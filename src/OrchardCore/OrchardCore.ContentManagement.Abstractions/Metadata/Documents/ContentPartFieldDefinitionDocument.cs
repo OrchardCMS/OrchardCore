@@ -1,11 +1,11 @@
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.ContentManagement.Metadata.Records
+namespace OrchardCore.ContentManagement.Metadata.Documents
 {
     /// <summary>
     /// Represents a field and its settings in a part.
     /// </summary>
-    public class ContentPartFieldDefinitionRecord
+    public class ContentPartFieldDefinitionDocument
     {
         /// <summary>
         /// Gets or set the field name, e.g. BooleanField.

@@ -1,11 +1,11 @@
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.ContentManagement.Metadata.Records
+namespace OrchardCore.ContentManagement.Metadata.Documents
 {
     /// <summary>
     /// Represents a part and its settings in a type.
     /// </summary>
-    public class ContentTypePartDefinitionRecord
+    public class ContentTypePartDefinitionDocument
     {
         /// <summary>
         /// Gets or sets the part name.

@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
 {
-    public static class MetaDataExtensions
+    public static class MetadataExtensions
     {
         /// <summary>
         /// Populates an object with the values from a <see cref="JObject"/> instance.

@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata.Records;
+using OrchardCore.ContentManagement.Metadata.Documents;
 using YesSql;
 
 namespace OrchardCore.ContentManagement
@@ -13,22 +13,22 @@ namespace OrchardCore.ContentManagement
             _session = session;
         }
 
-        public async Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
+        public async Task<ContentDefinitionDocument> LoadContentDefinitionAsync()
         {
             var contentDefinitionRecord = await _session
-                .Query<ContentDefinitionRecord>()
+                .Query<ContentDefinitionDocument>()
                 .FirstOrDefaultAsync();
 
             if (contentDefinitionRecord == null)
             {
-                contentDefinitionRecord = new ContentDefinitionRecord();
+                contentDefinitionRecord = new ContentDefinitionDocument();
                 await SaveContentDefinitionAsync(contentDefinitionRecord);
             }
 
             return contentDefinitionRecord;
         }
 
-        public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
+        public Task SaveContentDefinitionAsync(ContentDefinitionDocument contentDefinitionRecord)
         {
             _session.Save(contentDefinitionRecord);
 

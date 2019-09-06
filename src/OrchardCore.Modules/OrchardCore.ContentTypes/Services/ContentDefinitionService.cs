@@ -7,12 +7,10 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentTypes.Events;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
-using YesSql;
 
 namespace OrchardCore.ContentTypes.Services
 {
@@ -20,23 +18,17 @@ namespace OrchardCore.ContentTypes.Services
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IEnumerable<IContentDefinitionEventHandler> _contentDefinitionEventHandlers;
-        private readonly IContentManager _contentManager;
-        private readonly ISession _session;
         private readonly IEnumerable<ContentPart> _contentParts;
         private readonly IEnumerable<ContentField> _contentFields;
 
         public ContentDefinitionService(
                 IContentDefinitionManager contentDefinitionManager,
                 IEnumerable<IContentDefinitionEventHandler> contentDefinitionEventHandlers,
-                IContentManager contentManager,
-                ISession session,
                 IEnumerable<ContentPart> contentParts,
                 IEnumerable<ContentField> contentFields,
                 ILogger<IContentDefinitionService> logger,
                 IStringLocalizer<ContentDefinitionService> localizer)
         {
-            _session = session;
-            _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _contentDefinitionEventHandlers = contentDefinitionEventHandlers;
             _contentParts = contentParts;

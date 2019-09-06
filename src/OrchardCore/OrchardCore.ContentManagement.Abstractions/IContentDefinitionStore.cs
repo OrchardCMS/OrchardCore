@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata.Records;
+using OrchardCore.ContentManagement.Metadata.Documents;
 
 namespace OrchardCore.ContentManagement
 {
     public interface IContentDefinitionStore
     {
-        Task<ContentDefinitionRecord> LoadContentDefinitionAsync();
+        Task<ContentDefinitionDocument> LoadContentDefinitionAsync();
 
-        Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord);
+        Task SaveContentDefinitionAsync(ContentDefinitionDocument contentDefinitionRecord);
     }
 }

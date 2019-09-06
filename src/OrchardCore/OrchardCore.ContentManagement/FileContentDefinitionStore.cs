@@ -2,7 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using OrchardCore.ContentManagement.Metadata.Records;
+using OrchardCore.ContentManagement.Metadata.Documents;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.ContentManagement
@@ -18,28 +18,28 @@ namespace OrchardCore.ContentManagement
             _shellSettings = shellSettings;
         }
 
-        public Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
+        public Task<ContentDefinitionDocument> LoadContentDefinitionAsync()
         {
 
-            ContentDefinitionRecord result;
+            ContentDefinitionDocument result;
 
             if (!File.Exists(Filename))
             {
-                result = new ContentDefinitionRecord();
+                result = new ContentDefinitionDocument();
             }
             else
             {
                 using (var file = File.OpenText(Filename))
                 {
                     var serializer = new JsonSerializer();
-                    result = (ContentDefinitionRecord)serializer.Deserialize(file, typeof(ContentDefinitionRecord));
+                    result = (ContentDefinitionDocument)serializer.Deserialize(file, typeof(ContentDefinitionDocument));
                 }
             }
 
             return Task.FromResult(result);
         }
 
-        public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
+        public Task SaveContentDefinitionAsync(ContentDefinitionDocument contentDefinitionRecord)
         {
             using (var file = File.CreateText(Filename))
             {

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Records;
+using OrchardCore.ContentManagement.Metadata.Documents;
 using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.ContentManagement
@@ -15,7 +15,7 @@ namespace OrchardCore.ContentManagement
     {
         private const string TypeHashCacheKey = "ContentDefinitionManager:Serial";
 
-        private ContentDefinitionRecord _contentDefinitionRecord;
+        private ContentDefinitionDocument _contentDefinitionDocument;
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
         private readonly IContentDefinitionStore _contentDefinitionStore;
@@ -41,11 +41,11 @@ namespace OrchardCore.ContentManagement
         {
             return _typeDefinitions.GetOrAdd(name, n =>
             {
-                var contentTypeDefinitionRecord = GetContentDefinitionRecord()
-                    .ContentTypeDefinitionRecords
+                var contentTypeDefinitionDocument = GetContentDefinitionDocument()
+                    .ContentTypeDefinitions
                     .FirstOrDefault(x => x.Name == name);
 
-                return Build(contentTypeDefinitionRecord);
+                return Build(contentTypeDefinitionDocument);
             });
         }
 
@@ -53,43 +53,43 @@ namespace OrchardCore.ContentManagement
         {
             return _partDefinitions.GetOrAdd(name, n =>
             {
-                return Build(GetContentDefinitionRecord()
-                .ContentPartDefinitionRecords
+                return Build(GetContentDefinitionDocument()
+                .ContentPartDefinitions
                 .FirstOrDefault(x => x.Name == name));
             });
         }
 
         public IEnumerable<ContentTypeDefinition> ListTypeDefinitions()
         {
-            return GetContentDefinitionRecord().ContentTypeDefinitionRecords.Select(x => GetTypeDefinition(x.Name)).ToList();
+            return GetContentDefinitionDocument().ContentTypeDefinitions.Select(x => GetTypeDefinition(x.Name)).ToList();
         }
 
         public IEnumerable<ContentPartDefinition> ListPartDefinitions()
         {
-            return GetContentDefinitionRecord().ContentPartDefinitionRecords.Select(x => GetPartDefinition(x.Name)).ToList();
+            return GetContentDefinitionDocument().ContentPartDefinitions.Select(x => GetPartDefinition(x.Name)).ToList();
         }
 
         public void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition)
         {
             Apply(contentTypeDefinition, Acquire(contentTypeDefinition));
-            UpdateContentDefinitionRecord();
+            UpdateContentDefinitionDocument();
         }
 
         public void StorePartDefinition(ContentPartDefinition contentPartDefinition)
         {
             Apply(contentPartDefinition, Acquire(contentPartDefinition));
-            UpdateContentDefinitionRecord();
+            UpdateContentDefinitionDocument();
         }
 
         public void DeleteTypeDefinition(string name)
         {
-            var record = GetContentDefinitionRecord().ContentTypeDefinitionRecords.FirstOrDefault(x => x.Name == name);
+            var document = GetContentDefinitionDocument().ContentTypeDefinitions.FirstOrDefault(x => x.Name == name);
 
-            // deletes the content type record associated
-            if (record != null)
+            // deletes the content type document associated
+            if (document != null)
             {
-                GetContentDefinitionRecord().ContentTypeDefinitionRecords.Remove(record);
-                UpdateContentDefinitionRecord();
+                GetContentDefinitionDocument().ContentTypeDefinitions.Remove(document);
+                UpdateContentDefinitionDocument();
             }
         }
 
@@ -104,118 +104,118 @@ namespace OrchardCore.ContentManagement
             }
 
             // delete part
-            var record = GetContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => x.Name == name);
+            var document = GetContentDefinitionDocument().ContentPartDefinitions.FirstOrDefault(x => x.Name == name);
 
-            if (record != null)
+            if (document != null)
             {
-                GetContentDefinitionRecord().ContentPartDefinitionRecords.Remove(record);
-                UpdateContentDefinitionRecord();
+                GetContentDefinitionDocument().ContentPartDefinitions.Remove(document);
+                UpdateContentDefinitionDocument();
             }
         }
 
-        private ContentTypeDefinitionRecord Acquire(ContentTypeDefinition contentTypeDefinition)
+        private ContentTypeDefinitionDocument Acquire(ContentTypeDefinition contentTypeDefinition)
         {
-            var result = GetContentDefinitionRecord().ContentTypeDefinitionRecords.FirstOrDefault(x => x.Name == contentTypeDefinition.Name);
+            var result = GetContentDefinitionDocument().ContentTypeDefinitions.FirstOrDefault(x => x.Name == contentTypeDefinition.Name);
             if (result == null)
             {
-                result = new ContentTypeDefinitionRecord { Name = contentTypeDefinition.Name, DisplayName = contentTypeDefinition.DisplayName };
-                GetContentDefinitionRecord().ContentTypeDefinitionRecords.Add(result);
+                result = new ContentTypeDefinitionDocument { Name = contentTypeDefinition.Name, DisplayName = contentTypeDefinition.DisplayName };
+                GetContentDefinitionDocument().ContentTypeDefinitions.Add(result);
             }
             return result;
         }
 
-        private ContentPartDefinitionRecord Acquire(ContentPartDefinition contentPartDefinition)
+        private ContentPartDefinitionDocument Acquire(ContentPartDefinition contentPartDefinition)
         {
-            var result = GetContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => x.Name == contentPartDefinition.Name);
+            var result = GetContentDefinitionDocument().ContentPartDefinitions.FirstOrDefault(x => x.Name == contentPartDefinition.Name);
             if (result == null)
             {
-                result = new ContentPartDefinitionRecord { Name = contentPartDefinition.Name, };
-                GetContentDefinitionRecord().ContentPartDefinitionRecords.Add(result);
+                result = new ContentPartDefinitionDocument { Name = contentPartDefinition.Name, };
+                GetContentDefinitionDocument().ContentPartDefinitions.Add(result);
             }
             return result;
         }
 
-        private ContentFieldDefinitionRecord Acquire(ContentFieldDefinition contentFieldDefinition)
+        private ContentFieldDefinitionDocument Acquire(ContentFieldDefinition contentFieldDefinition)
         {
-            return new ContentFieldDefinitionRecord { Name = contentFieldDefinition.Name };
+            return new ContentFieldDefinitionDocument { Name = contentFieldDefinition.Name };
         }
 
-        private void Apply(ContentTypeDefinition model, ContentTypeDefinitionRecord record)
+        private void Apply(ContentTypeDefinition model, ContentTypeDefinitionDocument document)
         {
-            record.DisplayName = model.DisplayName;
-            record.Settings = model.Settings;
+            document.DisplayName = model.DisplayName;
+            document.Settings = model.Settings;
 
-            var toRemove = record.ContentTypePartDefinitionRecords
-                .Where(typePartDefinitionRecord => !model.Parts.Any(part => typePartDefinitionRecord.Name == part.Name))
+            var toRemove = document.ContentTypePartDefinitions
+                .Where(typePartDefinitionDocument => !model.Parts.Any(part => typePartDefinitionDocument.Name == part.Name))
                 .ToList();
 
             foreach (var remove in toRemove)
             {
-                record.ContentTypePartDefinitionRecords.Remove(remove);
+                document.ContentTypePartDefinitions.Remove(remove);
             }
 
             foreach (var part in model.Parts)
             {
-                var typePartRecord = record.ContentTypePartDefinitionRecords.FirstOrDefault(r => r.Name == part.Name);
-                if (typePartRecord == null)
+                var typePartDocument = document.ContentTypePartDefinitions.FirstOrDefault(r => r.Name == part.Name);
+                if (typePartDocument == null)
                 {
-                    typePartRecord = new ContentTypePartDefinitionRecord
+                    typePartDocument = new ContentTypePartDefinitionDocument
                     {
                         PartName = part.PartDefinition.Name,
                         Name = part.Name,
                         Settings = part.Settings
                     };
 
-                    record.ContentTypePartDefinitionRecords.Add(typePartRecord);
+                    document.ContentTypePartDefinitions.Add(typePartDocument);
                 }
-                Apply(part, typePartRecord);
+                Apply(part, typePartDocument);
             }
 
             // Persist changes
-            UpdateContentDefinitionRecord();
+            UpdateContentDefinitionDocument();
         }
 
-        private void Apply(ContentTypePartDefinition model, ContentTypePartDefinitionRecord record)
+        private void Apply(ContentTypePartDefinition model, ContentTypePartDefinitionDocument document)
         {
-            record.Settings = model.Settings;
+            document.Settings = model.Settings;
         }
 
-        private void Apply(ContentPartDefinition model, ContentPartDefinitionRecord record)
+        private void Apply(ContentPartDefinition model, ContentPartDefinitionDocument document)
         {
-            record.Settings = model.Settings;
+            document.Settings = model.Settings;
 
-            var toRemove = record.ContentPartFieldDefinitionRecords
-                .Where(partFieldDefinitionRecord => !model.Fields.Any(partField => partFieldDefinitionRecord.Name == partField.Name))
+            var toRemove = document.ContentPartFieldDefinitions
+                .Where(partFieldDefinitionDocument => !model.Fields.Any(partField => partFieldDefinitionDocument.Name == partField.Name))
                 .ToList();
 
             foreach (var remove in toRemove)
             {
-                record.ContentPartFieldDefinitionRecords.Remove(remove);
+                document.ContentPartFieldDefinitions.Remove(remove);
             }
 
             foreach (var field in model.Fields)
             {
                 var fieldName = field.Name;
-                var partFieldRecord = record.ContentPartFieldDefinitionRecords.FirstOrDefault(r => r.Name == fieldName);
-                if (partFieldRecord == null)
+                var partFieldDocument = document.ContentPartFieldDefinitions.FirstOrDefault(r => r.Name == fieldName);
+                if (partFieldDocument == null)
                 {
-                    partFieldRecord = new ContentPartFieldDefinitionRecord
+                    partFieldDocument = new ContentPartFieldDefinitionDocument
                     {
                         FieldName = field.FieldDefinition.Name,
                         Name = field.Name
                     };
-                    record.ContentPartFieldDefinitionRecords.Add(partFieldRecord);
+                    document.ContentPartFieldDefinitions.Add(partFieldDocument);
                 }
-                Apply(field, partFieldRecord);
+                Apply(field, partFieldDocument);
             }
         }
 
-        private void Apply(ContentPartFieldDefinition model, ContentPartFieldDefinitionRecord record)
+        private void Apply(ContentPartFieldDefinition model, ContentPartFieldDefinitionDocument document)
         {
-            record.Settings = model.Settings;
+            document.Settings = model.Settings;
         }
 
-        ContentTypeDefinition Build(ContentTypeDefinitionRecord source)
+        ContentTypeDefinition Build(ContentTypeDefinitionDocument source)
         {
             if (source == null)
             {
@@ -225,40 +225,40 @@ namespace OrchardCore.ContentManagement
             var contentTypeDefinition = new ContentTypeDefinition(
                 source.Name,
                 source.DisplayName,
-                source.ContentTypePartDefinitionRecords.Select(Build),
+                source.ContentTypePartDefinitions.Select(Build),
                 source.Settings);
 
             return contentTypeDefinition;
         }
 
-        ContentTypePartDefinition Build(ContentTypePartDefinitionRecord source)
+        ContentTypePartDefinition Build(ContentTypePartDefinitionDocument source)
         {
-            var partDefinitionRecord = GetContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => x.Name == source.PartName);
+            var partDefinitionDocument = GetContentDefinitionDocument().ContentPartDefinitions.FirstOrDefault(x => x.Name == source.PartName);
 
             return source == null ? null : new ContentTypePartDefinition(
                 source.Name,
-                Build(partDefinitionRecord) ?? new ContentPartDefinition(source.PartName, Enumerable.Empty<ContentPartFieldDefinition>(), new Newtonsoft.Json.Linq.JObject()),
+                Build(partDefinitionDocument) ?? new ContentPartDefinition(source.PartName, Enumerable.Empty<ContentPartFieldDefinition>(), new Newtonsoft.Json.Linq.JObject()),
                 source.Settings);
         }
 
-        ContentPartDefinition Build(ContentPartDefinitionRecord source)
+        ContentPartDefinition Build(ContentPartDefinitionDocument source)
         {
             return source == null ? null : new ContentPartDefinition(
                 source.Name,
-                source.ContentPartFieldDefinitionRecords.Select(Build),
+                source.ContentPartFieldDefinitions.Select(Build),
                 source.Settings);
         }
 
-        ContentPartFieldDefinition Build(ContentPartFieldDefinitionRecord source)
+        ContentPartFieldDefinition Build(ContentPartFieldDefinitionDocument source)
         {
             return source == null ? null : new ContentPartFieldDefinition(
-                Build(new ContentFieldDefinitionRecord { Name = source.FieldName }),
+                Build(new ContentFieldDefinitionDocument { Name = source.FieldName }),
                 source.Name,
                 source.Settings
             );
         }
 
-        ContentFieldDefinition Build(ContentFieldDefinitionRecord source)
+        ContentFieldDefinition Build(ContentFieldDefinitionDocument source)
         {
             return source == null ? null : new ContentFieldDefinition(source.Name);
         }
@@ -266,14 +266,14 @@ namespace OrchardCore.ContentManagement
         public Task<int> GetTypesHashAsync()
         {
             // The serial number is stored in local cache in order to prevent
-            // loading the record if it's not necessary
+            // loading the document if it's not necessary
 
             int serial;
             if (!_memoryCache.TryGetValue(TypeHashCacheKey, out serial))
             {
                 serial = _memoryCache.Set(
                     TypeHashCacheKey,
-                    GetContentDefinitionRecord().Serial,
+                    GetContentDefinitionDocument().Serial,
                     _signal.GetToken(TypeHashCacheKey)
                 );
             }
@@ -281,20 +281,20 @@ namespace OrchardCore.ContentManagement
             return Task.FromResult(serial);
         }
 
-        private ContentDefinitionRecord GetContentDefinitionRecord()
+        private ContentDefinitionDocument GetContentDefinitionDocument()
         {
-            if (_contentDefinitionRecord != null)
+            if (_contentDefinitionDocument != null)
             {
-                return _contentDefinitionRecord;
+                return _contentDefinitionDocument;
             }
 
-            return _contentDefinitionRecord = _contentDefinitionStore.LoadContentDefinitionAsync().GetAwaiter().GetResult();
+            return _contentDefinitionDocument = _contentDefinitionStore.LoadContentDefinitionAsync().GetAwaiter().GetResult();
         }
 
-        private void UpdateContentDefinitionRecord()
+        private void UpdateContentDefinitionDocument()
         {
-            _contentDefinitionRecord.Serial++;
-            _contentDefinitionStore.SaveContentDefinitionAsync(_contentDefinitionRecord).GetAwaiter().GetResult();
+            _contentDefinitionDocument.Serial++;
+            _contentDefinitionStore.SaveContentDefinitionAsync(_contentDefinitionDocument).GetAwaiter().GetResult();
 
             _signal.SignalToken(TypeHashCacheKey);
 
