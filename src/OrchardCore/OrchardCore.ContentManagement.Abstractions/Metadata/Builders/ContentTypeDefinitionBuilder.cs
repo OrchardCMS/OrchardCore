@@ -55,9 +55,9 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        public ContentTypeDefinitionBuilder WithSetting(string name, string value)
+        public ContentTypeDefinitionBuilder WithSetting(string name, object value)
         {
-            _settings[name] = value;
+            _settings[name] = JToken.FromObject(value);
             return this;
         }
 
