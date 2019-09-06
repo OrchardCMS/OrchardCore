@@ -17,7 +17,7 @@ namespace OrchardCore.Markdown.Settings
                 return null;
             }
 
-            return Initialize<MarkdownBodyPartSettings>("MarkdownBodyPartSettings_Edit", model => contentTypePartDefinition.Settings.Populate(model))
+            return Initialize<MarkdownBodyPartSettings>("MarkdownBodyPartSettings_Edit", model => contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>())
                 .Location("Content");
         }
 
