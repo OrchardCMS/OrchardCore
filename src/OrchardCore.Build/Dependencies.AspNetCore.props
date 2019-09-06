@@ -9,7 +9,6 @@
     <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="3.0.0-preview9.19424.4" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="3.0.0-preview9.19424.4" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="3.0.0-preview9.19424.4" />
-    <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.2.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview9.19424.4" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.0.0-preview9.19424.4" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.0.0-preview9.19424.4" />
