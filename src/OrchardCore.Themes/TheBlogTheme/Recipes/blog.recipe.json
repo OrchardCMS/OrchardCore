@@ -715,7 +715,8 @@
         {
           "IndexName": "Search",
           "AnalyzerName": "standardanalyzer",
-          "IndexDrafted": true,
+          "IndexLatest": false,
+          "IndexInBackgroundTask": true,
           "IndexedContentTypes": [
             "Article",
             "Blockquote",
