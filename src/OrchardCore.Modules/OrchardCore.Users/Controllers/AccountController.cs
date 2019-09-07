@@ -79,7 +79,7 @@ namespace OrchardCore.Users.Controllers
                 }
             }
 
-            await _accountEvents.InvokeAsync(i => i.LoggingInAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+            await _accountEvents.InvokeAsync(i => i.LoggingInAsync(model.UserName, (key, message) => ModelState.AddModelError(key, message)), _logger);
 
             if (ModelState.IsValid)
             {
@@ -89,7 +89,7 @@ namespace OrchardCore.Users.Controllers
                 if (result.Succeeded)
                 {
                     _logger.LogInformation(1, "User logged in.");
-                    await _accountEvents.InvokeAsync(a => a.LoggedInAsync(), _logger);
+                    await _accountEvents.InvokeAsync(a => a.LoggedInAsync(model.UserName), _logger);
                     return RedirectToLocal(returnUrl);
                 }
                 //if (result.RequiresTwoFactor)
@@ -104,7 +104,7 @@ namespace OrchardCore.Users.Controllers
                 else
                 {
                     ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
-                    await _accountEvents.InvokeAsync(a => a.LoggingInFailedAsync(), _logger);
+                    await _accountEvents.InvokeAsync(a => a.LoggingInFailedAsync(model.UserName), _logger);
                     return View(model);
                 }
             }
