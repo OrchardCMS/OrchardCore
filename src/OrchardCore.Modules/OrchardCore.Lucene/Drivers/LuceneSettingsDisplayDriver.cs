@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -11,11 +12,11 @@ namespace OrchardCore.Lucene.Drivers
 {
     public class LuceneSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, LuceneSettings>
     {
-        private readonly LuceneIndexManager _luceneIndexProvider;
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
-        public LuceneSiteSettingsDisplayDriver(LuceneIndexManager luceneIndexProvider)
+        public LuceneSiteSettingsDisplayDriver(LuceneIndexSettingsService luceneIndexSettingsService)
         {
-            _luceneIndexProvider = luceneIndexProvider;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
         }
 
         public override IDisplayResult Edit(LuceneSettings section, BuildEditorContext context)
@@ -24,7 +25,7 @@ namespace OrchardCore.Lucene.Drivers
                 {
                     model.SearchIndex = section.SearchIndex;
                     model.SearchFields = String.Join(", ", section.DefaultSearchFields ?? new string[0]);
-                    model.SearchIndexes = _luceneIndexProvider.List();
+                    model.SearchIndexes = _luceneIndexSettingsService.List().Select(x => x.IndexName).ToArray();
                 }).Location("Content:2").OnGroup("search");
         }
 

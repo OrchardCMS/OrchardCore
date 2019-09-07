@@ -70,7 +70,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             var viewModel = new AdminIndexViewModel
             {
-                Indexes = _luceneIndexManager.List().Select(s => new IndexViewModel { Name = s }).ToArray()
+                Indexes = _luceneIndexSettingsService.List().Select(s => new IndexViewModel { Name = s.IndexName }).ToArray()
             };
 
             return View(viewModel);
@@ -287,7 +287,7 @@ namespace OrchardCore.Lucene.Controllers
                 return Unauthorized();
             }
 
-            model.Indices = _luceneIndexManager.List().ToArray();
+            model.Indices = _luceneIndexSettingsService.List().Select(x => x.IndexName).ToArray();
 
             // Can't query if there are no indices
             if (model.Indices.Length == 0)

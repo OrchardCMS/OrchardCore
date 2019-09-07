@@ -11,11 +11,11 @@ namespace OrchardCore.Lucene.Deployment
 {
     public class LuceneIndexDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexDeploymentStep>
     {
-        private readonly LuceneIndexManager _luceneIndexManager;
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
-        public LuceneIndexDeploymentStepDriver(LuceneIndexManager luceneIndexManager)
+        public LuceneIndexDeploymentStepDriver(LuceneIndexSettingsService luceneIndexSettingsService)
         {
-            _luceneIndexManager = luceneIndexManager;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
         }
 
         public override IDisplayResult Display(LuceneIndexDeploymentStep step)
@@ -33,7 +33,7 @@ namespace OrchardCore.Lucene.Deployment
             {
                 model.IncludeAll = step.IncludeAll;
                 model.IndexNames = step.IndexNames;
-                model.AllIndexNames = _luceneIndexManager.List().ToArray();
+                model.AllIndexNames = _luceneIndexSettingsService.List().Select(x => x.IndexName).ToArray();
             }).Location("Content");
         }
 

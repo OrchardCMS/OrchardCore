@@ -35,13 +35,12 @@ namespace OrchardCore.Lucene.Handlers
             var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
-            foreach (var index in _luceneIndexManager.List())
+            foreach (var indexSettings in _luceneIndexSettingsService.List())
             {
-                var indexSettings = _luceneIndexSettingsService.List().Where(x => x.IndexName == index).FirstOrDefault();
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
-                    _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
-                    _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { buildIndexContext.DocumentIndex });
+                    _luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                    _luceneIndexManager.StoreDocuments(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
                 }
             }
         }
@@ -53,12 +52,11 @@ namespace OrchardCore.Lucene.Handlers
             var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
-            foreach (var index in _luceneIndexManager.List())
+            foreach (var indexSettings in _luceneIndexSettingsService.List())
             {
-                var indexSettings = _luceneIndexSettingsService.List().Where(x => x.IndexName == index).FirstOrDefault();
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
-                    _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { buildIndexContext.DocumentIndex });
+                    _luceneIndexManager.StoreDocuments(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
                 }
             }
         }
@@ -70,15 +68,14 @@ namespace OrchardCore.Lucene.Handlers
             var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
-            foreach (var index in _luceneIndexManager.List())
+            foreach (var indexSettings in _luceneIndexSettingsService.List())
             {
-                var indexSettings = _luceneIndexSettingsService.List().Where(x => x.IndexName == index).FirstOrDefault();
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
                     if (indexSettings.IndexLatest)
                     {
-                        _luceneIndexManager.DeleteDocumentVersions(index, new string[] { context.ContentItem.ContentItemVersionId });
-                        _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { buildIndexContext.DocumentIndex });
+                        _luceneIndexManager.DeleteDocumentVersions(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemVersionId });
+                        _luceneIndexManager.StoreDocuments(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
                     }
                 }
             }
@@ -91,18 +88,17 @@ namespace OrchardCore.Lucene.Handlers
             var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
-            foreach (var index in _luceneIndexManager.List())
+            foreach (var indexSettings in _luceneIndexSettingsService.List())
             {
-                var indexSettings = _luceneIndexSettingsService.List().Where(x => x.IndexName == index).FirstOrDefault();
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
                     if (indexSettings.IndexLatest)
                     {
-                        _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
+                        _luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
                     }
                     else {
-                        _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
-                        _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { buildIndexContext.DocumentIndex });
+                        _luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                        _luceneIndexManager.StoreDocuments(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
                     }
                 }
             }
@@ -110,12 +106,11 @@ namespace OrchardCore.Lucene.Handlers
 
         public override Task RemovedAsync(RemoveContentContext context)
         {
-            foreach (var index in _luceneIndexManager.List())
+            foreach (var indexSettings in _luceneIndexSettingsService.List())
             {
-                var indexSettings = _luceneIndexSettingsService.List().Where(x => x.IndexName == index).FirstOrDefault();
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
-                    _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
+                    _luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
                 }
             }
 
@@ -129,13 +124,12 @@ namespace OrchardCore.Lucene.Handlers
             var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
-            foreach (var index in _luceneIndexManager.List())
+            foreach (var indexSettings in _luceneIndexSettingsService.List())
             {
-                var indexSettings = _luceneIndexSettingsService.List().Where(x => x.IndexName == index).FirstOrDefault();
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
-                    _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
-                    _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { buildIndexContext.DocumentIndex });
+                    _luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                    _luceneIndexManager.StoreDocuments(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
                 }
             }
         }

@@ -8,11 +8,11 @@ namespace OrchardCore.Lucene.Settings
 {
     public class ContentPickerFieldLuceneEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
     {
-        private readonly LuceneIndexManager _luceneIndexManager;
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
-        public ContentPickerFieldLuceneEditorSettingsDriver(LuceneIndexManager luceneIndexManager)
+        public ContentPickerFieldLuceneEditorSettingsDriver(LuceneIndexSettingsService luceneIndexSettingsService)
         {
-            _luceneIndexManager = luceneIndexManager;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
         }
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
@@ -20,7 +20,7 @@ namespace OrchardCore.Lucene.Settings
             return Initialize<ContentPickerFieldLuceneEditorSettings>("ContentPickerFieldLuceneEditorSettings_Edit", model =>
             {
                 partFieldDefinition.Settings.Populate<ContentPickerFieldLuceneEditorSettings>(model);
-                model.Indices = _luceneIndexManager.List().ToArray();
+                model.Indices = _luceneIndexSettingsService.List().Select(x => x.IndexName).ToArray();
             }).Location("Editor");
         }
 

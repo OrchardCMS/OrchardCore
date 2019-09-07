@@ -140,13 +140,6 @@ namespace OrchardCore.Lucene
             return Directory.Exists(PathExtensions.Combine(_rootPath, indexName));
         }
 
-        public IEnumerable<string> List()
-        {
-            return _rootDirectory
-                .GetDirectories()
-                .Select(x => x.Name);
-        }
-
         public void StoreDocuments(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
             Write(indexName, writer =>

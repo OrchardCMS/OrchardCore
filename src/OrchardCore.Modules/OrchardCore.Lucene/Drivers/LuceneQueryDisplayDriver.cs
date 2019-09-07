@@ -13,13 +13,13 @@ namespace OrchardCore.Lucene.Drivers
     public class LuceneQueryDisplayDriver : DisplayDriver<Query, LuceneQuery>
     {
         private IStringLocalizer S;
-        private LuceneIndexManager _luceneIndexManager;
+        private LuceneIndexSettingsService _luceneIndexSettingsService;
 
         public LuceneQueryDisplayDriver(
             IStringLocalizer<LuceneQueryDisplayDriver> stringLocalizer,
-            LuceneIndexManager luceneIndexManager)
+            LuceneIndexSettingsService luceneIndexSettingsService)
         {
-            _luceneIndexManager = luceneIndexManager;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
             S = stringLocalizer;
         }
 
@@ -38,7 +38,7 @@ namespace OrchardCore.Lucene.Drivers
                 model.Query = query.Template;
                 model.Index = query.Index;
                 model.ReturnContentItems = query.ReturnContentItems;
-                model.Indices = _luceneIndexManager.List().ToArray();
+                model.Indices = _luceneIndexSettingsService.List().Select(x => x.IndexName).ToArray();
 
                 // Extract query from the query string if we come from the main query editor
                 if (string.IsNullOrEmpty(query.Template))

@@ -8,12 +8,12 @@ namespace OrchardCore.Lucene.Deployment
 {
     public class LuceneIndexDeploymentSource : IDeploymentSource
     {
-        private readonly LuceneIndexManager _luceneIndexManager;
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly ISiteService _siteService;
 
-        public LuceneIndexDeploymentSource(LuceneIndexManager luceneIndexManager, ISiteService siteService)
+        public LuceneIndexDeploymentSource(LuceneIndexSettingsService luceneIndexSettingsService, ISiteService siteService)
         {
-            _luceneIndexManager = luceneIndexManager;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
             _siteService = siteService;
         }
 
@@ -26,7 +26,7 @@ namespace OrchardCore.Lucene.Deployment
                 return Task.CompletedTask;
             }
 
-            var indices = luceneIndexStep.IncludeAll ? _luceneIndexManager.List().ToArray() : luceneIndexStep.IndexNames;
+            var indices = luceneIndexStep.IncludeAll ? _luceneIndexSettingsService.List().Select(x => x.IndexName).ToArray() : luceneIndexStep.IndexNames;
 
             // Adding Lucene settings
             result.Steps.Add(new JObject(
