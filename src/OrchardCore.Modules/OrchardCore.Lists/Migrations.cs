@@ -2,6 +2,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 using OrchardCore.Lists.Indexes;
+using OrchardCore.Lists.Models;
 
 namespace OrchardCore.Lists
 {
@@ -29,7 +30,16 @@ namespace OrchardCore.Lists
                 .CreateIndex("IDX_ContainedPartIndex_ListContentItemId", "ListContentItemId")
             );
 
-            return 1;
+            // Return 2 to shortcut the second migration on new content definition schemas.
+            return 2;
+        }
+
+        // Migrate PartSettings. This only needs to run on old content definition schemas.
+        public int UpdateFrom1()
+        {
+            _contentDefinitionManager.MigratePartSettings<ListPart, ListPartSettings>();
+
+            return 2;
         }
     }
 }
