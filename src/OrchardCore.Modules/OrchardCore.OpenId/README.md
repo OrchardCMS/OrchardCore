@@ -244,5 +244,5 @@ A sample of OpenID Connect Client Settings recipe step:
 
 ### OpenIddict
 
-https://github.com/openiddict
+<https://github.com/openiddict>
 License under Apache License 2.0

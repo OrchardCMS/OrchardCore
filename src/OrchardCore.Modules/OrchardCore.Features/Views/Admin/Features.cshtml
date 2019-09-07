@@ -4,43 +4,55 @@
 
 @{
 }
-<h1>@RenderTitleSegments(T["Features"])</h1>
-
-<form asp-action="Features" method="post">
-    <div class="card">
-        <div class="card-body bg-light">
-            <div class="input-group mb-3 w-xl-50">
-                <div class="input-group-prepend">
-                    <span class="input-group-text bg-secondary text-light">@T["Filter:"]</span>
-                </div>
-                <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
-            </div>
-
-            <div class="input-group w-xl-50">
-                <div class="input-group-prepend">
-                    <span class="input-group-text bg-secondary text-light">@T["Actions:"]</span>
-                </div>
-                <select class="form-control" name="bulkAction">
-                    <option value="@FeaturesBulkAction.Enable.ToString()">@T["Enable"]</option>
-                    <option value="@FeaturesBulkAction.Disable.ToString()">@T["Disable"]</option>
-                    <option value="@FeaturesBulkAction.Toggle.ToString()">@T["Toggle"]</option>
-                </select>
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-secondary">@T["Apply"]</button>
-                </div>
+<div class="row">
+    <div class="form-group col-xl-6 mb-xl-n1">
+        <h1>@RenderTitleSegments(T["Features"])</h1>
+    </div>
+    <div class="form-group col-xl-6 mb-xl-n1">
+        <div class="dropdown float-right order-md-1">
+            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                @T["Bulk Actions"]
+            </button>
+            <div class="dropdown-menu" aria-labelledby="bulk-action-menu-button">
+                <a class="dropdown-item" href="#" data-action="@FeaturesBulkAction.Disable.ToString()">@T["Disable"]</a>
+                <a class="dropdown-item" href="#" data-action="@FeaturesBulkAction.Enable.ToString()">@T["Enable"]</a>
+                <a class="dropdown-item" href="#" data-action="@FeaturesBulkAction.Toggle.ToString()">@T["Toggle"]</a>
             </div>
         </div>
     </div>
+</div>
+
+<form asp-action="Features" method="get">
+    <fieldset class="filter-options">
+        <div class="card mb-6">
+            <div class="card-body bg-light p-3">
+                <div class="row">
+                    <div class="form-group col-xl-6 mb-n1">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+                            </div>
+                            <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</form>
+<form asp-action="Features" method="post">
+    <input name="BulkAction" type="hidden" />
+    <input type="submit" name="submit.BulkAction" class="d-none" />
     @{
-        var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).ToList(); //.OrderBy(f => f.Descriptor.Category, new DoghouseComparer("Core"))
+        var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).OrderBy(o => o.Key).ToArray();
         foreach (var featureGroup in featureGroups)
         {
             if (!featureGroup.Any(x => Model.IsAllowed(x.Descriptor)))
             {
                 continue;
             }
-            var categoryName = featureGroup.First().Descriptor.Category ?? T["Uncategorized"].Value; //LocalizedString.TextOrDefault(featureGroup.First().Descriptor.Category, T("Uncategorized"));
-            var categoryClassName = string.Format("category {0}", Html.Encode(categoryName.ToString())); //Html.Encode(categoryName.ToString().HtmlClassify()));
+            var categoryName = featureGroup.First().Descriptor.Category ?? T["Uncategorized"].Value;
+            var categoryClassName = string.Format("category {0}", Html.Encode(categoryName.ToString()));
             if (featureGroup == featureGroups.First())
             {
                 categoryClassName += " first";
@@ -55,7 +67,7 @@
                     var features = featureGroup.OrderBy(f => f.Descriptor.Name);
                     var categoryFeatureNames = String.Join(" ", features.Select(f => f.Descriptor.Name));
                 }
-                <h2 class="mb-2 mt-3" data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h2>
+                <h4 class="mb-2 mt-3" data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h4>
                 <ul class="list-group" data-filter-value="@categoryName @categoryFeatureNames">
                     @{
                         foreach (var feature in features)
@@ -85,12 +97,12 @@
                                         {
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox" class="custom-control-input" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id">
-                                                <label class="custom-control-label h5" for="@feature.Descriptor.Id">@featureName</label>
+                                                <label class="custom-control-label h6" for="@feature.Descriptor.Id">@featureName</label>
                                             </div>
                                         }
                                         else
                                         {
-                                            <h5>@featureName</h5>
+                                            <h6>@featureName</h6>
                                         }
 
                                         <p class="text-muted">@feature.Descriptor.Description</p>
@@ -136,97 +148,8 @@
             </div>
         }
     }
-
-    @*<li class="@featureClassName" id="@featureId" title="@string.Format(feature.IsEnabled ? " {0} is enabled" : "{0} is disabled" , featureName)">
-            <div class="panel panel-default panel-heading-fullwidth panel-borders">
-                <div class="panel-heading">
-                    <div class="title">
-                        @if ((showEnable && !feature.IsEnabled) || (showDisable && feature.IsEnabled))
-                        {
-                        <span class="or-checkbox">
-                            <input type="checkbox" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id" />
-                            <label for="@feature.Descriptor.Id">
-                                @featureName
-                            </label>
-                        </span>
-                        }
-                        else
-                        {
-                        @featureName
-                        }
-                    </div>
-                    <div class="tools">
-                        @if (showDisable && feature.IsEnabled)
-                        {
-                        var dependantsJoined = string.Join(", ", feature.DependentFeatures.Select(f => f.Name));
-                        <div class="switch-button">
-                            <input type="checkbox" checked="" name="swt@(feature.Descriptor.Id)" id="swt@(feature.Descriptor.Id)"><span>
-                                <label for="swt@(feature.Descriptor.Id)" data-feature-id="@feature.Descriptor.Id" data-feature-action="@FeaturesBulkAction.Disable" data-feature-force="true" data-feature-dependants="@dependantsJoined">@T["Disable"]</label>
-                            </span>
-                        </div>
-                        }
-
-                        @if (showEnable && !feature.IsEnabled)
-                        {
-                        <div class="switch-button">
-                            <input type="checkbox" name="swt@(feature.Descriptor.Id)" id="swt@(feature.Descriptor.Id)"><span>
-                                <label for="swt@(feature.Descriptor.Id)" data-feature-id="@feature.Descriptor.Id" data-feature-action="@FeaturesBulkAction.Enable" data-feature-force="true">@T["Enable"]</label>
-                            </span>
-                        </div>
-                        }
-
-                        @if (feature.NeedsUpdate)
-                        {
-                        <span class="icon s7-upload">
-                            <a href="#" data-feature-id="@feature.Descriptor.Id" data-feature-action="@FeaturesBulkAction.Update" data-feature-force="false">@T["Update"]</a>
-                        </span>
-                        }
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <p class="description" title="@feature.Descriptor.Description">@feature.Descriptor.Description</p>
-                    @if (feature.Descriptor.Dependencies != null && feature.Descriptor.Dependencies.Any())
-                    {
-                    <div class="dependencies">
-                        <h4>@T["Depends on:"]</h4>
-                        <ul>
-                            @foreach (var d in dependencies)
-                            {
-                            <li>
-                                <a href="#@d">@(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)</a>
-                            </li>
-                            }
-                        </ul>
-                    </div>
-                    }
-                    @if (missingDependencies.Any())
-                    {
-                    <div class="missingdependencies">
-                        <h4>@T["Missing:"]</h4>
-                        <ul>
-                            @foreach (var d in missingDependencies)
-                            {
-                            <li>
-                                @d
-                            </li>
-                            }
-                        </ul>
-                    </div>}
-                </div>
-                <div class="panel-footer">
-                    @if (lifecycleStatus != LifecycleStatus.Production) {
-                    var iconClass = lifecycleStatusClassDictionary[lifecycleStatus];
-                    <div class="lifecycle-status lifecycle-status-@feature.Descriptor.Extension.LifecycleStatus.ToString().HtmlClassify()">
-                        <i class="fa @iconClass"></i>
-                        @T(lifecycleStatus.ToString())
-                    </div>
-                    }
-                </div>
-            </div>
-        </li>*@
 </form>
 <script at="Foot" type="text/javascript">
-    //<![CDATA[
     $(function () {
         var searchBox = $('#search-box');
 
@@ -256,6 +179,10 @@
                 return false;
             }
         });
+
+        $(".dropdown-menu a").on('click', function () {
+            $("[name='BulkAction']").val($(this).data('action'));
+            $("[name='submit.BulkAction']").click();
+        });
     });
-    //]]>
 </script>

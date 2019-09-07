@@ -1,4 +1,3 @@
-
 using System.Threading.Tasks;
 
 namespace OrchardCore.DisplayManagement.Layout
@@ -15,7 +14,7 @@ namespace OrchardCore.DisplayManagement.Layout
 
         public async Task<IShape> GetLayoutAsync()
         {
-            if(_layout == null)
+            if (_layout == null)
             {
                 _layout = await _shapeFactory.CreateAsync("Layout", Arguments.Empty);
             }

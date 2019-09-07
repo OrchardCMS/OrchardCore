@@ -10,12 +10,12 @@ namespace OrchardCore.ContentLocalization
         /// Get the list of items for the localizationSet
         /// </summary>
         /// <returns>List of all items matching a localizationSet</returns>
-        Task<IEnumerable<ContentItem>> GetItemsForSet(string localizationSet);
+        Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet);
         /// <summary>
         /// Get the content item that matches the localizationSet / culture combinaison
         /// </summary>
         /// <returns>ContentItem or null if not found</returns>
-        Task<ContentItem> GetContentItem(string localizationSet, string culture);
+        Task<ContentItem> GetContentItemAsync(string localizationSet, string culture);
         /// <summary>
         /// Localizes the content item to the target culture.
         /// This method will clone the ContentItem of the default locale
@@ -23,5 +23,30 @@ namespace OrchardCore.ContentLocalization
         /// </summary>
         /// <returns>The localized content item</returns>
         Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture);
+
+        /// Deduplicate the list of contentItems to only keep a single contentItem per LocalizationSet.
+        /// Each ContentItem is chosen with the following rules:
+        /// - ContentItemId of the current culture for the set
+        /// - OR ContentItemId of the default culture for the set
+        /// - OR First ContentItemId found in the set
+        /// </summary
+        /// <returns>Cleaned list of ContentItem</returns>
+        Task<IDictionary<string, ContentItem>> DeduplicateContentItemsAsync(IEnumerable<ContentItem> contentItems);
+        /// <summary>
+        /// Gets a list of ContentItemId for the LocalizationSet based on some rules
+        /// Order of elements is kept.
+        /// </summary>
+        /// <returns>
+        /// List of contentItemId, each chosen with the following rules:
+        /// - ContentItemId of the current culture for the set
+        /// - OR ContentItemId of the default culture for the set
+        /// - OR First ContentItemId found in the set
+        /// </returns>
+        Task<IDictionary<string, string>> GetFirstItemIdForSetsAsync(IEnumerable<string> localizationSets);
+        /// <summary>
+        /// Get the ContenItems that match the culture and localizationSet.
+        /// A single ContentItem is returned per set if it exists.
+        /// </summary>
+        Task<IEnumerable<ContentItem>> GetItemsForSetsAsync(IEnumerable<string> localizationSets, string culture);
     }
 }

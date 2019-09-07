@@ -370,7 +370,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ContentLocaliza
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ContentLocalization.Abstractions", "src\OrchardCore\OrchardCore.ContentLocalization.Abstractions\OrchardCore.ContentLocalization.Abstractions.csproj", "{C2EA489A-B51B-40CE-BE71-8EC9774075C6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Github", "src\OrchardCore.Modules\OrchardCore.Github\OrchardCore.Github.csproj", "{E8594DF8-5E41-4D24-B7DE-3AD0C1D035BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.GitHub", "src\OrchardCore.Modules\OrchardCore.GitHub\OrchardCore.GitHub.csproj", "{E8594DF8-5E41-4D24-B7DE-3AD0C1D035BA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Contents.Core", "src\OrchardCore\OrchardCore.Contents.Core\OrchardCore.Contents.Core.csproj", "{72B9B2A0-1166-4744-AB08-8704DD9CC8AC}"
 EndProject

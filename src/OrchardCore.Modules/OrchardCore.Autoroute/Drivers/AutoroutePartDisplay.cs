@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Autoroute.Model;
+using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Routing;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
@@ -23,6 +24,7 @@ namespace OrchardCore.Autoroute.Drivers
         public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,.;=<>\\|%".ToCharArray();
         public const int MaxPathLength = 1024;
 
+        private readonly AutorouteOptions _options;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly IAuthorizationService _authorizationService;
@@ -31,6 +33,7 @@ namespace OrchardCore.Autoroute.Drivers
         private readonly IStringLocalizer<AutoroutePartDisplay> T;
 
         public AutoroutePartDisplay(
+            IOptions<AutorouteOptions> options,
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             IAuthorizationService authorizationService,
@@ -39,6 +42,7 @@ namespace OrchardCore.Autoroute.Drivers
             IStringLocalizer<AutoroutePartDisplay> localizer
             )
         {
+            _options = options.Value;
             _contentDefinitionManager = contentDefinitionManager;
             _siteService = siteService;
             _authorizationService = authorizationService;
@@ -51,17 +55,14 @@ namespace OrchardCore.Autoroute.Drivers
         {
             return Initialize<AutoroutePartViewModel>("AutoroutePart_Edit", async model =>
             {
-
                 model.Path = autoroutePart.Path;
                 model.AutoroutePart = autoroutePart;
                 model.SetHomepage = false;
 
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
                 var homeRoute = siteSettings.HomeRoute;
-                if (homeRoute["area"]?.ToString() == "OrchardCore.Contents" &&
-                    homeRoute["controller"]?.ToString() == "Item" &&
-                    homeRoute["action"]?.ToString() == "Display" &&
-                    autoroutePart.ContentItem.ContentItemId == homeRoute["contentItemId"]?.ToString())
+
+                if (autoroutePart.ContentItem.ContentItemId == homeRoute?[_options.ContentItemIdKey]?.ToString())
                 {
                     model.IsHomepage = true;
                 }
@@ -110,6 +111,11 @@ namespace OrchardCore.Autoroute.Drivers
 
         private async Task ValidateAsync(AutoroutePart autoroute, IUpdateModel updater)
         {
+            if (autoroute.Path == "/")
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Your permalink can't be set to the homepage, please use the homepage option instead."]);
+            }
+
             if (autoroute.Path?.IndexOfAny(InvalidCharactersForPath) > -1 || autoroute.Path?.IndexOf(' ') > -1)
             {
                 var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));

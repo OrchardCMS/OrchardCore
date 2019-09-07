@@ -23,12 +23,7 @@ namespace OrchardCore.ResourceManagement
         /// <summary>
         /// Registers a specific resource url.
         /// </summary>
-        RequireSettings Include(string resourceType, string resourcePath, string resourceDebugPath);
-
-        /// <summary>
-        /// Registers a custom url.
-        /// </summary>
-        RequireSettings RegisterUrl(string resourceType, string resourcePath, string resourceDebugPath, string relativeFromPath);
+        RequireSettings RegisterUrl(string resourceType, string resourcePath, string resourceDebugPath);
 
         /// <summary>
         /// Registers a named resource.

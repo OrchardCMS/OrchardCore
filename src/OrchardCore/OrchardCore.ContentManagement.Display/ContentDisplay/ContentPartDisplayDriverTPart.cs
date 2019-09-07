@@ -244,7 +244,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return UpdateAsync(part, context);
         }
 
-        public virtual Task<IDisplayResult> UpdateAsync(TPart part, BuildPartEditorContext context)
+        public virtual Task<IDisplayResult> UpdateAsync(TPart part, UpdatePartEditorContext context)
         {
             return UpdateAsync(part, context.Updater);
         }

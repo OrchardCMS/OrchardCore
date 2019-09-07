@@ -182,7 +182,8 @@ The following configuration values are used by default and can be customized:
       // The accepted sizes for custom width and height
       "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],
 
-      // The number of days to store images in the browser cache
+      // The number of days to store images in the browser cache.
+      // NB: To control cache headers for module static assets, refer to [this section](../../OrchardCore/OrchardCore/Modules/README.md).
       "MaxBrowserCacheDays": 30,
 
       // The number of days to store images in the image cache
@@ -239,7 +240,7 @@ The following configuration values are used by default and can be customized:
 
 ### ImageSharp
 
-https://sixlabors.com/projects/imagesharp/
+<https://sixlabors.com/projects/imagesharp/>
 
 Copyright 2012 James South
 Licensed under the Apache License, Version 2.0

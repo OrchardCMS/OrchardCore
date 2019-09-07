@@ -71,7 +71,7 @@ namespace OrchardCore.ContentLocalization.Controllers
                 return NotFound();
             }
 
-            var alreadyLocalizedContent = await _contentLocalizationManager.GetContentItem(part.LocalizationSet, targetCulture);
+            var alreadyLocalizedContent = await _contentLocalizationManager.GetContentItemAsync(part.LocalizationSet, targetCulture);
 
             if (alreadyLocalizedContent != null)
             {
