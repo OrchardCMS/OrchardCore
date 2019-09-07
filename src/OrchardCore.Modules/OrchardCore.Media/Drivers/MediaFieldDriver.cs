@@ -38,7 +38,8 @@ namespace OrchardCore.Media.Drivers
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
             .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("SummaryAdmin", "")
+            .Location("DetailAdmin", "");
         }
 
         public override IDisplayResult Edit(MediaField field, BuildFieldEditorContext context)

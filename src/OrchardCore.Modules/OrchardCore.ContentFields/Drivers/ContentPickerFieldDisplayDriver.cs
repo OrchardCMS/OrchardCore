@@ -17,15 +17,12 @@ namespace OrchardCore.ContentFields.Fields
     public class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<ContentPickerField>
     {
         private readonly IContentManager _contentManager;
-        private readonly ISession _session;
 
         public ContentPickerFieldDisplayDriver(
             IContentManager contentManager,
-            ISession session,
             IStringLocalizer<ContentPickerFieldDisplayDriver> localizer)
         {
             _contentManager = contentManager;
-            _session = session;
             T = localizer;
         }
 
@@ -40,7 +37,8 @@ namespace OrchardCore.ContentFields.Fields
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
             .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("SummaryAdmin", "")
+            .Location("DetailAdmin", "");
         }
 
         public override IDisplayResult Edit(ContentPickerField field, BuildFieldEditorContext context)

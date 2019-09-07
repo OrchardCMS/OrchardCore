@@ -29,7 +29,8 @@ namespace OrchardCore.ContentFields.Fields
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
             .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("SummaryAdmin", "")
+            .Location("DetailAdmin", "");
         }
 
         public override IDisplayResult Edit(LinkField field, BuildFieldEditorContext context)
