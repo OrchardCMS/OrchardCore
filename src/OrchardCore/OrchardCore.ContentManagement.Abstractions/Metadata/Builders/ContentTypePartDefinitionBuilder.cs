@@ -63,12 +63,15 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
 
             var existingJObject = _settings[typeof(T).Name] as JObject;
+            // If existing settings do not exist, create.
             if (existingJObject == null)
             {
-                throw new ArgumentNullException(nameof(settings));
+                _settings[typeof(T).Name] = jObject;
             }
-
-            existingJObject.Merge(jObject, ContentBuilderSettings.JsonMergeSettings);
+            else
+            {
+                existingJObject.Merge(jObject, ContentBuilderSettings.JsonMergeSettings);
+            }
             return this;
         }
 
