@@ -117,9 +117,11 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{ ContentItem | display_text | slugify }}",
-                "AllowCustomPath": "True",
-                "ShowHomepageOption": "True",
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": true
+                },
                 "Position": "1"
               }
             },
@@ -200,9 +202,11 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{ ContentItem | display_text | slugify }}",
-                "AllowCustomPath": "True",
-                "ShowHomepageOption": "True"
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": true
+                }
               }
             },
             {
@@ -244,9 +248,6 @@
               "PartName": "AutoroutePart",
               "Name": "AutoroutePart",
               "Settings": {
-                "Pattern": "{{ ContentItem | display_text | slugify }}",
-                "AllowCustomPath": "True",
-                "ShowHomepageOption": "True",
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
@@ -254,6 +255,11 @@
                   "Sanitized": false,
                   "Tokenized": false,
                   "Template": null
+                },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": true
                 },
                 "Position": "1"
               }
@@ -272,9 +278,11 @@
                 "DisplayName": "Services",
                 "Description": "Provides a collection behavior for your content item.",
                 "Position": "3",
-                "ContainedContentTypes": [
-                  "Service"
-                ],
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "Service"
+                  ]
+                },
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
@@ -291,9 +299,11 @@
               "Settings": {
                 "DisplayName": "Portfolio",
                 "Description": "Provides a collection behavior for your content item.",
-                "ContainedContentTypes": [
-                  "Project"
-                ],
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "Project"
+                  ]
+                },
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
@@ -312,9 +322,11 @@
                 "DisplayName": "About",
                 "Description": "A collection of milestones",
                 "Position": "5",
-                "ContainedContentTypes": [
-                  "Milestone"
-                ],
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "Milestone"
+                  ]
+                },
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
@@ -332,9 +344,11 @@
                 "DisplayName": "Team",
                 "Description": "Team members",
                 "Position": "6",
-                "ContainedContentTypes": [
-                  "TeamMember"
-                ],
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "TeamMember"
+                  ]
+                },
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
@@ -352,9 +366,11 @@
                 "DisplayName": "Clients",
                 "Description": "Provides a collection behavior for your content item.",
                 "Position": "7",
-                "ContainedContentTypes": [
-                  "Client"
-                ],
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "Client"
+                  ]
+                },
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,

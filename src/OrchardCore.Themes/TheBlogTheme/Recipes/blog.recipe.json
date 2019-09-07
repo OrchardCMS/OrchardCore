@@ -121,9 +121,11 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{ ContentItem | display_text | slugify }}",
-                "AllowCustomPath": "True",
-                "ShowHomepageOption": "True",
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": true
+                },
                 "Position": "1"
               }
             },
@@ -184,9 +186,11 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{ ContentItem | display_text | slugify }}",
-                "AllowCustomPath": "True",
-                "ShowHomepageOption": "True",
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": true
+                },
                 "Position": "1"
               }
             },
@@ -247,9 +251,11 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{ ContentItem | container | display_text | slugify }}/{{ ContentItem | display_text | slugify }}",
-                "AllowCustomPath": "True",
-                "ShowHomepageOption": "False"
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ ContentItem | container | display_text | slugify }}/{{ ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": false
+                }
               }
             },
             {
@@ -310,9 +316,11 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{ ContentItem | display_text | slugify }}",
-                "AllowCustomPath": "True",
-                "ShowHomepageOption": "True"
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": true
+                }
               }
             },
             {
@@ -328,10 +336,12 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "PageSize": 10,
-                "ContainedContentTypes": [
-                  "BlogPost"
-                ]
+                "ListPartSettings": {
+                  "PageSize": 10,
+                  "ContainedContentTypes": [
+                    "BlogPost"
+                  ]
+                }
               }
             },
             {
@@ -543,9 +553,11 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{ ContentItem | display_text | slugify }}",
-                "AllowCustomPath": "True",
-                "ShowHomepageOption": "True"
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": true
+                }
               }
             },
             {

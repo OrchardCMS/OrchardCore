@@ -279,9 +279,11 @@
               "Name": "AutoroutePart",
               "Settings": {
                 "Position": "1",
-                "Pattern": null,
-                "AllowCustomPath": "False",
-                "ShowHomepageOption": "True"
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": false,
+                  "Pattern": null,
+                  "ShowHomepageOption": true
+                }
               }
             },
             {
