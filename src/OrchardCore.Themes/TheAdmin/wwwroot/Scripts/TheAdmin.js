@@ -7099,24 +7099,25 @@ $(function () {
 
 $(function () {
     $("body").on("click", "[itemprop~='RemoveUrl']", function () {
+        var _this = $(this);
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
-        if ($(this).filter("[itemprop~='UnsafeUrl']").length == 1) {
+        if (_this.filter("[itemprop~='UnsafeUrl']").length == 1) {
             return false;
         }
         // use a custom message if its set in data-message
-        var title = $(this).data('title');
-        var message = $(this).data('message');
-        var okText = $(this).data('ok');
-        var cancelText = $(this).data('cancel');
-        var okCssClass = $(this).data('okClass');
-        var cancelCssClass = $(this).data('cancelClass');
+        var title = _this.data('title');
+        var message = _this.data('message');
+        var okText = _this.data('ok');
+        var cancelText = _this.data('cancel');
+        var okCssClass = _this.data('okClass');
+        var cancelCssClass = _this.data('cancelClass');
         confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, r => {
             if (r) {
-                var url = $(this).attr('href');
+                var url = _this.attr('href');
                 if (url == undefined) {
-                    var form = $(this).parents('form');
+                    var form = _this.parents('form');
                     // This line is reuired in case we used the FormValueRequiredAttribute
-                    form.append($("<input type=\"hidden\" name=\"" + $(this).attr('name') + "\" value=\"" + $(this).attr('value') + "\" />"));
+                    form.append($("<input type=\"hidden\" name=\"" + _this.attr('name') + "\" value=\"" + _this.attr('value') + "\" />"));
                     form.submit();
                 }
                 else {
@@ -7125,7 +7126,7 @@ $(function () {
             }
         });
 
-        return false
+        return false;
     });
 });
 
@@ -7148,12 +7149,13 @@ $(function () {
             form.css({ "position": "absolute", "left": "-9999em" });
             $("body").append(form);
 
-            var title = _this.data("title");
             var unsafeUrlPrompt = _this.data("unsafe-url");
-            var okText = $(this).data('ok');
-            var cancelText = $(this).data('cancel');
-            var okCssClass = $(this).data('okClass');
-            var cancelCssClass = $(this).data('cancelClass');
+            var title = _this.data("title");
+            var message = unsafeUrlPrompt;
+            var okText = _this.data('ok');
+            var cancelText = _this.data('cancel');
+            var okCssClass = _this.data('okClass');
+            var cancelCssClass = _this.data('cancelClass');
 
             if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
                 confirmDialog(title, unsafeUrlPrompt, okText, cancelText, okCssClass, cancelCssClass, r => {
@@ -7166,13 +7168,7 @@ $(function () {
             }
 
             if (_this.filter("[itemprop~='RemoveUrl']").length == 1) {
-                // use a custom message if its set in data-message
-                var title = $(this).data('title');
-                var message = $(this).data('message');
-                var okText = $(this).data('ok');
-                var cancelText = $(this).data('cancel');
-                var okCssClass = $(this).data('okClass');
-                var cancelCssClass = $(this).data('cancelClass');
+                message = _this.data('message');
                 confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, r => {
                     if (r) {
                         form.submit();
