@@ -156,7 +156,6 @@ namespace OrchardCore.ContentManagement.Display
                     }
 
                     context = tempContext;
-
                 }
             }
         }
