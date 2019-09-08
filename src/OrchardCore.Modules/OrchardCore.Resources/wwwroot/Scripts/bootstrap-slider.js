@@ -4,7 +4,7 @@
 */
 
 /*! =======================================================
-                      VERSION  10.4.1              
+                      VERSION  10.6.2              
 ========================================================= */
 "use strict";
 
@@ -24,7 +24,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  * =========================================================
  *
  * bootstrap-slider is released under the MIT License
- * Copyright (c) 2017 Kyle Kemp, Rohit Kalkur, and contributors
+ * Copyright (c) 2019 Kyle Kemp, Rohit Kalkur, and contributors
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -188,11 +188,10 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 							return $(this);
 						});
 
-						if (!objects || objects.length > 1) {
-							return objects;
-						} else {
+						if (objects.length === 1) {
 							return objects[0];
 						}
+						return objects;
 					}
 				};
 			}
@@ -233,6 +232,15 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 
 		var SliderScale = {
 			linear: {
+				getValue: function getValue(value, options) {
+					if (value < options.min) {
+						return options.min;
+					} else if (value > options.max) {
+						return options.max;
+					} else {
+						return value;
+					}
+				},
 				toValue: function toValue(percentage) {
 					var rawValue = percentage / 100 * (this.options.max - this.options.min);
 					var shouldAdjustWithBase = true;
@@ -258,13 +266,7 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 
 					var adjustment = shouldAdjustWithBase ? this.options.min : 0;
 					var value = adjustment + Math.round(rawValue / this.options.step) * this.options.step;
-					if (value < this.options.min) {
-						return this.options.min;
-					} else if (value > this.options.max) {
-						return this.options.max;
-					} else {
-						return value;
-					}
+					return SliderScale.linear.getValue(value, this.options);
 				},
 				toPercentage: function toPercentage(value) {
 					if (this.options.max === this.options.min) {
@@ -309,13 +311,7 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 					value = this.options.min + Math.round((value - this.options.min) / this.options.step) * this.options.step;
 					/* Rounding to the nearest step could exceed the min or
       * max, so clip to those values. */
-					if (value < this.options.min) {
-						return this.options.min;
-					} else if (value > this.options.max) {
-						return this.options.max;
-					} else {
-						return value;
-					}
+					return SliderScale.linear.getValue(value, this.options);
 				},
 				toPercentage: function toPercentage(value) {
 					if (this.options.max === this.options.min) {
@@ -352,7 +348,8 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				size: null,
 				percentage: null,
 				inDrag: false,
-				over: false
+				over: false,
+				tickIndex: null
 			};
 
 			// The objects used to store the reference to the tick methods if ticks_tooltip is on
@@ -389,6 +386,13 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 					this.options = {};
 				}
 				this.options[optName] = val;
+			}
+
+			this.ticksAreValid = Array.isArray(this.options.ticks) && this.options.ticks.length > 0;
+
+			// Lock to ticks only when ticks[] is defined and set
+			if (!this.ticksAreValid) {
+				this.options.lock_to_ticks = false;
 			}
 
 			// Check options.rtl
@@ -763,22 +767,10 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 			this.touchmove = this._touchmove.bind(this);
 
 			if (this.touchCapable) {
-				// Test for passive event support
-				var supportsPassive = false;
-				try {
-					var opts = Object.defineProperty({}, 'passive', {
-						get: function get() {
-							supportsPassive = true;
-						}
-					});
-					window.addEventListener("test", null, opts);
-				} catch (e) {}
-				// Use our detect's results. passive applied if supported, capture will be false either way.
-				var eventOptions = supportsPassive ? { passive: true } : false;
-				// Bind touch handlers
-				this.sliderElem.addEventListener("touchstart", this.touchstart, eventOptions);
-				this.sliderElem.addEventListener("touchmove", this.touchmove, eventOptions);
+				this.sliderElem.addEventListener("touchstart", this.touchstart, false);
+				this.sliderElem.addEventListener("touchmove", this.touchmove, false);
 			}
+
 			this.sliderElem.addEventListener("mousedown", this.mousedown, false);
 
 			// Bind window handlers
@@ -816,6 +808,12 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				} else {
 					this.sliderElem.addEventListener("mouseenter", this.showTooltip, false);
 					this.sliderElem.addEventListener("mouseleave", this.hideTooltip, false);
+
+					if (this.touchCapable) {
+						this.sliderElem.addEventListener("touchstart", this.showTooltip, false);
+						this.sliderElem.addEventListener("touchmove", this.showTooltip, false);
+						this.sliderElem.addEventListener("touchend", this.hideTooltip, false);
+					}
 				}
 
 				this.handle1.addEventListener("focus", this.showTooltip, false);
@@ -823,6 +821,16 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 
 				this.handle2.addEventListener("focus", this.showTooltip, false);
 				this.handle2.addEventListener("blur", this.hideTooltip, false);
+
+				if (this.touchCapable) {
+					this.handle1.addEventListener("touchstart", this.showTooltip, false);
+					this.handle1.addEventListener("touchmove", this.showTooltip, false);
+					this.handle1.addEventListener("touchend", this.hideTooltip, false);
+
+					this.handle2.addEventListener("touchstart", this.showTooltip, false);
+					this.handle2.addEventListener("touchmove", this.showTooltip, false);
+					this.handle2.addEventListener("touchend", this.hideTooltip, false);
+				}
 			}
 
 			if (this.options.enabled) {
@@ -854,6 +862,7 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				selection: 'before',
 				tooltip: 'show',
 				tooltip_split: false,
+				lock_to_ticks: false,
 				handle: 'round',
 				reversed: false,
 				rtl: 'auto',
@@ -902,10 +911,20 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 					this._state.value[0] = applyPrecision(this._state.value[0]);
 					this._state.value[1] = applyPrecision(this._state.value[1]);
 
+					if (this.ticksAreValid && this.options.lock_to_ticks) {
+						this._state.value[0] = this.options.ticks[this._getClosestTickIndex(this._state.value[0])];
+						this._state.value[1] = this.options.ticks[this._getClosestTickIndex(this._state.value[1])];
+					}
+
 					this._state.value[0] = Math.max(this.options.min, Math.min(this.options.max, this._state.value[0]));
 					this._state.value[1] = Math.max(this.options.min, Math.min(this.options.max, this._state.value[1]));
 				} else {
 					this._state.value = applyPrecision(this._state.value);
+
+					if (this.ticksAreValid && this.options.lock_to_ticks) {
+						this._state.value = this.options.ticks[this._getClosestTickIndex(this._state.value)];
+					}
+
 					this._state.value = [Math.max(this.options.min, Math.min(this.options.max, this._state.value))];
 					this._addClass(this.handle2, 'hide');
 					if (this.options.selection === 'after') {
@@ -914,6 +933,9 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 						this._state.value[1] = this.options.min;
 					}
 				}
+
+				// Determine which ticks the handle(s) are set at (if applicable)
+				this._setTickIndex();
 
 				if (this.options.max > this.options.min) {
 					this._state.percentage = [this._toPercentage(this._state.value[0]), this._toPercentage(this._state.value[1]), this.options.step * 100 / (this.options.max - this.options.min)];
@@ -931,7 +953,7 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 
 				var hasChanged = false;
 				if (Array.isArray(newValue)) {
-					hasChanged = oldValue[0] !== newValue[0] && oldValue[1] !== newValue[1];
+					hasChanged = oldValue[0] !== newValue[0] || oldValue[1] !== newValue[1];
 				} else {
 					hasChanged = oldValue !== newValue;
 				}
@@ -1031,9 +1053,14 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				return this;
 			},
 
-			refresh: function refresh() {
+			refresh: function refresh(options) {
+				var currentValue = this.getValue();
 				this._removeSliderEventHandlers();
 				createNewSlider.call(this, this.element, this.options);
+				// Don't reset slider's value on refresh if `useCurrentValue` is true
+				if (options && options.useCurrentValue === true) {
+					this.setValue(currentValue);
+				}
 				if ($) {
 					// Bind new instance of slider to the element
 					if (autoRegisterNamespace === NAMESPACE_MAIN) {
@@ -1057,6 +1084,10 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
    - Place it underneath this comment block and write its signature like so:
    		_fnName : function() {...}
    	********************************/
+			_removeTooltipListener: function _removeTooltipListener(event, handler) {
+				this.handle1.removeEventListener(event, handler, false);
+				this.handle2.removeEventListener(event, handler, false);
+			},
 			_removeSliderEventHandlers: function _removeSliderEventHandlers() {
 				// Remove keydown event listeners
 				this.handle1.removeEventListener("keydown", this.handle1Keydown, false);
@@ -1081,12 +1112,10 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				this.ticksCallbackMap = null;
 
 				if (this.showTooltip) {
-					this.handle1.removeEventListener("focus", this.showTooltip, false);
-					this.handle2.removeEventListener("focus", this.showTooltip, false);
+					this._removeTooltipListener("focus", this.showTooltip);
 				}
 				if (this.hideTooltip) {
-					this.handle1.removeEventListener("blur", this.hideTooltip, false);
-					this.handle2.removeEventListener("blur", this.hideTooltip, false);
+					this._removeTooltipListener("blur", this.hideTooltip);
 				}
 
 				// Remove event listeners from sliderElem
@@ -1096,9 +1125,34 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				if (this.hideTooltip) {
 					this.sliderElem.removeEventListener("mouseleave", this.hideTooltip, false);
 				}
-				this.sliderElem.removeEventListener("touchstart", this.touchstart, false);
-				this.sliderElem.removeEventListener("touchmove", this.touchmove, false);
+
 				this.sliderElem.removeEventListener("mousedown", this.mousedown, false);
+
+				if (this.touchCapable) {
+					// Remove touch event listeners from handles
+					if (this.showTooltip) {
+						this.handle1.removeEventListener("touchstart", this.showTooltip, false);
+						this.handle1.removeEventListener("touchmove", this.showTooltip, false);
+						this.handle2.removeEventListener("touchstart", this.showTooltip, false);
+						this.handle2.removeEventListener("touchmove", this.showTooltip, false);
+					}
+					if (this.hideTooltip) {
+						this.handle1.removeEventListener("touchend", this.hideTooltip, false);
+						this.handle2.removeEventListener("touchend", this.hideTooltip, false);
+					}
+
+					// Remove event listeners from sliderElem
+					if (this.showTooltip) {
+						this.sliderElem.removeEventListener("touchstart", this.showTooltip, false);
+						this.sliderElem.removeEventListener("touchmove", this.showTooltip, false);
+					}
+					if (this.hideTooltip) {
+						this.sliderElem.removeEventListener("touchend", this.hideTooltip, false);
+					}
+
+					this.sliderElem.removeEventListener("touchstart", this.touchstart, false);
+					this.sliderElem.removeEventListener("touchmove", this.touchmove, false);
+				}
 
 				// Remove window event listener
 				window.removeEventListener("resize", this.resize, false);
@@ -1541,14 +1595,7 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				return true;
 			},
 			_touchstart: function _touchstart(ev) {
-				if (ev.changedTouches === undefined) {
-					this._mousedown(ev);
-					return;
-				}
-
-				var touch = ev.changedTouches[0];
-				this.touchX = touch.pageX;
-				this.touchY = touch.pageY;
+				this._mousedown(ev);
 			},
 			_triggerFocusOnHandle: function _triggerFocusOnHandle(handleIdx) {
 				if (handleIdx === 0) {
@@ -1582,15 +1629,44 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 
 				// use natural arrow keys instead of from min to max
 				if (this.options.natural_arrow_keys) {
-					var ifVerticalAndNotReversed = this.options.orientation === 'vertical' && !this.options.reversed;
-					var ifHorizontalAndReversed = this.options.orientation === 'horizontal' && this.options.reversed; // @todo control with rtl
+					var isHorizontal = this.options.orientation === 'horizontal';
+					var isVertical = this.options.orientation === 'vertical';
+					var isRTL = this.options.rtl;
+					var isReversed = this.options.reversed;
 
-					if (ifVerticalAndNotReversed || ifHorizontalAndReversed) {
-						dir = -dir;
+					if (isHorizontal) {
+						if (isRTL) {
+							if (!isReversed) {
+								dir = -dir;
+							}
+						} else {
+							if (isReversed) {
+								dir = -dir;
+							}
+						}
+					} else if (isVertical) {
+						if (!isReversed) {
+							dir = -dir;
+						}
 					}
 				}
 
-				var val = this._state.value[handleIdx] + dir * this.options.step;
+				var val;
+				if (this.ticksAreValid && this.options.lock_to_ticks) {
+					var index = void 0;
+					// Find tick index that handle 1/2 is currently on
+					index = this.options.ticks.indexOf(this._state.value[handleIdx]);
+					if (index === -1) {
+						// Set default to first tick
+						index = 0;
+						window.console.warn('(lock_to_ticks) _keydown: index should not be -1');
+					}
+					index += dir;
+					index = Math.max(0, Math.min(this.options.ticks.length - 1, index));
+					val = this.options.ticks[index];
+				} else {
+					val = this._state.value[handleIdx] + dir * this.options.step;
+				}
 				var percentage = this._toPercentage(val);
 				this._state.keyCtrl = handleIdx;
 				if (this.options.range) {
@@ -1643,20 +1719,9 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 					return;
 				}
 
-				var touch = ev.changedTouches[0];
-
-				var xDiff = touch.pageX - this.touchX;
-				var yDiff = touch.pageY - this.touchY;
-
-				if (!this._state.inDrag) {
-					// Vertical Slider
-					if (this.options.orientation === 'vertical' && xDiff <= 5 && xDiff >= -5 && (yDiff >= 15 || yDiff <= -15)) {
-						this._mousedown(ev);
-					}
-					// Horizontal slider.
-					else if (yDiff <= 5 && yDiff >= -5 && (xDiff >= 15 || xDiff <= -15)) {
-							this._mousedown(ev);
-						}
+				// Prevent page from scrolling and only drag the slider
+				if (ev.preventDefault) {
+					ev.preventDefault();
 				}
 			},
 			_adjustPercentageForRangeSliders: function _adjustPercentageForRangeSliders(percentage) {
@@ -1705,8 +1770,7 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				}
 				var val = this._calculateValue(true);
 
-				this._layout();
-				this._setDataVal(val);
+				this.setValue(val, false, true);
 				this._trigger('slideStop', val);
 
 				// No longer need 'dragged' after mouse up
@@ -1714,31 +1778,33 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 
 				return false;
 			},
+			_setValues: function _setValues(index, val) {
+				var comp = 0 === index ? 0 : 100;
+				if (this._state.percentage[index] !== comp) {
+					val.data[index] = this._toValue(this._state.percentage[index]);
+					val.data[index] = this._applyPrecision(val.data[index]);
+				}
+			},
 			_calculateValue: function _calculateValue(snapToClosestTick) {
-				var val;
+				var val = {};
 				if (this.options.range) {
-					val = [this.options.min, this.options.max];
-					if (this._state.percentage[0] !== 0) {
-						val[0] = this._toValue(this._state.percentage[0]);
-						val[0] = this._applyPrecision(val[0]);
-					}
-					if (this._state.percentage[1] !== 100) {
-						val[1] = this._toValue(this._state.percentage[1]);
-						val[1] = this._applyPrecision(val[1]);
-					}
+					val.data = [this.options.min, this.options.max];
+					this._setValues(0, val);
+					this._setValues(1, val);
 					if (snapToClosestTick) {
-						val[0] = this._snapToClosestTick(val[0]);
-						val[1] = this._snapToClosestTick(val[1]);
+						val.data[0] = this._snapToClosestTick(val.data[0]);
+						val.data[1] = this._snapToClosestTick(val.data[1]);
 					}
 				} else {
-					val = this._toValue(this._state.percentage[0]);
-					val = this._applyPrecision(val);
+					val.data = this._toValue(this._state.percentage[0]);
+					val.data = parseFloat(val.data);
+					val.data = this._applyPrecision(val.data);
 					if (snapToClosestTick) {
-						val = this._snapToClosestTick(val);
+						val.data = this._snapToClosestTick(val.data);
 					}
 				}
 
-				return val;
+				return val.data;
 			},
 			_snapToClosestTick: function _snapToClosestTick(val) {
 				var min = [val, Infinity];
@@ -1774,8 +1840,8 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
    	Source: http://stackoverflow.com/questions/10454518/javascript-how-to-retrieve-the-number-of-decimals-of-a-string-number
    */
 			_getPercentage: function _getPercentage(ev) {
-				if (this.touchCapable && (ev.type === 'touchstart' || ev.type === 'touchmove')) {
-					ev = ev.touches[0];
+				if (this.touchCapable && (ev.type === 'touchstart' || ev.type === 'touchmove' || ev.type === 'touchend')) {
+					ev = ev.changedTouches[0];
 				}
 
 				var eventPosition = ev[this.mousePos];
@@ -1949,6 +2015,27 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 						this._addClass(tooltip, 'top');
 						tooltip.style.top = -this.tooltip.outerHeight - 14 + 'px';
 					}.bind(this));
+				}
+			},
+			_getClosestTickIndex: function _getClosestTickIndex(val) {
+				var difference = Math.abs(val - this.options.ticks[0]);
+				var index = 0;
+				for (var i = 0; i < this.options.ticks.length; ++i) {
+					var d = Math.abs(val - this.options.ticks[i]);
+					if (d < difference) {
+						difference = d;
+						index = i;
+					}
+				}
+				return index;
+			},
+			/**
+    * Attempts to find the index in `ticks[]` the slider values are set at.
+    * The indexes can be -1 to indicate the slider value is not set at a value in `ticks[]`.
+    */
+			_setTickIndex: function _setTickIndex() {
+				if (this.ticksAreValid) {
+					this._state.tickIndex = [this.options.ticks.indexOf(this._state.value[0]), this.options.ticks.indexOf(this._state.value[1])];
 				}
 			}
 		};
