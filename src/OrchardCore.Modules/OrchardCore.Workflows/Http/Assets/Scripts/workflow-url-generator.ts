@@ -1,4 +1,4 @@
-///<reference path="../../../Assets/Lib/jQuery/typings.d.ts" />
+///<reference path="../../../Assets/Lib/jquery/typings.d.ts" />
 
 $(() => {
     const generateWorkflowUrl = function () {
