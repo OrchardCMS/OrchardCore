@@ -23,25 +23,25 @@ function confirmDialog(title, message, okText, cancelText, okCssClass, cancelCss
         cancelCssClass = $('#confirmRemoveModalMetadata').data('cancelClass');
     }
 
-    $(`<div id="confirmRemoveModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">${title}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>${message}</p>
-                </div>
-                <div class="modal-footer">
-                    <button id="modalOkButton" type="button" class="btn ${okCssClass}">${okText}</button>
-                    <button id="modalCancelButton" type="button" class="btn ${cancelCssClass}" data-dismiss="modal">${cancelText}</button>
-                </div>
-            </div>
-        </div>
-    </div>`).appendTo("body");
+    $('<div id="confirmRemoveModal" class="modal" tabindex="-1" role="dialog">\
+        <div class="modal-dialog modal-dialog-centered" role="document">\
+            <div class="modal-content">\
+                <div class="modal-header">\
+                    <h5 class="modal-title">' + title + '</h5>\
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                        <span aria-hidden="true">&times;</span>\
+                    </button>\
+                </div>\
+                <div class="modal-body">\
+                    <p>' + message +'</p>\
+                </div>\
+                <div class="modal-footer">\
+                    <button id="modalOkButton" type="button" class="btn ' + okCssClass + '">' + okText + '</button>\
+                    <button id="modalCancelButton" type="button" class="btn' + cancelCssClass + '" data-dismiss="modal">' + cancelText + '</button>\
+                </div>\
+            </div>\
+        </div>\
+    </div>').appendTo("body");
     $("#confirmRemoveModal").modal({
         backdrop: 'static',
         keyboard: false
@@ -80,8 +80,8 @@ $(function () {
         var cancelText = _this.data('cancel');
         var okCssClass = _this.data('okClass');
         var cancelCssClass = _this.data('cancelClass');
-        confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, r => {
-            if (r) {
+        confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, function(resp) {
+            if (resp) {
                 var url = _this.attr('href');
                 if (url == undefined) {
                     var form = _this.parents('form');
@@ -127,8 +127,8 @@ $(function () {
             var cancelCssClass = _this.data('cancelClass');
 
             if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
-                confirmDialog(title, unsafeUrlPrompt, okText, cancelText, okCssClass, cancelCssClass, r => {
-                    if (r) {
+                confirmDialog(title, unsafeUrlPrompt, okText, cancelText, okCssClass, cancelCssClass, function(resp) {
+                    if (resp) {
                         form.submit();
                     }
                 });
@@ -138,8 +138,8 @@ $(function () {
 
             if (_this.filter("[itemprop~='RemoveUrl']").length == 1) {
                 message = _this.data('message');
-                confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, r => {
-                    if (r) {
+                confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, function(resp) {
+                    if (resp) {
                         form.submit();
                     }
                 });
