@@ -40,7 +40,7 @@
   },
   {
     "inputs": [
-      "HTTP/Assets/Scripts/workflow-url-generator.ts"
+      "Http/Assets/Scripts/workflow-url-generator.ts"
     ],
     "output": "wwwroot/Scripts/orchard.http-request-event-editor.js"
   },
