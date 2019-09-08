@@ -170,13 +170,18 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="input" class="form-control-label" id="input-label">@T["Folder name"]</label>
-                    <input type="text" id="create-folder-name" class="form-control">
+                    <input type="text" id="create-folder-name" class="form-control d-none d-sm-block">
+                    <input type="text" id="create-folder-name" class="form-control form-control-sm d-block d-sm-none">
                 </div>
                 <div id="createFolderModal-errors"></div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer d-none d-sm-block">
                 <button type="button" class="btn btn-primary" id="modalFooterOk">@T["Ok"]</button>
                 <button type="button" class="btn btn-light" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+            <div class="modal-footer d-block d-sm-none">
+                <button type="button" class="btn btn-sm btn-primary" id="modalFooterOk">@T["Ok"]</button>
+                <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">@T["Cancel"]</button>
             </div>
         </div>
     </div>
@@ -194,14 +199,19 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="input" class="form-control-label" id="input-label">@T["New Name"]</label>
-                    <input type="text" id="new-item-name" class="form-control">
+                    <input type="text" id="new-item-name" class="form-control d-none d-sm-block">
+                    <input type="text" id="new-item-name" class="form-control form-control-sm d-block d-sm-none">
                     <input type="hidden" id="old-item-name" value="">
                 </div>
                 <div id="renameMediaModal-errors"></div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer d-none d-sm-block">
                 <button type="button" class="btn btn-primary" id="renameMediaModalFooterOk">@T["Ok"]</button>
                 <button type="button" class="btn btn-light" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+            <div class="modal-footer d-block d-sm-none">
+                <button type="button" class="btn btn-sm btn-primary" id="renameMediaModalFooterOk">@T["Ok"]</button>
+                <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">@T["Cancel"]</button>
             </div>
         </div>
     </div>
