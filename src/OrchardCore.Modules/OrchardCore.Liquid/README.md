@@ -516,7 +516,7 @@ Removes a property from a shape by name.
 Input
 
 ```liquid
-{% shape_remove_property "prop_name1" %}
+{% shape_remove_property my_shape "prop_name1" %}
 ```
 
 ### `shape_type`
