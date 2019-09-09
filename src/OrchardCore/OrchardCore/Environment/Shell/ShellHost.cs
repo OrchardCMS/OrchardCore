@@ -69,9 +69,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         public Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings)
-        {
-            return GetOrCreateShellContextAsync(settings, false);
-        }
+            => GetOrCreateShellContextAsync(settings, false);
 
         private async Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings, bool reloadSettings)
         {

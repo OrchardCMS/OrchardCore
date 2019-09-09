@@ -79,7 +79,6 @@ namespace OrchardCore.Environment.Shell
                 .Build();
 
             var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
-
             var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
 
             var allSettings = new List<ShellSettings>();

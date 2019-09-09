@@ -22,14 +22,7 @@ namespace OrchardCore.Environment.Shell
             };
         }
 
-        public ShellSettings LoadSettings(string tenant)
-        {
-            return new ShellSettings()
-            {
-                Name = "Default",
-                State = Models.TenantState.Running
-            };
-        }
+        public ShellSettings LoadSettings(string tenant) => CreateDefaultSettings();
 
         public void SaveSettings(ShellSettings shellSettings)
         {
