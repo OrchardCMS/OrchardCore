@@ -6,5 +6,6 @@
     var elementId = formElementPart.Id;
     var elementName = formInputElementPart.Name;
     var id = !string.IsNullOrEmpty(elementId) ? elementId : !string.IsNullOrEmpty(elementName) ? Html.GenerateIdFromName(elementName) : default(string);
+    var fieldValue = ViewData.ModelState.ContainsKey(elementName) ? ViewData.ModelState[elementName].AttemptedValue : Model.Value.DefaultValue?.Trim();
 }
-<textarea id="@id" name="@elementName" class="form-control" placeholder="@Model.Value.Placeholder">@Model.Value.DefaultValue?.Trim()</textarea>
+<textarea id="@id" name="@elementName" class="form-control" placeholder="@Model.Value.Placeholder">@fieldValue</textarea>
