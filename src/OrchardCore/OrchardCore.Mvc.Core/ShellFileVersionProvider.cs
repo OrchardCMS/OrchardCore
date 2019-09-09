@@ -20,7 +20,6 @@ namespace OrchardCore.Mvc
     {
         private const string VersionKey = "v";
         private static readonly char[] QueryStringAndFragmentTokens = new[] { '?', '#' };
-
         private static readonly MemoryCache _sharedCache = new MemoryCache(new MemoryCacheOptions());
 
         private readonly IEnumerable<IFileProvider> _fileProviders;
@@ -69,7 +68,7 @@ namespace OrchardCore.Mvc
                 return path;
             }
 
-            // Try to get the hash from the cache shared accross tenants.
+            // Try to get the hash from the cache shared across tenants.
             if (resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
             {
                 if (_sharedCache.TryGetValue(resolvedPath.Substring(requestPathBase.Value.Length), out value))
