@@ -17,7 +17,11 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             if (objectValue is IShape shape)
             {
                 var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
-                shape.Properties.Remove(arguments["property"].Or(arguments.At(0)).ToStringValue().ToPascalCaseUnderscore());
+                var propName = arguments["property"].Or(arguments.At(0)).ToStringValue();
+                if (!string.IsNullOrEmpty(propName))
+                {
+                    shape.Properties.Remove(propName.ToPascalCaseUnderscore());
+                }
             }
 
             return Completion.Normal;
