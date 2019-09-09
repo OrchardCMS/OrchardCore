@@ -1,4 +1,6 @@
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Shell.Builders;
 
 namespace OrchardCore.DisplayManagement.Descriptors
 {
@@ -29,6 +31,20 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             services.AddScoped<T>();
             services.AddScoped<IShapeAttributeProvider, T>();
+
+            return services;
+        }
+
+        public static IServiceCollection ReplaceShapeAttributes<T>(this IServiceCollection services) where T : class, IShapeAttributeProvider
+        {
+            var descriptors = services.Where(d => d.GetImplementationType() == typeof(T)).ToArray();
+
+            foreach (var descriptor in descriptors)
+            {
+                services.Remove(descriptor);
+            }
+
+            services.AddShapeAttributes<T>();
 
             return services;
         }

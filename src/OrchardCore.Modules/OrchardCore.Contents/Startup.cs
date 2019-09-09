@@ -26,6 +26,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Entities;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
@@ -42,6 +43,10 @@ namespace OrchardCore.Contents
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            // Re-register core shapes to not be tied to the application's module,
+            // so that that they can be overridden by the current theme.
+            services.ReplaceCoreShapeAttributes();
+
             services.AddContentManagement();
             services.AddContentManagementDisplay();
             services.AddScoped<IPermissionProvider, Permissions>();

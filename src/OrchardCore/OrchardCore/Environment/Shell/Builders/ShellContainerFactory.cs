@@ -131,7 +131,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
                     if (type != null)
                     {
-                        typeFeatureProvider.TryAdd(type, featureServiceCollection.Key);
+                        typeFeatureProvider.Add(type, featureServiceCollection.Key);
                     }
                 }
             }
