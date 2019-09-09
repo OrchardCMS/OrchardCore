@@ -19,18 +19,19 @@ namespace OrchardCore.ContentLocalization
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return Task.CompletedTask;
-            }
-
-            builder
+                builder
                 .Add(T["Configuration"], configuration => configuration
                     .Add(T["Settings"], settings => settings
                         .Add(T["ContentCulturePicker"], T["ContentCulturePicker"], registration => registration
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ContentCulturePickerSettingsDriver.GroupId })
+                            .Permission(Permissions.ManageCulturePicker)
                             .LocalNav()
                         )));
+
+                return Task.CompletedTask;
+            }
 
             return Task.CompletedTask;
         }

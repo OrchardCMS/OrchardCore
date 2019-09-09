@@ -10,6 +10,7 @@ namespace OrchardCore.ContentLocalization
 
         public static readonly Permission LocalizeContent = new Permission("LocalizeContent", "Localize content for others");
         public static readonly Permission LocalizeOwnContent = new Permission("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
+        public static readonly Permission ManageCulturePicker = new Permission("ManageCulturePicker", "Manage content culture picker");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -17,6 +18,7 @@ namespace OrchardCore.ContentLocalization
             {
                 LocalizeContent,
                 LocalizeOwnContent,
+                ManageCulturePicker,
             }
             .AsEnumerable());
         }
@@ -28,7 +30,7 @@ namespace OrchardCore.ContentLocalization
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { LocalizeContent, LocalizeOwnContent }
+                    Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageCulturePicker }
                 },
                 new PermissionStereotype
                 {
