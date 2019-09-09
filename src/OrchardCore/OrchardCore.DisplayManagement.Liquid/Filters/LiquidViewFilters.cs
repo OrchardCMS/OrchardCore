@@ -20,7 +20,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             filters.AddAsyncFilter("shape_new", NewShape);
             filters.AddAsyncFilter("shape_render", ShapeRender);
             filters.AddAsyncFilter("shape_stringify", ShapeStringify);
-            filters.AddFilter("shape_property", ShapeProperty);
+            filters.AddFilter("shape_properties", ShapeProperties);
 
             return filters;
         }
@@ -95,7 +95,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             return NilValue.Instance;
         }
 
-        public static FluidValue ShapeProperty(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static FluidValue ShapeProperties(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (input.ToObjectValue() is IShape shape)
             {

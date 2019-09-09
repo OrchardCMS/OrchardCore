@@ -355,7 +355,7 @@ Output
 Monday, September 11, 2017 3:29:26 PM
 ```
 
-### `shape_property`
+### `shape_properties`
 
 Returns a shape with the added properties.
 Property names get converted to PascalCase. Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template. 
@@ -363,7 +363,7 @@ Property names get converted to PascalCase. Ex: `prop_name1` can be accessed via
 Input
 
 ```liquid
-{% assign my_shape = "MyCustomShape" | shape_new | shape_property: prop_value1: "some value", prop_value2: 5 %}
+{% assign my_shape = "MyCustomShape" | shape_new | shape_properties: prop_value1: "some value", prop_value2: 5 %}
 ```
 
 ## Layout Tags
