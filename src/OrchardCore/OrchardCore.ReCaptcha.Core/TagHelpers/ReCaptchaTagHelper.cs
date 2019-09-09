@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Localization;
@@ -17,7 +18,7 @@ using OrchardCore.ResourceManagement;
 namespace OrchardCore.ReCaptcha.TagHelpers
 {
     [HtmlTargetElement("captcha", TagStructure = TagStructure.WithoutEndTag)]
-    [HtmlTargetElement("captcha", Attributes = "mode", TagStructure = TagStructure.WithoutEndTag)]
+    [HtmlTargetElement("captcha", Attributes = "mode,language", TagStructure = TagStructure.WithoutEndTag)]
     public class ReCaptchaTagHelper : TagHelper
     {
         private readonly IResourceManager _resourceManager;
@@ -25,8 +26,9 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         private readonly ReCaptchaSettings _settings;
         private readonly ILogger<ReCaptchaTagHelper> _logger;
         private readonly ILocalizationService _localizationService;
+        private readonly IStringLocalizer T;
 
-        public ReCaptchaTagHelper(IOptions<ReCaptchaSettings> optionsAccessor, IResourceManager resourceManager, ILocalizationService localizationService, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaTagHelper> logger)
+        public ReCaptchaTagHelper(IOptions<ReCaptchaSettings> optionsAccessor, IResourceManager resourceManager, ILocalizationService localizationService, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaTagHelper> logger, IStringLocalizer<ReCaptchaTagHelper> localizer)
         {
             _resourceManager = resourceManager;
             _httpContextAccessor = httpContextAccessor;
@@ -34,10 +36,18 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             Mode = ReCaptchaMode.PreventRobots;
             _logger = logger;
             _localizationService = localizationService;
+            T = localizer;
         }
 
         [HtmlAttributeName("mode")]
         public ReCaptchaMode Mode { get; set; }
+
+        /// <summary>
+        /// The two letter ISO code of the language the captcha should be displayed in
+        /// When left blank it will fall back to the default OrchardCore language
+        /// </summary>
+        [HtmlAttributeName("language")]
+        public string Language { get; set; }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
@@ -64,14 +74,55 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             output.TagMode = TagMode.StartTagAndEndTag;
 
             var builder = new TagBuilder("script");
+            var cultureInfo = await GetCultureAsync();
 
-            var culture = await _localizationService.GetDefaultCultureAsync();
-
-            var cultureInfo = CultureInfo.GetCultureInfo(culture);
             var settingsUrl = $"{_settings.ReCaptchaScriptUri}?hl={cultureInfo.TwoLetterISOLanguageName}";
 
             builder.Attributes.Add("src", settingsUrl);
             _resourceManager.RegisterFootScript(builder);
+        }
+
+        private async Task<CultureInfo> GetCultureAsync()
+        {
+            CultureInfo culture = null;
+
+            if (!string.IsNullOrWhiteSpace(Language))
+            {
+                try
+                {
+                    culture = CultureInfo.GetCultureInfo(Language);
+                }
+                catch (CultureNotFoundException)
+                {
+                    // if a developer makes a mistake, it is a warning
+                    _logger.LogWarning(T["Language with name; {0} not found", Language]);
+                }
+            }
+
+            if (culture == null)
+            {
+                // This should always return a valid culture
+                var ocCultureName = await _localizationService.GetDefaultCultureAsync();
+
+                try
+                {
+                    culture = CultureInfo.GetCultureInfo(ocCultureName);
+                }
+                catch (CultureNotFoundException)
+                {
+                    // if an orchard core installation is at fault, it is an error
+                    _logger.LogError(T["Culture with name; {0} not found", Language]);
+                }
+            }
+
+            // if it is still null, revert to the CurrentUICulture
+            // in theory this should never happen
+            if(culture == null)
+            {
+                culture = CultureInfo.CurrentUICulture;
+            }
+
+            return culture;
         }
     }
 }
