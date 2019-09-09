@@ -554,21 +554,24 @@ namespace OrchardCore.Tenants.Controllers
 
         private async Task UpdateShellSettingsAsync(ShellSettings settings, string action)
         {
+            string message;
+
             switch (settings.State)
             {
                 case TenantState.Running:
-                    _notifier.Warning(H["The tenant '{0}' is already {1}.", settings.Name, action]);
+                    message = String.Concat("The tenant '{0}' is already ", action, ".");
+                    _notifier.Warning(H[message, settings.Name]);
                     break;
                 case TenantState.Disabled:
                     settings.State = TenantState.Disabled;
                     await _shellHost.UpdateShellSettingsAsync(settings);
-                    _notifier.Success(H["The tenant '{0}' is {1}.", settings.Name, action]);
+                    message = "The tenant '{0}' is " + action + ".";
+                    _notifier.Success(H[message, settings.Name]);
                     break;
                 case TenantState.Uninitialized:
-                case TenantState.Initializing:
-                case TenantState.Invalid:
                 default:
-                    _notifier.Error(H["Unable to {0} the tenant '{1}'.", action.Remove(action.Last()), settings.Name]);
+                    message = String.Concat("Unable to ", action.Remove(action.Last()), " the tenant '{0}'.");
+                    _notifier.Error(H[message, settings.Name]);
                     break;
             }
         }
