@@ -1,17 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Users.Events
 {
     public interface ILoginFormEvent
     {
-        Task LoggingInAsync(Action<string, string> reportError);
+        Task LoggingInAsync(string userName, Action<string, string> reportError);
 
-        Task LoggingInFailedAsync();
+        Task LoggingInFailedAsync(string userName);
 
-        Task LoggedInAsync();
+        Task LoggedInAsync(string userName);
     }
 }
