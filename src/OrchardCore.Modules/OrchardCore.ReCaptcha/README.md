@@ -25,6 +25,7 @@ You can decorate your controllers with [ValidateReCaptcha] attribute.
 This attribute works in tandem with the <recaptcha /> HTML element, both need to be cofigured.
 The standard mode is PreventAbuse, this will show the captcha when a robot is suspected.
 The mode AlwaysShow, always shows the captcha on the page.
+If you have a requirement to display the captcha in a specific language, you can use the language property to set it to desired langauge using either the culture string or the two letter ISO code of the language.
 
 ## Extending the module
 If you have requirements that you have to protect against robots using another method then IP address,
