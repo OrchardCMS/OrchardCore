@@ -17,3 +17,14 @@ using OrchardCore.Modules.Manifest;
     },
     Category = "Content Management"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Media.Cache",
+    Name = "Media Cache",
+    Description = "The media cache module adds remote file store cache support.",
+    Dependencies = new[]
+    {
+        "OrchardCore.Media"
+    },
+    Category = "Content Management"
+)]

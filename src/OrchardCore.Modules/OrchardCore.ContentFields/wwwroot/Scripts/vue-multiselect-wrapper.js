@@ -3,24 +3,23 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-(function () {
-    function debounce(func, wait, immediate) {
-        var timeout;
-        return function () {
-            var context = this, args = arguments;
-            var later = function () {
-                timeout = null;
-                if (!immediate) func.apply(context, args);
-            };
-            var callNow = immediate && !timeout;
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-            if (callNow) func.apply(context, args);
+function debounce(func, wait, immediate) {
+    var timeout;
+    return function () {
+        var context = this, args = arguments;
+        var later = function () {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
         };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
     };
-
-    document.querySelectorAll('.vue-multiselect').forEach(function (element) {
-
+};
+function initVueMultiselect(element) {
+    // only run script if element exists
+    if (element) {
         var elementId = element.id;
         var editorType = element.dataset.editorType;
         var selectedItems = JSON.parse(element.dataset.selectedItems || "[]");
@@ -40,7 +39,7 @@
                     vm.isLoading = false;
                 })
             });
-        },250);
+        }, 250);
 
         var vueMultiselect = Vue.component('vue-multiselect', window.VueMultiselect.default);
 
@@ -95,6 +94,6 @@
         /*Hook for other scripts that might want to have access to the view model*/
         var event = new CustomEvent("vue-multiselect-created", { detail: { vm: vm, editorType: editorType } });
         document.querySelector("body").dispatchEvent(event);
-    });
-
-})();
+    }
+}
+ 
