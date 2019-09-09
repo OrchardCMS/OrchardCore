@@ -27,6 +27,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Entities;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
@@ -45,7 +46,10 @@ namespace OrchardCore.Contents
         {
             // Re-register core shapes to not be tied to the application's module,
             // so that that they can be overridden by the current theme.
-            services.ReplaceCoreShapeAttributes();
+            services.ReplaceShapeAttributes<CoreShapes>();
+            services.ReplaceShapeAttributes<ZoneShapes>();
+            services.ReplaceShapeAttributes<DateTimeShapes>();
+            services.ReplaceShapeAttributes<PageTitleShapes>();
 
             services.AddContentManagement();
             services.AddContentManagementDisplay();

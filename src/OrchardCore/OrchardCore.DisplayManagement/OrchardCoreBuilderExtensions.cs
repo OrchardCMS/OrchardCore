@@ -67,8 +67,9 @@ namespace Microsoft.Extensions.DependencyInjection
                         ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, ShapeTemplateOptionsSetup>());
                     services.TryAddSingleton<IShapeTemplateFileProviderAccessor, ShapeTemplateFileProviderAccessor>();
 
-                    services.AddCoreShapeAttributes();
+                    services.AddShapeAttributes<CoreShapes>();
                     services.AddScoped<IShapeTableProvider, CoreShapesTableProvider>();
+                    services.AddShapeAttributes<ZoneShapes>();
                     services.AddScoped<IShapeTableProvider, LayoutShapes>();
 
                     services.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
@@ -80,6 +81,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped<IDisplayHelper, DisplayHelper>();
 
                     services.AddScoped<INotifier, Notifier>();
+
+                    services.AddShapeAttributes<DateTimeShapes>();
+                    services.AddShapeAttributes<PageTitleShapes>();
 
                     services.AddTagHelpers<AddAlternateTagHelper>();
                     services.AddTagHelpers<AddClassTagHelper>();
