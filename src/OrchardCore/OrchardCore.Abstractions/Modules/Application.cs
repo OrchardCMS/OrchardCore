@@ -14,6 +14,9 @@ namespace OrchardCore.Modules
         public static readonly string ModuleName = "Application";
         public static readonly string ModulesRoot = ModulesPath + "/";
 
+        public const string DefaultFeatureId = "OrchardCore.Default";
+        public const string DefaultFeatureName = "Default Feature";
+
         public Application(IHostingEnvironment environment, IEnumerable<Module> modules)
         {
             Name = environment.ApplicationName;

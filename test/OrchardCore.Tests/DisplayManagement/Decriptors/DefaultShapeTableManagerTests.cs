@@ -176,7 +176,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             _serviceProvider = serviceCollection.BuildServiceProvider();
 
             var typeFeatureProvider = _serviceProvider.GetService<ITypeFeatureProvider>();
-            typeFeatureProvider.Add(typeof(TestShapeProvider), new InternalFeatureInfo("Core", new InternalExtensionInfo("Core")));
+            typeFeatureProvider.TryAdd(typeof(TestShapeProvider), new InternalFeatureInfo("Core", new InternalExtensionInfo("Core")));
         }
 
         static IFeatureInfo TestFeature()

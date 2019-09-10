@@ -47,17 +47,27 @@ namespace OrchardCore.Modules
                     ModuleInfo.Category = "Application";
                     ModuleInfo.DefaultTenantOnly = true;
 
-                    if (features.Any())
+                    // Adds the application main feature.
+                    features.Insert(0, new Manifest.FeatureAttribute()
                     {
-                        features.Insert(0, new Manifest.FeatureAttribute()
-                        {
-                            Id = name,
-                            Name = ModuleInfo.Name,
-                            Description = ModuleInfo.Description,
-                            Priority = ModuleInfo.Priority,
-                            Category = ModuleInfo.Category
-                        });
-                    }
+                        Id = name,
+                        Name = ModuleInfo.Name,
+                        Description = ModuleInfo.Description,
+                        Priority = ModuleInfo.Priority,
+                        Category = ModuleInfo.Category,
+                        DefaultTenantOnly = ModuleInfo.DefaultTenantOnly
+                    });
+
+                    // Adds the application default feature.
+                    features.Insert(1, new Manifest.FeatureAttribute()
+                    {
+                        Id = Application.DefaultFeatureId,
+                        Name = Application.DefaultFeatureName,
+                        Description = "A default core feature used internally",
+                        Priority = ModuleInfo.Priority,
+                        Category = ModuleInfo.Category,
+                        DefaultTenantOnly = ModuleInfo.DefaultTenantOnly
+                    });
                 }
 
                 ModuleInfo.Features.AddRange(features);

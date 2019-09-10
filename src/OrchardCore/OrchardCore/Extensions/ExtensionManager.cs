@@ -293,7 +293,7 @@ namespace OrchardCore.Environment.Extensions
                         {
                             foreach (var type in featureTypes)
                             {
-                                _typeFeatureProvider.Add(type, feature);
+                                _typeFeatureProvider.TryAdd(type, feature);
                             }
                         }
                         else

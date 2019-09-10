@@ -9,9 +9,6 @@ namespace OrchardCore.Environment.Extensions
         private readonly ConcurrentDictionary<Type, IFeatureInfo> _features
             = new ConcurrentDictionary<Type, IFeatureInfo>();
 
-        /// <summary>
-        /// Retrieves the feature that is tied to a given type.
-        /// </summary>
         public IFeatureInfo GetFeatureForDependency(Type dependency)
         {
             IFeatureInfo feature = null;
@@ -24,9 +21,9 @@ namespace OrchardCore.Environment.Extensions
             throw new InvalidOperationException($"Could not resolve feature for type {dependency.Name}");
         }
 
-        /// <summary>
-        /// Ties a given type to a given feature. Note: The last registration wins.
-        /// </summary>
-        public void Add(Type type, IFeatureInfo feature) => _features[type] = feature;
+        public void TryAdd(Type type, IFeatureInfo feature)
+        {
+            _features.TryAdd(type, feature);
+        }
     }
 }
