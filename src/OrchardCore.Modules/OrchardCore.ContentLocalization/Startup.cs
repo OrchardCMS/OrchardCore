@@ -88,6 +88,10 @@ namespace OrchardCore.ContentLocalization
     [RequireFeatures("OrchardCore.Liquid")]
     public class LiquidStartup : StartupBase
     {
+        static LiquidStartup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<CultureInfo>();
+        }
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddLiquidFilter<ContentLocalizationFilter>("localization_set");

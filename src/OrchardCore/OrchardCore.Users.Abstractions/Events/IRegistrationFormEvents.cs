@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Users.Events
@@ -9,6 +7,6 @@ namespace OrchardCore.Users.Events
     {
         Task RegistrationValidationAsync(Action<string, string> reportError);
 
-        Task RegisteredAsync();
+        Task RegisteredAsync(IUser user);
     }
 }
