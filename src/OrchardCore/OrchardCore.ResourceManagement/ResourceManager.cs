@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Options;
 
@@ -15,7 +14,6 @@ namespace OrchardCore.ResourceManagement
     {
         private readonly Dictionary<ResourceTypeName, RequireSettings> _required = new Dictionary<ResourceTypeName, RequireSettings>();
         private readonly Dictionary<string, IList<ResourceRequiredContext>> _builtResources;
-        private readonly string _pathBase;
         private readonly IEnumerable<IResourceManifestProvider> _providers;
         private readonly IFileVersionProvider _fileVersionProvider;
         private ResourceManifest _dynamicManifest;
@@ -27,18 +25,16 @@ namespace OrchardCore.ResourceManagement
         private HashSet<string> _localScripts;
 
         private readonly IResourceManifestState _resourceManifestState;
-        private readonly IOptions<ResourceManagementOptions> _options;
+        private readonly ResourceManagementOptions _options;
 
         public ResourceManager(
-            IHttpContextAccessor httpContextAccessor,
             IEnumerable<IResourceManifestProvider> resourceProviders,
             IResourceManifestState resourceManifestState,
             IOptions<ResourceManagementOptions> options,
             IFileVersionProvider fileVersionProvider)
         {
             _resourceManifestState = resourceManifestState;
-            _options = options;
-            _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+            _options = options.Value;
             _providers = resourceProviders;
             _fileVersionProvider = fileVersionProvider;
 
@@ -92,19 +88,14 @@ namespace OrchardCore.ResourceManagement
             var key = new ResourceTypeName(resourceType, resourceName);
             if (!_required.TryGetValue(key, out settings))
             {
-                settings = new RequireSettings(_options.Value) { Type = resourceType, Name = resourceName };
+                settings = new RequireSettings(_options) { Type = resourceType, Name = resourceName };
                 _required[key] = settings;
             }
             _builtResources[resourceType] = null;
             return settings;
         }
 
-        public RequireSettings Include(string resourceType, string resourcePath, string resourceDebugPath)
-        {
-            return RegisterUrl(resourceType, resourcePath, resourceDebugPath, null);
-        }
-
-        public RequireSettings RegisterUrl(string resourceType, string resourcePath, string resourceDebugPath, string relativeFromPath)
+        public RequireSettings RegisterUrl(string resourceType, string resourcePath, string resourceDebugPath)
         {
             if (resourceType == null)
             {
@@ -120,12 +111,12 @@ namespace OrchardCore.ResourceManagement
 
             if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
             {
-                resourcePath = _pathBase + resourcePath.Substring(1);
+                resourcePath = _options.ContentBasePath + resourcePath.Substring(1);
             }
 
             if (resourceDebugPath != null && resourceDebugPath.StartsWith("~/", StringComparison.Ordinal))
             {
-                resourceDebugPath = _pathBase + resourceDebugPath.Substring(1);
+                resourceDebugPath = _options.ContentBasePath + resourceDebugPath.Substring(1);
             }
 
             return RegisterResource(resourceType, GetResourceKey(resourcePath, resourceDebugPath)).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
@@ -390,7 +381,7 @@ namespace OrchardCore.ResourceManagement
             // (2) If no require already exists, form a new settings object based on the given one but with its own type/name.
             settings = allResources.Contains(resource)
                 ? ((RequireSettings)allResources[resource]).Combine(settings)
-                : new RequireSettings(_options.Value) { Type = resource.Type, Name = resource.Name }.Combine(settings);
+                : new RequireSettings(_options) { Type = resource.Type, Name = resource.Name }.Combine(settings);
             if (resource.Dependencies != null)
             {
                 var dependencies = from d in resource.Dependencies
@@ -421,12 +412,12 @@ namespace OrchardCore.ResourceManagement
 
             if (href != null && href.StartsWith("~/", StringComparison.Ordinal))
             {
-                link.Href = _pathBase + href.Substring(1);
+                link.Href = _options.ContentBasePath + href.Substring(1);
             }
 
             if (link.AppendVersion)
             {
-                link.Href = _fileVersionProvider.AddFileVersionToPath(_pathBase, link.Href);
+                link.Href = _fileVersionProvider.AddFileVersionToPath(_options.ContentBasePath, link.Href);
             }
 
             _links.Add(link);
@@ -526,7 +517,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_pathBase));
+                builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
             }
         }
 
@@ -545,7 +536,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_pathBase));
+                builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
             }
 
             foreach (var context in GetRegisteredHeadScripts())
@@ -576,7 +567,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_pathBase));
+                builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
             }
 
             foreach (var context in GetRegisteredFootScripts())
@@ -609,7 +600,7 @@ namespace OrchardCore.ResourceManagement
 
                     first = false;
 
-                    builder.AppendHtml(context.GetHtmlContent(_pathBase));
+                    builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
                 }
             }
         }
@@ -654,7 +645,7 @@ namespace OrchardCore.ResourceManagement
 
         private string GetResourceKey(string releasePath, string debugPath)
         {
-            if (_options.Value.DebugMode && !string.IsNullOrWhiteSpace(debugPath))
+            if (_options.DebugMode && !string.IsNullOrWhiteSpace(debugPath))
             {
                 return debugPath;
             }

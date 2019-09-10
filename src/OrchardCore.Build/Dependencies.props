@@ -11,7 +11,7 @@
     <PackageManagement Include="AspNet.Security.OpenIdConnect.Primitives" Version="2.0.0" />
     <PackageManagement Include="Castle.Core" Version="4.4.0" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
-    <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9578" />
+    <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9588" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-1598" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00005" />
@@ -35,7 +35,7 @@
     <PackageManagement Include="Serilog.Settings.Configuration" Version="3.0.1" />
     <PackageManagement Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageManagement Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
-    <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0007" />
+    <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0009" />
     <PackageManagement Include="Swashbuckle.AspNetCore" Version="4.0.1" />
     <PackageManagement Include="Swashbuckle.AspNetCore.Annotations" Version="4.0.1" />
     <PackageManagement Include="WindowsAzure.Storage" Version="9.3.3" />

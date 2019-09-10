@@ -2,9 +2,11 @@
 @using OrchardCore.Html.ViewModels;
 @using OrchardCore.Html.Settings;
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization
 
 @{
     var settings = Model.TypePartDefinition.Settings.ToObject<HtmlBodyPartSettings>();
+    var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
 }
 
 <script asp-name="trumbowyg" depends-on="admin" asp-src="~/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="~/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
@@ -12,7 +14,16 @@
 
 <fieldset class="form-group">
     <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
-    <textarea asp-for="Source" rows="5" class="form-control"></textarea>
+    @if (culture.IsRightToLeft())
+    {
+        <div style="text-align:right">
+            <textarea asp-for="Source" rows="5" class="form-control"></textarea>
+        </div>
+    }
+    else
+    {
+        <textarea asp-for="Source" rows="5" class="form-control"></textarea>
+    }
     <span class="hint">@T["The body of the content item."]</span>
 </fieldset>
 

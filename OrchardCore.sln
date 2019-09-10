@@ -370,11 +370,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ContentLocaliza
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ContentLocalization.Abstractions", "src\OrchardCore\OrchardCore.ContentLocalization.Abstractions\OrchardCore.ContentLocalization.Abstractions.csproj", "{C2EA489A-B51B-40CE-BE71-8EC9774075C6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Github", "src\OrchardCore.Modules\OrchardCore.Github\OrchardCore.Github.csproj", "{E8594DF8-5E41-4D24-B7DE-3AD0C1D035BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.GitHub", "src\OrchardCore.Modules\OrchardCore.GitHub\OrchardCore.GitHub.csproj", "{E8594DF8-5E41-4D24-B7DE-3AD0C1D035BA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Contents.Core", "src\OrchardCore\OrchardCore.Contents.Core\OrchardCore.Contents.Core.csproj", "{72B9B2A0-1166-4744-AB08-8704DD9CC8AC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application.Cms.Core.Targets", "src\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.csproj", "{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Media.Core", "src\OrchardCore\OrchardCore.Media.Core\OrchardCore.Media.Core\OrchardCore.Media.Core.csproj", "{8BC282D3-B7AF-495A-A5B1-D175875EB90E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Swagger.Abstractions", "src\OrchardCore\OrchardCore.Swagger.Abstractions\OrchardCore.Swagger.Abstractions.csproj", "{FF58FC22-B42B-454C-950F-1E34613CA877}"
 EndProject
@@ -1006,6 +1008,10 @@ Global
 		{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BC282D3-B7AF-495A-A5B1-D175875EB90E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BC282D3-B7AF-495A-A5B1-D175875EB90E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BC282D3-B7AF-495A-A5B1-D175875EB90E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BC282D3-B7AF-495A-A5B1-D175875EB90E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FF58FC22-B42B-454C-950F-1E34613CA877}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FF58FC22-B42B-454C-950F-1E34613CA877}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF58FC22-B42B-454C-950F-1E34613CA877}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -1191,6 +1197,7 @@ Global
 		{E8594DF8-5E41-4D24-B7DE-3AD0C1D035BA} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{72B9B2A0-1166-4744-AB08-8704DD9CC8AC} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2} = {3398AB60-2DB7-464C-B211-C4120BE75582}
+		{8BC282D3-B7AF-495A-A5B1-D175875EB90E} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{FF58FC22-B42B-454C-950F-1E34613CA877} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{D3CD5990-662A-42E0-8EB2-138979F0BA79} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection

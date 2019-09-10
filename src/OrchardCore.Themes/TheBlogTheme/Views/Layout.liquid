@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% page_title Site.SiteName, position: "before", separator: " - " %}</title>
+    <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>
 
     {% resources type: "Meta" %}
 

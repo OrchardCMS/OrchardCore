@@ -52,7 +52,7 @@ namespace OrchardCore.Apis.GraphQL
                     ServiceProvider = ctx.RequestServices,
                 },
                 ExposeExceptions = exposeExceptions,
-                MaxDepth = _configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 10,
+                MaxDepth = _configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 20,
                 MaxComplexity = _configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxComplexity)}"),
                 FieldImpact = _configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.FieldImpact)}")
             });

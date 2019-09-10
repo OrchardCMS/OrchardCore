@@ -37,7 +37,6 @@ namespace OrchardCore.ContentFields.Fields
             return Initialize<EditTextFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Text = field.Text;
-
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;

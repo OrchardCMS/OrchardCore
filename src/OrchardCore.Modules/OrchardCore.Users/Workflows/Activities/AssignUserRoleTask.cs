@@ -29,6 +29,7 @@ namespace OrchardCore.Users.Workflows.Activities
 
         private IStringLocalizer T { get; set; }
         public override string Name => nameof(AssignUserRoleTask);
+        public override LocalizedString DisplayText => T["Assign User Role Task"];
         public override LocalizedString Category => T["User"];
 
         public WorkflowExpression<string> UserName
