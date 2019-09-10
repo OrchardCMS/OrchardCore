@@ -20,6 +20,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             filters.AddAsyncFilter("shape_new", NewShape);
             filters.AddAsyncFilter("shape_render", ShapeRender);
             filters.AddAsyncFilter("shape_stringify", ShapeStringify);
+            filters.AddFilter("shape_properties", ShapeProperties);
 
             return filters;
         }
@@ -89,6 +90,20 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             if (input.ToObjectValue() is IShape shape)
             {
                 return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(shape));
+            }
+
+            return NilValue.Instance;
+        }
+
+        public static FluidValue ShapeProperties(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            if (input.ToObjectValue() is IShape shape)
+            {
+                foreach (var name in arguments.Names)
+                {
+                    shape.Properties[name.ToPascalCaseUnderscore()] = arguments[name].ToObjectValue();
+                }
+                return FluidValue.Create(shape);
             }
 
             return NilValue.Instance;

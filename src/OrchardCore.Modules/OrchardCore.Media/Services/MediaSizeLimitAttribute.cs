@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Media.Services
@@ -19,12 +20,9 @@ namespace OrchardCore.Media.Services
         /// <inheritdoc />
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
-            var configuration = serviceProvider.GetRequiredService<IShellConfiguration>();
-            var section = configuration.GetSection("OrchardCore.Media");
+            var options = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
 
-            var maxFileSize = section.GetValue("MaxFileSize", 30_000_000);
-
-            return new InternalMediaSizeFilter(maxFileSize);
+            return new InternalMediaSizeFilter(options.Value.MaxFileSize);
         }
 
         private class InternalMediaSizeFilter : IAuthorizationFilter, IRequestFormLimitsPolicy

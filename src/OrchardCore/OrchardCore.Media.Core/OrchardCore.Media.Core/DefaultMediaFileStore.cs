@@ -1,25 +1,28 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using OrchardCore.FileStorage;
 
-namespace OrchardCore.Media.Services
+namespace OrchardCore.Media.Core
 {
-    public class MediaFileStore : IMediaFileStore
+    public class DefaultMediaFileStore : IMediaFileStore
     {
         private readonly IFileStore _fileStore;
-        private readonly string _publicUrlBase;
+        private readonly string _requestBasePath;
+        private readonly string _cdnBaseUrl;
 
-        public MediaFileStore(IFileStore fileStore, string publicUrlBase)
+        public DefaultMediaFileStore(
+            IFileStore fileStore,
+            string requestBasePath,
+            string cdnBaseUrl)
         {
             _fileStore = fileStore;
-            _publicUrlBase = publicUrlBase;
-        }
 
-        public MediaFileStore(IFileStore fileStore)
-        {
-            _fileStore = fileStore;
+            // Ensure trailing slash removed.
+            _requestBasePath = requestBasePath.TrimEnd('/');
+
+            // Media options configuration ensures any trailing slash is removed.
+            _cdnBaseUrl = cdnBaseUrl;
         }
 
         public Task<IFileStoreEntry> GetFileInfoAsync(string path)
@@ -57,11 +60,6 @@ namespace OrchardCore.Media.Services
             return _fileStore.MoveFileAsync(oldPath, newPath);
         }
 
-        //public Task MoveDirectoryAsync(string oldPath, string newPath)
-        //{
-        //    return _fileStore.MoveDirectoryAsync(oldPath, newPath);
-        //}
-
         public Task CopyFileAsync(string srcPath, string dstPath)
         {
             return _fileStore.CopyFileAsync(srcPath, dstPath);
@@ -72,24 +70,19 @@ namespace OrchardCore.Media.Services
             return _fileStore.GetFileStreamAsync(path);
         }
 
-        public Task CreateFileFromStream(string path, Stream inputStream, bool overwrite = false)
+        public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
         {
-            return _fileStore.CreateFileFromStream(path, inputStream, overwrite);
+            return _fileStore.GetFileStreamAsync(fileStoreEntry);
+        }
+
+        public Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+        {
+            return _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
         }
 
         public string MapPathToPublicUrl(string path)
         {
-            return _publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path);
-        }
-
-        public string MapPublicUrlToPath(string publicUrl)
-        {
-            if (!publicUrl.StartsWith(_publicUrlBase, StringComparison.OrdinalIgnoreCase))
-            {
-                throw new ArgumentOutOfRangeException(nameof(publicUrl), "The specified URL is not inside the URL scope of the file store.");
-            }
-
-            return publicUrl.Substring(_publicUrlBase.Length);
+            return _cdnBaseUrl + _requestBasePath + "/" + _fileStore.NormalizePath(path);
         }
     }
 }
