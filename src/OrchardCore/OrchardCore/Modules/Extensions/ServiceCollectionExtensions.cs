@@ -102,10 +102,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 sp.GetRequiredService<IHostingEnvironment>().ApplicationName, alwaysEnabled: true)
             );
 
-            // Registers the application secondary feature.
+            // Registers the application default feature.
             services.AddTransient(sp => new ShellFeature
             (
-                Application.SecondaryFeatureId, alwaysEnabled: true)
+                Application.DefaultFeatureId, alwaysEnabled: true)
             );
         }
 

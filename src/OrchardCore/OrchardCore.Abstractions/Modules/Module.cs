@@ -58,12 +58,12 @@ namespace OrchardCore.Modules
                         DefaultTenantOnly = true
                     });
 
-                    // Adds the application secondary feature.
+                    // Adds the application default feature.
                     features.Insert(1, new Manifest.FeatureAttribute()
                     {
-                        Id = Application.SecondaryFeatureId,
-                        Name = Application.SecondaryFeatureName,
-                        Description = Application.SecondaryFeatureDescription,
+                        Id = Application.DefaultFeatureId,
+                        Name = Application.DefaultFeatureName,
+                        Description = Application.DefaultFeatureDescription,
                         Priority = Application.ModulePriority,
                         Category = Application.ModuleCategory,
                         DefaultTenantOnly = true

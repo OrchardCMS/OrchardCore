@@ -10,7 +10,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
-    [Feature(Application.SecondaryFeatureId)]
+    [Feature(Application.DefaultFeatureId)]
     public class DateTimeShapes : IShapeAttributeProvider
     {
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";

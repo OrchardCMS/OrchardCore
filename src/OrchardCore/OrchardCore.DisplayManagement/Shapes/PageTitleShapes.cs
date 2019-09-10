@@ -13,7 +13,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
-    [Feature(Application.SecondaryFeatureId)]
+    [Feature(Application.DefaultFeatureId)]
     public class PageTitleShapes : IShapeAttributeProvider
     {
         private IPageTitleBuilder _pageTitleBuilder;

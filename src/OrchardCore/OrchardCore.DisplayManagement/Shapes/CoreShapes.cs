@@ -10,7 +10,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
-    [Feature(Application.SecondaryFeatureId)]
+    [Feature(Application.DefaultFeatureId)]
     public class CoreShapes : IShapeAttributeProvider
     {
         [Shape]

@@ -13,14 +13,14 @@ namespace OrchardCore.Modules
         public const string ModulesPath = "Areas";
         public const string ModulesRoot = ModulesPath + "/";
 
-        public const string ModuleName = "Application Primary Feature";
+        public const string ModuleName = "Application Main Feature";
         public const string ModuleDescription = "Provides components defined at the application level.";
         public static readonly string ModulePriority = int.MinValue.ToString();
         public const string ModuleCategory = "Application";
 
-        public const string SecondaryFeatureId = "Application.Secondary";
-        public const string SecondaryFeatureName = "Application Secondary Feature";
-        public const string SecondaryFeatureDescription = "Adds a secondary feature to the application's module.";
+        public const string DefaultFeatureId = "Application.Default";
+        public const string DefaultFeatureName = "Application Default Feature";
+        public const string DefaultFeatureDescription = "Adds a default feature to the application's module.";
 
         public Application(IHostingEnvironment environment, IEnumerable<Module> modules)
         {
