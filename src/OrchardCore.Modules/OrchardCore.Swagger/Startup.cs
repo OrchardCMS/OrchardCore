@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,11 +18,14 @@ namespace OrchardCore.Swagger
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                var routeTenantPrefix = string.Empty;
-                if(shellSettings.RequestUrlPrefix != null)
+                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                var routeTenantPrefix = String.Empty;
+
+                var request = httpContextAccessor?.HttpContext?.Request;
+                if (request != null && request.PathBase.HasValue)
                 {
-                    routeTenantPrefix = $"{shellSettings.RequestUrlPrefix}/";
+                    // remove trailing and leading slashes, and then add one, just to be sure
+                    routeTenantPrefix = $"{request.PathBase.Value.TrimEnd('/').TrimStart('/')}/";
                 }
 
                 c.RoutePrefix = "swagger";
