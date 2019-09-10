@@ -135,7 +135,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     {
                         var feature = featureServiceCollection.Key;
 
-                        if (featureServiceCollection.Key == _applicationFeature)
+                        if (feature == _applicationFeature)
                         {
                             var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
 
@@ -143,7 +143,7 @@ namespace OrchardCore.Environment.Shell.Builders
                             {
                                 feature = featureServiceCollection.Key.Extension.Features
                                     .FirstOrDefault(f => f.Id == attribute.FeatureName)
-                                    ?? featureServiceCollection.Key;
+                                    ?? feature;
                             }
                         }
 

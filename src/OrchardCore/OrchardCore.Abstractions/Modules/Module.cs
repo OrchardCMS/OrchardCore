@@ -42,31 +42,31 @@ namespace OrchardCore.Modules
                 if (isApplication)
                 {
                     ModuleInfo.Name = Application.ModuleName;
-                    ModuleInfo.Description = "Provides core features defined at the application level";
-                    ModuleInfo.Priority = int.MinValue.ToString();
-                    ModuleInfo.Category = "Application";
+                    ModuleInfo.Description = Application.ModuleDescription;
+                    ModuleInfo.Priority = Application.ModulePriority;
+                    ModuleInfo.Category = Application.ModuleCategory;
                     ModuleInfo.DefaultTenantOnly = true;
 
-                    // Adds the application main feature.
+                    // Adds the application primary feature.
                     features.Insert(0, new Manifest.FeatureAttribute()
                     {
                         Id = name,
-                        Name = ModuleInfo.Name,
-                        Description = ModuleInfo.Description,
-                        Priority = ModuleInfo.Priority,
-                        Category = ModuleInfo.Category,
-                        DefaultTenantOnly = ModuleInfo.DefaultTenantOnly
+                        Name = Application.ModuleName,
+                        Description = Application.ModuleDescription,
+                        Priority = Application.ModulePriority,
+                        Category = Application.ModuleCategory,
+                        DefaultTenantOnly = true
                     });
 
-                    // Adds the application default feature.
+                    // Adds the application secondary feature.
                     features.Insert(1, new Manifest.FeatureAttribute()
                     {
-                        Id = Application.DefaultFeatureId,
-                        Name = Application.DefaultFeatureName,
-                        Description = "A default core feature used internally",
-                        Priority = ModuleInfo.Priority,
-                        Category = ModuleInfo.Category,
-                        DefaultTenantOnly = ModuleInfo.DefaultTenantOnly
+                        Id = Application.SecondaryFeatureId,
+                        Name = Application.SecondaryFeatureName,
+                        Description = Application.SecondaryFeatureDescription,
+                        Priority = Application.ModulePriority,
+                        Category = Application.ModuleCategory,
+                        DefaultTenantOnly = true
                     });
                 }
 

@@ -96,16 +96,16 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddHostingShellServices();
             services.AddAllFeaturesDescriptor();
 
-            // Registers the application main feature.
+            // Registers the application primary feature.
             services.AddTransient(sp => new ShellFeature
             (
                 sp.GetRequiredService<IHostingEnvironment>().ApplicationName, alwaysEnabled: true)
             );
 
-            // Registers the application default feature.
+            // Registers the application secondary feature.
             services.AddTransient(sp => new ShellFeature
             (
-                Application.DefaultFeatureId, alwaysEnabled: true)
+                Application.SecondaryFeatureId, alwaysEnabled: true)
             );
         }
 

@@ -10,12 +10,17 @@ namespace OrchardCore.Modules
         private readonly Dictionary<string, Module> _modulesByName;
         private readonly List<Module> _modules;
 
-        public static readonly string ModulesPath = "Areas";
-        public static readonly string ModuleName = "Application";
-        public static readonly string ModulesRoot = ModulesPath + "/";
+        public const string ModulesPath = "Areas";
+        public const string ModulesRoot = ModulesPath + "/";
 
-        public const string DefaultFeatureId = "OrchardCore.Default";
-        public const string DefaultFeatureName = "Default Feature";
+        public const string ModuleName = "Application Primary Feature";
+        public const string ModuleDescription = "Provides components defined at the application level.";
+        public static readonly string ModulePriority = int.MinValue.ToString();
+        public const string ModuleCategory = "Application";
+
+        public const string SecondaryFeatureId = "Application.Secondary";
+        public const string SecondaryFeatureName = "Application Secondary Feature";
+        public const string SecondaryFeatureDescription = "Adds a secondary feature to the application's module.";
 
         public Application(IHostingEnvironment environment, IEnumerable<Module> modules)
         {
