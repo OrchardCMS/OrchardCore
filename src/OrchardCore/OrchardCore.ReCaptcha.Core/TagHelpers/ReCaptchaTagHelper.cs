@@ -84,42 +84,19 @@ namespace OrchardCore.ReCaptcha.TagHelpers
 
         private async Task<CultureInfo> GetCultureAsync()
         {
+            var language = Language;
             CultureInfo culture = null;
 
-            if (!string.IsNullOrWhiteSpace(Language))
+            if (string.IsNullOrWhiteSpace(language))
+                language = await _localizationService.GetDefaultCultureAsync();
+
+            try
             {
-                try
-                {
-                    culture = CultureInfo.GetCultureInfo(Language);
-                }
-                catch (CultureNotFoundException)
-                {
-                    // if a developer makes a mistake, it is a warning
-                    _logger.LogWarning(T["Language with name; {0} not found", Language]);
-                }
+                culture = CultureInfo.GetCultureInfo(language);
             }
-
-            if (culture == null)
+            catch (CultureNotFoundException)
             {
-                // This should always return a valid culture
-                var ocCultureName = await _localizationService.GetDefaultCultureAsync();
-
-                try
-                {
-                    culture = CultureInfo.GetCultureInfo(ocCultureName);
-                }
-                catch (CultureNotFoundException)
-                {
-                    // if an orchard core installation is at fault, it is an error
-                    _logger.LogError(T["Culture with name; {0} not found", Language]);
-                }
-            }
-
-            // if it is still null, revert to the CurrentUICulture
-            // in theory this should never happen
-            if(culture == null)
-            {
-                culture = CultureInfo.CurrentUICulture;
+                _logger.LogWarning(T["Language with name; {0} not found", language]);
             }
 
             return culture;
