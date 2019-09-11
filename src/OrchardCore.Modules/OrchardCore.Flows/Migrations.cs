@@ -30,8 +30,9 @@ namespace OrchardCore.Flows
                 .Reusable()
                 .WithDescription("Provides a collection behavior for your content item."));
 
+            //TODO set to 3 when testing complete
             // Return 3 to shortcut the third migration on new content definition schemas.
-            return 3;
+            return 2;
         }
 
         // Migrate PartSettings. This only needs to run on old content definition schemas.

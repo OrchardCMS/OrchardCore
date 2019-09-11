@@ -30,8 +30,9 @@ namespace OrchardCore.Lists
                 .CreateIndex("IDX_ContainedPartIndex_ListContentItemId", "ListContentItemId")
             );
 
+            //TODO set to 2 when testing complete
             // Return 2 to shortcut the second migration on new content definition schemas.
-            return 2;
+            return 1;
         }
 
         // Migrate PartSettings. This only needs to run on old content definition schemas.
