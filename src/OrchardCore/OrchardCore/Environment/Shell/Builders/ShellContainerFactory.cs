@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -131,7 +133,21 @@ namespace OrchardCore.Environment.Shell.Builders
 
                     if (type != null)
                     {
-                        typeFeatureProvider.TryAdd(type, featureServiceCollection.Key);
+                        var feature = featureServiceCollection.Key;
+
+                        if (feature == _applicationFeature)
+                        {
+                            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
+
+                            if (attribute != null)
+                            {
+                                feature = featureServiceCollection.Key.Extension.Features
+                                    .FirstOrDefault(f => f.Id == attribute.FeatureName)
+                                    ?? feature;
+                            }
+                        }
+
+                        typeFeatureProvider.TryAdd(type, feature);
                     }
                 }
             }
