@@ -9,12 +9,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WindowsAzure.Storage" />
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
+    <PackageReference Include="WindowsAzure.Storage" />
   </ItemGroup>
 
 </Project>
