@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Media.Abstractions\OrchardCore.Media.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
