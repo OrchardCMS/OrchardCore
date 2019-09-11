@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using Fluid;
 using Fluid.Values;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
 
 using OrchardCore.Mvc.Utilities;
@@ -35,9 +34,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
         public static ValueTask<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("ViewLocalizer", out var localizer))
+            if (!context.AmbientValues.TryGetValue("ViewLocalizer", out var item) || !(item is IViewLocalizer localizer))
             {
-                ThrowArgumentException("ViewLocalizer missing while invoking 't'");
+                return ThrowArgumentException<ValueTask<FluidValue>>("ViewLocalizer missing while invoking 't'");
             }
 
             var parameters = new object[arguments.Count];
@@ -46,8 +45,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 parameters[i] = arguments.At(i).ToStringValue();
             }
 
-            return new ValueTask<FluidValue>(new StringValue(((IViewLocalizer)localizer)
-                .GetString(input.ToStringValue(), parameters)));
+            return new ValueTask<FluidValue>(new StringValue(localizer.GetString(input.ToStringValue(), parameters)));
         }
 
         public static ValueTask<FluidValue> HtmlClass(FluidValue input, FilterArguments arguments, TemplateContext context)
@@ -57,9 +55,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
         public static async ValueTask<FluidValue> NewShape(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("ShapeFactory", out dynamic shapeFactory))
+            if (!context.AmbientValues.TryGetValue("ShapeFactory", out var item) || !(item is IShapeFactory shapeFactory))
             {
-                ThrowArgumentException("ShapeFactory missing while invoking 'shape_new'");
+                return ThrowArgumentException<FluidValue>("ShapeFactory missing while invoking 'shape_new'");
             }
 
             var type = input.ToStringValue();
@@ -70,19 +68,19 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 properties.Add(name.ToPascalCaseUnderscore(), arguments[name].ToObjectValue());
             }
 
-            return FluidValue.Create(await ((IShapeFactory)shapeFactory).CreateAsync(type, Arguments.From(properties)));
+            return FluidValue.Create(await shapeFactory.CreateAsync(type, Arguments.From(properties)));
         }
 
         public static async ValueTask<FluidValue> ShapeStringify(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (input.ToObjectValue() is IShape shape)
             {
-                if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
+                if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
                 {
-                    ThrowArgumentException("DisplayHelper missing while invoking 'shape_stringify'");
+                    return ThrowArgumentException<FluidValue>("DisplayHelper missing while invoking 'shape_stringify'");
                 }
 
-                return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(shape));
+                return new HtmlContentValue(await displayHelper.ShapeExecuteAsync(shape));
             }
 
             return NilValue.Instance;
@@ -92,12 +90,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             if (input.ToObjectValue() is IShape shape)
             {
-                if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
+                if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
                 {
-                    ThrowArgumentException("DisplayHelper missing while invoking 'shape_render'");
+                    return ThrowArgumentException<FluidValue>("DisplayHelper missing while invoking 'shape_render'");
                 }
 
-                return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(shape));
+                return new HtmlContentValue(await displayHelper.ShapeExecuteAsync(shape));
             }
 
             return NilValue.Instance;
@@ -118,7 +116,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void ThrowArgumentException(string message)
+        private static T ThrowArgumentException<T>(string message)
         {
             throw new ArgumentException(message);
         }
