@@ -1,10 +1,18 @@
-using OrchardCore.Data.Migration;
 using System;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Data.Migration;
 
 namespace OrchardCore.ContentManagement.Records
 {
     public class Migrations : DataMigration
     {
+        private readonly IContentDefinitionManager _contentDefinitionManager;
+        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        {
+            _contentDefinitionManager = contentDefinitionManager;
+        }
+
         public int Create()
         {
             SchemaBuilder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
@@ -59,7 +67,93 @@ namespace OrchardCore.ContentManagement.Records
                 .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
             );
 
+            //TODO set to 4 when testing complete
             return 3;
+        }
+
+        // Migrate content type definitions.
+        public int UpdateFrom3()
+        {
+            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+            foreach (var contentTypeDefinition in contentTypeDefinitions)
+            {
+                var existingContentTypeSettings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
+
+                // Do this before creating builder, so settings are removed from the builder settings object.
+                // Remove existing properties from JObject
+                var contentTypeSettingsProperties = existingContentTypeSettings.GetType().GetProperties();
+                foreach (var property in contentTypeSettingsProperties)
+                {
+                    contentTypeDefinition.Settings.Remove(property.Name);
+                }
+
+                _contentDefinitionManager.AlterTypeDefinition(contentTypeDefinition.Name, builder =>
+                {
+                    builder.WithSettings(existingContentTypeSettings);
+
+                    foreach(var contentTypePartDefinition in contentTypeDefinition.Parts)
+                    {
+                        var existingTypePartSettings = contentTypePartDefinition.Settings.ToObject<ContentTypePartSettings>();
+
+                        // Remove existing properties from JObject
+                        var contentTypePartSettingsProperties = existingTypePartSettings.GetType().GetProperties();
+                        foreach (var property in contentTypePartSettingsProperties)
+                        {
+                            contentTypePartDefinition.Settings.Remove(property.Name);
+                        }
+
+                        builder.WithPart(contentTypePartDefinition.Name, contentTypePartDefinition.PartDefinition, partBuilder =>
+                        {
+                            partBuilder.WithSettings(existingTypePartSettings);
+
+                        });
+                    }
+                });
+            }
+
+            return 4;
+        }
+
+        // Migration content part definitions.
+        public int UpdateFrom4()
+        {
+            var partDefinitions = _contentDefinitionManager.ListPartDefinitions();
+            foreach(var partDefinition in partDefinitions)
+            {
+                var existingPartSettings = partDefinition.Settings.ToObject<ContentPartSettings>();
+
+                // Do this before creating builder, so settings are removed from the builder settings object.
+                // Remove existing properties from JObject
+                var contentTypeSettingsProperties = existingPartSettings.GetType().GetProperties();
+                foreach (var property in contentTypeSettingsProperties)
+                {
+                    partDefinition.Settings.Remove(property.Name);
+                }
+
+                _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                {
+                    partBuilder.WithSettings(existingPartSettings);
+                    foreach(var fieldDefinition in partDefinition.Fields)
+                    {
+                        var existingFieldSettings = fieldDefinition.Settings.ToObject<ContentPartFieldSettings>();
+
+                        // Do this before creating builder, so settings are removed from the builder settings object.
+                        // Remove existing properties from JObject
+                        var fieldSettingsProperties = existingFieldSettings.GetType().GetProperties();
+                        foreach (var property in fieldSettingsProperties)
+                        {
+                            fieldDefinition.Settings.Remove(property.Name);
+                        }
+
+                        partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
+                        {
+                            fieldBuilder.WithSettings(existingFieldSettings);
+                        });
+                    }
+                });
+            }
+
+            return 5;
         }
     }
 }

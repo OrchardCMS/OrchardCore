@@ -60,17 +60,17 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+            var newjObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
 
             var existingJObject = _settings[typeof(T).Name] as JObject;
             // If existing settings do not exist, create.
             if (existingJObject == null)
             {
-                _settings[typeof(T).Name] = jObject;
+                _settings[typeof(T).Name] = newjObject;
             }
             else
             {
-                existingJObject.Merge(jObject, ContentBuilderSettings.JsonMergeSettings);
+                existingJObject.Merge(newjObject, ContentBuilderSettings.JsonMergeSettings);
             }
             return this;
         }

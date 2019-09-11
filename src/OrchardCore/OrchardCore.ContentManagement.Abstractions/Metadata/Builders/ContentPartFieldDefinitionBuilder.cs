@@ -44,6 +44,29 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
+        public ContentPartFieldDefinitionBuilder MergeSettings<T>(T settings)
+        {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
+            var newjObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+
+            var existingJObject = _settings[typeof(T).Name] as JObject;
+            // If existing settings do not exist, create.
+            if (existingJObject == null)
+            {
+                _settings[typeof(T).Name] = newjObject;
+            }
+            else
+            {
+                existingJObject.Merge(newjObject, ContentBuilderSettings.JsonMergeSettings);
+            }
+            return this;
+        }
+
+
         public ContentPartFieldDefinitionBuilder WithSettings<T>(T settings)
         {
             if (settings == null)
