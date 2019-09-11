@@ -15,23 +15,18 @@ namespace OrchardCore.Swagger
     {
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-                var routeTenantPrefix = String.Empty;
-
-                var request = httpContextAccessor?.HttpContext?.Request;
-                if (request != null && request.PathBase.HasValue)
-                {
-                    // remove trailing and leading slashes, and then add one, just to be sure
-                    routeTenantPrefix = $"{request.PathBase.Value.TrimEnd('/').TrimStart('/')}/";
-                }
-
                 c.RoutePrefix = "swagger";
+    
+                var swaggerPath = httpContextAccessor.HttpContext.Request.PathBase + new PathString("/swagger");
+
                 foreach (var definition in serviceProvider.GetServices<ISwaggerApiDefinition>())
                 {
-                    c.SwaggerEndpoint($"/{routeTenantPrefix}swagger/{definition.Name}/swagger.json", definition.Name);
+                    c.SwaggerEndpoint($"{swaggerPath}/{definition.Name}/swagger.json", definition.Name);
                 }
             });
         }
