@@ -12,5 +12,6 @@ namespace OrchardCore.Apis.GraphQL
         public int? MaxDepth { get; set; }
         public int? MaxComplexity { get; set; }
         public double? FieldImpact { get; set; }
+        public int MaxNumberOfResults { get; set; }
     }
 }

@@ -84,7 +84,8 @@ Configuration is done via the standard shell configuration, as follows.
       "ExposeExceptions": true,
       "MaxDepth": 50, 
       "MaxComplexity": 100, 
-      "FieldImpact": 2.0 
+      "FieldImpact": 2.0 ,
+      "MaxNumberOfResults": 100
     }
   }
 }
@@ -92,6 +93,9 @@ Configuration is done via the standard shell configuration, as follows.
 *ExposeExceptions (bool, Default: false for production, true for development)*
 
 If set to true stack traces are exposed to graphql clients
+
+*MaxNumberOfResults (int, Default: 1000)
+The maximum number of results returned by all paged fields/types.
 
 *MaxDepth (int?, Default: 20)*
 
