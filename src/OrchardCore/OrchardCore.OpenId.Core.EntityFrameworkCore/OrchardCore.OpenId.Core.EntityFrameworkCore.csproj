@@ -13,11 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-
-    <!-- TODO: Remove this reference once SQLite targets netstandard2.0 -->
-    <!-- c.f., https://github.com/aspnet/EntityFrameworkCore/issues/15969 -->
-    <PackageReference Include="NETStandard.Library" Version ="1.6.1" />
-
     <PackageReference Include="OpenIddict.EntityFrameworkCore" />
   </ItemGroup>
 
