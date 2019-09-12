@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -18,7 +18,7 @@ namespace OrchardCore.Environment.Shell.Builders
     {
         private IFeatureInfo _applicationFeature;
 
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly IExtensionManager _extensionManager;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
@@ -26,7 +26,7 @@ namespace OrchardCore.Environment.Shell.Builders
         private readonly IServiceCollection _applicationServices;
 
         public ShellContainerFactory(
-            IHostingEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             IExtensionManager extensionManager,
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory,

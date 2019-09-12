@@ -17,10 +17,10 @@ namespace OrchardCore.Apis.GraphQL
     public class Startup : StartupBase
     {
         private readonly IShellConfiguration _configuration;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
 
         public Startup(IShellConfiguration configuration,
-            IHostingEnvironment hostingEnvironment)
+            IHostEnvironment hostingEnvironment)
         {
             _configuration = configuration;
             _hostingEnvironment = hostingEnvironment;
@@ -37,7 +37,7 @@ namespace OrchardCore.Apis.GraphQL
             services.AddTransient<INavigationProvider, AdminMenu>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var exposeExceptions = _configuration.GetValue(
                 $"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.ExposeExceptions)}",
