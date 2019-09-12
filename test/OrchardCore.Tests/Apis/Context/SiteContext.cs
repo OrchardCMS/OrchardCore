@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using OrchardCore.Apis.GraphQL.Client;
@@ -20,8 +21,10 @@ namespace OrchardCore.Tests.Apis.Context
             DefaultTenantClient = Site.CreateDefaultClient();
         }
 
-        public virtual async Task InitializeAsync()
+        public virtual async Task InitializeAsync(PermissionsContext permissionsContext = null)
         {
+            SiteStartup.PermissionsContext = permissionsContext;
+
             var tenantName = Guid.NewGuid().ToString().Replace("-", "");
 
             var createModel = new Tenants.ViewModels.CreateApiViewModel

@@ -14,11 +14,14 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteStartup
     {
+        public static PermissionsContext PermissionsContext = null;
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOrchardCms(builder =>
@@ -64,9 +67,29 @@ namespace OrchardCore.Tests.Apis.Context
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
-            context.Succeed(requirement);
+            var permissionsContext = SiteStartup.PermissionsContext;
+
+            if (permissionsContext == null || !permissionsContext.UsePermissionsContext)
+            {
+                context.Succeed(requirement);
+            }
+            else if (permissionsContext.AuthorizedPermissions.Contains(requirement.Permission))
+            {
+                context.Succeed(requirement);
+            }
+            else
+            {
+                context.Fail();
+            }
+
             return Task.CompletedTask;
         }
+    }
+
+    public class PermissionsContext
+    {
+        public IEnumerable<Permission> AuthorizedPermissions { get; set; } = Enumerable.Empty<Permission>();
+        public bool UsePermissionsContext { get; set; } = false;
     }
 
     public class AlwaysLoggedInApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOptions>
