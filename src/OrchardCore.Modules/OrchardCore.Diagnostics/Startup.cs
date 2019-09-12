@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,6 +58,9 @@ namespace OrchardCore.Diagnostics
                             .FirstOrDefault();
 
                         context.SetEndpoint(endpoint);
+
+                        var routeValues = endpoint.Metadata.GetMetadata<ControllerActionDescriptor>().RouteValues;
+                        context.Request.RouteValues = new RouteValueDictionary(routeValues);
                     }
                 }
             });
