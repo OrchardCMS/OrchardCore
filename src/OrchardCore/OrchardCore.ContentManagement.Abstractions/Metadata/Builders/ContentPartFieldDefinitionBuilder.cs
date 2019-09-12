@@ -20,12 +20,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             _settings = new JObject(field.Settings);
         }
 
+        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
         public ContentPartFieldDefinitionBuilder WithSetting(string name, string value)
         {
             _settings[name] = value;
             return this;
         }
 
+        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
         public ContentPartFieldDefinitionBuilder WithSetting(string name, string[] values)
         {
             _settings[name] = new JArray(values);
@@ -38,6 +40,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
+        [Obsolete("Use MergeSettings<T>. This will be removed in a future version.")]
         public ContentPartFieldDefinitionBuilder MergeSettings(object model)
         {
             _settings.Merge(JObject.FromObject(model), ContentBuilderSettings.JsonMergeSettings);

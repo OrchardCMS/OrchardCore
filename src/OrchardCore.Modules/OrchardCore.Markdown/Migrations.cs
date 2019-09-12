@@ -1,6 +1,8 @@
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
+using OrchardCore.Markdown.Fields;
+using OrchardCore.Markdown.Settings;
 
 namespace OrchardCore.Markdown
 {
@@ -19,7 +21,14 @@ namespace OrchardCore.Markdown
                 .Attachable()
                 .WithDescription("Provides a Markdown formatted body for your content item."));
 
+            //TODO shortcut
             return 1;
+        }
+
+        public int UpdateFrom1()
+        {
+            _contentDefinitionManager.MigrateFieldSettings<MarkdownField, MarkdownFieldSettings>();
+            return 2;
         }
     }
 }

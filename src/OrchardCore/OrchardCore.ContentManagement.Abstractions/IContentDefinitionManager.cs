@@ -56,6 +56,13 @@ namespace OrchardCore.ContentManagement.Metadata
             manager.StorePartDefinition(builder.Build());
         }
 
+        /// <summary>
+        /// Migrate existing ContentPart settings to WithSettings<typeparamref name="TSettings"/> 
+        /// This method will be removed in a future release.
+        /// </summary>
+        /// <typeparam name="TPart"></typeparam>
+        /// <typeparam name="TSettings"></typeparam>
+        /// <param name="manager"></param>
         public static void MigratePartSettings<TPart, TSettings>(this IContentDefinitionManager manager)
             where TPart : ContentPart where TSettings : class
         {
@@ -84,6 +91,42 @@ namespace OrchardCore.ContentManagement.Metadata
                         });
                     });
                 }
+            }
+        }
+
+        /// <summary>
+        /// Migrate existing ContentField settings to WithSettings<typeparamref name="TSettings"/> 
+        /// This method will be removed in a future release.
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <typeparam name="TSettings"></typeparam>
+        /// <param name="manager"></param>
+        public static void MigrateFieldSettings<TField, TSettings>(this IContentDefinitionManager manager)
+            where TField : ContentField where TSettings : class
+        {
+            var partDefinitions = manager.ListPartDefinitions();
+            foreach (var partDefinition in partDefinitions)
+            {
+                manager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                {
+                    foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == typeof(TField).Name))
+                    {
+                        var existingFieldSettings = fieldDefinition.Settings.ToObject<TSettings>();
+
+                        // Do this before creating builder, so settings are removed from the builder settings object.
+                        // Remove existing properties from JObject
+                        var fieldSettingsProperties = existingFieldSettings.GetType().GetProperties();
+                        foreach (var property in fieldSettingsProperties)
+                        {
+                            fieldDefinition.Settings.Remove(property.Name);
+                        }
+
+                        partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
+                        {
+                            fieldBuilder.WithSettings(existingFieldSettings);
+                        });
+                    }
+                });
             }
         }
     }

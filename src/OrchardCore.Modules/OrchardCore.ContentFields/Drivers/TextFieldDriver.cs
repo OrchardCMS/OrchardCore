@@ -47,7 +47,7 @@ namespace OrchardCore.ContentFields.Fields
         {
             if (await updater.TryUpdateModelAsync(field, Prefix, f => f.Text))
             {
-                var settings = context.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Text))
                 {
                     updater.ModelState.AddModelError(Prefix, T["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);

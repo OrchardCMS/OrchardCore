@@ -2,7 +2,9 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.Indexing;
+using OrchardCore.Taxonomies.Settings;
 
 namespace OrchardCore.Taxonomies
 {
@@ -22,6 +24,7 @@ namespace OrchardCore.Taxonomies
                 .Versionable()
                 .Creatable()
                 .Listable()
+                //TODO position to become int
                 .WithPart("TitlePart", part => part.WithPosition("1"))
                 .WithPart("AliasPart", part => part.WithPosition("2").WithSettings(new AliasPartSettings { Pattern = "{{ ContentItem | display_text | slugify }}" }))
                 .WithPart("TaxonomyPart", part => part.WithPosition("3"))
@@ -44,7 +47,14 @@ namespace OrchardCore.Taxonomies
                 .CreateIndex("IDX_TaxonomyIndex_Search", "TermContentItemId")
             );
 
+            // TODO shortcut
             return 1;
+        }
+
+        public int UpdateFrom1()
+        {
+            _contentDefinitionManager.MigrateFieldSettings<TaxonomyField, TaxonomyFieldSettings>();
+            return 2;
         }
     }
 

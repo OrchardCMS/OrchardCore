@@ -1,7 +1,7 @@
 @model EditTypeViewModel
 @using OrchardCore.ContentManagement.Metadata.Settings;
 @{
-    var settings = Model.Settings.ToObject<ContentTypeSettings>();
+    var settings = Model.TypeDefinition.GetSettings<ContentTypeSettings>();
 }
 <div class="properties">
     <a asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name">@Model.DisplayName</a>

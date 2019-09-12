@@ -227,7 +227,7 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 Type = typeViewModel,
                 PartSelections = _contentDefinitionService.GetParts(metadataPartsOnly: false)
-                    .Where(cpd => !typePartNames.Contains(cpd.Name) && cpd.Settings.ToObject<ContentPartSettings>().Attachable)
+                    .Where(cpd => !typePartNames.Contains(cpd.Name) && cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable)
                     .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
                     .ToList()
             };
@@ -249,8 +249,8 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var reusableParts = _contentDefinitionService.GetParts(metadataPartsOnly: false)
                     .Where(cpd =>
-                        cpd.Settings.ToObject<ContentPartSettings>().Attachable &&
-                        cpd.Settings.ToObject<ContentPartSettings>().Reusable);
+                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable &&
+                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Reusable);
 
             var viewModel = new AddReusablePartViewModel
             {
