@@ -195,3 +195,7 @@ wwwroot
 
 # Rider
 /.idea
+
+# BenchmarkDotNet artifacts
+BenchmarkDotNet.Artifacts
+
