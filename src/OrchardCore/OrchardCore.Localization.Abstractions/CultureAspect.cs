@@ -10,6 +10,6 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets or sets the culture.
         /// </summary>
-        public CultureInfo Culture { get; set; }
+        public CultureInfo Culture { get; set; } = CultureInfo.CurrentUICulture;
     }
 }
