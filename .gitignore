@@ -190,6 +190,9 @@ wwwroot
 !src/OrchardCore.Modules/**/wwwroot
 !src/OrchardCore.Themes/**/wwwroot
 !src/Templates/**/content/**
+!src/Templates/**/content/**
+src/Templates/**/content/**/[Bb]in/
+src/Templates/**/content/**/[Oo]bj/
 .template.config/
 /OrchardCore.sln.GhostDoc.xml
 
