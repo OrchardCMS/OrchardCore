@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Commands;
-using SixLabors.ImageSharp.Web.Helpers;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
 using SixLabors.ImageSharp.Web.Providers;
@@ -97,7 +95,7 @@ namespace OrchardCore.Media.Processing
             }
 
             // We don't care about the content type nor cache control max age here.
-            var metadata = new ImageMetaData(fileInfo.LastModified.UtcDateTime);
+            var metadata = new ImageMetadata(fileInfo.LastModified.UtcDateTime);
             return Task.FromResult<IImageResolver>(new PhysicalFileSystemResolver(fileInfo, metadata));
         }
     }
