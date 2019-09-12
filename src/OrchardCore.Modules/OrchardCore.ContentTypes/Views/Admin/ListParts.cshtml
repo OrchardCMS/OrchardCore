@@ -1,32 +1,26 @@
 @model ListContentPartsViewModel
 
 <div class="row">
-    <div class="form-group col-xl-6 mb-xl-n1">
+    <div class="form-group col mb-n1">
         <h1>@RenderTitleSegments(T["Content Parts"])</h1>
     </div>
-    <div class="form-group col-xl-6 mb-xl-n1">
-        <a asp-route-action="Create" id="btnCreate" class="btn btn-primary float-right" role="button">@T["Create new part"]</a>
+    <div class="form-group col mb-n1">
+        <a asp-route-action="CreatePart" id="btnCreate" class="btn btn-primary float-right" role="button">@T["Create new part"]</a>
     </div>
 </div>
 
-<fieldset class="filter-options">
-    <div class="card mb-3">
-        <div class="card-body bg-light p-3">
-            <div class="row">
-                <div class="form-group col-xl-6 mb-xl-n1">
-                    <div class="input-group input-group-sm">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-                        </div>
-                        <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus" />
-                    </div>
-                </div>
+<fieldset class="card mb-3">
+    <div class="card-body bg-light p-3">
+        <div class="input-group input-group-sm w-lg-50">
+            <div class="input-group-prepend">
+                <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
             </div>
+            <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus" />
         </div>
     </div>
 </fieldset>
 
-<ul class="list-group">
+<ul id="content-parts" class="list-group">
     @foreach (var type in Model.Parts)
     {
         <li class="list-group-item" data-filter-value="@type.DisplayName" data-type-name="@type.Name">
@@ -34,6 +28,10 @@
         </li>
     }
 </ul>
+<div id="list-alert" class="alert alert-info d-none" role="alert">
+    @T["<strong>Nothing here!</strong> Your search returned no result."]
+</div>
+
 <script at="Foot" type="text/javascript">
     //<![CDATA[
     $(function () {
@@ -54,6 +52,15 @@
                     var found = text.indexOf(search) > -1;
                     $(this).toggle(found);
                 });
+
+                // We display an alert if a search is not found
+                var visible = $('#content-parts > li:visible');
+                if (visible.length == 0) {
+                    $('#list-alert').removeClass("d-none");
+                }
+                else {
+                    $('#list-alert').addClass("d-none");
+                }
             }
 
             // On Enter, redirect to the edit page if the part exists or the create page with a suggestion
