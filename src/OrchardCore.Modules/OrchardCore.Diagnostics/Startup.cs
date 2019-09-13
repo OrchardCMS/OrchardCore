@@ -1,12 +1,8 @@
 using System;
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Modules;
 
@@ -23,15 +19,14 @@ namespace OrchardCore.Diagnostics
             _hostingEnvironment = hostingEnvironment;
         }
 
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void ConfigureBeforeRouting(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
             if (!_hostingEnvironment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
             }
 
-            // c.f. https://docs.asp.net/en/latest/fundamentals/error-handling.html#id3
-            app.UseStatusCodePagesWithReExecute("/Error", "?status={0}");
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
             app.Use(async (context, next) =>
             {
@@ -48,33 +43,18 @@ namespace OrchardCore.Diagnostics
                             statusCodePagesFeature.Enabled = false;
                         }
                     }
-                    else
-                    {
-                        // Workaround of c.f. https://github.com/aspnet/AspNetCore/issues/11555
-                        var endpointDataSource = context.RequestServices.GetRequiredService<EndpointDataSource>();
-
-                        var endpoint = endpointDataSource.Endpoints
-                            .Where(e => e.Metadata.GetMetadata<RouteNameMetadata>().RouteName == "Diagnostics.Error")
-                            .FirstOrDefault();
-
-                        context.SetEndpoint(endpoint);
-
-                        var routeValues = endpoint.Metadata.GetMetadata<ControllerActionDescriptor>().RouteValues;
-                        context.Request.RouteValues = new RouteValueDictionary(routeValues);
-                    }
                 }
             });
+        }
 
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
             routes.MapAreaControllerRoute(
                 name: "Diagnostics.Error",
                 areaName: "OrchardCore.Diagnostics",
                 pattern: "Error/{status?}",
                 defaults: new { controller = "Diagnostics", action = "Error" }
             );
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
         }
     }
 }

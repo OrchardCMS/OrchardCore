@@ -117,6 +117,11 @@ namespace OrchardCore.Modules
             // OrderBy performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
             startups = startups.OrderBy(s => s.ConfigureOrder);
 
+            foreach (var startup in startups)
+            {
+                startup.ConfigureBeforeRouting(appBuilder, ShellScope.Services);
+            }
+
             appBuilder.UseRouting().UseEndpoints(routes =>
             {
                 foreach (var startup in startups)
