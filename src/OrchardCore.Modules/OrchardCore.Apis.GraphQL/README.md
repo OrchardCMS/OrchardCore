@@ -86,6 +86,7 @@ Configuration is done via the standard shell configuration, as follows.
       "MaxComplexity": 100, 
       "FieldImpact": 2.0 ,
       "MaxNumberOfResults": 100
+      "MaxNumberOfResultsValidationMode": "Environment"
     }
   }
 }
@@ -94,8 +95,14 @@ Configuration is done via the standard shell configuration, as follows.
 
 If set to true stack traces are exposed to graphql clients
 
-*MaxNumberOfResults (int, Default: 1000)
+*MaxNumberOfResults (int, Default: 1000)*
 The maximum number of results returned by all paged fields/types.
+
+*MaxNumberOfResultsValidationMode (enum, Values: Environment|Debug|Release, Default: Environment)()
+Specify the validation behaviour if the max number of results is exceeded in a pager paramater
+* Environment - In production info will be logged and only the max number of results will be returned. In development a graphql validation error will be raised.
+* Debug - a graphql validation error will be raised
+* Release - Info will be logged and only the max number of results will be returned
 
 *MaxDepth (int?, Default: 20)*
 

@@ -13,5 +13,13 @@ namespace OrchardCore.Apis.GraphQL
         public int? MaxComplexity { get; set; }
         public double? FieldImpact { get; set; }
         public int MaxNumberOfResults { get; set; }
+        public MaxNumberOfResultsValidationMode MaxNumberOfResultsValidationMode { get; set; }
+    }
+
+    public enum MaxNumberOfResultsValidationMode
+    {
+        Environment,
+        Debug,
+        Release
     }
 }

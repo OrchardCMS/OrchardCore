@@ -56,6 +56,7 @@ namespace OrchardCore.Apis.GraphQL
                 MaxComplexity = _configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxComplexity)}"),
                 FieldImpact = _configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.FieldImpact)}"),
                 MaxNumberOfResults = _configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxNumberOfResults)}") ?? 1000,
+                MaxNumberOfResultsValidationMode = _configuration.GetValue<MaxNumberOfResultsValidationMode?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxNumberOfResultsValidationMode)}") ?? MaxNumberOfResultsValidationMode.Environment
             });
         }
     }
