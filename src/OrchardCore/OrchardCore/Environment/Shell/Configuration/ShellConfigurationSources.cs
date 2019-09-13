@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
@@ -11,7 +10,7 @@ namespace OrchardCore.Environment.Shell.Configuration
     {
         private readonly string _container;
 
-        public ShellConfigurationSources(IHostingEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
+        public ShellConfigurationSources(IOptions<ShellOptions> shellOptions)
         {
             // e.g., App_Data/Sites
             _container = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName);

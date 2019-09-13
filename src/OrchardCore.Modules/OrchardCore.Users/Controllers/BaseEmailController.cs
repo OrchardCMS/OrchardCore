@@ -24,11 +24,14 @@ namespace OrchardCore.Users.Controllers
         {
             var body = string.Empty;
 
-            using (var sw = new StringWriter())
+            using (var sb = StringBuilderPool.GetInstance())
             {
-                var htmlContent = await _displayHelper.ShapeExecuteAsync(model);
-                htmlContent.WriteTo(sw, HtmlEncoder.Default);
-                body = sw.ToString();
+                using (var sw = new StringWriter(sb.Builder))
+                {
+                    var htmlContent = await _displayHelper.ShapeExecuteAsync(model);
+                    htmlContent.WriteTo(sw, HtmlEncoder.Default);
+                    body = sw.ToString();
+                }
             }
 
             var message = new MailMessage()

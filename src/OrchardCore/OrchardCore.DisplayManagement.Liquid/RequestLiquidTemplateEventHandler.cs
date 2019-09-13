@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 
@@ -54,7 +53,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 return new ArrayValue(forms[name].Select(x => new StringValue(x)).ToArray());
             });
 
-            TemplateContext.GlobalMemberAccessStrategy.Register<RequestCookieCollection, string>((cookies, name) => cookies[name]);
+            TemplateContext.GlobalMemberAccessStrategy.Register<IRequestCookieCollection, string>((cookies, name) => cookies[name]);
             TemplateContext.GlobalMemberAccessStrategy.Register<QueryCollection, string[]>((queries, name) => queries[name].ToArray());
             TemplateContext.GlobalMemberAccessStrategy.Register<HeaderDictionaryWrapper, string[]>((headers, name) => headers.HeaderDictionary[name].ToArray());
         }

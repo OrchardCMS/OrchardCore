@@ -406,7 +406,7 @@ namespace OrchardCore.Navigation
         }
 
         [Shape]
-        public IHtmlContent ActionLink(UrlHelper Url, Shape Shape, object Value, bool Disabled = false)
+        public IHtmlContent ActionLink(IUrlHelper Url, Shape Shape, object Value, bool Disabled = false)
         {
             if (Disabled)
             {

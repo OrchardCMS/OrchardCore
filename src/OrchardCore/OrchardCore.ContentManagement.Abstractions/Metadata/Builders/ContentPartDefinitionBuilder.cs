@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OrchardCore.ContentManagement.Metadata.Models;
 using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.Metadata.Builders
 {
     public class ContentPartDefinitionBuilder
     {
         private readonly ContentPartDefinition _part;
-        private string _name;
         private readonly IList<ContentPartFieldDefinition> _fields;
         private readonly JObject _settings;
 
@@ -31,22 +30,22 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                _name = existing.Name;
+                Name = existing.Name;
                 _fields = existing.Fields.ToList();
                 _settings = new JObject(existing.Settings);
             }
         }
 
-        public string Name { get { return _name; } }
+        public string Name { get; private set; }
 
         public ContentPartDefinition Build()
         {
-            return new ContentPartDefinition(_name, _fields, _settings);
+            return new ContentPartDefinition(Name, _fields, _settings);
         }
 
         public ContentPartDefinitionBuilder Named(string name)
         {
-            _name = name;
+            Name = name;
             return this;
         }
 

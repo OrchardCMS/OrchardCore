@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using OrchardCore.ContentManagement.Metadata.Builders;
-using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Mvc.Utilities;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
-using System.Linq;
+using OrchardCore.ContentManagement.Metadata.Builders;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentManagement.Metadata
 {

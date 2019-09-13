@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -18,7 +17,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Media.Azure
 {
     [Feature("OrchardCore.Media.Azure.Storage")]
-    public class Startup : StartupBase
+    public class Startup : Modules.StartupBase
     {
         private readonly ILogger<Startup> _logger;
         private readonly IShellConfiguration _configuration;
@@ -43,7 +42,7 @@ namespace OrchardCore.Media.Azure
                 // Register a media cache file provider.
                 services.AddSingleton<IMediaFileStoreCacheFileProvider>(serviceProvider =>
                 {
-                    var hostingEnvironment = serviceProvider.GetRequiredService<IHostingEnvironment>();
+                    var hostingEnvironment = serviceProvider.GetRequiredService<IWebHostEnvironment>();
 
                     if (String.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
                     {
@@ -106,7 +105,7 @@ namespace OrchardCore.Media.Azure
             return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
         }
 
-        private string GetMediaCachePath(IHostingEnvironment hostingEnvironment, string assetsPath, ShellSettings shellSettings)
+        private string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, string assetsPath, ShellSettings shellSettings)
         {
             return PathExtensions.Combine(hostingEnvironment.WebRootPath, assetsPath, shellSettings.Name);
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,8 +8,11 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -48,6 +52,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddExtensionServices(builder);
                 AddStaticFiles(builder);
 
+                AddRouting(builder);
                 AddAntiForgery(builder);
                 AddAuthentication(builder);
                 AddDataProtection(builder);
@@ -72,10 +77,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddWebEncoders();
 
-            // ModularTenantRouterMiddleware which is configured with UseOrchardCore() calls UseRouter() which requires the routing services to be
-            // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
-            services.AddRouting();
-
             services.AddHttpContextAccessor();
             services.AddSingleton<IClock, Clock>();
             services.AddScoped<ILocalClock, LocalClock>();
@@ -85,7 +86,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
-            services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
         }
@@ -96,10 +96,16 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddHostingShellServices();
             services.AddAllFeaturesDescriptor();
 
-            // Registers the application main feature
+            // Registers the application primary feature.
             services.AddTransient(sp => new ShellFeature
             (
-                sp.GetRequiredService<IHostingEnvironment>().ApplicationName, alwaysEnabled: true)
+                sp.GetRequiredService<IHostEnvironment>().ApplicationName, alwaysEnabled: true)
+            );
+
+            // Registers the application default feature.
+            services.AddTransient(sp => new ShellFeature
+            (
+                Application.DefaultFeatureId, alwaysEnabled: true)
             );
         }
 
@@ -125,7 +131,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddSingleton<IModuleStaticFileProvider>(serviceProvider =>
                 {
-                    var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
+                    var env = serviceProvider.GetRequiredService<IHostEnvironment>();
                     var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
 
                     IModuleStaticFileProvider fileProvider;
@@ -172,6 +178,39 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 app.UseStaticFiles(options);
             });
+        }
+
+        /// <summary>
+        /// Adds isolated tenant level routing services.
+        /// </summary>
+        private static void AddRouting(OrchardCoreBuilder builder)
+        {
+            // 'AddRouting()' is called by the host.
+
+            builder.ConfigureServices(collection =>
+            {
+                // The routing system is not tenant aware and uses a global list of endpoint data sources which is
+                // setup by the default configuration of 'RouteOptions' and mutated on each call of 'UseEndPoints()'.
+                // So, we need isolated routing singletons (and a default configuration) per tenant.
+
+                var implementationTypesToRemove = new ServiceCollection().AddRouting()
+                    .Where(sd => sd.Lifetime == ServiceLifetime.Singleton || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
+                    .Select(sd => sd.GetImplementationType())
+                    .ToArray();
+
+                var descriptorsToRemove = collection
+                    .Where(sd => (sd is ClonedSingletonDescriptor || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>)) &&
+                        implementationTypesToRemove.Contains(sd.GetImplementationType()))
+                    .ToArray();
+
+                foreach (var descriptor in descriptorsToRemove)
+                {
+                    collection.Remove(descriptor);
+                }
+
+                collection.AddRouting();
+            },
+            order: int.MinValue + 100);
         }
 
         /// <summary>

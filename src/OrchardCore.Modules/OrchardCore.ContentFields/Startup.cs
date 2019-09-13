@@ -113,12 +113,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IDataMigration, Migrations>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ContentPicker",
                 areaName: "OrchardCore.ContentFields",
-                template: "ContentFields/SearchContentItems",
+                pattern: "ContentFields/SearchContentItems",
                 defaults: new { controller = "ContentPickerAdmin", action = "SearchContentItems" }
             );
         }
@@ -135,12 +135,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldIndexHandler, LocalizationSetContentPickerFieldIndexHandler>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "SearchLocalizationSets",
                 areaName: "OrchardCore.ContentFields",
-                template: "ContentFields/SearchLocalizationSets",
+                pattern: "ContentFields/SearchLocalizationSets",
                 defaults: new { controller = "LocalizationSetContentPickerAdmin", action = "SearchLocalizationSets" }
             );
         }
