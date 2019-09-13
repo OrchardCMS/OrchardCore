@@ -97,8 +97,6 @@ namespace OrchardCore.Modules
                 ConfigureTenantPipeline(builder);
             };
 
-            var test = startupFilters.Reverse();
-
             foreach (var filter in startupFilters.Reverse())
             {
                 configure = filter.Configure(configure);
