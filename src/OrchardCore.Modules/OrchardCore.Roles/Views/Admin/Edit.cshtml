@@ -5,9 +5,9 @@
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto"></ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
-        </form>
+    <form class="form-inline my-2 my-lg-0">
+        <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+    </form>
 </nav>
 
 <form asp-action="Edit" method="post">
@@ -19,7 +19,8 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="col-10">@T["Permission"]</th>
+                            <th class="col-9">@T["Permission"]</th>
+                            <th class="col-1"></th>
                             <th class="col-1">@T["Allow"]</th>
                             <th class="col-1">@T["Effective"]</th>
                         </tr>
@@ -28,7 +29,16 @@
                         @foreach (var permission in Model.RoleCategoryPermissions[category])
                         {
                             <tr data-text="@permission.Description">
-                                <td class="col-10">@permission.Description</td>
+                                <td class="col-9">@permission.Description</td>
+                                <td class="col-1">
+                                    @if (permission.IsSecurityCritical)
+                                    {
+                                        <div>
+                                            <span class="badge badge-danger">Security Critical</span>
+                                        </div>
+
+                                    }
+                                </td>
                                 <td class="col-1">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input" id="Checkbox.@permission.Name" name="Checkbox.@permission.Name" checked="@(Model.Role.RoleClaims.Any(x => x.ClaimValue == permission.Name))" value="true">
@@ -41,6 +51,7 @@
                                         <label class="custom-control-label" for="Effective.@permission.Name">&nbsp;</label>
                                     </div>
                                 </td>
+
                             </tr>
                         }
                     </tbody>
@@ -58,7 +69,7 @@
 </form>
 
 <script at="Foot" type="text/javascript">
-//<![CDATA[
+    //<![CDATA[
     $(function () {
         var searchBox = $('#search-box');
 
