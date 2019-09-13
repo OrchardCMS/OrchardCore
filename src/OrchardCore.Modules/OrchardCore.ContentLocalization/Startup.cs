@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentLocalization.Drivers;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Indexing;
@@ -58,7 +59,7 @@ namespace OrchardCore.ContentLocalization
             services.AddScoped<IDisplayDriver<ISite>, ContentCulturePickerSettingsDriver>();
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                options.RequestCultureProviders.Insert(0, new ContentRequestCultureProvider());
+                options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider());
             });
         }
 
