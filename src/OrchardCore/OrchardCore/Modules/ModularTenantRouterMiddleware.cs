@@ -97,6 +97,8 @@ namespace OrchardCore.Modules
                 ConfigureTenantPipeline(builder);
             };
 
+            var test = startupFilters.Reverse();
+
             foreach (var filter in startupFilters.Reverse())
             {
                 configure = filter.Configure(configure);
@@ -116,11 +118,6 @@ namespace OrchardCore.Modules
             // IStartup instances are ordered by module dependency with an 'ConfigureOrder' of 0 by default.
             // OrderBy performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
             startups = startups.OrderBy(s => s.ConfigureOrder);
-
-            foreach (var startup in startups)
-            {
-                startup.ConfigureBeforeRouting(appBuilder, ShellScope.Services);
-            }
 
             appBuilder.UseRouting().UseEndpoints(routes =>
             {

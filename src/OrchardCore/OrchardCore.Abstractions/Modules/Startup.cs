@@ -25,11 +25,6 @@ namespace OrchardCore.Modules
         }
 
         /// <inheritdoc />
-        public virtual void ConfigureBeforeRouting(IApplicationBuilder app, IServiceProvider serviceProvider)
-        {
-        }
-
-        /// <inheritdoc />
         public virtual void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
         }

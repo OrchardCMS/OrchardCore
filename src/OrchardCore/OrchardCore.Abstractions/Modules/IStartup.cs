@@ -29,13 +29,6 @@ namespace OrchardCore.Modules
         void ConfigureServices(IServiceCollection services);
 
         /// <summary>
-        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline before the routing system.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="serviceProvider"></param>
-        void ConfigureBeforeRouting(IApplicationBuilder builder, IServiceProvider serviceProvider);
-
-        /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
         /// <param name="builder"></param>
