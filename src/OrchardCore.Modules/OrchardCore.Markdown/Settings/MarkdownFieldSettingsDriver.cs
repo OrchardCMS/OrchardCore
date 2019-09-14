@@ -6,7 +6,6 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Markdown.Settings
 {
-
     public class MarkdownFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MarkdownField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
