@@ -23,7 +23,7 @@ namespace OrchardCore.Mvc.RazorPages
             // 'PageLoaderMatcherPolicy' doesn't check if an endpoint is a valid candidate.
             // So, we replace it by a custom implementation that does it as other policies.
             var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(MatcherPolicy) &&
-                d.ImplementationType.Name == nameof(PageLoaderMatcherPolicy));
+                d.ImplementationType?.Name == nameof(PageLoaderMatcherPolicy));
 
             if (descriptor != null)
             {
