@@ -16,29 +16,29 @@
           "Name": "FacebookComments",
           "DisplayName": "Facebook Comments",
           "Settings": {
-            "Creatable": "False",
-            "Draftable": "False",
-            "Versionable": "True",
-            "Listable": "False",
-            "Securable": "True",
-            "Stereotype": "Widget"
+            "ContentTypeSettings": {
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "FacebookComments",
               "Name": "FacebookComments",
               "Settings": {
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
               }
             },
             {
               "PartName": "FacebookPluginPart",
               "Name": "FacebookPluginPart",
               "Settings": {
-                "Position": "1",
-                "DisplayName": null,
-                "Description": null,
-                "Editor": null,
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                },
                 "FacebookPluginPartSettings": {
                   "Liquid": "<div class=\"fb-comments\" data-numposts=\"5\"></div>"
                 }
@@ -50,29 +50,29 @@
           "Name": "FacebookShare",
           "DisplayName": "Facebook Share",
           "Settings": {
-            "Creatable": "False",
-            "Draftable": "False",
-            "Versionable": "True",
-            "Listable": "False",
-            "Securable": "True",
-            "Stereotype": "Widget"
+            "ContentTypeSettings": {
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "FacebookShare",
               "Name": "FacebookShare",
               "Settings": {
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
               }
             },
             {
               "PartName": "FacebookPluginPart",
               "Name": "FacebookPluginPart",
               "Settings": {
-                "Position": "1",
-                "DisplayName": null,
-                "Description": null,
-                "Editor": null,
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                },
                 "FacebookPluginPartSettings": {
                   "Liquid": "<div class=\"fb-share-button\" data-layout=\"button\" data-size=\"large\">\r\n</div>"
                 }
@@ -84,29 +84,29 @@
           "Name": "FacebookContinueWith",
           "DisplayName": "Facebook Continue With",
           "Settings": {
-            "Creatable": "False",
-            "Draftable": "False",
-            "Versionable": "True",
-            "Listable": "False",
-            "Securable": "True",
-            "Stereotype": "Widget"
+            "ContentTypeSettings": {
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "FacebookContinueWith",
               "Name": "FacebookContinueWith",
               "Settings": {
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
               }
             },
             {
               "PartName": "FacebookPluginPart",
               "Name": "FacebookPluginPart",
               "Settings": {
-                "Position": "1",
-                "DisplayName": null,
-                "Description": null,
-                "Editor": null,
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                },
                 "FacebookPluginPartSettings": {
                   "Liquid": "<div class=\"fb-login-button\" data-size=\"large\" data-button-type=\"continue_with\" data-auto-logout-link=\"false\" data-use-continue-as=\"true\"></div>"
                 }
@@ -118,29 +118,29 @@
           "Name": "FacebookLike",
           "DisplayName": "Facebook Like",
           "Settings": {
-            "Creatable": "False",
-            "Draftable": "False",
-            "Versionable": "True",
-            "Listable": "False",
-            "Securable": "True",
-            "Stereotype": "Widget"
+            "ContentTypeSettings": {
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "FacebookLike",
               "Name": "FacebookLike",
               "Settings": {
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
               }
             },
             {
               "PartName": "FacebookPluginPart",
               "Name": "FacebookPluginPart",
               "Settings": {
-                "Position": "1",
-                "DisplayName": null,
-                "Description": null,
-                "Editor": null,
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                },
                 "FacebookPluginPartSettings": {
                   "Liquid": "<div class=\"fb-like\" data-layout=\"button\" data-action=\"like\" data-size=\"large\" data-share=\"false\"></div>"
                 }
@@ -152,29 +152,29 @@
           "Name": "FacebookQuote",
           "DisplayName": "Facebook Quote",
           "Settings": {
-            "Creatable": "False",
-            "Draftable": "False",
-            "Versionable": "True",
-            "Listable": "False",
-            "Securable": "True",
-            "Stereotype": "Widget"
+            "ContentTypeSettings": {
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "FacebookQuote",
               "Name": "FacebookQuote",
               "Settings": {
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
               }
             },
             {
               "PartName": "FacebookPluginPart",
               "Name": "FacebookPluginPart",
               "Settings": {
-                "Position": "1",
-                "DisplayName": null,
-                "Description": null,
-                "Editor": null,
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                },
                 "FacebookPluginPartSettings": {
                   "Liquid": "<div class=\"fb-quote\"></div>"
                 }
@@ -186,29 +186,29 @@
           "Name": "FacebookSave",
           "DisplayName": "Facebook Save",
           "Settings": {
-            "Creatable": "False",
-            "Draftable": "False",
-            "Versionable": "True",
-            "Listable": "False",
-            "Securable": "True",
-            "Stereotype": "Widget"
+            "ContentTypeSettings": {
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "FacebookSave",
               "Name": "FacebookSave",
               "Settings": {
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
               }
             },
             {
               "PartName": "FacebookPluginPart",
               "Name": "FacebookPluginPart",
               "Settings": {
-                "Position": "1",
-                "DisplayName": null,
-                "Description": null,
-                "Editor": null,
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                },
                 "FacebookPluginPartSettings": {
                   "Liquid": "<div class=\"fb-save\" \r\n     data-uri=\"https://www.bsnet.gr{{Request.PathBase | url_encode }}{{Request.Path | url_encode }}\" \r\n     data-size=\"large\">\r\n</div> "
                 }
@@ -220,29 +220,29 @@
           "Name": "FacebookChat",
           "DisplayName": "Facebook Chat",
           "Settings": {
-            "Creatable": "False",
-            "Draftable": "False",
-            "Versionable": "True",
-            "Listable": "False",
-            "Securable": "True",
-            "Stereotype": "Widget"
+            "ContentTypeSettings": {
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "FacebookChat",
               "Name": "FacebookChat",
               "Settings": {
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
               }
             },
             {
               "PartName": "FacebookPluginPart",
               "Name": "FacebookPluginPart",
               "Settings": {
-                "Position": "1",
-                "DisplayName": null,
-                "Description": null,
-                "Editor": null,
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                },
                 "FacebookPluginPartSettings": {
                   "Liquid": "<div class=\"fb-customerchat\"\r\n page_id=\"<PAGE_ID>\">\r\n</div>"
                 },
