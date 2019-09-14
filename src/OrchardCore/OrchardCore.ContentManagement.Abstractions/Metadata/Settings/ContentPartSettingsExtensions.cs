@@ -9,7 +9,7 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
     {
         public static ContentPartDefinitionBuilder Attachable(this ContentPartDefinitionBuilder builder, bool attachable = true)
         {
-            return builder.MergeSettings(new ContentPartSettings { Attachable = attachable });
+            return builder.MergeSettings<ContentPartSettings>(x => x.Attachable = attachable );
         }
 
         public static bool IsAttachable(this ContentPartDefinition part)
@@ -19,7 +19,7 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
 
         public static ContentPartDefinitionBuilder Reusable(this ContentPartDefinitionBuilder builder, bool reusable = true)
         {
-            return builder.MergeSettings(new ContentPartSettings { Reusable = reusable });
+            return builder.MergeSettings<ContentPartSettings>(x => x.Reusable = reusable);
         }
 
         public static bool IsReusable(this ContentPartDefinition part)
@@ -29,17 +29,17 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
 
         public static ContentPartDefinitionBuilder WithDescription(this ContentPartDefinitionBuilder builder, string description)
         {
-            return builder.MergeSettings(new ContentPartSettings { Description = description });
+            return builder.MergeSettings<ContentPartSettings>(x => x.Description = description);
         }
 
         public static ContentPartDefinitionBuilder WithDisplayName(this ContentPartDefinitionBuilder builder, string description)
         {
-            return builder.MergeSettings(new ContentPartSettings { DisplayName = description });
+            return builder.MergeSettings<ContentPartSettings>(x => x.DisplayName = description);
         }
 
         public static ContentPartDefinitionBuilder WithDefaultPosition(this ContentPartDefinitionBuilder builder, string position)
         {
-            return builder.MergeSettings(new ContentPartSettings { DefaultPosition = position });
+            return builder.MergeSettings<ContentPartSettings>(x => x.DefaultPosition = position);
         }
 
         public static string DefaultPosition(this ContentPartDefinition part)
