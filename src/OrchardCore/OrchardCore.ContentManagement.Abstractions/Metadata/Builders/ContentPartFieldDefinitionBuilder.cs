@@ -70,7 +70,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var jObject = JObject.FromObject(settings);
+            var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;
 
             return this;
