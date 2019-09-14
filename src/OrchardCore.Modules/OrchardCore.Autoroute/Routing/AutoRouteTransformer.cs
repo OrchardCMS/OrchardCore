@@ -35,7 +35,7 @@ namespace OrchardCore.Autoroute.Routing
                 return new ValueTask<RouteValueDictionary>(routeValues);
             }
 
-            return new ValueTask<RouteValueDictionary>((RouteValueDictionary)null);
+            return new ValueTask<RouteValueDictionary>(new RouteValueDictionary(_options.GlobalRouteValues));
         }
 
         private RouteValueDictionary GetRouteValues(string contentItemId)
