@@ -67,11 +67,12 @@ namespace OrchardCore.ContentManagement.Records
                 .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
             );
 
-            //TODO set to 4 when testing complete
-            return 3;
+            // Return 3 to shortcut the 3rd and 4th migration on new content definition schemas.
+            return 5;
         }
 
-        // Migrate content type definitions.
+        // Migrate content type definitions. This only needs to run on old content definition schemas.
+        // This code can be removed in a later version.
         public int UpdateFrom3()
         {
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
@@ -115,6 +116,7 @@ namespace OrchardCore.ContentManagement.Records
         }
 
         // Migration content part definitions.
+        // This code can be removed in a later version.
         public int UpdateFrom4()
         {
             var partDefinitions = _contentDefinitionManager.ListPartDefinitions();

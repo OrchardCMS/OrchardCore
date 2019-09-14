@@ -14,7 +14,8 @@ namespace OrchardCore.ContentFields
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        //TODO make empty migration here, and UpdateFrom1(). To shortcut, after testing complete.
+        // This migration does not need to run on new installations, but because there is no
+        // initial migration record, there is no way to shortcut the Create migration.
         public int Create()
         {
             // Boolean field

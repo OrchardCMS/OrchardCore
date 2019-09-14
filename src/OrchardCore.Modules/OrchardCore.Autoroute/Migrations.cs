@@ -32,12 +32,12 @@ namespace OrchardCore.Autoroute
                 .CreateIndex("IDX_AutoroutePartIndex_ContentItemId", "ContentItemId")
             );
 
-            //TODO set to 2 when testing complete
             // Return 2 to shortcut the second migration on new content definition schemas.
-            return 1;
+            return 2;
         }
 
         // Migrate PartSettings. This only needs to run on old content definition schemas.
+        // This code can be removed in a later version.
         public int UpdateFrom1()
         {
             _contentDefinitionManager.MigratePartSettings<AutoroutePart, AutoroutePartSettings>();
