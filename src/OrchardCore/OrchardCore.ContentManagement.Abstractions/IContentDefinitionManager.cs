@@ -116,15 +116,24 @@ namespace OrchardCore.ContentManagement.Metadata
                         // Do this before creating builder, so settings are removed from the builder settings object.
                         // Remove existing properties from JObject
                         var fieldSettingsProperties = existingFieldSettings.GetType().GetProperties();
+                        var hasSetting = false;
                         foreach (var property in fieldSettingsProperties)
                         {
-                            fieldDefinition.Settings.Remove(property.Name);
+                            if (fieldDefinition.Settings.ContainsKey(property.Name))
+                            {
+                                hasSetting = true;
+                                fieldDefinition.Settings.Remove(property.Name);
+                            }
                         }
 
-                        partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
+                        // Only include settings if the definition already has at least one of these settings.
+                        if (hasSetting)
                         {
-                            fieldBuilder.WithSettings(existingFieldSettings);
-                        });
+                            partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
+                            {
+                                fieldBuilder.WithSettings(existingFieldSettings);
+                            });
+                        }
                     }
                 });
             }
