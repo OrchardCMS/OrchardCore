@@ -4,12 +4,12 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentManagement.Handlers
 {
-    public class UpdateContentsHandler : ContentHandlerBase
+    public class ContentsHandler : ContentHandlerBase
     {
         private readonly IClock _clock;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UpdateContentsHandler(IClock clock, IHttpContextAccessor httpContextAccessor)
+        public ContentsHandler(IClock clock, IHttpContextAccessor httpContextAccessor)
         {
             _clock = clock;
             _httpContextAccessor = httpContextAccessor;

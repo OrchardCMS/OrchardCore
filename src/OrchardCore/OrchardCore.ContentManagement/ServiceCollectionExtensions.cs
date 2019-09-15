@@ -22,7 +22,7 @@ namespace OrchardCore.ContentManagement
             services.TryAddScoped<IContentManagerSession, DefaultContentManagerSession>();
             services.AddSingleton<IIndexProvider, ContentItemIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IContentHandler, UpdateContentsHandler>();
+            services.AddScoped<IContentHandler, ContentsHandler>();
             services.AddScoped<IContentHandler, ContentPartHandlerCoordinator>();
             services.AddSingleton<ITypeActivatorFactory<ContentPart>, ContentPartFactory>();
             services.AddSingleton<ITypeActivatorFactory<ContentField>, ContentFieldFactory>();
