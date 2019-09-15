@@ -22,27 +22,12 @@ namespace OrchardCore.Autoroute.Routing
         {
             if (_entries.TryGetContentItemId(httpContext.Request.Path.ToString().TrimEnd('/'), out var contentItemId))
             {
-                var routeValues = new RouteValueDictionary(GetRouteValues(contentItemId));
-
-                if (values != null)
-                {
-                    foreach (var entry in values)
-                    {
-                        routeValues.TryAdd(entry.Key, entry.Value);
-                    }
-                }
-
+                var routeValues = new RouteValueDictionary(_options.GlobalRouteValues);
+                routeValues[_options.ContentItemIdKey] = contentItemId;
                 return new ValueTask<RouteValueDictionary>(routeValues);
             }
 
             return new ValueTask<RouteValueDictionary>((RouteValueDictionary)null);
-        }
-
-        private RouteValueDictionary GetRouteValues(string contentItemId)
-        {
-            var routeValues = new RouteValueDictionary(_options.GlobalRouteValues);
-            routeValues[_options.ContentItemIdKey] = contentItemId;
-            return routeValues;
         }
     }
 }
