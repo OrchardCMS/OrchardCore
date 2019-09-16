@@ -25,8 +25,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     /// </summary>
     public class ContentItemsFieldType : FieldType
     {
-
         private static readonly List<string> ContentItemProperties;
+        private readonly int _defaultNumberOfItems;
 
         static ContentItemsFieldType()
         {
@@ -38,7 +38,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        public ContentItemsFieldType(string contentItemName, ISchema schema, IOptions<GraphQLContentOptions> optionsAccessor)
+        public ContentItemsFieldType(string contentItemName, ISchema schema, IOptions<GraphQLContentOptions> optionsAccessor, IOptions<GraphQLSettings> settingsAccessor)
         {
             Name = "ContentItems";
 
@@ -60,6 +60,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             schema.RegisterType(whereInput);
             schema.RegisterType(orderByInput);
             schema.RegisterType<PublicationStatusGraphType>();
+
+            _defaultNumberOfItems = settingsAccessor.Value.DefaultNumberOfResults;
         }
 
         private async Task<IEnumerable<ContentItem>> Resolve(ResolveFieldContext context)
@@ -178,8 +180,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             if (first == 0)
             {
-                var serviceProvider = graphQLContext.ServiceProvider;
-                first = serviceProvider.GetService<IOptions<GraphQLSettings>>().Value.DefaultNumberOfResults;
+                first = _defaultNumberOfItems;
             }
 
             contentItemsQuery = contentItemsQuery.Take(first);

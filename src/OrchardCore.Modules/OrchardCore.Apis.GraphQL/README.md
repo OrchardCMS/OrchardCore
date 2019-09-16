@@ -96,7 +96,7 @@ Configuration is done via the standard shell configuration, as follows.
 
 If set to true stack traces are exposed to graphql clients
 
-*MaxNumberOfResults (int, Default: 100)*
+*DefaultNumberOfResults (int, Default: 100)*
 The default number of results returned by all paged fields/types.
 
 *MaxNumberOfResults (int, Default: 1000)*
