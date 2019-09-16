@@ -128,7 +128,7 @@ namespace OrchardCore.ResourceManagement
         {
             if (String.IsNullOrEmpty(cdnIntegrity))
             {
-                ThrowArgumentNullException("cdnUrl");
+                ThrowArgumentNullException(nameof(cdnIntegrity));
             }
             CdnIntegrity = cdnIntegrity;
             if (cdnDebugIntegrity != null)
