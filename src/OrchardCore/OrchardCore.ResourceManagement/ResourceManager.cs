@@ -434,7 +434,7 @@ namespace OrchardCore.ResourceManagement
                         continue;
                     }
 
-                    ExpandDependencies(dependency, tempSettings, allResources);
+                    ExpandDependencies(dependency, settings, allResources);
                 }
             }
             allResources[resource] = settings;
