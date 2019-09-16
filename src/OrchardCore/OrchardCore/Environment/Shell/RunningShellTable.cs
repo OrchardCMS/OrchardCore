@@ -100,7 +100,7 @@ namespace OrchardCore.Environment.Shell
         private bool TryMatchInternal(string host, string appRelativePath, bool fallbackToDefault, out ShellSettings result)
         {
             // We can skip some checks for port matching if we know the host doesn't contain one
-            var hasPort = host.IndexOf(':') != -1;
+            var hasPort = host.Contains(':');
 
             // 1. Search for Host:Port + Prefix match
 
