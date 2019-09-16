@@ -11,7 +11,7 @@ namespace OrchardCore.Mvc.Web
 
         public static IHost BuildHost(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>webBuilder.UseStartup<Startup>())
+                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
                 .Build();
     }
 }
