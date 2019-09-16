@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentManagement.Metadata
 {

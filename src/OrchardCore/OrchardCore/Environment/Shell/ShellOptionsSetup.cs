@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Environment.Shell
@@ -14,9 +14,9 @@ namespace OrchardCore.Environment.Shell
         private const string DefaultAppDataPath = "App_Data";
         private const string DefaultSitesPath = "Sites";
 
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
 
-        public ShellOptionsSetup(IHostingEnvironment hostingEnvironment)
+        public ShellOptionsSetup(IHostEnvironment hostingEnvironment)
         {
             _hostingEnvironment = hostingEnvironment;
         }

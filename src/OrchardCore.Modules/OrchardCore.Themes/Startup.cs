@@ -34,7 +34,7 @@ namespace OrchardCore.Themes
             services.AddScoped<IDisplayDriver<DeploymentStep>, ThemesDeploymentStepDriver>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
         }
     }
