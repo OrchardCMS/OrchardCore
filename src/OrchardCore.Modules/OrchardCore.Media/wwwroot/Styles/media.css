@@ -255,7 +255,7 @@ ol.media-items-grid {
   .media-items-table td {
     vertical-align: middle; }
   [dir] .media-items-table .text-col {
-    margin-top: -15px; }
+    margin-top: 16px; }
   [dir] .media-items-table tr:hover {
     cursor: pointer; }
   .media-items-table .media-name-cell {
@@ -425,6 +425,8 @@ ol.media-items-grid {
       font-size: 0.875rem; }
     [dir] #folder-tree .treeroot .expand {
       padding: 0; }
+    #folder-tree .treeroot + ol {
+      overflow-x: auto; }
   #folder-tree li.selected > div:not(.treeroot) {
     font-weight: bold; }
   [dir] #folder-tree li.selected > div:not(.treeroot) {
@@ -432,7 +434,7 @@ ol.media-items-grid {
   [dir] #folder-tree li div:not(.treeroot) a:hover, [dir] #folder-tree .folderhovered {
     background-color: #e6f2ff; }
   #folder-tree li div {
-    height: 40px;
+    min-height: 40px;
     font-size: 0.875rem; }
   [dir] #folder-tree li div {
     padding: 0; }
@@ -474,7 +476,7 @@ ol.media-items-grid {
       display: flex;
       align-items: center; }
     #folder-tree .folder-menu-item .folder-actions {
-      align-self: flex-end;
+      align-self: stretch;
       display: flex;
       align-items: center;
       font-size: 0.875rem; }

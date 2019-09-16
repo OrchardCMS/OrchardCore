@@ -7029,7 +7029,7 @@ return Popper;
 }));
 //# sourceMappingURL=bootstrap.js.map
 
-function confirmDialog(title, message, handler) {
+function confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, handler) {
     if (title === undefined) {
         title = $('#confirmRemoveModalMetadata').data('title');
     }
@@ -7038,21 +7038,37 @@ function confirmDialog(title, message, handler) {
         message = $('#confirmRemoveModalMetadata').data('message');
     }
 
+    if (okText === undefined) {
+        okText = $('#confirmRemoveModalMetadata').data('ok');
+    }
+
+    if (cancelText === undefined) {
+        cancelText = $('#confirmRemoveModalMetadata').data('cancel');
+    }
+
+    if (okCssClass === undefined) {
+        okCssClass = $('#confirmRemoveModalMetadata').data('okClass');
+    }
+
+    if (cancelCssClass === undefined) {
+        cancelCssClass = $('#confirmRemoveModalMetadata').data('cancelClass');
+    }
+
     $(`<div id="confirmRemoveModal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">`+ title + `</h5>
+                    <h5 class="modal-title">${title}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>`+ message + `</p>
+                    <p>${message}</p>
                 </div>
                 <div class="modal-footer">
-                    <button id="modalOkButton" type="button" class="btn btn-danger">`+ $('#confirmRemoveModalMetadata').data('ok') + `</button>
-                    <button id="modalCancelButton" type="button" class="btn btn-secondary" data-dismiss="modal">`+ $('#confirmRemoveModalMetadata').data('cancel') + `</button>
+                    <button id="modalOkButton" type="button" class="btn ${okCssClass}">${okText}</button>
+                    <button id="modalCancelButton" type="button" class="btn ${cancelCssClass}" data-dismiss="modal">${cancelText}</button>
                 </div>
             </div>
         </div>
@@ -7083,20 +7099,25 @@ $(function () {
 
 $(function () {
     $("body").on("click", "[itemprop~='RemoveUrl']", function () {
+        var _this = $(this);
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
-        if ($(this).filter("[itemprop~='UnsafeUrl']").length == 1) {
+        if (_this.filter("[itemprop~='UnsafeUrl']").length == 1) {
             return false;
         }
         // use a custom message if its set in data-message
-        var title = $(this).data('title');
-        var message = $(this).data('message');
-        confirmDialog(title, message, r => {
+        var title = _this.data('title');
+        var message = _this.data('message');
+        var okText = _this.data('ok');
+        var cancelText = _this.data('cancel');
+        var okCssClass = _this.data('okClass');
+        var cancelCssClass = _this.data('cancelClass');
+        confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, r => {
             if (r) {
-                var url = $(this).attr('href');
+                var url = _this.attr('href');
                 if (url == undefined) {
-                    var form = $(this).parents('form');
+                    var form = _this.parents('form');
                     // This line is reuired in case we used the FormValueRequiredAttribute
-                    form.append($("<input type=\"hidden\" name=\"" + $(this).attr('name') + "\" value=\"" + $(this).attr('value') + "\" />"));
+                    form.append($("<input type=\"hidden\" name=\"" + _this.attr('name') + "\" value=\"" + _this.attr('value') + "\" />"));
                     form.submit();
                 }
                 else {
@@ -7105,7 +7126,7 @@ $(function () {
             }
         });
 
-        return false
+        return false;
     });
 });
 
@@ -7128,12 +7149,17 @@ $(function () {
             form.css({ "position": "absolute", "left": "-9999em" });
             $("body").append(form);
 
-            var title = _this.data("title");
             var unsafeUrlPrompt = _this.data("unsafe-url");
+            var title = _this.data("title");
+            var message = unsafeUrlPrompt;
+            var okText = _this.data('ok');
+            var cancelText = _this.data('cancel');
+            var okCssClass = _this.data('okClass');
+            var cancelCssClass = _this.data('cancelClass');
 
             if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
-                confirmDialog(title, unsafeUrlPrompt, resp => {
-                    if (resp) {
+                confirmDialog(title, unsafeUrlPrompt, okText, cancelText, okCssClass, cancelCssClass, r => {
+                    if (r) {
                         form.submit();
                     }
                 });
@@ -7142,10 +7168,8 @@ $(function () {
             }
 
             if (_this.filter("[itemprop~='RemoveUrl']").length == 1) {
-                // use a custom message if its set in data-message
-                var title = $(this).data('title');
-                var message = $(this).data('message');
-                confirmDialog(title, message, r => {
+                message = _this.data('message');
+                confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, r => {
                     if (r) {
                         form.submit();
                     }

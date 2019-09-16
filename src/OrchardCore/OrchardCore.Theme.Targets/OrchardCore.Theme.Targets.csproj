@@ -1,14 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <!-- Add a ".props" file in the package specific to the "Theme" module type -->
   <ItemGroup>
     <None Include="OrchardCore.Theme.Targets.props" Pack="true">
-      <PackagePath>build\netstandard2.0\OrchardCore.Theme.Targets.props</PackagePath>
+      <PackagePath>build\netcoreapp3.0\OrchardCore.Theme.Targets.props</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>

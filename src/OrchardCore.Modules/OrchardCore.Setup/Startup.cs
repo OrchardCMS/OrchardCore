@@ -33,7 +33,7 @@ namespace OrchardCore.Setup
             services.AddSetup();
         }
 
-		public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
 
@@ -52,10 +52,10 @@ namespace OrchardCore.Setup
 
             app.UseRequestLocalization(localizationOptions);
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Setup",
                 areaName: "OrchardCore.Setup",
-                template: "",
+                pattern: "",
                 defaults: new { controller = "Setup", action = "Index" }
             );
         }

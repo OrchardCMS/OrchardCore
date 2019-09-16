@@ -18,12 +18,12 @@ namespace OrchardCore.Lists.RemotePublishing
             services.AddScoped<IContentPartDisplayDriver, ListMetaWeblogDriver>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "RSD",
                 areaName: "OrchardCore.Lists",
-                template: "xmlrpc/metaweblog/{contentItemId}/rsd",
+                pattern: "xmlrpc/metaweblog/{contentItemId}/rsd",
                 defaults: new { controller = "RemotePublishing", action = "Rsd" }
             );
         }

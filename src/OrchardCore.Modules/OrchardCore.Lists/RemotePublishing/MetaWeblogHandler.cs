@@ -166,7 +166,7 @@ namespace OrchardCore.Lists.RemotePublishing
 
             string directoryName = Path.GetDirectoryName(name);
             string filePath = _mediaFileStore.Combine(directoryName, Path.GetFileName(name));
-            await _mediaFileStore.CreateFileFromStream(filePath, new MemoryStream(bits));
+            await _mediaFileStore.CreateFileFromStreamAsync(filePath, new MemoryStream(bits));
 
             string publicUrl = _mediaFileStore.MapPathToPublicUrl(filePath);
 
