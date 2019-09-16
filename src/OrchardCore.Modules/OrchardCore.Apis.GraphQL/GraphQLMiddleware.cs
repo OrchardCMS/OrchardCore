@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.Validation;
 using GraphQL.Validation.Complexity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.Apis.GraphQL.ValidationRules;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -162,6 +164,9 @@ namespace OrchardCore.Apis.GraphQL
                 _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ExposeExceptions = _settings.ExposeExceptions;
+                _.ValidationRules = DocumentValidator.CoreRules()
+                                    .Concat(_settings.ValidationRules)
+                                    .Concat(new[] { new MaxNumberOfResultsValidationRule(_settings.MaxNumberOfResults, _settings.MaxNumberOfResultsValidationMode) });
                 _.ComplexityConfiguration = new ComplexityConfiguration
                 {
                     MaxDepth = _settings.MaxDepth,
