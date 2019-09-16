@@ -3,18 +3,20 @@ using GraphQL.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Apis.GraphQL.ValidationRules
 {
     public class MaxNumberOfResultsValidationRule : IValidationRule
     {
-        private readonly int _maxResults;
+        private readonly int _maxNumberOfResults;
         private readonly MaxNumberOfResultsValidationMode _maxNumberOfResultsValidationMode;
 
-        public MaxNumberOfResultsValidationRule(int maxNumberOfResults, MaxNumberOfResultsValidationMode maxNumberOfResultsValidationMode)
+        public MaxNumberOfResultsValidationRule(IOptions<GraphQLSettings> options)
         {
-            _maxResults = maxNumberOfResults;
-            _maxNumberOfResultsValidationMode = maxNumberOfResultsValidationMode;
+            var settings = options.Value;
+            _maxNumberOfResults = settings.MaxNumberOfResults;
+            _maxNumberOfResultsValidationMode = settings.MaxNumberOfResultsValidationMode;
         }
 
         public INodeVisitor Validate(ValidationContext validationContext)
@@ -29,16 +31,16 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
                         var value = (IntValue)arg.Value;
 
-                        if (value?.Value > _maxResults)
+                        if (value?.Value > _maxNumberOfResults)
                         {
                             var localizer = context.ServiceProvider.GetService<IStringLocalizer<MaxNumberOfResultsValidationRule>>();
-                            var errorMessage = localizer[$"'{value}' exceeds the maximum number of results for '{arg.Name}' ({_maxResults})"];
+                            var errorMessage = localizer["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults];
 
-                            if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Debug)
+                            if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
                             {
                                 validationContext.ReportError(new ValidationError(
                                     validationContext.OriginalQuery,
-                                    "UserInputError",
+                                    "ArgumentInputError",
                                     errorMessage,
                                     arg));
                             }
@@ -46,7 +48,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                             {
                                 var logger = context.ServiceProvider.GetService<ILogger<MaxNumberOfResultsValidationMode>>();
                                 logger.LogInformation(errorMessage);
-                                arg.Value = new IntValue(_maxResults); // in release mode we just log info andf override the arg to be maxvalue
+                                arg.Value = new IntValue(_maxNumberOfResults); // if disabled mode we just log info and override the arg to be maxvalue
                             }
                         }
                     }

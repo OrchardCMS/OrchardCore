@@ -97,7 +97,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             query = OrderBy(query, context);
 
             var contentItemsQuery = await FilterWhereArguments(query, where, context, session, graphContext);
-            contentItemsQuery = PageQuery(contentItemsQuery, context);
+            contentItemsQuery = PageQuery(contentItemsQuery, context, graphContext);
 
             var contentItems = await contentItemsQuery.ListAsync();
 
@@ -172,15 +172,18 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentQuery;
         }
 
-        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context)
+        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context, GraphQLContext graphQLContext)
         {
-            if (context.HasPopulatedArgument("first"))
-            {
-                var first = context.GetArgument<int>("first");
+            var first = context.GetArgument<int>("first");
 
-                contentItemsQuery = contentItemsQuery.Take(first);
+            if (first == 0)
+            {
+                var serviceProvider = graphQLContext.ServiceProvider;
+                first = serviceProvider.GetService<IOptions<GraphQLSettings>>().Value.DefaultNumberOfResults;
             }
 
+            contentItemsQuery = contentItemsQuery.Take(first);
+            
             if (context.HasPopulatedArgument("skip"))
             {
                 var skip = context.GetArgument<int>("skip");

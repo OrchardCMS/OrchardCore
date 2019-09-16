@@ -165,8 +165,7 @@ namespace OrchardCore.Apis.GraphQL
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ExposeExceptions = _settings.ExposeExceptions;
                 _.ValidationRules = DocumentValidator.CoreRules()
-                                    .Concat(_settings.ValidationRules)
-                                    .Concat(new[] { new MaxNumberOfResultsValidationRule(_settings.MaxNumberOfResults, _settings.MaxNumberOfResultsValidationMode) });
+                                    .Concat(context.RequestServices.GetServices<IValidationRule>());
                 _.ComplexityConfiguration = new ComplexityConfiguration
                 {
                     MaxDepth = _settings.MaxDepth,
