@@ -84,7 +84,10 @@ Configuration is done via the standard shell configuration, as follows.
       "ExposeExceptions": true,
       "MaxDepth": 50, 
       "MaxComplexity": 100, 
-      "FieldImpact": 2.0 
+      "FieldImpact": 2.0 ,
+      "DefaultNumberOfResults": 100
+      "MaxNumberOfResults": 1000
+      "MaxNumberOfResultsValidationMode": "Default"
     }
   }
 }
@@ -92,6 +95,18 @@ Configuration is done via the standard shell configuration, as follows.
 *ExposeExceptions (bool, Default: false for production, true for development)*
 
 If set to true stack traces are exposed to graphql clients
+
+*DefaultNumberOfResults (int, Default: 100)*
+The default number of results returned by all paged fields/types.
+
+*MaxNumberOfResults (int, Default: 1000)*
+The maximum number of results returned by all paged fields/types.
+
+*MaxNumberOfResultsValidationMode (enum, Values: Default|Enabled|Disabled, Default: Default)()
+Specify the validation behaviour if the max number of results is exceeded in a pager paramater
+* Default - In production info will be logged and only the max number of results will be returned. In development a graphql validation error will be raised.
+* Enabled - a graphql validation error will be raised
+* Disabled - Info will be logged and only the max number of results will be returned
 
 *MaxDepth (int?, Default: 20)*
 
