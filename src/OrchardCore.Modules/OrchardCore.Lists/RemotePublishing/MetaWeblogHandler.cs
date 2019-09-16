@@ -497,7 +497,7 @@ namespace OrchardCore.Lists.RemotePublishing
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
-            var settings = contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
+            var settings = contentTypePartDefinition.GetSettings<ListPartSettings>();
             var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
             return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
         }

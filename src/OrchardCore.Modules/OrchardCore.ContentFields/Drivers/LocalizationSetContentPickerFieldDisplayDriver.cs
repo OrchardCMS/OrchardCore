@@ -92,7 +92,7 @@ namespace OrchardCore.ContentFields.Fields
             field.LocalizationSets = viewModel.LocalizationSets == null
                 ? new string[0] : viewModel.LocalizationSets.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var settings = context.PartFieldDefinition.Settings.ToObject<LocalizationSetContentPickerFieldSettings>();
+            var settings = context.PartFieldDefinition.GetSettings<LocalizationSetContentPickerFieldSettings>();
 
             if (settings.Required && field.LocalizationSets.Length == 0)
             {

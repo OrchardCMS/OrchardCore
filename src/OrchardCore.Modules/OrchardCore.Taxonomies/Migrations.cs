@@ -2,7 +2,9 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.Indexing;
+using OrchardCore.Taxonomies.Settings;
 
 namespace OrchardCore.Taxonomies
 {
@@ -44,7 +46,16 @@ namespace OrchardCore.Taxonomies
                 .CreateIndex("IDX_TaxonomyIndex_Search", "TermContentItemId")
             );
 
+            // Return 2 to shortcut the second migration on new content definition schemas.
             return 1;
+        }
+
+        // Migrate FieldSettings. This only needs to run on old content definition schemas.
+        // This code can be removed in a later version.
+        public int UpdateFrom1()
+        {
+            _contentDefinitionManager.MigrateFieldSettings<TaxonomyField, TaxonomyFieldSettings>();
+            return 2;
         }
     }
 

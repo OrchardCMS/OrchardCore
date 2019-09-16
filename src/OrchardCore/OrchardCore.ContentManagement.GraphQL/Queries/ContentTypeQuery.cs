@@ -62,7 +62,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     builder.Build(query, typeDefinition, typeType);
                 }
 
-                var settings = typeDefinition.Settings?.ToObject<ContentTypeSettings>();
+                var settings = typeDefinition.GetSettings<ContentTypeSettings>();
 
                 // Only add queries over standard content types
                 if (settings == null || String.IsNullOrWhiteSpace(settings.Stereotype))
