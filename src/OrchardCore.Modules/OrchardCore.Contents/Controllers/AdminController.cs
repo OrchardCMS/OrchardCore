@@ -341,6 +341,8 @@ namespace OrchardCore.Contents.Controllers
             // pass a dummy content to the authorization check to check for "own" variations
             var dummyContent = await _contentManager.NewAsync(id);
 
+            // Set the current user as the owner to check for ownership permissions on creation
+            dummyContent.Owner = User.Identity.Name;
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, dummyContent))
             {
