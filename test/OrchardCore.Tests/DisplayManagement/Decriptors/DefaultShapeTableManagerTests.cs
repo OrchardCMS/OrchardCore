@@ -22,13 +22,23 @@ using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
+    public static class StringArrayExtensions
+    {
+        private static readonly string[] _emptyStringArray = new string[0];
+
+        public static string[] Empty
+        {
+            get {  return _emptyStringArray; }
+        }
+    }
+
     public class DefaultShapeTableManagerTests : IDisposable
     {
         IServiceProvider _serviceProvider;
 
         private class TestFeatureInfo : IFeatureInfo
         {
-            public string[] Dependencies { get; set; } = new string[0];
+            public string[] Dependencies { get; set; } = StringArrayExtensions.Empty;
             public IExtensionInfo Extension { get; set; }
             public string Id { get; set; }
             public string Name { get; set; }
@@ -64,7 +74,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[0], false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, StringArrayExtensions.Empty, false, false) }
                     };
 
                 Features = features;
@@ -98,7 +108,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0, "", "", this, new string[0], false, false)}
+                        {new FeatureInfo(name, name, 0, "", "", this, StringArrayExtensions.Empty, false, false)}
                     };
 
                 Features = features;
@@ -185,7 +195,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             return new TestFeatureInfo
             {
                 Id = "Testing",
-                Dependencies = new string[0],
+                Dependencies = StringArrayExtensions.Empty,
                 Extension = new TestModuleExtensionInfo("Testing")
             };
         }
