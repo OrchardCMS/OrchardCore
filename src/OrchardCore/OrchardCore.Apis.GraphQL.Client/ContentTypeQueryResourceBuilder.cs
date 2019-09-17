@@ -110,7 +110,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             if (_queries.Count > 0)
             {
-                sb.Append("(");
+                sb.Append('(');
 
                 for (var i = 0; i < _queries.Count; i++)
                 {
@@ -119,19 +119,19 @@ namespace OrchardCore.Apis.GraphQL.Client
                     // Top-level argument
                     if (query.Value is string)
                     {
-                        sb.Append($"{query.Key}: {query.Value}");
+                        sb.Append(query.Key).Append(": ").Append(query.Value);
                     }
                     // Field-level argument
                     else
                     {
-                        sb.Append($"{query.Key}:{{");
+                        sb.Append(query.Key).Append(":{{");
 
                         var fieldValuePair = (IDictionary<string, string>)query.Value;
                         for (var c = 0; c < fieldValuePair.Count; c++)
                         {
                             var item = fieldValuePair.ElementAt(c);
 
-                            sb.Append($"{item.Key}: {item.Value}");
+                            sb.Append(item.Key).Append(": ").Append(item.Value);
 
                             if (c < (fieldValuePair.Count - 1))
                             {
@@ -139,7 +139,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                             }
                             else
                             {
-                                sb.Append("}");
+                                sb.Append('}');
                             }
                         }
 
@@ -150,19 +150,19 @@ namespace OrchardCore.Apis.GraphQL.Client
                     }
                 }
 
-                sb.Append(")");
+                sb.Append(')');
             }
 
-            sb.Append(" { ");
+            sb.Append('{');
 
-            sb.Append(" " + string.Join(" ", _keys) + " ");
+            sb.AppendJoin(' ', _keys);
 
             foreach (var item in _nested)
             {
                 sb.Append(item.Build());
             }
 
-            sb.Append(" }");
+            sb.Append('}');
 
             return sb.ToString().Trim();
         }
