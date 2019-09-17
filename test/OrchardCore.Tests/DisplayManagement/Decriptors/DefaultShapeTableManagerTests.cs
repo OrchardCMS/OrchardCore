@@ -64,7 +64,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[0], false, false)}
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[0], false, false) }
                     };
 
                 Features = features;
