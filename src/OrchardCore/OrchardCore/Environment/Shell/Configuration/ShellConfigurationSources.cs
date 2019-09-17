@@ -74,7 +74,6 @@ namespace OrchardCore.Environment.Shell.Configuration
                     }
                 }
             }
-
             finally
             {
                 _semaphore.Release();
