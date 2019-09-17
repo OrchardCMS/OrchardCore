@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -25,6 +26,6 @@ namespace OrchardCore.Environment.Shell
         /// Persists shell settings to the storage.
         /// </summary>
         /// <param name="settings">The shell settings to store.</param>
-        void SaveSettings(ShellSettings settings);
+        Task SaveSettingsAsync(ShellSettings settings);
     }
 }

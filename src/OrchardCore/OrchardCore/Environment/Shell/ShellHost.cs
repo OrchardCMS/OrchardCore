@@ -143,10 +143,10 @@ namespace OrchardCore.Environment.Shell
             return scope;
         }
 
-        public Task UpdateShellSettingsAsync(ShellSettings settings)
+        public async Task UpdateShellSettingsAsync(ShellSettings settings)
         {
-            _shellSettingsManager.SaveSettings(settings);
-            return ReloadShellContextAsync(settings);
+            await _shellSettingsManager.SaveSettingsAsync(settings);
+            await ReloadShellContextAsync(settings);
         }
 
         async Task PreCreateAndRegisterShellsAsync()
