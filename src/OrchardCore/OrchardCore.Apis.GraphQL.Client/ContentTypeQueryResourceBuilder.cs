@@ -153,7 +153,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 sb.Append(')');
             }
 
-            sb.Append('{');
+            sb.Append(" { ");
 
             sb.AppendJoin(' ', _keys);
 
@@ -162,7 +162,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 sb.Append(item.Build());
             }
 
-            sb.Append('}');
+            sb.Append(" } ");
 
             return sb.ToString().Trim();
         }
