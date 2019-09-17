@@ -3,7 +3,7 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<TaxonomyFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
     int previousLevel = 0;
 }
 

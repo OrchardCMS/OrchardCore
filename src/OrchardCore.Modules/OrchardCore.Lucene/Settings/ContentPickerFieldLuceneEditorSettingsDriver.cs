@@ -19,7 +19,7 @@ namespace OrchardCore.Lucene.Settings
         {
             return Initialize<ContentPickerFieldLuceneEditorSettings>("ContentPickerFieldLuceneEditorSettings_Edit", model =>
             {
-                partFieldDefinition.Settings.Populate<ContentPickerFieldLuceneEditorSettings>(model);
+                partFieldDefinition.PopulateSettings<ContentPickerFieldLuceneEditorSettings>(model);
                 model.Indices = _luceneIndexManager.List().ToArray();
             }).Location("Editor");
         }

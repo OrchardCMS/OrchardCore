@@ -4,7 +4,7 @@
 @using OrchardCore.Markdown.Settings;
 
 @{
-    var settings = Model.TypePartDefinition.Settings.ToObject<MarkdownBodyPartSettings>();
+    var settings = Model.TypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.MarkdownBodyPart.ContentItem);
 }
 

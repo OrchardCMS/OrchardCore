@@ -46,7 +46,7 @@ namespace OrchardCore.Taxonomies.Drivers
         {
             return Initialize<EditTaxonomyFieldViewModel>("TaxonomyField_Edit", async model =>
             {
-                var settings = context.PartFieldDefinition.Settings.ToObject<TaxonomyFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
                 model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
 
                 if (model.Taxonomy != null )
@@ -70,7 +70,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
             if (await updater.TryUpdateModelAsync(model, Prefix))
             {
-                var settings = context.PartFieldDefinition.Settings.ToObject<TaxonomyFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
 
                 field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
                 field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();

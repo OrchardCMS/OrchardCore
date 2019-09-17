@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentTypes.ViewModels
@@ -10,13 +11,11 @@ namespace OrchardCore.ContentTypes.ViewModels
     {
         public EditPartViewModel()
         {
-            Settings = new JObject();
         }
 
         public EditPartViewModel(ContentPartDefinition contentPartDefinition)
         {
             Name = contentPartDefinition.Name;
-            Settings = contentPartDefinition.Settings;
             PartDefinition = contentPartDefinition;
         }
 
@@ -32,12 +31,9 @@ namespace OrchardCore.ContentTypes.ViewModels
 
         public string Description
         {
-            get { return Settings.Value<string>("Description"); }
-            set { Settings["Description"] = value; }
+            get { return PartDefinition.GetSettings<ContentPartSettings>().Description; }
+            set { PartDefinition.GetSettings<ContentPartSettings>().Description = value; }
         }
-
-        [BindNever]
-        public JObject Settings { get; set; }
 
         [BindNever]
         public ContentPartDefinition PartDefinition { get; private set; }

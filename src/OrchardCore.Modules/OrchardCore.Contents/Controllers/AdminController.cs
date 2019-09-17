@@ -680,7 +680,7 @@ namespace OrchardCore.Contents.Controllers
             var creatable = new List<ContentTypeDefinition>();
             foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
             {
-                if (ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
+                if (ctd.GetSettings<ContentTypeSettings>().Creatable)
                 {
                     var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
                     if (authorized)
@@ -697,7 +697,7 @@ namespace OrchardCore.Contents.Controllers
             var listable = new List<ContentTypeDefinition>();
             foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
             {
-                if (ctd.Settings.ToObject<ContentTypeSettings>().Listable)
+                if (ctd.GetSettings<ContentTypeSettings>().Listable)
                 {
                     var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
                     if (authorized)
