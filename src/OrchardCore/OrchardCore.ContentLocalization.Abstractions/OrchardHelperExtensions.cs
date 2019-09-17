@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Localization
+namespace OrchardCore.ContentLocalization
 {
     /// <summary>
     /// Provides an extension methods for <see cref="IOrchardHelper"/>.
