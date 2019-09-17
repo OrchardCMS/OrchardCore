@@ -26,6 +26,7 @@ namespace OrchardCore.Forms.Workflows.Activities
         }
 
         public override string Name => nameof(ValidateAntiforgeryTokenTask);
+        public override LocalizedString DisplayText => T["Validate Antiforgery Token Task"];
         public override LocalizedString Category => T["Validation"];
         public override bool HasEditor => false;
 

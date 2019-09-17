@@ -17,7 +17,7 @@ namespace OrchardCore.ContentPreview
             services.AddScoped<IPermissionProvider, Permissions>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
         }
     }

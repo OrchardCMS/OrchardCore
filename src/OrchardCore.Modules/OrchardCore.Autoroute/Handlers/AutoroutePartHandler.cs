@@ -2,7 +2,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
-using OrchardCore.Autoroute.Model;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -19,23 +20,26 @@ namespace OrchardCore.Autoroute.Handlers
     public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
     {
         private readonly IAutorouteEntries _entries;
+        private readonly AutorouteOptions _options;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
-        private readonly YesSql.ISession _session;
+        private readonly ISession _session;
 
         public AutoroutePartHandler(
             IAutorouteEntries entries,
+            IOptions<AutorouteOptions> options,
             ILiquidTemplateManager liquidTemplateManager,
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             ITagCache tagCache,
-            YesSql.ISession session)
+            ISession session)
         {
-            _contentDefinitionManager = contentDefinitionManager;
             _entries = entries;
+            _options = options.Value;
             _liquidTemplateManager = liquidTemplateManager;
+            _contentDefinitionManager = contentDefinitionManager;
             _siteService = siteService;
             _tagCache = tagCache;
             _session = session;
@@ -51,12 +55,20 @@ namespace OrchardCore.Autoroute.Handlers
             if (part.SetHomepage)
             {
                 var site = await _siteService.GetSiteSettingsAsync();
+
+                if (site.HomeRoute == null)
+                {
+                    site.HomeRoute = new RouteValueDictionary();
+                }
+
                 var homeRoute = site.HomeRoute;
 
-                homeRoute["area"] = "OrchardCore.Contents";
-                homeRoute["controller"] = "Item";
-                homeRoute["action"] = "Display";
-                homeRoute["contentItemId"] = context.ContentItem.ContentItemId;
+                foreach (var entry in _options.GlobalRouteValues)
+                {
+                    homeRoute[entry.Key] = entry.Value;
+                }
+
+                homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId;
 
                 // Once we too the flag into account we can dismiss it.
                 part.SetHomepage = false;
@@ -140,7 +152,7 @@ namespace OrchardCore.Autoroute.Handlers
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AutoroutePart", StringComparison.Ordinal));
-            var pattern = contentTypePartDefinition.Settings.ToObject<AutoroutePartSettings>().Pattern;
+            var pattern = contentTypePartDefinition.GetSettings<AutoroutePartSettings>().Pattern;
 
             return pattern;
         }

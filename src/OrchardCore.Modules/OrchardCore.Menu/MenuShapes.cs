@@ -60,7 +60,7 @@ namespace OrchardCore.Menu
                         return;
                     }
 
-                    string differentiator = FormatName((string) menu.MenuName);
+                    string differentiator = FormatName((string)menu.MenuName);
 
                     if (!String.IsNullOrEmpty(differentiator))
                     {

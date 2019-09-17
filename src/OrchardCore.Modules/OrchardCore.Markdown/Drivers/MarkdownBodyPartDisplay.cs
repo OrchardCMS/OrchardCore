@@ -9,7 +9,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
-using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 

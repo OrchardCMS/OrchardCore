@@ -79,7 +79,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
 
-            if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
+            if (!contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
             {
                 taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
             }
@@ -116,7 +116,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 if (parentTaxonomyItem == null)
                 {
                     return NotFound();
-                } 
+                }
 
                 var taxonomyItems = parentTaxonomyItem?.Terms as JArray;
 
@@ -179,7 +179,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
 
-            if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
+            if (!contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
             {
                 taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
             }
@@ -237,7 +237,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
 
-            if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
+            if (!contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
             {
                 taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
             }

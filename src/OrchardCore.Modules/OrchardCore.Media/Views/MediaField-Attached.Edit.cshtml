@@ -3,7 +3,7 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<MediaFieldSettings>();
     var mediaFieldId = Html.IdFor(m => m);
 }
 
@@ -36,7 +36,7 @@
                         <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>
                         <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-expand"></i></span>
                     </button>
-                    <label class="btn btn-sm btn-secondary fileinput-button">
+                    <label v-show="canAddMedia" class="btn btn-sm btn-secondary fileinput-button">
                         <input id="@mediaFieldId-field-file-upload" type="file" name="files" multiple="multiple">
                         <i class="fa fa-upload"></i>
                     </label>

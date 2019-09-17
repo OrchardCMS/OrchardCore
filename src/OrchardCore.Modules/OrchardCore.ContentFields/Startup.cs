@@ -5,12 +5,15 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing;
+using OrchardCore.ContentFields.Indexing.SQL;
 using OrchardCore.ContentFields.Services;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data;
+using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 
@@ -105,16 +108,60 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
             services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
+
+            // Migration, can be removed in a future release.
+            services.AddScoped<IDataMigration, Migrations>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ContentPicker",
                 areaName: "OrchardCore.ContentFields",
-                template: "ContentPicker",
-                defaults: new { controller = "ContentPicker", action = "List" }
+                pattern: "ContentFields/SearchContentItems",
+                defaults: new { controller = "ContentPickerAdmin", action = "SearchContentItems" }
             );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.ContentLocalization")]
+    public class LocalizationSetContentPickerStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<ContentField, LocalizationSetContentPickerField>();
+            services.AddScoped<IContentFieldDisplayDriver, LocalizationSetContentPickerFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LocalizationSetContentPickerFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, LocalizationSetContentPickerFieldIndexHandler>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "SearchLocalizationSets",
+                areaName: "OrchardCore.ContentFields",
+                pattern: "ContentFields/SearchLocalizationSets",
+                defaults: new { controller = "LocalizationSetContentPickerAdmin", action = "SearchLocalizationSets" }
+            );
+        }
+    }
+
+    [Feature("OrchardCore.ContentFields.Indexing.SQL")]
+    [RequireFeatures("OrchardCore.ContentFields")]
+    public class IndexingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IScopedIndexProvider, TextFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, BooleanFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, NumericFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, DateTimeFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, DateFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, ContentPickerFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, TimeFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
         }
     }
 }

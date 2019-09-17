@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
 using Fluid.Values;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -21,6 +20,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Layout;
@@ -30,9 +30,7 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.DynamicCache.Liquid;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
-using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
@@ -70,6 +68,8 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<ShapeCacheTag>("shape_cache");
             Factory.RegisterTag<ShapeTabTag>("shape_tab");
             Factory.RegisterTag<ShapeRemoveItemTag>("shape_remove_item");
+            Factory.RegisterTag<ShapeAddPropertyTag>("shape_add_properties");
+            Factory.RegisterTag<ShapeRemovePropertyTag>("shape_remove_property");
             Factory.RegisterTag<ShapePagerTag>("shape_pager");
 
             Factory.RegisterTag<HelperTag>("helper");
@@ -103,9 +103,9 @@ namespace OrchardCore.DisplayManagement.Liquid
             var services = page.Context.RequestServices;
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
             var fileProviderAccessor = services.GetRequiredService<ILiquidViewFileProviderAccessor>();
-            var isDevelopment = services.GetRequiredService<IHostingEnvironment>().IsDevelopment();
+            var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
 
-            var template = Parse(path, fileProviderAccessor.FileProvider, Cache, isDevelopment);
+            var template = await ParseAsync(path, fileProviderAccessor.FileProvider, Cache, isDevelopment);
 
             var context = new TemplateContext();
             await context.ContextualizeAsync(page, (object)page.Model);
@@ -114,9 +114,9 @@ namespace OrchardCore.DisplayManagement.Liquid
             await template.RenderAsync(options, services, page.Output, HtmlEncoder.Default, context);
         }
 
-        public static LiquidViewTemplate Parse(string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
+        public static Task<LiquidViewTemplate> ParseAsync(string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
         {
-            return cache.GetOrCreate(path, entry =>
+            return cache.GetOrCreateAsync(path, async entry =>
             {
                 entry.SetSlidingExpiration(TimeSpan.FromHours(1));
                 var fileInfo = fileProvider.GetFileInfo(path);
@@ -130,7 +130,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 {
                     using (var sr = new StreamReader(stream))
                     {
-                        if (TryParse(sr.ReadToEnd(), out var template, out var errors))
+                        if (TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
                         {
                             return template;
                         }
@@ -203,12 +203,18 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             if (viewContext != null)
             {
-                using (var writer = new StringWriter())
+                using (var sb = StringBuilderPool.GetInstance())
                 {
-                    // Use the view engine to render the liquid page.
-                    viewContext.Writer = writer;
-                    await viewContext.View.RenderAsync(viewContext);
-                    return writer.ToString();
+                    using (var writer = new StringWriter(sb.Builder))
+                    {
+                        // Use the view engine to render the liquid page.
+                        viewContext.Writer = writer;
+                        await viewContext.View.RenderAsync(viewContext);
+
+                        await writer.FlushAsync();
+                    }
+
+                    return sb.Builder.ToString();
                 }
             }
 
@@ -293,7 +299,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             if (viewContext == null)
             {
-                var actionContext = GetActionContext(services);
+                var actionContext = await GetActionContextAsync(services);
                 viewContext = GetViewContext(services, actionContext);
 
                 // If there was no 'ViewContext' but a 'DisplayContext'.
@@ -345,7 +351,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             context.CultureInfo = CultureInfo.CurrentUICulture;
         }
 
-        private static ActionContext GetActionContext(IServiceProvider services)
+        private async static Task<ActionContext> GetActionContextAsync(IServiceProvider services)
         {
             var actionContext = services.GetService<IActionContextAccessor>()?.ActionContext;
 
@@ -354,15 +360,20 @@ namespace OrchardCore.DisplayManagement.Liquid
                 return actionContext;
             }
 
-            var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
-            var httpContext = httpContextAccessor.HttpContext;
-            var shellContext = httpContext.Features.Get<ShellContextFeature>()?.ShellContext;
-
             var routeData = new RouteData();
-            var pipeline = shellContext?.Pipeline as ShellRequestPipeline;
-            routeData.Routers.Add(pipeline?.Router ?? new RouteCollection());
+            routeData.Routers.Add(new RouteCollection());
 
-            return new ActionContext(httpContext, routeData, new ActionDescriptor());
+            var httpContext = services.GetRequiredService<IHttpContextAccessor>().HttpContext;
+
+            actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewResultFilter>();
+
+            foreach (var filter in filters)
+            {
+                await filter.OnResultExecutionAsync(actionContext);
+            }
+
+            return actionContext;
         }
 
         private static ViewContext GetViewContext(IServiceProvider services, ActionContext actionContext)

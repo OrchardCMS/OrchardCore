@@ -35,7 +35,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { property.Name };
                 var htmlAttribute = property.GetCustomAttribute<HtmlAttributeNameAttribute>();
 
-                if (htmlAttribute != null)
+                if (htmlAttribute != null && htmlAttribute.Name != null)
                 {
                     allNames.Add(htmlAttribute.Name.Replace('-', '_'));
 

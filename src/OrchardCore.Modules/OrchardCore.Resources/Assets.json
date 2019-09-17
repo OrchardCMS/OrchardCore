@@ -1,6 +1,6 @@
 [
   {
-    "generateRTL": true,
+    "generateRTL": false,
     "generateSourceMaps": false,
     "inputs": [ "../../../node_modules/bootstrap/scss/bootstrap.scss" ],
     "output": "wwwroot/Styles/bootstrap.css"
@@ -23,7 +23,7 @@
     "output": "wwwroot/Scripts/bootstrap-slider.js"
   },
   {
-    "generateRTL": true,
+    "generateRTL": false,
     "inputs": [ "../../../node_modules/codemirror/lib/codemirror.css" ],
     "output": "wwwroot/Scripts/codemirror/codemirror.css"
   },
