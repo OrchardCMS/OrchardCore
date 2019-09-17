@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -203,7 +204,7 @@ namespace OrchardCore.ContentManagement.Display
                 typePartShape.ContentPart = part;
                 typePartShape.ContentTypePartDefinition = typePartDefinition;
 
-                var partPosition = typePartDefinition.Settings["Position"]?.ToString() ?? "before";
+                var partPosition = typePartDefinition.GetSettings<ContentTypePartSettings>().Position ?? "before";
 
                 partsShape.Add(typePartShape, partPosition);
                 partsShape[typePartDefinition.Name] = typePartShape;
@@ -223,8 +224,7 @@ namespace OrchardCore.ContentManagement.Display
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.Name;
-
-                    var fieldPosition = partFieldDefinition.Settings["Position"]?.ToString() ?? "before";
+                    var fieldPosition = partFieldDefinition.GetSettings<ContentPartFieldSettings>().Position ?? "before";
 
                     context.DefaultZone = $"Parts.{typePartDefinition.Name}:{fieldPosition}";
 
@@ -282,8 +282,7 @@ namespace OrchardCore.ContentManagement.Display
                 dynamic typePartShape = await context.ShapeFactory.CreateAsync("ContentPart_Edit", Arguments.Empty);
                 typePartShape.ContentPart = part;
                 typePartShape.ContentTypePartDefinition = typePartDefinition;
-
-                var partPosition = typePartDefinition.Settings["Position"]?.ToString() ?? "before";
+                var partPosition = typePartDefinition.GetSettings<ContentPartFieldSettings>().Position ?? "before";
 
                 partsShape.Add(typePartShape, partPosition);
                 partsShape[typePartDefinition.Name] = typePartShape;
@@ -302,8 +301,7 @@ namespace OrchardCore.ContentManagement.Display
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.Name;
-
-                    var fieldPosition = partFieldDefinition.Settings["Position"]?.ToString() ?? "before";
+                    var fieldPosition = partFieldDefinition.GetSettings<ContentPartFieldSettings>().Position ?? "before";
 
                     context.DefaultZone = $"Parts.{typePartDefinition.Name}:{fieldPosition}";
 

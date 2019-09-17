@@ -22,7 +22,7 @@ namespace OrchardCore.Mvc
         private static readonly char[] QueryStringAndFragmentTokens = new[] { '?', '#' };
         private static readonly MemoryCache _sharedCache = new MemoryCache(new MemoryCacheOptions());
 
-        private readonly IEnumerable<IFileProvider> _fileProviders;
+        private readonly IFileProvider[] _fileProviders;
         private readonly IMemoryCache _cache;
 
         public ShellFileVersionProvider(
@@ -31,7 +31,9 @@ namespace OrchardCore.Mvc
             IMemoryCache cache)
         {
             _fileProviders = staticFileProviders
-                .Concat(new[] { environment.WebRootFileProvider });
+                .Concat(new[] { environment.WebRootFileProvider })
+                .ToArray();
+
             _cache = cache;
         }
 

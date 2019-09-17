@@ -152,7 +152,7 @@ namespace OrchardCore.Autoroute.Handlers
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AutoroutePart", StringComparison.Ordinal));
-            var pattern = contentTypePartDefinition.Settings.ToObject<AutoroutePartSettings>().Pattern;
+            var pattern = contentTypePartDefinition.GetSettings<AutoroutePartSettings>().Pattern;
 
             return pattern;
         }

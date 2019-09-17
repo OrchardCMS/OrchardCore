@@ -32,11 +32,11 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 var stereotype = "";
 
-                var settings = _typePartDefinition.ContentTypeDefinition?.Settings;
+                var settings = _typePartDefinition.ContentTypeDefinition?.GetSettings<ContentTypeSettings>();
 
                 if (settings != null)
                 {
-                    stereotype = Convert.ToString(settings[nameof(ContentTypeSettings.Stereotype)]);
+                    stereotype = settings.Stereotype;
                 }
 
                 if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))

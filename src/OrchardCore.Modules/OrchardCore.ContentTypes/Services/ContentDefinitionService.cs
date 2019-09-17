@@ -322,7 +322,7 @@ namespace OrchardCore.ContentTypes.Services
                     var partDefinition = typeDefinition.Parts.FirstOrDefault(x => x.Name == partNames[i]);
                     type.WithPart(partNames[i], partDefinition.PartDefinition, part =>
                     {
-                        part.WithSetting("Position", i.ToString());
+                        part.MergeSettings<ContentTypePartSettings>(x => x.Position = i.ToString());
                     });
                 }
             });
@@ -337,7 +337,7 @@ namespace OrchardCore.ContentTypes.Services
                     var fieldDefinition = partDefinition.Fields.FirstOrDefault(x => x.Name == fieldNames[i]);
                     type.WithField(fieldNames[i], field =>
                     {
-                        field.WithSetting("Position", i.ToString());
+                        field.MergeSettings<ContentPartFieldSettings>(x => x.Position = i.ToString());
                     });
                 }
             });

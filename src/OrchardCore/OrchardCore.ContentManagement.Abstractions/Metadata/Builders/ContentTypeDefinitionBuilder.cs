@@ -55,6 +55,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
+        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
         public ContentTypeDefinitionBuilder WithSetting(string name, object value)
         {
             _settings[name] = JToken.FromObject(value);
@@ -64,6 +65,22 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public ContentTypeDefinitionBuilder MergeSettings(JObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
+            return this;
+        }
+
+        public ContentTypeDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
+        {
+            var existingJObject = _settings[typeof(T).Name] as JObject;
+            // If existing settings do not exist, create.
+            if (existingJObject == null)
+            {
+                existingJObject = JObject.FromObject(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                _settings[typeof(T).Name] = existingJObject;
+            }
+
+            var settingsToMerge = existingJObject.ToObject<T>();
+            setting(settingsToMerge);
+            _settings[typeof(T).Name] = JObject.FromObject(settingsToMerge, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             return this;
         }
 
