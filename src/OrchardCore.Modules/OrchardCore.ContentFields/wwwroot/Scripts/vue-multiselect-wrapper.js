@@ -21,7 +21,6 @@ function initVueMultiselect(element) {
     // only run script if element exists
     if (element) {
         var elementId = element.id;
-        var editorType = element.dataset.editorType;
         var selectedItems = JSON.parse(element.dataset.selectedItems || "[]");
         var tenantPath = element.dataset.tenantPath;
         var searchApiUrl = element.dataset.searchUrl;
@@ -91,8 +90,9 @@ function initVueMultiselect(element) {
                 }
             }
         })
+        
         /*Hook for other scripts that might want to have access to the view model*/
-        var event = new CustomEvent("vue-multiselect-created", { detail: { vm: vm, editorType: editorType } });
+        var event = new CustomEvent("vue-multiselect-created", { detail: { vm: vm } });
         document.querySelector("body").dispatchEvent(event);
     }
 }
