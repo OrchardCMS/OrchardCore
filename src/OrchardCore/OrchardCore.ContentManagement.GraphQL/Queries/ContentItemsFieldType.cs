@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Environment.Shell;
 using YesSql;
 using Expression = OrchardCore.ContentManagement.GraphQL.Queries.Predicates.Expression;
 
@@ -22,8 +25,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     /// </summary>
     public class ContentItemsFieldType : FieldType
     {
-
         private static readonly List<string> ContentItemProperties;
+        private readonly int _defaultNumberOfItems;
 
         static ContentItemsFieldType()
         {
@@ -35,13 +38,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        public ContentItemsFieldType(string contentItemName, ISchema schema)
+        public ContentItemsFieldType(string contentItemName, ISchema schema, IOptions<GraphQLContentOptions> optionsAccessor, IOptions<GraphQLSettings> settingsAccessor)
         {
             Name = "ContentItems";
 
             Type = typeof(ListGraphType<ContentItemType>);
 
-            var whereInput = new ContentItemWhereInput(contentItemName);
+            var whereInput = new ContentItemWhereInput(contentItemName, optionsAccessor);
             var orderByInput = new ContentItemOrderByInput(contentItemName);
 
             Arguments = new QueryArguments(
@@ -57,6 +60,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             schema.RegisterType(whereInput);
             schema.RegisterType(orderByInput);
             schema.RegisterType<PublicationStatusGraphType>();
+
+            _defaultNumberOfItems = settingsAccessor.Value.DefaultNumberOfResults;
         }
 
         private async Task<IEnumerable<ContentItem>> Resolve(ResolveFieldContext context)
@@ -78,16 +83,32 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var session = graphContext.ServiceProvider.GetService<ISession>();
 
-            var query = session.Query<ContentItem, ContentItemIndex>();
+            var preQuery = session.Query<ContentItem>();
+
+            var filters = graphContext.ServiceProvider.GetServices<IGraphQLFilter<ContentItem>>();
+
+            foreach (var filter in filters)
+            {
+                preQuery = await filter.PreQueryAsync(preQuery, context);
+            }
+
+            var query = preQuery.With<ContentItemIndex>();
 
             query = FilterVersion(query, versionOption);
             query = FilterContentType(query, context);
             query = OrderBy(query, context);
 
             var contentItemsQuery = await FilterWhereArguments(query, where, context, session, graphContext);
-            contentItemsQuery = PageQuery(contentItemsQuery, context);
+            contentItemsQuery = PageQuery(contentItemsQuery, context, graphContext);
 
-            return await contentItemsQuery.ListAsync();
+            var contentItems = await contentItemsQuery.ListAsync();
+
+            foreach (var filter in filters)
+            {
+                contentItems = await filter.PostQueryAsync(contentItems, context);
+            }
+
+            return contentItems;
         }
 
         private async Task<IQuery<ContentItem>> FilterWhereArguments(
@@ -103,7 +124,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
 
             var transaction = await session.DemandAsync();
-            IPredicateQuery predicateQuery = new PredicateQuery(SqlDialectFactory.For(transaction.Connection));
+
+            IPredicateQuery predicateQuery = new PredicateQuery(SqlDialectFactory.For(transaction.Connection), context.ServiceProvider.GetService<ShellSettings>());
 
             // Create the default table alias
             predicateQuery.CreateAlias("", nameof(ContentItemIndex));
@@ -152,15 +174,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentQuery;
         }
 
-        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context)
+        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context, GraphQLContext graphQLContext)
         {
-            if (context.HasPopulatedArgument("first"))
-            {
-                var first = context.GetArgument<int>("first");
+            var first = context.GetArgument<int>("first");
 
-                contentItemsQuery = contentItemsQuery.Take(first);
+            if (first == 0)
+            {
+                first = _defaultNumberOfItems;
             }
 
+            contentItemsQuery = contentItemsQuery.Take(first);
+            
             if (context.HasPopulatedArgument("skip"))
             {
                 var skip = context.GetArgument<int>("skip");

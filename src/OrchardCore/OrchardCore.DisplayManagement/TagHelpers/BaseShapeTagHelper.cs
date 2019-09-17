@@ -1,21 +1,27 @@
 using System;
-using System.Linq;
-using System.Text;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
     public abstract class BaseShapeTagHelper : TagHelper
     {
-        private static readonly string[] InternalProperties = { "id", "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-fixed-duration", "cache-sliding-duration" };
+        private static readonly HashSet<string> InternalProperties = new HashSet<string>
+        {
+            "id", "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-fixed-duration", "cache-sliding-duration"
+        };
+
+        protected const string PropertyPrefix = "prop-";
+        protected IDictionary<string, string> _properties;
+
         private static readonly char[] Separators = { ',', ' ' };
 
         protected IShapeFactory _shapeFactory;
-        protected IDisplayHelperFactory _displayHelperFactory;
+        protected IDisplayHelper _displayHelper;
 
         public string Type { get; set; }
         public string Cache { get; set; }
@@ -28,21 +34,43 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
-        protected BaseShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelperFactory displayHelperFactory)
+        protected BaseShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
         {
             _shapeFactory = shapeFactory;
-            _displayHelperFactory = displayHelperFactory;
+            _displayHelper = displayHelper;
         }
+
+        /// <summary>
+        /// Additional properties for the shape.
+        /// </summary>
+        [HtmlAttributeName(DictionaryAttributePrefix = PropertyPrefix)]
+        public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         public override async Task ProcessAsync(TagHelperContext tagHelperContext, TagHelperOutput output)
         {
-            var display = (DisplayHelper)_displayHelperFactory.CreateHelper(ViewContext);
+            var properties = new Dictionary<string, object>();
 
-            // Extract all attributes from the tag helper to
-            var properties = output.Attributes
-                .Where(x => !InternalProperties.Contains(x.Name))
-                .ToDictionary(x => LowerKebabToPascalCase(x.Name), x => (object)x.Value.ToString())
-                ;
+            // These prefixed properties are bound with their original type and not converted as IHtmlContent
+            foreach(var property in Properties)
+            {
+                var normalizedName = property.Key.ToPascalCaseDash();
+                properties.Add(normalizedName, property.Value);
+            }
+
+            // Extract all other attributes from the tag helper, which are passed as IHtmlContent
+            foreach (var pair in output.Attributes)
+            {
+                // Check it's not a reserved property name
+                if (!InternalProperties.Contains(pair.Name))
+                {
+                    var normalizedName = pair.Name.ToPascalCaseDash();
+
+                    if (!properties.ContainsKey(normalizedName))
+                    {
+                        properties.Add(normalizedName, pair.Value.ToString());
+                    }
+                }
+            }
 
             if (string.IsNullOrWhiteSpace(Type))
             {
@@ -132,42 +160,10 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
             await output.GetChildContentAsync();
 
-            output.Content.SetHtmlContent(await display.ShapeExecuteAsync(shape));
+            output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
 
             // We don't want any encapsulating tag around the shape
             output.TagName = null;
-        }
-
-        /// <summary>
-        /// Converts foo-bar to FooBar
-        /// </summary>
-        private static string LowerKebabToPascalCase(string attribute)
-        {
-            attribute = attribute.Trim();
-            bool nextIsUpper = true;
-            var result = new StringBuilder();
-            for (int i = 0; i < attribute.Length; i++)
-            {
-                var c = attribute[i];
-                if (c == '-')
-                {
-                    nextIsUpper = true;
-                    continue;
-                }
-
-                if (nextIsUpper)
-                {
-                    result.Append(c.ToString().ToUpper());
-                }
-                else
-                {
-                    result.Append(c);
-                }
-
-                nextIsUpper = false;
-            }
-
-            return result.ToString();
         }
     }
 }

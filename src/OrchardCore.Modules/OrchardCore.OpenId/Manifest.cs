@@ -12,7 +12,7 @@ using OrchardCore.OpenId;
     Id = OpenIdConstants.Features.Client,
     Name = "OpenID Client",
     Category = "OpenID Connect",
-    Description = "Auhenticates users from an external OpenID Connect identity provider.",
+    Description = "Authenticates users from an external OpenID Connect identity provider.",
     Dependencies = new[] { OpenIdConstants.Features.Core }
 )]
 

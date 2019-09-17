@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Title.Model;
+using OrchardCore.Title.Models;
 using OrchardCore.Title.ViewModels;
 
 namespace OrchardCore.Title.Drivers

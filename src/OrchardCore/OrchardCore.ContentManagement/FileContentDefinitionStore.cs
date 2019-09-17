@@ -20,7 +20,7 @@ namespace OrchardCore.ContentManagement
 
         public Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
         {
-            
+
             ContentDefinitionRecord result;
 
             if (!File.Exists(Filename))

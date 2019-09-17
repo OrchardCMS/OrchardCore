@@ -17,6 +17,7 @@ using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using OrchardCore.Tenants.ViewModels;
 
@@ -160,6 +161,7 @@ namespace OrchardCore.Tenants.Controllers
         }
 
         [HttpPost]
+        [FormValueRequired("submit.BulkAction")]
         public async Task<IActionResult> Index(BulkActionViewModel model)
         {
             var allSettings = _shellHost.GetAllSettings();

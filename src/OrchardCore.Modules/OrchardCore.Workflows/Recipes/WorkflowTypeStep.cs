@@ -43,7 +43,7 @@ namespace OrchardCore.Workflows.Recipes
                 }
                 else
                 {
-                    await _workflowTypeStore.DeleteAsync(workflow);
+                    await _workflowTypeStore.DeleteAsync(existing);
                 }
 
                 await _workflowTypeStore.SaveAsync(workflow);

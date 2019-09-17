@@ -10,7 +10,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableTokenEndpoint">
         <label class="custom-control-label" asp-for="EnableTokenEndpoint">@T["Enable Token Endpoint"]</label>
-        <span class="hint">@T["— {0} {1}", "Enables action", "/connect/token"]</span>
+        <span class="hint">— @T["Enables action"] /connect/token</span>
     </div>
 </fieldset>
 
@@ -18,7 +18,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableAuthorizationEndpoint">
         <label class="custom-control-label" asp-for="EnableAuthorizationEndpoint">@T["Enable Authorization Endpoint"]</label>
-        <span class="hint">@T["— {0} {1}", "Enables action", "/connect/authorize"]</span>
+        <span class="hint">— @T["Enables action"] /connect/authorize</span>
     </div>
 </fieldset>
 
@@ -26,7 +26,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableLogoutEndpoint">
         <label class="custom-control-label" asp-for="EnableLogoutEndpoint">@T["Enable Logout Endpoint"]</label>
-        <span class="hint">@T["— {0} {1}", "Enables action", "/connect/logout"]</span>
+        <span class="hint">— @T["Enables action"] /connect/logout</span>
     </div>
 </fieldset>
 
@@ -34,7 +34,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableUserInfoEndpoint">
         <label class="custom-control-label" asp-for="EnableUserInfoEndpoint">@T["Enable User Info Endpoint"]</label>
-        <span class="hint">@T["— {0} {1}", "Enables action", "/connect/userinfo"]</span>
+        <span class="hint">— @T["Enables action"] /connect/userinfo]</span>
     </div>
 </fieldset>
 
@@ -44,7 +44,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowAuthorizationCodeFlow">
         <label class="custom-control-label" asp-for="AllowAuthorizationCodeFlow">@T["Allow Authorization Code Flow"]</label>
-        <span class="hint">@T["— {0}", "More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></span>
+        <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></span>
     </div>
 </fieldset>
 
@@ -52,7 +52,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowImplicitFlow">
         <label class="custom-control-label" asp-for="AllowImplicitFlow">@T["Allow Implicit Flow"]</label>
-        <span class="hint">@T["— {0}", "More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
+        <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
     </div>
 </fieldset>
 
@@ -60,7 +60,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowPasswordFlow">
         <label class="custom-control-label" asp-for="AllowPasswordFlow">@T["Allow Password Flow"]</label>
-        <span class="hint">@T["— {0}", "More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
+        <span class="hint">— @T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
     </div>
 </fieldset>
 
@@ -68,7 +68,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowRefreshTokenFlow">
         <label class="custom-control-label" asp-for="AllowRefreshTokenFlow">@T["Allow Refresh Token Flow"]</label>
-        <span class="hint">@T["— {0}", "More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
+        <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
     </div>
 </fieldset>
 
@@ -76,7 +76,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowClientCredentialsFlow">
         <label class="custom-control-label" asp-for="AllowClientCredentialsFlow">@T["Allow Client Credentials Flow"]</label>
-        <span class="hint">@T["— {0}", "More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
+        <span class="hint">— @T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
     </div>
 </fieldset>
 
@@ -160,7 +160,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseRollingTokens">
         <label class="custom-control-label" asp-for="UseRollingTokens">@T["Use Rolling Tokens"]</label>
-        <span class="hint">@T["— {0}", "When this option is enabled, a new refresh token is issued for each refresh token request (and the previous one is automatically revoked)."]</span>
+        <span class="hint">— @T["When this option is enabled, a new refresh token is issued for each refresh token request (and the previous one is automatically revoked)."]</span>
     </div>
 </fieldset>
 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Razor.Internal;
+using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -21,7 +21,7 @@ namespace OrchardCore.Mvc.LocationExpander
         private readonly IMemoryCache _memoryCache;
 
         public ComponentViewLocationExpanderProvider(
-            IRazorViewEngineFileProviderAccessor fileProviderAccessor,
+            RazorCompilationFileProviderAccessor fileProviderAccessor,
             IExtensionManager extensionManager,
             ShellDescriptor shellDescriptor,
             IMemoryCache memoryCache)

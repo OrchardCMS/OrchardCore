@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using OrchardCore.Html.Model;
+using OrchardCore.Html.Models;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.Html.Indexing

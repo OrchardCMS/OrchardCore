@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -82,12 +83,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             ShapeAttributeOccurrence attributeOccurrence,
             ShapeDescriptor descriptor)
         {
-			return context =>
-			{
-				var serviceInstance = context.ServiceProvider.GetService(attributeOccurrence.ServiceType);
-				// oversimplification for the sake of evolving
-				return PerformInvokeAsync(context, attributeOccurrence.MethodInfo, serviceInstance);
-			};
+            return context =>
+            {
+                var serviceInstance = context.ServiceProvider.GetService(attributeOccurrence.ServiceType);
+                // oversimplification for the sake of evolving
+                return PerformInvokeAsync(context, attributeOccurrence.MethodInfo, serviceInstance);
+            };
         }
 
         private static Task<IHtmlContent> PerformInvokeAsync(DisplayContext displayContext, MethodInfo methodInfo, object serviceInstance)
@@ -145,7 +146,10 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
             if (String.Equals(parameter.Name, "Html", StringComparison.OrdinalIgnoreCase))
             {
-                return MakeHtmlHelper(displayContext.ViewContext, displayContext.ViewContext.ViewData);
+                var viewContextAccessor = displayContext.ServiceProvider.GetRequiredService<ViewContextAccessor>();
+                var viewContext = viewContextAccessor.ViewContext;
+
+                return MakeHtmlHelper(viewContext, viewContext.ViewData);
             }
 
             if (String.Equals(parameter.Name, "DisplayContext", StringComparison.OrdinalIgnoreCase))
@@ -154,10 +158,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             }
 
             if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) &&
-                parameter.ParameterType.IsAssignableFrom(typeof(UrlHelper)))
+                typeof(IUrlHelper).IsAssignableFrom(parameter.ParameterType))
             {
+                var viewContextAccessor = displayContext.ServiceProvider.GetRequiredService<ViewContextAccessor>();
+                var viewContext = viewContextAccessor.ViewContext;
+
                 var urlHelperFactory = displayContext.ServiceProvider.GetService<IUrlHelperFactory>();
-                return urlHelperFactory.GetUrlHelper(displayContext.ViewContext);
+                return urlHelperFactory.GetUrlHelper(viewContext);
             }
 
             if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&

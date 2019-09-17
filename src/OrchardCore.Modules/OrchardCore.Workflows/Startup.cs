@@ -1,15 +1,13 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
-using OrchardCore.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
@@ -66,37 +64,36 @@ namespace OrchardCore.Workflows
             services.AddActivity<ScriptTask, ScriptTaskDisplay>();
             services.AddActivity<LogTask, LogTaskDisplay>();
 
-            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddRecipeExecutionStep<WorkflowTypeStep>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "AddActivity",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Types/{workflowTypeId}/Activity/{activityName}/Add",
+                pattern: "Admin/Workflows/Types/{workflowTypeId}/Activity/{activityName}/Add",
                 defaults: new { controller = "Activity", action = "Create" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "EditActivity",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Types/{workflowTypeId}/Activity/{activityId}/Edit",
+                pattern: "Admin/Workflows/Types/{workflowTypeId}/Activity/{activityId}/Edit",
                 defaults: new { controller = "Activity", action = "Edit" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Workflows",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Types/{workflowTypeId}/Instances/{action}",
+                pattern: "Admin/Workflows/Types/{workflowTypeId}/Instances/{action}",
                 defaults: new { controller = "Workflow", action = "Index" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "WorkflowTypes",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Types/{action}/{id?}",
+                pattern: "Admin/Workflows/Types/{action}/{id?}",
                 defaults: new { controller = "WorkflowType", action = "Index" }
             );
         }

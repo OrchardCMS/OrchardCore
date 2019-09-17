@@ -80,7 +80,8 @@ namespace OrchardCore.ContentTypes.Services
             {
                 name = GenerateContentTypeNameFromDisplayName(displayName);
             }
-            else {
+            else
+            {
                 if (!name[0].IsLetter())
                 {
                     throw new ArgumentException("Content type name must start with a letter", "name");
@@ -183,7 +184,7 @@ namespace OrchardCore.ContentTypes.Services
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(name);
 
-                if(contentTypeDefinition == null)
+                if (contentTypeDefinition == null)
                 {
                     return null;
                 }
@@ -321,7 +322,7 @@ namespace OrchardCore.ContentTypes.Services
                     var partDefinition = typeDefinition.Parts.FirstOrDefault(x => x.Name == partNames[i]);
                     type.WithPart(partNames[i], partDefinition.PartDefinition, part =>
                     {
-                        part.WithSetting("Position", i.ToString());
+                        part.MergeSettings<ContentTypePartSettings>(x => x.Position = i.ToString());
                     });
                 }
             });
@@ -336,7 +337,7 @@ namespace OrchardCore.ContentTypes.Services
                     var fieldDefinition = partDefinition.Fields.FirstOrDefault(x => x.Name == fieldNames[i]);
                     type.WithField(fieldNames[i], field =>
                     {
-                        field.WithSetting("Position", i.ToString());
+                        field.MergeSettings<ContentPartFieldSettings>(x => x.Position = i.ToString());
                     });
                 }
             });
@@ -375,12 +376,14 @@ namespace OrchardCore.ContentTypes.Services
                 {
                     return displayName;
                 }
-                else {
+                else
+                {
                     fieldDefinitions = typePart.PartDefinition.Fields.ToArray();
                 }
 
             }
-            else {
+            else
+            {
                 fieldDefinitions = part.Fields.ToArray();
             }
 
@@ -401,7 +404,8 @@ namespace OrchardCore.ContentTypes.Services
                 //this could unintentionally chomp something that looks like a version
                 name = string.Join("-", nameParts.Take(nameParts.Length - 1));
             }
-            else {
+            else
+            {
                 version = 2;
             }
 

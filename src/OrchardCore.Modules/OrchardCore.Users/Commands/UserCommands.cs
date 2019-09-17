@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Users.Models;
@@ -32,17 +33,17 @@ namespace OrchardCore.Users.Commands
         [CommandName("createUser")]
         [CommandHelp("createUser /UserName:<username> /Password:<password> /Email:<email> /Roles:{rolename,rolename,...}\r\n\t" + "Creates a new User")]
         [OrchardSwitches("UserName,Password,Email,Roles")]
-        public void CreateUser()
+        public async Task CreateUserAsync()
         {
             var roleNames = (Roles ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
 
             var valid = true;
 
-            _userService.CreateUserAsync(new User { UserName = UserName, Email = Email, RoleNames = roleNames, EmailConfirmed = true }, Password, (key, message) =>
+            await _userService.CreateUserAsync(new User { UserName = UserName, Email = Email, RoleNames = roleNames, EmailConfirmed = true }, Password, (key, message) =>
             {
                 valid = false;
                 Context.Output.WriteLine(message);
-            }).GetAwaiter().GetResult();
+            });
 
             if (valid)
             {

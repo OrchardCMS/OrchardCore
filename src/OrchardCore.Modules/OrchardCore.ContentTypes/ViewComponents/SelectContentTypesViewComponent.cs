@@ -29,7 +29,7 @@ namespace OrchardCore.ContentTypes.ViewComponents
             if (!String.IsNullOrEmpty(stereotype))
             {
                 contentTypes = contentTypes
-                    .Where(x => x.ContentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype == stereotype)
+                    .Where(x => x.ContentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype == stereotype)
                     .ToArray();
             }
 

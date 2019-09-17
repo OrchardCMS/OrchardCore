@@ -8,14 +8,10 @@ namespace OrchardCore.Environment.Cache
     {
         private HashSet<string> _contexts;
         private HashSet<string> _tags;
-        private string _cacheId;
-        private DateTimeOffset? _expiresOn;
-        private TimeSpan? _expiresAfter;
-        private TimeSpan? _expiresSliding;
 
         public CacheContext(string cacheId)
         {
-            _cacheId = cacheId;
+            CacheId = cacheId;
         }
 
         /// <summary>
@@ -24,7 +20,7 @@ namespace OrchardCore.Environment.Cache
         /// </summary>
         public CacheContext WithExpiryOn(DateTimeOffset expiry)
         {
-            _expiresOn = expiry;
+            ExpiresOn = expiry;
             return this;
         }
 
@@ -34,7 +30,7 @@ namespace OrchardCore.Environment.Cache
         /// </summary>
         public CacheContext WithExpiryAfter(TimeSpan duration)
         {
-            _expiresAfter = duration;
+            ExpiresAfter = duration;
             return this;
         }
 
@@ -44,7 +40,7 @@ namespace OrchardCore.Environment.Cache
         /// </summary>
         public CacheContext WithExpirySliding(TimeSpan window)
         {
-            _expiresSliding = window;
+            ExpiresSliding = window;
             return this;
         }
 
@@ -105,12 +101,11 @@ namespace OrchardCore.Environment.Cache
             return this;
         }
 
-        public string CacheId => _cacheId;
+        public string CacheId { get; }
         public ICollection<string> Contexts => (ICollection<string>) _contexts ?? Array.Empty<string>();
         public IEnumerable<string> Tags => _tags ?? Enumerable.Empty<string>();
-        public DateTimeOffset? ExpiresOn => _expiresOn;
-        public TimeSpan? ExpiresAfter => _expiresAfter;
-        public TimeSpan? ExpiresSliding => _expiresSliding;
-
+        public DateTimeOffset? ExpiresOn { get; private set; }
+        public TimeSpan? ExpiresAfter { get; private set; }
+        public TimeSpan? ExpiresSliding { get; private set; }
     }
 }

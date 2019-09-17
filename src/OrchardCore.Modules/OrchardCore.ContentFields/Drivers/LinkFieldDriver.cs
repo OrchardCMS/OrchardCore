@@ -36,7 +36,7 @@ namespace OrchardCore.ContentFields.Fields
         {
             return Initialize<EditLinkFieldViewModel>(GetEditorShapeType(context), model =>
             {
-                var settings = context.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
                 model.Url = context.IsNew ? settings.DefaultUrl : field.Url;
                 model.Text = context.IsNew ? settings.DefaultText : field.Text;
                 model.Field = field;
@@ -51,7 +51,7 @@ namespace OrchardCore.ContentFields.Fields
 
             if (modelUpdated)
             {                
-                var settings = context.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
 
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Url))
                 {

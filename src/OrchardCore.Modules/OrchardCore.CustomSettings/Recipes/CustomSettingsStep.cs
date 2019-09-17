@@ -42,15 +42,12 @@ namespace OrchardCore.CustomSettings.Recipes
 
             var customSettingsTypes = _customSettingsService.GetSettingsTypes(customSettingsNames).ToArray();
 
-            var customSettingsPermissionsTasks =
-                (from customSettingsType in customSettingsTypes
-                 select _customSettingsService.CanUserCreateSettingsAsync(customSettingsType)).ToArray();
-
-            await Task.WhenAll(customSettingsPermissionsTasks);
-
-            if (customSettingsPermissionsTasks.Any(t => !t.Result))
+            foreach (var customSettingsType in customSettingsTypes)
             {
-                return;
+                if (!await _customSettingsService.CanUserCreateSettingsAsync(customSettingsType))
+                {
+                    return;
+                }
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();

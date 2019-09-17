@@ -9,5 +9,7 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = "OrchardCore.HomeRoute",
+    Name = "Home Route",
+    Description = "Provides a way to set the route corresponding to the homepage of the site",
     Category = "Infrastructure"
 )]

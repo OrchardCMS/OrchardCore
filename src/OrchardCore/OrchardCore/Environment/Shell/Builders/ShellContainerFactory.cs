@@ -1,14 +1,16 @@
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -16,7 +18,7 @@ namespace OrchardCore.Environment.Shell.Builders
     {
         private IFeatureInfo _applicationFeature;
 
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly IExtensionManager _extensionManager;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
@@ -24,7 +26,7 @@ namespace OrchardCore.Environment.Shell.Builders
         private readonly IServiceCollection _applicationServices;
 
         public ShellContainerFactory(
-            IHostingEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             IExtensionManager extensionManager,
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory,
@@ -127,17 +129,25 @@ namespace OrchardCore.Environment.Shell.Builders
             {
                 foreach (var serviceDescriptor in featureServiceCollection.Value)
                 {
-                    if (serviceDescriptor.ImplementationType != null)
+                    var type = serviceDescriptor.GetImplementationType();
+
+                    if (type != null)
                     {
-                        typeFeatureProvider.TryAdd(serviceDescriptor.ImplementationType, featureServiceCollection.Key);
-                    }
-                    else if (serviceDescriptor.ImplementationInstance != null)
-                    {
-                        typeFeatureProvider.TryAdd(serviceDescriptor.ImplementationInstance.GetType(), featureServiceCollection.Key);
-                    }
-                    else
-                    {
-                        // Factory, we can't know which type will be returned
+                        var feature = featureServiceCollection.Key;
+
+                        if (feature == _applicationFeature)
+                        {
+                            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
+
+                            if (attribute != null)
+                            {
+                                feature = featureServiceCollection.Key.Extension.Features
+                                    .FirstOrDefault(f => f.Id == attribute.FeatureName)
+                                    ?? feature;
+                            }
+                        }
+
+                        typeFeatureProvider.TryAdd(type, feature);
                     }
                 }
             }

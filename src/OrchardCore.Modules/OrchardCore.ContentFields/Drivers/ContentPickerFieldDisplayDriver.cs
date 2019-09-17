@@ -53,7 +53,7 @@ namespace OrchardCore.ContentFields.Fields
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
-                model.SelectedItems = new List<ContentPickerItemViewModel>();
+                model.SelectedItems = new List<VueMultiselectItemViewModel>();
 
                 foreach (var contentItemId in field.ContentItemIds)
                 {
@@ -64,9 +64,9 @@ namespace OrchardCore.ContentFields.Fields
                         continue;
                     }
 
-                    model.SelectedItems.Add(new ContentPickerItemViewModel
+                    model.SelectedItems.Add(new VueMultiselectItemViewModel
                     {
-                        ContentItemId = contentItemId,
+                        Id = contentItemId,
                         DisplayText = contentItem.ToString(),
                         HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
                     });
@@ -88,7 +88,7 @@ namespace OrchardCore.ContentFields.Fields
             field.ContentItemIds = viewModel.ContentItemIds == null
                 ? new string[0] : viewModel.ContentItemIds.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var settings = context.PartFieldDefinition.Settings.ToObject<ContentPickerFieldSettings>();
+            var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 
             if (settings.Required && field.ContentItemIds.Length == 0)
             {

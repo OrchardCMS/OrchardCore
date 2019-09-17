@@ -14,6 +14,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
         private const string AtAttributeName = "at";
+        private const string AppendVersionAttributeName = "asp-append-version";
 
         [HtmlAttributeName(NameAttributeName)]
         public string Name { get; set; }
@@ -21,6 +22,8 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         [HtmlAttributeName(SrcAttributeName)]
         public string Src { get; set; }
 
+        [HtmlAttributeName(AppendVersionAttributeName)]
+        public bool? AppendVersion { get; set; }
         public string CdnSrc { get; set; }
         public string DebugSrc { get; set; }
         public string DebugCdnSrc { get; set; }
@@ -53,7 +56,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (String.IsNullOrEmpty(DependsOn))
                 {
                     // Include custom script url
-                    setting = _resourceManager.Include("script", Src, DebugSrc);
+                    setting = _resourceManager.RegisterUrl("script", Src, DebugSrc);
                 }
                 else
                 {
@@ -85,6 +88,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                         definition.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
                     }
 
+                    if (AppendVersion.HasValue)
+                    {
+                        definition.ShouldAppendVersion(AppendVersion);
+                    }
+
                     if (!String.IsNullOrEmpty(Version))
                     {
                         definition.SetVersion(Version);
@@ -111,6 +119,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (!String.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
+                }
+
+                if (AppendVersion.HasValue)
+                {
+                    setting.ShouldAppendVersion(AppendVersion);
                 }
 
                 foreach (var attribute in output.Attributes)
@@ -154,6 +167,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCulture(Culture);
                 }
 
+                if (AppendVersion.HasValue)
+                {
+                    setting.ShouldAppendVersion(AppendVersion);
+                }
+
                 if (!String.IsNullOrEmpty(Version))
                 {
                     setting.UseVersion(Version);
@@ -189,6 +207,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (!String.IsNullOrEmpty(DependsOn))
                 {
                     definition.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                if (AppendVersion.HasValue)
+                {
+                    definition.ShouldAppendVersion(AppendVersion);
                 }
 
                 if (!String.IsNullOrEmpty(Version))

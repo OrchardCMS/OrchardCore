@@ -7,8 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Data;
-using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
 
@@ -16,14 +16,13 @@ namespace OrchardCore.Indexing.Services
 {
     /// <summary>
     /// This is a scoped service that enlists tasks to be stored in the database.
-    /// It enlists a final task using the <see cref="IDeferredTaskEngine"/> such
+    /// It enlists a final task using the current <see cref="ShellScope"/> such
     /// that multiple calls to <see cref="CreateTaskAsync"/> can be done without incurring
     /// a SQL query on every single one.
     /// </summary>
     public class IndexingTaskManager : IIndexingTaskManager
     {
         private readonly IClock _clock;
-        private readonly IDeferredTaskEngine _deferredTaskEngine;
         private readonly IDbConnectionAccessor _dbConnectionAccessor;
         private readonly string _tablePrefix;
         private readonly List<IndexingTask> _tasksQueue = new List<IndexingTask>();
@@ -31,12 +30,10 @@ namespace OrchardCore.Indexing.Services
         public IndexingTaskManager(
             IClock clock,
             ShellSettings shellSettings,
-            IDeferredTaskEngine deferredTaskEngine,
             IDbConnectionAccessor dbConnectionAccessor,
             ILogger<IndexingTaskManager> logger)
         {
             _clock = clock;
-            _deferredTaskEngine = deferredTaskEngine;
             _dbConnectionAccessor = dbConnectionAccessor;
             Logger = logger;
 
@@ -75,7 +72,7 @@ namespace OrchardCore.Indexing.Services
             {
                 if (_tasksQueue.Count == 0)
                 {
-                    _deferredTaskEngine.AddTask(context => FlushAsync(context, _tasksQueue));
+                    ShellScope.AddDeferredTask(scope => FlushAsync(scope, _tasksQueue));
                 }
 
                 _tasksQueue.Add(indexingTask);
@@ -84,11 +81,11 @@ namespace OrchardCore.Indexing.Services
             return Task.CompletedTask;
         }
 
-        private static async Task FlushAsync(DeferredTaskContext context, IEnumerable<IndexingTask> tasks)
+        private static async Task FlushAsync(ShellScope scope, IEnumerable<IndexingTask> tasks)
         {
             var localQueue = new List<IndexingTask>(tasks);
 
-            var serviceProvider = context.ServiceProvider;
+            var serviceProvider = scope.ServiceProvider;
 
             var dbConnectionAccessor = serviceProvider.GetService<IDbConnectionAccessor>();
             var shellSettings = serviceProvider.GetService<ShellSettings>();
@@ -160,7 +157,9 @@ namespace OrchardCore.Indexing.Services
                     }
                     catch (Exception e)
                     {
-                        logger.LogError(e, "An error occured while updating indexing tasks");
+                        transaction.Rollback();
+                        logger.LogError(e, "An error occurred while updating indexing tasks");
+
                         throw;
                     }
                 }
@@ -193,7 +192,7 @@ namespace OrchardCore.Indexing.Services
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "An error occured while reading indexing tasks");
+                    Logger.LogError(e, "An error occurred while reading indexing tasks");
                     throw;
                 }
             }

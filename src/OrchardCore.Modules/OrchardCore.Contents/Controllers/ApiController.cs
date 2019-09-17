@@ -22,7 +22,7 @@ namespace OrchardCore.Content.Controllers
             _contentManager = contentManager;
         }
 
-        [Route("{contentItemId}")]
+        [Route("{contentItemId}"), HttpGet]
         public async Task<IActionResult> Get(string contentItemId)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId);

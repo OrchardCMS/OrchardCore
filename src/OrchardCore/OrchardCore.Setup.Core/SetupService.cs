@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -27,20 +27,20 @@ namespace OrchardCore.Setup.Services
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly ILogger _logger;
         private readonly IStringLocalizer T;
-        private readonly IApplicationLifetime _applicationLifetime;
+        private readonly IHostApplicationLifetime _applicationLifetime;
         private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
 
         public SetupService(
             IShellHost shellHost,
-            IHostingEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             IShellContextFactory shellContextFactory,
             IRunningShellTable runningShellTable,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             ILogger<SetupService> logger,
             IStringLocalizerFactory stringLocalizerFactory,
             IStringLocalizer<SetupService> stringLocalizer,
-            IApplicationLifetime applicationLifetime
+            IHostApplicationLifetime applicationLifetime
             )
         {
             _shellHost = shellHost;
@@ -133,7 +133,7 @@ namespace OrchardCore.Setup.Services
 
             using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                using (var scope = shellContext.CreateScope())
+                await shellContext.CreateScope().UsingAsync(async scope =>
                 {
                     IStore store;
 
@@ -152,7 +152,7 @@ namespace OrchardCore.Setup.Services
 
                         _logger.LogError(e, "An error occurred while initializing the datastore.");
                         context.Errors.Add("DatabaseProvider", T["An error occurred while initializing the datastore: {0}", e.Message]);
-                        return null;
+                        return;
                     }
 
                     // Create the "minimum shell descriptor"
@@ -162,14 +162,11 @@ namespace OrchardCore.Setup.Services
                         .UpdateShellDescriptorAsync(0,
                             shellContext.Blueprint.Descriptor.Features,
                             shellContext.Blueprint.Descriptor.Parameters);
+                });
 
-                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-
-                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
-                    {
-                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
-                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
-                    }
+                if (context.Errors.Any())
+                {
+                    return null;
                 }
 
                 executionId = Guid.NewGuid().ToString("n");
@@ -192,13 +189,10 @@ namespace OrchardCore.Setup.Services
             // Reloading the shell context as the recipe  has probably updated its features
             using (var shellContext = await _shellHost.CreateShellContextAsync(shellSettings))
             {
-                using (var scope = shellContext.CreateScope())
+                await shellContext.CreateScope().UsingAsync(async scope =>
                 {
-                    var hasErrors = false;
-
                     void reportError(string key, string message)
                     {
-                        hasErrors = true;
                         context.Errors[key] = message;
                     }
 
@@ -217,19 +211,11 @@ namespace OrchardCore.Setup.Services
                         context.SiteTimeZone,
                         reportError
                     ), logger);
+                });
 
-                    if (hasErrors)
-                    {
-                        return executionId;
-                    }
-
-                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-
-                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
-                    {
-                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
-                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
-                    }
+                if (context.Errors.Any())
+                {
+                    return executionId;
                 }
             }
 

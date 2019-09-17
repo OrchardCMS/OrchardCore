@@ -12,7 +12,7 @@ namespace OrchardCore.ContentTypes.Editors
         {
             return Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", model =>
             {
-                var settings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
+                var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
 
                 model.Creatable = settings.Creatable;
                 model.Listable = settings.Listable;

@@ -47,19 +47,19 @@ namespace OrchardCore.Deployment
             services.AddScoped<IDisplayDriver<DeploymentStep>, DeploymentPlanDeploymentStepDriver>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "DeleteStep",
                 areaName: "OrchardCore.Deployment",
-                template: "Deployment/DeploymentPlan/{id}/Step/{stepId}/Delete",
+                pattern: "Deployment/DeploymentPlan/{id}/Step/{stepId}/Delete",
                 defaults: new { controller = "Step", action = "Delete" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ExecutePlan",
                 areaName: "OrchardCore.Deployment",
-                template: "Deployment/DeploymentPlan/{id}/Type/{type}/Execute",
+                pattern: "Deployment/DeploymentPlan/{id}/Type/{type}/Execute",
                 defaults: new { controller = "DeploymentPlan", action = "Execute" }
             );
         }

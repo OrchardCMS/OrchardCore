@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.Settings;
@@ -26,12 +24,22 @@ namespace OrchardCore.DisplayManagement.Razor
         private IOrchardDisplayHelper _orchardHelper;
         private ISite _site;
 
+        public override ViewContext ViewContext
+        {
+            get => base.ViewContext;
+            set
+            {
+                // We make the ViewContext available to other sub-systems that need it.
+                var viewContextAccessor = value.HttpContext.RequestServices.GetService<ViewContextAccessor>();
+                base.ViewContext = viewContextAccessor.ViewContext = value;
+            }
+        }
+
         private void EnsureDisplayHelper()
         {
             if (_displayHelper == null)
             {
-                IDisplayHelperFactory _factory = Context.RequestServices.GetService<IDisplayHelperFactory>();
-                _displayHelper = _factory.CreateHelper(ViewContext);
+                _displayHelper = Context.RequestServices.GetService<IDisplayHelper>();
             }
         }
 
@@ -105,14 +113,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 if (_themeLayout == null)
                 {
-                    var layoutAccessor = Context.RequestServices.GetService<ILayoutAccessor>();
-
-                    if (layoutAccessor == null)
-                    {
-                        throw new InvalidOperationException("Could not find a valid layout accessor");
-                    }
-
-                    _themeLayout = layoutAccessor.GetLayoutAsync().GetAwaiter().GetResult();
+                    _themeLayout = Context.Features.Get<RazorViewFeature>()?.ThemeLayout;
                 }
 
                 return _themeLayout;
@@ -219,7 +220,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
             }
-            
+
             return Title.GenerateTitle(separator);
         }
 
@@ -246,7 +247,6 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             return Shape.GetTagBuilder(shape, tag);
         }
-
 
         // <summary>
         /// In a Razor layout page, renders the portion of a content page that is not within a named zone.
@@ -354,7 +354,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 if (_site == null)
                 {
-                    _site = (ISite)Context.Items[typeof(ISite)];
+                    _site = Context.Features.Get<RazorViewFeature>()?.Site;
                 }
 
                 return _site;

@@ -136,14 +136,15 @@ namespace OrchardCore.OpenId.Services
             if (!string.IsNullOrEmpty(settings.Tenant) &&
                 !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
-                IServiceScope scope;
-                if ((scope = await _shellHost.TryGetScopeAsync(settings.Tenant)) == null)
+                if (!_shellHost.TryGetSettings(settings.Tenant, out var shellSettings))
                 {
                     results.Add(new ValidationResult(T["The specified tenant is not valid."]));
                 }
                 else
                 {
-                    using (scope)
+                    var shellScope = await _shellHost.GetScopeAsync(shellSettings);
+
+                    await shellScope.UsingAsync(async scope =>
                     {
                         var manager = scope.ServiceProvider.GetService<IOpenIdScopeManager>();
                         if (manager == null)
@@ -165,7 +166,7 @@ namespace OrchardCore.OpenId.Services
                                 }));
                             }
                         }
-                    }
+                    });
                 }
             }
 

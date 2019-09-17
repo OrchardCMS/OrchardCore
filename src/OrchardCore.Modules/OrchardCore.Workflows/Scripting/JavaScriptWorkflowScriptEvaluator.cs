@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,11 +34,16 @@ namespace OrchardCore.Workflows.Evaluators
 
         public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, params IGlobalMethodProvider[] scopedMethodProviders)
         {
+            if (String.IsNullOrWhiteSpace(expression.Expression))
+            {
+                return await Task.FromResult<T>(default(T));
+            }
+
             var workflowType = workflowContext.WorkflowType;
             var directive = $"js:{expression}";
             var expressionContext = new WorkflowExecutionScriptContext(workflowContext);
 
-            await _workflowContextHandlers.InvokeAsync(async x => await x.EvaluatingScriptAsync(expressionContext), _logger);
+            await _workflowContextHandlers.InvokeAsync(x => x.EvaluatingScriptAsync(expressionContext), _logger);
 
             var methodProviders = scopedMethodProviders.Concat(expressionContext.ScopedMethodProviders);
             return (T)_scriptingManager.Evaluate(directive, null, null, methodProviders);

@@ -10,7 +10,7 @@ namespace OrchardCore.Modules
     /// This custom <see cref="IFileProvider"/> implementation provides the file contents
     /// of embedded files in Module assemblies whose path is under a Module 'wwwroot' folder.
     /// </summary>
-    public class ModuleEmbeddedStaticFileProvider : IFileProvider
+    public class ModuleEmbeddedStaticFileProvider : IModuleStaticFileProvider
     {
         private readonly IApplicationContext _applicationContext;
 
