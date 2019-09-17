@@ -11,7 +11,7 @@ namespace OrchardCore.ContentFields.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<DateTimeFieldSettings>("DateTimeFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
+            return Initialize<DateTimeFieldSettings>("DateTimeFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
                 .Location("Content");
         }
 
@@ -21,7 +21,7 @@ namespace OrchardCore.ContentFields.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            context.Builder.MergeSettings(model);
+            context.Builder.WithSettings(model);
 
             return Edit(partFieldDefinition);
         }

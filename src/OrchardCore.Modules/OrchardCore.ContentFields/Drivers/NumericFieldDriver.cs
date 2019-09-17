@@ -37,7 +37,7 @@ namespace OrchardCore.ContentFields.Fields
         {
             return Initialize<EditNumericFieldViewModel>(GetEditorShapeType(context), model =>
             {
-                var settings = context.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<NumericFieldSettings>();
                 model.Value = context.IsNew ? settings.DefaultValue : Convert.ToString(field.Value, CultureInfo.CurrentUICulture);
 
                 model.Field = field;
@@ -56,7 +56,7 @@ namespace OrchardCore.ContentFields.Fields
             {
                 decimal value;
 
-                var settings = context.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<NumericFieldSettings>();
 
                 field.Value = null;
 

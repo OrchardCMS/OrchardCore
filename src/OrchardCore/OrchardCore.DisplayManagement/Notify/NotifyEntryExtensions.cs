@@ -14,6 +14,7 @@ namespace OrchardCore.DisplayManagement.Notify
             using (var stringWriter = new StringWriter(stringBuilder))
             {
                 entry.Message.WriteTo(stringWriter, htmlEncoder);
+                stringWriter.Flush();
             }
 
             return stringBuilder.ToString();

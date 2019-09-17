@@ -5,7 +5,7 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<ContentPickerFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
     var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
@@ -65,5 +65,5 @@
             }
         </div>
     </fieldset>
-
 </div>
+<script at="Foot" depends-on="vue-multiselect-wrapper">initVueMultiselect(document.querySelector("#@vueElementId"))</script>

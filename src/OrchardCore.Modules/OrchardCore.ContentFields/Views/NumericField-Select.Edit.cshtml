@@ -2,7 +2,7 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentFields.Settings;
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<NumericFieldSettings>();
     string name = Model.PartFieldDefinition.DisplayName();
     decimal step = (decimal)Math.Pow(10, 0 - settings.Scale);
     decimal from = settings.Minimum.HasValue ? settings.Minimum.Value : 0;

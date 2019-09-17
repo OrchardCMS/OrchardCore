@@ -137,7 +137,7 @@
                                                 var dependentFeatures = new HtmlString(String.Join(" ", feature.DependentFeatures.Select(f => f.Name)));
                                                 confirmationMessage = T["Disabling this feature will also disable the following dependent features: {0}. Continue?", dependentFeatures];
                                             }
-                                            <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-message="@confirmationMessage" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+                                            <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable"]" data-message="@confirmationMessage" data-ok="@T["Yes"]" data-cancel="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
                                         }
                                     </div>
                                 </div>

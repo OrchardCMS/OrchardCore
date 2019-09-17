@@ -3,7 +3,7 @@
 @using OrchardCore.Markdown.Settings;
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<MarkdownFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 

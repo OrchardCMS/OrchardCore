@@ -53,19 +53,19 @@ namespace OrchardCore.Workflows.Http
             services.AddTransient<IModularTenantEvents, HttpRequestRouteActivator>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "HttpWorkflow",
                 areaName: "OrchardCore.Workflows",
-                template: "workflows/{action}",
+                pattern: "workflows/{action}",
                 defaults: new { controller = "HttpWorkflow" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "InvokeWorkflow",
                 areaName: "OrchardCore.Workflows",
-                template: "workflows/invoke/{token}",
+                pattern: "workflows/invoke/{token}",
                 defaults: new { controller = "HttpWorkflow", action = "Invoke" }
             );
         }

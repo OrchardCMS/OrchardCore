@@ -8,11 +8,12 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
+using OrchardCore.Modules;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
-
+    [Feature(Application.DefaultFeatureId)]
     public class PageTitleShapes : IShapeAttributeProvider
     {
         private IPageTitleBuilder _pageTitleBuilder;
