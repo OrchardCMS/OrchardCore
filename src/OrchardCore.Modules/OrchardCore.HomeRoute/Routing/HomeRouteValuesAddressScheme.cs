@@ -59,6 +59,11 @@ namespace OrchardCore.HomeRoute.Routing
 
         private bool Match(RouteValueDictionary routeValues, RouteValueDictionary explicitValues)
         {
+            if (routeValues.Count == 0)
+            {
+                return false;
+            }
+
             foreach (var entry in routeValues)
             {
                 if (!String.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))

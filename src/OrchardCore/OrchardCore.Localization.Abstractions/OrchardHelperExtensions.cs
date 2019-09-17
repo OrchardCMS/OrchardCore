@@ -19,7 +19,7 @@ namespace OrchardCore.Localization
         public async static Task<CultureInfo> GetContentCultureAsync(this IOrchardHelper orchardHelper, ContentItem contentItem)
         {
             var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
-            var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(contentItem);
+            var cultureAspect = await contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
 
             return cultureAspect.Culture;
         }
