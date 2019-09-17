@@ -31,6 +31,8 @@ namespace OrchardCore.Mvc.RazorPages
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, PageLoaderMatcherPolicy>());
             }
 
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, PageEndpointComparerPolicy>());
+
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorPagesOptions>, ModularPageRazorPagesOptionsSetup>());
 
