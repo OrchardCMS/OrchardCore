@@ -60,7 +60,7 @@ namespace OrchardCore.Contents.Handlers
                         fullTextAspect.FullText.AppendLine(body.Body.ToString());
                     }
 
-                    //We index values from custom FullText settings
+                    //We index values from content type definition FullText settings
                     var settings = contentTypeDefinition.GetSettings<ContentTypeIndexingSettings>();
 
                     if (settings.IsFullText && !String.IsNullOrEmpty(settings.FullText))
