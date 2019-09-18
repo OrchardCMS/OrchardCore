@@ -16,7 +16,6 @@ namespace OrchardCore.Contents.Handlers
 {
     public class FullTextPartHandler : ContentPartHandler<FullTextPart>
     {
-
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IServiceProvider _serviceProvider;
