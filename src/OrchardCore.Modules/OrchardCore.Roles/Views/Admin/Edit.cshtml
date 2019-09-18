@@ -32,7 +32,7 @@
                                     @if (permission.IsSecurityCritical)
                                     {
                                         <div class="float-right">
-                                            <span class="badge badge-danger" data-toggle="tooltip" data-html="true" title="@T["A user who has access to security critical permissions can potentially grant himself site ownership."]">@T["Security Critical"]</span>
+                                            <span class="badge badge-danger" data-toggle="tooltip" data-html="true" title="@T["This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."]">@T["Security Critical"]</span>
                                         </div>
                                     }
                                 </td>
