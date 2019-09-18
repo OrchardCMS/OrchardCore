@@ -1,0 +1,10 @@
+@using OrchardCore.Contents.ViewModels;
+@model FullTextEditorViewModel
+
+<div class="form-group custom-control custom-checkbox" asp-validation-class-for="IsIndexed">
+    <input asp-for="IsIndexed" class="custom-control-input" tabindex="3">
+    <label asp-for="IsIndexed" class="custom-control-label">@T["Full-text"]</label>
+    <span class="hint">— @T["Wether the content item will be indexed in the full-text index."]</span>
+    <span asp-validation-for="IsIndexed"></span>
+</div>
+

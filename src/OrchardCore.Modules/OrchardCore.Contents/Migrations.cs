@@ -21,5 +21,14 @@ namespace OrchardCore.Contents
 
             return 1;
         }
+
+        public int UpdateFrom1()
+        {
+            _contentDefinitionManager.AlterPartDefinition("FullTextPart", builder => builder
+                .Attachable()
+                .WithDescription("Provides a checkbox to determine if a content item will be indexed in the full-text index."));
+
+            return 2;
+        }
     }
 }
