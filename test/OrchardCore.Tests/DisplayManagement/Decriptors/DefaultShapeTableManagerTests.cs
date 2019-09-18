@@ -22,13 +22,13 @@ using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
-    public static class StringArrayExtensions
+    public static class StringArray
     {
         private static readonly string[] _emptyStringArray = new string[0];
 
         public static string[] Empty
         {
-            get {  return _emptyStringArray; }
+            get { return _emptyStringArray; }
         }
     }
 
@@ -38,7 +38,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
         private class TestFeatureInfo : IFeatureInfo
         {
-            public string[] Dependencies { get; set; } = StringArrayExtensions.Empty;
+            public string[] Dependencies { get; set; } = StringArray.Empty;
             public IExtensionInfo Extension { get; set; }
             public string Id { get; set; }
             public string Name { get; set; }
@@ -74,7 +74,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, StringArrayExtensions.Empty, false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, StringArray.Empty, false, false) }
                     };
 
                 Features = features;
@@ -108,7 +108,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0, "", "", this, StringArrayExtensions.Empty, false, false)}
+                        {new FeatureInfo(name, name, 0, "", "", this, StringArray.Empty, false, false)}
                     };
 
                 Features = features;
@@ -135,7 +135,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false)}
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false) }
                     };
 
                 Id = name;
@@ -195,7 +195,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             return new TestFeatureInfo
             {
                 Id = "Testing",
-                Dependencies = StringArrayExtensions.Empty,
+                Dependencies = StringArray.Empty,
                 Extension = new TestModuleExtensionInfo("Testing")
             };
         }
