@@ -124,7 +124,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                     // Field-level argument
                     else
                     {
-                        sb.Append(query.Key).Append(":{{");
+                        sb.Append(query.Key).Append(":{");
 
                         var fieldValuePair = (IDictionary<string, string>)query.Value;
                         for (var c = 0; c < fieldValuePair.Count; c++)

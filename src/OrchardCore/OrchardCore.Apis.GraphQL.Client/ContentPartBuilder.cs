@@ -35,7 +35,6 @@ namespace OrchardCore.Apis.GraphQL.Client
             var sb = new StringBuilder();
             sb.Append(_contentPartName).Append(": {{ ");
 
-
             for (var i = 0; i < _keysWithValues.Count; i++)
             {
                 var item = _keysWithValues.ElementAt(i);
