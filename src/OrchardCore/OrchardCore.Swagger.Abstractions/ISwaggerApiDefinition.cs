@@ -1,6 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 
 namespace OrchardCore.Swagger
 {
@@ -8,7 +8,7 @@ namespace OrchardCore.Swagger
     {
         string Name { get; }
 
-        SwaggerDocument Document { get; }
+        OpenApiDocument Document { get; }
 
         Func<string, ApiDescription, bool> ApiDescriptionFilterPredicate { get; }
     }

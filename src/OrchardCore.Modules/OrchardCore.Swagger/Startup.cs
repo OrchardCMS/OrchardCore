@@ -13,7 +13,7 @@ namespace OrchardCore.Swagger
 {
     public class Startup : StartupBase
     {
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
 
@@ -21,7 +21,7 @@ namespace OrchardCore.Swagger
             app.UseSwaggerUI(c =>
             {
                 c.RoutePrefix = "swagger";
-    
+
                 var swaggerPath = httpContextAccessor.HttpContext.Request.PathBase + new PathString("/swagger");
 
                 foreach (var definition in serviceProvider.GetServices<ISwaggerApiDefinition>())
