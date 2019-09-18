@@ -18,6 +18,7 @@ namespace OrchardCore.Contents.Indexing
         {
             var result = await _contentManager.PopulateAspectAsync<FullTextAspect>(context.ContentItem);
 
+            //TODO Index "NULL" value instead. To change in #3809
             if (result.IsIndexed)
             {
                 context.DocumentIndex.Set(
