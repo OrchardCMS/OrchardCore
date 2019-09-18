@@ -26,7 +26,7 @@ namespace OrchardCore.Contents
         {
             _contentDefinitionManager.AlterPartDefinition("FullTextPart", builder => builder
                 .Attachable()
-                .WithDescription("Provides a checkbox to determine if a content item will be indexed in the full-text index."));
+                .WithDescription("Provides a checkbox to determine if a content item will be indexed."));
 
             return 2;
         }

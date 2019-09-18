@@ -71,6 +71,7 @@ namespace OrchardCore.Contents
             // Full-text Part
             services.AddSingleton<ContentPart, FullTextPart>();
             services.AddScoped<IContentPartDisplayDriver, FullTextEditorDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, FullTextPartSettingsDisplayDriver>();
             services.AddScoped<IContentPartHandler, FullTextPartHandler>();
 
             // Feeds
