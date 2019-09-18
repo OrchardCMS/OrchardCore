@@ -69,10 +69,11 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentPartDisplayDriver, OwnerEditorDriver>();
 
             // Full-text Part
-            services.AddSingleton<ContentPart, FullTextPart>();
-            services.AddScoped<IContentPartDisplayDriver, FullTextEditorDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, FullTextPartSettingsDisplayDriver>();
-            services.AddScoped<IContentPartHandler, FullTextPartHandler>();
+            services.AddSingleton<ContentPart, IndexingPart>();
+            services.AddScoped<IContentPartDisplayDriver, IndexingEditorDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, IndexingPartSettingsDisplayDriver>();
+            services.AddScoped<IContentHandler, FullTextHandler>();
+            services.AddScoped<IContentPartHandler, IndexingPartHandler>();
 
             // Feeds
             // TODO: Move to feature

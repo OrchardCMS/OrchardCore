@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Fluid;
@@ -14,18 +15,18 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Handlers
 {
-    public class FullTextPartHandler : ContentPartHandler<FullTextPart>
+    public class IndexingPartHandler : ContentPartHandler<IndexingPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<FullTextPartHandler> _logger;
+        private readonly ILogger<IndexingPartHandler> _logger;
 
-        public FullTextPartHandler(
+        public IndexingPartHandler(
             IContentDefinitionManager contentDefinitionManager,
             ILiquidTemplateManager liquidTemplateManager,
             IServiceProvider serviceProvider,
-            ILogger<FullTextPartHandler> logger)
+            ILogger<IndexingPartHandler> logger)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _liquidTemplateManager = liquidTemplateManager;
@@ -33,7 +34,7 @@ namespace OrchardCore.Contents.Handlers
             _logger = logger;
         }
 
-        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, FullTextPart part)
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, IndexingPart part)
         {
             return context.ForAsync<FullTextAspect>(async fullTextAspect =>
             {
@@ -47,19 +48,29 @@ namespace OrchardCore.Contents.Handlers
 
                 if (part.IsIndexed)
                 {
-                    //We always index DisplayText in FullText
-                    fullTextAspect.FullText = sb.AppendLine(context.ContentItem.DisplayText);
+                    //Get part settings
+                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(IndexingPart));                  
+                    var partSettings = contentTypePartDefinition.GetSettings<IndexingPartSettings>();
 
-                    //We always index BodyPart in FullText
-                    var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
-                    var body = await contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
-
-                    if (body != null)
+                    //Index DisplayText in FullText index
+                    if (partSettings.IndexDisplayText)
                     {
-                        fullTextAspect.FullText.AppendLine(body.Body.ToString());
+                        fullTextAspect.FullText = sb.AppendLine(context.ContentItem.DisplayText);
                     }
 
-                    //We index values from content type definition FullText settings
+                    //Index BodyAspect in FullText index
+                    if (partSettings.IndexBodyAspect)
+                    {
+                        var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
+                        var body = await contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
+
+                        if (body != null)
+                        {
+                            fullTextAspect.FullText.AppendLine(body.Body.ToString());
+                        }
+                    }
+
+                    //Index values from content type definition FullText settings
                     var settings = contentTypeDefinition.GetSettings<ContentTypeIndexingSettings>();
 
                     if (settings.IsFullText && !String.IsNullOrEmpty(settings.FullText))

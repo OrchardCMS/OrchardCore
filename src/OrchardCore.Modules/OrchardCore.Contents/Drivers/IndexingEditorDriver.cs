@@ -7,19 +7,19 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Drivers
 {
-    public class FullTextEditorDriver : ContentPartDisplayDriver<FullTextPart>
+    public class IndexingEditorDriver : ContentPartDisplayDriver<IndexingPart>
     {
-        public override IDisplayResult Edit(FullTextPart part, BuildPartEditorContext context)
+        public override IDisplayResult Edit(IndexingPart part, BuildPartEditorContext context)
         {
-            return Initialize<FullTextEditorViewModel>("FullTextPart_Edit", model =>
+            return Initialize<IndexingEditorViewModel>("IndexingPart_Edit", model =>
             {
                 model.IsIndexed = part.IsIndexed;
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(FullTextPart part, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(IndexingPart part, UpdatePartEditorContext context)
         {
-            var model = new FullTextEditorViewModel();
+            var model = new IndexingEditorViewModel();
             await context.Updater.TryUpdateModelAsync(model, Prefix);
             part.IsIndexed = model.IsIndexed;
 

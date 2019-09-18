@@ -24,7 +24,7 @@ namespace OrchardCore.Contents
 
         public int UpdateFrom1()
         {
-            _contentDefinitionManager.AlterPartDefinition("FullTextPart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("IndexingPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a checkbox to determine if a content item will be indexed."));
 

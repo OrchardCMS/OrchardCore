@@ -2,7 +2,7 @@ using System;
 
 namespace OrchardCore.Contents.ViewModels
 {
-    public class FullTextEditorViewModel
+    public class IndexingEditorViewModel
     {
         public bool IsIndexed { get; set; }
     }
