@@ -38,52 +38,11 @@
 }
 
 <div class="row">
-    <div class="form-group col mb-n1">
+    <div class="form-group col">
         <h1>@RenderTitleSegments(T["Tenants"])</h1>
     </div>
-    <div class="form-group col mb-n1 float-right" style="display:none">
-        <div class="input-group input-group-sm">
-            <div class="input-group-prepend">
-                <div class="input-group-text">
-                    <div class="custom-control custom-checkbox mr-n2">
-                        <input type="checkbox" class="custom-control-input" id="select-all">
-                        <label class="custom-control-label" for="select-all"></label>
-                    </div>
-                </div>
-            </div>
-            <div class="input-group-append">
-                <span class="input-group-text bg-secondary text-light">@T["Select All"]</span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group col mb-n1" style="display:none">
-        <div class="input-group input-group-sm mr-2 float-right" style="width:max-content">
-            <div class="input-group-prepend">
-                <div class="input-group-text">
-                    <div class="custom-control custom-checkbox mr-n2">
-                        <input type="checkbox" class="custom-control-input" id="select-all">
-                        <label class="custom-control-label" for="select-all"></label>
-                    </div>
-                </div>
-            </div>
-            <div class="input-group-append">
-                <span class="input-group-text bg-secondary text-light">@T["Select All"]</span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group col-xl-3 mb-xl-n1" style="display:none">
-        <div class="dropdown float-right">
-            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>
-                @T["Bulk Actions"]
-            </button>
-            <div class="dropdown-menu" aria-labelledby="bulk-action-menu-button">
-                <a class="dropdown-item" href="#" data-action="disable">@T["Disable"]</a>
-                <a class="dropdown-item" href="#" data-action="enable">@T["Enable"]</a>
-            </div>
-        </div>
-    </div>
-    <div class="form-group col">
-        <div class="input-group input-group-sm mr-2 float-left" style="width:max-content">
+    <div class="form-group col-auto pr-1">
+        <div class="input-group float-left mr-1" style="width:max-content">
             <div class="input-group-prepend">
                 <div class="input-group-text">
                     <div class="custom-control custom-checkbox mr-n2">
@@ -97,15 +56,15 @@
             </div>
         </div>
         <div class="dropdown float-right">
-            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>
-                @T["Bulk Actions"]
-            </button>
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>@T["Bulk Actions"]</button>
             <div class="dropdown-menu" aria-labelledby="bulk-action-menu-button">
                 <a class="dropdown-item" href="#" data-action="disable">@T["Disable"]</a>
                 <a class="dropdown-item" href="#" data-action="enable">@T["Enable"]</a>
             </div>
-            <a asp-route-action="Create" class="btn btn-sm btn-primary float-right ml-1" role="button">@T["Add Tenant"]</a>
         </div>
+    </div>
+    <div class="form-group col-auto pl-0">
+        <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Tenant"]</a>
     </div>
 </div>
 <form asp-action="Index" method="get">
