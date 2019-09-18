@@ -4,6 +4,8 @@ using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -14,17 +16,20 @@ namespace OrchardCore.Lucene.Handlers
     public class LuceneIndexingContentHandler : ContentHandlerBase
     {
         private readonly LuceneIndexManager _luceneIndexManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<LuceneIndexingContentHandler> _logger;
 
         public LuceneIndexingContentHandler(
             LuceneIndexManager luceneIndexManager,
+            IContentDefinitionManager contentDefinitionManager,
             ILiquidTemplateManager liquidTemplateManager,
             IServiceProvider serviceProvider,
             ILogger<LuceneIndexingContentHandler> logger)
         {
             _luceneIndexManager = luceneIndexManager;
+            _contentDefinitionManager = contentDefinitionManager;
             _liquidTemplateManager = liquidTemplateManager;
             _serviceProvider = serviceProvider;
             _logger = logger;
@@ -74,11 +79,23 @@ namespace OrchardCore.Lucene.Handlers
         {
             return context.ForAsync<FullTextAspect>(async fullTextAspect =>
             {
-                var templateContext = new TemplateContext();
-                templateContext.SetValue("Model", context.ContentItem);
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
 
-                var result = await _liquidTemplateManager.RenderAsync(fullTextAspect.FullText, NullEncoder.Default, templateContext);
-                fullTextAspect.FullText = result;
+                if (contentTypeDefinition == null)
+                {
+                    return;
+                }
+
+                var settings = contentTypeDefinition.GetSettings<ContentTypeIndexingSettings>();
+
+                if (settings.IsFullText && !String.IsNullOrEmpty(settings.FullText))
+                {
+                    var templateContext = new TemplateContext();
+                    templateContext.SetValue("Model", context.ContentItem);
+
+                    var result = await _liquidTemplateManager.RenderAsync(settings.FullText, NullEncoder.Default, templateContext);
+                    fullTextAspect.FullText = result;
+                }
             });
         }
     }
