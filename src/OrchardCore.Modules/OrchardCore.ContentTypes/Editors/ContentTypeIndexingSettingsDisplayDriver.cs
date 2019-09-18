@@ -12,7 +12,7 @@ namespace OrchardCore.ContentTypes.Editors
         {
             return Initialize<ContentTypeIndexingSettingsViewModel>("ContentTypeIndexingSettings_Edit", model =>
             {
-                var settings = contentTypeDefinition.Settings.ToObject<ContentTypeIndexingSettings>();
+                var settings = contentTypeDefinition.GetSettings<ContentTypeIndexingSettings>();
 
                 model.IsFullTextLiquid = settings.IsFullText;
                 model.FullTextLiquid = settings.FullText;

@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.Indexing
                 return;
             }
 
-            var settings = contentTypeDefinition.Settings.ToObject<ContentTypeIndexingSettings>();
+            var settings = contentTypeDefinition.GetSettings<ContentTypeIndexingSettings>();
 
             if (settings.IsFullText && !String.IsNullOrEmpty(settings.FullText))
             {
