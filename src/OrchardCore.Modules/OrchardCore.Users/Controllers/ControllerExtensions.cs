@@ -1,17 +1,13 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -27,20 +23,18 @@ namespace OrchardCore.Users.Controllers
     {
         internal static async Task<bool> SendEmailAsync(this Controller controller, string email, string subject, IShape model)
         {
-            var displayHelper = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
             var smtpService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISmtpService>();
+            var displayHelper = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
 
             var body = string.Empty;
 
-            using (var sb = StringBuilderPool.GetInstance())
+            using (var sw = new StringWriter())
             {
-                using (var sw = new StringWriter())
-                {
-                    var htmlContent = await displayHelper.ShapeExecuteAsync(model);
-                    htmlContent.WriteTo(sw, HtmlEncoder.Default);
-                    body = sw.ToString();
-                }
+                var htmlContent = await displayHelper.ShapeExecuteAsync(model);
+                htmlContent.WriteTo(sw, HtmlEncoder.Default);
+                body = sw.ToString();
             }
+
             var message = new MailMessage()
             {
                 To = email,
@@ -90,7 +84,7 @@ namespace OrchardCore.Users.Controllers
                             await signInManager.SignInAsync(user, isPersistent: false);
                         }
                         logger.LogInformation(3, "User created a new account with password.");
-                        registrationEvents.Invoke(i => i.RegisteredAsync(user), logger);
+                        registrationEvents.Invoke(i => i.RegisteredAsync(), logger);
 
                         return user;
                     }
@@ -106,6 +100,12 @@ namespace OrchardCore.Users.Controllers
             var callbackUrl = controller.Url.Action("ConfirmEmail", "Registration", new { userId = user.Id, code }, protocol: controller.HttpContext.Request.Scheme);
             await SendEmailAsync(controller, user.Email, subject, new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl });
 
+            return callbackUrl;
+        }
+
+
+    }
+}
             return callbackUrl;
         }
 
