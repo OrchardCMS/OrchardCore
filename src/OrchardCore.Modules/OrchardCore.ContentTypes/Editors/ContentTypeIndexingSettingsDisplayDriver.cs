@@ -1,13 +1,28 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentTypeIndexingSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
+
+        private readonly ILiquidTemplateManager _templateManager;
+
+        public ContentTypeIndexingSettingsDisplayDriver(
+            ILiquidTemplateManager templateManager,
+            IStringLocalizer<ContentTypeIndexingSettingsDisplayDriver> localizer)
+        {
+            _templateManager = templateManager;
+            T = localizer;
+        }
+
+        public IStringLocalizer T { get; private set; }
+
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {
             return Initialize<ContentTypeIndexingSettingsViewModel>("ContentTypeIndexingSettings_Edit", model =>
@@ -23,10 +38,21 @@ namespace OrchardCore.ContentTypes.Editors
         {
             var model = new ContentTypeIndexingSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix, 
+                m => m.IsFullTextLiquid,
+                m => m.FullTextLiquid);
+
+            if (!string.IsNullOrEmpty(model.FullTextLiquid) && !_templateManager.Validate(model.FullTextLiquid, out var errors))
             {
-                context.Builder.IsFullText(model.IsFullTextLiquid);
-                context.Builder.FullText(model.FullTextLiquid);
+                context.Updater.ModelState.AddModelError(nameof(model.FullTextLiquid), T["Full-text doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+            } 
+            else 
+            {
+                context.Builder.WithSettings(new ContentTypeIndexingSettings
+                {
+                    IsFullText = model.IsFullTextLiquid,
+                    FullText = model.FullTextLiquid,
+                });
             }
 
             return Edit(contentTypeDefinition, context.Updater);
