@@ -147,13 +147,13 @@ namespace OrchardCore.Users.Controllers
             if (signInResult.Succeeded)
             {
                 _logger.LogInformation(1, "User logged in.");
-                await _accountEvents.InvokeAsync(a => a.LoggedInAsync(), _logger);
+                await _accountEvents.InvokeAsync(a => a.LoggedInAsync(model.UserName), _logger);
             }
             else
             {
                 if (ModelState.IsValid && (user == null && !external))
                     ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
-                await _accountEvents.InvokeAsync(a => a.LoggingInFailedAsync(), _logger);
+                await _accountEvents.InvokeAsync(a => a.LoggingInFailedAsync(model.UserName), _logger);
             }
             return new VerifyLoginResult(user, signInResult);
         }
@@ -322,43 +322,6 @@ namespace OrchardCore.Users.Controllers
                     }
                 }
 
-                    model.NoPassword = registrationSettings.NoPasswordForExternalUsers;
-                    model.NoEmail = registrationSettings.NoEmailForExternalUsers;
-                    model.NoUsername = registrationSettings.NoUsernameForExternalUsers;
-
-                    // The user doesn't exist, if we don't request any information we can create the account locally instead of redirecting to the ExternalLoginConfirmation
-                    var noInformationRequired = model.NoPassword && model.NoEmail && model.NoUsername;
-
-                    if (noInformationRequired)
-                    {
-
-                        var user = await this.RegisterUser(new RegisterViewModel() { UserName = model.UserName, Email = model.Email, Password = model.Password, ConfirmPassword = model.ConfirmPassword }, T["Confirm your account"], _logger);
-
-                        // If the registration was successfull we can link the external provider and redirect the user
-                        if (user != null)
-                        {
-                            var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
-                            if (identityResult.Succeeded)
-                            {
-                                _logger.LogInformation(3, "User account linked to {Name} provider.", info.LoginProvider);
-
-                                // We have created/linked to the local user, so we must verify the login. If it does not succeed,
-                                // the user is not allowed to login
-                                if ((await VerifyLogin(null, info, returnUrl)).SignInResult.Succeeded)
-                                {
-                                    return RedirectToLocal(returnUrl);
-                                }
-                                else
-                                {
-                                    return View(nameof(Login));
-                                }
-                            }
-
-                            AddErrors(identityResult);
-                        }
-                    }
-                }
-
                 ViewData["LoginProvider"] = info.LoginProvider;
                 return View("ExternalLogin", model);
             }
@@ -399,7 +362,7 @@ namespace OrchardCore.Users.Controllers
                 {
                     user = await _userManager.FindByNameAsync(model.UserName);
 
-                    await _accountEvents.InvokeAsync(i => i.LoggingInAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+                    await _accountEvents.InvokeAsync(i => i.LoggingInAsync(model.UserName, (key, message) => ModelState.AddModelError(key, message)), _logger);
 
                     if ((await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
                     {
@@ -438,8 +401,6 @@ namespace OrchardCore.Users.Controllers
                             return View(nameof(Login));
                         }
                         }
-                    AddErrors(identityResult);
-                    }
                     AddErrors(identityResult);
                 }
             }
