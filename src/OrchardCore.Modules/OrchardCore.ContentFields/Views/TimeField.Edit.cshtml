@@ -2,7 +2,7 @@
 @using OrchardCore.ContentFields.Settings;
 @using OrchardCore.ContentManagement.Metadata.Models
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<TimeFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<TimeFieldSettings>();
 }
 
 <fieldset class="form-group">

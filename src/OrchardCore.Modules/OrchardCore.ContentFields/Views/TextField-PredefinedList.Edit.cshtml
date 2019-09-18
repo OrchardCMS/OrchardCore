@@ -3,7 +3,7 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
     var listSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
 
     var options = new List<SelectListItem>();

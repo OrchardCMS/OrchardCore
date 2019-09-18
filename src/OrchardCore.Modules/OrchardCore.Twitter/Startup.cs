@@ -1,21 +1,21 @@
+using System;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Twitter;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
-using OrchardCore.Twitter.Signin.Configuration;
-using OrchardCore.Twitter.Drivers;
-using OrchardCore.Twitter.Services;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using Microsoft.AspNetCore.Authentication.Twitter;
-using OrchardCore.Twitter.Signin.Services;
+using OrchardCore.Twitter.Drivers;
+using OrchardCore.Twitter.Services;
+using OrchardCore.Twitter.Signin.Configuration;
 using OrchardCore.Twitter.Signin.Drivers;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
-using System;
+using OrchardCore.Twitter.Signin.Services;
 using Polly;
 
 namespace OrchardCore.Twitter
@@ -44,9 +44,8 @@ namespace OrchardCore.Twitter
                 .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            base.Configure(app, routes, serviceProvider);
         }
     }
 

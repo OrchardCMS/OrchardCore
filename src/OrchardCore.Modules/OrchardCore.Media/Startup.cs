@@ -14,6 +14,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
@@ -133,6 +134,7 @@ namespace OrchardCore.Media
             services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
             services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
+            services.AddScoped<IDataMigration, Migrations>();
 
             services.AddRecipeExecutionStep<MediaStep>();
 
@@ -143,7 +145,7 @@ namespace OrchardCore.Media
             services.AddTagHelpers<ImageResizeTagHelper>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;

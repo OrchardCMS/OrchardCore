@@ -20,6 +20,11 @@ namespace OrchardCore.Media.Processing
         private readonly int[] _supportedSizes;
         private readonly PathString _assetsRequestPath;
 
+        /// <summary>
+        /// A match function used by the resolver to identify itself as the correct resolver to use.
+        /// </summary>
+        private Func<HttpContext, bool> _match;
+
         public MediaResizingFileProvider(
             IMediaFileProvider mediaFileProvider,
             IOptions<ImageSharpMiddlewareOptions> imageSharpOptions,
@@ -33,26 +38,16 @@ namespace OrchardCore.Media.Processing
         }
 
         /// <inheritdoc/>
-        public Func<HttpContext, bool> Match { get; set; } = _ => true;
-
-        /// <inheritdoc/>
-        public IDictionary<string, string> Settings { get; set; } = new Dictionary<string, string>();
+        public Func<HttpContext, bool> Match
+        {
+            get => _match ?? IsMatch;
+            set => _match = value;
+        }
 
         /// <inheritdoc/>
         public bool IsValidRequest(HttpContext context)
         {
-            if (!context.Request.Path.StartsWithSegments(_assetsRequestPath))
-            {
-                return false;
-            }
-
             if (_formatUtilities.GetExtensionFromUri(context.Request.GetDisplayUrl()) == null)
-            {
-                return false;
-            }
-
-            if (!context.Request.Query.ContainsKey(ResizeWebProcessor.Width) &&
-                !context.Request.Query.ContainsKey(ResizeWebProcessor.Height))
             {
                 return false;
             }
@@ -97,6 +92,16 @@ namespace OrchardCore.Media.Processing
             // We don't care about the content type nor cache control max age here.
             var metadata = new ImageMetadata(fileInfo.LastModified.UtcDateTime);
             return Task.FromResult<IImageResolver>(new PhysicalFileSystemResolver(fileInfo, metadata));
+        }
+
+        private bool IsMatch(HttpContext context)
+        {
+            if (!context.Request.Path.StartsWithSegments(_assetsRequestPath))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

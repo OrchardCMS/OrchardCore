@@ -36,7 +36,7 @@ namespace OrchardCore.ContentFields.Controllers
             var partFieldDefinition = _contentDefinitionManager.GetPartDefinition(part)?.Fields
                 .FirstOrDefault(f => f.Name == field);
 
-            var fieldSettings = partFieldDefinition?.Settings.ToObject<ContentPickerFieldSettings>();
+            var fieldSettings = partFieldDefinition?.GetSettings<ContentPickerFieldSettings>();
             if (fieldSettings == null)
             {
                 return BadRequest("Unable to find field definition");

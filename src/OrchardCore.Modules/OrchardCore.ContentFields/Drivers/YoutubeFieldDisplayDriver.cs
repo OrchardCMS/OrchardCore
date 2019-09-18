@@ -49,7 +49,7 @@ namespace OrchardCore.ContentFields.Fields
 
             if (await updater.TryUpdateModelAsync(model, Prefix))
             {
-                var settings = context.PartFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
                 if (settings.Required && String.IsNullOrWhiteSpace(model.RawAddress))
                 {
                     updater.ModelState.AddModelError(Prefix, T["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
