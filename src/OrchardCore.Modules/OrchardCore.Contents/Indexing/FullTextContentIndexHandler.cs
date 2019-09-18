@@ -16,14 +16,14 @@ namespace OrchardCore.Contents.Indexing
 
         public async Task BuildIndexAsync(BuildIndexContext context)
         {
-            var result = await _contentManager.PopulateAspectAsync(context.ContentItem, new FullTextAspect());
+            var result = await _contentManager.PopulateAspectAsync<FullTextAspect>(context.ContentItem);
 
             if (result.Indexed)
             {
                 context.DocumentIndex.Set(
                     IndexingConstants.FullTextKey,
                     result.FullText.ToString(),
-                    DocumentIndexOptions.Analyze);
+                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
             }
         }
     }

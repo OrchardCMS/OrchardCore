@@ -1,8 +1,10 @@
 using System;
+using System.Text;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -79,6 +81,7 @@ namespace OrchardCore.Lucene.Handlers
         {
             return context.ForAsync<FullTextAspect>(async fullTextAspect =>
             {
+                var sb = new StringBuilder();
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
 
                 if (contentTypeDefinition == null)
@@ -86,6 +89,19 @@ namespace OrchardCore.Lucene.Handlers
                     return;
                 }
 
+                //We always index DisplayText in FullText
+                fullTextAspect.FullText = sb.AppendLine(context.ContentItem.DisplayText);
+
+                //We always index BodyPart in FullText
+                var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
+                var body = await contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
+
+                if (body != null)
+                {
+                    fullTextAspect.FullText.AppendLine(body.Body.ToString());
+                }
+
+                //We index values from custom FullText settings
                 var settings = contentTypeDefinition.GetSettings<ContentTypeIndexingSettings>();
 
                 if (settings.IsFullText && !String.IsNullOrEmpty(settings.FullText))
@@ -94,7 +110,7 @@ namespace OrchardCore.Lucene.Handlers
                     templateContext.SetValue("Model", context.ContentItem);
 
                     var result = await _liquidTemplateManager.RenderAsync(settings.FullText, NullEncoder.Default, templateContext);
-                    fullTextAspect.FullText.Append(result);
+                    fullTextAspect.FullText.AppendLine(result);
                 }
             });
         }
