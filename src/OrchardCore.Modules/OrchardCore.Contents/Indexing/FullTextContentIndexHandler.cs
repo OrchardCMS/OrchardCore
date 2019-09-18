@@ -1,24 +1,24 @@
 using System;
 using System.Threading.Tasks;
-using Fluid;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Models;
 using OrchardCore.Indexing;
-using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Indexing
 {
     public class FullTextContentIndexHandler : IContentItemIndexHandler
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly IContentManager _contentManager;
 
         public FullTextContentIndexHandler(
             IContentDefinitionManager contentDefinitionManager,
-            ILiquidTemplateManager liquidTemplateManager)
+            IContentManager contentManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _liquidTemplateManager = liquidTemplateManager;
+            _contentManager = contentManager;
         }
 
         public async Task BuildIndexAsync(BuildIndexContext context)
@@ -34,14 +34,11 @@ namespace OrchardCore.Contents.Indexing
 
             if (settings.IsFullText && !String.IsNullOrEmpty(settings.FullText))
             {
-                var templateContext = new TemplateContext();
-                templateContext.SetValue("Model", context.ContentItem);
-
-                var result = await _liquidTemplateManager.RenderAsync(settings.FullText, NullEncoder.Default, templateContext);
+                var result = await _contentManager.PopulateAspectAsync(context.ContentItem, new FullTextAspect { FullText = settings.FullText });
 
                 context.DocumentIndex.Set(
                     IndexingConstants.FullTextKey,
-                    result,
+                    result.FullText,
                     DocumentIndexOptions.Analyze);
             }
         }

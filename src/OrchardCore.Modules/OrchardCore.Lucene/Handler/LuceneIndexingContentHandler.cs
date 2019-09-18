@@ -1,26 +1,31 @@
 using System;
-using System.Collections.Generic;
-using OrchardCore.Modules;
+using System.Threading.Tasks;
+using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Models;
 using OrchardCore.Indexing;
-using System.Threading.Tasks;
+using OrchardCore.Liquid;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Lucene.Handlers
 {
     public class LuceneIndexingContentHandler : ContentHandlerBase
     {
         private readonly LuceneIndexManager _luceneIndexManager;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<LuceneIndexingContentHandler> _logger;
 
         public LuceneIndexingContentHandler(
             LuceneIndexManager luceneIndexManager,
+            ILiquidTemplateManager liquidTemplateManager,
             IServiceProvider serviceProvider,
             ILogger<LuceneIndexingContentHandler> logger)
         {
             _luceneIndexManager = luceneIndexManager;
+            _liquidTemplateManager = liquidTemplateManager;
             _serviceProvider = serviceProvider;
             _logger = logger;
         }
@@ -63,6 +68,18 @@ namespace OrchardCore.Lucene.Handlers
             }
 
             return Task.CompletedTask;
+        }
+
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
+        {
+            return context.ForAsync<FullTextAspect>(async fullTextAspect =>
+            {
+                var templateContext = new TemplateContext();
+                templateContext.SetValue("Model", context.ContentItem);
+
+                var result = await _liquidTemplateManager.RenderAsync(fullTextAspect.FullText, NullEncoder.Default, templateContext);
+                fullTextAspect.FullText = result;
+            });
         }
     }
 }
