@@ -94,7 +94,7 @@ namespace OrchardCore.Lucene.Handlers
                     templateContext.SetValue("Model", context.ContentItem);
 
                     var result = await _liquidTemplateManager.RenderAsync(settings.FullText, NullEncoder.Default, templateContext);
-                    fullTextAspect.FullText = result;
+                    fullTextAspect.FullText.Append(result);
                 }
             });
         }

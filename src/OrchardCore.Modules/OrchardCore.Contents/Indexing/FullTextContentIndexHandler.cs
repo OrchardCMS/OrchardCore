@@ -22,7 +22,7 @@ namespace OrchardCore.Contents.Indexing
             {
                 context.DocumentIndex.Set(
                     IndexingConstants.FullTextKey,
-                    result.FullText,
+                    result.FullText.ToString(),
                     DocumentIndexOptions.Analyze);
             }
         }
