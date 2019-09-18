@@ -122,6 +122,16 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
+            // See; https://github.com/OrchardCMS/OrchardCore/issues/4287
+            //if (!string.IsNullOrEmpty(settings.Audience) &&
+            //    settings.Audience.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.OrdinalIgnoreCase))
+            //{
+            //    results.Add(new ValidationResult(T["The audience cannot start with the special 'oct:' prefix."], new[]
+            //    {
+            //        nameof(settings.Audience)
+            //    }));
+            //}
+
             // If a tenant was specified, ensure it is valid, that the OpenID server feature
             // was enabled and that at least a scope linked with the current tenant exists.
             if (!string.IsNullOrEmpty(settings.Tenant) &&
