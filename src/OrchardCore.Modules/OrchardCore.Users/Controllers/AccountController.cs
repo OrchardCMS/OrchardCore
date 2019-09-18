@@ -147,7 +147,7 @@ namespace OrchardCore.Users.Controllers
             if (signInResult.Succeeded)
             {
                 _logger.LogInformation(1, "User logged in.");
-                await _accountEvents.InvokeAsync(a => a.LoggedInAsync(), _logger);
+                await _accountEvents.InvokeAsync(a => a.LoggedInAsync(model.UserName), _logger);
             }
             else
             {
@@ -362,7 +362,7 @@ namespace OrchardCore.Users.Controllers
                 {
                     user = await _userManager.FindByNameAsync(model.UserName);
 
-                    await _accountEvents.InvokeAsync(i => i.LoggingInAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+                    await _accountEvents.InvokeAsync(i => i.LoggingInAsync(model.UserName, (key, message) => ModelState.AddModelError(key, message)), _logger);
 
                     if ((await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
                     {

@@ -27,32 +27,20 @@ namespace OrchardCore.Users.Controllers
     {
         internal static async Task<bool> SendEmailAsync(this Controller controller, string email, string subject, IShape model)
         {
-            var options = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<MvcViewOptions>>();
-            var displayManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IHtmlDisplay>();
+            var displayHelper = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
             var smtpService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISmtpService>();
-            // Just use the current context to get a view and then create a view context.
-            var view = options.Value.ViewEngines
-                    .Select(x => x.FindView(
-                        controller.ControllerContext,
-                        controller.ControllerContext.ActionDescriptor.ActionName,
-                        false)).FirstOrDefault()?.View;
-
-            var displayContext = new DisplayContext()
-            {
-                ServiceProvider = controller.ControllerContext.HttpContext.RequestServices,
-                Value = model,
-                ViewContext = new ViewContext(controller.ControllerContext, view, controller.ViewData, controller.TempData, new StringWriter(), new HtmlHelperOptions())
-            };
 
             var body = string.Empty;
 
-            using (var sw = new StringWriter())
+            using (var sb = StringBuilderPool.GetInstance())
             {
-                var htmlContent = await displayManager.ExecuteAsync(displayContext);
-                htmlContent.WriteTo(sw, HtmlEncoder.Default);
-                body = sw.ToString();
+                using (var sw = new StringWriter())
+                {
+                    var htmlContent = await displayHelper.ShapeExecuteAsync(model);
+                    htmlContent.WriteTo(sw, HtmlEncoder.Default);
+                    body = sw.ToString();
+                }
             }
-
             var message = new MailMessage()
             {
                 To = email,
@@ -102,7 +90,7 @@ namespace OrchardCore.Users.Controllers
                             await signInManager.SignInAsync(user, isPersistent: false);
                         }
                         logger.LogInformation(3, "User created a new account with password.");
-                        registrationEvents.Invoke(i => i.RegisteredAsync(), logger);
+                        registrationEvents.Invoke(i => i.RegisteredAsync(user), logger);
 
                         return user;
                     }
