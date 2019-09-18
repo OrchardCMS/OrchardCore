@@ -14,10 +14,10 @@ namespace OrchardCore.Lists.Settings
     {
         public IndexingPartSettingsDisplayDriver(IStringLocalizer<IndexingPartSettingsDisplayDriver> localizer)
         {
-            TS = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer TS { get; set; }
+        public IStringLocalizer S { get; set; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {

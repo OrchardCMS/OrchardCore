@@ -78,7 +78,8 @@ namespace OrchardCore.Contents.Handlers
                     }
                 });
             }
-            else {
+            else
+            {
                 return Task.CompletedTask;
             }
         }
