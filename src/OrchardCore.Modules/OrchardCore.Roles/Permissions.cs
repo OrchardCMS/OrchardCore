@@ -8,7 +8,7 @@ namespace OrchardCore.Roles
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageRoles = new Permission("ManageRoles", "Managing Roles"){ IsSecurityCritical = true };
+        public static readonly Permission ManageRoles = new Permission("ManageRoles", "Managing Roles", isSecurityCritical: true);
         public static readonly Permission AssignRoles = new Permission("AssignRoles", "Assign Roles", new[] { ManageRoles }, isSecurityCritical: true);
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()

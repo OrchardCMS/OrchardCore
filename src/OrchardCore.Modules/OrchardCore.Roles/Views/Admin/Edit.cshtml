@@ -19,8 +19,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="col-9">@T["Permission"]</th>
-                            <th class="col-1"></th>
+                            <th class="col-10">@T["Permission"]</th>
                             <th class="col-1">@T["Allow"]</th>
                             <th class="col-1">@T["Effective"]</th>
                         </tr>
@@ -29,12 +28,11 @@
                         @foreach (var permission in Model.RoleCategoryPermissions[category])
                         {
                             <tr data-text="@permission.Description">
-                                <td class="col-9">@permission.Description</td>
-                                <td class="col-1">
+                                <td class="col-10">@permission.Description
                                     @if (permission.IsSecurityCritical)
                                     {
-                                        <div>
-                                            <span class="badge badge-danger">Security Critical</span>
+                                        <div class="float-right">
+                                            <span class="badge badge-danger" data-toggle="tooltip" data-html="true" title="@T["A user who has access to security critical permissions can potentially grant himself site ownership."]">@T["Security Critical"]</span>
                                         </div>
                                     }
                                 </td>
