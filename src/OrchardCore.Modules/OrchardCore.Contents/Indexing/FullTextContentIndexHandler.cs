@@ -18,7 +18,7 @@ namespace OrchardCore.Contents.Indexing
         {
             var result = await _contentManager.PopulateAspectAsync<FullTextAspect>(context.ContentItem);
 
-            if (result.Indexed)
+            if (result.IsIndexed)
             {
                 context.DocumentIndex.Set(
                     IndexingConstants.FullTextKey,
