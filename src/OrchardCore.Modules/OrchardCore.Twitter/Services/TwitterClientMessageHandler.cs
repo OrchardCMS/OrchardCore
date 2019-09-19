@@ -101,13 +101,13 @@ namespace OrchardCore.Twitter.Services
             }
 
             var sb = new StringBuilder();
-            sb.Append($"oauth_consumer_key=\"{Uri.EscapeDataString(settings.ConsumerKey)}\", ");
-            sb.Append($"oauth_nonce=\"{Uri.EscapeDataString(nonce)}\", ");
-            sb.Append($"oauth_signature=\"{Uri.EscapeDataString(signature)}\", ");
+            sb.Append("oauth_consumer_key=\"").Append(Uri.EscapeDataString(settings.ConsumerKey)).Append("\", ");
+            sb.Append("oauth_nonce=\"").Append(Uri.EscapeDataString(nonce)).Append("\", ");
+            sb.Append("oauth_signature=\"").Append(Uri.EscapeDataString(signature)).Append("\", ");
             sb.Append($"oauth_signature_method=\"HMAC-SHA1\", ");
-            sb.Append($"oauth_timestamp=\"{Uri.EscapeDataString(timeStamp)}\", ");
-            sb.Append($"oauth_token=\"{Uri.EscapeDataString(settings.AccessToken)}\", ");
-            sb.Append($"oauth_version=\"{Uri.EscapeDataString("1.0")}\"");
+            sb.Append("oauth_timestamp=\"").Append(Uri.EscapeDataString(timeStamp)).Append("\", ");
+            sb.Append("oauth_token=\"").Append(Uri.EscapeDataString(settings.AccessToken)).Append("\", ");
+            sb.Append("oauth_version=\"").Append(Uri.EscapeDataString("1.0")).Append('"');
 
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", sb.ToString());
         }

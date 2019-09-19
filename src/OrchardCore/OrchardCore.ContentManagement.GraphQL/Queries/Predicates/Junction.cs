@@ -27,7 +27,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
             var sqlBuilder = new StringBuilder();
 
-            sqlBuilder.Append("(");
+            sqlBuilder.Append('(');
 
             for (var i = 0; i < _predicates.Count - 1; i++)
             {
@@ -37,7 +37,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
             sqlBuilder.Append(_predicates[_predicates.Count - 1].ToSqlString(predicateQuery));
 
-            sqlBuilder.Append(")");
+            sqlBuilder.Append(')');
 
             return sqlBuilder.ToString();
         }
