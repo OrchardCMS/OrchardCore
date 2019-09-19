@@ -86,7 +86,7 @@ namespace OrchardCore.Queries.Sql
 
             foreach (var selectStatement in statementList.ChildNodes)
             {
-                statementsBuilder.Append(EvaluateSelectStatement(selectStatement)).Append(";");
+                statementsBuilder.Append(EvaluateSelectStatement(selectStatement)).Append(';');
             }
 
             return statementsBuilder.ToString();

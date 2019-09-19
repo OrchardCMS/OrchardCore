@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace OrchardCore.Localization
+namespace OrchardCore.ContentLocalization
 {
     /// <summary>
     /// Represents a culture metadata for the content item.
