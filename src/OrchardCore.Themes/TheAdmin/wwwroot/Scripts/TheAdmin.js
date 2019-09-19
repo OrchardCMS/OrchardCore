@@ -5,7 +5,7 @@
 
 /**!
  * @fileOverview Kickass library to create and place poppers near their reference elements.
- * @version 1.14.7
+ * @version 1.15.0
  * @license
  * Copyright (c) 2016 Federico Zivolo and contributors
  *
@@ -1615,7 +1615,14 @@ function flip(data, options) {
 
     // flip the variation if required
     var isVertical = ['top', 'bottom'].indexOf(placement) !== -1;
-    var flippedVariation = !!options.flipVariations && (isVertical && variation === 'start' && overflowsLeft || isVertical && variation === 'end' && overflowsRight || !isVertical && variation === 'start' && overflowsTop || !isVertical && variation === 'end' && overflowsBottom);
+
+    // flips variation if reference element overflows boundaries
+    var flippedVariationByRef = !!options.flipVariations && (isVertical && variation === 'start' && overflowsLeft || isVertical && variation === 'end' && overflowsRight || !isVertical && variation === 'start' && overflowsTop || !isVertical && variation === 'end' && overflowsBottom);
+
+    // flips variation if popper content overflows boundaries
+    var flippedVariationByContent = !!options.flipVariationsByContent && (isVertical && variation === 'start' && overflowsRight || isVertical && variation === 'end' && overflowsLeft || !isVertical && variation === 'start' && overflowsBottom || !isVertical && variation === 'end' && overflowsTop);
+
+    var flippedVariation = flippedVariationByRef || flippedVariationByContent;
 
     if (overlapsRef || overflowsBoundaries || flippedVariation) {
       // this boolean to detect any flip loop
@@ -2222,7 +2229,23 @@ var modifiers = {
      * The popper will never be placed outside of the defined boundaries
      * (except if `keepTogether` is enabled)
      */
-    boundariesElement: 'viewport'
+    boundariesElement: 'viewport',
+    /**
+     * @prop {Boolean} flipVariations=false
+     * The popper will switch placement variation between `-start` and `-end` when
+     * the reference element overlaps its boundaries.
+     *
+     * The original placement should have a set variation.
+     */
+    flipVariations: false,
+    /**
+     * @prop {Boolean} flipVariationsByContent=false
+     * The popper will switch placement variation between `-start` and `-end` when
+     * the popper element overlaps its reference boundaries.
+     *
+     * The original placement should have a set variation.
+     */
+    flipVariationsByContent: false
   },
 
   /**
@@ -2439,8 +2462,8 @@ var Popper = function () {
   /**
    * Creates a new Popper.js instance.
    * @class Popper
-   * @param {HTMLElement|referenceObject} reference - The reference element used to position the popper
-   * @param {HTMLElement} popper - The HTML element used as the popper
+   * @param {Element|referenceObject} reference - The reference element used to position the popper
+   * @param {Element} popper - The HTML / XML element used as the popper
    * @param {Object} options - Your custom options to override the ones defined in [Defaults](#defaults)
    * @return {Object} instance - The generated Popper.js instance
    */
@@ -7029,50 +7052,34 @@ return Popper;
 }));
 //# sourceMappingURL=bootstrap.js.map
 
-function confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, handler) {
-    if (title === undefined) {
-        title = $('#confirmRemoveModalMetadata').data('title');
-    }
+function confirmDialog({title, message, okText, cancelText, okCssClass, cancelCssClass, callback}) {
+    var $confirmRemoveModalMetadata = $('#confirmRemoveModalMetadata')
+    title = title || $confirmRemoveModalMetadata.data('title');
+    message = message || $confirmRemoveModalMetadata.data('message');
+    okText = okText || $confirmRemoveModalMetadata.data('ok');
+    cancelText = cancelText || $confirmRemoveModalMetadata.data('cancel');
+    okCssClass = okCssClass || $confirmRemoveModalMetadata.data('okClass');
+    cancelCssClass = cancelCssClass || $confirmRemoveModalMetadata.data('cancelClass');
 
-    if (message === undefined) {
-        message = $('#confirmRemoveModalMetadata').data('message');
-    }
-
-    if (okText === undefined) {
-        okText = $('#confirmRemoveModalMetadata').data('ok');
-    }
-
-    if (cancelText === undefined) {
-        cancelText = $('#confirmRemoveModalMetadata').data('cancel');
-    }
-
-    if (okCssClass === undefined) {
-        okCssClass = $('#confirmRemoveModalMetadata').data('okClass');
-    }
-
-    if (cancelCssClass === undefined) {
-        cancelCssClass = $('#confirmRemoveModalMetadata').data('cancelClass');
-    }
-
-    $(`<div id="confirmRemoveModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">${title}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>${message}</p>
-                </div>
-                <div class="modal-footer">
-                    <button id="modalOkButton" type="button" class="btn ${okCssClass}">${okText}</button>
-                    <button id="modalCancelButton" type="button" class="btn ${cancelCssClass}" data-dismiss="modal">${cancelText}</button>
-                </div>
-            </div>
-        </div>
-    </div>`).appendTo("body");
+    $('<div id="confirmRemoveModal" class="modal" tabindex="-1" role="dialog">\
+        <div class="modal-dialog modal-dialog-centered" role="document">\
+            <div class="modal-content">\
+                <div class="modal-header">\
+                    <h5 class="modal-title">' + title + '</h5>\
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                        <span aria-hidden="true">&times;</span>\
+                    </button>\
+                </div>\
+                <div class="modal-body">\
+                    <p>' + message +'</p>\
+                </div>\
+                <div class="modal-footer">\
+                    <button id="modalOkButton" type="button" class="btn ' + okCssClass + '">' + okText + '</button>\
+                    <button id="modalCancelButton" type="button" class="btn ' + cancelCssClass + '" data-dismiss="modal">' + cancelText + '</button>\
+                </div>\
+            </div>\
+        </div>\
+    </div>').appendTo("body");
     $("#confirmRemoveModal").modal({
         backdrop: 'static',
         keyboard: false
@@ -7083,12 +7090,12 @@ function confirmDialog(title, message, okText, cancelText, okCssClass, cancelCss
     });
 
     $("#modalOkButton").click(function () {
-        handler(true);
+        callback(true);
         $("#confirmRemoveModal").modal("hide");
     });
 
     $("#modalCancelButton").click(function () {
-        handler(false);
+        callback(false);
         $("#confirmRemoveModal").modal("hide");
     });
 }
@@ -7111,20 +7118,26 @@ $(function () {
         var cancelText = _this.data('cancel');
         var okCssClass = _this.data('okClass');
         var cancelCssClass = _this.data('cancelClass');
-        confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, r => {
-            if (r) {
-                var url = _this.attr('href');
-                if (url == undefined) {
-                    var form = _this.parents('form');
-                    // This line is reuired in case we used the FormValueRequiredAttribute
-                    form.append($("<input type=\"hidden\" name=\"" + _this.attr('name') + "\" value=\"" + _this.attr('value') + "\" />"));
-                    form.submit();
+        confirmDialog({ title: title,
+             message: message,
+             okText: okText, 
+             cancelText: cancelText, 
+             okCssClass: okCssClass, 
+             cancelCssClass: cancelCssClass,  
+             callback: function(resp) {
+                if (resp) {
+                    var url = _this.attr('href');
+                    if (url == undefined) {
+                        var form = _this.parents('form');
+                        // This line is reuired in case we used the FormValueRequiredAttribute
+                        form.append($("<input type=\"hidden\" name=\"" + _this.attr('name') + "\" value=\"" + _this.attr('value') + "\" />"));
+                        form.submit();
+                    }
+                    else {
+                        window.location = url;
+                    }
                 }
-                else {
-                    window.location = url;
-                }
-            }
-        });
+            }});
 
         return false;
     });
@@ -7151,16 +7164,23 @@ $(function () {
 
             var unsafeUrlPrompt = _this.data("unsafe-url");
             var title = _this.data("title");
-            var message = unsafeUrlPrompt;
+            var message = _this.data('message');
             var okText = _this.data('ok');
             var cancelText = _this.data('cancel');
             var okCssClass = _this.data('okClass');
             var cancelCssClass = _this.data('cancelClass');
 
             if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
-                confirmDialog(title, unsafeUrlPrompt, okText, cancelText, okCssClass, cancelCssClass, r => {
-                    if (r) {
-                        form.submit();
+                confirmDialog({title:title, 
+                    message: unsafeUrlPrompt, 
+                    okText: okText, 
+                    cancelText: cancelText, 
+                    okCssClass: okCssClass, 
+                    cancelCssClass: cancelCssClass,
+                    callback: function(resp) {
+                        if (resp) {
+                            form.submit();
+                        }
                     }
                 });
 
@@ -7168,10 +7188,16 @@ $(function () {
             }
 
             if (_this.filter("[itemprop~='RemoveUrl']").length == 1) {
-                message = _this.data('message');
-                confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, r => {
-                    if (r) {
-                        form.submit();
+                confirmDialog({title: title, 
+                    message: message,
+                    okText: okText, 
+                    cancelText: cancelText, 
+                    okCssClass: okCssClass, 
+                    cancelCssClass: cancelCssClass, 
+                    callback: function(resp) {
+                        if (resp) {
+                            form.submit();
+                        }
                     }
                 });
 
