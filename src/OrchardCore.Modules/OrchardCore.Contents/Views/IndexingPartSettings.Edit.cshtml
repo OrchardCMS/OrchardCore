@@ -7,19 +7,3 @@
         <span class="hint">— @T["Check to disable content item indexing (checked) or full-text index only (unchecked)."]</span>
     </div>
 </div>
-
-<div class="form-group">
-    <div class="switch">
-        <input asp-for="IndexBodyAspect" type="checkbox" class="switch switch-sm content-preview-select" checked="@Model.IndexBodyAspect" />
-        <label asp-for="IndexBodyAspect">@T["Index body part"]</label>
-        <span class="hint">— @T["Check to index body part by default in full-text index."]</span>
-    </div>
-</div>
-
-<div class="form-group">
-    <div class="switch">
-        <input asp-for="IndexDisplayText" type="checkbox" class="switch switch-sm content-preview-select" checked="@Model.IndexDisplayText" />
-        <label asp-for="IndexDisplayText">@T["Index display text"]</label>
-        <span class="hint">— @T["Check to index display text by default in full-text index."]</span>
-    </div>
-</div>

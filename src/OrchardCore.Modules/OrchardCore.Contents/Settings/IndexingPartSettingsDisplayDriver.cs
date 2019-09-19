@@ -30,8 +30,6 @@ namespace OrchardCore.Lists.Settings
             {
                 var settings = contentTypePartDefinition.GetSettings<IndexingPartSettings>();
                 model.IsNotIndexingFullTextOrAll = settings.IsNotIndexingFullTextOrAll;
-                model.IndexDisplayText = settings.IndexDisplayText;
-                model.IndexBodyAspect = settings.IndexBodyAspect;
 
             }).Location("Content");
         }
@@ -47,7 +45,7 @@ namespace OrchardCore.Lists.Settings
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                context.Builder.WithSettings(new IndexingPartSettings { IsNotIndexingFullTextOrAll = model.IsNotIndexingFullTextOrAll, IndexDisplayText = model.IndexDisplayText, IndexBodyAspect = model.IndexBodyAspect });
+                context.Builder.WithSettings(new IndexingPartSettings { IsNotIndexingFullTextOrAll = model.IsNotIndexingFullTextOrAll });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

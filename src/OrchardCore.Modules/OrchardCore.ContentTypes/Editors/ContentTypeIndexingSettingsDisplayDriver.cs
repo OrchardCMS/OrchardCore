@@ -31,6 +31,8 @@ namespace OrchardCore.ContentTypes.Editors
 
                 model.IsFullTextLiquid = settings.IsFullText;
                 model.FullTextLiquid = settings.FullText;
+                model.IndexDisplayText = settings.IndexDisplayText;
+                model.IndexBodyAspect = settings.IndexBodyAspect;
             }).Location("Content:6");
         }
 
@@ -52,6 +54,8 @@ namespace OrchardCore.ContentTypes.Editors
                 {
                     IsFullText = model.IsFullTextLiquid,
                     FullText = model.FullTextLiquid,
+                    IndexDisplayText = model.IndexDisplayText,
+                    IndexBodyAspect = model.IndexBodyAspect
                 });
             }
 

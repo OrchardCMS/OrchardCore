@@ -52,22 +52,27 @@ namespace OrchardCore.Contents.Handlers
                 return context.ForAsync<FullTextAspect>(async fullTextAspect =>
                 {
                     var sb = new StringBuilder();
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+                    var settings = contentTypeDefinition.GetSettings<ContentTypeIndexingSettings>();
 
-                    //Index DisplayText in FullText index
-                    fullTextAspect.FullText = sb.AppendLine(context.ContentItem.DisplayText);
+                    if (settings.IndexDisplayText)
+                    {
+                        fullTextAspect.FullText = sb.AppendLine(context.ContentItem.DisplayText);
+                    }
 
                     //Index BodyAspect in FullText index
-                    var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
-                    var body = await contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
-
-                    if (body != null)
+                    if (settings.IndexBodyAspect)
                     {
-                        fullTextAspect.FullText.AppendLine(body.Body.ToString());
+                        var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
+                        var body = await contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
+
+                        if (body != null)
+                        {
+                            fullTextAspect.FullText.AppendLine(body.Body.ToString());
+                        }
                     }
 
                     //Index values from content type definition FullText settings
-                    var settings = contentTypeDefinition.GetSettings<ContentTypeIndexingSettings>();
-
                     if (settings.IsFullText && !String.IsNullOrEmpty(settings.FullText))
                     {
                         var templateContext = new TemplateContext();

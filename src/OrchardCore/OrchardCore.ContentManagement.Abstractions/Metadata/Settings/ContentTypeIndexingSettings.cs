@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace OrchardCore.ContentManagement.Metadata.Settings
 {
     public class ContentTypeIndexingSettings
@@ -10,5 +12,11 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         /// Used to define the string values that should be indexed for a full-text search
         /// </summary>
         public string FullText { get; set; }
+
+        [DefaultValue(true)]
+        public bool IndexBodyAspect { get; set; } = true;
+
+        [DefaultValue(true)]
+        public bool IndexDisplayText { get; set; } = true;
     }
 }

@@ -73,7 +73,6 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentPartDisplayDriver, IndexingEditorDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, IndexingPartSettingsDisplayDriver>();
             services.AddScoped<IContentHandler, FullTextHandler>();
-            services.AddScoped<IContentPartHandler, IndexingPartHandler>();
 
             // Feeds
             // TODO: Move to feature

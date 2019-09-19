@@ -40,6 +40,7 @@ namespace OrchardCore.Contents.Handlers
             {
                 var sb = new StringBuilder();
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+                var settings = contentTypeDefinition.GetSettings<ContentTypeIndexingSettings>();
 
                 if (contentTypeDefinition == null)
                 {
@@ -48,18 +49,14 @@ namespace OrchardCore.Contents.Handlers
 
                 if (part.IsIndexed)
                 {
-                    //Get part settings
-                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(IndexingPart));                  
-                    var partSettings = contentTypePartDefinition.GetSettings<IndexingPartSettings>();
-
                     //Index DisplayText in FullText index
-                    if (partSettings.IndexDisplayText)
+                    if (settings.IndexDisplayText)
                     {
                         fullTextAspect.FullText = sb.AppendLine(context.ContentItem.DisplayText);
                     }
 
                     //Index BodyAspect in FullText index
-                    if (partSettings.IndexBodyAspect)
+                    if (settings.IndexBodyAspect)
                     {
                         var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
                         var body = await contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
@@ -69,9 +66,6 @@ namespace OrchardCore.Contents.Handlers
                             fullTextAspect.FullText.AppendLine(body.Body.ToString());
                         }
                     }
-
-                    //Index values from content type definition FullText settings
-                    var settings = contentTypeDefinition.GetSettings<ContentTypeIndexingSettings>();
 
                     if (settings.IsFullText && !String.IsNullOrEmpty(settings.FullText))
                     {
