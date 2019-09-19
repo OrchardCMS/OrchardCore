@@ -43,9 +43,15 @@ namespace OrchardCore.Autoroute
         public override void ConfigureServices(IServiceCollection services)
         {
             // Autoroute Part
+
+            services.Configure<ContentPartOptions>(options =>
+            {
+                options.AddPart<AutoroutePart>();
+            });
+
             services.AddScoped<IContentPartDisplayDriver, AutoroutePartDisplay>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddSingleton<ContentPart, AutoroutePart>();
+            // services.AddSingleton<ContentPart, AutoroutePart>();
             services.AddScoped<IContentPartHandler, AutoroutePartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();

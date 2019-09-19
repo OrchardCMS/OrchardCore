@@ -30,8 +30,11 @@ namespace OrchardCore.Markdown
         public override void ConfigureServices(IServiceCollection services)
         {
             // Markdown Part
+            services.AddContentPart<MarkdownBodyPart>()
+                .WithDisplayDriver<MarkdownBodyPartDisplay>();
+
             services.AddScoped<IContentPartDisplayDriver, MarkdownBodyPartDisplay>();
-            services.AddSingleton<ContentPart, MarkdownBodyPart>();
+            // services.AddSingleton<ContentPart, MarkdownBodyPart>();            
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
