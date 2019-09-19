@@ -41,6 +41,10 @@ namespace OrchardCore.Contents.Recipes
                     // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
                     contentItem.Id = 0;
                     await _contentManager.CreateAsync(contentItem);
+                    
+                    // Overwrite ModifiedUtc & PublishedUtc values that handlers have changes
+                    context.ContentItem.ModifiedUtc = contentItem.ModifiedUtc;
+                    context.ContentItem.PublishedUtc = contentItem.PublishedUtc;
                 }
                 else
                 {
