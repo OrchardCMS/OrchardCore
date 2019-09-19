@@ -1,27 +1,10 @@
-function confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, handler) {
-    if (title === undefined) {
-        title = $('#confirmRemoveModalMetadata').data('title');
-    }
-
-    if (message === undefined) {
-        message = $('#confirmRemoveModalMetadata').data('message');
-    }
-
-    if (okText === undefined) {
-        okText = $('#confirmRemoveModalMetadata').data('ok');
-    }
-
-    if (cancelText === undefined) {
-        cancelText = $('#confirmRemoveModalMetadata').data('cancel');
-    }
-
-    if (okCssClass === undefined) {
-        okCssClass = $('#confirmRemoveModalMetadata').data('okClass');
-    }
-
-    if (cancelCssClass === undefined) {
-        cancelCssClass = $('#confirmRemoveModalMetadata').data('cancelClass');
-    }
+function confirmDialog({title, message, okText, cancelText, okCssClass, cancelCssClass, callback}) {
+    title = title || $('#confirmRemoveModalMetadata').data('title');
+    message = message || $('#confirmRemoveModalMetadata').data('message');
+    okText = okText || $('#confirmRemoveModalMetadata').data('ok');
+    cancelText = cancelText || $('#confirmRemoveModalMetadata').data('cancel');
+    okCssClass = okCssClass || $('#confirmRemoveModalMetadata').data('okClass');
+    cancelCssClass = cancelCssClass || $('#confirmRemoveModalMetadata').data('cancelClass');
 
     $('<div id="confirmRemoveModal" class="modal" tabindex="-1" role="dialog">\
         <div class="modal-dialog modal-dialog-centered" role="document">\
@@ -52,12 +35,12 @@ function confirmDialog(title, message, okText, cancelText, okCssClass, cancelCss
     });
 
     $("#modalOkButton").click(function () {
-        handler(true);
+        callback(true);
         $("#confirmRemoveModal").modal("hide");
     });
 
     $("#modalCancelButton").click(function () {
-        handler(false);
+        callback(false);
         $("#confirmRemoveModal").modal("hide");
     });
 }
