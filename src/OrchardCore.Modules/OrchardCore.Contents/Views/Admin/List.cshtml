@@ -132,6 +132,7 @@
 @* This is because ContentTypesAdminNode requires the ContenType to be available as part of the url *@
 <script at="Foot" type="text/javascript">
     $(function () {
+        vat _this = $(this);
         var bulkActionButton = $("#bulk-action-menu-button");
         var selectAllCtrl = $("#select-all");
         var contentItemsCheckboxes = $(":checkbox[name='itemIds']");
@@ -149,9 +150,9 @@
 
         $(".dropdown-menu .dropdown-item").on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                confirmDialog({title: $(this).data('title'), message: $(this).data('message'), callback: r => {
+                confirmDialog({title: _this.data('title'), message: _this.data('message'), callback: function(r) {
                     if (r) {
-                        $("[name='Options.BulkAction']").val($(this).data("action"));
+                        $("[name='Options.BulkAction']").val(_this.data("action"));
                         $("[name='submit.BulkAction']").click();
                     }
                 }});

@@ -1,10 +1,11 @@
 function confirmDialog({title, message, okText, cancelText, okCssClass, cancelCssClass, callback}) {
-    title = title || $('#confirmRemoveModalMetadata').data('title');
-    message = message || $('#confirmRemoveModalMetadata').data('message');
-    okText = okText || $('#confirmRemoveModalMetadata').data('ok');
-    cancelText = cancelText || $('#confirmRemoveModalMetadata').data('cancel');
-    okCssClass = okCssClass || $('#confirmRemoveModalMetadata').data('okClass');
-    cancelCssClass = cancelCssClass || $('#confirmRemoveModalMetadata').data('cancelClass');
+    var modal = $('#confirmRemoveModalMetadata');
+    title = title || modal.data('title');
+    message = message || modal.data('message');
+    okText = okText || modal.data('ok');
+    cancelText = cancelText || modal.data('cancel');
+    okCssClass = okCssClass || modal.data('okClass');
+    cancelCssClass = cancelCssClass || modal.data('cancelClass');
 
     $('<div id="confirmRemoveModal" class="modal" tabindex="-1" role="dialog">\
         <div class="modal-dialog modal-dialog-centered" role="document">\
@@ -25,7 +26,7 @@ function confirmDialog({title, message, okText, cancelText, okCssClass, cancelCs
             </div>\
         </div>\
     </div>').appendTo("body");
-    $("#confirmRemoveModal").modal({
+    modal.modal({
         backdrop: 'static',
         keyboard: false
     });

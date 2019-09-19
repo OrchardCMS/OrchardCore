@@ -56,11 +56,12 @@ $(function () {
     });
 
     $(document).on('click', '.widget-delete', function () {
-        var title = $(this).data('title');
-        var message = $(this).data('message');
-        confirmDialog({title: title, message: message, callback: r => {
+        var _this = $(this);
+        var title = _this.data('title');
+        var message = _this.data('message');
+        confirmDialog({title: title, message: message, callback: function(r) {
             if (r) {
-                $(this).closest('.widget-template').remove();
+                _this.closest('.widget-template').remove();
                 $(document).trigger('contentpreview:render');
             }
         }});
