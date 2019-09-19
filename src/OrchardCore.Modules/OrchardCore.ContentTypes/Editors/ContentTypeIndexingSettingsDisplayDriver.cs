@@ -42,7 +42,9 @@ namespace OrchardCore.ContentTypes.Editors
 
             await context.Updater.TryUpdateModelAsync(model, Prefix, 
                 m => m.IsFullTextLiquid,
-                m => m.FullTextLiquid);
+                m => m.FullTextLiquid,
+                m => m.IndexDisplayText,
+                m => m.IndexBodyAspect);
 
             if (!string.IsNullOrEmpty(model.FullTextLiquid) && !_templateManager.Validate(model.FullTextLiquid, out var errors))
             {
