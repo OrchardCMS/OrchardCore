@@ -26,7 +26,7 @@ namespace OrchardCore.Contents
         {
             _contentDefinitionManager.AlterPartDefinition("IndexingPart", builder => builder
                 .Attachable()
-                .WithDescription("Provides a checkbox to determine if a content item will be indexed."));
+                .WithDescription("Provides indexing settings for a content item."));
 
             return 2;
         }
