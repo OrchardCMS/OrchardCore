@@ -190,7 +190,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
 
             // Otherwise, we don't need the view engine for rendering.
-            return template.RenderAsync(writer, encoder, templateContext);
+            return Task.FromResult(template.RenderAsync(writer, encoder, templateContext));
         }
 
         public static async Task<string> RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
@@ -249,7 +249,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 liquidPage.RenderAsync = output =>
                 {
                     // Render the template through the default liquid page.
-                    return template.RenderAsync(output, encoder, templateContext);
+                    return Task.FromResult(template.RenderAsync(output, encoder, templateContext));
                 };
 
                 return viewContext;
