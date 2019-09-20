@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 
@@ -21,7 +21,8 @@ namespace OrchardCore.ContentManagement
         {
             _contentPartActivators = new Dictionary<string, ITypeActivator<ContentPart>>();
 
-            // Check DI container for registered parts
+            // Check DI container for registered parts.
+            // This code can be removed in a future release.
             foreach (var contentPart in contentParts)
             {
                 var activatorType =  typeof(GenericTypeActivator<,>).MakeGenericType(contentPart.GetType(), typeof(ContentPart));
@@ -30,7 +31,6 @@ namespace OrchardCore.ContentManagement
             }
 
             // Check ContentPartOptions for configured parts.
-            // TODO possibly check here, that it's not already registered.
             foreach (var partOption in contentPartOptions.Value.PartOptions)
             {
                 var activatorType =  typeof(GenericTypeActivator<,>).MakeGenericType(partOption.Type, typeof(ContentPart));
