@@ -104,7 +104,10 @@ namespace OrchardCore.Media
             services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddSingleton<ContentPart, ImageMediaPart>();
+            services.Configure<ContentPartOptions>(options =>
+            {
+                options.AddPart<ImageMediaPart>();
+            });
             services.AddMedia();
 
             services.AddLiquidFilter<MediaUrlFilter>("asset_url");

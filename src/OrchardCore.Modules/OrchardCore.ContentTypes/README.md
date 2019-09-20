@@ -143,7 +143,10 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<ContentPart, Product>();
+        services.Configure<ContentPartOptions>(options =>
+        {
+           options.AddPart<Product>();
+        });
     }
 }
 ```

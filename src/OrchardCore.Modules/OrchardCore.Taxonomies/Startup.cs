@@ -40,7 +40,10 @@ namespace OrchardCore.Taxonomies
 
             // Taxonomy Part
             services.AddScoped<IContentPartDisplayDriver, TaxonomyPartDisplayDriver>();
-            services.AddSingleton<ContentPart, TaxonomyPart>();
+            services.Configure<ContentPartOptions>(options =>
+            {
+                options.AddPart<TaxonomyPart>();
+            });
 
             // Taxonomy Field
             services.AddSingleton<ContentField, TaxonomyField>();
