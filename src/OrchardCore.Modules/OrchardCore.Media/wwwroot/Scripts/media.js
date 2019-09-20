@@ -281,7 +281,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             return;
                         }
 
-                        confirmDialog($("#deleteFolder").data("title"), $("#deleteFolder").data("title"), function (resp) {
+                        confirmDialog({title: $("#deleteFolder").data("title"), message: $("#deleteFolder").data("title"), callback: function (resp) {
                             if (resp) {
                                 $.ajax({
                                     url: $('#deleteFolderUrl').val() + "?path=" + encodeURIComponent(folder.path),
@@ -297,7 +297,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     }
                                 });
                             }
-                        });
+                        }});
                     },
                     createFolder: function () {
                         $('#createFolderModal-errors').empty();
@@ -321,7 +321,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             return;
                         }
 
-                        confirmDialog($("#deleteMedia").data("title"), $("#deleteMedia").data("title"), function (resp) {
+                        confirmDialog({title: $("#deleteMedia").data("title"), message: $("#deleteMedia").data("title"), callback: function (resp) {
                             if (resp) {
                                 var paths = [];
                                 for (var i = 0; i < mediaList.length; i++) {
@@ -350,7 +350,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     }
                                 });
                             }
-                        });
+                        }});
                     },
                     deleteMediaItem: function (media) {
 
@@ -359,7 +359,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             return;
                         }
 
-                        confirmDialog($("#deleteMedia").data("title"), $("#deleteMedia").data("title"), function (resp) {
+                        confirmDialog({title: $("#deleteMedia").data("title"), message: $("#deleteMedia").data("title"), callback: function (resp) {
                             if (resp) {
                                 $.ajax({
                                     url: $('#deleteMediaUrl').val() + "?path=" + encodeURIComponent(media.mediaPath),
@@ -380,7 +380,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     }
                                 });
                             }
-                        });
+                        }});
                     },
                     handleDragStart: function (media, e) {
                         // first part of move media to folder:
