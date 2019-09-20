@@ -162,7 +162,7 @@ Vue.component('folder', {
                 return;
             }
 
-            confirmDialog($("#moveMedia").data("title"), $("#deleteMedia").data("title"), function (resp) {
+            confirmDialog({title: $("#moveMedia").data("title"), message: $("#deleteMedia").data("title"), callback: function (resp) {
                 if (resp) {
                     $.ajax({
                         url: $('#moveMediaListUrl').val(),
@@ -182,7 +182,7 @@ Vue.component('folder', {
                         }
                     });
                 }
-            });
+            }});
         }
 
     }
