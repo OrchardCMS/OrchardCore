@@ -22,6 +22,5 @@ namespace OrchardCore.ContentManagement
         }
 
         public Type Type { get; }
-
     }
 }

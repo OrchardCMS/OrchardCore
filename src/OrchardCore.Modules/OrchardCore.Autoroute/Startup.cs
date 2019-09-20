@@ -43,7 +43,6 @@ namespace OrchardCore.Autoroute
         public override void ConfigureServices(IServiceCollection services)
         {
             // Autoroute Part
-
             services.Configure<ContentPartOptions>(options =>
             {
                 options.AddPart<AutoroutePart>();
