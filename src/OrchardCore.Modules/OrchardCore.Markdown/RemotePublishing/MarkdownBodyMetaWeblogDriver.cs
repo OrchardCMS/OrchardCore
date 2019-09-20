@@ -2,7 +2,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.XmlRpc;
 using OrchardCore.XmlRpc.Models;
 using OrchardCore.MetaWeblog;
-using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Models;
 
 namespace OrchardCore.Markdown.RemotePublishing
 {

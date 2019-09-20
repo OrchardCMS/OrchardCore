@@ -35,6 +35,7 @@ namespace OrchardCore.Twitter.Workflows.Activities
 
         // The technical name of the activity. Activities on a workflow definition reference this name.
         public override string Name => nameof(UpdateTwitterStatusTask);
+        public override LocalizedString DisplayText => T["Update Twitter Status Task"];
 
         // The category to which this activity belongs. The activity picker groups activities by this category.
         public override LocalizedString Category => T["Social"];

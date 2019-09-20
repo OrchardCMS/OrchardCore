@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ReCaptcha.Services;
+using OrchardCore.Users;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha.Users.Handlers
@@ -15,7 +15,7 @@ namespace OrchardCore.ReCaptcha.Users.Handlers
             _reCaptchaService = recaptchaService;
         }
 
-        public Task RegisteredAsync()
+        public Task RegisteredAsync(IUser user)
         {
             return Task.CompletedTask;
         }

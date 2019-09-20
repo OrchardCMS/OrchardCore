@@ -24,6 +24,8 @@ namespace OrchardCore.Workflows.Http.Activities
         private IStringLocalizer T { get; }
 
         public override string Name => EventName;
+        public override LocalizedString DisplayText => T["Http Request Filter Event"];
+
         public override LocalizedString Category => T["HTTP"];
 
         public string HttpMethod
@@ -66,7 +68,7 @@ namespace OrchardCore.Workflows.Http.Activities
                 return false;
 
             var routeValues = RouteValues;
-            var currentRouteValues = httpContext.GetRouteData().Values;
+            var currentRouteValues = httpContext.Request.RouteValues;
             var isRouteMatch = RouteMatches(routeValues, currentRouteValues);
 
             if (!isRouteMatch)

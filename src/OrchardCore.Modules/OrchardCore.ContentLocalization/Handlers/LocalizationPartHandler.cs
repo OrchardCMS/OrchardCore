@@ -1,8 +1,10 @@
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentLocalization.Handlers
 {
@@ -13,6 +15,15 @@ namespace OrchardCore.ContentLocalization.Handlers
         public LocalizationPartHandler(ILocalizationEntries entries)
         {
             _entries = entries;
+        }
+
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, LocalizationPart part)
+        {
+            return context.ForAsync<CultureAspect>(cultureAspect =>
+            {
+                cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
+                return Task.CompletedTask;
+            });
         }
 
         public override Task PublishedAsync(PublishContentContext context, LocalizationPart part)

@@ -1,20 +1,28 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <ItemGroup>
-    <Compile Remove="App_Data\**" />
-    <Content Remove="App_Data\**" />
-    <EmbeddedResource Remove="App_Data\**" />
-    <None Remove="App_Data\**" />
+    <Compile Remove="App_Data\**;Localization\**" />
+    <Content Remove="App_Data\**;Localization\**" />
+    <EmbeddedResource Remove="App_Data\**;Localization\**" />
+    <None Remove="App_Data\**;Localization\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ResolvedFileToPublish Include="App_Data\**" Exclude="App_Data\**\*.log">
       <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
     </ResolvedFileToPublish>
+
+    <ResolvedFileToPublish Include="Localization\**">
+      <RelativePath>Localization\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+    </ResolvedFileToPublish>
   </ItemGroup>
 
-  <Target Name="MakeWebRootFolder" BeforeTargets="Build" Condition="!Exists('wwwroot/.placeholder')">
+  <Target Name="MakeWebRootFolder" BeforeTargets="MakeLocalizationFolder" Condition="!Exists('wwwroot/.placeholder')">
     <WriteLinesToFile Lines="" Encoding="Unicode" File="wwwroot/.placeholder" />
+  </Target>
+
+  <Target Name="MakeLocalizationFolder" BeforeTargets="Build" Condition="!Exists('Localization/.placeholder')">
+    <WriteLinesToFile Lines="" Encoding="Unicode" File="Localization/.placeholder" />
   </Target>
 
 </Project>

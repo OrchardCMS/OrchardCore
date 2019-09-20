@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -26,8 +27,7 @@ namespace OrchardCore.ContentFields.Fields
             return Initialize<EditBooleanFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Value = (context.IsNew == false) ?
-                    field.Value :
-                    (bool)(context.PartFieldDefinition.Settings["DefaultValue"] ?? false);
+                    field.Value : context.PartFieldDefinition.GetSettings<BooleanFieldSettings>().DefaultValue;
 
                 model.Field = field;
                 model.Part = context.ContentPart;

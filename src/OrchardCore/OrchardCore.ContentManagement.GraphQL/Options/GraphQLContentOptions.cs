@@ -159,7 +159,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
         internal bool ShouldSkip(Type fieldType, string fieldName)
         {
             return HiddenFields
-                .Any(x => x.FieldType == fieldType && x.FieldName == fieldName);
+                .Any(x => x.FieldType == fieldType && x.FieldName.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
         }
 
         public bool IsHiddenByDefault(ContentTypePartDefinition definition)

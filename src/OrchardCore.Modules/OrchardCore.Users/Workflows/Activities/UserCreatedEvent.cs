@@ -12,5 +12,6 @@ namespace OrchardCore.Users.Workflows.Activities
         }
 
         public override string Name => nameof(UserCreatedEvent);
+        public override LocalizedString DisplayText => T["User Created Event"];
     }
 }

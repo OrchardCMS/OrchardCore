@@ -9,8 +9,8 @@
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "Widget");
-    var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");   
+    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>

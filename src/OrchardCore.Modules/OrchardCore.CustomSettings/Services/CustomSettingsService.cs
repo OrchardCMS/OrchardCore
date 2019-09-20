@@ -37,7 +37,7 @@ namespace OrchardCore.CustomSettings.Services
             _settingsTypes = new Lazy<IDictionary<string, ContentTypeDefinition>>(
                 () => _contentDefinitionManager
                      .ListTypeDefinitions()
-                     .Where(x => x.Settings.ToObject<ContentTypeSettings>().Stereotype == "CustomSettings")
+                     .Where(x => x.GetSettings<ContentTypeSettings>().Stereotype == "CustomSettings")
                      .ToDictionary(x => x.Name));
         }
 
