@@ -13,7 +13,7 @@ using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
-using ContentsHandlers = OrchardCore.Contents.Handlers;
+using OrchardCore.Contents.Handlers;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Contents.Liquid;
 using OrchardCore.Contents.Models;
@@ -50,7 +50,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IShapeTableProvider, Shapes>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentDisplayDriver, ContentsDriver>();
-            services.AddScoped<IContentHandler, ContentsHandlers.ContentsHandler>();
+            services.AddScoped<IContentHandler, ContentsHandler>();
             services.AddRecipeExecutionStep<ContentStep>();
 
             services.AddScoped<IContentItemIndexHandler, AspectsContentIndexHandler>();

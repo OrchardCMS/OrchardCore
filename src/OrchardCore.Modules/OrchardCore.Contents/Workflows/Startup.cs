@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.Drivers;
-using WorkflowsHandlers = OrchardCore.Contents.Workflows.Handlers;
+using OrchardCore.Contents.Workflows.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Services;
@@ -25,7 +25,7 @@ namespace OrchardCore.Contents.Workflows
             services.AddActivity<UnpublishContentTask, UnpublishContentTaskDisplay>();
             services.AddActivity<CreateContentTask, CreateContentTaskDisplay>();
 
-            services.AddScoped<IContentHandler, WorkflowsHandlers.ContentsHandler>();
+            services.AddScoped<IContentHandler, ContentsHandler>();
             services.AddScoped<IWorkflowValueSerializer, ContentItemSerializer>();
         }
     }
