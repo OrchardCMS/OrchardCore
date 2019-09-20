@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.ContentManagement
 {
-    public static class ServiceColletionExtensions
+    public static class ServiceCollectionExtensions
     {
         /// <summary>
         /// Registers a content part type.
@@ -19,7 +19,7 @@ namespace OrchardCore.ContentManagement
         public static IServiceCollection AddContentField<TContentField>(this IServiceCollection serviceCollection)
             where TContentField : ContentField
         {
-            return serviceCollection.Configure<ContentOptions>(o => o.AddField<TContentField>());
+            return serviceCollection.Configure<ContentOptions>(o => o.AddContentField<TContentField>());
         }
     }
 }

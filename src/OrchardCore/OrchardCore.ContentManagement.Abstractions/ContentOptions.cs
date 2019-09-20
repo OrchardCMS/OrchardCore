@@ -29,7 +29,7 @@ namespace OrchardCore.ContentManagement
             return option;
         }
 
-        public ContentFieldOption AddField<T>() where T : ContentField
+        public ContentFieldOption AddContentField<T>() where T : ContentField
         {
             return AddContentField(typeof(T));
         }
