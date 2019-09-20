@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -46,7 +45,10 @@ namespace OrchardCore.Taxonomies
             });
 
             // Taxonomy Field
-            services.AddSingleton<ContentField, TaxonomyField>();
+            services.Configure<ContentFieldOptions>(options =>
+            {
+                options.AddField<TaxonomyField>();
+            });
             services.AddScoped<IContentFieldDisplayDriver, TaxonomyFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();

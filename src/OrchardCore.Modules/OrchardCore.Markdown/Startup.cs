@@ -35,7 +35,7 @@ namespace OrchardCore.Markdown
                 options.AddPart<MarkdownBodyPart>();
             });
 
-            services.AddScoped<IContentPartDisplayDriver, MarkdownBodyPartDisplay>();         
+            services.AddScoped<IContentPartDisplayDriver, MarkdownBodyPartDisplay>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
