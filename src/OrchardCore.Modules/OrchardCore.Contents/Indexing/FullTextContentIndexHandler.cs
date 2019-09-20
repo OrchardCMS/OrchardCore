@@ -18,10 +18,14 @@ namespace OrchardCore.Contents.Indexing
         {
             var result = await _contentManager.PopulateAspectAsync<FullTextAspect>(context.ContentItem);
 
-            context.DocumentIndex.Set(
-                IndexingConstants.FullTextKey,
-                result.FullText.ToString(),
-                DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+            // Index each segment as a new value to prevent from allocation a new string
+            foreach(var segment in result.Segments)
+            {
+                context.DocumentIndex.Set(
+                    IndexingConstants.FullTextKey,
+                    segment,
+                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+            }
         }
     }
 }

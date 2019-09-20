@@ -20,6 +20,7 @@ using OrchardCore.Contents.Models;
 using OrchardCore.Contents.Recipes;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.Services;
+using OrchardCore.Contents.Settings;
 using OrchardCore.Contents.TagHelpers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
@@ -68,11 +69,9 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentPartDisplayDriver, DateEditorDriver>();
             services.AddScoped<IContentPartDisplayDriver, OwnerEditorDriver>();
 
-            // Full-text Part
-            services.AddSingleton<ContentPart, IndexingPart>();
-            services.AddScoped<IContentPartDisplayDriver, IndexingEditorDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, IndexingPartSettingsDisplayDriver>();
-            services.AddScoped<IContentHandler, FullTextHandler>();
+            // FullTextAspect
+            services.AddScoped<IContentTypeDefinitionDisplayDriver, FullTextAspectSettingsDisplayDriver>();
+            services.AddScoped<IContentHandler, FullTextAspectSettingsHandler>();
 
             // Feeds
             // TODO: Move to feature

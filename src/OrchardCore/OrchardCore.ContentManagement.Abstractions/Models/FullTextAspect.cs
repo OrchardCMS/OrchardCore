@@ -1,9 +1,12 @@
-using System.Text;
+using System.Collections.Generic;
 
 namespace OrchardCore.ContentManagement.Models
 {
     public class FullTextAspect
     {
-        public StringBuilder FullText { get; set; }
+        /// <summary>
+        /// Gets the list of all string segments the aspect is made of.
+        /// </summary>
+        public List<string> Segments { get; } = new List<string>();
     }
 }

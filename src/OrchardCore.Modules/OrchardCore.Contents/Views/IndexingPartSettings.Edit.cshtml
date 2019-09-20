@@ -1,9 +1,0 @@
-@model OrchardCore.Contents.ViewModels.IndexingPartSettingsViewModel
-
-<div class="form-group">
-    <div class="switch">
-        <input asp-for="IsNotIndexingFullTextOrAll" type="checkbox" class="switch switch-sm content-preview-select" checked="@Model.IsNotIndexingFullTextOrAll" />
-        <label asp-for="IsNotIndexingFullTextOrAll">@T["Disable content item indexing"]</label>
-        <span class="hint">— @T["Check to disable content item indexing (checked) or full-text index only (unchecked)."]</span>
-    </div>
-</div>

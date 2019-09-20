@@ -28,7 +28,6 @@ namespace OrchardCore.ContentTypes
             services.AddScoped<IContentDefinitionDisplayManager, DefaultContentDefinitionDisplayManager>();
             services.AddScoped<IContentPartDefinitionDisplayDriver, ContentPartSettingsDisplayDriver>();
             services.AddScoped<IContentTypeDefinitionDisplayDriver, ContentTypeSettingsDisplayDriver>();
-            services.AddScoped<IContentTypeDefinitionDisplayDriver, ContentTypeIndexingSettingsDisplayDriver>();
             services.AddScoped<IContentTypeDefinitionDisplayDriver, DefaultContentTypeDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartSettingsDisplayDriver>();
 
