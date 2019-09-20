@@ -58,7 +58,7 @@ namespace OrchardCore.Contents.Handlers
                     var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
                     var bodyAspect = await contentManager.PopulateAspectAsync<BodyAspect>(context.ContentItem);
 
-                    if (bodyAspect != null)
+                    if (bodyAspect != null && bodyAspect.Body != null)
                     {
                         using (var sw = new StringWriter())
                         {
