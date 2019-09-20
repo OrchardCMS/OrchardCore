@@ -10,7 +10,7 @@
 @{
     ViewLayout = "Layout__Login";
 
-    var userCanRegister = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister;
+    var userCanRegister = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister == RegistrationSettings.UsersCanRegisterEnum.AllowRegistration;
     var allowResetPassword = (await _site.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
     var loginProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 }

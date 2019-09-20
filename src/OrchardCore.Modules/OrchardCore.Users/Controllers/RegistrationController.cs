@@ -39,7 +39,7 @@ namespace OrchardCore.Users.Controllers
             INotifier notifier,
             ILogger<RegistrationController> logger,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
-            IStringLocalizer<RegistrationController> stringLocalizer) 
+            IStringLocalizer<RegistrationController> stringLocalizer)
         {
             _userService = userService;
             _userManager = userManager;
@@ -61,7 +61,8 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(string returnUrl = null)
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister)
+            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            if (settings.UsersCanRegister != RegistrationSettings.UsersCanRegisterEnum.AllowRegistration)
             {
                 return NotFound();
             }
@@ -77,7 +78,7 @@ namespace OrchardCore.Users.Controllers
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
 
-            if (!settings.UsersCanRegister)
+            if (settings.UsersCanRegister != RegistrationSettings.UsersCanRegisterEnum.AllowRegistration)
             {
                 return NotFound();
             }
@@ -89,7 +90,7 @@ namespace OrchardCore.Users.Controllers
             {
                 return RedirectToLocal(returnUrl);
             }
-              
+
             // If we got this far, something failed, redisplay form
             return View(model);
         }

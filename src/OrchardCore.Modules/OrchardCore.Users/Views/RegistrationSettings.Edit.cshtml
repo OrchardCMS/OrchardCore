@@ -1,12 +1,16 @@
-@model OrchardCore.Users.Models.RegistrationSettings
+@using OrchardCore.Users.Models;
+@model RegistrationSettings
 
 <fieldset class="form-group" asp-validation-class-for="UsersCanRegister">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="UsersCanRegister" />
-        <span asp-validation-for="UsersCanRegister"></span>
-        <label class="custom-control-label" asp-for="UsersCanRegister">@T["Users can create new accounts on the site"]</label>
-        <span class="hint">— @T["Display a link to allow the users to register on the site."]</span>
-    </div>
+    <label asp-for="UsersCanRegister">@T["Users can create new accounts on the site"]</label>
+    <select asp-for="UsersCanRegister" class="form-control">
+        @foreach (RegistrationSettings.UsersCanRegisterEnum option in Enum.GetValues(typeof(RegistrationSettings.UsersCanRegisterEnum)))
+        {
+            <option value="@option" selected="@(Model.UsersCanRegister == option)">@T[option.ToString()]</option>
+        }
+    </select>
+    <span asp-validation-for="UsersCanRegister"></span>
+    <span class="hint">— @T["Display a link to allow the users to register on the site."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="UsersMustValidateEmail">
@@ -33,24 +37,24 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="NoUsernameForExternalUsers" />
         <span asp-validation-for="NoUsernameForExternalUsers"></span>
-        <label class="custom-control-label" asp-for="NoUsernameForExternalUsers">@T["Automatically import the username for external users"]</label>
-        <span class="hint">— @T["When a new user logs in with an external provider, they are not required to provide a local username."]</span>
+        <label class="custom-control-label" asp-for="NoUsernameForExternalUsers">@T["Generate username for external users"]</label>
+        <span class="hint">— @T["When a new user logs in with an external provider, he is not required to provide a local username."]</span>
     </div>
 </fieldset>
 <fieldset class="form-group" asp-validation-class-for="NoEmailForExternalUsers">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="NoEmailForExternalUsers" />
         <span asp-validation-for="NoEmailForExternalUsers"></span>
-        <label class="custom-control-label" asp-for="NoEmailForExternalUsers">@T["Automatically import the email for external users"]</label>
-        <span class="hint">— @T["When a new user logs in with an external provider, they are not required to provide a local email address."]</span>
+        <label class="custom-control-label" asp-for="NoEmailForExternalUsers">@T["Use email address from external provider"]</label>
+        <span class="hint">— @T["When a new user logs in with an external provider, he is not required to provide a local email address."]</span>
     </div>
 </fieldset>
 <fieldset class="form-group" asp-validation-class-for="NoPasswordForExternalUsers">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="NoPasswordForExternalUsers" />
         <span asp-validation-for="NoPasswordForExternalUsers"></span>
-        <label class="custom-control-label" asp-for="NoPasswordForExternalUsers">@T["Do not create password for external users"]</label>
-        <span class="hint">— @T["When a new user logs in with an external provider, they are not required to provide a local password."]</span>
+        <label class="custom-control-label" asp-for="NoPasswordForExternalUsers">@T["Do not create local password for external users"]</label>
+        <span class="hint">— @T["When a new user logs in with an external provider, he is not required to provide a local password."]</span>
     </div>
 </fieldset>
 

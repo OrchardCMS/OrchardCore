@@ -114,7 +114,7 @@ namespace OrchardCore.Users.Controllers
                 // Require that the users have a confirmed email before they can log on.
                 if (user != null && !await _userManager.IsEmailConfirmedAsync(user))
                 {
-                    ModelState.AddModelError(string.Empty, T["You must have a confirmed email to log on."]);
+                    ModelState.AddModelError(string.Empty, T["You must confirm your email."]);
                 }
             }
 
@@ -276,7 +276,7 @@ namespace OrchardCore.Users.Controllers
                 if (!model.IsExistingUser)
                 {
                     var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
-                    if (!registrationSettings.UsersCanRegister)
+                    if (registrationSettings.UsersCanRegister == RegistrationSettings.UsersCanRegisterEnum.NoRegistration)
                     {
                         string message = T["Site does not allow user registration."];
                         _logger.LogInformation(message);
@@ -332,7 +332,8 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model, string returnUrl = null, string loginProvider = null)
         {
-            if ((!model.IsExistingUser && !(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister))
+            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            if (!model.IsExistingUser && (settings.UsersCanRegister == RegistrationSettings.UsersCanRegisterEnum.NoRegistration))
             {
                 _logger.LogInformation("Site does not allow user registration.");
                 return NotFound();
@@ -364,7 +365,7 @@ namespace OrchardCore.Users.Controllers
 
                     await _accountEvents.InvokeAsync(i => i.LoggingInAsync(model.UserName, (key, message) => ModelState.AddModelError(key, message)), _logger);
 
-                    if ((await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
+                    if (settings.UsersMustValidateEmail)
                     {
                         // Require that the users have a confirmed email before they can log on.
                         if (user != null && !await _userManager.IsEmailConfirmedAsync(user))
@@ -400,7 +401,7 @@ namespace OrchardCore.Users.Controllers
                         {
                             return View(nameof(Login));
                         }
-                        }
+                    }
                     AddErrors(identityResult);
                 }
             }
