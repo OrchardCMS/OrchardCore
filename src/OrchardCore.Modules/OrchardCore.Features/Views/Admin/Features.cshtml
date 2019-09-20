@@ -14,9 +14,9 @@
                 @T["Bulk Actions"]
             </button>
             <div class="dropdown-menu" aria-labelledby="bulk-action-menu-button">
-                <a class="dropdown-item" href="#" data-action="@FeaturesBulkAction.Disable.ToString()">@T["Disable"]</a>
-                <a class="dropdown-item" href="#" data-action="@FeaturesBulkAction.Enable.ToString()">@T["Enable"]</a>
-                <a class="dropdown-item" href="#" data-action="@FeaturesBulkAction.Toggle.ToString()">@T["Toggle"]</a>
+                <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Disable)">@T["Disable"]</a>
+                <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Enable)">@T["Enable"]</a>
+                <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Toggle)">@T["Toggle"]</a>
             </div>
         </div>
     </div>
@@ -131,10 +131,10 @@
                                             var confirmationMessage = T["Are you sure you want to disable this feature? Continue?"];
                                             if (feature.DependentFeatures.Any())
                                             {
-                                                var dependentFeatures = new HtmlString(String.Join(" ", feature.DependentFeatures.Select(f => f.Name)));
-                                                confirmationMessage = T["Disabling this feature will also disable the following dependent features: {0}. Continue?", dependentFeatures];
+                                                var dependentFeatures = new HtmlString($"<ul>{String.Join("", feature.DependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
+                                                confirmationMessage = T["Disabling this feature will also disable the following dependent features:{0}Continue?", dependentFeatures];
                                             }
-                                            <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable"]" data-message="@confirmationMessage" data-ok="@T["Yes"]" data-cancel="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+                                            <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok="@T["Yes"]" data-cancel="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
                                         }
                                     </div>
                                 </div>

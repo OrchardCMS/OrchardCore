@@ -149,15 +149,13 @@
 
         $(".dropdown-menu .dropdown-item").on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
-
-                var title = $(this).data('title');
-                var message = $(this).data('message');
-                confirmDialog(title, message, r => {
+                var $this = $(this);
+                confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
                     if (r) {
-                        $("[name='Options.BulkAction']").val($(this).data("action"));
+                        $("[name='Options.BulkAction']").val($this.data("action"));
                         $("[name='submit.BulkAction']").click();
                     }
-                });
+                }});
             }
         });
 
