@@ -173,7 +173,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class LiquidViewTemplateExtensions
     {
-        public static Task RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
+        public static async Task RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
             IServiceProvider services, TextWriter writer, TextEncoder encoder, TemplateContext templateContext)
         {
             templateContext.AddAsyncFilters(options, services);
@@ -186,11 +186,13 @@ namespace OrchardCore.DisplayManagement.Liquid
                 viewContext.Writer = writer;
 
                 // Use the view engine to render the liquid page.
-                return viewContext.View.RenderAsync(viewContext);
+                await viewContext.View.RenderAsync(viewContext);
+
+                return;
             }
 
             // Otherwise, we don't need the view engine for rendering.
-            return template.RenderAsync(writer, encoder, templateContext);
+            await template.RenderAsync(writer, encoder, templateContext);
         }
 
         public static async Task<string> RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
@@ -246,10 +248,10 @@ namespace OrchardCore.DisplayManagement.Liquid
                 viewContext.View is RazorView razorView &&
                 razorView.RazorPage is LiquidPage liquidPage)
             {
-                liquidPage.RenderAsync = output =>
+                liquidPage.RenderAsync = async output =>
                 {
                     // Render the template through the default liquid page.
-                    return template.RenderAsync(output, encoder, templateContext);
+                    await template.RenderAsync(output, encoder, templateContext);
                 };
 
                 return viewContext;
