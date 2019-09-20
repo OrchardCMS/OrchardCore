@@ -25,4 +25,12 @@
     <WriteLinesToFile Lines="" Encoding="Unicode" File="Localization/.placeholder" />
   </Target>
 
+  <Target Name="CopyPackageTranslationFiles" AfterTargets="Build">
+    <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
+    <Copy
+      SourceFiles="%(PackageTranslationFiles.FullPath)"
+      DestinationFolder="Localization\%(RecursiveDir)"
+      Condition="'@(PackageTranslationFiles)' != ''" />
+  </Target>
+
 </Project>
