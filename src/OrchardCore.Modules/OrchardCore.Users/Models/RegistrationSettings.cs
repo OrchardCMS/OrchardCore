@@ -6,7 +6,7 @@ namespace OrchardCore.Users.Models
         {
             NoRegistration = 0,
             AllowRegistration = 1,
-            AllowExternalUsersRegistration = 2
+            AllowOnlyExternalUsers = 2
         }
 
         public UsersCanRegisterEnum UsersCanRegister { get; set; }

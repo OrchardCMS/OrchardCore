@@ -10,7 +10,15 @@
         }
     </select>
     <span asp-validation-for="UsersCanRegister"></span>
-    <span class="hint">— @T["Display a link to allow the users to register on the site."]</span>
+
+    <div class="hint">
+        <span>@T["Configure users registration."]</span>        
+        <ul>
+            <li>@T["when NoRegistration is selected, no new users can register"]</li>
+            <li>@T["when AllowRegistration is selected, a link is displayed to allow the users to register on the site. If there are external providers, once authenticated the user can register"]</li>
+            <li>@T["when AllowOnlyExternalUsers is selected, only users authenticated with external providers can register on the site"]</li>
+        </ul>
+    </div>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="UsersMustValidateEmail">
@@ -31,11 +39,11 @@
     </div>
 </fieldset>
 
-<h5 class="form-group">@T["External Authentication"]<span class="hint"> — @T["Settings for external authentication providers"]</span></h5>
+<h5 class="form-group">@T["External Authentication"]<span class="hint"> — @T["Settings when registering with external authentication providers"]</span></h5>
 
 <fieldset class="form-group" asp-validation-class-for="NoUsernameForExternalUsers">
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="NoUsernameForExternalUsers" />
+        <input type="checkbox" class="custom-control-input" asp-for="NoUsernameForExternalUsers" data-external-registration />
         <span asp-validation-for="NoUsernameForExternalUsers"></span>
         <label class="custom-control-label" asp-for="NoUsernameForExternalUsers">@T["Generate username for external users"]</label>
         <span class="hint">— @T["When a new user logs in with an external provider, he is not required to provide a local username."]</span>
@@ -43,7 +51,7 @@
 </fieldset>
 <fieldset class="form-group" asp-validation-class-for="NoEmailForExternalUsers">
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="NoEmailForExternalUsers" />
+        <input type="checkbox" class="custom-control-input" asp-for="NoEmailForExternalUsers" data-external-registration />
         <span asp-validation-for="NoEmailForExternalUsers"></span>
         <label class="custom-control-label" asp-for="NoEmailForExternalUsers">@T["Use email address from external provider"]</label>
         <span class="hint">— @T["When a new user logs in with an external provider, he is not required to provide a local email address."]</span>
@@ -51,7 +59,7 @@
 </fieldset>
 <fieldset class="form-group" asp-validation-class-for="NoPasswordForExternalUsers">
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="NoPasswordForExternalUsers" />
+        <input type="checkbox" class="custom-control-input" asp-for="NoPasswordForExternalUsers" data-external-registration />
         <span asp-validation-for="NoPasswordForExternalUsers"></span>
         <label class="custom-control-label" asp-for="NoPasswordForExternalUsers">@T["Do not create local password for external users"]</label>
         <span class="hint">— @T["When a new user logs in with an external provider, he is not required to provide a local password."]</span>
@@ -68,13 +76,13 @@
         });
 
         function refresh(e) {
-            var usersCanRegisterElement = $("#@Html.IdFor(m => m.UsersCanRegister)");
-            var noPasswordForExternalUsers = $("#@Html.IdFor(m => m.NoPasswordForExternalUsers)");
+            var usersCanRegisterElement = document.getElementById("@Html.IdFor(m => m.UsersCanRegister)");
+            var externalRegistrationInputs = $("input[data-external-registration]");
 
-            if (usersCanRegisterElement.prop("checked")) {
-                noPasswordForExternalUsers.removeAttr("disabled");
+            if (usersCanRegisterElement.value == "NoRegistration") {
+                externalRegistrationInputs.prop('disabled', true);
             } else {
-                noPasswordForExternalUsers.prop('checked',false).prop("disabled", 'disabled');
+                externalRegistrationInputs.prop('disabled', false);
             }
         }
     };

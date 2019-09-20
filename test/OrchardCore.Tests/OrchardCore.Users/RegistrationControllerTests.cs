@@ -32,7 +32,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public async Task UsersShouldNotBeAbleToRegisterIfNotAllowed()
         {
             var mockUserManager = MockUserManager<IUser>().Object;
-            var settings = new RegistrationSettings { UsersCanRegister = false };
+            var settings = new RegistrationSettings { UsersCanRegister = RegistrationSettings.UsersCanRegisterEnum.NoRegistration };
             var mockSiteService = Mock.Of<ISiteService>(ss =>
                 ss.GetSiteSettingsAsync() == Task.FromResult(
                     Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { RegistrationSettings = settings }))
@@ -63,7 +63,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public async Task UsersShouldBeAbleToRegisterIfAllowed()
         {
             var mockUserManager = MockUserManager<IUser>().Object;
-            var settings = new RegistrationSettings { UsersCanRegister = true };
+            var settings = new RegistrationSettings { UsersCanRegister = RegistrationSettings.UsersCanRegisterEnum.AllowRegistration};
             var mockSiteService = Mock.Of<ISiteService>(ss =>
                 ss.GetSiteSettingsAsync() == Task.FromResult(
                     Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { RegistrationSettings = settings }))
