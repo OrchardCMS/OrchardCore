@@ -43,8 +43,9 @@ namespace OrchardCore.Contents.Recipes
                     await _contentManager.CreateAsync(contentItem);
                     
                     // Overwrite ModifiedUtc & PublishedUtc values that handlers have changes
-                    context.ContentItem.ModifiedUtc = contentItem.ModifiedUtc;
-                    context.ContentItem.PublishedUtc = contentItem.PublishedUtc;
+                    // Should not be necessary if IContentManager had an Import method
+                    contentItem.ModifiedUtc = contentItem.ModifiedUtc;
+                    contentItem.PublishedUtc = contentItem.PublishedUtc;
                 }
                 else
                 {
