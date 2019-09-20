@@ -16,7 +16,7 @@ namespace OrchardCore.Tests.OrchardCore.ContentManagement.Handlers
         {
             var clock = new Mock<IClock>();
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
-            var contentHandler = new ContentsHandler(clock.Object, httpContextAccessor.Object);
+            var contentHandler = new UpdateContentsHandler(clock.Object, httpContextAccessor.Object);
             var modifiedUtc = "09/13/2019";
             var publishedUtc = "09/14/2019";
             var contentItem = new ContentItem {
