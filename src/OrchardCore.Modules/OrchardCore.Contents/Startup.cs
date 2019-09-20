@@ -64,7 +64,8 @@ namespace OrchardCore.Contents
             services.AddScoped<IDataMigration, Migrations>();
 
             // Common Part
-            services.AddSingleton<ContentPart, CommonPart>();
+            services.AddContentPart<CommonPart>();
+
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, CommonPartSettingsDisplayDriver>();
             services.AddScoped<IContentPartDisplayDriver, DateEditorDriver>();
             services.AddScoped<IContentPartDisplayDriver, OwnerEditorDriver>();
