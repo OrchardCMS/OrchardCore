@@ -1,6 +1,6 @@
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ContentManagement
 {
@@ -16,13 +16,13 @@ namespace OrchardCore.ContentManagement
 
         public ContentPartFactory(
             IEnumerable<ContentPart> contentParts,
-            IOptions<ContentPartOptions> contentPartOptions
+            IOptions<ContentOptions> contentOptions
             )
         {
             _contentPartActivators = new Dictionary<string, ITypeActivator<ContentPart>>();
 
             // Check DI container for registered parts.
-            // This code can be removed in a future release.
+            // TODO: This code can be removed in a future release as the recommended way is to use ContentOptions.
             foreach (var contentPart in contentParts)
             {
                 var activatorType =  typeof(GenericTypeActivator<,>).MakeGenericType(contentPart.GetType(), typeof(ContentPart));
@@ -30,8 +30,8 @@ namespace OrchardCore.ContentManagement
                 _contentPartActivators.Add(contentPart.GetType().Name, activator);
             }
 
-            // Check ContentPartOptions for configured parts.
-            foreach (var partOption in contentPartOptions.Value.PartOptions)
+            // Check content options for configured parts.
+            foreach (var partOption in contentOptions.Value.ContentPartOptions)
             {
                 var activatorType =  typeof(GenericTypeActivator<,>).MakeGenericType(partOption.Type, typeof(ContentPart));
                 var activator = (ITypeActivator<ContentPart>)Activator.CreateInstance(activatorType);

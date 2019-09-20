@@ -71,10 +71,7 @@ namespace OrchardCore.Demo
             services.AddScoped<IContentDisplayDriver, TestContentElementDisplay>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<TestContentPartA>();
-            });
+            services.AddContentPart<TestContentPartA>();
 
             services.AddScoped<IDisplayDriver<User>, UserProfileDisplayDriver>();
 

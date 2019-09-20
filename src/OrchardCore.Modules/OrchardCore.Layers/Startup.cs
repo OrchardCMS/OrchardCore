@@ -36,10 +36,7 @@ namespace OrchardCore.Layers
             });
 
             services.AddScoped<IDisplayDriver<ISite>, LayerSiteSettingsDisplayDriver>();
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<LayerMetadata>();
-            });
+            services.AddContentPart<LayerMetadata>();
             services.AddScoped<IContentDisplayDriver, LayerMetadataWelder>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<ILayerService, LayerService>();

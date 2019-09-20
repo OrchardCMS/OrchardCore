@@ -27,21 +27,30 @@ namespace OrchardCore.ContentTypes.Services
                 IEnumerable<IContentDefinitionEventHandler> contentDefinitionEventHandlers,
                 IEnumerable<ContentPart> contentParts,
                 IEnumerable<ContentField> contentFields,
-                IOptions<ContentPartOptions> contentPartOptions,
-                IOptions<ContentFieldOptions> contentFieldOptions,
+                IOptions<ContentOptions> contentOptions,
                 ILogger<IContentDefinitionService> logger,
                 IStringLocalizer<ContentDefinitionService> localizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentDefinitionEventHandlers = contentDefinitionEventHandlers;
 
-            // This code can be removed in a future release and rationalized to only use ContentPartOptions.
-            _contentPartTypes = contentParts.Select(cp => cp.GetType())
-                .Union(contentPartOptions.Value.PartOptions.Select(cpo => cpo.Type));
+            foreach (var element in contentParts.Select(x => x.GetType()))
+            {
+                logger.LogWarning("The content part '{ContentPart}' should not be registerd in DI. Use AddContentPart<T> instead.", element);
+            }
 
-            // This code can be removed in a future release and rationalized to only use ContentFieldOptions.
+            foreach (var element in contentFields.Select(x => x.GetType()))
+            {
+                logger.LogWarning("The content field '{ContentField}' should not be registerd in DI. Use AddContentField<T> instead.", element);
+            }
+
+            // TODO: This code can be removed in a future release and rationalized to only use ContentPartOptions.
+            _contentPartTypes = contentParts.Select(cp => cp.GetType())
+                .Union(contentOptions.Value.ContentPartOptions.Select(cpo => cpo.Type));
+
+            // TODO: This code can be removed in a future release and rationalized to only use ContentFieldOptions.
             _contentFieldTypes = contentFields.Select(cf => cf.GetType())
-                .Union(contentFieldOptions.Value.FieldOptions.Select(cfo => cfo.Type));
+                .Union(contentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type));
             Logger = logger;
             T = localizer;
         }

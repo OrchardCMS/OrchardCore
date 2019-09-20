@@ -26,11 +26,8 @@ namespace OrchardCore.Html
         public override void ConfigureServices(IServiceCollection services)
         {
             // Body Part
+            services.AddContentPart<HtmlBodyPart>();
             services.AddScoped<IContentPartDisplayDriver, HtmlBodyPartDisplay>();
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<HtmlBodyPart>();
-            });
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, HtmlBodyPartIndexHandler>();

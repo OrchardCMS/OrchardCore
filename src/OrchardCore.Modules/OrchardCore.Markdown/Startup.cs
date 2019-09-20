@@ -30,11 +30,7 @@ namespace OrchardCore.Markdown
         public override void ConfigureServices(IServiceCollection services)
         {
             // Markdown Part
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<MarkdownBodyPart>();
-            });
-
+            services.AddContentPart<MarkdownBodyPart>();
             services.AddScoped<IContentPartDisplayDriver, MarkdownBodyPartDisplay>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
@@ -42,10 +38,7 @@ namespace OrchardCore.Markdown
             services.AddScoped<IContentPartHandler, MarkdownBodyPartHandler>();
 
             // Markdown Field
-            services.Configure<ContentFieldOptions>(options =>
-            {
-                options.AddField<MarkdownField>();
-            });
+            services.AddContentField<MarkdownField>();
             services.AddScoped<IContentFieldDisplayDriver, MarkdownFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();

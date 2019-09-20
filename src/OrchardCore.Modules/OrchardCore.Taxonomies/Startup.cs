@@ -39,16 +39,10 @@ namespace OrchardCore.Taxonomies
 
             // Taxonomy Part
             services.AddScoped<IContentPartDisplayDriver, TaxonomyPartDisplayDriver>();
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<TaxonomyPart>();
-            });
+            services.AddContentPart<TaxonomyPart>();
 
             // Taxonomy Field
-            services.Configure<ContentFieldOptions>(options =>
-            {
-                options.AddField<TaxonomyField>();
-            });
+            services.AddContentField<TaxonomyField>();
             services.AddScoped<IContentFieldDisplayDriver, TaxonomyFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();

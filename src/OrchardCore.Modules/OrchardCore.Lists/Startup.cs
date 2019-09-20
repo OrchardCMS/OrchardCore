@@ -39,18 +39,12 @@ namespace OrchardCore.Lists
         {
             services.AddSingleton<IIndexProvider, ContainedPartIndexProvider>();
             services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<ContainedPart>();
-            });
+            services.AddContentPart<ContainedPart>();
             services.AddTransient<IContentAdminFilter, ListPartContentAdminFilter>();
 
             // List Part
             services.AddScoped<IContentPartDisplayDriver, ListPartDisplayDriver>();
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<ListPart>();
-            });
+            services.AddContentPart<ListPart>();
             services.AddScoped<IContentPartHandler, ListPartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();

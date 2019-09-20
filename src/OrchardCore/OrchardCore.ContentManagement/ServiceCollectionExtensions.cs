@@ -30,8 +30,7 @@ namespace OrchardCore.ContentManagement
             services.AddSingleton<IContentItemIdGenerator, DefaultContentItemIdGenerator>();
             services.AddScoped<IContentAliasManager, ContentAliasManager>();
 
-            services.AddOptions<ContentPartOptions>();
-            services.AddOptions<ContentFieldOptions>();
+            services.AddOptions<ContentOptions>();
 
             return services;
         }

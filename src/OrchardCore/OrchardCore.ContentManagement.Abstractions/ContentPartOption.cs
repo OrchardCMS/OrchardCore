@@ -2,13 +2,6 @@ using System;
 
 namespace OrchardCore.ContentManagement
 {
-    public class ContentPartOption<TContentPart> : ContentPartOption where TContentPart : ContentPart
-    {
-        public ContentPartOption() : base(typeof(TContentPart))
-        {
-        }
-    }
-
     public class ContentPartOption
     {
         public ContentPartOption(Type contentPartType)

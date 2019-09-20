@@ -28,25 +28,16 @@ namespace OrchardCore.Flows
         {
             // Flow Part
             services.AddScoped<IContentPartDisplayDriver, FlowPartDisplay>();
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<FlowPart>();
-            });
+            services.AddContentPart<FlowPart>();
             services.AddScoped<IContentDisplayDriver, FlowMetadataDisplay>();
 
             // Bag Part
             services.AddScoped<IContentPartDisplayDriver, BagPartDisplay>();
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<BagPart>();
-            });
+            services.AddContentPart<BagPart>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, BagPartIndexHandler>();
 
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<FlowMetadata>();
-            });
+            services.AddContentPart<FlowMetadata>();
 
             services.AddScoped<IDataMigration, Migrations>();
         }

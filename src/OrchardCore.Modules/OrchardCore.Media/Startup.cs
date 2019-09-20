@@ -103,11 +103,7 @@ namespace OrchardCore.Media
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<ImageMediaPart>();
-            });
+            services.AddContentPart<ImageMediaPart>();
             services.AddMedia();
 
             services.AddLiquidFilter<MediaUrlFilter>("asset_url");
@@ -131,10 +127,7 @@ namespace OrchardCore.Media
                 .AddProcessor<BackgroundColorWebProcessor>();
 
             // Media Field
-            services.Configure<ContentFieldOptions>(options =>
-            {
-                options.AddField<MediaField>();
-            });
+            services.AddContentField<MediaField>();
             services.AddScoped<IContentFieldDisplayDriver, MediaFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
             services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();

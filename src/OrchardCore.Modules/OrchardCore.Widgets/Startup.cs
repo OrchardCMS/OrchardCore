@@ -16,16 +16,10 @@ namespace OrchardCore.Widgets
         {
             // Widgets List Part
             services.AddScoped<IContentPartDisplayDriver, WidgetsListPartDisplay>();
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<WidgetsListPart>();
-            });
+            services.AddContentPart<WidgetsListPart>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<WidgetMetadata>();
-            });
+            services.AddContentPart<WidgetMetadata>();
             services.AddScoped<IDataMigration, Migrations>();
         }
     }

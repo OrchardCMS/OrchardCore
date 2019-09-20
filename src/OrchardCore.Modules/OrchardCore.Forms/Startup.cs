@@ -42,18 +42,17 @@ namespace OrchardCore.Forms
             services.AddScoped<IContentPartDisplayDriver, ValidationSummaryPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, ValidationPartDisplay>();
 
-            services.Configure<ContentPartOptions>(options =>
-            {
-                options.AddPart<FormPart>();
-                options.AddPart<FormElementPart>();
-                options.AddPart<FormInputElementPart>();
-                options.AddPart<LabelPart>();
-                options.AddPart<ButtonPart>();
-                options.AddPart<InputPart>();
-                options.AddPart<TextAreaPart>();
-                options.AddPart<ValidationSummaryPart>();
-                options.AddPart<ValidationPart>();
-            });
+            services
+                .AddContentPart<FormPart>()
+                .AddContentPart<FormElementPart>()
+                .AddContentPart<FormInputElementPart>()
+                .AddContentPart<LabelPart>()
+                .AddContentPart<ButtonPart>()
+                .AddContentPart<InputPart>()
+                .AddContentPart<TextAreaPart>()
+                .AddContentPart<ValidationSummaryPart>()
+                .AddContentPart<ValidationPart>()
+                ;
 
             services.AddScoped<IDataMigration, Migrations>();
         }

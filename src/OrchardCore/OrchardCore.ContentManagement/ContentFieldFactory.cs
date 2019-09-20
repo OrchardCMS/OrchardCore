@@ -16,13 +16,13 @@ namespace OrchardCore.ContentManagement
 
         public ContentFieldFactory(
             IEnumerable<ContentField> contentFields,
-            IOptions<ContentFieldOptions> contentFieldOptions
+            IOptions<ContentOptions> contentOptions
             )
         {
             _contentFieldActivators = new Dictionary<string, ITypeActivator<ContentField>>();
 
             // Check DI container for registered parts.
-            // This code can be removed in a future release.
+            // TODO: This code can be removed in a future release as the recommended way is to use ContentOptions.
             foreach (var contentField in contentFields)
             {
                 var activatorType = typeof(GenericTypeActivator<,>).MakeGenericType(contentField.GetType(), typeof(ContentField));
@@ -30,8 +30,8 @@ namespace OrchardCore.ContentManagement
                 _contentFieldActivators.Add(contentField.GetType().Name, activator);
             }
 
-            // Check ContentFieldOptions for configured parts.
-            foreach (var fieldOption in contentFieldOptions.Value.FieldOptions)
+            // Check content options for configured fields.
+            foreach (var fieldOption in contentOptions.Value.ContentFieldOptions)
             {
                 var activatorType = typeof(GenericTypeActivator<,>).MakeGenericType(fieldOption.Type, typeof(ContentField));
                 var activator = (ITypeActivator<ContentField>)Activator.CreateInstance(activatorType);

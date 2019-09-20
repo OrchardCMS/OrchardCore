@@ -190,10 +190,7 @@ public class TextField : ContentField
 This class needs to be registered in the DI like this:
 
 ```csharp
-services.Configure<ContentFieldOptions>(options =>
-{
-    options.AddField<TextField>();
-});
+services.AddContentField<TextField>();
 ```
 
 ### Display Driver
