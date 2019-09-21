@@ -144,7 +144,7 @@ namespace OrchardCore.Contents
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
                 pattern: "Admin/Contents/ContentItems/{contentTypeId?}",
-                defaults: new { controller = "Admin", action = "List" }
+                defaults: new {controller = "Admin", action = "List" }
             );
         }
     }
