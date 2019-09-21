@@ -14,15 +14,6 @@ namespace OrchardCore.Environment.Shell.Builders
         private readonly MethodInfo _configureService;
         private readonly MethodInfo _configure;
 
-        private readonly int _order;
-        private readonly int _configureOrder;
-
-        /// <inheritdoc />
-        public override int Order => _order;
-
-        /// <inheritdoc />
-        public override int ConfigureOrder => _configureOrder;
-
         public StartupBaseMock(
             object startup,
             MethodInfo configureService,
@@ -37,9 +28,15 @@ namespace OrchardCore.Environment.Shell.Builders
             var orderValue = order?.GetValue(_startup);
             var configureOrderValue = configureOrder?.GetValue(_startup);
 
-            _order = orderValue != null ? (int)orderValue : default;
-            _configureOrder = configureOrderValue != null ? (int)configureOrderValue : _order;
+            Order = orderValue != null ? (int)orderValue : default;
+            ConfigureOrder = configureOrderValue != null ? (int)configureOrderValue : Order;
         }
+
+        /// <inheritdoc />
+        public override int Order { get; }
+
+        /// <inheritdoc />
+        public override int ConfigureOrder { get; }
 
         public override void ConfigureServices(IServiceCollection services)
         {
