@@ -46,7 +46,7 @@ namespace OrchardCore.Environment.Shell.Builders
             var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             tenantServiceCollection.AddSingleton(settings);
-            tenantServiceCollection.AddSingleton<IShellConfiguration>(sp =>
+            tenantServiceCollection.AddSingleton(sp =>
             {
                 // Resolve it lazily as it's constructed lazily
                 var shellSettings = sp.GetRequiredService<ShellSettings>();
@@ -89,7 +89,6 @@ namespace OrchardCore.Environment.Shell.Builders
                 }
 
                 // Create a wrapper around this method
-
                 var configureServicesMethod = rawStartup.GetMethod(
                     "ConfigureServices",
                     BindingFlags.Public | BindingFlags.Instance,
@@ -102,6 +101,9 @@ namespace OrchardCore.Environment.Shell.Builders
                     "Configure",
                     BindingFlags.Public | BindingFlags.Instance);
 
+                var orderProperty = rawStartup.GetProperty("Order");
+                var configureOrderProperty = rawStartup.GetProperty("ConfigureOrder");
+
                 // Add the startup class to the DI so we can instantiate it with
                 // valid ctor arguments
                 moduleServiceCollection.AddSingleton(rawStartup);
@@ -110,13 +112,13 @@ namespace OrchardCore.Environment.Shell.Builders
                 moduleServiceCollection.AddSingleton<IStartup>(sp =>
                 {
                     var startupInstance = sp.GetService(rawStartup);
-                    return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod);
+                    return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod, orderProperty, configureOrderProperty);
                 });
 
                 tenantServiceCollection.AddSingleton<IStartup>(sp =>
                 {
                     var startupInstance = sp.GetService(rawStartup);
-                    return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod);
+                    return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod, orderProperty, configureOrderProperty);
                 });
             }
 
