@@ -101,8 +101,13 @@ namespace OrchardCore.Environment.Shell.Builders
                     "Configure",
                     BindingFlags.Public | BindingFlags.Instance);
 
-                var orderProperty = rawStartup.GetProperty("Order");
-                var configureOrderProperty = rawStartup.GetProperty("ConfigureOrder");
+                var orderProperty = rawStartup.GetProperty(
+                    "Order",
+                    BindingFlags.Public | BindingFlags.Instance);
+
+                var configureOrderProperty = rawStartup.GetProperty(
+                    "ConfigureOrder",
+                    BindingFlags.Public | BindingFlags.Instance);
 
                 // Add the startup class to the DI so we can instantiate it with
                 // valid ctor arguments
