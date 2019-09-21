@@ -70,6 +70,10 @@ namespace OrchardCore.Environment.Shell.Builders
                 tenantServiceCollection.AddSingleton(typeof(IStartup), dependency.Key);
             }
 
+            // To not trigger features loading before it is normally done by 'ShellHost',
+            // init here the application feature in place of doing it in the constructor.
+            EnsureApplicationFeature();
+
             foreach (var rawStartup in blueprint.Dependencies.Keys.Where(t => t.Name == "Startup"))
             {
                 // Startup classes inheriting from IStartup are already treated
@@ -79,7 +83,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 }
 
                 // Ignore Startup class from main application
-                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeature) && startupFeature.FeatureInfo.Name == Application.ModuleName)
+                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeature) && startupFeature.FeatureInfo.Id == _applicationFeature.Id)
                 {
                     continue;
                 }
@@ -140,10 +144,6 @@ namespace OrchardCore.Environment.Shell.Builders
             // IStartup instances are ordered by module dependency with an Order of 0 by default.
             // OrderBy performs a stable sort so order is preserved among equal Order values.
             startups = startups.OrderBy(s => s.Order);
-
-            // To not trigger features loading before it is normally done by 'ShellHost',
-            // init here the application feature in place of doing it in the constructor.
-            EnsureApplicationFeature();
 
             // Let any module add custom service descriptors to the tenant
             foreach (var startup in startups)
