@@ -30,6 +30,7 @@ namespace OrchardCore.Forms
             {
                 options.Filters.Add<ExportModelStateAttribute>();
                 options.Filters.Add<ImportModelStateAttribute>();
+                options.Filters.Add<ImportModelStatePageFilter>();
             });
 
             services.AddScoped<IContentPartDisplayDriver, FormPartDisplay>();
