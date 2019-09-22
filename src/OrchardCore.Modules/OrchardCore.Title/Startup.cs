@@ -23,7 +23,7 @@ namespace OrchardCore.Title
         {
             // Title Part
             services.AddScoped<IContentPartDisplayDriver, TitlePartDisplay>();
-            services.AddSingleton<ContentPart, TitlePart>();
+            services.AddContentPart<TitlePart>();
             services.AddScoped<IContentPartIndexHandler, TitlePartIndexHandler>();
 
             services.AddScoped<IDataMigration, Migrations>();

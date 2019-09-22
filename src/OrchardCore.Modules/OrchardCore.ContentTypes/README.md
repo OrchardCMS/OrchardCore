@@ -139,11 +139,15 @@ public class Product : ContentPart
 Then, register your ContentPart with Dependency Injection:
 
 ```csharp
+using OrchardCore.ContentManagement;
+
+...
+
 public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<ContentPart, Product>();
+        services.AddContentPart<Product>();
     }
 }
 ```

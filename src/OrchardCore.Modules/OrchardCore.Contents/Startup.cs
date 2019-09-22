@@ -20,12 +20,14 @@ using OrchardCore.Contents.Models;
 using OrchardCore.Contents.Recipes;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.Services;
+using OrchardCore.Contents.Settings;
 using OrchardCore.Contents.TagHelpers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Entities;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
@@ -53,6 +55,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentHandler, ContentsHandler>();
             services.AddRecipeExecutionStep<ContentStep>();
 
+            services.AddScoped<IContentItemIndexHandler, FullTextContentIndexHandler>();
             services.AddScoped<IContentItemIndexHandler, AspectsContentIndexHandler>();
             services.AddScoped<IContentItemIndexHandler, DefaultContentIndexHandler>();
             services.AddScoped<IContentAliasProvider, ContentItemIdAliasProvider>();
@@ -62,16 +65,22 @@ namespace OrchardCore.Contents
             services.AddScoped<IDataMigration, Migrations>();
 
             // Common Part
-            services.AddSingleton<ContentPart, CommonPart>();
+            services.AddContentPart<CommonPart>();
+
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, CommonPartSettingsDisplayDriver>();
             services.AddScoped<IContentPartDisplayDriver, DateEditorDriver>();
             services.AddScoped<IContentPartDisplayDriver, OwnerEditorDriver>();
+
+            // FullTextAspect
+            services.AddScoped<IContentTypeDefinitionDisplayDriver, FullTextAspectSettingsDisplayDriver>();
+            services.AddScoped<IContentHandler, FullTextAspectSettingsHandler>();
 
             // Feeds
             // TODO: Move to feature
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
 
             services.AddTagHelpers<ContentLinkTagHelper>();
+            services.AddTagHelpers<ContentItemTagHelper>();
             services.Configure<AutorouteOptions>(options =>
             {
                 if (options.GlobalRouteValues.Count == 0)
@@ -137,7 +146,7 @@ namespace OrchardCore.Contents
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
                 pattern: "Admin/Contents/ContentItems/{contentTypeId?}",
-                defaults: new { controller = "Admin", action = "List" }
+                defaults: new {controller = "Admin", action = "List" }
             );
         }
     }
