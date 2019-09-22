@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Builders
@@ -134,7 +133,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
             // Make shell settings available to the modules
             moduleServiceCollection.AddSingleton(settings);
-            moduleServiceCollection.AddSingleton<IShellConfiguration>(sp =>
+            moduleServiceCollection.AddSingleton(sp =>
             {
                 // Resolve it lazily as it's constructed lazily
                 var shellSettings = sp.GetRequiredService<ShellSettings>();
