@@ -77,7 +77,28 @@ be `Address.City`.
 
 Everything you need to know about Shapes is in [this video](https://youtu.be/gKLjtCIs4GU).
 
-### Tag Helpers
+### Rendering a shape
+
+You can use the `<shape>` tag helper to render a ContentItem shape by alias for example.
+
+```razor
+<shape Type="ContentItem" alias="alias:my-alias" display-type="Detail" />
+```
+
+```liquid
+{% shape "ContentItem", alias:"alias:main-menu" display_type="Detail" %}
+```
+
+For rendering content items, you could also use the following tag helper.
+Note: you need to add `@addTagHelper *, OrchardCore.Contents` to your `_ViewImports.cshtml` file to load this tag helper.
+
+```razor
+<contentitem alias="alias:main-menu" display-type="Detail" />
+```
+
+```liquid
+{% contentitem alias:"alias:main-menu" display_type="Detail" %}
+```
 
 #### Manipulating shape metadata
 
