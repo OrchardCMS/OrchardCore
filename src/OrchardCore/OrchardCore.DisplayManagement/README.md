@@ -79,14 +79,29 @@ Everything you need to know about Shapes is in [this video](https://youtu.be/gKL
 
 ### Rendering a shape
 
-You can use the `<shape>` tag helper to render a ContentItem shape by alias for example.
+You can use the `<shape>` tag helper to render any shapes, even pass properties.
 
 ```razor
-<shape Type="ContentItem" alias="alias:my-alias" display-type="Detail" />
+@{
+    var intValue = 1;
+    var stringValue = "a";
+}
+
+@await DisplayAsync(await New.MyShape(Foo: 1, Bar: "a"))
+
+<shape type="MyShape" foo="1" bar="a" />
+
+<shape type="MyShape" prop-foo="1" bar="a" />
+
+<shape type="MyShape" prop-foo="@intValue" prop-bar="@stringValue" />
 ```
 
 ```liquid
-{% shape "ContentItem", alias:"alias:main-menu" display_type="Detail" %}
+{% assign customShape = "MyShape" | shape_new %}
+{% shape_add_properties customShape my_string: "String Test 3", my_int: 1 %}
+{{ customShape | shape_render }}
+
+{% "MyShape" | shape_new | shape_properties: my_int: 3, my_string: "String Test 3" | shape_render %}
 ```
 
 For rendering content items, you could also use the following tag helper.
