@@ -90,7 +90,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
                 // Create a wrapper around this method
                 var configureServicesMethod = rawStartup.GetMethod(
-                    "ConfigureServices",
+                    nameof(IStartup.ConfigureServices),
                     BindingFlags.Public | BindingFlags.Instance,
                     null,
                     CallingConventions.Any,
@@ -98,15 +98,15 @@ namespace OrchardCore.Environment.Shell.Builders
                     null);
 
                 var configureMethod = rawStartup.GetMethod(
-                    "Configure",
+                    nameof(IStartup.Configure),
                     BindingFlags.Public | BindingFlags.Instance);
 
                 var orderProperty = rawStartup.GetProperty(
-                    "Order",
+                    nameof(IStartup.Order),
                     BindingFlags.Public | BindingFlags.Instance);
 
                 var configureOrderProperty = rawStartup.GetProperty(
-                    "ConfigureOrder",
+                    nameof(IStartup.ConfigureOrder),
                     BindingFlags.Public | BindingFlags.Instance);
 
                 // Add the startup class to the DI so we can instantiate it with
