@@ -20,7 +20,7 @@
     <PackageManagement Include="MailKit" Version="2.3.1.6" />
     <PackageManagement Include="Markdig" Version="0.17.1" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.0.180" />
+    <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.1.0-preview.32" />
     <PackageManagement Include="Moq" Version="4.13.0" />
     <PackageManagement Include="Nancy" Version="2.0.0" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
