@@ -4,12 +4,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Users.ViewModels
 {
-    public class ExternalLoginViewModel : IValidatableObject
+    public class RegisterExternalLoginViewModel : IValidatableObject
     {
         public bool NoUsername { get; set; }
         public bool NoEmail { get; set; }
         public bool NoPassword { get; set; }
-        public bool IsExistingUser { get; set; }
 
         public string UserName { get; set; }
 
@@ -24,22 +23,22 @@ namespace OrchardCore.Users.ViewModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (string.IsNullOrWhiteSpace(Email) && (!NoEmail || IsExistingUser))
+            if (string.IsNullOrWhiteSpace(Email) && !NoEmail)
             {
                 yield return new ValidationResult("Email is required!", new[] { "Email" });
             }
 
-            if (string.IsNullOrWhiteSpace(UserName) && (!NoUsername || IsExistingUser))
+            if (string.IsNullOrWhiteSpace(UserName) && !NoUsername)
             {
                 yield return new ValidationResult("Username is required!", new[] { "UserName" });
             }
 
-            if (string.IsNullOrWhiteSpace(Password) && (!NoPassword || IsExistingUser))
+            if (string.IsNullOrWhiteSpace(Password) && !NoPassword)
             {
                 yield return new ValidationResult("Password is required!", new[] { "Password" });
             }
 
-            if (!IsExistingUser && Password != ConfirmPassword)
+            if (Password != ConfirmPassword)
             {
                 yield return new ValidationResult("Confirm Password do not match", new[] { "ConfirmPassword" });
             }

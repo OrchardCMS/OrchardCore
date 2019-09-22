@@ -1,7 +1,14 @@
 @using OrchardCore.Users.Models;
 @model RegistrationSettings
 
-<fieldset class="form-group" asp-validation-class-for="UsersCanRegister">
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+
+<div class="form-group" asp-validation-class-for="UsersCanRegister">
     <label asp-for="UsersCanRegister">@T["Users can create new accounts on the site"]</label>
     <select asp-for="UsersCanRegister" class="form-control">
         @foreach (RegistrationSettings.UsersCanRegisterEnum option in Enum.GetValues(typeof(RegistrationSettings.UsersCanRegisterEnum)))
@@ -12,79 +19,141 @@
     <span asp-validation-for="UsersCanRegister"></span>
 
     <div class="hint">
-        <span>@T["Configure users registration."]</span>        
+        <span>@T["Configure users registration."]</span>
         <ul>
             <li>@T["when NoRegistration is selected, no new users can register"]</li>
             <li>@T["when AllowRegistration is selected, a link is displayed to allow the users to register on the site. If there are external providers, once authenticated the user can register"]</li>
             <li>@T["when AllowOnlyExternalUsers is selected, only users authenticated with external providers can register on the site"]</li>
         </ul>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="UsersMustValidateEmail">
+<div class="form-group" asp-validation-class-for="UsersMustValidateEmail">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UsersMustValidateEmail" data-toggle="collapse" data-target="#warnEmailValidation" />
         <span asp-validation-for="UsersMustValidateEmail"></span>
         <label class="custom-control-label" asp-for="UsersMustValidateEmail">@T["Users must verify their email address"]</label>
         <span class="hint">— @T["The users whose email address has not been confirmed will not be able to login."]</span>
     </div>
-</fieldset>
+</div>
+
 <div class="alert alert-warning collapse" id="warnEmailValidation">@T["The users whose email address has not been confirmed will not be able to login or reset their password."]</div>
-<fieldset class="form-group" asp-validation-class-for="UseSiteTheme">
+
+<div class="form-group" asp-validation-class-for="UseSiteTheme">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseSiteTheme" />
         <span asp-validation-for="UseSiteTheme"></span>
         <label class="custom-control-label" asp-for="UseSiteTheme">@T["Use site theme for registration page"]</label>
         <span class="hint">— @T["Requires an active site theme."]</span>
     </div>
-</fieldset>
+</div>
+
+<div class="form-group" asp-validation-class-for="GenerateUsernameScript">
+    <label asp-for="GenerateUsernameScript">@T["Use the following script to create a username."]</label>
+    <button type="button" class="btn btn-sm" onclick="resetScript()">@T["Reset Script"]</button>
+    <textarea asp-for="GenerateUsernameScript" rows="1" class="form-control content-preview-text"></textarea>
+    <span asp-validation-for="GenerateUsernameScript"></span>
+</div>
 
 <h5 class="form-group">@T["External Authentication"]<span class="hint"> — @T["Settings when registering with external authentication providers"]</span></h5>
 
-<fieldset class="form-group" asp-validation-class-for="NoUsernameForExternalUsers">
+<div class="form-group" asp-validation-class-for="NoUsernameForExternalUsers">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="NoUsernameForExternalUsers" data-external-registration />
         <span asp-validation-for="NoUsernameForExternalUsers"></span>
         <label class="custom-control-label" asp-for="NoUsernameForExternalUsers">@T["Generate username for external users"]</label>
-        <span class="hint">— @T["When a new user logs in with an external provider, he is not required to provide a local username."]</span>
+        <span class="hint">— @T["When a new user logs in with an external provider, he is not required to provide a local username. If GenerateUsername script is set, it is used to create the username."]</span>
     </div>
-</fieldset>
-<fieldset class="form-group" asp-validation-class-for="NoEmailForExternalUsers">
+</div>
+<div class="form-group" asp-validation-class-for="NoEmailForExternalUsers">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="NoEmailForExternalUsers" data-external-registration />
         <span asp-validation-for="NoEmailForExternalUsers"></span>
         <label class="custom-control-label" asp-for="NoEmailForExternalUsers">@T["Use email address from external provider"]</label>
         <span class="hint">— @T["When a new user logs in with an external provider, he is not required to provide a local email address."]</span>
     </div>
-</fieldset>
-<fieldset class="form-group" asp-validation-class-for="NoPasswordForExternalUsers">
+</div>
+<div class="form-group" asp-validation-class-for="NoPasswordForExternalUsers">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="NoPasswordForExternalUsers" data-external-registration />
         <span asp-validation-for="NoPasswordForExternalUsers"></span>
         <label class="custom-control-label" asp-for="NoPasswordForExternalUsers">@T["Do not create local password for external users"]</label>
         <span class="hint">— @T["When a new user logs in with an external provider, he is not required to provide a local password."]</span>
     </div>
-</fieldset>
+</div>
 
-<script at="Foot" type="text/javascript">
-////<![CDATA[
-    window.onload = function () {
+<script at="Foot">
+    //<![CDATA[
+    function refresh(e) {
+        var usersCanRegisterElement = document.getElementById("@Html.IdFor(m => m.UsersCanRegister)");
+        var externalRegistrationInputs = $("input[data-external-registration]");
+
+        if (usersCanRegisterElement.value == "NoRegistration") {
+            externalRegistrationInputs.prop('disabled', true);
+        } else {
+            externalRegistrationInputs.prop('disabled', false);
+        }
+    }
+
+    function resetScript(keepText) {
+        var editor = $('#@Html.IdFor(x => x.GenerateUsernameScript)').data('editor');
+        if (!keepText) {
+            editor.doc.setValue(
+                '/**************************************************************************/\n' +
+                '/* Input                                                                  */\n' +
+                '/* =====                                                                  */\n' +
+                '/* claims   : a list of claims received from the external provider        */\n' +
+                '/* provider : the id of the provider                                      */\n' +
+                '/*                                                                        */\n' +
+                '/* Output                                                                 */\n' +
+                '/* ======                                                                 */\n' +
+                '/* the generated username or false                                        */\n' +
+                '/*                                                                        */\n' +
+                '/* Description                                                            */\n' +
+                '/* ===========                                                            */\n' +
+                '/* Use the claims variable to inspect the external identity claims        */\n' +
+                '/* Each claim has the following properties                                */\n' +
+                '/* { Issuer, OriginalIssuer, Properties, Type, Value, ValueType }         */\n' +
+                '/* You can use log(level, text) to append to OrchardCore log file         */\n' +
+                '/* The provider variable holds the provider id of the claims              */\n' +
+                '/* The script must return a generated username or null                    */\n' +
+                '/**************************************************************************/\n' +
+                '\n' +
+                '/* Uncomment to map AzureAD\n' +
+                'switch (provider) {\n' +
+                '    case "AzureAD":\n' +
+                '        return "azad" + Date.now().toString();\n' +
+                '    default:\n' +
+    	        '        log("Warning", "Provider " + provider + " was not handled");\n' +
+                '}\n' +
+                '*/\n' +
+                'return "u" + Data.now().toString();\n'
+            );
+        }
+        editor.markText({ line: 0, ch: 0 }, { line: 18 }, { readOnly: true });
+    }
+
+    window.onload=function () {
         refresh();
 
         $("#@Html.IdFor(m => m.UsersCanRegister)").change(function () {
             refresh();
         });
 
-        function refresh(e) {
-            var usersCanRegisterElement = document.getElementById("@Html.IdFor(m => m.UsersCanRegister)");
-            var externalRegistrationInputs = $("input[data-external-registration]");
-
-            if (usersCanRegisterElement.value == "NoRegistration") {
-                externalRegistrationInputs.prop('disabled', true);
-            } else {
-                externalRegistrationInputs.prop('disabled', false);
-            }
+        var textArea = document.getElementById('@Html.IdFor(x => x.GenerateUsernameScript)');
+        if (textArea == null) {
+            return;
         }
+        var editor = CodeMirror.fromTextArea(textArea, {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            autoCloseTags: true,
+            mode: "javascript"
+        });
+        $('#@Html.IdFor(x => x.GenerateUsernameScript)').data('editor', editor);
+        resetScript(editor.doc.lineCount() > 1);
     };
-//]]>
+    //]]>
 </script>
