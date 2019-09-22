@@ -79,7 +79,7 @@ Everything you need to know about Shapes is in [this video](https://youtu.be/gKL
 
 ### Rendering a shape
 
-You can use the `<shape>` tag helper to render any shapes, even pass properties.
+You can use the `<shape>` tag helper to render any shape, even pass properties.
 
 ```razor
 @{
