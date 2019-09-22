@@ -65,6 +65,8 @@ namespace OrchardCore.Contents
 
             // Common Part
             services.AddContentPart<CommonPart>();
+            //TODO need to consider this now.
+                //.WithDisplayDriver
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, CommonPartSettingsDisplayDriver>();
             services.AddScoped<IContentPartDisplayDriver, DateEditorDriver>();

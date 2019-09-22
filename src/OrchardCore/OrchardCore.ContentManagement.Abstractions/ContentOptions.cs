@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.ContentManagement
 {
@@ -9,8 +10,8 @@ namespace OrchardCore.ContentManagement
     public class ContentOptions
     {
         private readonly List<ContentPartOption> _contentParts = new List<ContentPartOption>();
-        private readonly List<ContentFieldOption> _contentFields = new List<ContentFieldOption>();
 
+        private readonly List<ContentFieldOption> _contentFields = new List<ContentFieldOption>();
         public ContentPartOption AddContentPart<T>() where T : ContentPart
         {
             return AddContentPart(typeof(T));
@@ -27,6 +28,12 @@ namespace OrchardCore.ContentManagement
             _contentParts.Add(option);
 
             return option;
+        }
+
+        public void WithContentPartFactoryType(string factoryName, Type contentPartType, Type factoryType)
+        {
+            var option = _contentParts.FirstOrDefault(x => x.Type.Name == contentPartType.Name);
+            option.WithFactoryType(factoryName, factoryType);
         }
 
         public ContentFieldOption AddContentField<T>() where T : ContentField
@@ -48,6 +55,9 @@ namespace OrchardCore.ContentManagement
         }
 
         public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
+
+        private Dictionary<string, ContentPartOption> _contentPartOptionsLookup;
+        public IReadOnlyDictionary<string, ContentPartOption> ContentPartOptionsLookup => _contentPartOptionsLookup ??= _contentParts.ToDictionary(k => k.Type.Name);
 
         public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;
     }

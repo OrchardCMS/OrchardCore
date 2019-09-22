@@ -43,8 +43,9 @@ namespace OrchardCore.Lists
             services.AddTransient<IContentAdminFilter, ListPartContentAdminFilter>();
 
             // List Part
-            services.AddScoped<IContentPartDisplayDriver, ListPartDisplayDriver>();
-            services.AddContentPart<ListPart>();
+            services.AddContentPart<ListPart>()
+                .WithDisplayDriver<ListPartDisplayDriver>();
+
             services.AddScoped<IContentPartHandler, ListPartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();

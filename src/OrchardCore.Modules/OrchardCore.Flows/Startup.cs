@@ -27,13 +27,14 @@ namespace OrchardCore.Flows
         public override void ConfigureServices(IServiceCollection services)
         {
             // Flow Part
-            services.AddScoped<IContentPartDisplayDriver, FlowPartDisplay>();
-            services.AddContentPart<FlowPart>();
+            services.AddContentPart<FlowPart>()
+                .WithDisplayDriver<FlowPartDisplay>();
+
             services.AddScoped<IContentDisplayDriver, FlowMetadataDisplay>();
 
             // Bag Part
-            services.AddScoped<IContentPartDisplayDriver, BagPartDisplay>();
-            services.AddContentPart<BagPart>();
+            services.AddContentPart<BagPart>()
+                .WithDisplayDriver<BagPartDisplay>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, BagPartIndexHandler>();
 

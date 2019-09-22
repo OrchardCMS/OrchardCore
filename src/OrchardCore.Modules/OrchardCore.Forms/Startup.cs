@@ -33,27 +33,32 @@ namespace OrchardCore.Forms
                 options.Filters.Add<ImportModelStatePageFilter>();
             });
 
-            services.AddScoped<IContentPartDisplayDriver, FormPartDisplay>();
-            services.AddScoped<IContentPartDisplayDriver, FormElementPartDisplay>();
-            services.AddScoped<IContentPartDisplayDriver, FormInputElementPartDisplay>();
-            services.AddScoped<IContentPartDisplayDriver, ButtonPartDisplay>();
-            services.AddScoped<IContentPartDisplayDriver, LabelPartDisplay>();
-            services.AddScoped<IContentPartDisplayDriver, InputPartDisplay>();
-            services.AddScoped<IContentPartDisplayDriver, TextAreaPartDisplay>();
-            services.AddScoped<IContentPartDisplayDriver, ValidationSummaryPartDisplay>();
-            services.AddScoped<IContentPartDisplayDriver, ValidationPartDisplay>();
+            services.AddContentPart<FormPart>()
+                    .WithDisplayDriver<FormPartDisplay>();
 
-            services
-                .AddContentPart<FormPart>()
-                .AddContentPart<FormElementPart>()
-                .AddContentPart<FormInputElementPart>()
-                .AddContentPart<LabelPart>()
-                .AddContentPart<ButtonPart>()
-                .AddContentPart<InputPart>()
-                .AddContentPart<TextAreaPart>()
-                .AddContentPart<ValidationSummaryPart>()
-                .AddContentPart<ValidationPart>()
-                ;
+            services.AddContentPart<FormElementPart>()
+                    .WithDisplayDriver<FormElementPartDisplay>();
+
+            services.AddContentPart<FormInputElementPart>()
+                    .WithDisplayDriver<FormInputElementPartDisplay>();
+
+            services.AddContentPart<LabelPart>()
+                    .WithDisplayDriver<LabelPartDisplay>();
+
+            services.AddContentPart<ButtonPart>()
+                    .WithDisplayDriver<ButtonPartDisplay>();
+
+            services.AddContentPart<InputPart>()
+                    .WithDisplayDriver<InputPartDisplay>();
+
+            services.AddContentPart<TextAreaPart>()
+                    .WithDisplayDriver<TextAreaPartDisplay>();
+
+            services.AddContentPart<ValidationSummaryPart>()
+                    .WithDisplayDriver<ValidationSummaryPartDisplay>();
+
+            services.AddContentPart<ValidationPart>()
+                    .WithDisplayDriver<ValidationPartDisplay>();
 
             services.AddScoped<IDataMigration, Migrations>();
         }

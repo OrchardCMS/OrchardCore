@@ -18,6 +18,7 @@ namespace OrchardCore.ContentManagement.Display
     /// </summary>
     public class ContentItemDisplayCoordinator : IContentDisplayHandler
     {
+        private readonly IContentPartDisplayDriverFactory _contentPartDisplayDriverFactory;
         private readonly IEnumerable<IContentDisplayDriver> _displayDrivers;
         private readonly IEnumerable<IContentFieldDisplayDriver> _fieldDisplayDrivers;
         private readonly IEnumerable<IContentPartDisplayDriver> _partDisplayDrivers;
@@ -25,6 +26,7 @@ namespace OrchardCore.ContentManagement.Display
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
 
         public ContentItemDisplayCoordinator(
+            IContentPartDisplayDriverFactory contentPartDisplayDriverFactory,
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentDisplayDriver> displayDrivers,
             IEnumerable<IContentFieldDisplayDriver> fieldDisplayDrivers,
@@ -32,6 +34,7 @@ namespace OrchardCore.ContentManagement.Display
             ITypeActivatorFactory<ContentPart> contentPartFactory,
             ILogger<ContentItemDisplayCoordinator> logger)
         {
+            _contentPartDisplayDriverFactory = contentPartDisplayDriverFactory;
             _contentPartFactory = contentPartFactory;
             _contentDefinitionManager = contentDefinitionManager;
             _displayDrivers = displayDrivers;
@@ -77,11 +80,12 @@ namespace OrchardCore.ContentManagement.Display
 
                 if (part != null)
                 {
-                    foreach (var displayDriver in _partDisplayDrivers)
+                    var partDisplayDriver = _contentPartDisplayDriverFactory.GetDisplayDriver(partTypeName);
+                    if (partDisplayDriver != null)
                     {
                         try
                         {
-                            var result = await displayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
+                            var result = await partDisplayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
                             if (result != null)
                             {
                                 await result.ApplyAsync(context);
@@ -89,10 +93,27 @@ namespace OrchardCore.ContentManagement.Display
                         }
                         catch (Exception ex)
                         {
-                            InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                            InvokeExtensions.HandleException(ex, Logger, partDisplayDriver.GetType().Name, "BuildDisplayAsync");
                         }
                     }
-
+                    else
+                    {
+                        foreach (var displayDriver in _partDisplayDrivers)
+                        {
+                            try
+                            {
+                                var result = await displayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
+                                if (result != null)
+                                {
+                                    await result.ApplyAsync(context);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                            }
+                        }
+                    }
                     var tempContext = context;
 
                     // Create a custom ContentPart shape that will hold the fields for dynamic content part (not implicit parts)
@@ -211,16 +232,33 @@ namespace OrchardCore.ContentManagement.Display
 
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}";
                 context.DefaultPosition = partPosition;
-
-                await _partDisplayDrivers.InvokeAsync(async contentDisplay =>
+                var partDisplayDriver = _contentPartDisplayDriverFactory.GetDisplayDriver(partTypeName);
+                if (partDisplayDriver != null)
                 {
-                    var result = await contentDisplay.BuildEditorAsync(part, typePartDefinition, context);
-                    if (result != null)
+                    try
                     {
-                        await result.ApplyAsync(context);
+                        var result = await partDisplayDriver.BuildEditorAsync(part, typePartDefinition, context);
+                        if (result != null)
+                        {
+                            await result.ApplyAsync(context);
+                        }
                     }
-                }, Logger);
-
+                    catch (Exception ex)
+                    {
+                        InvokeExtensions.HandleException(ex, Logger, partDisplayDriver.GetType().Name, "BuildDisplayAsync");
+                    }
+                }
+                else
+                {
+                    await _partDisplayDrivers.InvokeAsync(async contentDisplay =>
+                    {
+                        var result = await contentDisplay.BuildEditorAsync(part, typePartDefinition, context);
+                        if (result != null)
+                        {
+                            await result.ApplyAsync(context);
+                        }
+                    }, Logger);
+                }
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.Name;

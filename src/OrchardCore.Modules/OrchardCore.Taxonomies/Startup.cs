@@ -38,8 +38,8 @@ namespace OrchardCore.Taxonomies
             services.AddScoped<IPermissionProvider, Permissions>();
 
             // Taxonomy Part
-            services.AddScoped<IContentPartDisplayDriver, TaxonomyPartDisplayDriver>();
-            services.AddContentPart<TaxonomyPart>();
+            services.AddContentPart<TaxonomyPart>()
+                .WithDisplayDriver<TaxonomyPartDisplayDriver>();
 
             // Taxonomy Field
             services.AddContentField<TaxonomyField>();

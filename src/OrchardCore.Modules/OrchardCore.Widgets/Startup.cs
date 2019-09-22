@@ -16,7 +16,8 @@ namespace OrchardCore.Widgets
         {
             // Widgets List Part
             services.AddScoped<IContentPartDisplayDriver, WidgetsListPartDisplay>();
-            services.AddContentPart<WidgetsListPart>();
+            services.AddContentPart<WidgetsListPart>()
+                .WithDisplayDriver<WidgetsListPartDisplay>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
             services.AddContentPart<WidgetMetadata>();
