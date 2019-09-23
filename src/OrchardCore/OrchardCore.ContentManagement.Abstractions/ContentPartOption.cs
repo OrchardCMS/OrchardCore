@@ -1,21 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace OrchardCore.ContentManagement
 {
-    public class ContentPartOption
+    public class ContentPartOption : ContentPartOptionBase
     {
-        public ContentPartOption(Type contentPartType)
-        {
-            if (contentPartType == null)
-            {
-                throw new ArgumentNullException(nameof(contentPartType));
-            }
-
-            Type = contentPartType;
-        }
-
-        public Type Type { get; }
+        public ContentPartOption(Type contentPartType) : base(contentPartType) { }
     }
 }

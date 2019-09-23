@@ -3,20 +3,10 @@ using System.Collections.Generic;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
-    public class ContentPartDisplayOption
+    public class ContentPartDisplayOption : ContentPartOptionBase
     {
         private readonly List<Type> _displayDrivers = new List<Type>();
-        public ContentPartDisplayOption(Type contentPartType)
-        {
-            if (contentPartType == null)
-            {
-                throw new ArgumentNullException(nameof(contentPartType));
-            }
-
-            Type = contentPartType;
-        }
-
-        public Type Type { get; }
+        public ContentPartDisplayOption(Type contentPartType) : base(contentPartType) { }
 
         public IReadOnlyList<Type> DisplayDrivers => _displayDrivers;
 
