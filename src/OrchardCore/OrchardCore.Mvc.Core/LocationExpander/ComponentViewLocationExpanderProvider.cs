@@ -12,7 +12,7 @@ namespace OrchardCore.Mvc.LocationExpander
 {
     public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        private const string CacheKey = "ModuleComponentViewLocations)";
+        private const string CacheKey = "ModuleComponentViewLocations";
         private static IList<IExtensionInfo> _modulesWithComponentViews;
         private static object _synLock = new object();
 
