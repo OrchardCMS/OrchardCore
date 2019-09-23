@@ -38,5 +38,20 @@ namespace OrchardCore.ContentManagement
             });
             return builder;
         }
+
+        /// <summary>
+        /// Add a handler to a pre-registered content part.
+        /// </summary>
+        /// <typeparam name="TContentPart"></typeparam>
+        /// <typeparam name="TContentPartHandler"></typeparam>
+        public static ContentPartOptionBuilder AddPartHandler<TContentPart, TContentPartHandler>(this IServiceCollection services)
+            where TContentPart : ContentPart
+            where TContentPartHandler : class, IContentPartHandler
+        {
+            var builder = new ContentPartOptionBuilder(services, typeof(TContentPart));
+            builder.Services.Configure<ContentOptions>(o => o.TryAddContentPart(builder.ContentPartType));
+            builder.WithHandler<TContentPartHandler>();
+            return builder;
+        }
     }
 }

@@ -30,7 +30,6 @@ namespace OrchardCore.ContentManagement
             return option;
         }
 
-        //TODO remove. Unless we add AddPartHandler
         internal ContentPartOption TryAddContentPart(Type contentPartType)
         {
             if (!contentPartType.IsSubclassOf(typeof(ContentPart)))

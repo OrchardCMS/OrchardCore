@@ -13,9 +13,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             where TContentPart : ContentPart
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
-            services.AddScoped<TContentPartDisplayDriver>();
-
             var builder = new ContentPartOptionBuilder(services, typeof(TContentPart));
+            builder.Services.Configure<ContentDisplayOptions>(o => o.TryAddContentPart(builder.ContentPartType));
             builder.WithDisplayDriver<TContentPartDisplayDriver>();
             return builder;
         }
@@ -28,10 +27,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
             builder.Services.AddScoped<TContentPartDisplayDriver>();
-            builder.Services.Configure((System.Action<ContentDisplayOptions>)(o => {
-                o.TryAddContentPart(builder.ContentPartType);
-                o.WithPartDisplayDriver(builder.ContentPartType, typeof(TContentPartDisplayDriver));
-            }));
+            builder.Services.Configure<ContentDisplayOptions>(o => 
+                o.WithPartDisplayDriver(builder.ContentPartType, typeof(TContentPartDisplayDriver)));
             return builder;
         }
 
@@ -44,9 +41,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             where TContentField : ContentField
             where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
         {
-            services.AddScoped<TContentFieldDisplayDriver>();
-
             var builder = new ContentFieldOptionBuilder(services, typeof(TContentField));
+            builder.Services.Configure<ContentDisplayOptions>(o => o.TryAddContentField(builder.ContentFieldType));
             builder.WithDisplayDriver<TContentFieldDisplayDriver>();
             return builder;
         }
@@ -61,10 +57,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             builder.Services.AddScoped<TContentFieldDisplayDriver>();
             builder.Services.Configure<ContentDisplayOptions>(o =>
-            {
-                o.TryAddContentField(builder.ContentFieldType);
-                o.WithFieldDisplayDriver(builder.ContentFieldType, typeof(TContentFieldDisplayDriver));
-            });
+                o.WithFieldDisplayDriver(builder.ContentFieldType, typeof(TContentFieldDisplayDriver)));
             return builder;
         }
     }
