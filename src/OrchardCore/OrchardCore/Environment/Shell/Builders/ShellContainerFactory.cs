@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -58,8 +57,6 @@ namespace OrchardCore.Environment.Shell.Builders
             AddCoreServices(tenantServiceCollection);
 
             // Execute IStartup registrations
-
-            // TODO: Use StartupLoader in RTM and then don't need to register the classes anymore then
 
             var moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
@@ -125,11 +122,6 @@ namespace OrchardCore.Environment.Shell.Builders
                     return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod, orderProperty, configureOrderProperty);
                 });
             }
-
-            // Add a default configuration if none has been provided
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            moduleServiceCollection.TryAddSingleton(configuration);
-            tenantServiceCollection.TryAddSingleton(configuration);
 
             // Make shell settings available to the modules
             moduleServiceCollection.AddSingleton(settings);
