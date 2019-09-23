@@ -38,12 +38,12 @@ namespace OrchardCore.ContentLocalization
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentPartDisplayDriver, LocalizationPartDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
             services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
             services.AddContentLocalization();
 
+            services.AddDisplayDriver<LocalizationPart, LocalizationPartDisplayDriver>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
         }

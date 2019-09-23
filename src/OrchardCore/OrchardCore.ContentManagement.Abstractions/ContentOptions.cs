@@ -30,10 +30,10 @@ namespace OrchardCore.ContentManagement
             return option;
         }
 
-        public void WithContentPartFactoryType(string factoryName, Type contentPartType, Type factoryType)
+        public void WithContentPartResolver(Type key, Type contentPartType, Type resolverType)
         {
-            var option = _contentParts.FirstOrDefault(x => x.Type.Name == contentPartType.Name);
-            option.WithFactoryType(factoryName, factoryType);
+            var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
+            option.WithResolver(key, resolverType);
         }
 
         public ContentFieldOption AddContentField<T>() where T : ContentField

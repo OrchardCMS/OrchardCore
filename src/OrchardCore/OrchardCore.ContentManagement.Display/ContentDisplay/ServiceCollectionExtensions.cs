@@ -1,26 +1,37 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Add a display driver to a pre-registered content part.
+        /// </summary>
+        /// <typeparam name="TContentPart"></typeparam>
+        /// <typeparam name="TContentPartDisplayDriver"></typeparam>
+        /// <param name="services"></param>
+        public static ContentPartBuilder AddDisplayDriver<TContentPart, TContentPartDisplayDriver>(this IServiceCollection services)
+            where TContentPart : ContentPart
+            where TContentPartDisplayDriver : class, IContentPartDisplayDriver
+        {
+            services.AddScoped<TContentPartDisplayDriver>();
+
+            var builder = new ContentPartBuilder(services, typeof(TContentPart));
+            builder.WithDisplayDriver<TContentPartDisplayDriver>();
+            return builder;
+        }
+
+        /// <summary>
+        /// Register a display driver for use with a content part.
+        /// </summary>
+        /// <typeparam name="TContentPartDisplayDriver"></typeparam>
+        /// <param name="contentPartBuilder"></param>
         public static ContentPartBuilder WithDisplayDriver<TContentPartDisplayDriver>(this ContentPartBuilder contentPartBuilder)
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
-            // For backward compatability, probably not required.
-            //contentPartBuilder.Services.AddScoped<IContentPartDisplayDriver>(sp => sp.GetRequiredService<TContentPartDisplayDriver>());
-
-            var displayDriverType = typeof(TContentPartDisplayDriver);
-
-            if (displayDriverType.BaseType != null && !Array.Exists(displayDriverType.BaseType.GenericTypeArguments, x => x == contentPartBuilder.ContentPartType))
-            {
-                throw new ArgumentException("The display driver type must inherit from " + contentPartBuilder.ContentPartType.Name);
-            }
-
             contentPartBuilder.Services.AddScoped<TContentPartDisplayDriver>();
             contentPartBuilder.Services.Configure<ContentOptions>(o =>
-                o.WithContentPartFactoryType("displaydriver", contentPartBuilder.ContentPartType, displayDriverType));
+                o.WithContentPartResolver(typeof(IContentPartDisplayDriver), contentPartBuilder.ContentPartType, typeof(TContentPartDisplayDriver)));
             return contentPartBuilder;
         }
     }

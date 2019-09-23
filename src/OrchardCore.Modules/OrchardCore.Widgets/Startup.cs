@@ -15,7 +15,6 @@ namespace OrchardCore.Widgets
         public override void ConfigureServices(IServiceCollection services)
         {
             // Widgets List Part
-            services.AddScoped<IContentPartDisplayDriver, WidgetsListPartDisplay>();
             services.AddContentPart<WidgetsListPart>()
                 .WithDisplayDriver<WidgetsListPartDisplay>();
 

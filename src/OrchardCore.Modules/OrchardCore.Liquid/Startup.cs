@@ -59,7 +59,6 @@ namespace OrchardCore.Liquid
         public override void ConfigureServices(IServiceCollection services)
         {
             // Liquid Part
-            services.AddScoped<IContentPartDisplayDriver, LiquidPartDisplay>();
             services.AddScoped<IShapeTableProvider, LiquidShapes>();
             services.AddContentPart<LiquidPart>()
                 .WithDisplayDriver<LiquidPartDisplay>();

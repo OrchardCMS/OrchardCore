@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -18,7 +19,7 @@ namespace OrchardCore.ContentManagement.Display
     /// </summary>
     public class ContentItemDisplayCoordinator : IContentDisplayHandler
     {
-        private readonly IContentPartDisplayDriverFactory _contentPartDisplayDriverFactory;
+        private readonly IContentPartDisplayDriverResolver _contentPartDisplayDriverFactory;
         private readonly IEnumerable<IContentDisplayDriver> _displayDrivers;
         private readonly IEnumerable<IContentFieldDisplayDriver> _fieldDisplayDrivers;
         private readonly IEnumerable<IContentPartDisplayDriver> _partDisplayDrivers;
@@ -26,7 +27,7 @@ namespace OrchardCore.ContentManagement.Display
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
 
         public ContentItemDisplayCoordinator(
-            IContentPartDisplayDriverFactory contentPartDisplayDriverFactory,
+            IContentPartDisplayDriverResolver contentPartDisplayDriverFactory,
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentDisplayDriver> displayDrivers,
             IEnumerable<IContentFieldDisplayDriver> fieldDisplayDrivers,
@@ -80,22 +81,28 @@ namespace OrchardCore.ContentManagement.Display
 
                 if (part != null)
                 {
-                    var partDisplayDriver = _contentPartDisplayDriverFactory.GetDisplayDriver(partTypeName);
-                    if (partDisplayDriver != null)
+                    var partDisplayDrivers = _contentPartDisplayDriverFactory.GetDisplayDrivers(partTypeName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partDisplayDrivers != null && partDisplayDrivers.Any())
                     {
-                        try
+                        foreach (var partDisplayDriver in partDisplayDrivers)
                         {
-                            var result = await partDisplayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
-                            if (result != null)
+                            try
                             {
-                                await result.ApplyAsync(context);
+                                var result = await partDisplayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
+                                if (result != null)
+                                {
+                                    await result.ApplyAsync(context);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                InvokeExtensions.HandleException(ex, Logger, partDisplayDrivers.GetType().Name, "BuildDisplayAsync");
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            InvokeExtensions.HandleException(ex, Logger, partDisplayDriver.GetType().Name, "BuildDisplayAsync");
-                        }
                     }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
                         foreach (var displayDriver in _partDisplayDrivers)
@@ -232,26 +239,33 @@ namespace OrchardCore.ContentManagement.Display
 
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}";
                 context.DefaultPosition = partPosition;
-                var partDisplayDriver = _contentPartDisplayDriverFactory.GetDisplayDriver(partTypeName);
-                if (partDisplayDriver != null)
+                var partDisplayDrivers = _contentPartDisplayDriverFactory.GetDisplayDrivers(partTypeName);
+                // For backward compatability check for Any().
+                // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                if (partDisplayDrivers != null && partDisplayDrivers.Any())
                 {
-                    try
+                    foreach (var partDisplayDriver in partDisplayDrivers)
                     {
-                        var result = await partDisplayDriver.BuildEditorAsync(part, typePartDefinition, context);
-                        if (result != null)
+                        try
                         {
-                            await result.ApplyAsync(context);
+                            var result = await partDisplayDriver.BuildEditorAsync(part, typePartDefinition, context);
+                            if (result != null)
+                            {
+                                await result.ApplyAsync(context);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            InvokeExtensions.HandleException(ex, Logger, partDisplayDriver.GetType().Name, "BuildDisplayAsync");
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        InvokeExtensions.HandleException(ex, Logger, partDisplayDriver.GetType().Name, "BuildDisplayAsync");
-                    }
                 }
+                // TODO: This can be removed in a future release as the recommened way is to use ContentOptions.
                 else
                 {
                     await _partDisplayDrivers.InvokeAsync(async contentDisplay =>
                     {
+                        Logger.LogWarning("The display driver '{DisplayDriver}' should not be registerd as IContentPartDisplayDriver. Use WithDisplayDriver<T> instead.", contentDisplay.GetType());
                         var result = await contentDisplay.BuildEditorAsync(part, typePartDefinition, context);
                         if (result != null)
                         {

@@ -29,7 +29,6 @@ namespace OrchardCore.Menu
             services.AddContentPart<MenuItemsListPart>();
 
             // LinkMenuItemPart
-            //services.AddScoped<IContentPartDisplayDriver, LinkMenuItemPartDisplayDriver>();
             services.AddContentPart<LinkMenuItemPart>()
                 .WithDisplayDriver<LinkMenuItemPartDisplayDriver>();
 

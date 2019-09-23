@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.ContentManagement
 {
     public class ContentPartOption
     {
-        private readonly Dictionary<string, Type> _factoryTypes = new Dictionary<string, Type>();
+        private readonly List<KeyValuePair<Type, Type>> _resolverPairs = new List<KeyValuePair<Type, Type>>();
         public ContentPartOption(Type contentPartType)
         {
             if (contentPartType == null)
@@ -18,11 +19,12 @@ namespace OrchardCore.ContentManagement
 
         public Type Type { get; }
 
-        public IReadOnlyDictionary<string, Type> FactoryTypes => _factoryTypes;
+        private ILookup<Type, Type> _resolvers;
+        public ILookup<Type, Type> Resolvers => _resolvers ??= _resolverPairs.ToLookup(x => x.Key, x => x.Value);
 
-        internal void WithFactoryType(string factoryName, Type type)
+        internal void WithResolver(Type key, Type type)
         {
-            _factoryTypes.Add(factoryName, type);
+            _resolverPairs.Add(KeyValuePair.Create(key, type));
         }
     }
 }
