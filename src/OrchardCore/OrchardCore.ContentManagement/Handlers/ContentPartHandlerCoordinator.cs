@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Handlers;
@@ -12,18 +13,21 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
     /// </summary>
     public class ContentPartHandlerCoordinator : ContentHandlerBase
     {
+        private readonly IContentPartHandlerResolver _contentPartHandlerResolver;
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
         private readonly IEnumerable<IContentPartHandler> _partHandlers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ITypeActivatorFactory<ContentField> _contentFieldFactory;
 
         public ContentPartHandlerCoordinator(
+            IContentPartHandlerResolver contentPartHandlerResolver,
             ITypeActivatorFactory<ContentPart> contentPartFactory,
             IEnumerable<IContentPartHandler> partHandlers,
             ITypeActivatorFactory<ContentField> contentFieldFactory,
             IContentDefinitionManager contentDefinitionManager,
             ILogger<ContentPartHandlerCoordinator> logger)
         {
+            _contentPartHandlerResolver = contentPartHandlerResolver;
             _contentPartFactory = contentPartFactory;
             _contentFieldFactory = contentFieldFactory;
             _partHandlers = partHandlers;
@@ -49,9 +53,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 // We create the part from it's known type or from a generic one
                 var part = _contentPartFactory.GetTypeActivator(partName).CreateInstance();
-
-                await _partHandlers.InvokeAsync(handler => handler.ActivatingAsync(context, part), Logger);
-
+                var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                // For backward compatability check for Any().
+                // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                if (partHandlers != null && partHandlers.Any())
+                {
+                    await partHandlers.InvokeAsync(handler => handler.ActivatingAsync(context, part), Logger);
+                }
+                // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                else
+                {
+                    await _partHandlers.InvokeAsync(handler => handler.ActivatingAsync(context, part), Logger);
+                }
                 context.Builder.Weld(typePartDefinition.Name, part);
             }
         }
@@ -70,7 +83,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.ActivatedAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.ActivatedAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.ActivatedAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -90,7 +114,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.CreatingAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.CreatingAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.CreatingAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -110,7 +145,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.CreatedAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.CreatedAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.CreatedAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -127,7 +173,21 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
                 var activator = _contentPartFactory.GetTypeActivator(partName);
 
                 var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-                await _partHandlers.InvokeAsync(handler => handler.InitializingAsync(context, part), Logger);
+                if (part != null)
+                {
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.InitializingAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.InitializingAsync(context, part), Logger);
+                    }
+                }
             }
         }
 
@@ -146,7 +206,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.InitializedAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.InitializedAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.InitializedAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -178,8 +249,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
                     context.ContentItem.Weld(typePartDefinition.Name, part);
                 }
 
-                await _partHandlers.InvokeAsync(handler => handler.LoadingAsync(context, part), Logger);
-
+                var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                // For backward compatability check for Any().
+                // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                if (partHandlers != null && partHandlers.Any())
+                {
+                    await partHandlers.InvokeAsync(handler => handler.LoadingAsync(context, part), Logger);
+                }
+                // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                else
+                {
+                    await _partHandlers.InvokeAsync(handler => handler.LoadingAsync(context, part), Logger);
+                }
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.Name;
@@ -208,7 +289,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.LoadedAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.LoadedAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.LoadedAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -227,7 +319,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.PublishingAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.PublishingAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.PublishingAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -246,7 +349,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.PublishedAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.PublishedAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.PublishedAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -265,7 +379,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.RemovingAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.RemovingAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.RemovingAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -284,7 +409,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.RemovedAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.RemovedAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.RemovedAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -303,7 +439,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.UnpublishingAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.UnpublishingAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.UnpublishingAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -322,7 +469,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.UnpublishedAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.UnpublishedAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.UnpublishedAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -341,7 +499,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.UpdatingAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.UpdatingAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.UpdatingAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -360,7 +529,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.UpdatedAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.UpdatedAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.UpdatedAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -381,7 +561,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (buildingPart != null && existingPart != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.VersioningAsync(context, existingPart, buildingPart), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.VersioningAsync(context, existingPart, buildingPart), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.VersioningAsync(context, existingPart, buildingPart), Logger);
+                    }
                 }
             }
         }
@@ -402,7 +593,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (buildingPart != null && existingPart != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.VersionedAsync(context, existingPart, buildingPart), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.VersionedAsync(context, existingPart, buildingPart), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.VersionedAsync(context, existingPart, buildingPart), Logger);
+                    }
                 }
             }
         }
@@ -421,7 +623,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.GetContentItemAspectAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.GetContentItemAspectAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.GetContentItemAspectAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -439,7 +652,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.ClonedAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.ClonedAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.ClonedAsync(context, part), Logger);
+                    }
                 }
             }
         }
@@ -457,7 +681,18 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.CloningAsync(context, part), Logger);
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (partHandlers != null && partHandlers.Any())
+                    {
+                        await partHandlers.InvokeAsync(handler => handler.CloningAsync(context, part), Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _partHandlers.InvokeAsync(handler => handler.CloningAsync(context, part), Logger);
+                    }
                 }
             }
         }

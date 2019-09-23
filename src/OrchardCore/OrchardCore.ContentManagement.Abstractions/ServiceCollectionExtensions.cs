@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentManagement.Handlers;
 
 namespace OrchardCore.ContentManagement
 {
@@ -22,6 +23,20 @@ namespace OrchardCore.ContentManagement
         {
             services.Configure<ContentOptions>(o => o.AddContentField<TContentField>());
             return new ContentFieldOptionBuilder(services, typeof(TContentField));
+        }
+
+        /// <summary>
+        /// Register a handler for use with a content part.
+        /// </summary>
+        /// <typeparam name="TContentPartHandler"></typeparam>
+        public static ContentPartOptionBuilder WithHandler<TContentPartHandler>(this ContentPartOptionBuilder builder)
+            where TContentPartHandler : class, IContentPartHandler
+        {
+            builder.Services.AddScoped<TContentPartHandler>();
+            builder.Services.Configure<ContentOptions>(o => {
+                o.WithPartHandler(builder.ContentPartType, typeof(TContentPartHandler));
+            });
+            return builder;
         }
     }
 }

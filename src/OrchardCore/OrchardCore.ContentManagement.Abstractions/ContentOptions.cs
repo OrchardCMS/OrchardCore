@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.ContentManagement
 {
@@ -29,6 +30,28 @@ namespace OrchardCore.ContentManagement
             return option;
         }
 
+        //TODO remove. Unless we add AddPartHandler
+        internal ContentPartOption TryAddContentPart(Type contentPartType)
+        {
+            if (!contentPartType.IsSubclassOf(typeof(ContentPart)))
+            {
+                throw new ArgumentException("The type must inherit from " + nameof(ContentPart));
+            }
+            var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
+            if (option == null)
+            {
+                option = new ContentPartOption(contentPartType);
+                _contentParts.Add(option);
+            }
+            return option;
+        }
+
+        internal void WithPartHandler(Type contentPartType, Type handlerType)
+        {
+            var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
+            option.WithHandler(handlerType);
+        }
+
         internal ContentFieldOption AddContentField<T>() where T : ContentField
         {
             return AddContentField(typeof(T));
@@ -48,6 +71,9 @@ namespace OrchardCore.ContentManagement
         }
 
         public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
+
+        private IReadOnlyDictionary<string, ContentPartOption> _contentPartOptionsLookup;
+        public IReadOnlyDictionary<string, ContentPartOption> ContentPartOptionsLookup => _contentPartOptionsLookup ??= ContentPartOptions.ToDictionary(k => k.Type.Name);
 
         public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;
     }
