@@ -12,23 +12,22 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     public class ContentPartDisplayDriverResolver : IContentPartDisplayDriverResolver
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly ContentOptions _contentOptions;
+        private readonly ContentDisplayOptions _contentDisplayOptions;
         public ContentPartDisplayDriverResolver(
             IServiceProvider serviceProvider,
-            IOptions<ContentOptions> contentOptions
+            IOptions<ContentDisplayOptions> contentDisplayOptions
             )
         {
             _serviceProvider = serviceProvider;
-            _contentOptions = contentOptions.Value;
+            _contentDisplayOptions = contentDisplayOptions.Value;
         }
 
         public IReadOnlyList<IContentPartDisplayDriver> GetDisplayDrivers(string partName)
         {
-            if (_contentOptions.ContentPartOptionsLookup.TryGetValue(partName, out var displayTypeDriver))
+            if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
             {
                 var services = new List<IContentPartDisplayDriver>();
-                var resolvers = displayTypeDriver.Resolvers[typeof(IContentPartDisplayDriver)];
-                foreach (var resolver in resolvers)
+                foreach (var resolver in contentPartDisplayOption.DisplayDrivers)
                 {
                     services.Add((IContentPartDisplayDriver)_serviceProvider.GetService(resolver));
                 }

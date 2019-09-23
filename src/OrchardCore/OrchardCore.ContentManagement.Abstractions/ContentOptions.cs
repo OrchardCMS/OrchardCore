@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OrchardCore.ContentManagement
 {
@@ -30,12 +29,6 @@ namespace OrchardCore.ContentManagement
             return option;
         }
 
-        public void WithContentPartResolver(Type key, Type contentPartType, Type resolverType)
-        {
-            var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
-            option.WithResolver(key, resolverType);
-        }
-
         public ContentFieldOption AddContentField<T>() where T : ContentField
         {
             return AddContentField(typeof(T));
@@ -55,9 +48,6 @@ namespace OrchardCore.ContentManagement
         }
 
         public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
-
-        private Dictionary<string, ContentPartOption> _contentPartOptionsLookup;
-        public IReadOnlyDictionary<string, ContentPartOption> ContentPartOptionsLookup => _contentPartOptionsLookup ??= _contentParts.ToDictionary(k => k.Type.Name);
 
         public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;
     }

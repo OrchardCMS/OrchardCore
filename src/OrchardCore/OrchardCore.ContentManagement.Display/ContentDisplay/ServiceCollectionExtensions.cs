@@ -30,8 +30,10 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
             contentPartBuilder.Services.AddScoped<TContentPartDisplayDriver>();
-            contentPartBuilder.Services.Configure<ContentOptions>(o =>
-                o.WithContentPartResolver(typeof(IContentPartDisplayDriver), contentPartBuilder.ContentPartType, typeof(TContentPartDisplayDriver)));
+            contentPartBuilder.Services.Configure<ContentDisplayOptions>(o => {
+                o.TryAddContentPart(contentPartBuilder.ContentPartType);
+                o.WithDisplayDriver(contentPartBuilder.ContentPartType, typeof(TContentPartDisplayDriver));
+            });
             return contentPartBuilder;
         }
     }

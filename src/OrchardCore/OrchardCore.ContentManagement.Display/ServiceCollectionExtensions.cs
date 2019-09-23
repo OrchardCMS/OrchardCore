@@ -18,6 +18,8 @@ namespace OrchardCore.ContentManagement.Display
 
             services.AddScoped<IContentPartDisplayDriverResolver, ContentPartDisplayDriverResolver>();
 
+            services.AddOptions<ContentDisplayOptions>();
+
             return services;
         }
     }
