@@ -13,7 +13,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         //private readonly List<ContentFieldOption> _contentFields = new List<ContentFieldOption>();
 
 
-        public ContentPartDisplayOption TryAddContentPart(Type contentPartType)
+        internal ContentPartDisplayOption TryAddContentPart(Type contentPartType)
         {
             if (!contentPartType.IsSubclassOf(typeof(ContentPart)))
             {
@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return option;
         }
 
-        public void WithDisplayDriver(Type contentPartType, Type displayDriverType)
+        internal void WithDisplayDriver(Type contentPartType, Type displayDriverType)
         {
             var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
             option.WithDisplayDriver(displayDriverType);

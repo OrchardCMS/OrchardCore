@@ -11,12 +11,12 @@ namespace OrchardCore.ContentManagement
         private readonly List<ContentPartOption> _contentParts = new List<ContentPartOption>();
 
         private readonly List<ContentFieldOption> _contentFields = new List<ContentFieldOption>();
-        public ContentPartOption AddContentPart<T>() where T : ContentPart
+        internal ContentPartOption AddContentPart<T>() where T : ContentPart
         {
             return AddContentPart(typeof(T));
         }
 
-        public ContentPartOption AddContentPart(Type contentPartType)
+        internal ContentPartOption AddContentPart(Type contentPartType)
         {
             if (!contentPartType.IsSubclassOf(typeof(ContentPart)))
             {
@@ -29,12 +29,12 @@ namespace OrchardCore.ContentManagement
             return option;
         }
 
-        public ContentFieldOption AddContentField<T>() where T : ContentField
+        internal ContentFieldOption AddContentField<T>() where T : ContentField
         {
             return AddContentField(typeof(T));
         }
 
-        public ContentFieldOption AddContentField(Type contentFieldType)
+        internal ContentFieldOption AddContentField(Type contentFieldType)
         {
             if (!contentFieldType.IsSubclassOf(typeof(ContentField)))
             {
