@@ -2,7 +2,6 @@ using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
@@ -31,12 +30,12 @@ namespace OrchardCore.Markdown
         {
             // Markdown Part
             services.AddContentPart<MarkdownBodyPart>()
-                .WithDisplayDriver<MarkdownBodyPartDisplay>();
+                .WithDisplayDriver<MarkdownBodyPartDisplay>()
+                .WithHandler<MarkdownBodyPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
-            services.AddScoped<IContentPartHandler, MarkdownBodyPartHandler>();
 
             // Markdown Field
             services.AddContentField<MarkdownField>()

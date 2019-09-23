@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentLocalization.Drivers;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Indexing;
@@ -16,8 +15,8 @@ using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.Security;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentLocalization.ViewModels;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -40,10 +39,10 @@ namespace OrchardCore.ContentLocalization
         {
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
-            services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
             services.AddContentLocalization();
 
             services.AddPartDisplayDriver<LocalizationPart, LocalizationPartDisplayDriver>();
+            services.AddPartHandler<LocalizationPart, LocalizationPartHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
         }
