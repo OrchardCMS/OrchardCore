@@ -17,10 +17,11 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Registers a content field type.
         /// </summary>
-        public static IServiceCollection AddContentField<TContentField>(this IServiceCollection serviceCollection)
+        public static ContentFieldOptionBuilder AddContentField<TContentField>(this IServiceCollection services)
             where TContentField : ContentField
         {
-            return serviceCollection.Configure<ContentOptions>(o => o.AddContentField<TContentField>());
+            services.Configure<ContentOptions>(o => o.AddContentField<TContentField>());
+            return new ContentFieldOptionBuilder(services, typeof(TContentField));
         }
     }
 }

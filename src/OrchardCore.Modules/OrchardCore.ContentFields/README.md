@@ -204,7 +204,8 @@ Create a class inheriting from `ContentFieldDisplayDriver<TextField>` and implem
 This class needs to be registered in the DI like this:
 
 ```csharp
-services.AddScoped<IContentFieldDisplayDriver, TextFieldDisplayDriver>();
+services.AddContentField<TextField>()
+    .WithDisplayDriver<TextFieldDisplayDriver>();
 ```
 
 ## Creating Custom Editors

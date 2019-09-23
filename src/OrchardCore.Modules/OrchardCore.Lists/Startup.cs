@@ -54,7 +54,7 @@ namespace OrchardCore.Lists
             // Feeds
             // TODO: Create feature
             services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
-            services.AddDisplayDriver<ListPart, ListPartFeedDisplayDriver>();
+            services.AddPartDisplayDriver<ListPart, ListPartFeedDisplayDriver>();
             services.AddScoped<IContentPartHandler, ListPartFeedHandler>();
         }
 

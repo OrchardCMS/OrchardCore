@@ -16,7 +16,7 @@ namespace OrchardCore.Lists.RemotePublishing
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IXmlRpcHandler, MetaWeblogHandler>();
-            services.AddDisplayDriver<ListPart, ListMetaWeblogDriver>();
+            services.AddPartDisplayDriver<ListPart, ListMetaWeblogDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

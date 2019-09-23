@@ -6,12 +6,9 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public class ContentDisplayOptions
     {
-
         private readonly List<ContentPartDisplayOption> _contentParts = new List<ContentPartDisplayOption>();
 
-        //TODO fields
-        //private readonly List<ContentFieldOption> _contentFields = new List<ContentFieldOption>();
-
+        private readonly List<ContentFieldDisplayOption> _contentFields = new List<ContentFieldDisplayOption>();
 
         internal ContentPartDisplayOption TryAddContentPart(Type contentPartType)
         {
@@ -28,35 +25,37 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return option;
         }
 
-        internal void WithDisplayDriver(Type contentPartType, Type displayDriverType)
+        internal void WithPartDisplayDriver(Type contentPartType, Type displayDriverType)
         {
             var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
             option.WithDisplayDriver(displayDriverType);
         }
+        public ContentFieldDisplayOption TryAddContentField(Type contentFieldType)
+        {
+            if (!contentFieldType.IsSubclassOf(typeof(ContentField)))
+            {
+                throw new ArgumentException("The type must inherit from " + nameof(ContentField));
+            }
+            var option = _contentFields.FirstOrDefault(x => x.Type == contentFieldType);
+            if (option == null)
+            {
+                option = new ContentFieldDisplayOption(contentFieldType);
+                _contentFields.Add(option);
+            }
 
-        //public ContentFieldOption AddContentField<T>() where T : ContentField
-        //{
-        //    return AddContentField(typeof(T));
-        //}
+            return option;
+        }
 
-        //public ContentFieldOption AddContentField(Type contentFieldType)
-        //{
-        //    if (!contentFieldType.IsSubclassOf(typeof(ContentField)))
-        //    {
-        //        throw new ArgumentException("The type must inherit from " + nameof(ContentField));
-        //    }
-
-        //    var option = new ContentFieldOption(contentFieldType);
-        //    _contentFields.Add(option);
-
-        //    return option;
-        //}
-
-        //public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
+        internal void WithFieldDisplayDriver(Type contentFieldType, Type displayDriverType)
+        {
+            var option = _contentFields.FirstOrDefault(x => x.Type == contentFieldType);
+            option.WithDisplayDriver(displayDriverType);
+        }
 
         private Dictionary<string, ContentPartDisplayOption> _contentPartOptions;
         public IReadOnlyDictionary<string, ContentPartDisplayOption> ContentPartOptions => _contentPartOptions ??= _contentParts.ToDictionary(k => k.Type.Name);
 
-        //public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;
+        private Dictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
+        public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions => _contentFieldOptions ??= _contentFields.ToDictionary(k => k.Type.Name);
     }
 }

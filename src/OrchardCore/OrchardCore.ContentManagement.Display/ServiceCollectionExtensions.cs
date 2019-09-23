@@ -17,6 +17,7 @@ namespace OrchardCore.ContentManagement.Display
             services.AddScoped<IPlacementNodeFilterProvider, ContentPartPlacementNodeFilterProvider>();
 
             services.AddScoped<IContentPartDisplayDriverResolver, ContentPartDisplayDriverResolver>();
+            services.AddScoped<IContentFieldDisplayDriverResolver, ContentFieldDisplayDriverResolver>();
 
             services.AddOptions<ContentDisplayOptions>();
 

@@ -39,8 +39,8 @@ namespace OrchardCore.Markdown
             services.AddScoped<IContentPartHandler, MarkdownBodyPartHandler>();
 
             // Markdown Field
-            services.AddContentField<MarkdownField>();
-            services.AddScoped<IContentFieldDisplayDriver, MarkdownFieldDisplayDriver>();
+            services.AddContentField<MarkdownField>()
+                .WithDisplayDriver<MarkdownFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
 

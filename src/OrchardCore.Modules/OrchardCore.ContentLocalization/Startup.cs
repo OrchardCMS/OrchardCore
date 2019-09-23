@@ -43,7 +43,7 @@ namespace OrchardCore.ContentLocalization
             services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
             services.AddContentLocalization();
 
-            services.AddDisplayDriver<LocalizationPart, LocalizationPartDisplayDriver>();
+            services.AddPartDisplayDriver<LocalizationPart, LocalizationPartDisplayDriver>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
         }

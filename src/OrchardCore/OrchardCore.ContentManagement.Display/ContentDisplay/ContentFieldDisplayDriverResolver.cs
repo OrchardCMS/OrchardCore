@@ -4,11 +4,11 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
-    public class ContentPartDisplayDriverResolver : IContentPartDisplayDriverResolver
+    public class ContentFieldDisplayDriverResolver : IContentFieldDisplayDriverResolver
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ContentDisplayOptions _contentDisplayOptions;
-        public ContentPartDisplayDriverResolver(
+        public ContentFieldDisplayDriverResolver(
             IServiceProvider serviceProvider,
             IOptions<ContentDisplayOptions> contentDisplayOptions
             )
@@ -17,14 +17,14 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             _contentDisplayOptions = contentDisplayOptions.Value;
         }
 
-        public IReadOnlyList<IContentPartDisplayDriver> GetDisplayDrivers(string partName)
+        public IReadOnlyList<IContentFieldDisplayDriver> GetDisplayDrivers(string fieldName)
         {
-            if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
+            if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
             {
-                var services = new List<IContentPartDisplayDriver>();
-                foreach (var resolver in contentPartDisplayOption.DisplayDrivers)
+                var services = new List<IContentFieldDisplayDriver>();
+                foreach (var resolver in contentFieldDisplayOption.DisplayDrivers)
                 {
-                    services.Add((IContentPartDisplayDriver)_serviceProvider.GetService(resolver));
+                    services.Add((IContentFieldDisplayDriver)_serviceProvider.GetService(resolver));
                 }
 
                 return services;

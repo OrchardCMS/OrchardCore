@@ -19,7 +19,8 @@ namespace OrchardCore.ContentManagement.Display
     /// </summary>
     public class ContentItemDisplayCoordinator : IContentDisplayHandler
     {
-        private readonly IContentPartDisplayDriverResolver _contentPartDisplayDriverFactory;
+        private readonly IContentPartDisplayDriverResolver _contentPartDisplayDriverResolver;
+        private readonly IContentFieldDisplayDriverResolver _contentFieldDisplayDriverResolver;
         private readonly IEnumerable<IContentDisplayDriver> _displayDrivers;
         private readonly IEnumerable<IContentFieldDisplayDriver> _fieldDisplayDrivers;
         private readonly IEnumerable<IContentPartDisplayDriver> _partDisplayDrivers;
@@ -27,7 +28,8 @@ namespace OrchardCore.ContentManagement.Display
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
 
         public ContentItemDisplayCoordinator(
-            IContentPartDisplayDriverResolver contentPartDisplayDriverFactory,
+            IContentPartDisplayDriverResolver contentPartDisplayDriverResolver,
+            IContentFieldDisplayDriverResolver contentFieldDisplayDriverResolver,
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentDisplayDriver> displayDrivers,
             IEnumerable<IContentFieldDisplayDriver> fieldDisplayDrivers,
@@ -35,7 +37,8 @@ namespace OrchardCore.ContentManagement.Display
             ITypeActivatorFactory<ContentPart> contentPartFactory,
             ILogger<ContentItemDisplayCoordinator> logger)
         {
-            _contentPartDisplayDriverFactory = contentPartDisplayDriverFactory;
+            _contentPartDisplayDriverResolver = contentPartDisplayDriverResolver;
+            _contentFieldDisplayDriverResolver = contentFieldDisplayDriverResolver;
             _contentPartFactory = contentPartFactory;
             _contentDefinitionManager = contentDefinitionManager;
             _displayDrivers = displayDrivers;
@@ -67,7 +70,7 @@ namespace OrchardCore.ContentManagement.Display
                 }
                 catch (Exception ex)
                 {
-                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, nameof(BuildDisplayAsync));
                 }
             }
 
@@ -81,7 +84,7 @@ namespace OrchardCore.ContentManagement.Display
 
                 if (part != null)
                 {
-                    var partDisplayDrivers = _contentPartDisplayDriverFactory.GetDisplayDrivers(partTypeName);
+                    var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayDrivers(partTypeName);
                     // For backward compatability check for Any().
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partDisplayDrivers != null && partDisplayDrivers.Any())
@@ -98,7 +101,7 @@ namespace OrchardCore.ContentManagement.Display
                             }
                             catch (Exception ex)
                             {
-                                InvokeExtensions.HandleException(ex, Logger, partDisplayDrivers.GetType().Name, "BuildDisplayAsync");
+                                InvokeExtensions.HandleException(ex, Logger, partDisplayDrivers.GetType().Name, nameof(BuildDisplayAsync));
                             }
                         }
                     }
@@ -117,7 +120,7 @@ namespace OrchardCore.ContentManagement.Display
                             }
                             catch (Exception ex)
                             {
-                                InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                                InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, nameof(BuildDisplayAsync));
                             }
                         }
                     }
@@ -167,19 +170,44 @@ namespace OrchardCore.ContentManagement.Display
 
                     foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                     {
-                        foreach (var displayDriver in _fieldDisplayDrivers)
+                        var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDisplayDrivers(contentPartFieldDefinition.FieldDefinition.Name);
+                        // For backward compatability check for Any().
+                        // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                        if (fieldDisplayDrivers != null && fieldDisplayDrivers.Any())
                         {
-                            try
+                            foreach (var fieldDisplayDriver in fieldDisplayDrivers)
                             {
-                                var result = await displayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
-                                if (result != null)
+                                try
                                 {
-                                    await result.ApplyAsync(context);
+                                    var result = await fieldDisplayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
+                                    if (result != null)
+                                    {
+                                        await result.ApplyAsync(context);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    InvokeExtensions.HandleException(ex, Logger, fieldDisplayDriver.GetType().Name, nameof(BuildDisplayAsync));
                                 }
                             }
-                            catch (Exception ex)
+                        }
+                        // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                        else
+                        {
+                            foreach (var displayDriver in _fieldDisplayDrivers)
                             {
-                                InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                                try
+                                {
+                                    var result = await displayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
+                                    if (result != null)
+                                    {
+                                        await result.ApplyAsync(context);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, nameof(BuildDisplayAsync));
+                                }
                             }
                         }
                     }
@@ -239,7 +267,7 @@ namespace OrchardCore.ContentManagement.Display
 
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}";
                 context.DefaultPosition = partPosition;
-                var partDisplayDrivers = _contentPartDisplayDriverFactory.GetDisplayDrivers(partTypeName);
+                var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayDrivers(partTypeName);
                 // For backward compatability check for Any().
                 // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                 if (partDisplayDrivers != null && partDisplayDrivers.Any())
@@ -256,11 +284,11 @@ namespace OrchardCore.ContentManagement.Display
                         }
                         catch (Exception ex)
                         {
-                            InvokeExtensions.HandleException(ex, Logger, partDisplayDriver.GetType().Name, "BuildDisplayAsync");
+                            InvokeExtensions.HandleException(ex, Logger, partDisplayDriver.GetType().Name, nameof(BuildEditorAsync));
                         }
                     }
                 }
-                // TODO: This can be removed in a future release as the recommened way is to use ContentOptions.
+                // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                 else
                 {
                     await _partDisplayDrivers.InvokeAsync(async contentDisplay =>
@@ -279,15 +307,39 @@ namespace OrchardCore.ContentManagement.Display
                     var fieldPosition = partFieldDefinition.GetSettings<ContentPartFieldSettings>().Position ?? "before";
 
                     context.DefaultZone = $"Parts.{typePartDefinition.Name}:{fieldPosition}";
-
-                    await _fieldDisplayDrivers.InvokeAsync(async contentDisplay =>
+                    var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDisplayDrivers(partFieldDefinition.FieldDefinition.Name);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (fieldDisplayDrivers != null && fieldDisplayDrivers.Any())
                     {
-                        var result = await contentDisplay.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
-                        if (result != null)
+                        foreach (var fieldDisplayDriver in fieldDisplayDrivers)
                         {
-                            await result.ApplyAsync(context);
+                            try
+                            {
+                                var result = await fieldDisplayDriver.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
+                                if (result != null)
+                                {
+                                    await result.ApplyAsync(context);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                InvokeExtensions.HandleException(ex, Logger, fieldDisplayDriver.GetType().Name, nameof(BuildEditorAsync));
+                            }
                         }
-                    }, Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _fieldDisplayDrivers.InvokeAsync(async contentDisplay =>
+                        {
+                            var result = await contentDisplay.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
+                            if (result != null)
+                            {
+                                await result.ApplyAsync(context);
+                            }
+                        }, Logger);
+                    }
                 }
             }
         }
@@ -341,30 +393,78 @@ namespace OrchardCore.ContentManagement.Display
 
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}:{partPosition}";
 
-                await _partDisplayDrivers.InvokeAsync(async contentDisplay =>
+                var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayDrivers(partTypeName);
+                // For backward compatability check for Any().
+                // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                if (partDisplayDrivers != null && partDisplayDrivers.Any())
                 {
-                    var result = await contentDisplay.UpdateEditorAsync(part, typePartDefinition, context);
-                    if (result != null)
+                    foreach (var partDisplayDriver in partDisplayDrivers)
                     {
-                        await result.ApplyAsync(context);
+                        try
+                        {
+                            var result = await partDisplayDriver.UpdateEditorAsync(part, typePartDefinition, context);
+                            if (result != null)
+                            {
+                                await result.ApplyAsync(context);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            InvokeExtensions.HandleException(ex, Logger, partDisplayDriver.GetType().Name, nameof(UpdateEditorAsync));
+                        }
                     }
-                }, Logger);
-
+                }
+                // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                else
+                {
+                    await _partDisplayDrivers.InvokeAsync(async contentDisplay =>
+                    {
+                        var result = await contentDisplay.UpdateEditorAsync(part, typePartDefinition, context);
+                        if (result != null)
+                        {
+                            await result.ApplyAsync(context);
+                        }
+                    }, Logger);
+                }
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.Name;
                     var fieldPosition = partFieldDefinition.GetSettings<ContentPartFieldSettings>().Position ?? "before";
 
                     context.DefaultZone = $"Parts.{typePartDefinition.Name}:{fieldPosition}";
-
-                    await _fieldDisplayDrivers.InvokeAsync(async contentDisplay =>
+                    var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDisplayDrivers(partFieldDefinition.FieldDefinition.Name);
+                    // For backward compatability check for Any().
+                    // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
+                    if (fieldDisplayDrivers != null && fieldDisplayDrivers.Any())
                     {
-                        var result = await contentDisplay.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
-                        if (result != null)
+                        foreach (var fieldDisplayDriver in fieldDisplayDrivers)
                         {
-                            await result.ApplyAsync(context);
+                            try
+                            {
+                                var result = await fieldDisplayDriver.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
+                                if (result != null)
+                                {
+                                    await result.ApplyAsync(context);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                InvokeExtensions.HandleException(ex, Logger, fieldDisplayDriver.GetType().Name, nameof(UpdateEditorAsync));
+                            }
                         }
-                    }, Logger);
+                    }
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    else
+                    {
+                        await _fieldDisplayDrivers.InvokeAsync(async contentDisplay =>
+                        {
+                            var result = await contentDisplay.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
+                            if (result != null)
+                            {
+                                await result.ApplyAsync(context);
+                            }
+                        }, Logger);
+                    }
                 }
             }
         }

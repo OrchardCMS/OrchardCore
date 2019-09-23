@@ -9,8 +9,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         /// </summary>
         /// <typeparam name="TContentPart"></typeparam>
         /// <typeparam name="TContentPartDisplayDriver"></typeparam>
-        /// <param name="services"></param>
-        public static ContentPartOptionBuilder AddDisplayDriver<TContentPart, TContentPartDisplayDriver>(this IServiceCollection services)
+        public static ContentPartOptionBuilder AddPartDisplayDriver<TContentPart, TContentPartDisplayDriver>(this IServiceCollection services)
             where TContentPart : ContentPart
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
@@ -25,16 +24,48 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         /// Register a display driver for use with a content part.
         /// </summary>
         /// <typeparam name="TContentPartDisplayDriver"></typeparam>
-        /// <param name="contentPartBuilder"></param>
-        public static ContentPartOptionBuilder WithDisplayDriver<TContentPartDisplayDriver>(this ContentPartOptionBuilder contentPartBuilder)
+        public static ContentPartOptionBuilder WithDisplayDriver<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder)
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
-            contentPartBuilder.Services.AddScoped<TContentPartDisplayDriver>();
-            contentPartBuilder.Services.Configure<ContentDisplayOptions>(o => {
-                o.TryAddContentPart(contentPartBuilder.ContentPartType);
-                o.WithDisplayDriver(contentPartBuilder.ContentPartType, typeof(TContentPartDisplayDriver));
+            builder.Services.AddScoped<TContentPartDisplayDriver>();
+            builder.Services.Configure((System.Action<ContentDisplayOptions>)(o => {
+                o.TryAddContentPart(builder.ContentPartType);
+                o.WithPartDisplayDriver(builder.ContentPartType, typeof(TContentPartDisplayDriver));
+            }));
+            return builder;
+        }
+
+        /// <summary>
+        /// Add a display driver to a pre-registered content field.
+        /// </summary>
+        /// <typeparam name="TContentField"></typeparam>
+        /// <typeparam name="TContentFieldDisplayDriver"></typeparam>
+        public static ContentFieldOptionBuilder AddFieldDisplayDriver<TContentField, TContentFieldDisplayDriver>(this IServiceCollection services)
+            where TContentField : ContentField
+            where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
+        {
+            services.AddScoped<TContentFieldDisplayDriver>();
+
+            var builder = new ContentFieldOptionBuilder(services, typeof(TContentField));
+            builder.WithDisplayDriver<TContentFieldDisplayDriver>();
+            return builder;
+        }
+
+        /// <summary>
+        /// Register a display driver for use with a content field.
+        /// </summary>
+        /// <typeparam name="TContentFieldDisplayDriver"></typeparam>
+        /// <param name="builder"></param>
+        public static ContentFieldOptionBuilder WithDisplayDriver<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder)
+            where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
+        {
+            builder.Services.AddScoped<TContentFieldDisplayDriver>();
+            builder.Services.Configure<ContentDisplayOptions>(o =>
+            {
+                o.TryAddContentField(builder.ContentFieldType);
+                o.WithFieldDisplayDriver(builder.ContentFieldType, typeof(TContentFieldDisplayDriver));
             });
-            return contentPartBuilder;
+            return builder;
         }
     }
 }

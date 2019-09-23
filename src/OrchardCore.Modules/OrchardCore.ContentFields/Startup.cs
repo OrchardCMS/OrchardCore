@@ -47,64 +47,64 @@ namespace OrchardCore.ContentFields
         public override void ConfigureServices(IServiceCollection services)
         {
             // Boolean Field
-            services.AddContentField<BooleanField>();
-            services.AddScoped<IContentFieldDisplayDriver, BooleanFieldDisplayDriver>();
+            services.AddContentField<BooleanField>()
+                .WithDisplayDriver<BooleanFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, BooleanFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, BooleanFieldIndexHandler>();
 
             // Text Field
-            services.AddContentField<TextField>();
-            services.AddScoped<IContentFieldDisplayDriver, TextFieldDisplayDriver>();
+            services.AddContentField<TextField>()
+                .WithDisplayDriver<TextFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TextFieldIndexHandler>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldPredefinedListEditorSettingsDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldHeaderDisplaySettingsDriver>();
 
             // Html Field
-            services.AddContentField<HtmlField>();
-            services.AddScoped<IContentFieldDisplayDriver, HtmlFieldDisplayDriver>();
+            services.AddContentField<HtmlField>()
+                .WithDisplayDriver<HtmlFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, HtmlFieldIndexHandler>();
 
             // Link Field
-            services.AddContentField<LinkField>();
-            services.AddScoped<IContentFieldDisplayDriver, LinkFieldDisplayDriver>();
+            services.AddContentField<LinkField>()
+                .WithDisplayDriver<LinkFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LinkFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, LinkFieldIndexHandler>();
 
             // Numeric Field
-            services.AddContentField<NumericField>();
-            services.AddScoped<IContentFieldDisplayDriver, NumericFieldDisplayDriver>();
+            services.AddContentField<NumericField>()
+                .WithDisplayDriver<NumericFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, NumericFieldIndexHandler>();
 
             // DateTime Field
-            services.AddContentField<DateTimeField>();
-            services.AddScoped<IContentFieldDisplayDriver, DateTimeFieldDisplayDriver>();
+            services.AddContentField<DateTimeField>()
+                .WithDisplayDriver<DateTimeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateTimeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, DateTimeFieldIndexHandler>();
 
             // Date Field
-            services.AddContentField<DateField>();
-            services.AddScoped<IContentFieldDisplayDriver, DateFieldDisplayDriver>();
+            services.AddContentField<DateField>()
+                .WithDisplayDriver<DateFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, DateFieldIndexHandler>();
 
             // Time Field
-            services.AddContentField<TimeField>();
-            services.AddScoped<IContentFieldDisplayDriver, TimeFieldDisplayDriver>();
+            services.AddContentField<TimeField>()
+                .WithDisplayDriver<TimeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TimeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TimeFieldIndexHandler>();
 
             // Video field
-            services.AddContentField<YoutubeField>();
-            services.AddScoped<IContentFieldDisplayDriver, YoutubeFieldDisplayDriver>();
+            services.AddContentField<YoutubeField>()
+                .WithDisplayDriver<YoutubeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, YoutubeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, YoutubeFieldIndexHandler>();
 
             // Content picker field
-            services.AddContentField<ContentPickerField>();
-            services.AddScoped<IContentFieldDisplayDriver, ContentPickerFieldDisplayDriver>();
+            services.AddContentField<ContentPickerField>()
+                .WithDisplayDriver<ContentPickerFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
             services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
@@ -129,8 +129,8 @@ namespace OrchardCore.ContentFields
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddContentField<LocalizationSetContentPickerField>();
-            services.AddScoped<IContentFieldDisplayDriver, LocalizationSetContentPickerFieldDisplayDriver>();
+            services.AddContentField<LocalizationSetContentPickerField>()
+                .WithDisplayDriver<LocalizationSetContentPickerFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LocalizationSetContentPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, LocalizationSetContentPickerFieldIndexHandler>();
         }
