@@ -10,13 +10,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         /// <typeparam name="TContentPart"></typeparam>
         /// <typeparam name="TContentPartDisplayDriver"></typeparam>
         /// <param name="services"></param>
-        public static ContentPartBuilder AddDisplayDriver<TContentPart, TContentPartDisplayDriver>(this IServiceCollection services)
+        public static ContentPartOptionBuilder AddDisplayDriver<TContentPart, TContentPartDisplayDriver>(this IServiceCollection services)
             where TContentPart : ContentPart
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
             services.AddScoped<TContentPartDisplayDriver>();
 
-            var builder = new ContentPartBuilder(services, typeof(TContentPart));
+            var builder = new ContentPartOptionBuilder(services, typeof(TContentPart));
             builder.WithDisplayDriver<TContentPartDisplayDriver>();
             return builder;
         }
@@ -26,7 +26,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         /// </summary>
         /// <typeparam name="TContentPartDisplayDriver"></typeparam>
         /// <param name="contentPartBuilder"></param>
-        public static ContentPartBuilder WithDisplayDriver<TContentPartDisplayDriver>(this ContentPartBuilder contentPartBuilder)
+        public static ContentPartOptionBuilder WithDisplayDriver<TContentPartDisplayDriver>(this ContentPartOptionBuilder contentPartBuilder)
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
             contentPartBuilder.Services.AddScoped<TContentPartDisplayDriver>();

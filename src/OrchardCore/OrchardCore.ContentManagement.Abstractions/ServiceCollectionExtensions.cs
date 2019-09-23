@@ -7,11 +7,11 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Registers a content part type.
         /// </summary>
-        public static ContentPartBuilder AddContentPart<TContentPart>(this IServiceCollection services)
+        public static ContentPartOptionBuilder AddContentPart<TContentPart>(this IServiceCollection services)
             where TContentPart : ContentPart
         {
             services.Configure<ContentOptions>(o => o.AddContentPart<TContentPart>());
-            return new ContentPartBuilder(services, typeof(TContentPart));
+            return new ContentPartOptionBuilder(services, typeof(TContentPart));
         }
 
         /// <summary>

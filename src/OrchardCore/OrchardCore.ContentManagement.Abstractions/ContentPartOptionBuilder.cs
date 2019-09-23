@@ -1,13 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.ContentManagement
 {
-    public class ContentPartBuilder
+    public class ContentPartOptionBuilder
     {
-        public ContentPartBuilder(IServiceCollection services, Type contentPartType)
+        public ContentPartOptionBuilder(IServiceCollection services, Type contentPartType)
         {
             Services = services;
             ContentPartType = contentPartType;
