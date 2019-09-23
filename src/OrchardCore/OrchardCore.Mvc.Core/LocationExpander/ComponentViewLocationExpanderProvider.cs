@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -12,7 +11,7 @@ namespace OrchardCore.Mvc.LocationExpander
 {
     public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        private const string CacheKey = "ModuleComponentViewLocations)";
+        private const string CacheKey = "ModuleComponentViewLocations";
         private static IList<IExtensionInfo> _modulesWithComponentViews;
         private static object _synLock = new object();
 
