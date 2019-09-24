@@ -62,9 +62,13 @@ namespace OrchardCore.Localization
 
                 // \src\OrchardCore.Cms.Web\Localization\OrchardCore.Cms.Web-fr-CA.po
                 yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, extension.Id + CultureDelimiter + poFileName));
+            }
 
-                // \src\OrchardCore.Cms.Web\Localization\fr-CA\OrchardCore.Cms.Web.po
-                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, cultureName, extension.Id + PoFileExtension));
+            // Load all .po files from a culture specific folder
+            // e.g, \src\OrchardCore.Cms.Web\Localization\fr-CA\*.po
+            foreach (var file in _fileProvider.GetDirectoryContents(PathExtensions.Combine(_resourcesContainer, cultureName)))
+            {
+                yield return file;
             }
         }
     }

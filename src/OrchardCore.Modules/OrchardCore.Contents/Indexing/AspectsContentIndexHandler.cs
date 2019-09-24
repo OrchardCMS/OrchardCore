@@ -42,11 +42,6 @@ namespace OrchardCore.Contents.Indexing
                 IndexingConstants.DisplayTextNormalizedKey,
                 context.ContentItem.DisplayText?.ReplaceDiacritics().ToLower(),
                 DocumentIndexOptions.Store);
-
-            context.DocumentIndex.Set(
-                IndexingConstants.FullTextKey,
-                context.ContentItem.DisplayText,
-                DocumentIndexOptions.Analyze);
         }
 
     }

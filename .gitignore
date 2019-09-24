@@ -187,8 +187,11 @@ nuget.exe
 node_modules/
 
 wwwroot
+Localization
 !src/OrchardCore.Modules/**/wwwroot
 !src/OrchardCore.Themes/**/wwwroot
+!src/OrchardCore.Modules/**/Localization
+!src/OrchardCore.Themes/**/Localization
 !src/Templates/**/content/**
 src/Templates/**/content/**/[Bb]in/
 src/Templates/**/content/**/[Oo]bj/
