@@ -11,15 +11,15 @@ namespace OrchardCore.Contents.SitemapNodes
 
         [Required]
         public string Path { get; set; }
-        public bool IndexAll { get; set; }
-        public ChangeFrequency ChangeFrequency { get; set; }
-        public float Priority { get; set; }
+
         public ContentTypeSitemapEntryViewModel[] ContentTypes { get; set; } = new ContentTypeSitemapEntryViewModel[] { };
 
         [BindNever]
         public SitemapNode SitemapNode { get; set; }
+
         [BindNever]
         public bool CanBeChildNode { get; set; }
+
         [BindNever]
         public bool CanSupportChildNodes { get; set; }
     }
