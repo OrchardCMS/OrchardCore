@@ -184,7 +184,7 @@ The following configuration values are used by default and can be customized:
       "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],
 
       // The number of days to store images in the browser cache.
-      // NB: To control cache headers for module static assets, refer to [this section](../../OrchardCore/OrchardCore/Modules/README.md).
+      // NB: To control cache headers for module static assets, refer to the Orchard Core Modules Section.
       "MaxBrowserCacheDays": 30,
 
       // The number of days a cached resized media item will be valid for, before being rebuilt on request.
