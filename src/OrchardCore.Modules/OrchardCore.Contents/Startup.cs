@@ -37,6 +37,10 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Contents.SitemapNodes;
+using OrchardCore.Sitemaps.Services;
+using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Builders;
 
 namespace OrchardCore.Contents
 {
@@ -196,6 +200,17 @@ namespace OrchardCore.Contents
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddFileContentDefinitionStore();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Sitemaps")]
+    public class SitemapMenuStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<ContentTypesSitemapNode>>();
+            services.AddScoped<ISitemapNodeBuilder, ContentTypesSitemapBuilder>();
+            services.AddScoped<IDisplayDriver<SitemapNode>, ContentTypesSitemapNodeDriver>();
         }
     }
 }
