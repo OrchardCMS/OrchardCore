@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentTypes.Events;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
-using YesSql;
 
 namespace OrchardCore.ContentTypes.Services
 {
@@ -20,28 +19,38 @@ namespace OrchardCore.ContentTypes.Services
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IEnumerable<IContentDefinitionEventHandler> _contentDefinitionEventHandlers;
-        private readonly IContentManager _contentManager;
-        private readonly ISession _session;
-        private readonly IEnumerable<ContentPart> _contentParts;
-        private readonly IEnumerable<ContentField> _contentFields;
+        private readonly IEnumerable<Type> _contentPartTypes;
+        private readonly IEnumerable<Type> _contentFieldTypes;
 
         public ContentDefinitionService(
                 IContentDefinitionManager contentDefinitionManager,
                 IEnumerable<IContentDefinitionEventHandler> contentDefinitionEventHandlers,
-                IContentManager contentManager,
-                ISession session,
                 IEnumerable<ContentPart> contentParts,
                 IEnumerable<ContentField> contentFields,
+                IOptions<ContentOptions> contentOptions,
                 ILogger<IContentDefinitionService> logger,
                 IStringLocalizer<ContentDefinitionService> localizer)
         {
-            _session = session;
-            _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _contentDefinitionEventHandlers = contentDefinitionEventHandlers;
-            _contentParts = contentParts;
-            _contentFields = contentFields;
 
+            foreach (var element in contentParts.Select(x => x.GetType()))
+            {
+                logger.LogWarning("The content part '{ContentPart}' should not be registerd in DI. Use AddContentPart<T> instead.", element);
+            }
+
+            foreach (var element in contentFields.Select(x => x.GetType()))
+            {
+                logger.LogWarning("The content field '{ContentField}' should not be registerd in DI. Use AddContentField<T> instead.", element);
+            }
+
+            // TODO: This code can be removed in a future release and rationalized to only use ContentPartOptions.
+            _contentPartTypes = contentParts.Select(cp => cp.GetType())
+                .Union(contentOptions.Value.ContentPartOptions.Select(cpo => cpo.Type));
+
+            // TODO: This code can be removed in a future release and rationalized to only use ContentFieldOptions.
+            _contentFieldTypes = contentFields.Select(cf => cf.GetType())
+                .Union(contentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type));
             Logger = logger;
             T = localizer;
         }
@@ -80,7 +89,8 @@ namespace OrchardCore.ContentTypes.Services
             {
                 name = GenerateContentTypeNameFromDisplayName(displayName);
             }
-            else {
+            else
+            {
                 if (!name[0].IsLetter())
                 {
                     throw new ArgumentException("Content type name must start with a letter", "name");
@@ -164,9 +174,9 @@ namespace OrchardCore.ContentTypes.Services
             // code-defined parts
             var codeDefinedParts = metadataPartsOnly
                 ? Enumerable.Empty<EditPartViewModel>()
-                : _contentParts
-                        .Where(cpd => !userContentParts.ContainsKey(cpd.GetType().Name))
-                        .Select(cpi => new EditPartViewModel { Name = cpi.GetType().Name, DisplayName = cpi.GetType().Name })
+                : _contentPartTypes
+                        .Where(cpd => !userContentParts.ContainsKey(cpd.Name))
+                        .Select(cpi => new EditPartViewModel { Name = cpi.Name, DisplayName = cpi.Name })
                     .ToList();
 
             // Order by display name
@@ -183,7 +193,7 @@ namespace OrchardCore.ContentTypes.Services
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(name);
 
-                if(contentTypeDefinition == null)
+                if (contentTypeDefinition == null)
                 {
                     return null;
                 }
@@ -236,7 +246,7 @@ namespace OrchardCore.ContentTypes.Services
 
         public IEnumerable<Type> GetFields()
         {
-            return _contentFields.Select(x => x.GetType()).ToList();
+            return _contentFieldTypes;
         }
 
         public void AddFieldToPart(string fieldName, string fieldTypeName, string partName)
@@ -321,7 +331,7 @@ namespace OrchardCore.ContentTypes.Services
                     var partDefinition = typeDefinition.Parts.FirstOrDefault(x => x.Name == partNames[i]);
                     type.WithPart(partNames[i], partDefinition.PartDefinition, part =>
                     {
-                        part.WithSetting("Position", i.ToString());
+                        part.MergeSettings<ContentTypePartSettings>(x => x.Position = i.ToString());
                     });
                 }
             });
@@ -336,7 +346,7 @@ namespace OrchardCore.ContentTypes.Services
                     var fieldDefinition = partDefinition.Fields.FirstOrDefault(x => x.Name == fieldNames[i]);
                     type.WithField(fieldNames[i], field =>
                     {
-                        field.WithSetting("Position", i.ToString());
+                        field.MergeSettings<ContentPartFieldSettings>(x => x.Position = i.ToString());
                     });
                 }
             });
@@ -375,12 +385,14 @@ namespace OrchardCore.ContentTypes.Services
                 {
                     return displayName;
                 }
-                else {
+                else
+                {
                     fieldDefinitions = typePart.PartDefinition.Fields.ToArray();
                 }
 
             }
-            else {
+            else
+            {
                 fieldDefinitions = part.Fields.ToArray();
             }
 
@@ -401,7 +413,8 @@ namespace OrchardCore.ContentTypes.Services
                 //this could unintentionally chomp something that looks like a version
                 name = string.Join("-", nameParts.Take(nameParts.Length - 1));
             }
-            else {
+            else
+            {
                 version = 2;
             }
 

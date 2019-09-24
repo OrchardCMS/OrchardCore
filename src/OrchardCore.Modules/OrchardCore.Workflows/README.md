@@ -12,7 +12,9 @@ A workflow is essentially a visual script, where each activity is a statement of
 There are two types of activities: **Task** and **Event**.
 A Task activity typically performs an action, such as publishing a content item, while an Event activity typically listens for an event to happen before execution continues.
 
-In order for a workflow to execute, at least one activity must be marked as the *start of the workflow*. Only Event activities can be marked as the start of a workflow. An example of such an event activity is _Content Created_, which executes whenever a content item is created.
+In order for a workflow to execute, at least one activity must be marked as the *start of the workflow*.
+Only Event activities can be marked as the start of a workflow.
+An example of such an event activity is _Content Created_, which executes whenever a content item is created.
 A workflow can have more than one start event. This allows you to trigger (run) a workflow in response to various types of events.
 
 Each activity has one or more **outcomes**, which represent a source endpoint from which a connection can be made to the next activity, which are called transitions.
@@ -40,11 +42,14 @@ A document (as in a "document-DB" document) that contains all the necessary info
 
 ### Workflow Instance
 
-A document that represents an "instance" of a workflow definition. A workflow instance contains runtime-state of a workflow. Whenever a workflow is started, a new workflow instance is created of a given workflow definition.
+A document that represents an "instance" of a workflow definition. A workflow instance contains runtime-state of a workflow.
+Whenever a workflow is started, a new workflow instance is created of a given workflow definition.
 
 ### Activity
 
-A step in a workflow definition. An activity performs an action and provides zero or more outcomes, which are used to connect to the next activity to execute. There are two types of activities: Task and Event.
+A step in a workflow definition.
+An activity performs an action and provides zero or more outcomes, which are used to connect to the next activity to execute.
+There are two types of activities: Task and Event.
 
 ### Task
 
@@ -52,7 +57,9 @@ A specialized type of activity. Tasks perform actions such as sending emails, pu
 
 ### Event
 
-A specialized type of activity. Like tasks, events can perform actions, but typically all they do is halt the workflow, awaiting for an event to happen before continuing on to the next activity. When an event is configured as the starting activity of a workflow, that workflow is started when that event is triggered.
+A specialized type of activity.
+Like tasks, events can perform actions, but typically all they do is halt the workflow, awaiting an event to happen before continuing on to the next activity.
+When an event is configured as the starting activity of a workflow, that workflow is started when that event is triggered.
 
 ### Workflow Editor
 
@@ -60,16 +67,23 @@ An editor that allows you to create and manage a workflow definition using a dra
 
 ### Activity Editor
 
-Most activities expose settings that can be configured via the activity editor. To configure an activity, you can either double-click an activity on the design surface of the workflow editor, or click an activity once to activate a small popup that provides various actions you can perform on an activity. One of these actions is the Edit action.
+Most activities expose settings that can be configured via the activity editor.
+To configure an activity, you can either double-click an activity on the design surface of the workflow editor, or click an activity once to activate a small popup that provides various actions you can perform on an activity.
+One of these actions is the *Edit* action.
 
 ### Activity Picker
 
-When you are in the Workflow Editor, you use the Activity Picker to add activities to the design surface. Open the activity picker by clicking **Add Task** or **Add Event** to add a task or event, respectively.
+When you are in the Workflow Editor, you use the Activity Picker to add activities to the design surface.
+Open the activity picker by clicking **Add Task** or **Add Event** to add a task or event, respectively.
 
 ### Outcome
 
-Each activity has zero or more outcomes. When an activity has executed, it yields control back to the workflow manager along with a list of outcomes. The workflow manager uses this list of outcomes to determine which activities to execute next.
-Although many activities support multiple outcomes, they typically return only one of them when done executing. For example, the _Send Email_ activity has two possible outcomes: "Done" and "Failed". When the email was sent successfully, it yields "Done" as the outcome, and "Failed" otherwise.
+Each activity has zero or more outcomes. When an activity has executed, it yields control back to the workflow manager along with a list of outcomes.
+The workflow manager uses this list of outcomes to determine which activities to execute next.
+
+Although many activities support multiple outcomes, they typically return only one of them when done executing.
+For example, the _Send Email_ activity has two possible outcomes: "Done" and "Failed".
+When the email was sent successfully, it yields "Done" as the outcome, and "Failed" otherwise.
 
 ### Transition
 
@@ -87,28 +101,30 @@ Each activity has access to this execution context.
 
 ### Correlation
 
-Correlation is the act of associating a workflow instance with one or more _identifiers_. These identifiers can be anything. For example, when a workflow has the _Content Created_ event as its starting point, the workflow instance will be associated, or rather _correlated_ to the content item ID that was just created.
+Correlation is the act of associating a workflow instance with one or more _identifiers_. These identifiers can be anything.
+For example, when a workflow has the _Content Created_ event as its starting point, the workflow instance will be associated, or rather _correlated_ to the content item ID that was just created.
 This allows long-running workflow scenarios where only workflow instances associated with a given content item ID are resumed.
 
 ### Input
 
-When a workflow is executed, the caller can provide input to the workflow instance. This input is stored in the `Input` dictionary of the workfow execution context.
+When a workflow is executed, the caller can provide input to the workflow instance. This input is stored in the `Input` dictionary of the workflow execution context.
 This is analogous to providing arguments to a function.
 
 ### Output
 
-When a workflow executes, each activity can provide output values to the workflow instance. This output is stored in the `Output` dictionary of the workfow execution context.
+When a workflow executes, each activity can provide output values to the workflow instance. This output is stored in the `Output` dictionary of the workflow execution context.
 This is analogous to returning values from a function.
 
 ### Properties
 
-When a workflow executes, each activity can set property values to the workflow instance. These properties are stored in the `Properties` dictionary of the workfow execution context.
+When a workflow executes, each activity can set property values to the workflow instance. These properties are stored in the `Properties` dictionary of the workflow execution context.
 Each activity can set and access these properties, allowing a workflow to compute and retrieve information that can then be processed by other activities further down the chain.
 This is analogous to a function setting local variables.
 
 ## Workflow Execution
 
-When a workflow executes, the **Workflow Manager** creates a **Workflow Instance** and a **Workflow Execution Context**. A workflow instance maintains state about the execution, such as which activity to execute next and state that can be provided by individual activities.
+When a workflow executes, the **Workflow Manager** creates a **Workflow Instance** and a **Workflow Execution Context**.
+A workflow instance maintains state about the execution, such as which activity to execute next and state that can be provided by individual activities.
 A Workflow Instance is ultimately persisted in the underlying data storage provider, while a Workflow Execution Context exists only in memory for the duration of a workflow execution. 
 Workflows can be **short-running** as well as **long-running**.
 
@@ -168,7 +184,7 @@ The following Liquid tags, properties and filters are available by default to an
 | `Workflow.Output` | Property | Returns the Output dictionary. | `{{ Workflow.Output["SomeResult"] }}` |
 | `Workflow.Properties` | Property | Returns the Properties dictionary. | `{{ Workflow.Properties["Foo"] }}` |
 
-Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you cal also use dot notation, e.g.:
+Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you can also use dot notation, e.g.:
 
 ```liquid
 {{ Workflow.Input.ContentItem }}
@@ -177,7 +193,7 @@ Instead of using the indexer syntax on the three workflow dictionaries `Input`, 
 ### Liquid Expressions and ContentItem Events
 
 When handling content related events using a workflow, the content item in question is made available to the workflow via the `Input` dictionary.
-For example, if you have a workflow that starts with the **Content Created Event** activity, you can send an email or make an HTTP request whereand reference the content item from liquid-ebabled fields as follows:
+For example, if you have a workflow that starts with the **Content Created Event** activity, you can send an email or make an HTTP request and reference the content item from liquid-enabled fields as follows:
 
 ```liquid
 {{ Workflow.Input.ContentItem | display_url }}
@@ -185,7 +201,7 @@ For example, if you have a workflow that starts with the **Content Created Event
 {{ Workflow.Input.ContentItem.DisplayText }}
 ```
 
-For more examples of supported content item filters, see the documention on [Liquid ](https://orchardcore.readthedocs.io/en/latest/OrchardCore.Modules/OrchardCore.Liquid/README/).
+For more examples of supported content item filters, see the documentation on [Liquid ](https://orchardcore.readthedocs.io/en/latest/OrchardCore.Modules/OrchardCore.Liquid/README/).
 
 ## Activities out of the box
 
@@ -232,7 +248,8 @@ The following activities are available with any default Orchard installation:
 
 ## Developing Custom Activities
 
-Orchard is built to be extended, and the `Workflows` module is no different. When creating your own module, you can develop custom workflow activities. Developing custom activities involve the following steps:
+Orchard is built to be extended, and the `Workflows` module is no different. When creating your own module, you can develop custom workflow activities.
+Developing custom activities involve the following steps:
 
 1. Create a new class that directly or indirectly implements `IActivity`. In most cases, you either derive from `TaskActivity` or `EventActivity`, depending on whether your activity represents an event or not. Although not required, it is recommended to keep this class in a folder called `Activities`.
 2. Create a new **display driver** class that directly or indirectly implements `IDisplayDriver`. An activity display driver controls the activity's display on the **workflow editor canvas**, the **activity picker** and the **activity editor**. Although not required, it is recommended to keep this class in a folder called `Drivers`. 
@@ -267,7 +284,7 @@ Used when the activity is rendered as part of the workflow editor design surface
 - `OnWorkflowStartedAsync`
 - `OnWorkflowResumingAsync`
 - `OnWorkflowResumedAsync`
-- `OnActivityExecutingAsync
+- `OnActivityExecutingAsync`
 - `OnActivityExecutedAsync`
 
 The `IEvent` interface adds the following member:
@@ -293,6 +310,9 @@ public class NotifyTask : TaskActivity
 
     // The technical name of the activity. Activities on a workflow definition reference this name.
     public override string Name => nameof(NotifyTask);
+
+    // The displayed name of the activity, so it can use localization.
+    public override LocalizedString DisplayText => S["Notify Task"];
 
     // The category to which this activity belongs. The activity picker groups activities by this category.
     public override LocalizedString Category => S["UI"];

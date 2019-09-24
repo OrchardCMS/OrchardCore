@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Theming;
@@ -16,7 +15,6 @@ namespace OrchardCore.DisplayManagement.Implementation
     {
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IEnumerable<IShapeDisplayEvents> _shapeDisplayEvents;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IShapeBindingResolver> _shapeBindingResolvers;
         private readonly IThemeManager _themeManager;
         private readonly IServiceProvider _serviceProvider;
@@ -26,7 +24,6 @@ namespace OrchardCore.DisplayManagement.Implementation
         public DefaultHtmlDisplay(
             IEnumerable<IShapeDisplayEvents> shapeDisplayEvents,
             IEnumerable<IShapeBindingResolver> shapeBindingResolvers,
-            IHttpContextAccessor httpContextAccessor,
             IShapeTableManager shapeTableManager,
             IServiceProvider serviceProvider,
             ILogger<DefaultHtmlDisplay> logger,
@@ -34,7 +31,6 @@ namespace OrchardCore.DisplayManagement.Implementation
         {
             _shapeTableManager = shapeTableManager;
             _shapeDisplayEvents = shapeDisplayEvents;
-            _httpContextAccessor = httpContextAccessor;
             _shapeBindingResolvers = shapeBindingResolvers;
             _themeManager = themeManager;
             _serviceProvider = serviceProvider;
@@ -53,18 +49,23 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             var shapeMetadata = shape.Metadata;
-            
+
             // can't really cope with a shape that has no type information
             if (shapeMetadata == null || string.IsNullOrEmpty(shapeMetadata.Type))
             {
                 return CoerceHtmlString(context.Value);
             }
 
+            // Copy the current context such that the rendering can customize it if necessary
+            // For instance to change the HtmlFieldPrefix
+            var localContext = new DisplayContext(context);
+            localContext.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
+
             var displayContext = new ShapeDisplayContext
             {
                 Shape = shape,
                 ShapeMetadata = shapeMetadata,
-                DisplayContext = context,
+                DisplayContext = localContext,
                 ServiceProvider = _serviceProvider
             };
 
@@ -73,17 +74,13 @@ namespace OrchardCore.DisplayManagement.Implementation
                 var theme = await _themeManager.GetThemeAsync();
                 var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
 
-                // Use the same prefix as the shape
-                var originalHtmlFieldPrefix = context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-                context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
-
                 // Evaluate global Shape Display Events
                 await _shapeDisplayEvents.InvokeAsync(sde => sde.DisplayingAsync(displayContext), _logger);
 
                 // Find base shape association using only the fundamental shape type.
                 // Alternates that may already be registered do not affect the "displaying" event calls.
-                ShapeBinding shapeBinding;
-                if (TryGetDescriptorBinding(shapeMetadata.Type, Enumerable.Empty<string>(), shapeTable, out shapeBinding))
+                var shapeBinding = await GetDescriptorBindingAsync(shapeMetadata.Type, Enumerable.Empty<string>(), shapeTable); ;
+                if (shapeBinding != null)
                 {
                     await shapeBinding.ShapeDescriptor.DisplayingAsync.InvokeAsync(action => action(displayContext), _logger);
 
@@ -113,13 +110,13 @@ namespace OrchardCore.DisplayManagement.Implementation
                     }
 
                     // now find the actual binding to render, taking alternates into account
-                    ShapeBinding actualBinding;
-                    if (TryGetDescriptorBinding(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable, out actualBinding))
+                    var actualBinding = await GetDescriptorBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable);
+                    if (actualBinding != null)
                     {
                         // invoking ShapeMetadata processing events, this includes the Drivers results
                         await shapeMetadata.ProcessingAsync.InvokeAsync(processing => processing(displayContext.Shape), _logger);
 
-                        shape.Metadata.ChildContent = await ProcessAsync(actualBinding, shape, context);
+                        shape.Metadata.ChildContent = await ProcessAsync(actualBinding, shape, localContext);
                     }
                     else
                     {
@@ -132,10 +129,10 @@ namespace OrchardCore.DisplayManagement.Implementation
                 {
                     foreach (var frameType in shape.Metadata.Wrappers)
                     {
-                        ShapeBinding frameBinding;
-                        if (TryGetDescriptorBinding(frameType, Enumerable.Empty<string>(), shapeTable, out frameBinding))
+                        var frameBinding = await GetDescriptorBindingAsync(frameType, Enumerable.Empty<string>(), shapeTable);
+                        if (frameBinding != null)
                         {
-                            shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, context);
+                            shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, localContext);
                         }
                     }
 
@@ -170,9 +167,6 @@ namespace OrchardCore.DisplayManagement.Implementation
 
                 // invoking ShapeMetadata displayed events
                 shapeMetadata.Displayed.Invoke(action => action(displayContext), _logger);
-
-                //restore original HtmlFieldPrefix
-                context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = originalHtmlFieldPrefix;
             }
             finally
             {
@@ -182,7 +176,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             return shape.Metadata.ChildContent;
         }
 
-        private bool TryGetDescriptorBinding(string shapeType, IEnumerable<string> shapeAlternates, ShapeTable shapeTable, out ShapeBinding shapeBinding)
+        private async Task<ShapeBinding> GetDescriptorBindingAsync(string shapeType, IEnumerable<string> shapeAlternates, ShapeTable shapeTable)
         {
             // shape alternates are optional, fully qualified binding names
             // the earliest added alternates have the lowest priority
@@ -192,15 +186,17 @@ namespace OrchardCore.DisplayManagement.Implementation
             {
                 foreach (var shapeBindingResolver in _shapeBindingResolvers)
                 {
-                    if (shapeBindingResolver.TryGetDescriptorBinding(shapeAlternate, out shapeBinding))
+                    var binding = await shapeBindingResolver.GetDescriptorBindingAsync(shapeAlternate);
+
+                    if (binding != null)
                     {
-                        return true;
+                        return binding;
                     }
                 }
 
-                if (shapeTable.Bindings.TryGetValue(shapeAlternate, out shapeBinding))
+                if (shapeTable.Bindings.TryGetValue(shapeAlternate, out var shapeBinding))
                 {
-                    return true;
+                    return shapeBinding;
                 }
             }
 
@@ -208,26 +204,27 @@ namespace OrchardCore.DisplayManagement.Implementation
             // the shapetype name can break itself into shorter fallbacks at double-underscore marks
             // so the shapetype itself may contain a longer alternate forms that falls back to a shorter one
             var shapeTypeScan = shapeType;
-            for (;;)
+            for (; ; )
             {
                 foreach (var shapeBindingResolver in _shapeBindingResolvers)
                 {
-                    if (shapeBindingResolver.TryGetDescriptorBinding(shapeTypeScan, out shapeBinding))
+                    var binding = await shapeBindingResolver.GetDescriptorBindingAsync(shapeTypeScan);
+
+                    if (binding != null)
                     {
-                        return true;
+                        return binding;
                     }
                 }
 
-                if (shapeTable.Bindings.TryGetValue(shapeTypeScan, out shapeBinding))
+                if (shapeTable.Bindings.TryGetValue(shapeTypeScan, out var shapeBinding))
                 {
-                    return true;
+                    return shapeBinding;
                 }
 
                 var delimiterIndex = shapeTypeScan.LastIndexOf("__");
                 if (delimiterIndex < 0)
                 {
-                    shapeBinding = null;
-                    return false;
+                    return null;
                 }
 
                 shapeTypeScan = shapeTypeScan.Substring(0, delimiterIndex);

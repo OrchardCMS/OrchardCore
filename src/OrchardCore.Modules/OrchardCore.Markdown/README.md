@@ -104,6 +104,18 @@ You can override the HTML editor for the `Default` editor by creating a shape fi
 `Markdown.Editor.cshtml`. The WYSIWYG editor is defined by using the file named 
 `Markdown-Wysiwyg.Editor.cshtml`.
 
+## Razor Helper
+
+To render a Markdown string to HTML within Razor use the `MarkdownToHtmlAsync` helper extension method on the view's base `Orchard` property, e.g.:
+
+```
+@await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown)
+```
+
+In this example we assume that `Model.ContentItem.Content.MarkdownParagraph.Content` represents an `MarkdownField`, and `Markdown` is the field value, and we cast to a string, as extension methods do not support dynamic dispatching.
+
+This helper will also parse any liquid included in the Markdown.
+
 ## CREDITS
 
 ### Markdig
@@ -112,6 +124,6 @@ Copyright (c) 2016, Alexandre Mutel
 BSD-2
 
 ### SimpleMDE
-<https://github.com/NextStepWebs/simplemde-markdown-editor>
+<https://github.com/sparksuite/simplemde-markdown-editor>
 Copyright (c) 2015 Next Step Webs, Inc.  
 MIT

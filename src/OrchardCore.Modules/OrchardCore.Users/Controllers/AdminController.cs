@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -123,11 +123,19 @@ namespace OrchardCore.Users.Controllers
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
 
+            var userEntries = new List<UserEntry>();
+
+            foreach (var user in results)
+            {
+                userEntries.Add(new UserEntry
+                {
+                    Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: this, displayType: "SummaryAdmin")
+                });
+            }
+
             var model = new UsersIndexViewModel
             {
-                Users = await Task.WhenAll(
-                    results.Select(async x => 
-                        new UserEntry { Shape = await _userDisplayManager.BuildDisplayAsync(x, updater: this, displayType: "SummaryAdmin") })),
+                Users = userEntries,
                 Options = options,
                 Pager = pagerShape
             };
@@ -155,9 +163,9 @@ namespace OrchardCore.Users.Controllers
             {
                 return Unauthorized();
             }
-            
+
             var user = new User();
-            
+
             var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: this, isNew: true);
 
             if (!ModelState.IsValid)
@@ -304,13 +312,16 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
+            if (ModelState.IsValid)
             {
-                _notifier.Success(TH["Password updated correctly."]);
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-                return RedirectToAction(nameof(Index));
+                if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
+                {
+                    _notifier.Success(TH["Password updated correctly."]);
+
+                    return RedirectToAction(nameof(Index));
+                }
             }
 
             return View(model);

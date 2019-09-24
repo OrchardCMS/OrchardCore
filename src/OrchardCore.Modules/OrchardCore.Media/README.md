@@ -107,6 +107,18 @@ Resizes the image using the same functionality as `max` then removes any image a
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=crop" />`
 
+### `append_version`
+
+Appends a version hash for an asset. Can be piped together with the other media filters.
+
+#### Input
+
+`{{ 'animals/kittens.jpg' | asset_url | append_version | img_tag }}`
+
+#### Output
+
+`<img src="~/media/animals/kittens.jpg?v=Ailxbj_jQtYc9LRXKa21DygRzmQqc3OfN1XxSaQ3UWE" />`
+
 ## Razor Helpers
 
 To obtain the correct URL for an asset, use the `AssetUrl` helper extension method on the view's base `Orchard` property, e.g.:
@@ -117,15 +129,38 @@ To obtain the correct URL for a resized asset use `AssetUrl` with the optional w
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop)`
 
+To append a version hash for an asset use `AssetUrl` with the append version parameter, e.g.:
+
+`@Orchard.AssetUrl(Model.Paths[0], appendVersion: true)`
+
+or with resizing options as well, noting that the version hash is based on the source image
+
+`@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop, appendVersion: true)`
+
 ### Razor image resizing tag helpers
 
-To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`. `asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height and resize mode can be set using `img-width`, `img-height` and `img-resize-mode` respectively. e.g.:
+To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`. 
+
+`asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height and resize mode can be set using `img-width`, `img-height` and `img-resize-mode` respectively. e.g.:
 
 `<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
 
 Alternatively the Asset Url can be resolved independently and the `src` attribute used:
 
 `<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
+
+### Razor append version
+`asp-append-version` support is available on the OrchardCore tag helpers and MVC tag helpers.
+
+`<img asset-src="Model.Paths[0]" alt="..." asp-append-version="true" />`
+
+Alternatively the Asset Url can be resolved independently and the `src` attribute used:
+
+`<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." asp-append-version="true" />`
+
+Or when using the MVC tag helpers and the image is resolved from static assets, i.e. wwwroot
+
+`<img src="/favicon.ico" asp-append-version="true"/>`
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
 
@@ -144,18 +179,29 @@ The following configuration values are used by default and can be customized:
 
 ```json
     "OrchardCore.Media": {
+
       // The accepted sizes for custom width and height
       "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],
 
-      // The number of days to store images in the browser cache
+      // The number of days to store images in the browser cache.
+      // NB: To control cache headers for module static assets, refer to [this section](../../OrchardCore/OrchardCore/Modules/README.md).
       "MaxBrowserCacheDays": 30,
 
-      // The number of days to store images in the image cache
+      // The number of days a cached resized media item will be valid for, before being rebuilt on request.
       "MaxCacheDays": 365,
 
       // The maximum size of an uploaded file in bytes. 
       // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
       "MaxFileSize": 30000000,
+
+      // A CDN base url that will be prefixed to the request path when serving images.
+      "CdnBaseUrl": "https://your-cdn.com",
+
+      // The path used when serving media assets.
+      "AssetsRequestPath": "/media",
+
+      // The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
+      "AssetsPath": "Media",
 
       // The list of allowed file extensions
       "AllowedFileExtensions": [
@@ -204,7 +250,7 @@ The following configuration values are used by default and can be customized:
 
 ### ImageSharp
 
-https://sixlabors.com/projects/imagesharp/
+<https://sixlabors.com/projects/imagesharp/>
 
 Copyright 2012 James South
 Licensed under the Apache License, Version 2.0

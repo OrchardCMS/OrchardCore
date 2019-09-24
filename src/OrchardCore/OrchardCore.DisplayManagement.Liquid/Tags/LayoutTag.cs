@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         {
             var name = (await expression.EvaluateAsync(context)).ToStringValue();
 
-            if (!context.AmbientValues.TryGetValue("LiquidPage", out dynamic page))
+            if (!context.AmbientValues.TryGetValue("LiquidPage", out var page))
             {
                 throw new ArgumentException("LiquidPage missing while invoking 'layout'");
             }

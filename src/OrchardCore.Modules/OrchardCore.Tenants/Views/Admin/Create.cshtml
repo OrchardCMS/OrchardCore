@@ -58,7 +58,7 @@
                 <option value="" data-connection-string="false">@T["None"]</option>
                 @foreach (var provider in DatabaseProviders)
                 {
-                    <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()" data-table-prefix="@provider.HasTablePrefix.ToString().ToLower()">@provider.Name</option>
+                    <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()" data-table-prefix="@provider.HasTablePrefix.ToString().ToLower()" data-connection-string-sample="@T["The connection string to your database instance. e.g., {0}", provider.SampleConnectionString]">@provider.Name</option>
                 }
             </select>
         </div>
@@ -74,7 +74,7 @@
             <label asp-for="ConnectionString">@T["Connection string"]</label>
             <input asp-for="ConnectionString" class="form-control" />
             <span asp-validation-for="ConnectionString" class="text-danger"></span>
-            <span class="text-muted form-text small">@T["The connection string to your database instance. e.g., Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"]</span>
+            <span id="connectionStringHint" class="text-muted form-text small"></span>
         </div>
     </fieldset>
 

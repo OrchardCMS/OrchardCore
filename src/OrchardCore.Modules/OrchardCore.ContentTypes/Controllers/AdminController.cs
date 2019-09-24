@@ -16,8 +16,8 @@ using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Routing;
 using YesSql;
 
 namespace OrchardCore.ContentTypes.Controllers
@@ -174,9 +174,6 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 _session.Cancel();
 
-                HackModelState(nameof(EditTypeViewModel.OrderedFieldNames));
-                HackModelState(nameof(EditTypeViewModel.OrderedPartNames));
-
                 return View(viewModel);
             }
             else
@@ -230,7 +227,7 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 Type = typeViewModel,
                 PartSelections = _contentDefinitionService.GetParts(metadataPartsOnly: false)
-                    .Where(cpd => !typePartNames.Contains(cpd.Name) && cpd.Settings.ToObject<ContentPartSettings>().Attachable)
+                    .Where(cpd => !typePartNames.Contains(cpd.Name) && cpd.PartDefinition != null ? cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable : false)
                     .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
                     .ToList()
             };
@@ -251,9 +248,9 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
 
             var reusableParts = _contentDefinitionService.GetParts(metadataPartsOnly: false)
-                    .Where(cpd =>
-                        cpd.Settings.ToObject<ContentPartSettings>().Attachable &&
-                        cpd.Settings.ToObject<ContentPartSettings>().Reusable);
+                    .Where(cpd => cpd.PartDefinition != null ?
+                        (cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable &&
+                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Reusable) : false);
 
             var viewModel = new AddReusablePartViewModel
             {
@@ -579,7 +576,7 @@ namespace OrchardCore.ContentTypes.Controllers
             else
             {
                 return RedirectToAction("EditField", new { id, viewModel.Name });
-            }            
+            }
         }
 
         public async Task<ActionResult> EditField(string id, string name, string returnUrl = null)
@@ -642,7 +639,8 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 return NotFound();
             }
-
+            viewModel.PartFieldDefinition = field;
+            viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
 
             if (field.DisplayName() != viewModel.DisplayName)
             {
@@ -846,14 +844,5 @@ namespace OrchardCore.ContentTypes.Controllers
         }
 
         #endregion
-
-        private void HackModelState(string key)
-        {
-            // TODO: Remove this once https://github.com/aspnet/Mvc/issues/4989 has shipped
-            var modelStateEntry = ModelState[key];
-            var nodeType = modelStateEntry.GetType();
-            nodeType.GetMethod("GetNode").Invoke(modelStateEntry, new object[] { new Microsoft.Extensions.Primitives.StringSegment("--!!f-a-k-e"), true });
-            ((System.Collections.IList)nodeType.GetProperty("ChildNodes").GetValue(modelStateEntry)).Clear();
-        }
     }
 }

@@ -1,10 +1,20 @@
 [
   {
+    "generateRTL": false,
     "generateSourceMaps": false,
-    "inputs": [ "../../../node_modules/bootstrap-scss/bootstrap.scss" ],
+    "inputs": [ "../../../node_modules/bootstrap/scss/bootstrap.scss" ],
     "output": "wwwroot/Styles/bootstrap.css"
   },
   {
+    "inputs": [ "../../../node_modules/bootstrap/dist/js/bootstrap.js" ],
+    "output": "wwwroot/Scripts/bootstrap.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/popper.js/dist/umd/popper.js" ],
+    "output": "wwwroot/Scripts/popper.js"
+  },
+  {
+    "generateRTL": true,
     "inputs": [ "../../../node_modules/bootstrap-slider/dist/css/bootstrap-slider.css" ],
     "output": "wwwroot/Styles/bootstrap-slider.css"
   },
@@ -13,6 +23,7 @@
     "output": "wwwroot/Scripts/bootstrap-slider.js"
   },
   {
+    "generateRTL": false,
     "inputs": [ "../../../node_modules/codemirror/lib/codemirror.css" ],
     "output": "wwwroot/Scripts/codemirror/codemirror.css"
   },
@@ -58,6 +69,7 @@
   },
   {
     "generateSourceMaps": false,
+    "generateRTL": true,
     "inputs": [
       "../../../node_modules/trumbowyg/dist/ui/sass/trumbowyg.scss",
       "../../../node_modules/trumbowyg/plugins/*/ui/sass/*.scss"

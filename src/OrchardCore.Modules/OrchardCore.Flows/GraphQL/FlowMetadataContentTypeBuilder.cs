@@ -12,9 +12,9 @@ namespace OrchardCore.Flows.GraphQL
     {
         public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
-            var settings = contentTypeDefinition.Settings?.ToObject<ContentTypeSettings>();
+            var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
 
-            if (settings != null && settings.Stereotype != "Widget") return;
+            if (settings.Stereotype != "Widget") return;
 
             contentItemType.Field<FlowMetadataQueryObjectType>(
                 "metadata",

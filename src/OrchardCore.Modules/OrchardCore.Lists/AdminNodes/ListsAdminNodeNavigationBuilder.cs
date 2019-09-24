@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.AdminMenu.Services;
+using OrchardCore.Contents.Security;
 using OrchardCore.Navigation;
 using YesSql;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Lists.AdminNodes
 {
@@ -20,6 +22,8 @@ namespace OrchardCore.Lists.AdminNodes
         private readonly ISession _session;
         private readonly ILogger<ListsAdminNodeNavigationBuilder> _logger;
         private ListsAdminNode _node;
+        private ContentTypeDefinition _contentType;
+
         private const int MaxItemsInNode = 100; // security check
 
         public ListsAdminNodeNavigationBuilder(
@@ -45,26 +49,27 @@ namespace OrchardCore.Lists.AdminNodes
                 return;
             }
 
+            _contentType = _contentDefinitionManager.GetTypeDefinition(_node.ContentType);
+
             if (_node.AddContentTypeAsParent)
             {
-                var contentType = _contentDefinitionManager.GetTypeDefinition(_node.ContentType);
-                if (contentType == null)
+                if (_contentType == null)
                 {
                     _logger.LogError("Can't find The content type {0} for list admin node.", _node.ContentType);
                 }
 
-                builder.Add(new LocalizedString(contentType.DisplayName, contentType.DisplayName), listTypeMenu =>
+                await builder.AddAsync(new LocalizedString(_contentType.DisplayName, _contentType.DisplayName), async listTypeMenu =>
                 {
                     AddPrefixToClasses(_node.IconForParentLink).ForEach(c => listTypeMenu.AddClass(c));
-
-                    AddContentItems(listTypeMenu);
+                    listTypeMenu.Permission(ContentTypePermissions.CreateDynamicPermission(
+                        ContentTypePermissions.PermissionTemplates[Contents.Permissions.EditContent.Name], _contentType));
+                    await AddContentItemsAsync(listTypeMenu);
                 });
             }
             else
             {
-                AddContentItems(builder);
+                await AddContentItemsAsync(builder);
             }
-
 
             // Add external children
             foreach (var childNode in _node.Items)
@@ -82,9 +87,9 @@ namespace OrchardCore.Lists.AdminNodes
 
         }
 
-        private async void AddContentItems(NavigationBuilder listTypeMenu)
+        private async Task AddContentItemsAsync(NavigationBuilder listTypeMenu)
         {
-            foreach (var ci in await getContentItems())
+            foreach (var ci in await getContentItemsAsync())
             {
                 var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
 
@@ -93,29 +98,28 @@ namespace OrchardCore.Lists.AdminNodes
                     listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), m =>
                     {
                         m.Action(cim.AdminRouteValues["Action"] as string, cim.AdminRouteValues["Controller"] as string, cim.AdminRouteValues);
-                        m.Permission(Contents.Permissions.EditOwnContent);
                         m.Resource(ci);
                         m.Priority(_node.Priority);
                         m.Position(_node.Position);
                         m.LocalNav();
-                        AddPrefixToClasses(_node.IconForContentItems).ToList().ForEach(c => m.AddClass(c));                     
+                        AddPrefixToClasses(_node.IconForContentItems).ToList().ForEach(c => m.AddClass(c));
+
+                        m.Permission(ContentTypePermissions.CreateDynamicPermission(
+                        ContentTypePermissions.PermissionTemplates[Contents.Permissions.EditContent.Name], _contentType));
                     });
                 }
             }
         }
 
-
-        private async Task<List<ContentItem>> getContentItems()
+        private async Task<List<ContentItem>> getContentItemsAsync()
         {
             return (await _session.Query<ContentItem, ContentItemIndex>()
-                .With<ContentItemIndex>(x => x.Latest)
-                .With<ContentItemIndex>(x => x.ContentType == _node.ContentType)
+                .With<ContentItemIndex>(x => x.Latest && x.ContentType == _node.ContentType)
                 .Take(MaxItemsInNode)
                 .ListAsync())
                 .OrderBy(x => x.DisplayText)
                 .ToList();
         }
-
 
         private List<string> AddPrefixToClasses(string unprefixed)
         {

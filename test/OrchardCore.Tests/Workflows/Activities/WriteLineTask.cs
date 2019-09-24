@@ -23,6 +23,7 @@ namespace OrchardCore.Tests.Workflows.Activities
 
         private IStringLocalizer T { get; }
         public override string Name => nameof(WriteLineTask);
+        public override LocalizedString DisplayText => T["Write Line Task"];
         public override LocalizedString Category => T["Test"];
 
         public WorkflowExpression<string> Text

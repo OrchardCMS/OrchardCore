@@ -3,7 +3,7 @@ using Fluid;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Models;
-using OrchardCore.Liquid.Model;
+using OrchardCore.Liquid.Models;
 
 namespace OrchardCore.Liquid.Handlers
 {
@@ -18,11 +18,11 @@ namespace OrchardCore.Liquid.Handlers
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, LiquidPart part)
         {
-            context.For<BodyAspect>(bodyAspect =>
+            return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
                 try
                 {
-                    var result = _liquidTemplateManager.RenderAsync(part.Liquid, System.Text.Encodings.Web.HtmlEncoder.Default, new TemplateContext()).GetAwaiter().GetResult();
+                    var result = await _liquidTemplateManager.RenderAsync(part.Liquid, System.Text.Encodings.Web.HtmlEncoder.Default, new TemplateContext());
                     bodyAspect.Body = new HtmlString(result);
                 }
                 catch
@@ -30,8 +30,6 @@ namespace OrchardCore.Liquid.Handlers
                     bodyAspect.Body = HtmlString.Empty;
                 }
             });
-
-            return Task.CompletedTask;
         }
     }
 }
