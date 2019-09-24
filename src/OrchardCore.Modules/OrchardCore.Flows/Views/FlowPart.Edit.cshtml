@@ -1,5 +1,6 @@
 @using OrchardCore.ContentManagement;
 @using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.Flows.Extensions;
 @using OrchardCore.Flows.ViewModels;
 
 @model FlowPartEditViewModel
@@ -24,31 +25,8 @@
             dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
 
             var metadata = ((ContentItem)widgetEditor.ContentItem).As<OrchardCore.Flows.Models.FlowMetadata>();
-
-            var colSize = 100;
-            switch (metadata.Size)
-            {
-                case 25:
-                    colSize = 3;
-                    break;
-                case 33:
-                    colSize = 4;
-                    break;
-                case 50:
-                    colSize = 6;
-                    break;
-                case 66:
-                    colSize = 8;
-                    break;
-                case 75:
-                    colSize = 9;
-                    break;
-                default:
-                    colSize = 12;
-                    break;
-
-            }
-            <div class="widget-template col-md-@colSize">
+            
+            <div class="widget-template col-md-@metadata.ToColumnSize()">
                 @{
                     widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
                     widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
@@ -103,7 +81,7 @@
     }
 
     <script at="Foot">
-              
+
         $("#@widgetTemplatePlaceholderId").sortable({
             handle: ".widget-editor-header",
             cursor: "move",
@@ -122,22 +100,22 @@
             start: function (event, ui) {
 
                 widgetDragItem = ui.item;
-                lastContainer = ui.item.parent();                
+                lastContainer = ui.item.parent();
                 lastContainer.toggleClass('widget-dropzone-hint');
 
                 widgetDragItem.find('.card').first().toggleClass('border-primary')
-                
+
                 widgetItemSourceId = widgetDragItem.parent().attr('id');
 
                 var classList = widgetDragItem.attr('class').split(' ');
                 $.each(classList, function (id, item) {
                     if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
                 });
-                
+
             },
             stop: function (event, ui) {
 
-                lastContainer.toggleClass('widget-dropzone-hint');                
+                lastContainer.toggleClass('widget-dropzone-hint');
                 widgetDragItem.find('.card').first()
                     .toggleClass('border-primary')
 
@@ -192,12 +170,12 @@
                 widgetDragItem = null;
                 lastContainer = null;
                 widgetItemSourceId = null;
-                widgetItemDestId = null; 
+                widgetItemDestId = null;
             },
             over: function (event, ui) {
 
                 if (lastContainer[0] != this) {
-                    lastContainer.toggleClass('widget-dropzone-hint');                    
+                    lastContainer.toggleClass('widget-dropzone-hint');
                     lastContainer = $(this);
                     $(this).toggleClass('widget-dropzone-hint');
                 }

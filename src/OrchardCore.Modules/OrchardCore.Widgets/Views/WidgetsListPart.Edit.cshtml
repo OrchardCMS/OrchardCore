@@ -23,7 +23,7 @@
                 @zone
             </div>
             <div class="widget-editor-body card-body" data-zone="@zone">
-                <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder">
+                <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-widget-list row">
                     @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
 
                     @if (Model.WidgetsListPart.Widgets.ContainsKey(zone))
@@ -31,7 +31,7 @@
                         foreach (var widget in Model.WidgetsListPart.Widgets[zone])
                         {
                             var prefix = Guid.NewGuid().ToString("n");
-                            <div class="widget-template">
+                            <div class="widget-template col-md-12">
                                 @{
                                     dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
 
@@ -92,12 +92,12 @@
         <script asp-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
         <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
     }
-
+    
     <script at="Foot">
         $(".widget-template-placeholder").sortable({
             handle: ".widget-editor-header",
             cursor: "move",
-            connectWith: '.widget-template-placeholder',
+            connectWith: '.widget-template-placeholder.widget-template-placeholder-widget-list',
             receive: function (event, ui) {
                 var newZone = ui.item.closest('.widget-editor-body').data("zone");
                 var zoneInput = ui.item.find('.source-zone').val(newZone);

@@ -1,6 +1,6 @@
 var createEditorUrl = $('#buildEditorUrl').attr("value");
 var widgetTemplate = function (data, prefixesName, prefix, contentTypesName, contentType, zoneName, zone) {
-    return '<div class="widget-template">' + data + '<input type="hidden" name="' + prefixesName + '" value="' + prefix + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /><input type="hidden" name="' + zoneName + '" value="' + zone + '" class="source-zone" /></div>';
+    return '<div class="widget-template col-md-12">' + data + '<input type="hidden" name="' + prefixesName + '" value="' + prefix + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /><input type="hidden" name="' + zoneName + '" value="' + zone + '" class="source-zone" /></div>';
 };
 function guid() {
     function s4() {

@@ -17,3 +17,12 @@
 .widget-template-placeholder {
     min-height: 1em;
 }
+
+.widget-editor-header div.handle {
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.widget-editor-header div.handle:hover {
+    cursor: move;
+}
