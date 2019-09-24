@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
 using Fluid.Values;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -21,6 +20,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Layout;
@@ -30,9 +30,7 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.DynamicCache.Liquid;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
-using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
@@ -70,10 +68,13 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<ShapeCacheTag>("shape_cache");
             Factory.RegisterTag<ShapeTabTag>("shape_tab");
             Factory.RegisterTag<ShapeRemoveItemTag>("shape_remove_item");
+            Factory.RegisterTag<ShapeAddPropertyTag>("shape_add_properties");
+            Factory.RegisterTag<ShapeRemovePropertyTag>("shape_remove_property");
             Factory.RegisterTag<ShapePagerTag>("shape_pager");
 
             Factory.RegisterTag<HelperTag>("helper");
             Factory.RegisterTag<NamedHelperTag>("shape");
+            Factory.RegisterTag<NamedHelperTag>("contentitem");
             Factory.RegisterTag<NamedHelperTag>("link");
             Factory.RegisterTag<NamedHelperTag>("meta");
             Factory.RegisterTag<NamedHelperTag>("resources");
@@ -103,7 +104,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             var services = page.Context.RequestServices;
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
             var fileProviderAccessor = services.GetRequiredService<ILiquidViewFileProviderAccessor>();
-            var isDevelopment = services.GetRequiredService<IHostingEnvironment>().IsDevelopment();
+            var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
 
             var template = await ParseAsync(path, fileProviderAccessor.FileProvider, Cache, isDevelopment);
 
@@ -173,7 +174,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class LiquidViewTemplateExtensions
     {
-        public static Task RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
+        public static async Task RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
             IServiceProvider services, TextWriter writer, TextEncoder encoder, TemplateContext templateContext)
         {
             templateContext.AddAsyncFilters(options, services);
@@ -186,11 +187,13 @@ namespace OrchardCore.DisplayManagement.Liquid
                 viewContext.Writer = writer;
 
                 // Use the view engine to render the liquid page.
-                return viewContext.View.RenderAsync(viewContext);
+                await viewContext.View.RenderAsync(viewContext);
+
+                return;
             }
 
             // Otherwise, we don't need the view engine for rendering.
-            return template.RenderAsync(writer, encoder, templateContext);
+            await template.RenderAsync(writer, encoder, templateContext);
         }
 
         public static async Task<string> RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
@@ -203,12 +206,18 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             if (viewContext != null)
             {
-                using (var writer = new StringWriter())
+                using (var sb = StringBuilderPool.GetInstance())
                 {
-                    // Use the view engine to render the liquid page.
-                    viewContext.Writer = writer;
-                    await viewContext.View.RenderAsync(viewContext);
-                    return writer.ToString();
+                    using (var writer = new StringWriter(sb.Builder))
+                    {
+                        // Use the view engine to render the liquid page.
+                        viewContext.Writer = writer;
+                        await viewContext.View.RenderAsync(viewContext);
+
+                        await writer.FlushAsync();
+                    }
+
+                    return sb.Builder.ToString();
                 }
             }
 
@@ -240,10 +249,10 @@ namespace OrchardCore.DisplayManagement.Liquid
                 viewContext.View is RazorView razorView &&
                 razorView.RazorPage is LiquidPage liquidPage)
             {
-                liquidPage.RenderAsync = output =>
+                liquidPage.RenderAsync = async output =>
                 {
                     // Render the template through the default liquid page.
-                    return template.RenderAsync(output, encoder, templateContext);
+                    await template.RenderAsync(output, encoder, templateContext);
                 };
 
                 return viewContext;
@@ -354,13 +363,10 @@ namespace OrchardCore.DisplayManagement.Liquid
                 return actionContext;
             }
 
-            var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
-            var httpContext = httpContextAccessor.HttpContext;
-            var shellContext = httpContext.Features.Get<ShellContextFeature>()?.ShellContext;
-
             var routeData = new RouteData();
-            var pipeline = shellContext?.Pipeline as ShellRequestPipeline;
-            routeData.Routers.Add(pipeline?.Router ?? new RouteCollection());
+            routeData.Routers.Add(new RouteCollection());
+
+            var httpContext = services.GetRequiredService<IHttpContextAccessor>().HttpContext;
 
             actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
             var filters = httpContext.RequestServices.GetServices<IAsyncViewResultFilter>();

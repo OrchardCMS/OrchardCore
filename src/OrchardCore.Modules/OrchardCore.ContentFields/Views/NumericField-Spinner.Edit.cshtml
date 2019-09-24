@@ -3,7 +3,7 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentFields.Settings;
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<NumericFieldSettings>();
     string name = Model.PartFieldDefinition.DisplayName();
     string step = Math.Pow(10, 0 - settings.Scale).ToString(CultureInfo.InvariantCulture);
     decimal min = settings.Minimum.HasValue ? settings.Minimum.Value : 0;

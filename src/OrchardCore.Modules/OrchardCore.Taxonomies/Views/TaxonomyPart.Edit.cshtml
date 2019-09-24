@@ -17,7 +17,7 @@
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
     var canAddTerm = Model.TaxonomyPart.ContentItem.Id != 0;
-    var termContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => String.IsNullOrEmpty(t.Settings.ToObject<ContentTypeSettings>().Stereotype)).OrderBy(x => x.DisplayName);
+    var termContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => String.IsNullOrEmpty(t.GetSettings<ContentTypeSettings>().Stereotype)).OrderBy(x => x.DisplayName);
     var index = 0;
 }
 <fieldset class="form-group" asp-validation-class-for="TermContentType">

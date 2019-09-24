@@ -7,7 +7,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Title.Drivers;
 using OrchardCore.Title.Indexing;
-using OrchardCore.Title.Model;
+using OrchardCore.Title.Models;
 using OrchardCore.Title.ViewModels;
 
 namespace OrchardCore.Title
@@ -23,7 +23,7 @@ namespace OrchardCore.Title
         {
             // Title Part
             services.AddScoped<IContentPartDisplayDriver, TitlePartDisplay>();
-            services.AddSingleton<ContentPart, TitlePart>();
+            services.AddContentPart<TitlePart>();
             services.AddScoped<IContentPartIndexHandler, TitlePartIndexHandler>();
 
             services.AddScoped<IDataMigration, Migrations>();

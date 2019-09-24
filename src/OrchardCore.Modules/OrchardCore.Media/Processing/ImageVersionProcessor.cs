@@ -5,6 +5,9 @@ using SixLabors.ImageSharp.Web.Processors;
 
 namespace OrchardCore.Media.Processing
 {
+    /// <summary>
+    /// Pass through processor which allows inclusion of a version query string in the cache key.
+    /// </summary>
     public class ImageVersionProcessor : IImageWebProcessor
     {
         private static readonly IEnumerable<string> VersionCommands = new[] { "v" };

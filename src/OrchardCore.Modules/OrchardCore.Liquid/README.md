@@ -322,11 +322,16 @@ Input
 {% assign date_time = "DateTime" | shape_new %}
 ```
 
+You can also pass properties when creating the shape.
+Property names get converted to PascalCase. Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template. 
+
+```liquid
+{{ Model.Content | shape_new: prop_value1: "some value", prop_value2: 5 }}
+```
+
 ### `shape_render`
 
 Renders a shape.
-
-Input
 
 ```liquid
 {{ Model.Content | shape_render }}
@@ -348,6 +353,17 @@ Output
 
 ```text
 Monday, September 11, 2017 3:29:26 PM
+```
+
+### `shape_properties`
+
+Returns a shape with the added properties.
+Property names get converted to PascalCase. Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template. 
+
+Input
+
+```liquid
+{% assign my_shape = "MyCustomShape" | shape_new | shape_properties: prop_value1: "some value", prop_value2: 5 %}
 ```
 
 ## Layout Tags
@@ -480,6 +496,27 @@ Input
 
 ```liquid
 {% shape_add_attributes my_shape attr_name1: "value1", attr_name2: "value2" ... %}
+```
+
+### `shape_add_properties`
+
+Adds properties to a shape. This can be useful to pass values from a parent shape. 
+Property names get converted to PascalCase. Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template. 
+
+Input
+
+```liquid
+{% shape_add_properties my_shape prop_name1: "value1", prop_name2: 2  %}
+```
+
+### `shape_remove_property`
+
+Removes a property from a shape by name.
+
+Input
+
+```liquid
+{% shape_remove_property my_shape "prop_name1" %}
 ```
 
 ### `shape_type`

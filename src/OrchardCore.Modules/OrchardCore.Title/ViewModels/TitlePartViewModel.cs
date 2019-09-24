@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.Title.Model;
+using OrchardCore.Title.Models;
 
 namespace OrchardCore.Title.ViewModels
 {

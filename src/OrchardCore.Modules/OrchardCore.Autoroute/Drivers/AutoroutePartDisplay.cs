@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Autoroute.Model;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -76,7 +75,7 @@ namespace OrchardCore.Autoroute.Drivers
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(autoroutePart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AutoroutePart), StringComparison.Ordinal));
-            return contentTypePartDefinition.Settings.ToObject<AutoroutePartSettings>();
+            return contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AutoroutePart model, IUpdateModel updater)

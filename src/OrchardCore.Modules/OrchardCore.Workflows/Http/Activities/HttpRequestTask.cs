@@ -32,6 +32,7 @@ namespace OrchardCore.Workflows.Http.Activities
         private IStringLocalizer T { get; }
 
         public override string Name => nameof(HttpRequestTask);
+        public override LocalizedString DisplayText => T["Http Request Task"];
         public override LocalizedString Category => T["HTTP"];
 
         public WorkflowExpression<string> Url

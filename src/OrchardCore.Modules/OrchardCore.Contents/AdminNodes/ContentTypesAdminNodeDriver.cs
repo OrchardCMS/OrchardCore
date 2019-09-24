@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.AdminNodes
         public override IDisplayResult Edit(ContentTypesAdminNode treeNode)
         {
             var listable = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Listable)
+                .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Listable)
                 .OrderBy(ctd => ctd.DisplayName).ToList();
 
 

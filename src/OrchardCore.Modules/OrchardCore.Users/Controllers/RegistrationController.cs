@@ -108,7 +108,7 @@ namespace OrchardCore.Users.Controllers
                         await _signInManager.SignInAsync(user, isPersistent: false);
                     }
                     _logger.LogInformation(3, "User created a new account with password.");
-                    _registrationEvents.Invoke(i => i.RegisteredAsync(), _logger);
+                    _registrationEvents.Invoke(i => i.RegisteredAsync(user), _logger);
 
                     return RedirectToLocal(returnUrl);
                 }

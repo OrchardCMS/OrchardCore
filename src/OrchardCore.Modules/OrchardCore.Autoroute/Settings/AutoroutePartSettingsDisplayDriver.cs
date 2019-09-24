@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Autoroute.Model;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -33,7 +32,7 @@ namespace OrchardCore.Autoroute.Settings
 
             return Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettings_Edit", model =>
             {
-                var settings = contentTypePartDefinition.Settings.ToObject<AutoroutePartSettings>();
+                var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
 
                 model.AllowCustomPath = settings.AllowCustomPath;
                 model.AllowUpdatePath = settings.AllowUpdatePath;
@@ -62,10 +61,13 @@ namespace OrchardCore.Autoroute.Settings
             {
                 context.Updater.ModelState.AddModelError(nameof(model.Pattern), T["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
             } else {
-                context.Builder.WithSetting(nameof(AutoroutePartSettings.Pattern), model.Pattern);
-                context.Builder.WithSetting(nameof(AutoroutePartSettings.AllowCustomPath), model.AllowCustomPath.ToString());
-                context.Builder.WithSetting(nameof(AutoroutePartSettings.AllowUpdatePath), model.AllowUpdatePath.ToString());
-                context.Builder.WithSetting(nameof(AutoroutePartSettings.ShowHomepageOption), model.ShowHomepageOption.ToString());
+                context.Builder.WithSettings(new AutoroutePartSettings
+                {
+                    Pattern = model.Pattern,
+                    AllowCustomPath = model.AllowCustomPath,
+                    AllowUpdatePath = model.AllowUpdatePath,
+                    ShowHomepageOption = model.ShowHomepageOption
+                });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

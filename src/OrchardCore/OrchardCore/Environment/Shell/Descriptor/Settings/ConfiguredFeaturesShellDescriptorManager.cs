@@ -13,17 +13,14 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
     public class ConfiguredFeaturesShellDescriptorManager : IShellDescriptorManager
     {
         private readonly IShellConfiguration _shellConfiguration;
-        private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private ShellDescriptor _shellDescriptor;
 
         public ConfiguredFeaturesShellDescriptorManager(
             IShellConfiguration shellConfiguration,
-            IShellSettingsManager shellSettingsManager,
             IEnumerable<ShellFeature> shellFeatures)
         {
             _shellConfiguration = shellConfiguration;
-            _shellSettingsManager = shellSettingsManager;
             _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
         }
 
