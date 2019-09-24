@@ -75,16 +75,16 @@ $(function () {
         var $tmpl = $(this).closest('.widget-template');
         var $radio = $(this).find("input:first-child");
         if ($radio[0].id !== 'undefined' && $radio[0].id.indexOf('Size') > 0) {
-            var $radiSize = $(this).find("input:first-child").val();
+            var $radioSize = $(this).find("input:first-child").val();
             var classList = $tmpl.attr('class').split(' ');
             $.each(classList, function (id, item) {
                 if (item.indexOf('col-md-') === 0) $tmpl.removeClass(item);
             });
-            var colSize = Math.round( $radiSize / 100 * 12);
+            var colSize = Math.round($radioSize / 100 * 12);
             $tmpl.addClass('col-md-' + colSize);
 
             var dropdown = $(this).closest('.dropdown-menu');
-            dropdown.prev('button').text($radiSize + '%');
+            dropdown.prev('button').text($radioSize + '%');
         } else if ($radio[0].id !== 'undefined' && $radio[0].id.indexOf('Alignment') > 0) {
             var svg = $(this).find('svg')[0].outerHTML;
             var alignDropdown = $(this).closest('.dropdown-menu');
