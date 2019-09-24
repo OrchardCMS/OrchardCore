@@ -1,6 +1,5 @@
 @using OrchardCore.ContentManagement;
 @using OrchardCore.ContentManagement.Metadata.Settings;
-@using OrchardCore.Flows.Extensions;
 @using OrchardCore.Flows.ViewModels;
 
 @model FlowPartEditViewModel
@@ -25,8 +24,9 @@
             dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
 
             var metadata = ((ContentItem)widgetEditor.ContentItem).As<OrchardCore.Flows.Models.FlowMetadata>();
-            
-            <div class="widget-template col-md-@metadata.ToColumnSize()">
+
+            var colSize = (int)Math.Round( (double)metadata.Size / 100.0 * 12);
+            <div class="widget-template col-md-@colSize">
                 @{
                     widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
                     widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
