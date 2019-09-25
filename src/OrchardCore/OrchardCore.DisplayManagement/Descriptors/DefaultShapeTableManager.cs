@@ -51,16 +51,14 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             var cacheKey = $"ShapeTable:{themeId}";
 
-            ShapeTable shapeTable;
-            if (!_memoryCache.TryGetValue(cacheKey, out shapeTable))
+            if (!_memoryCache.TryGetValue(cacheKey, out ShapeTable shapeTable))
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
                     _logger.LogInformation("Start building shape table");
                 }
 
-                var excludedFeatures = _shapeDescriptors.Count == 0 ? new List<string>() :
-                    _shapeDescriptors.Select(kv => kv.Value.Feature.Id).Distinct().ToList();
+                var excludedFeatures = new HashSet<string>(_shapeDescriptors.Select(kv => kv.Value.Feature.Id));
 
                 foreach (var bindingStrategy in _bindingStrategies)
                 {
@@ -99,11 +97,12 @@ namespace OrchardCore.DisplayManagement.Descriptors
                         shapeType: group.Key,
                         alterationKeys: group.Select(kv => kv.Key),
                         descriptors: _shapeDescriptors
-                    ));
+                    ))
+                    .ToList();
 
                 shapeTable = new ShapeTable
                 {
-                    Descriptors = descriptors.Cast<ShapeDescriptor>().ToDictionary(sd => sd.ShapeType, StringComparer.OrdinalIgnoreCase),
+                    Descriptors = descriptors.ToDictionary(sd => sd.ShapeType, x => (ShapeDescriptor) x, StringComparer.OrdinalIgnoreCase),
                     Bindings = descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
                 };
 
