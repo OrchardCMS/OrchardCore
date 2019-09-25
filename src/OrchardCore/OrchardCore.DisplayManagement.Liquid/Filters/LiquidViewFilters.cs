@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
-
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
@@ -91,6 +89,14 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             if (input.ToObjectValue() is IShape shape)
             {
+                if (shape == context.LocalScope.GetValue("Model")?.ToObjectValue())
+                {
+                    if (shape.Metadata.Recursion++ > 10)
+                    {
+                        return new ValueTask<FluidValue>(new HtmlContentValue(HtmlString.Empty));
+                    }
+                }
+
                 if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
                 {
                     return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_stringify'");
@@ -116,6 +122,14 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             if (input.ToObjectValue() is IShape shape)
             {
+                if (shape == context.LocalScope.GetValue("Model")?.ToObjectValue())
+                {
+                    if (shape.Metadata.Recursion++ > 10)
+                    {
+                        return new ValueTask<FluidValue>(new HtmlContentValue(HtmlString.Empty));
+                    }
+                }
+
                 if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
                 {
                     return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_render'");
