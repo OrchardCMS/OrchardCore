@@ -102,11 +102,15 @@
                 lastContainer = ui.item.parent();
                 lastContainer.toggleClass('widget-dropzone-hint');
                 widgetDragItem.find('.card').first().toggleClass('border-primary');
+                var classList = widgetDragItem.attr('class').split(' ');
+                $.each(classList, function (id, item) {
+                    if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
+                });
+
             },
             stop: function (event, ui) {
                 lastContainer.toggleClass('widget-dropzone-hint');
-                widgetDragItem.find('.card').first()
-                    .toggleClass('border-primary');
+                widgetDragItem.find('.card').first().toggleClass('border-primary');
 
                 //clear the global variables
                 widgetDragItem = null;

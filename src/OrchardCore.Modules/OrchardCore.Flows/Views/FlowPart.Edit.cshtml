@@ -16,7 +16,7 @@
 <script asp-name="jQuery-ui" at="Foot"></script>
 
 <fieldset class="form-group">
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart row " style="min-height:50px;">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart row">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.FlowPart.Widgets)
         {
@@ -116,8 +116,7 @@
             stop: function (event, ui) {
 
                 lastContainer.toggleClass('widget-dropzone-hint');
-                widgetDragItem.find('.card').first()
-                    .toggleClass('border-primary')
+                widgetDragItem.find('.card').first().toggleClass('border-primary');
 
                 widgetItemDestId = widgetDragItem.parent().attr('id');
 
@@ -173,11 +172,11 @@
                 widgetItemDestId = null;
             },
             over: function (event, ui) {
-
+                var $self = $(this); 
                 if (lastContainer[0] != this) {
                     lastContainer.toggleClass('widget-dropzone-hint');
-                    lastContainer = $(this);
-                    $(this).toggleClass('widget-dropzone-hint');
+                    lastContainer = $self;
+                    $self.toggleClass('widget-dropzone-hint');
                 }
             }
         });
