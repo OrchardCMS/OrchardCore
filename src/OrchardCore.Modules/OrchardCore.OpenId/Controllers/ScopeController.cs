@@ -57,7 +57,7 @@ namespace OrchardCore.OpenId.Controllers
             _shellHost = shellHost;
         }
 
-        public dynamic New { get; set; }
+        public dynamic New { get; }
 
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {
