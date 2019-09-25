@@ -11,7 +11,7 @@ namespace OrchardCore.Mvc.LocationExpander
 {
     public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        private static readonly string ShareViewPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
+        private static readonly string SharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
         private static readonly string[] RazorExtensions = new[] { RazorViewEngine.ViewExtension };
         private const string CacheKey = "ModuleComponentViewLocations";
         private static List<IExtensionInfo> _modulesWithComponentViews;
@@ -96,7 +96,7 @@ namespace OrchardCore.Mvc.LocationExpander
 
                     moduleComponentViewLocations = _modulesWithComponentViews
                         .Where(m => enabledExtensionIds.Contains(m.Id))
-                        .Select(m => '/' + m.SubPath + ShareViewPath)
+                        .Select(m => '/' + m.SubPath + SharedViewsPath)
                         .ToArray();
 
                     _memoryCache.Set(CacheKey, moduleComponentViewLocations);

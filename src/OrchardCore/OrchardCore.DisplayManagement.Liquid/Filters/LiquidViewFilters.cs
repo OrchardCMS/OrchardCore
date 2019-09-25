@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
+
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
@@ -52,11 +54,16 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             return new ValueTask<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
         }
 
-        public static async ValueTask<FluidValue> NewShape(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> NewShape(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
+            static async ValueTask<FluidValue> Awaited(ValueTask<IShape> task)
+            {
+                return FluidValue.Create(await task);
+            }
+
             if (!context.AmbientValues.TryGetValue("ShapeFactory", out var item) || !(item is IShapeFactory shapeFactory))
             {
-                return ThrowArgumentException<FluidValue>("ShapeFactory missing while invoking 'shape_new'");
+                return ThrowArgumentException<ValueTask<FluidValue>>("ShapeFactory missing while invoking 'shape_new'");
             }
 
             var type = input.ToStringValue();
@@ -67,53 +74,62 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 properties.Add(name.ToPascalCaseUnderscore(), arguments[name].ToObjectValue());
             }
 
-            return FluidValue.Create(await shapeFactory.CreateAsync(type, Arguments.From(properties)));
+            var task = shapeFactory.CreateAsync(type, Arguments.From(properties));
+            if (!task.IsCompletedSuccessfully)
+            {
+                return Awaited(task);
+            }
+            return new ValueTask<FluidValue>(FluidValue.Create(task.Result));
         }
 
-        public static async ValueTask<FluidValue> ShapeStringify(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> ShapeStringify(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
+            static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
+            {
+                return new HtmlContentValue(await task);
+            }
+
             if (input.ToObjectValue() is IShape shape)
             {
                 if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
                 {
-                    return ThrowArgumentException<FluidValue>("DisplayHelper missing while invoking 'shape_stringify'");
+                    return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_stringify'");
                 }
 
-                if (shape == context.LocalScope.GetValue("Model")?.ToObjectValue())
+                var task = displayHelper.ShapeExecuteAsync(shape);
+                if (!task.IsCompletedSuccessfully)
                 {
-                    if (shape.Metadata.Recursion++ > 10)
-                    {
-                        return new HtmlContentValue(HtmlString.Empty);
-                    }
+                    return Awaited(task);
                 }
-
-                return new HtmlContentValue(await displayHelper.ShapeExecuteAsync(shape));
+                return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
             }
 
-            return NilValue.Instance;
+            return new ValueTask<FluidValue>(NilValue.Instance);
         }
 
-        public static async ValueTask<FluidValue> ShapeRender(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> ShapeRender(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
+            static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
+            {
+                return new HtmlContentValue(await task);
+            }
+
             if (input.ToObjectValue() is IShape shape)
             {
                 if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
                 {
-                    return ThrowArgumentException<FluidValue>("DisplayHelper missing while invoking 'shape_render'");
+                    return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_render'");
                 }
 
-                if (shape == context.LocalScope.GetValue("Model")?.ToObjectValue())
+                var task = displayHelper.ShapeExecuteAsync(shape);
+                if (!task.IsCompletedSuccessfully)
                 {
-                    if (shape.Metadata.Recursion++ > 10)
-                    {
-                        return new HtmlContentValue(HtmlString.Empty);
-                    }
+                    return Awaited(task);
                 }
-
-                return new HtmlContentValue(await displayHelper.ShapeExecuteAsync(shape));
+                return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
             }
 
-            return NilValue.Instance;
+            return new ValueTask<FluidValue>(NilValue.Instance);
         }
 
         public static FluidValue ShapeProperties(FluidValue input, FilterArguments arguments, TemplateContext context)
