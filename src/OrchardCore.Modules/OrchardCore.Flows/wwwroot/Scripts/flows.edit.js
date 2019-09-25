@@ -1,23 +1,26 @@
-var createEditorUrl = $('#buildEditorUrl').attr("value");
-var widgetTemplate = function (data, prefixesName, prefix, contentTypesName, contentType) {
-    return '<div class="widget-template col-md-12">' + data + '<input type="hidden" name="' + prefixesName + '" value="' + prefix + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /></div>';
-};
 //variables used in FlowPart.Edit sortable
 var widgetDragItem, lastContainer, widgetItemSourceId, widgetItemDestId;
 
-function guid() {
-    function s4() {
-        return Math
-            .floor((1 + Math.random()) * 0x10000)
-            .toString(16)
-            .substring(1);
-    }
-    return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
-}
 
 $(function () {
 
+    // function scopped variable    
+    var widgetTemplate = function (data, prefixesName, prefix, contentTypesName, contentType) {
+        return '<div class="widget-template col-md-12">' + data + '<input type="hidden" name="' + prefixesName + '" value="' + prefix + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /></div>';
+    };
+
+    function guid() {
+        function s4() {
+            return Math
+                .floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
+    }    
     $(document).on('click', '.add-widget', function (event) {
+
+        var createEditorUrl = $('#buildFlowEditorUrl').attr("value");
         var type = $(this).data("widget-type");
         var targetId = $(this).data("target-id");
         var prefixesName = $(this).data("prefixes-name");
@@ -38,6 +41,8 @@ $(function () {
     });
 
     $(document).on('click', '.insert-widget', function (event) {
+
+        var createEditorUrl = $('#buildFlowEditorUrl').attr("value");
         var type = $(this).data("widget-type");
         var target = $(this).closest('.widget-template');
         var targetId = $(this).data("target-id");

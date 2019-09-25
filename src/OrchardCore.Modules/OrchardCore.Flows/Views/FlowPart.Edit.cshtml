@@ -25,7 +25,7 @@
 
             var metadata = ((ContentItem)widgetEditor.ContentItem).As<OrchardCore.Flows.Models.FlowMetadata>();
 
-            var colSize = (int)Math.Round( (double)metadata.Size / 100.0 * 12);
+            var colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
             <div class="widget-template col-md-@colSize">
                 @{
                     widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
@@ -62,11 +62,11 @@
         </div>
     </div>
 
-
+    
     @if (Context.Items["FlowPart.Edit"] == null)
     {
         Context.Items["FlowPart.Edit"] = new object();
-        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
+        <input type="hidden" id="buildFlowEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
 
         @foreach (var type in widgetContentTypes)
         {

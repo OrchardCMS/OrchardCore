@@ -57,12 +57,12 @@
         </div>
     </div>
 
-
+    
     @* Rendered only once in case multiple BagPart (or FlowPart) are on the page *@
     @if (Context.Items["BagPart.Edit"] == null)
     {
         Context.Items["BagPart.Edit"] = new object();
-        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
+        <input type="hidden" id="buildFlowEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
 
         <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
         <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
@@ -81,13 +81,51 @@
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
         }
     }
-
+    
     <script at="Foot">
         $("#@widgetTemplatePlaceholderId").sortable({
             handle: ".widget-editor-header",
             cursor: "move",
+            opacity: 0.7,
+            tolerance: "pointer",
+            placeholder: {
+                element: function(currentItem) {
+                    return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
+                },
+                update: function (container, p) {
+                    return;
+                }
+            },
+            toleranceElement: '> div',
+            start: function (event, ui) {
+                widgetDragItem = ui.item;
+                lastContainer = ui.item.parent();
+                lastContainer.toggleClass('widget-dropzone-hint');
+
+                widgetDragItem.find('.card').first().toggleClass('border-primary');
+
+            },
             stop: function (event, ui) {
+
+                lastContainer.toggleClass('widget-dropzone-hint');
+                widgetDragItem.find('.card').first()
+                    .toggleClass('border-primary')
+
+                //clear the global variables
+                widgetDragItem = null;
+                lastContainer = null;
+                widgetItemSourceId = null;
+                widgetItemDestId = null;
+
                 $(document).trigger('contentpreview:render');
+            },
+            over: function (event, ui) {
+
+                if (lastContainer[0] != this) {
+                    lastContainer.toggleClass('widget-dropzone-hint');
+                    lastContainer = $(this);
+                    $(this).toggleClass('widget-dropzone-hint');
+                }
             }
         });
     </script>
