@@ -79,12 +79,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                     return ThrowArgumentException<FluidValue>("DisplayHelper missing while invoking 'shape_stringify'");
                 }
 
-                var model = context.LocalScope.GetValue("Model")?.ToObjectValue();
-                if (model == shape)
+                if (shape == context.LocalScope.GetValue("Model")?.ToObjectValue())
                 {
-                    shape.Metadata.Recursion++;
-
-                    if (shape.Metadata.Recursion > 10)
+                    if (shape.Metadata.Recursion++ > 10)
                     {
                         return new HtmlContentValue(HtmlString.Empty);
                     }
@@ -105,12 +102,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                     return ThrowArgumentException<FluidValue>("DisplayHelper missing while invoking 'shape_render'");
                 }
 
-                var model = context.LocalScope.GetValue("Model")?.ToObjectValue();
-                if (model == shape)
+                if (shape == context.LocalScope.GetValue("Model")?.ToObjectValue())
                 {
-                    shape.Metadata.Recursion++;
-
-                    if (shape.Metadata.Recursion > 10)
+                    if (shape.Metadata.Recursion++ > 10)
                     {
                         return new HtmlContentValue(HtmlString.Empty);
                     }
