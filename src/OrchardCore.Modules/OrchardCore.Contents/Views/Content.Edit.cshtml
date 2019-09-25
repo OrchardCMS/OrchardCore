@@ -26,23 +26,20 @@
             }
         </div>
 
-        @if (Model.Actions != null)
-        {
-            <div class="edit-item-secondary group">
-                <div class="edit-item-actions form-group">
-                    @await DisplayAsync(Model.Actions)
+        <div class="edit-item-secondary group">
+            <div class="edit-item-actions form-group">
+                @await DisplayAsync(Model.Actions)
 
-                    @{
-                        var returnUrl = Context.Request.Query["returnUrl"];
-                    }
+                @{
+                    var returnUrl = Context.Request.Query["returnUrl"];
+                }
 
-                    @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    {
-                        <a id="button-cancel" href="@returnUrl" class="btn btn-secondary">@T["Cancel"]</a>
-                    }
-                </div>
+                @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    <a id="button-cancel" href="@returnUrl" class="btn btn-secondary">@T["Cancel"]</a>
+                }
             </div>
-        }
+        </div>
     </div>
     @if (Model.Sidebar != null)
     {
@@ -52,10 +49,8 @@
         </div>
     }
 </div>
-@if (Model.Actions != null)
+
+@if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
 {
-    @if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
-    {
-        @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
-    }
+    @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
 }
