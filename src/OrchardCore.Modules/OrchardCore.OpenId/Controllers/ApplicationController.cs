@@ -68,7 +68,7 @@ namespace OrchardCore.OpenId.Controllers
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
             var count = await _applicationManager.CountAsync();
 
-            var model = new OpenIdApplicationsIndexViewModel()
+            var model = new OpenIdApplicationsIndexViewModel
             {
                 Pager = (await New.Pager(pager)).TotalItemCount(count)
             };
