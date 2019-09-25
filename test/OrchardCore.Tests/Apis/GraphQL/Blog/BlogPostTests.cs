@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries;

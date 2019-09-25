@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Facebook
@@ -8,9 +10,9 @@ namespace OrchardCore.Facebook
         public static readonly Permission ManageFacebookApp
             = new Permission(nameof(ManageFacebookApp), "View and edit the Facebook app.");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            yield return ManageFacebookApp;
+            return Task.FromResult(new[] { ManageFacebookApp }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

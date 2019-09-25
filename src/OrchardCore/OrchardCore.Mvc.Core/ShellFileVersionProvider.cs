@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Antiforgery.Internal;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -20,20 +20,20 @@ namespace OrchardCore.Mvc
     {
         private const string VersionKey = "v";
         private static readonly char[] QueryStringAndFragmentTokens = new[] { '?', '#' };
-
         private static readonly MemoryCache _sharedCache = new MemoryCache(new MemoryCacheOptions());
 
-        private readonly IEnumerable<IFileProvider> _fileProviders;
+        private readonly IFileProvider[] _fileProviders;
         private readonly IMemoryCache _cache;
 
         public ShellFileVersionProvider(
             IEnumerable<IStaticFileProvider> staticFileProviders,
-            IHostingEnvironment environment,
-            IMemoryCache cache
-            )
+            IWebHostEnvironment environment,
+            IMemoryCache cache)
         {
             _fileProviders = staticFileProviders
-                .Concat(new[] { environment.WebRootFileProvider });
+                .Concat(new[] { environment.WebRootFileProvider })
+                .ToArray();
+
             _cache = cache;
         }
 
@@ -69,7 +69,7 @@ namespace OrchardCore.Mvc
                 return path;
             }
 
-            // Try to get the hash from the cache shared accross tenants.
+            // Try to get the hash from the cache shared across tenants.
             if (resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
             {
                 if (_sharedCache.TryGetValue(resolvedPath.Substring(requestPathBase.Value.Length), out value))
@@ -141,6 +141,24 @@ namespace OrchardCore.Mvc
                 {
                     var hash = sha256.ComputeHash(readStream);
                     return WebEncoders.Base64UrlEncode(hash);
+                }
+            }
+        }
+
+        internal static class CryptographyAlgorithms
+        {
+            public static SHA256 CreateSHA256()
+            {
+                try
+                {
+                    return SHA256.Create();
+                }
+                // SHA256.Create is documented to throw this exception on FIPS compliant machines.
+                // See: https://msdn.microsoft.com/en-us/library/z08hz7ad%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
+                catch (System.Reflection.TargetInvocationException)
+                {
+                    // Fallback to a FIPS compliant SHA256 algorithm.
+                    return new SHA256CryptoServiceProvider();
                 }
             }
         }

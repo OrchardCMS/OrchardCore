@@ -9,7 +9,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
-using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 
@@ -61,11 +61,8 @@ namespace OrchardCore.Markdown.Drivers
             templateContext.SetValue("ContentItem", MarkdownBodyPart.ContentItem);
             templateContext.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
 
-            using (var writer = new StringWriter())
-            {
-                await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, writer, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
-                model.Html = Markdig.Markdown.ToHtml(writer.ToString() ?? "");
-            }
+            var markdown = await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
+            model.Html = Markdig.Markdown.ToHtml(markdown ?? "");
 
             model.ContentItem = MarkdownBodyPart.ContentItem;
             model.Source = MarkdownBodyPart.Markdown;

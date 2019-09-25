@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Html.Drivers;
 using OrchardCore.Html.Handlers;
 using OrchardCore.Html.Indexing;
-using OrchardCore.Html.Model;
+using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.ContentManagement;
@@ -26,8 +26,8 @@ namespace OrchardCore.Html
         public override void ConfigureServices(IServiceCollection services)
         {
             // Body Part
+            services.AddContentPart<HtmlBodyPart>();
             services.AddScoped<IContentPartDisplayDriver, HtmlBodyPartDisplay>();
-            services.AddSingleton<ContentPart, HtmlBodyPart>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, HtmlBodyPartIndexHandler>();

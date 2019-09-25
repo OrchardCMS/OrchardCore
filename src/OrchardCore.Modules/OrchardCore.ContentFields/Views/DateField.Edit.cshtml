@@ -1,8 +1,7 @@
 @model OrchardCore.ContentFields.ViewModels.EditDateFieldViewModel
-@using OrchardCore.ContentFields.Settings;
-@using OrchardCore.ContentManagement.Metadata.Models
+
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<DateFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<DateFieldSettings>();
 }
 
 <fieldset class="form-group">

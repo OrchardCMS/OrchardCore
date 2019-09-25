@@ -28,6 +28,7 @@ namespace OrchardCore.Settings.Drivers
                     Initialize<SiteSettingsViewModel>("Settings_Edit", model =>
                     {
                         model.SiteName = site.SiteName;
+                        model.PageTitleFormat = site.PageTitleFormat;
                         model.BaseUrl = site.BaseUrl;
                         model.TimeZone = site.TimeZoneId;
                         model.UseCdn = site.UseCdn;
@@ -47,6 +48,7 @@ namespace OrchardCore.Settings.Drivers
                 if (await context.Updater.TryUpdateModelAsync(model, Prefix))
                 {
                     site.SiteName = model.SiteName;
+                    site.PageTitleFormat = model.PageTitleFormat;
                     site.BaseUrl = model.BaseUrl;
                     site.TimeZoneId = model.TimeZone;
                     site.UseCdn = model.UseCdn;

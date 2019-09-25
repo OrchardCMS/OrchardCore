@@ -1,8 +1,7 @@
 @model OrchardCore.ContentFields.ViewModels.EditLinkFieldViewModel
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.ContentFields.Settings;
+
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<LinkFieldSettings>();
 }
 
 @{

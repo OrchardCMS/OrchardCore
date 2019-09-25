@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 using OrchardCore.Localization.PortableObject;

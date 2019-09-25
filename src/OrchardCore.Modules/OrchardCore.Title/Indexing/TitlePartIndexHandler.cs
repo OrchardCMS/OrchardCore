@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using OrchardCore.Indexing;
-using OrchardCore.Title.Model;
+using OrchardCore.Title.Models;
 
 namespace OrchardCore.Title.Indexing
 {

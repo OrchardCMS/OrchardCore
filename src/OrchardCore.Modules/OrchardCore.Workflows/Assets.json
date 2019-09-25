@@ -25,12 +25,6 @@
   },
   {
     "inputs": [
-      "Assets/Styles/admin-menu.scss"
-    ],
-    "output": "wwwroot/Styles/menu.workflows-admin.css"
-  },
-  {
-    "inputs": [
       "Assets/Scripts/activity-picker.ts",
       "Http/Assets/Scripts/workflow-url-generator.ts",
       "Assets/Scripts/workflow-canvas.ts",
@@ -40,7 +34,7 @@
   },
   {
     "inputs": [
-      "HTTP/Assets/Scripts/workflow-url-generator.ts"
+      "Http/Assets/Scripts/workflow-url-generator.ts"
     ],
     "output": "wwwroot/Scripts/orchard.http-request-event-editor.js"
   },
@@ -50,12 +44,5 @@
       "Assets/Scripts/workflow-viewer.ts"
     ],
     "output": "wwwroot/Scripts/orchard.workflows-viewer.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "Assets/Images/*"
-    ],
-    "output": "wwwroot/Styles/Images/@"
   }
 ]

@@ -9,7 +9,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Html.Model;
+using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Liquid;
@@ -62,12 +62,7 @@ namespace OrchardCore.Html.Drivers
             templateContext.SetValue("ContentItem", HtmlBodyPart.ContentItem);
             templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
 
-            using (var writer = new StringWriter())
-            {
-                await _liquidTemplatemanager.RenderAsync(HtmlBodyPart.Html, writer, HtmlEncoder.Default, templateContext);
-                model.Html = writer.ToString();
-            }
-
+            model.Html = await _liquidTemplatemanager.RenderAsync(HtmlBodyPart.Html, HtmlEncoder.Default, templateContext);
             model.ContentItem = HtmlBodyPart.ContentItem;
             model.Source = HtmlBodyPart.Html;
             model.HtmlBodyPart = HtmlBodyPart;

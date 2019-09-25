@@ -1,6 +1,8 @@
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
+using OrchardCore.Markdown.Fields;
+using OrchardCore.Markdown.Settings;
 
 namespace OrchardCore.Markdown
 {
@@ -19,7 +21,16 @@ namespace OrchardCore.Markdown
                 .Attachable()
                 .WithDescription("Provides a Markdown formatted body for your content item."));
 
-            return 1;
+            // Return 2 to shortcut the third migration on new content definition schemas.
+            return 2;
+        }
+
+        // Migrate FieldSettings. This only needs to run on old content definition schemas.
+        // This code can be removed in a later version.
+        public int UpdateFrom1()
+        {
+            _contentDefinitionManager.MigrateFieldSettings<MarkdownField, MarkdownFieldSettings>();
+            return 2;
         }
     }
 }

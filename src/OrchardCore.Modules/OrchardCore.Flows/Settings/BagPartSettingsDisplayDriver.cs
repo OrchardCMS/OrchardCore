@@ -35,7 +35,7 @@ namespace OrchardCore.Flows.Settings
 
             return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", model =>
             {
-                model.BagPartSettings = contentTypePartDefinition.Settings.ToObject<BagPartSettings>();
+                model.BagPartSettings = contentTypePartDefinition.GetSettings<BagPartSettings>();
                 model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
                 model.DisplayType = model.BagPartSettings.DisplayType;
                 model.ContentTypes = new NameValueCollection();
@@ -64,8 +64,11 @@ namespace OrchardCore.Flows.Settings
             }
             else
             {
-                context.Builder.WithSetting(nameof(BagPartSettings.ContainedContentTypes), model.ContainedContentTypes);
-                context.Builder.WithSetting(nameof(BagPartSettings.DisplayType), model.DisplayType);
+                context.Builder.WithSettings(new BagPartSettings
+                {
+                    ContainedContentTypes = model.ContainedContentTypes,
+                    DisplayType = model.DisplayType
+                });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);
