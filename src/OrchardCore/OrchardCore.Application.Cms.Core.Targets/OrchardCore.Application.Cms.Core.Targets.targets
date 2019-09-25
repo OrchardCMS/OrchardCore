@@ -26,7 +26,8 @@
     <Copy
       SourceFiles="%(PackageTranslationFiles.FullPath)"
       DestinationFolder="Localization\%(RecursiveDir)"
-      Condition="'@(PackageTranslationFiles)' != ''" />
+      Condition="'@(PackageTranslationFiles)' != ''"
+      SkipUnchangedFiles="true" />
 
     <ItemGroup>
       <LocalizationFiles Include="Localization\**" />
