@@ -57,7 +57,7 @@
         </div>
     </div>
 
-    
+
     @* Rendered only once in case multiple BagPart (or FlowPart) are on the page *@
     @if (Context.Items["BagPart.Edit"] == null)
     {
@@ -81,7 +81,7 @@
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
         }
     }
-    
+
     <script at="Foot">
         $("#@widgetTemplatePlaceholderId").sortable({
             handle: ".widget-editor-header",
@@ -101,30 +101,26 @@
                 widgetDragItem = ui.item;
                 lastContainer = ui.item.parent();
                 lastContainer.toggleClass('widget-dropzone-hint');
-
                 widgetDragItem.find('.card').first().toggleClass('border-primary');
-
             },
             stop: function (event, ui) {
-
                 lastContainer.toggleClass('widget-dropzone-hint');
                 widgetDragItem.find('.card').first()
-                    .toggleClass('border-primary')
+                    .toggleClass('border-primary');
 
                 //clear the global variables
                 widgetDragItem = null;
                 lastContainer = null;
                 widgetItemSourceId = null;
                 widgetItemDestId = null;
-
                 $(document).trigger('contentpreview:render');
             },
             over: function (event, ui) {
-
+                var $self = $(this);
                 if (lastContainer[0] != this) {
                     lastContainer.toggleClass('widget-dropzone-hint');
-                    lastContainer = $(this);
-                    $(this).toggleClass('widget-dropzone-hint');
+                    lastContainer = $self;
+                    $self.toggleClass('widget-dropzone-hint');
                 }
             }
         });

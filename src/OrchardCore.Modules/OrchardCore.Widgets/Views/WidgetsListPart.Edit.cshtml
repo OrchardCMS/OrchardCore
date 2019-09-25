@@ -78,7 +78,7 @@
             </div>
         </div>
     }
-        
+
     @if (Context.Items["WidgetsListPart.Edit"] == null)
     {
         Context.Items["WidgetsListPart.Edit"] = new object();
@@ -119,16 +119,12 @@
                 widgetDragItem = ui.item;
                 lastContainer = ui.item.parent();
                 lastContainer.toggleClass('widget-dropzone-hint');
-
                 widgetDragItem.find('.card').first().toggleClass('border-primary');
-
             },
             stop: function (event, ui) {
-
                 lastContainer.toggleClass('widget-dropzone-hint');
                 widgetDragItem.find('.card').first()
-                    .toggleClass('border-primary')
-
+                    .toggleClass('border-primary');
                 //clear the global variables
                 widgetDragItem = null;
                 lastContainer = null;
@@ -138,11 +134,11 @@
                 $(document).trigger('contentpreview:render');
             },
             over: function (event, ui) {
-
+                $self = $(this);
                 if (lastContainer[0] != this) {
                     lastContainer.toggleClass('widget-dropzone-hint');
-                    lastContainer = $(this);
-                    $(this).toggleClass('widget-dropzone-hint');
+                    lastContainer = $self;
+                    $self.toggleClass('widget-dropzone-hint');
                 }
             }
         });

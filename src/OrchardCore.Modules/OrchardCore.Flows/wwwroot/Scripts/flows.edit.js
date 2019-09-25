@@ -19,7 +19,6 @@ $(function () {
         return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
     }    
     $(document).on('click', '.add-widget', function (event) {
-
         var createEditorUrl = $('#buildFlowEditorUrl').attr("value");
         var type = $(this).data("widget-type");
         var targetId = $(this).data("target-id");
@@ -41,7 +40,6 @@ $(function () {
     });
 
     $(document).on('click', '.insert-widget', function (event) {
-
         var createEditorUrl = $('#buildFlowEditorUrl').attr("value");
         var type = $(this).data("widget-type");
         var target = $(this).closest('.widget-template');
