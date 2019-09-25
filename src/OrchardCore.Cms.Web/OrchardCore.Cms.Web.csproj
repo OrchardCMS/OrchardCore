@@ -14,6 +14,11 @@
     <PreserveCompilationReferences>true</PreserveCompilationReferences>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <DefaultItemExcludes>$(DefaultItemExcludes);App_Data\**\Media\*</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);Localization\ar\*</DefaultItemExcludes>
+  </PropertyGroup>
+
   <ItemGroup>
     <Folder Include="wwwroot\" />
     <Folder Include="Localization\" />
