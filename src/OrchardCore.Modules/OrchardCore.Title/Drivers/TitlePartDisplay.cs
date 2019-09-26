@@ -27,7 +27,7 @@ namespace OrchardCore.Title.Drivers
                 model.Title = titlePart.ContentItem.DisplayText;
                 model.TitlePart = titlePart;
 
-                return Task.CompletedTask;
+                return new ValueTask();
             });
         }
 
