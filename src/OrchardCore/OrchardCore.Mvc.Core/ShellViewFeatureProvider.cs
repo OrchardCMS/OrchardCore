@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 
@@ -14,7 +14,7 @@ namespace OrchardCore.Mvc
 {
     public class ShellViewFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly IApplicationContext _applicationContext;
 
         private ApplicationPartManager _applicationPartManager;
@@ -22,7 +22,7 @@ namespace OrchardCore.Mvc
 
         public ShellViewFeatureProvider(IServiceProvider services)
         {
-            _hostingEnvironment = services.GetRequiredService<IHostingEnvironment>();
+            _hostingEnvironment = services.GetRequiredService<IHostEnvironment>();
             _applicationContext = services.GetRequiredService<IApplicationContext>();
         }
 
@@ -45,8 +45,10 @@ namespace OrchardCore.Mvc
                 }
             }
 
-            // Module compiled views are not served while in dev.
-            if (!_hostingEnvironment.IsDevelopment())
+            // Module compiled views are served if not in dev or if the 'refs' folder doesn't exists.
+            var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
+
+            if (!_hostingEnvironment.IsDevelopment() || !refsFolderExists)
             {
                 // Retrieve mvc views feature providers but not this one.
                 var mvcFeatureProviders = _applicationPartManager.FeatureProviders

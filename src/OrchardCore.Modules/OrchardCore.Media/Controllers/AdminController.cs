@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell.Configuration;
+using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Services;
 
@@ -18,43 +19,10 @@ namespace OrchardCore.Media.Controllers
 {
     public class AdminController : Controller
     {
-        private static string[] DefaultAllowedFileExtensions = new string[] {
-            // Images
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".ico",
-            ".svg",
-
-            // Documents
-            ".pdf", // (Portable Document Format; Adobe Acrobat)
-            ".doc", ".docx", // (Microsoft Word Document)
-            ".ppt", ".pptx", ".pps", ".ppsx", // (Microsoft PowerPoint Presentation)
-            ".odt", // (OpenDocument Text Document)
-            ".xls", ".xlsx", // (Microsoft Excel Document)
-            ".psd", // (Adobe Photoshop Document)
-
-            // Audio
-            ".mp3",
-            ".m4a",
-            ".ogg",
-            ".wav",
-
-            // Video
-            ".mp4", ".m4v", // (MPEG-4)
-            ".mov", // (QuickTime)
-            ".wmv", // (Windows Media Video)
-            ".avi",
-            ".mpg",
-            ".ogv", // (Ogg)
-            ".3gp", // (3GPP)
-        };
-
+        private readonly HashSet<string> _allowedFileExtensions;
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
-        private readonly IShellConfiguration _shellConfiguration;
         private readonly ILogger _logger;
         private readonly IStringLocalizer<AdminController> T;
 
@@ -62,14 +30,15 @@ namespace OrchardCore.Media.Controllers
             IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
-            IShellConfiguration shellConfiguration,
+            IOptions<MediaOptions> options,
             ILogger<AdminController> logger,
-            IStringLocalizer<AdminController> stringLocalizer)
+            IStringLocalizer<AdminController> stringLocalizer
+            )
         {
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
-            _shellConfiguration = shellConfiguration;
+            _allowedFileExtensions = options.Value.AllowedFileExtensions;
             _logger = logger;
             T = stringLocalizer;
         }
@@ -187,10 +156,6 @@ namespace OrchardCore.Media.Controllers
                 path = "";
             }
 
-            var section = _shellConfiguration.GetSection("OrchardCore.Media");
-
-            var allowedFileExtensions = section.GetSection("AllowedFileExtensions").Get<string[]>() ?? DefaultAllowedFileExtensions;
-
             var result = new List<object>();
 
             // Loop through each file in the request
@@ -198,7 +163,7 @@ namespace OrchardCore.Media.Controllers
             {
                 // TODO: support clipboard
 
-                if (!allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
+                if (!_allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
                 {
                     result.Add(new
                     {
@@ -219,7 +184,7 @@ namespace OrchardCore.Media.Controllers
 
                     using (var stream = file.OpenReadStream())
                     {
-                        await _mediaFileStore.CreateFileFromStream(mediaFilePath, stream);
+                        await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
                     }
 
                     var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);

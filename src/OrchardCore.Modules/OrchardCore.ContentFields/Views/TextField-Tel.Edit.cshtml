@@ -1,9 +1,7 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.ContentFields.Settings;
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
 }
 
 <fieldset class="form-group">

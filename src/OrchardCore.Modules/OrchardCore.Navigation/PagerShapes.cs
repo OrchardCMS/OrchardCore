@@ -30,15 +30,15 @@ namespace OrchardCore.Navigation
         public void Discover(ShapeTableBuilder builder)
         {
             builder.Describe("Pager")
-				.OnCreated(created =>
-				{
-					dynamic pager = created.Shape;
+                .OnCreated(created =>
+                {
+                    dynamic pager = created.Shape;
 
-					// Intializes the common properties of a Pager shape
-					// such that views can safely add values to them.
-					pager.ItemClasses = new List<string>();
-					pager.ItemAttributes = new Dictionary<string, string>();
-				})
+                    // Intializes the common properties of a Pager shape
+                    // such that views can safely add values to them.
+                    pager.ItemClasses = new List<string>();
+                    pager.ItemAttributes = new Dictionary<string, string>();
+                })
                 .OnDisplaying(displaying =>
                 {
                     var pager = displaying.Shape;
@@ -49,19 +49,19 @@ namespace OrchardCore.Navigation
                     }
                 });
 
-			builder.Describe("PagerSlim")
-				.OnCreated(created =>
-				{
+            builder.Describe("PagerSlim")
+                .OnCreated(created =>
+                {
                     dynamic pager = created.Shape;
 
-					// Intializes the common properties of a Pager shape
-					// such that views can safely add values to them.
-					pager.ItemClasses = new List<string>();
-					pager.ItemAttributes = new Dictionary<string, string>();
-				});
+                    // Intializes the common properties of a Pager shape
+                    // such that views can safely add values to them.
+                    pager.ItemClasses = new List<string>();
+                    pager.ItemAttributes = new Dictionary<string, string>();
+                });
 
 
-			builder.Describe("Pager_Gap")
+            builder.Describe("Pager_Gap")
                 .OnDisplaying(displaying =>
                 {
                     var pager = displaying.Shape.Pager;
@@ -158,7 +158,7 @@ namespace OrchardCore.Navigation
         [Shape]
         public async Task<IHtmlContent> Pager_Links(Shape Shape, dynamic DisplayAsync, dynamic New,
             IHtmlHelper Html,
-            DisplayContext DisplayContext, 
+            DisplayContext DisplayContext,
             int Page,
             int PageSize,
             double TotalItemCount,
@@ -239,7 +239,7 @@ namespace OrchardCore.Navigation
                         routeData[rd.Key] = rd.Value;
                     }
                 }
-            }            
+            }
 
             int firstPage = Math.Max(1, Page - (numberOfPagesToShow / 2));
             int lastPage = Math.Min(totalPageCount, Page + (int)(numberOfPagesToShow / 2));
@@ -282,7 +282,8 @@ namespace OrchardCore.Navigation
                         routeData[pageKey] = currentPage;
                         Shape.Add(await New.Pager_CurrentPage(Value: p, RouteValues: new RouteValueDictionary(routeData), Pager: Shape));
                     }
-                    else {
+                    else
+                    {
                         if (p == 1)
                             routeData.Remove(pageKey);
                         else
@@ -321,7 +322,7 @@ namespace OrchardCore.Navigation
         public async Task<IHtmlContent> PagerSlim(dynamic Shape, dynamic DisplayAsync, dynamic New, IHtmlHelper Html,
             object PreviousText,
             object NextText,
-            string PreviousClass, 
+            string PreviousClass,
             string NextClass)
         {
             Shape.Classes.Add("pager");
@@ -405,12 +406,12 @@ namespace OrchardCore.Navigation
         }
 
         [Shape]
-        public IHtmlContent ActionLink(UrlHelper Url, Shape Shape, object Value, bool Disabled = false)
+        public IHtmlContent ActionLink(IUrlHelper Url, Shape Shape, object Value, bool Disabled = false)
         {
             if (Disabled)
             {
                 TagBuilder parentLiTag = (TagBuilder)((dynamic)Shape).Tag;
-                parentLiTag.AddCssClass("disabled");                
+                parentLiTag.AddCssClass("disabled");
             }
 
             var RouteValues = (object)((dynamic)Shape).RouteValues;

@@ -13,7 +13,7 @@ namespace OrchardCore.ContentTypes.Editors
         {
             return Initialize<ContentPartSettingsViewModel>("ContentPartSettings_Edit", model =>
             {
-                var settings = contentPartDefinition.Settings.ToObject<ContentPartSettings>();
+                var settings = contentPartDefinition.GetSettings<ContentPartSettings>();
 
                 model.Attachable = settings.Attachable;
                 model.Reusable = settings.Reusable;

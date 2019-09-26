@@ -178,18 +178,19 @@ namespace OrchardCore.ContentManagement
                 // When draft is required and latest is published a new version is added
                 if (contentItem.Published)
                 {
-                    // Save the previous version
-                    _session.Save(contentItem);
-
+                    // We save the previous version further because this call might do a session query.
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                     // Check if not versionable, meaning we use only one version
-                    if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
+                    if (!(contentTypeDefinition?.GetSettings<ContentTypeSettings>().Versionable ?? true))
                     {
                         contentItem.Published = false;
                     }
                     else
                     {
+                        // Save the previous version
+                        _session.Save(contentItem);
+
                         contentItem = await BuildNewVersionAsync(contentItem);
                     }
                 }

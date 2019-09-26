@@ -1,7 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
@@ -49,7 +46,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
                 // Include custom script
-                var setting = _resourceManager.Include("stylesheet", Src, DebugSrc);
+                var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -67,7 +64,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (AppendVersion.HasValue == true)
                 {
-                    setting.SetAppendVersion(AppendVersion);
+                    setting.ShouldAppendVersion(AppendVersion);
                 }
 
                 if (Debug != null)
@@ -117,7 +114,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (AppendVersion.HasValue == true)
                 {
-                    setting.SetAppendVersion(AppendVersion);
+                    setting.ShouldAppendVersion(AppendVersion);
                 }
 
                 if (!String.IsNullOrEmpty(Version))

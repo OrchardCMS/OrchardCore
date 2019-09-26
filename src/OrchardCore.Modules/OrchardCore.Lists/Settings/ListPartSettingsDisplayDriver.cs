@@ -35,12 +35,12 @@ namespace OrchardCore.Lists.Settings
 
             return Initialize<ListPartSettingsViewModel>("ListPartSettings_Edit", model =>
             {
-                model.ListPartSettings = contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
+                model.ListPartSettings = contentTypePartDefinition.GetSettings<ListPartSettings>();
                 model.PageSize = model.ListPartSettings.PageSize;
                 model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
                 model.ContentTypes = new NameValueCollection();
 
-                foreach(var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
+                foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
                 }
@@ -64,8 +64,11 @@ namespace OrchardCore.Lists.Settings
             }
             else
             {
-                context.Builder.WithSetting("PageSize", model.PageSize.ToString());
-                context.Builder.ContainedContentTypes(model.ContainedContentTypes);
+                context.Builder.WithSettings(new ListPartSettings
+                {
+                    PageSize = model.PageSize,
+                    ContainedContentTypes = model.ContainedContentTypes
+                });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

@@ -41,7 +41,7 @@ namespace OrchardCore.Roles
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllRolesDeploymentStepDriver>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
         }
     }

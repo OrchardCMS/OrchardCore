@@ -4,7 +4,6 @@ using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -61,23 +60,23 @@ namespace OrchardCore.Recipes.Services
                         using (var reader = new JsonTextReader(file))
                         {
                             // Go to Steps, then iterate.
-                            while (reader.Read())
+                            while (await reader.ReadAsync())
                             {
                                 if (reader.Path == "variables")
                                 {
-                                    reader.Read();
+                                    await reader.ReadAsync();
 
-                                    var variables = JObject.Load(reader);
+                                    var variables = await JObject.LoadAsync(reader);
                                     _variablesMethodProvider = new VariablesMethodProvider(variables);
                                 }
 
                                 if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
                                 {
-                                    while (reader.Read() && reader.Depth > 1)
+                                    while (await reader.ReadAsync() && reader.Depth > 1)
                                     {
                                         if (reader.Depth == 2)
                                         {
-                                            var child = JObject.Load(reader);
+                                            var child = await JObject.LoadAsync(reader);
 
                                             var recipeStep = new RecipeExecutionContext
                                             {

@@ -20,10 +20,12 @@ namespace OrchardCore.ResourceManagement
             {
                 Name = name;
             }
+
             if (!String.IsNullOrEmpty(property))
             {
                 Property = property;
             }
+
             if (!String.IsNullOrEmpty(content))
             {
                 Content = content;
@@ -48,6 +50,7 @@ namespace OrchardCore.ResourceManagement
             {
                 newMeta.Content = meta1.Content + contentSeparator + meta2.Content;
             }
+
             return newMeta;
         }
 
@@ -67,6 +70,7 @@ namespace OrchardCore.ResourceManagement
             _builder.MergeAttribute(name, value);
             return this;
         }
+
         public MetaEntry SetAttribute(string name, string value)
         {
             _builder.MergeAttribute(name, value, true);
@@ -77,8 +81,7 @@ namespace OrchardCore.ResourceManagement
         {
             get
             {
-                string value;
-                _builder.Attributes.TryGetValue("name", out value);
+                _builder.Attributes.TryGetValue("name", out var value);
                 return value;
             }
             set { SetAttribute("name", value); }
@@ -88,8 +91,7 @@ namespace OrchardCore.ResourceManagement
         {
             get
             {
-                string value;
-                _builder.Attributes.TryGetValue("property", out value);
+                _builder.Attributes.TryGetValue("property", out var value);
                 return value;
             }
             set { SetAttribute("property", value); }
@@ -110,8 +112,7 @@ namespace OrchardCore.ResourceManagement
         {
             get
             {
-                string value;
-                _builder.Attributes.TryGetValue("http-equiv", out value);
+                _builder.Attributes.TryGetValue("http-equiv", out var value);
                 return value;
             }
             set { SetAttribute("http-equiv", value); }
@@ -121,8 +122,7 @@ namespace OrchardCore.ResourceManagement
         {
             get
             {
-                string value;
-                _builder.Attributes.TryGetValue("charset", out value);
+                _builder.Attributes.TryGetValue("charset", out var value);
                 return value;
             }
             set { SetAttribute("charset", value); }

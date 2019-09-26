@@ -1,10 +1,10 @@
 using System.IO;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Tests.Stubs
 {
-    public class StubHostingEnvironment : IHostingEnvironment
+    public class StubHostingEnvironment : IHostEnvironment
     {
         private string _rootPath;
         private IFileProvider _contentRootFileProvider;

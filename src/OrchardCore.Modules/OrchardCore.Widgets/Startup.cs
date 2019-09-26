@@ -1,4 +1,4 @@
-﻿using OrchardCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -16,10 +16,10 @@ namespace OrchardCore.Widgets
         {
             // Widgets List Part
             services.AddScoped<IContentPartDisplayDriver, WidgetsListPartDisplay>();
-            services.AddSingleton<ContentPart, WidgetsListPart>();
+            services.AddContentPart<WidgetsListPart>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
-            services.AddSingleton<ContentPart, WidgetMetadata>();
+            services.AddContentPart<WidgetMetadata>();
             services.AddScoped<IDataMigration, Migrations>();
         }
     }

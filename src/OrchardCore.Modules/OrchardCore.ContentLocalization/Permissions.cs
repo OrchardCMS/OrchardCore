@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentLocalization
@@ -8,14 +10,17 @@ namespace OrchardCore.ContentLocalization
 
         public static readonly Permission LocalizeContent = new Permission("LocalizeContent", "Localize content for others");
         public static readonly Permission LocalizeOwnContent = new Permission("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
+        public static readonly Permission ManageContentCulturePicker = new Permission("ManageContentCulturePicker", "Manage ContentCulturePicker settings");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[]
+            return Task.FromResult(new[]
             {
                 LocalizeContent,
                 LocalizeOwnContent,
-            };
+                ManageContentCulturePicker
+            }
+            .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -25,12 +30,12 @@ namespace OrchardCore.ContentLocalization
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { LocalizeContent, LocalizeOwnContent }
+                    Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker }
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { LocalizeContent, LocalizeOwnContent }
+                    Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker }
                 },
                 new PermissionStereotype
                 {

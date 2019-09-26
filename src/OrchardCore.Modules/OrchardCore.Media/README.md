@@ -179,18 +179,29 @@ The following configuration values are used by default and can be customized:
 
 ```json
     "OrchardCore.Media": {
+
       // The accepted sizes for custom width and height
       "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],
 
-      // The number of days to store images in the browser cache
+      // The number of days to store images in the browser cache.
+      // NB: To control cache headers for module static assets, refer to the Orchard Core Modules Section.
       "MaxBrowserCacheDays": 30,
 
-      // The number of days to store images in the image cache
+      // The number of days a cached resized media item will be valid for, before being rebuilt on request.
       "MaxCacheDays": 365,
 
       // The maximum size of an uploaded file in bytes. 
       // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
       "MaxFileSize": 30000000,
+
+      // A CDN base url that will be prefixed to the request path when serving images.
+      "CdnBaseUrl": "https://your-cdn.com",
+
+      // The path used when serving media assets.
+      "AssetsRequestPath": "/media",
+
+      // The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
+      "AssetsPath": "Media",
 
       // The list of allowed file extensions
       "AllowedFileExtensions": [
@@ -239,7 +250,7 @@ The following configuration values are used by default and can be customized:
 
 ### ImageSharp
 
-https://sixlabors.com/projects/imagesharp/
+<https://sixlabors.com/projects/imagesharp/>
 
 Copyright 2012 James South
 Licensed under the Apache License, Version 2.0

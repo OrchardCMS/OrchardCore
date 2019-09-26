@@ -9,6 +9,7 @@ namespace OrchardCore.Localization
     internal class NullStringLocalizerFactory : IStringLocalizerFactory
     {
         public IStringLocalizer Create(Type resourceSource) => NullStringLocalizer.Instance;
+
         public IStringLocalizer Create(string baseName, string location) => NullStringLocalizer.Instance;
 
         private class NullStringLocalizer : IStringLocalizer
@@ -23,11 +24,15 @@ namespace OrchardCore.Localization
             {
                 get
                 {
-                    var value = name;
+                    var value = String.Empty;
                     if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
                     {
                         var pluralForm = pluralArgument.Forms[_defaultPluralRule(pluralArgument.Count)];
                         value = String.Format(pluralForm, pluralArgument.Count);
+                    }
+                    else
+                    {
+                        value = String.Format(name, arguments);
                     }
 
                     return new LocalizedString(name, value);

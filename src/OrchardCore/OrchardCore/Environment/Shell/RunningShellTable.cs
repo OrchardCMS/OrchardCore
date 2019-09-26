@@ -83,7 +83,7 @@ namespace OrchardCore.Environment.Shell
                     return _default;
                 }
 
-                // Search for another catch-all 
+                // Search for another catch-all
                 if (fallbackToDefault && TryMatchInternal("", "/", fallbackToDefault, out result))
                 {
                     return result;
