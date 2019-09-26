@@ -88,7 +88,15 @@ namespace OrchardCore.Navigation
             // if route match failed, try comparing URL strings, if
             if (!match && !String.IsNullOrWhiteSpace(menuItem.Href) && menuItem.Href[0] == '/')
             {
-                PathString path = menuItem.Href.TrimEnd('/');
+                PathString path;
+                if (menuItem.Href.Contains("?"))
+                {
+                    path = menuItem.Href.TrimEnd('/').Split('?')[0];
+                }
+                else
+                {
+                    path = menuItem.Href.TrimEnd('/');
+                }
 
                 if (viewContext.HttpContext.Request.PathBase.HasValue)
                 {
@@ -99,6 +107,13 @@ namespace OrchardCore.Navigation
                 }
 
                 match = viewContext.HttpContext.Request.Path.StartsWithSegments(path, StringComparison.OrdinalIgnoreCase);
+
+                //if queryString Contain isAdminMenuNode
+                bool isAdminMenuNode = Convert.ToBoolean(viewContext.HttpContext.Request.Query["isAdminMenuNode"]);
+                if (isAdminMenuNode)
+                {
+                    match = match && isAdminMenuNode;
+                }
             }
 
             menuItemShape.Selected = match;
@@ -176,7 +191,7 @@ namespace OrchardCore.Navigation
                     }
                     else // found more selected: tie break required.
                     {
-                        if (item.Priority > result.Priority)
+                        if (item.SelectionPriority > result.SelectionPriority)
                         {
                             result.Selected = false;
                             result = item;
