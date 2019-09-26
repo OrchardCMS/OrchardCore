@@ -121,7 +121,7 @@
 
                 if (widgetItemDestId !== widgetItemSourceId) {
 
-                    var inputs = widgetDragItem.children('input');
+                    var inputs = widgetDragItem.children("input[name*='FlowPart']");
 
                     var destination = $('#' + widgetItemDestId).closest('.widget-template')
                     var source = $('#' + widgetItemSourceId).closest('.widget-template');
