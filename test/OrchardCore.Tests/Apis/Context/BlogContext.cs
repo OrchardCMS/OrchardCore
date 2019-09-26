@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Apis.Context
     {
         public string BlogContentItemId { get; private set; }
 
-        public override async Task InitializeAsync()
+        public override async Task InitializeAsync(PermissionsContext permissionsContext = null)
         {
             await base.InitializeAsync();
 
@@ -19,6 +19,7 @@ namespace OrchardCore.Tests.Apis.Context
                 });
 
             BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
+            SiteStartup.PermissionsContext = permissionsContext;
         }
     }
 }

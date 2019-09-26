@@ -23,8 +23,6 @@ namespace OrchardCore.Tests.Apis.Context
 
         public virtual async Task InitializeAsync(PermissionsContext permissionsContext = null)
         {
-            SiteStartup.PermissionsContext = permissionsContext;
-
             var tenantName = Guid.NewGuid().ToString().Replace("-", "");
 
             var createModel = new Tenants.ViewModels.CreateApiViewModel
@@ -59,6 +57,9 @@ namespace OrchardCore.Tests.Apis.Context
 
             // Track if Lucene needs more time to update its indexes.
             await Task.Delay(100);
+
+            SiteStartup.PermissionsContext = permissionsContext;
+
 
             Client = Site.CreateDefaultClient(url);
             GraphQLClient = new OrchardGraphQLClient(Client);

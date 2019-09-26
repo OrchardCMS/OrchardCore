@@ -179,7 +179,7 @@ namespace OrchardCore.Apis.GraphQL
             context.Response.StatusCode = (int) (result.Errors == null || result.Errors.Count == 0
                 ? HttpStatusCode.OK
                 : result.Errors.Any(x => x.Code == RequiresPermissionValidationRule.ErrorCode)
-                    ? HttpStatusCode.Forbidden
+                    ? HttpStatusCode.Unauthorized
                     : HttpStatusCode.BadRequest);
 
             context.Response.ContentType = "application/json";

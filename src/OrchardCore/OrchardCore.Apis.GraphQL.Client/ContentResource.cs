@@ -26,7 +26,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             var response = await _client
                 .PostJsonAsync("api/graphql", requestJson.ToString());
 
-            if (!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
             {
                 throw new Exception(await response.Content.ReadAsStringAsync());
             }
