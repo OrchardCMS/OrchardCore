@@ -24,7 +24,7 @@
             </div>
             <div class="widget-editor-body card-body" data-zone="@zone">
                 <div class="col-md-12">
-                    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-widget-list row">
+                    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-widget-list row"  data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Widgets" })">
                         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
 
                         @if (Model.WidgetsListPart.Widgets.ContainsKey(zone))
@@ -54,6 +54,62 @@
                                 </div>
                             }
                         }
+
+                        <script at="Foot">
+                            @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
+                            if ($('#@widgetTemplatePlaceholderId').length == 1) {
+                                $("#@widgetTemplatePlaceholderId").sortable({
+                                    handle: ".widget-editor-handle",
+                                    cursor: "move",
+                                    opacity: 0.7,
+                                    tolerance: "pointer",
+                                    placeholder: {
+                                        element: function (currentItem) {
+                                            return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
+                                        },
+                                        update: function (container, p) {
+                                            return;
+                                        }
+                                    },
+                                    toleranceElement: '> div',
+                                    connectWith: '.widget-template-placeholder.widget-template-placeholder-widget-list',
+                                    receive: function (event, ui) {
+                                        var newZone = ui.item.closest('.widget-editor-body').data("zone");
+                                        var zoneInput = ui.item.find('.source-zone').val(newZone);
+                                    },
+                                    start: function (event, ui) {
+                                        widgetDragItem = ui.item;
+                                        lastContainer = ui.item.parent();
+                                        lastContainer.toggleClass('widget-dropzone-hint');
+                                        widgetDragItem.find('.card').first().toggleClass('border-primary');
+                                        var classList = widgetDragItem.attr('class').split(' ');
+                                        $.each(classList, function (id, item) {
+                                            if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
+                                        });
+                                    },
+                                    stop: function (event, ui) {
+                                        lastContainer.toggleClass('widget-dropzone-hint');
+                                        widgetDragItem.find('.card').first().toggleClass('border-primary');
+                                        //clear the global variables
+                                        widgetDragItem = null;
+                                        lastContainer = null;
+                                        widgetItemSourceId = null;
+                                        widgetItemDestId = null;
+
+                                        $(document).trigger('contentpreview:render');
+                                    },
+                                    over: function (event, ui) {
+                                        var $self = $(this);
+                                        if (lastContainer[0] != this) {
+                                            lastContainer.toggleClass('widget-dropzone-hint');
+                                            lastContainer = $self;
+                                            $self.toggleClass('widget-dropzone-hint');
+                                        }
+                                    }
+                                });
+                            }
+                        </script>
+
                     </div>
 
                     <div class="btn-group ">
@@ -82,8 +138,6 @@
     @if (Context.Items["WidgetsListPart.Edit"] == null)
     {
         Context.Items["WidgetsListPart.Edit"] = new object();
-        <input type="hidden" id="buildWidgetListEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Widgets" })" />
-
         @foreach (var type in widgetContentTypes)
         {
             // Render a mock widget so that its resources are included in the page
@@ -94,56 +148,4 @@
         <script asp-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
         <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
     }
-
-    <script at="Foot">
-        $(".widget-template-placeholder").sortable({
-            handle: ".widget-editor-header",
-            cursor: "move",
-            opacity: 0.7,
-            tolerance: "pointer",
-            placeholder: {
-                element: function (currentItem) {
-                    return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
-                },
-                update: function (container, p) {
-                    return;
-                }
-            },
-            toleranceElement: '> div',
-            connectWith: '.widget-template-placeholder.widget-template-placeholder-widget-list',
-            receive: function (event, ui) {
-                var newZone = ui.item.closest('.widget-editor-body').data("zone");
-                var zoneInput = ui.item.find('.source-zone').val(newZone);
-            },
-            start: function (event, ui) {
-                widgetDragItem = ui.item;
-                lastContainer = ui.item.parent();
-                lastContainer.toggleClass('widget-dropzone-hint');
-                widgetDragItem.find('.card').first().toggleClass('border-primary');
-                var classList = widgetDragItem.attr('class').split(' ');
-                $.each(classList, function (id, item) {
-                    if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
-                });
-            },
-            stop: function (event, ui) {
-                lastContainer.toggleClass('widget-dropzone-hint');
-                widgetDragItem.find('.card').first().toggleClass('border-primary');
-                //clear the global variables
-                widgetDragItem = null;
-                lastContainer = null;
-                widgetItemSourceId = null;
-                widgetItemDestId = null;
-
-                $(document).trigger('contentpreview:render');
-            },
-            over: function (event, ui) {
-                var $self = $(this);
-                if (lastContainer[0] != this) {
-                    lastContainer.toggleClass('widget-dropzone-hint');
-                    lastContainer = $self;
-                    $self.toggleClass('widget-dropzone-hint');
-                }
-            }
-        });
-    </script>
 </fieldset>

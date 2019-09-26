@@ -13,9 +13,9 @@ $(function () {
     }
 
     $(document).on('click', '.add-list-widget', function (event) {
-        var createEditorUrl = $('#buildWidgetListEditorUrl').attr("value");
         var type = $(this).data("widget-type");
         var targetId = $(this).data("target-id");
+        var createEditorUrl = $('#' + targetId).data("buildeditorurl");
         var prefixesName = $(this).data("prefixes-name");
         var zonesName = $(this).data("zones-name");
         var zone = $(this).data("zone");
@@ -36,10 +36,10 @@ $(function () {
     });
 
     $(document).on('click', '.insert-list-widget', function (event) {
-        var createEditorUrl = $('#buildWidgetListEditorUrl').attr("value");
         var type = $(this).data("widget-type");
         var target = $(this).closest('.widget-template');
         var targetId = $(this).data("target-id");
+        var createEditorUrl = $('#' + targetId).data("buildeditorurl");
         var prefixesName = $(this).data("prefixes-name");
         var zonesName = $(this).data("zones-name");
         var zone = $(this).data("zone");

@@ -42,11 +42,11 @@
     margin-left: -10px;
 }
 
-.widget-editor-header div.handle {
+.widget-editor .widget-editor-handle {
     display: inline-block;
     margin-right: 0.5rem;
 }
 
-.widget-editor-header div.handle:hover {
+.widget-editor .widget-editor-handle:hover {
     cursor: move;
 }

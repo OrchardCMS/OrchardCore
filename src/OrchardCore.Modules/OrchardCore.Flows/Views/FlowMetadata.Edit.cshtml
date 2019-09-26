@@ -7,16 +7,16 @@
     </button>
     <div class="dropdown-menu btn-group-toggle">
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Left ? "active" : null)">
-            <input asp-for="Alignment" type="radio" autocomplete="off" value="Left"><i class="fa fa-align-left" aria-hidden="true"></i> Left
+            <input asp-for="Alignment" type="radio" autocomplete="off" value="Left"><i class="fa fa-align-left" aria-hidden="true"></i> @T["Left"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Center ? "active" : null)">
-            <input asp-for="Alignment" type="radio" autocomplete="off" value="Center"><i class="fa fa-align-center" aria-hidden="true"></i> Center
+            <input asp-for="Alignment" type="radio" autocomplete="off" value="Center"><i class="fa fa-align-center" aria-hidden="true"></i> @T["Center"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Right ? "active" : null)">
-            <input asp-for="Alignment" type="radio" autocomplete="off" value="Right"><i class="fa fa-align-right" aria-hidden="true"></i> Right
+            <input asp-for="Alignment" type="radio" autocomplete="off" value="Right"><i class="fa fa-align-right" aria-hidden="true"></i> @T["Right"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Justify ? "active" : null)">
-            <input asp-for="Alignment" type="radio" autocomplete="off" value="Justify"><i class="fa fa-align-justify" aria-hidden="true"></i> Justify
+            <input asp-for="Alignment" type="radio" autocomplete="off" value="Justify"><i class="fa fa-align-justify" aria-hidden="true"></i> @T["Justify"]
         </label>
     </div>
 </div>

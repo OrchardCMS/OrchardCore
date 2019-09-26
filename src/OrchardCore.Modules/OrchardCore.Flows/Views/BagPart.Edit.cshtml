@@ -14,7 +14,7 @@
 <script asp-name="jQuery-ui" at="Foot"></script>
 
 <fieldset class="form-group">
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart row">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart row" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.BagPart.ContentItems)
         {
@@ -62,8 +62,6 @@
     @if (Context.Items["BagPart.Edit"] == null)
     {
         Context.Items["BagPart.Edit"] = new object();
-        <input type="hidden" id="buildFlowEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
-
         <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
         <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
         <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
@@ -83,8 +81,10 @@
     }
 
     <script at="Foot">
+    @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
+    if ($('#@widgetTemplatePlaceholderId').length == 1) {
         $("#@widgetTemplatePlaceholderId").sortable({
-            handle: ".widget-editor-header",
+            handle: ".widget-editor-handle",
             cursor: "move",
             opacity: 0.7,
             tolerance: "pointer",
@@ -128,5 +128,6 @@
                 }
             }
         });
+    }
     </script>
 </fieldset>

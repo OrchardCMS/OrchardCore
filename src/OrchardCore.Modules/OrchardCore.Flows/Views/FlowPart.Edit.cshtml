@@ -16,7 +16,7 @@
 <script asp-name="jQuery-ui" at="Foot"></script>
 
 <fieldset class="form-group">
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart row">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart row" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.FlowPart.Widgets)
         {
@@ -66,8 +66,6 @@
     @if (Context.Items["FlowPart.Edit"] == null)
     {
         Context.Items["FlowPart.Edit"] = new object();
-        <input type="hidden" id="buildFlowEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
-
         @foreach (var type in widgetContentTypes)
         {
             // Render a mock widget so that its resources are included in the page
@@ -81,12 +79,13 @@
     }
 
     <script at="Foot">
-
+    @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
+    if ($('#@widgetTemplatePlaceholderId').length == 1) {
         $("#@widgetTemplatePlaceholderId").sortable({
-            handle: ".widget-editor-header",
+            handle: ".widget-editor-handle",
             cursor: "move",
             tolerance: "pointer",
-            opacity: 0.7 ,
+            opacity: 0.7,
             placeholder: {
                 element: function(currentItem) {
                     return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
@@ -180,5 +179,6 @@
                 }
             }
         });
+    }
     </script>
 </fieldset>
