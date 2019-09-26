@@ -86,6 +86,7 @@ namespace OrchardCore.Tests.Apis.Context
 
         public void Dispose()
         {
+            SiteStartup.PermissionsContext = null;
             Client?.Dispose();
         }
     }
