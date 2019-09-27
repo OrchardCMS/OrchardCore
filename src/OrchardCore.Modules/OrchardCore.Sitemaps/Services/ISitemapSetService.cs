@@ -46,6 +46,6 @@ namespace OrchardCore.Sitemaps.Services
         /// </summary>
         IChangeToken ChangeToken { get; }
 
-
+        void BuildSitemapRouteEntries(IList<SitemapNode> sitemapNodes, string rootPath);
     }
 }

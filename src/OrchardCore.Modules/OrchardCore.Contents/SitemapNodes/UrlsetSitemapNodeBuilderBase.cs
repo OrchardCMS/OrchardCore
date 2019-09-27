@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
@@ -21,6 +20,7 @@ namespace OrchardCore.Contents.SitemapNodes
     //TODO not totally happy with this arrangement, but till we work on localization, and images, hard to say how it is best arranged.
     public abstract class UrlsetSitemapNodeBuilderBase<TSitemapNode> : SitemapNodeBuilderBase<TSitemapNode> where TSitemapNode : ContentTypesSitemapNode
     {
+        private readonly ILogger _logger;
         protected readonly ISession _session;
         protected readonly IContentDefinitionManager _contentDefinitionManager;
         protected readonly IContentManager _contentManager;
@@ -32,14 +32,13 @@ namespace OrchardCore.Contents.SitemapNodes
             IContentManager contentManager,
             ISiteService siteService)
         {
-            Logger = logger;
+            _logger = logger;
             _session = session;
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
             _siteService = siteService;
         }
 
-        public ILogger Logger { get; }
         public override async Task<XDocument> BuildNodeAsync(TSitemapNode sitemapNode, SitemapBuilderContext context)
         {
             //this does not need to recurse sitemapNode.ChildNodes. urlsets do not support children. they are end of level
@@ -106,7 +105,7 @@ namespace OrchardCore.Contents.SitemapNodes
                 contentItems = (await query.ListAsync()).ToList();
                 if (contentItems.Count() > 50000)
                 {
-                    Logger.LogError($"Sitemap {sitemapNode.Description} count is over 50,000");
+                    _logger.LogError($"Sitemap {sitemapNode.Description} count is over 50,000");
                 }
             }
             else
@@ -118,7 +117,7 @@ namespace OrchardCore.Contents.SitemapNodes
                 if (sitemapNode.ContentTypes.Any(x => !x.TakeAll))
                 {
                     List<Task<IEnumerable<ContentItem>>> tasks = new List<Task<IEnumerable<ContentItem>>>();
-                    foreach(var takeSomeType in sitemapNode.ContentTypes.Where(x => !x.TakeAll))
+                    foreach (var takeSomeType in sitemapNode.ContentTypes.Where(x => !x.TakeAll))
                     {
                         var query = _session.Query<ContentItem>()
                             .With<ContentItemIndex>(x => x.ContentType == takeSomeType.ContentTypeName && x.Published)
@@ -186,15 +185,16 @@ namespace OrchardCore.Contents.SitemapNodes
             //I always put my home route with a blank path - which explains some of the weirdness
             //I get trying to get a good url out of url.action on my home route. but the blog theme provides /blog
             String locValue = null;
+
             var isHomePage = homeRoute.All(x => x.Value.ToString() == routes[x.Key].ToString());
             if (isHomePage)
             {
-                locValue = context.Url.GetBaseUrl();
+                locValue = context.PrefixUrl + "/";
             }
             else
             {
-                var request = context.Url.ActionContext.HttpContext.Request;
-                locValue = context.Url.Action(routes["action"].ToString(), routes["controller"].ToString(), routes, request.Scheme);
+                var link = context.UrlHelper.Action(routes["Action"].ToString(), routes);
+                locValue = context.PrefixUrl + link;
             }
             var loc = new XElement(GetNamespace() + "loc");
             loc.Add(locValue);

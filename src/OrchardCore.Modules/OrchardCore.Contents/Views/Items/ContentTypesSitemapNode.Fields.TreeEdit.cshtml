@@ -114,29 +114,10 @@
 
 <script at="Foot" depends-on="jquery">
     $(function () {
-        //switchContentTypesCheckBoxes();
-
-        //$('#ContentTypesSitemapNode_IndexAll').change(function () {
-        //    switchContentTypesCheckBoxes();
-        //});
-
-        //function switchContentTypesCheckBoxes() {
-        //    var indexAll = $('#ContentTypesSitemapNode_IndexAll').prop('checked');
-
-        //    if (indexAll) {
-        //        $('#index-all-card').show();
-        //        $('#index-selected-card').hide();
-        //    } else {
-        //        $('#index-all-card').hide();
-        //        $('#index-selected-card').show();
-        //    }
-        //}
-
         $('.content-type-checkbox').on('click', function (e) {
             var listItem = $(e.target).closest('.list-group-item');
 
             var selected = $(e.target).prop('checked');
-            //selected ? listItem.removeClass('disabled') : listItem.addClass('disabled');
             $(listItem).find('select, input:not(.content-type-checkbox)').each(function () {
                 selected ? $(this).prop('disabled', false) : $(this).prop('disabled', 'disabled');
             });

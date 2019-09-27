@@ -17,7 +17,8 @@
 
     var tenantPrefix = (ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
     var path =  sitemapNode.SitemapSet.RootPath + sitemapNode.Path;
-    path = !String.IsNullOrEmpty(tenantPrefix) ? tenantPrefix + '/' + path : path;
+    //TODO resolve this better. We need to strip / append paths automatically and consistently.
+    path = !String.IsNullOrEmpty(tenantPrefix) ? "/" + tenantPrefix + path : path;
 }
 
 <li class="sitemap-node display-summary @(!sitemapNode.CanSupportChildNodes ? "cannot-support-child-node" : "") @(!sitemapNode.CanBeChildNode ? "cannot-be-child": "")" id="sitemap-node-id-@Model.Index" data-index="@Model.Index" data-treenode-id="@Model.SitemapNode.Id">
