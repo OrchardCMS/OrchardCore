@@ -101,29 +101,29 @@ namespace OrchardCore.Workflows.Http.Scripting
             {
                 Name = "requestForm",
                 Method = serviceProvider => (Func<string, object>)(field =>
-               {
-                   object result;
-                   if (httpContextAccessor.HttpContext.Request.Form.TryGetValue(field, out var values))
-                   {
-                       if (values.Count == 0)
-                       {
-                           result = null;
-                       }
-                       else if (values.Count == 1)
-                       {
-                           result = values[0];
-                       }
-                       else
-                       {
-                           result = values.ToArray();
-                       }
-                   }
-                   else
-                   {
-                       result = null;
-                   }
-                   return result;
-               })
+                {
+                    object result;
+                    if (httpContextAccessor.HttpContext.Request.Form.TryGetValue(field, out var values))
+                    {
+                        if (values.Count == 0)
+                        {
+                            result = null;
+                        }
+                        else if (values.Count == 1)
+                        {
+                            result = values[0];
+                        }
+                        else
+                        {
+                            result = values.ToArray();
+                        }
+                    }
+                    else
+                    {
+                        result = null;
+                    }
+                    return result;
+                })
             };
 
             _queryStringAsJsonMethod = new GlobalMethod
