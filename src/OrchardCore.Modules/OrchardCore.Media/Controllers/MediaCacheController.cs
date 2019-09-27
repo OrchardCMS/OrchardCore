@@ -58,7 +58,7 @@ namespace OrchardCore.Media.Azure.Controllers
 
             if (_mediaFileStoreCache == null)
             {
-                _notifier.Error(H["The asset cache cannot be purged. The feature is enabled, but a remote file store feature is not enabled, or not configured with appsettings.json."]);
+                _notifier.Error(H["The asset cache cannot be purged. The feature is enabled, but a remote media store feature is not enabled, or not configured with appsettings.json."]);
                 RedirectToAction("Index");
             }
 
