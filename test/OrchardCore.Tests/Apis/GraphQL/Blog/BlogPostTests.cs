@@ -3,12 +3,11 @@ using System.Threading.Tasks;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
 
-namespace OrchardCore.Tests.Apis.GraphQL.Blog
+namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class BlogPostTests
     {

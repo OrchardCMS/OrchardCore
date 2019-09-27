@@ -1,22 +1,21 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
 using GraphQLApi = OrchardCore.Apis.GraphQL;
 
-namespace OrchardCore.Tests.Apis.GraphQL.Permissions
+namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class PermissionsTests
     {
         [Fact]
         public async Task ShouldNotBeAbleToExecuteAnyQueriesWithoutPermission()
         {
-            var permissionContext = new PermissionsContext {
-                UsePermissionsContext = true
-            };
-
             using (var context = new SiteContext())
             {
-                await context.InitializeAsync(permissionContext);
+                await context.InitializeAsync(new PermissionsContext { UsePermissionsContext = true });
 
                 var response = await context.GraphQLClient.Client.GetAsync("/api/graphql");
                 Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
@@ -30,8 +29,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Permissions
             var permissionContext = new PermissionsContext
             {
                 UsePermissionsContext = true,
-                AuthorizedPermissions = new[]
-                {
+                AuthorizedPermissions = new[] {
                     GraphQLApi.Permissions.ExecuteGraphQL,
                     Contents.Permissions.ViewContent
                 }
@@ -45,7 +43,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Permissions
                     .Query("blog", builder =>
                       {
                           builder.WithField("contentItemId");
-                    });
+                      });
 
                 Assert.NotEmpty(result["data"]["blog"]);
             }
@@ -57,8 +55,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Permissions
             var permissionContext = new PermissionsContext
             {
                 UsePermissionsContext = true,
-                AuthorizedPermissions = new[]
-                {
+                AuthorizedPermissions = new[] {
                     GraphQLApi.Permissions.ExecuteGraphQL
                 }
             };

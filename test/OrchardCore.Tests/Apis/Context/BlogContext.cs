@@ -19,7 +19,6 @@ namespace OrchardCore.Tests.Apis.Context
                 });
 
             BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
-            SiteStartup.PermissionsContext = permissionsContext;
         }
     }
 }

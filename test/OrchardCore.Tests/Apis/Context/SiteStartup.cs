@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,20 +8,28 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Tenants;
 
 namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteStartup
     {
-        public static PermissionsContext PermissionsContext = null;
+        public static ConcurrentDictionary<string, PermissionsContext> PermissionsContexts;
+
+        static SiteStartup()
+        {
+            PermissionsContexts = new ConcurrentDictionary<string, PermissionsContext>();
+        }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -64,17 +73,40 @@ namespace OrchardCore.Tests.Apis.Context
         }
     }
 
+    public class PermissionsContext 
+    {
+        public IEnumerable<Permission> AuthorizedPermissions { get; set; } = Enumerable.Empty<Permission>();
+
+        public bool UsePermissionsContext { get; set; } = false;
+    }
+
     public class AlwaysLoggedInAuthHandler : AuthorizationHandler<PermissionRequirement>
     {
+        private readonly PermissionsContext _permissionsContext; 
+
+        public AlwaysLoggedInAuthHandler(IHttpContextAccessor httpContextAccessor)
+        {
+            _permissionsContext = new PermissionsContext();
+
+            var requestContext = httpContextAccessor.HttpContext.Request;
+
+            if (requestContext?.Headers.ContainsKey("PermissionsContext") == true &&
+                SiteStartup.PermissionsContexts.TryGetValue(requestContext.Headers["PermissionsContext"], out var permissionsContext))
+            {
+                _permissionsContext = permissionsContext;
+            }
+        }
+
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
-            var permissionsContext = SiteStartup.PermissionsContext;
+            var permissions = (_permissionsContext.AuthorizedPermissions ?? Enumerable.Empty<Permission>()).ToList();
+            permissions.AddRange(new[] { Permissions.ManageTenants });
 
-            if (permissionsContext == null || !permissionsContext.UsePermissionsContext)
+            if (!_permissionsContext.UsePermissionsContext)
             {
                 context.Succeed(requirement);
             }
-            else if (permissionsContext.AuthorizedPermissions.Contains(requirement.Permission))
+            else if (permissions.Contains(requirement.Permission))
             {
                 context.Succeed(requirement);
             }
@@ -85,12 +117,6 @@ namespace OrchardCore.Tests.Apis.Context
 
             return Task.CompletedTask;
         }
-    }
-
-    public class PermissionsContext
-    {
-        public IEnumerable<Permission> AuthorizedPermissions { get; set; } = Enumerable.Empty<Permission>();
-        public bool UsePermissionsContext { get; set; } = false;
     }
 
     public class AlwaysLoggedInApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOptions>
