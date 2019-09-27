@@ -4,6 +4,7 @@ theme: readthedocs
 # Repository
 repo_name: OrchardCMS/OrchardCore
 repo_url: https://github.com/OrchardCMS/OrchardCore
+edit_uri: edit/dev/src/
 
 # Options
 docs_dir: src
