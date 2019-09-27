@@ -32,18 +32,18 @@ and optionally a version. The `OrchardCore.Resources` modules provides some comm
 
 | Name | Type | Versions | Dependencies |
 | ---- | ---- | -------- | ------------ |
-| jQuery | Script | 3.3.1 | - |
-| jQuery.slim | Script | 3.3.1 | - |
+| jQuery | Script | 3.4.1 | - |
+| jQuery.slim | Script | 3.4.1 | - |
 | jQuery-ui | Script | 1.12.1 | jQuery |
 | jQuery-ui-i18n | Script | 1.7.2 | jQuery-ui |
-| popper | Script | 1.15.0 | - |
+| popper | Script | 1.14.7 | - |
 | bootstrap | Script | 3.4.0, 4.3.1 | jQuery, Popper |
 | bootstrap | Style | 3.4.0, 4.3.1 | - |
-| codemirror | Script | 5.4.2 | - |
-| codemirror | Style | 5.4.2 | - |
-| font-awesome | Style | 4.7.0, 5.7.2 | - |
-| font-awesome | Script | 5.7.2 | - |
-| font-awesome-v4-shims | Script | 5.7.2 | - |
+| codemirror | Script | 5.48.4 | - |
+| codemirror | Style | 5.48.4 | - |
+| font-awesome | Style | 4.7.0, 5.10.2 | - |
+| font-awesome | Script | 5.10.2 | - |
+| font-awesome-v4-shims | Script | 5.10.2 | - |
 
 ## Usage
 
