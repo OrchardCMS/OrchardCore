@@ -28,6 +28,7 @@ namespace OrchardCore.Media.Azure.Controllers
             )
         {
             _authorizationService = authorizationService;
+            // Resolve from service provider as the service will not be registered if configuration is invalid.
             _mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
             _notifier = notifier;
             H = htmlLocalizer;
@@ -58,7 +59,7 @@ namespace OrchardCore.Media.Azure.Controllers
 
             if (_mediaFileStoreCache == null)
             {
-                _notifier.Error(H["The asset cache cannot be purged. The feature is enabled, but a remote media store feature is not enabled, or not configured with appsettings.json."]);
+                _notifier.Error(H["The asset cache feature is enabled, but a remote media store feature is not enabled, or not configured with appsettings.json."]);
                 RedirectToAction("Index");
             }
 
