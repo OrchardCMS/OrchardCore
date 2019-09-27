@@ -107,13 +107,6 @@ namespace OrchardCore.Navigation
                 }
 
                 match = viewContext.HttpContext.Request.Path.StartsWithSegments(path, StringComparison.OrdinalIgnoreCase);
-
-                //if queryString Contain isAdminMenuNode
-                bool isAdminMenuNode = Convert.ToBoolean(viewContext.HttpContext.Request.Query["isAdminMenuNode"]);
-                if (isAdminMenuNode)
-                {
-                    match = match && isAdminMenuNode;
-                }
             }
 
             menuItemShape.Selected = match;

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -212,7 +211,7 @@ namespace OrchardCore.Navigation
                 }
 
                 //prevent PathString Encode "?" 
-                url = actionContext.HttpContext.Request.PathBase + WebUtility.UrlDecode(new PathString("/" + url));
+                url = actionContext.HttpContext.Request.PathBase + new PathString("/" + url);
             }
 
             return url;
