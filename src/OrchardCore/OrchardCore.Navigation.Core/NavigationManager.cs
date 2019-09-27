@@ -210,7 +210,6 @@ namespace OrchardCore.Navigation
                     url = url.Substring(2);
                 }
 
-                //prevent PathString Encode "?" 
                 url = actionContext.HttpContext.Request.PathBase + new PathString("/" + url);
             }
 
