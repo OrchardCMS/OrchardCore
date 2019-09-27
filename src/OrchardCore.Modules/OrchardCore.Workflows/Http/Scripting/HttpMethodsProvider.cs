@@ -89,8 +89,9 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Name = "readBody",
                 Method = serviceProvider => (Func<string>)(() =>
                 {
+                    // Asynchronous read of the request body is mandatory.
                     var stream = httpContextAccessor.HttpContext.Request.Body;
-                    var body = new StreamReader(stream).ReadToEnd();
+                    var body = new StreamReader(stream).ReadToEndAsync().GetAwaiter().GetResult();
                     return body;
                 })
             };
