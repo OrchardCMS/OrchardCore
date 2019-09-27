@@ -66,8 +66,6 @@ namespace OrchardCore.Sitemaps
                 var rootPath = sitemapSet.RootPath.TrimStart('/');
                 sitemapSetService.BuildSitemapRouteEntries(sitemapSet.SitemapNodes, rootPath);
             }
-
-            //app.UseMiddleware<SitemapMiddleware>();
         }
     }
 }

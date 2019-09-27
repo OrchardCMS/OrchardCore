@@ -132,15 +132,6 @@ namespace OrchardCore.Sitemaps.Services
         {
             var entries = GetSitemapRouteEntries(sitemapNodes, rootPath);
             _sitemapEntries.RemoveEntries(entries);
-            foreach (var sitemapNode in sitemapNodes)
-            {
-                var path = String.Concat(rootPath, sitemapNode.Path);
-                _sitemapEntries.RemoveEntry(new SitemapEntry { Path = path, SitemapNodeId = sitemapNode.Id });
-                if (sitemapNode.ChildNodes != null)
-                {
-                    DeleteSitemapRouteEntries(sitemapNode.ChildNodes, rootPath);
-                }
-            }
         }
 
         private async Task<SitemapSetList> GetSitemapSetList()

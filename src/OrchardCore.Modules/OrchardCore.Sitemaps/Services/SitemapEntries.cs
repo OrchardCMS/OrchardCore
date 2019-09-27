@@ -20,21 +20,6 @@ namespace OrchardCore.Sitemaps.Services
             return _sitemapNodeIds.TryGetValue(path, out sitemapNodeId);
         }
 
-        public void AddEntry(SitemapEntry entry)
-        {
-            lock (this)
-            {
-                if (_paths.TryGetValue(entry.SitemapNodeId, out var previousPath))
-                {
-                    _sitemapNodeIds.Remove(previousPath);
-                }
-
-                var requestPath = "/" + entry.Path.TrimStart('/');
-                _paths[entry.SitemapNodeId] = requestPath;
-                _sitemapNodeIds[requestPath] = entry.SitemapNodeId;
-            }
-        }
-
         public void AddEntries(IEnumerable<SitemapEntry> entries)
         {
             lock (this)
@@ -62,15 +47,6 @@ namespace OrchardCore.Sitemaps.Services
                     _paths.Remove(entry.SitemapNodeId);
                     _sitemapNodeIds.Remove(entry.Path);
                 }
-            }
-        }
-
-        public void RemoveEntry(SitemapEntry entry)
-        {
-            lock (this)
-            {
-                _paths.Remove(entry.SitemapNodeId);
-                _sitemapNodeIds.Remove(entry.Path);
             }
         }
     }
