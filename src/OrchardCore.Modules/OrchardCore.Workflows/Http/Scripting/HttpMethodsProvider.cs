@@ -89,40 +89,41 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Name = "readBody",
                 Method = serviceProvider => (Func<string>)(() =>
                 {
-                    // Asynchronous read of the request body is mandatory.
-                    var stream = httpContextAccessor.HttpContext.Request.Body;
-                    var body = new StreamReader(stream).ReadToEndAsync().GetAwaiter().GetResult();
-                    return body;
+                    using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
+                    {
+                        // Async read of the request body is mandatory.
+                        return sr.ReadToEndAsync().GetAwaiter().GetResult();
+                    }
                 })
             };
 
             _requestFormMethod = new GlobalMethod
             {
                 Name = "requestForm",
-                Method = serviceProvider => (Func<string, object>) (field =>
-                {
-                    object result;
-                    if (httpContextAccessor.HttpContext.Request.Form.TryGetValue(field, out var values))
-                    {
-                        if (values.Count == 0)
-                        {
-                            result = null;
-                        }
-                        else if (values.Count == 1)
-                        {
-                            result = values[0];
-                        }
-                        else
-                        {
-                            result = values.ToArray();
-                        }
-                    }
-                    else
-                    {
-                        result = null;
-                    }
-                    return result;
-                })
+                Method = serviceProvider => (Func<string, object>)(field =>
+               {
+                   object result;
+                   if (httpContextAccessor.HttpContext.Request.Form.TryGetValue(field, out var values))
+                   {
+                       if (values.Count == 0)
+                       {
+                           result = null;
+                       }
+                       else if (values.Count == 1)
+                       {
+                           result = values[0];
+                       }
+                       else
+                       {
+                           result = values.ToArray();
+                       }
+                   }
+                   else
+                   {
+                       result = null;
+                   }
+                   return result;
+               })
             };
 
             _queryStringAsJsonMethod = new GlobalMethod
