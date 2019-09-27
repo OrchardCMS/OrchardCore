@@ -88,15 +88,7 @@ namespace OrchardCore.Navigation
             // if route match failed, try comparing URL strings, if
             if (!match && !String.IsNullOrWhiteSpace(menuItem.Href) && menuItem.Href[0] == '/')
             {
-                PathString path;
-                if (menuItem.Href.Contains("?"))
-                {
-                    path = menuItem.Href.TrimEnd('/').Split('?')[0];
-                }
-                else
-                {
-                    path = menuItem.Href.TrimEnd('/');
-                }
+                PathString path = menuItem.Href.TrimEnd('/');
 
                 if (viewContext.HttpContext.Request.PathBase.HasValue)
                 {
