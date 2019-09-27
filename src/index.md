@@ -52,16 +52,16 @@ Orchard Core CMS supports all major site building strategies:
 
 - **Full CMS**. In this mode, the website uses a theme and templates to render your content, aiming for little to no custom development at all.
 
-- **Decoupled CMS**. The site starts off blank, apart from the content management back-end. You create all the templates you need with Razor Pages or MVC actions and access your content via the content services.
+- **Decoupled CMS**. The site starts off blank, apart from the content management back-end. You create all the templates you need with Razor Pages or MVC actions and access your content via the content services. Ref: <https://www.youtube.com/watch?v=yWpz8p-oaKg&t=4725s>
 
-- **Headless CMS**. The site only manages the content, and you create a separate application that will fetch the managed content using GraphQL or REST APIs.
+- **Headless CMS**. The site only manages the content, and you create a separate application that will fetch the managed content using GraphQL or REST APIs. Ref: <https://www.youtube.com/watch?v=4o9zG17cfa0>
 
 ## Status
 
-The latest released version of Orchard Core is `1.0.0-beta3`.
-The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/1.0.0-beta3>
+The latest released version of Orchard Core is `1.0.0-rc1`.
+The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/1.0.0-rc1>
 
-The software is complete enough for external testing -- that is, by groups outside the organization or community that developed the software. Beta software is usually feature complete, but may have known limitations or bugs. Betas are either closed (private) and limited to a specific set of users, or they can be open to the general public.
+The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs.
 
 Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
 
@@ -83,7 +83,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.
 
-You can also read the [Code Generation Templates documentation](Templates/README) to create new applications from predefined templates.
+You can also read the [Code Generation Templates documentation](./docs/templates/) to create new applications from predefined templates.
 
 ### Visual Studio 2017
 

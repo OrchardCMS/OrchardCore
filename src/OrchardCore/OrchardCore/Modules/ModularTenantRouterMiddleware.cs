@@ -36,7 +36,7 @@ namespace OrchardCore.Modules
             _logger = logger;
         }
 
-        public async Task Invoke(HttpContext httpContext)
+        public Task Invoke(HttpContext httpContext)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -59,27 +59,32 @@ namespace OrchardCore.Modules
             // Do we need to rebuild the pipeline ?
             if (shellContext.Pipeline == null)
             {
-                var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, (name) => new SemaphoreSlim(1));
+                InitializePipeline(shellContext);
+            }
 
-                // Building a pipeline for a given shell can't be done by two requests.
-                await semaphore.WaitAsync();
+            return shellContext.Pipeline.Invoke(httpContext);
+        }
 
-                try
+        private void InitializePipeline(ShellContext shellContext)
+        {
+            var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, (name) => new SemaphoreSlim(1));
+
+            // Building a pipeline for a given shell can't be done by two requests.
+            semaphore.Wait();
+
+            try
+            {
+                if (shellContext.Pipeline == null)
                 {
-                    if (shellContext.Pipeline == null)
-                    {
-                        shellContext.Pipeline = BuildTenantPipeline();
-                    }
-                }
-
-                finally
-                {
-                    semaphore.Release();
-                    _semaphores.TryRemove(shellContext.Settings.Name, out semaphore);
+                    shellContext.Pipeline = BuildTenantPipeline();
                 }
             }
 
-            await shellContext.Pipeline.Invoke(httpContext);
+            finally
+            {
+                semaphore.Release();
+                _semaphores.TryRemove(shellContext.Settings.Name, out semaphore);
+            }
         }
 
         // Build the middleware pipeline for the current tenant

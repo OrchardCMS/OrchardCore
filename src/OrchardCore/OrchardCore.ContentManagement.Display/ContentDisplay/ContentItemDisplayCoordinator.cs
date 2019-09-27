@@ -96,13 +96,13 @@ namespace OrchardCore.ContentManagement.Display
                     var tempContext = context;
 
                     // Create a custom ContentPart shape that will hold the fields for dynamic content part (not implicit parts)
-                    // This allows its fields to be grouped and templated 
+                    // This allows its fields to be grouped and templated
 
                     if (part.GetType() == typeof(ContentPart) && partTypeName != contentTypePartDefinition.ContentTypeDefinition.Name)
                     {
                         var shapeType = context.DisplayType != "Detail" ? "ContentPart_" + context.DisplayType : "ContentPart";
 
-                        var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => Task.FromResult<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone", Arguments.Empty)))));
+                        var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => new ValueTask<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone", Arguments.Empty)))));
                         shapeResult.Differentiator(partName);
                         shapeResult.Location("Content");
 
