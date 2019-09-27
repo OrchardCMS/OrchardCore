@@ -17,6 +17,7 @@ namespace OrchardCore.ContentManagement
         {
             services.AddScoped<ICacheContextProvider, ContentDefinitionCacheContextProvider>();
             services.TryAddScoped<IContentDefinitionManager, ContentDefinitionManager>();
+            services.TryAddScoped<ICodeContentDefinitionService, DefaultCodeContentDefinitionService>();
             services.TryAddScoped<IContentDefinitionStore, DatabaseContentDefinitionStore>();
             services.TryAddScoped<IContentManager, DefaultContentManager>();
             services.TryAddScoped<IContentManagerSession, DefaultContentManagerSession>();
@@ -31,6 +32,7 @@ namespace OrchardCore.ContentManagement
             services.AddScoped<IContentAliasManager, ContentAliasManager>();
 
             services.AddOptions<ContentOptions>();
+            services.AddCodeContentType<TestContentType>();
 
             return services;
         }

@@ -5,6 +5,15 @@ namespace OrchardCore.ContentManagement
     public static class ServiceCollectionExtensions
     {
         /// <summary>
+        /// Registers a content type.
+        /// </summary>
+        public static IServiceCollection AddCodeContentType<TCodeContentType>(this IServiceCollection serviceCollection)
+            where TCodeContentType : CodeContentType
+        {
+            return serviceCollection.Configure<ContentOptions>(o => o.AddCodeContentType<TCodeContentType>());
+        }
+
+        /// <summary>
         /// Registers a content part type.
         /// </summary>
         public static IServiceCollection AddContentPart<TContentPart>(this IServiceCollection serviceCollection)

@@ -19,6 +19,7 @@ namespace OrchardCore.ContentManagement
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
         private readonly IContentDefinitionStore _contentDefinitionStore;
+        private readonly ICodeContentDefinitionService _codeContentDefinitionService;
         private readonly ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
         private readonly ConcurrentDictionary<string, ContentPartDefinition> _partDefinitions;
 
@@ -27,11 +28,14 @@ namespace OrchardCore.ContentManagement
         public ContentDefinitionManager(
             IMemoryCache memoryCache,
             ISignal signal,
-            IContentDefinitionStore contentDefinitionStore)
+            IContentDefinitionStore contentDefinitionStore,
+            ICodeContentDefinitionService codeContentDefinitionService
+            )
         {
             _signal = signal;
             _contentDefinitionStore = contentDefinitionStore;
             _memoryCache = memoryCache;
+            _codeContentDefinitionService = codeContentDefinitionService;
 
             _typeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>());
             _partDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>());
@@ -288,7 +292,14 @@ namespace OrchardCore.ContentManagement
                 return _contentDefinitionRecord;
             }
 
-            return _contentDefinitionRecord = _contentDefinitionStore.LoadContentDefinitionAsync().GetAwaiter().GetResult();
+            _contentDefinitionRecord = _contentDefinitionStore.LoadContentDefinitionAsync().GetAwaiter().GetResult();
+            var codeContentTypeDefinitions = _codeContentDefinitionService.GetContentTypeDefinitions();
+            foreach(var codeContentTypeDefinition in codeContentTypeDefinitions)
+            {
+                //TODO Somewhere (Not here) set IsCode or IsReadOnly
+                _contentDefinitionRecord.ContentTypeDefinitionRecords.Add(codeContentTypeDefinition);
+            }
+            return _contentDefinitionRecord;
         }
 
         private void UpdateContentDefinitionRecord()
