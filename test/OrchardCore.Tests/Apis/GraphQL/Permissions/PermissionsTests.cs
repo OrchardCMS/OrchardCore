@@ -44,8 +44,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Permissions
                 var result = await context.GraphQLClient.Content
                     .Query("blog", builder =>
                       {
-                          builder
-                              .WithField("contentItemId");
+                          builder.WithField("contentItemId");
                     });
 
                 Assert.NotEmpty(result["data"]["blog"]);
@@ -71,10 +70,8 @@ namespace OrchardCore.Tests.Apis.GraphQL.Permissions
                 var result = await context.GraphQLClient.Content
                     .Query("blog", builder =>
                     {
-                        builder
-                            .WithField("contentItemId");
+                        builder.WithField("contentItemId");
                     });
-
 
                 Assert.Equal(GraphQLApi.ValidationRules.RequiresPermissionValidationRule.ErrorCode, result["errors"][0]["extensions"]["code"]);
             }
