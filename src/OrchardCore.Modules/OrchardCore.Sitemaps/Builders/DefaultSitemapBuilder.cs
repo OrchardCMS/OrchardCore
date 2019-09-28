@@ -6,11 +6,11 @@ using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Builders
 {
-    public class SitemapBuilder : ISitemapBuilder
+    public class DefaultSitemapBuilder : ISitemapBuilder
     {
         private readonly IEnumerable<ISitemapNodeBuilder> _nodeBuilders;
 
-        public SitemapBuilder(IEnumerable<ISitemapNodeBuilder> nodeBuilders)
+        public DefaultSitemapBuilder(IEnumerable<ISitemapNodeBuilder> nodeBuilders)
         {
             _nodeBuilders = nodeBuilders;
         }
@@ -26,13 +26,15 @@ namespace OrchardCore.Sitemaps.Builders
             return null;
         }
 
-        public async Task<DateTime?> ProvideLastModifiedDateAsync(SitemapNode sitemapNode, SitemapBuilderContext context)
+        public async Task<DateTime?> GetLastModifiedDateAsync(SitemapNode sitemapNode, SitemapBuilderContext context)
         {
             foreach (var nodeBuilder in _nodeBuilders)
             {
-                var result = await nodeBuilder.ProvideLastModifiedDateAsync(sitemapNode, context);
+                var result = await nodeBuilder.GetLastModifiedDateAsync(sitemapNode, context);
                 if (result != null)
+                {
                     return result;
+                }
             }
             return null;
         }

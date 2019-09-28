@@ -8,6 +8,6 @@ namespace OrchardCore.Sitemaps.Builders
     public interface ISitemapNodeBuilder
     {
         Task<XDocument> BuildAsync(SitemapNode sitemapNode, SitemapBuilderContext context);
-        Task<DateTime?> ProvideLastModifiedDateAsync(SitemapNode sitemapNode, SitemapBuilderContext context);
+        Task<DateTime?> GetLastModifiedDateAsync(SitemapNode sitemapNode, SitemapBuilderContext context);
     }
 }

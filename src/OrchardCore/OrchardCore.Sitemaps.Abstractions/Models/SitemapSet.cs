@@ -5,10 +5,10 @@ namespace OrchardCore.Sitemaps.Models
 {
     public class SitemapSet
     {
-        public string Id { get; set; } 
+        public string Id { get; set; }
         public string Name { get; set; }
         public bool Enabled { get; set; } = true;
-        public string RootPath { get; set; } 
+        public string RootPath { get; set; }
         public List<SitemapNode> SitemapNodes { get; } = new List<SitemapNode>();
 
         public SitemapNode GetSitemapNodeById(string id)
@@ -31,7 +31,7 @@ namespace OrchardCore.Sitemaps.Models
             if (SitemapNodes.Contains(sitemapNodeToRemove)) // todo: avoid this check by having a single TreeNode as a property of the content tree preset.
             {
                 SitemapNodes.Remove(sitemapNodeToRemove);
-                return true; 
+                return true;
             }
             else
             {
@@ -39,12 +39,12 @@ namespace OrchardCore.Sitemaps.Models
                 {
                     if (firstLevelSitemapNode.RemoveSitemapNode(sitemapNodeToRemove))
                     {
-                        return true; 
+                        return true;
                     }
-                }                
+                }
             }
 
-            return false; 
+            return false;
         }
 
         public bool InsertSitemapNodeAt(SitemapNode sitemapNodeToInsert, SitemapNode destinationSitemapNode, int position)
@@ -58,7 +58,7 @@ namespace OrchardCore.Sitemaps.Models
             if (destinationSitemapNode == null)
             {
                 SitemapNodes.Insert(position, sitemapNodeToInsert);
-                return true; 
+                return true;
             }
             else
             {
@@ -66,12 +66,11 @@ namespace OrchardCore.Sitemaps.Models
                 {
                     if (firstLevelSitemapNode.InsertSitemapNode(sitemapNodeToInsert, destinationSitemapNode, position))
                     {
-                        return true; 
+                        return true;
                     }
-                }                
+                }
             }
-            return false; 
+            return false;
         }
-
     }
 }

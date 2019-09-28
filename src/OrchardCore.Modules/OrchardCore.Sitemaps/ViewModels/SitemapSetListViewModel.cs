@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.ViewModels
 {
@@ -11,7 +12,7 @@ namespace OrchardCore.Sitemaps.ViewModels
 
     public class SitemapSetEntry
     {
-        public Models.SitemapSet SitemapSet { get; set; }
+        public SitemapSet SitemapSet { get; set; }
         public bool IsChecked { get; set; }
     }
 }

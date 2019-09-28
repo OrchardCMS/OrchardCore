@@ -5,6 +5,7 @@ namespace OrchardCore.Sitemaps.Services
 {
     public class SitemapEntries
     {
+        //TODO remove paths.
         private readonly Dictionary<string, string> _paths;
         private readonly Dictionary<string, string> _sitemapNodeIds;
 

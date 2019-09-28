@@ -28,9 +28,9 @@ namespace OrchardCore.Contents.SitemapNodes
         public override IDisplayResult Edit(ContentTypesSitemapNode treeNode)
         {
             // TODO Prefer IsRoutable() to reduce list size, and allow SelectAll
-            var indexableTypeDefs = _contentDefinitionManager.ListTypeDefinitions();
+            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
 
-            var entries = indexableTypeDefs.Select(x => new ContentTypeSitemapEntryViewModel
+            var entries = contentTypeDefinitions.Select(x => new ContentTypeSitemapEntryViewModel
             {
                 ContentTypeName = x.Name,
                 IsChecked = treeNode.ContentTypes.Any(selected => selected.ContentTypeName == x.Name),

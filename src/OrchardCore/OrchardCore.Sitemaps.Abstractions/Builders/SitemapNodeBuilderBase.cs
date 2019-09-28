@@ -6,7 +6,7 @@ using OrchardCore.Sitemaps.Models;
 namespace OrchardCore.Sitemaps.Builders
 {
     /// <summary>
-    /// Inherit to provide a sitemap
+    /// Inherit to provide a sitemap builder.
     /// </summary>
     /// <typeparam name="TSitemapNode"></typeparam>
     public abstract class SitemapNodeBuilderBase<TSitemapNode> : ISitemapNodeBuilder where TSitemapNode : SitemapNode
@@ -14,7 +14,7 @@ namespace OrchardCore.Sitemaps.Builders
         async Task<XDocument> ISitemapNodeBuilder.BuildAsync(SitemapNode sitemapNode, SitemapBuilderContext context)
         {
             var node = sitemapNode as TSitemapNode;
-            //be exact type
+            // Be exact type to handle inheritance.
             if (node == null || node.GetType() != typeof(TSitemapNode) || !node.Enabled)
             {
                 return null;
@@ -25,19 +25,19 @@ namespace OrchardCore.Sitemaps.Builders
 
         public abstract Task<XDocument> BuildNodeAsync(TSitemapNode sitemapNode, SitemapBuilderContext context);
 
-        async Task<DateTime?> ISitemapNodeBuilder.ProvideLastModifiedDateAsync(SitemapNode sitemapNode, SitemapBuilderContext context)
+        async Task<DateTime?> ISitemapNodeBuilder.GetLastModifiedDateAsync(SitemapNode sitemapNode, SitemapBuilderContext context)
         {
             var node = sitemapNode as TSitemapNode;
 
             if (node == null || !node.Enabled)
             {
-                return null ;
+                return null;
             }
-            return await ProvideNodeLastModifiedDateAsync(node, context);
+            return await GetNodeLastModifiedDateAsync(node, context);
         }
 
-        //override to provide
-        public virtual Task<DateTime?> ProvideNodeLastModifiedDateAsync(TSitemapNode sitemapNode, SitemapBuilderContext context)
+        // Override to implement
+        public virtual Task<DateTime?> GetNodeLastModifiedDateAsync(TSitemapNode sitemapNode, SitemapBuilderContext context)
         {
             return Task.FromResult<DateTime?>(null);
         }

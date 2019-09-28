@@ -14,20 +14,20 @@ namespace OrchardCore.Sitemaps.Drivers
 {
     public class SitemapPartDisplay : ContentPartDisplayDriver<SitemapPart>
     {
-        public SitemapPartDisplay() { }
-
         public override IDisplayResult Edit(SitemapPart part)
         {
-            //TODO when tabs implemented locate in tab
-            return Initialize<SitemapPartViewModel>("SitemapPart_Edit", m =>
-            {
-                BuildViewModel(m, part);
-            });
+            return Initialize<SitemapPartViewModel>("SitemapPart_Edit", m => BuildViewModel(m, part))
+                .Location("Parts#Seo:5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SitemapPart model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.OverrideSitemapSetConfig, t => t.ChangeFrequency, t => t.Exclude, t => t.Priority);
+            await updater.TryUpdateModelAsync(model,
+                Prefix,
+                t => t.OverrideSitemapSetConfig,
+                t => t.ChangeFrequency,
+                t => t.Exclude, t => t.Priority
+            );
             return Edit(model);
         }
 

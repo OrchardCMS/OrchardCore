@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.Sitemaps.Models
 {
@@ -9,6 +7,7 @@ namespace OrchardCore.Sitemaps.Models
     /// </summary>
     public class SitemapSetList
     {
+        //TODO what is Id for?
         public int Id { get; set; }
         public List<SitemapSet> SitemapSets { get; set; } = new List<SitemapSet>();
 

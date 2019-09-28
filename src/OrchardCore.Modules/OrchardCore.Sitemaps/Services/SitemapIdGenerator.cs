@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using OrchardCore.Entities;
 
 namespace OrchardCore.Sitemaps.Services
 {
-
     public class SitemapIdGenerator : ISitemapIdGenerator
     {
         private readonly IIdGenerator _idGenerator;

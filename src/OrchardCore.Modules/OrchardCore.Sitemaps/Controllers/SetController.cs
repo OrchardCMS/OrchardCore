@@ -27,6 +27,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly ISitemapIdGenerator _sitemapIdGenerator;
+        private readonly ILogger _logger;
 
         public SetController(
             IAuthorizationService authorizationService,
@@ -35,9 +36,10 @@ namespace OrchardCore.Sitemaps.Controllers
             IShapeFactory shapeFactory,
             INotifier notifier,
             ISitemapIdGenerator sitemapIdGenerator,
+            ILogger<SetController> logger,
             IStringLocalizer<SetController> stringLocalizer,
-            IHtmlLocalizer<SetController> htmlLocalizer,
-            ILogger<SetController> logger)
+            IHtmlLocalizer<SetController> htmlLocalizer
+            )
         {
             _authorizationService = authorizationService;
             _sitemapSetService = sitemapSetService;
@@ -45,16 +47,15 @@ namespace OrchardCore.Sitemaps.Controllers
             New = shapeFactory;
             _notifier = notifier;
             _sitemapIdGenerator = sitemapIdGenerator;
+            _logger = logger;
 
             T = stringLocalizer;
             H = htmlLocalizer;
-            Logger = logger;
         }
 
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
-        public ILogger Logger { get; set; }
-        public dynamic New { get; set; }
+        public IStringLocalizer T { get; }
+        public IHtmlLocalizer H { get; }
+        public dynamic New { get; }
 
         public async Task<IActionResult> List(SitemapSetListOptions options, PagerParameters pagerParameters)
         {
@@ -96,7 +97,7 @@ namespace OrchardCore.Sitemaps.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error when retrieving the list of sitemap sets");
+                _logger.LogError(ex, "Error when retrieving the list of sitemap sets");
                 _notifier.Error(H["Error when retrieving the list of sitemap sets"]);
             }
 
@@ -265,6 +266,5 @@ namespace OrchardCore.Sitemaps.Controllers
 
             return RedirectToAction(nameof(List));
         }
-
     }
 }

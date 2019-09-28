@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Services
@@ -14,6 +11,7 @@ namespace OrchardCore.Sitemaps.Services
     public class SitemapNodeProviderFactory<TSitemapNode> : ISitemapNodeProviderFactory where TSitemapNode : SitemapNode, new()
     {
         private static readonly string TypeName = typeof(TSitemapNode).Name;
+
         private readonly ISitemapIdGenerator _sitemapIdGenerator;
 
         public string Name => TypeName;

@@ -41,6 +41,7 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 var sitemapNode = await _sitemapSetService.GetSitemapNodeByIdAsync(sitemapNodeId);
 
+                //TODO sort prefix url. see media, so request.pathbase + originalPathBase
                 var context = new SitemapBuilderContext()
                 {
                     UrlHelper = Url,

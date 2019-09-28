@@ -17,8 +17,8 @@ namespace OrchardCore.Sitemaps.Models
         [JsonIgnore]
         public SitemapSet SitemapSet { get; set; }
 
-        //With the nodes we currently have we don't need both these options, one would suffice, however
-        //we might plug in more nodes below a parent to support google news or other metadata related (will require other work!)
+        // With the nodes currently implemented we don't need both these options, one would suffice, however
+        // this allows room to might plug in more nodes below a parent to support google news or other metadata related.
 
         /// <summary>
         /// Override to disable support for child nodes
@@ -59,7 +59,7 @@ namespace OrchardCore.Sitemaps.Models
             return null;
         }
 
-        // return boolean so that caller can check for success
+        // Return bool so that caller can check for success.
         public bool RemoveSitemapNode(SitemapNode nodeToRemove)
         {
             var tempStack = new Stack<SitemapNode>(new SitemapNode[] { this });
@@ -103,6 +103,5 @@ namespace OrchardCore.Sitemaps.Models
             // failure
             return false;
         }
-
     }
 }

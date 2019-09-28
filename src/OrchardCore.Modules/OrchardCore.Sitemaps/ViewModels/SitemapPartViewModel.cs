@@ -6,7 +6,9 @@ namespace OrchardCore.Sitemaps.ViewModels
     public class SitemapPartViewModel
     {
         public bool OverrideSitemapSetConfig { get; set; }
+
         public ChangeFrequency ChangeFrequency { get; set; }
+
         public float Priority { get; set; }
 
         public bool Exclude { get; set; }

@@ -14,8 +14,10 @@ namespace OrchardCore.Sitemaps.SitemapNodes
 
         [BindNever]
         public SitemapNode SitemapNode { get; set; }
+
         [BindNever]
         public bool CanBeChildNode { get; set; }
+
         [BindNever]
         public bool CanSupportChildNodes { get; set; }
     }

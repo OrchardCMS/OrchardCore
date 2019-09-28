@@ -1,23 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
-using System.Xml.Linq;
 
 namespace OrchardCore.Sitemaps.SitemapNodes
 {
     public class SitemapIndexNodeBuilder : SitemapNodeBuilderBase<SitemapIndexNode>
     {
-        public SitemapIndexNodeBuilder()
-        {
-        }
-
         public override async Task<XDocument> BuildNodeAsync(SitemapIndexNode sitemapNode, SitemapBuilderContext context)
         {
-            //this needs to recurse ChildNodes, but only to one level. Nothing that can site under an index can have multi-levels
+            // Recurse ChildNodes, but only to one level. Nothing under an index can have multi-levels
             XNamespace defaultNamespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
             var root = new XElement(defaultNamespace + "sitemapindex");
             foreach (var node in sitemapNode.ChildNodes)
@@ -27,7 +20,7 @@ namespace OrchardCore.Sitemaps.SitemapNodes
                 loc.Add(context.UrlHelper.GetBaseUrl() + sitemapNode.SitemapSet.RootPath + node.Path);
                 sitemap.Add(loc);
 
-                var lastModDate = await context.Builder.ProvideLastModifiedDateAsync(node, context);
+                var lastModDate = await context.Builder.GetLastModifiedDateAsync(node, context);
                 var lastMod = new XElement(defaultNamespace + "lastmod");
                 lastMod.Add(lastModDate.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz"));
                 sitemap.Add(lastMod);

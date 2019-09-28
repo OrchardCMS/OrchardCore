@@ -10,6 +10,7 @@ namespace OrchardCore.Sitemaps.ViewModels
         public string Name { get; set; }
 
         [Required]
+        //TODO BasePath and PathString
         public string RootPath { get; set; }
     }
 }

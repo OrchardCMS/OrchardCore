@@ -35,12 +35,12 @@ namespace OrchardCore.Sitemaps.Services
 
         public IChangeToken ChangeToken => _signal.GetToken(SitemapSetCacheKey);
 
-        public async Task<IList<Models.SitemapSet>> GetAsync()
+        public async Task<IList<SitemapSet>> GetAsync()
         {
             return (await GetSitemapSetList()).SitemapSets;
         }
 
-        public async Task SaveAsync(Models.SitemapSet tree)
+        public async Task SaveAsync(SitemapSet tree)
         {
             var sitemapSetList = await GetSitemapSetList();
             var session = GetSession();
@@ -67,7 +67,7 @@ namespace OrchardCore.Sitemaps.Services
             _signal.SignalToken(SitemapSetCacheKey);
         }
 
-        public async Task<Models.SitemapSet> GetByIdAsync(string id)
+        public async Task<SitemapSet> GetByIdAsync(string id)
         {
             return (await GetSitemapSetList())
                 .SitemapSets
@@ -87,7 +87,7 @@ namespace OrchardCore.Sitemaps.Services
             return null;
         }
 
-        public async Task<int> DeleteAsync(Models.SitemapSet tree)
+        public async Task<int> DeleteAsync(SitemapSet tree)
         {
             var sitemapSetList = await GetSitemapSetList();
             var session = GetSession();
@@ -168,6 +168,7 @@ namespace OrchardCore.Sitemaps.Services
             return treeList;
         }
 
+        //TODO why this is scoped? not singleton.
         private YesSql.ISession GetSession()
         {
             var httpContextAccessor = _serviceProvider.GetService<IHttpContextAccessor>();

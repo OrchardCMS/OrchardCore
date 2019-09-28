@@ -13,25 +13,23 @@ namespace OrchardCore.Sitemaps.Services
         /// <summary>
         /// Returns all the sitemap sets
         /// </summary>
-        Task<IList<Models.SitemapSet>> GetAsync();
+        Task<IList<SitemapSet>> GetAsync();
 
         /// <summary>
         /// Persist a sitemap set
         /// </summary>
         /// <param name="tree"></param>
-        /// <returns></returns>
-        Task SaveAsync(Models.SitemapSet tree);
+        Task SaveAsync(SitemapSet tree);
 
         /// <summary>
         /// Returns a sitemap set.
         /// </summary>
-        Task<Models.SitemapSet> GetByIdAsync(string id);
+        Task<SitemapSet> GetByIdAsync(string id);
 
         /// <summary>
         /// Get a sitemap node by id
         /// </summary>
         /// <param name="nodeId"></param>
-        /// <returns></returns>
         Task<SitemapNode> GetSitemapNodeByIdAsync(string nodeId);
 
         /// <summary>
@@ -46,6 +44,6 @@ namespace OrchardCore.Sitemaps.Services
         /// </summary>
         IChangeToken ChangeToken { get; }
 
-        void BuildSitemapRouteEntries(IList<SitemapNode> sitemapNodes, string rootPath);
+        void BuildSitemapRouteEntries(IList<SitemapNode> sitemapNodes, string basePath);
     }
 }

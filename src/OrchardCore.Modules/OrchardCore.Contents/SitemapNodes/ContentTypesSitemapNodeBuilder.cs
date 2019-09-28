@@ -1,41 +1,208 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Settings;
+using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Contents.SitemapNodes
 {
-    public class ContentTypesSitemapBuilder : UrlsetSitemapNodeBuilderBase<ContentTypesSitemapNode>
+    public class ContentTypesSitemapBuilder : SitemapNodeBuilderBase<ContentTypesSitemapNode>
     {
+        private static readonly XNamespace Namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
+
+        private readonly ILogger _logger;
+        private readonly ISession _session;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentManager _contentManager;
+        private readonly ISiteService _siteService;
+
         public ContentTypesSitemapBuilder(
             ILogger<ContentTypesSitemapBuilder> logger,
             ISession session,
             IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
-            ISiteService siteService)
-            : base(logger,
-                  session,
-                  contentDefinitionManager,
-                  contentManager,
-                  siteService)
-        { }
-
-        protected async override Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context, RouteValueDictionary homeRoute, ContentItem contentItem, XElement url)
+            ISiteService siteService
+            )
         {
-            if (await base.BuildUrlsetMetadataAsync(sitemapNode, context, homeRoute, contentItem, url))
+            _logger = logger;
+            _session = session;
+            _contentDefinitionManager = contentDefinitionManager;
+            _contentManager = contentManager;
+            _siteService = siteService;
+        }
+
+        public override async Task<XDocument> BuildNodeAsync(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context)
+        {
+            // This does not need to recurse sitemapNode.ChildNodes. urlsets do not support children.
+            var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
+            var contentItems = await GetContentItemsToBuildAsync(sitemapNode);
+
+            var root = new XElement(Namespace + "urlset");
+
+            foreach (var contentItem in contentItems)
+            {
+                var url = new XElement(Namespace + "url");
+
+                if (await BuildUrlsetMetadataAsync(sitemapNode, context, homeRoute, contentItem, url))
+                {
+                    root.Add(url);
+                }
+            }
+            var document = new XDocument(root);
+            return new XDocument(document);
+        }
+
+        public override async Task<DateTime?> GetNodeLastModifiedDateAsync(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context)
+        {
+            ContentItem mostRecentModifiedContentItem;
+            if (sitemapNode.IndexAll)
+            {
+                var query = _session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => x.Published)
+                    .OrderByDescending(x => x.ModifiedUtc);
+
+                mostRecentModifiedContentItem = await query.FirstOrDefaultAsync();
+            }
+            else
+            {
+                var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
+                    .Where(ctd => sitemapNode.ContentTypes.ToList()
+                    .Any(s => ctd.Name == s.ContentTypeName))
+                    .Select(x => x.Name);
+
+                var contentTypes = sitemapNode.ContentTypes.Select(x => x.ContentTypeName);
+                // This is just an estimate, so doesn't take into account Take/Skip values.
+                var query = _session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
+                    .OrderByDescending(x => x.ModifiedUtc);
+                mostRecentModifiedContentItem = await query.FirstOrDefaultAsync();
+            }
+            return mostRecentModifiedContentItem.ModifiedUtc;
+        }
+
+        protected async Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context, RouteValueDictionary homeRoute, ContentItem contentItem, XElement url)
+        {
+            if (await BuildUrlAsync(context, contentItem, homeRoute, url))
             {
                 BuildLastMod(contentItem, url);
                 BuildChangeFrequencyPriority(sitemapNode, contentItem, url);
                 return true;
             };
+
             return false;
         }
+
+        private async Task<IEnumerable<ContentItem>> GetContentItemsToBuildAsync(ContentTypesSitemapNode sitemapNode)
+        {
+            var contentItems = new List<ContentItem>();
+            if (sitemapNode.IndexAll)
+            {
+                var query = _session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => x.Published)
+                    .OrderByDescending(x => x.ModifiedUtc);
+
+                contentItems = (await query.ListAsync()).ToList();
+                if (contentItems.Count() > 50000)
+                {
+                    _logger.LogError($"Sitemap {sitemapNode.Description} count is over 50,000");
+                }
+            }
+            else
+            {
+                // Should allow selection of multiple content types, though recommendation when
+                // splitting a sitemap is to restrict to a single content item. 
+                //TODO make a note in readme -> large content item recommendations
+                if (sitemapNode.ContentTypes.Any(x => !x.TakeAll))
+                {
+                    // Process content types that have a skip/take value.
+                    var tasks = new List<Task<IEnumerable<ContentItem>>>();
+                    foreach (var takeSomeType in sitemapNode.ContentTypes.Where(x => !x.TakeAll))
+                    {
+                        var query = _session.Query<ContentItem>()
+                            .With<ContentItemIndex>(x => x.ContentType == takeSomeType.ContentTypeName && x.Published)
+                            .OrderByDescending(x => x.ModifiedUtc)
+                            .Skip(takeSomeType.Skip)
+                            .Take(takeSomeType.Take);
+                        tasks.Add(query.ListAsync());
+                    }
+                    // Process content types without skip/take value.
+                    var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
+                        .Where(ctd => sitemapNode.ContentTypes.Where(x => x.TakeAll).Any(s => ctd.Name == s.ContentTypeName))
+                        .Select(x => x.Name);
+                    var othersQuery = _session.Query<ContentItem>()
+                        .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
+                        .OrderByDescending(x => x.ModifiedUtc);
+
+                    tasks.Add(othersQuery.ListAsync());
+                    await Task.WhenAll(tasks);
+                    tasks.ForEach(x => contentItems.AddRange(x.Result));
+                }
+                else
+                {
+                    var typeDef = _contentDefinitionManager.ListTypeDefinitions();
+                    var typesTo = _contentDefinitionManager.ListTypeDefinitions()
+                       .Where(ctd => sitemapNode.ContentTypes.ToList().Any(s => ctd.Name == s.ContentTypeName))
+                       .Select(t => t.Name);
+
+                    var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
+                       .Where(ctd => sitemapNode.ContentTypes.Any(s => ctd.Name == s.ContentTypeName))
+                       .Select(x => x.Name);
+
+                    var query = _session.Query<ContentItem>()
+                        .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
+                        .OrderByDescending(x => x.ModifiedUtc);
+
+                    contentItems = (await query.ListAsync()).ToList();
+                }
+            }
+
+            return contentItems;
+        }
+
+        private async Task<bool> BuildUrlAsync(SitemapBuilderContext context, ContentItem contentItem, RouteValueDictionary homeRoute, XElement url)
+        {
+            //TODO Consider IsRoutable() Content Type Definition setting.
+
+            // SitemapPart is optional, but to exclude or override defaults add it to the ContentItem
+            var sitemapPart = contentItem.As<SitemapPart>();
+            if (sitemapPart != null && sitemapPart.OverrideSitemapSetConfig && sitemapPart.Exclude)
+            {
+                return false;
+            }
+
+            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+            var routes = contentItemMetadata.DisplayRouteValues;
+
+            // If is home route prefer / rather than the autoroute value.
+            var locValue = String.Empty;
+
+            var isHomePage = homeRoute.All(x => x.Value.ToString() == routes[x.Key].ToString());
+            if (isHomePage)
+            {
+                locValue = context.PrefixUrl + "/";
+            }
+            else
+            {
+                var link = context.UrlHelper.Action(routes["Action"].ToString(), routes);
+                locValue = context.PrefixUrl + link;
+            }
+            var loc = new XElement(Namespace + "loc");
+            loc.Add(locValue);
+            url.Add(loc);
+            return true;
+        }
+
         private void BuildChangeFrequencyPriority(ContentTypesSitemapNode sitemapNode, ContentItem contentItem, XElement url)
         {
             string changeFrequencyValue = null;
@@ -70,18 +237,18 @@ namespace OrchardCore.Contents.SitemapNodes
                 }
             }
 
-            var changeFreq = new XElement(GetNamespace() + "changefreq");
+            var changeFreq = new XElement(Namespace + "changefreq");
             changeFreq.Add(changeFrequencyValue.ToLower());
             url.Add(changeFreq);
 
-            var priority = new XElement(GetNamespace() + "priority");
+            var priority = new XElement(Namespace + "priority");
             priority.Add(priorityValue);
             url.Add(priority);
         }
 
         private void BuildLastMod(ContentItem contentItem, XElement url)
         {
-            var lastMod = new XElement(GetNamespace() + "lastmod");
+            var lastMod = new XElement(Namespace + "lastmod");
             lastMod.Add(contentItem.ModifiedUtc.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz"));
             url.Add(lastMod);
         }

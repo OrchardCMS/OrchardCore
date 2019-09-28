@@ -38,7 +38,7 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ISitemapSetService, SitemapSetService>();
             services.AddScoped<IDisplayManager<SitemapNode>, DisplayManager<SitemapNode>>();
-            services.AddScoped<ISitemapBuilder, SitemapBuilder>();
+            services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();
 
             // index treeNode
             services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<SitemapIndexNode>>();

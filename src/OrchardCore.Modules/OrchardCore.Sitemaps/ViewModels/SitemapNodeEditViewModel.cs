@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Sitemaps.Models;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.Sitemaps.ViewModels
 {
