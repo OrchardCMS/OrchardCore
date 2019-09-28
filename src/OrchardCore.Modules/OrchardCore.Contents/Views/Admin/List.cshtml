@@ -188,8 +188,9 @@
             bulkActionButton.attr("disabled", !this.checked);
             if (this.checked) {
                 bulkActionButton.show();
-                selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' selected');
             }
+
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' selected');
         });
 
         contentItemsCheckboxes.on("click", function () {
