@@ -42,7 +42,7 @@ namespace OrchardCore.Media.Azure.Controllers
             }
             var model = new MediaCacheViewModel
             {
-                IsConfigured = _mediaFileStoreCache == null ? false : true
+                IsConfigured = _mediaFileStoreCache != null
             };
 
             return View(model);
@@ -55,7 +55,6 @@ namespace OrchardCore.Media.Azure.Controllers
             {
                 return Unauthorized();
             }
-
 
             if (_mediaFileStoreCache == null)
             {
