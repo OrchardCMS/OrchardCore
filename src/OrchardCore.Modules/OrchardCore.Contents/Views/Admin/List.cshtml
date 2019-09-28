@@ -16,6 +16,9 @@
     var formActionWithoutTypeName = Context.Request.PathBase + "/Admin/Contents/ContentItems";
 }
 
+<script asp-name="bootstrap-select" depends-on="admin" asp-src="~/OrchardCore.Resources/Scripts/bootstrap-select.min.js" debug-src="~/OrchardCore.Resources/Scripts/bootstrap-select.js" at="Foot"></script>
+<style asp-name="bootstrap-select" asp-src="~/OrchardCore.Resources/Styles/bootstrap-select.min.css" debug-src="~/OrchardCore.Resources/Styles/bootstrap-select.css"></style>
+
 <h1>@RenderTitleSegments(pageTitle)</h1>
 @using (Html.BeginForm("List", "Admin", FormMethod.Post, new { id = "items-form", autocomplete = "off" }))
 {
@@ -24,113 +27,89 @@
     <input type="submit" name="submit.BulkAction" class="d-none" />
     <input asp-for="Options.BulkAction" type="hidden" />
 
-
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                        @T["Filters"]
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="filter-dropdown">
+                        <a class="dropdown-item" href="javascript:void(0)" data-action="status:draft">Only draft items</a>
+                        <a class="dropdown-item" href="javascript:void(0)" data-action="status:published">Only published items</a>
+                        <a class="dropdown-item" href="javascript:void(0)" data-action="author:admin">Your items</a>
+                    </div>
+                </div>
+                <input asp-for="Options.DisplayText" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+            <button class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" id="new-dropdown" type="button" aria-haspopup="true" aria-expanded="false">New</button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="new-dropdown">
+                <a class="dropdown-item" href="/Admin/Contents/ContentTypes/Article/Create">Article</a>
+                <a class="dropdown-item" href="/Admin/Contents/ContentTypes/Liquid/Create">Liquid</a>
+                <a class="dropdown-item" href="/Admin/Contents/ContentTypes/Page/Create">Page</a>
+            </div>
+</div>
+        </div>
+    </div>
     @if (Model.ContentItems.Count > 0)
     {
         <ul class="list-group with-checkbox">
             <li class="list-group-item bg-light">
                 <div class="row">
-                    <div class="form-group col-xl-3 mb-xl-n1">
-                        <div class="custom-control custom-checkbox mr-n2">
+                    <div class="form-group col-xl-2 mb-xl-n1">
+                        <div class="custom-control custom-checkbox mt-2 mr-n2">
                             <input type="checkbox" class="custom-control-input" id="select-all">
                             <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                            <label id="selected-items" class="text-muted" for="select-all">@T.Plural(Model.ContentItems.Count, "1 item", "{0} items")</label>
-                            <span class="dropdown">
-                                <button disabled class="btn btn-light btn-sm dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    @T["Bulk Actions"]
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
-                                    @foreach (var item in Model.Options.ContentsBulkAction)
-                                    {
-                                        <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} this/these item(s)?", @item.Text.ToLower()]">@item.Text</a>
-                                    }
-                                </div>
+                            <label id="items" for="select-all">@T.Plural(Model.ContentItems.Count, "1 item", "{0} items")</label>
+                            <label id="selected-items" class="text-muted" for="select-all"></label>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-1 mb-xl-n1" id="actions" style="display:none">
+                        <span class="dropdown">
+                            <button disabled class="btn btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @T["Actions"]
+                            </button>
+                            <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                                @foreach (var item in Model.Options.ContentsBulkAction)
+                                {
+                                    <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} this/these item(s)?", @item.Text.ToLower()]">@item.Text</a>
+                                }
                             </span>
-                        </div>
+                        </span>
                     </div>
-                    <div class="form-group col-xl-5 mb-xl-n1">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-light">@T["Title"]</span>
-                            </div>
-                            <input asp-for="Options.DisplayText" class="form-control" />
-                        </div>
+                    <div class="form-group col-xl-2 mb-xl-n1">
+                        <select asp-for="Options.SelectedContentType" asp-items="Model.Options.ContentTypeOptions" data-header="@T["Filter by content type"]" data-live-search="true" title="@T["Type"]">
+                        </select>
                     </div>
-                    <div class="form-group col-xl-1 mb-xl-n1">
-                        @*<div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-                                </div>
-                                <select asp-for="Options.SelectedContentType" class="form-control" asp-items="Model.Options.ContentTypeOptions"></select>
-                            </div>*@
-                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Type"]
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="filter-dropdown">
-                            @foreach (var item in Model.Options.ContentTypeOptions)
-                            {
-                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value">@item.Text</a>
-                            }
-                        </div>
+                    <div class="form-group col-xl-2 mb-xl-n1">
+                        <select data-live-search="true" data-header="@T["Filter by author"]" title="@T["Author"]">
+                            <option value="Admin">Admin</option>
+                            <option value="Username 1">Username 1</option>
+                            <option value="Username 2">Username 2</option>
+                        </select>
                     </div>
                     @*@if (cultures.Count() > 1) {*@
-                    <div class="form-group col-xl-1 mb-xl-n1">
-                        @*<div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-secondary text-light">@T["Culture"]</span>
-                                </div>
-                                <select id="filterCultures" class="form-control" name="Options.SelectedCulture">
-                                    <option value="">@T["All cultures"]</option>
-                                    @foreach (string culture in cultures) {
-                                            string isSelected = culture == Model.Options.SelectedCulture ? "selected='selected'" : string.Empty;
-                                            <!option @isSelected value="culture">@System.Globalization.CultureInfo.GetCultureInfo(culture).DisplayName</!option>
-                                        }
-                                </select>
-                            </div>*@
-                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Culture"]
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="filter-dropdown">
-                            @*@foreach (string culture in cultures) {
+                    <div class="form-group col-xl-2 mb-xl-n1">
+                        <select name="Options.SelectedCulture" data-header="@T["Filter by culture"]" data-live-search="true" title="Culture">
+                            <option value="">@T["All cultures"]</option>
+                            <option value="">@T["English"]</option>
+                            <option value="">@T["French"]</option>
+                            @*@foreach (string culture in cultures)
+                                {
                                     string isSelected = culture == Model.Options.SelectedCulture ? "selected='selected'" : string.Empty;
                                     <!option @isSelected value="culture">@System.Globalization.CultureInfo.GetCultureInfo(culture).DisplayName</!option>
                                 }*@
-                        </div>
+                        </select>
                     </div>
                     @*}*@
                     <div class="form-group col-xl-1 mb-xl-n1">
-                        @*<div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-secondary text-light">@T["Show"]</span>
-                                </div>
-                                <select asp-for="Options.ContentsStatus" class="form-control" asp-items="@Model.Options.ContentStatuses"></select>
-                            </div>*@
-                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" id="status-dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Show"]
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="filter-dropdown">
-                            @foreach (var item in Model.Options.ContentStatuses)
-                            {
-                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value">@item.Text</a>
-                            }
-                        </div>
+                        <select asp-for="Options.ContentsStatus" asp-items="@Model.Options.ContentStatuses" data-header="@T["Status"]" data-width="fit" title="@T["Show"]"></select>
                     </div>
                     <div class="form-group col-xl-1 mb-n1">
-                        @*<div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-secondary text-light">@T["Sort by"]</span>
-                                </div>
-                                <select asp-for="Options.OrderBy" class="form-control" asp-items="@Model.Options.ContentSorts"></select>
-                            </div>*@
-                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Sort"]
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="filter-dropdown">
-                            @foreach (var item in Model.Options.ContentSorts)
-                            {
-                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value">@item.Text</a>
-                            }
-                        </div>
+                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.ContentSorts" data-header="@T["Sort by"]" data-width="fit" title="@T["Sort"]"></select>
                     </div>
                 </div>
             </li>
@@ -155,6 +134,10 @@
 @* This is because ContentTypesAdminNode requires the ContenType to be available as part of the url *@
 <script at="Foot" type="text/javascript">
     $(function () {
+        $('select').selectpicker();
+        
+        var actions = $("#actions");
+        var items = $("#items");
         var bulkActionButton = $("#bulk-action-menu-button");
         var selectAllCtrl = $("#select-all");
         var selectedItems = $("#selected-items");
@@ -168,6 +151,10 @@
         });
 
         $(".filter-options select, .filter-options input").on("change", function () {
+            $("[name='submit.Filter']").click();
+        });
+
+        $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
 
@@ -186,16 +173,33 @@
         selectAllCtrl.click(function(){
             contentItemsCheckboxes.not(this).prop("checked", this.checked);
             bulkActionButton.attr("disabled", !this.checked);
-            if (this.checked) {
-                bulkActionButton.show();
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                actions.show();
+                selectedItems.show();
+                items.hide();
+            }
+            else {
+                actions.hide();
+                selectedItems.hide();
+                items.show();
             }
 
-            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' selected');
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
         });
 
         contentItemsCheckboxes.on("click", function () {
             bulkActionButton.attr("disabled", !($(":checkbox[name='itemIds']:checked").length > 1));
-            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' selected');
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                actions.show();
+                selectedItems.show();
+                items.hide();
+            }
+            else {
+                actions.hide();
+                selectedItems.hide();
+                items.show();
+            }
         });
     })
 </script>
