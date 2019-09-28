@@ -287,6 +287,8 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         private CloudBlockBlob GetBlobReference(string path)
         {
+            // Unescape url encoded characters, as blob will double encode.
+            path = Uri.UnescapeDataString(path);
             var blobPath = this.Combine(_options.BasePath, path);
             var blob = _blobContainer.GetBlockBlobReference(blobPath);
 
