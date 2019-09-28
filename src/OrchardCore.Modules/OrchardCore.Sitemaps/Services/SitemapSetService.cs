@@ -51,14 +51,15 @@ namespace OrchardCore.Sitemaps.Services
             if (preExisting == null)
             {
                 sitemapSetList.SitemapSets.Add(tree);
-                BuildSitemapRouteEntries(tree.SitemapNodes, tree.RootPath.TrimStart('/'));
+                //TODO fix this rubbish
+                BuildSitemapRouteEntries(tree.SitemapNodes, String.Empty);
             }
             else // not new: replace it
             {
-                DeleteSitemapRouteEntries(preExisting.SitemapNodes, preExisting.RootPath.TrimStart('/'));
+                DeleteSitemapRouteEntries(preExisting.SitemapNodes, String.Empty);
                 var index = sitemapSetList.SitemapSets.IndexOf(preExisting);
                 sitemapSetList.SitemapSets[index] = tree;
-                BuildSitemapRouteEntries(tree.SitemapNodes, tree.RootPath.TrimStart('/'));
+                BuildSitemapRouteEntries(tree.SitemapNodes,String.Empty);
             }
 
             session.Save(sitemapSetList);
@@ -93,7 +94,7 @@ namespace OrchardCore.Sitemaps.Services
             var session = GetSession();
 
             var sitemapSet = sitemapSetList.SitemapSets.FirstOrDefault(x => x.Id == tree.Id);
-            DeleteSitemapRouteEntries(sitemapSet.SitemapNodes, sitemapSet.RootPath.TrimStart('/'));
+            DeleteSitemapRouteEntries(sitemapSet.SitemapNodes, String.Empty);
 
             var count = sitemapSetList.SitemapSets.RemoveAll(x => x.Id == tree.Id);
 

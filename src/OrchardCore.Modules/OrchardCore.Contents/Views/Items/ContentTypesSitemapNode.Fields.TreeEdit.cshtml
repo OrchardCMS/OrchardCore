@@ -1,10 +1,5 @@
 @using OrchardCore.Sitemaps.Models
 @model ContentTypesSitemapNodeViewModel
-@inject OrchardCore.Settings.ISiteService SiteService
-@inject OrchardCore.Environment.Shell.ShellSettings ShellSettings
-@{
-    var site = await SiteService.GetSiteSettingsAsync();
-}
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 
 <h5>@T["Content Types"]</h5>
@@ -23,8 +18,8 @@
                 <label asp-for="Path">@T["Path"]</label>
                 <div class="input-group">
                     @{
-                        var tenantPrefix = (ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
-                        var prependPath = !String.IsNullOrEmpty(tenantPrefix) ? site.BaseUrl + tenantPrefix + Model.SitemapNode.SitemapSet.RootPath : site.BaseUrl + Model.SitemapNode.SitemapSet.RootPath;
+                        var prependPath = Context.Request.PathBase.HasValue ? Site.BaseUrl + Context.Request.PathBase.Value : Site.BaseUrl;
+                        prependPath = prependPath + '/';
                     }
                     @if (!String.IsNullOrWhiteSpace(prependPath))
                     {

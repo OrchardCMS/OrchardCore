@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Sitemaps.ViewModels
 {
@@ -6,9 +7,5 @@ namespace OrchardCore.Sitemaps.ViewModels
     {
         [Required]
         public string Name { get; set; }
-
-        [Required]
-        //TODO BasePath as PathString?
-        public string RootPath { get; set; }
     }
 }

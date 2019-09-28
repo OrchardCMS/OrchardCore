@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
 using YesSql;
@@ -25,27 +24,23 @@ namespace OrchardCore.Contents.SitemapNodes
         private readonly ISession _session;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
-        private readonly ISiteService _siteService;
 
         public ContentTypesSitemapBuilder(
             ILogger<ContentTypesSitemapBuilder> logger,
             ISession session,
             IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager,
-            ISiteService siteService
+            IContentManager contentManager
             )
         {
             _logger = logger;
             _session = session;
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
-            _siteService = siteService;
         }
 
         public override async Task<XDocument> BuildNodeAsync(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context)
         {
             // This does not need to recurse sitemapNode.ChildNodes. urlsets do not support children.
-            var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
             var contentItems = await GetContentItemsToBuildAsync(sitemapNode);
 
             var root = new XElement(Namespace + "urlset");
@@ -54,7 +49,7 @@ namespace OrchardCore.Contents.SitemapNodes
             {
                 var url = new XElement(Namespace + "url");
 
-                if (await BuildUrlsetMetadataAsync(sitemapNode, context, homeRoute, contentItem, url))
+                if (await BuildUrlsetMetadataAsync(sitemapNode, context, contentItem, url))
                 {
                     root.Add(url);
                 }
@@ -91,9 +86,9 @@ namespace OrchardCore.Contents.SitemapNodes
             return mostRecentModifiedContentItem.ModifiedUtc;
         }
 
-        protected async Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context, RouteValueDictionary homeRoute, ContentItem contentItem, XElement url)
+        private async Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context, ContentItem contentItem, XElement url)
         {
-            if (await BuildUrlAsync(context, contentItem, homeRoute, url))
+            if (await BuildUrlAsync(context, contentItem, url))
             {
                 BuildLastMod(contentItem, url);
                 BuildChangeFrequencyPriority(sitemapNode, contentItem, url);
@@ -170,7 +165,7 @@ namespace OrchardCore.Contents.SitemapNodes
             return contentItems;
         }
 
-        private async Task<bool> BuildUrlAsync(SitemapBuilderContext context, ContentItem contentItem, RouteValueDictionary homeRoute, XElement url)
+        private async Task<bool> BuildUrlAsync(SitemapBuilderContext context, ContentItem contentItem, XElement url)
         {
             //TODO Consider IsRoutable() Content Type Definition setting.
 
@@ -184,19 +179,10 @@ namespace OrchardCore.Contents.SitemapNodes
             var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
             var routes = contentItemMetadata.DisplayRouteValues;
 
-            // If is home route prefer / rather than the autoroute value.
-            var locValue = String.Empty;
+            // UrlHelper.Action includes BasePath automatically if present.
+            // If content item is assigned as home route, Urlhelper resolves as site root.
+            var locValue = context.HostPrefix + context.UrlHelper.Action(routes["Action"].ToString(), routes);
 
-            var isHomePage = homeRoute.All(x => x.Value.ToString() == routes[x.Key].ToString());
-            if (isHomePage)
-            {
-                locValue = context.PrefixUrl + "/";
-            }
-            else
-            {
-                var link = context.UrlHelper.Action(routes["Action"].ToString(), routes);
-                locValue = context.PrefixUrl + link;
-            }
             var loc = new XElement(Namespace + "loc");
             loc.Add(locValue);
             url.Add(loc);

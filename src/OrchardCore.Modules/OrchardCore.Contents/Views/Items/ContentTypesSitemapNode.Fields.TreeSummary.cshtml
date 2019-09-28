@@ -19,12 +19,7 @@
 
 <div class="@(Model.Value.Enabled ? " " : " disabled")">
     <span>@Model.Value.Description</span>
-    @{
-        var tenantPrefix = (ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
-        var path = Model.Value.SitemapSet.RootPath + Model.Value.Path;
-        path = !String.IsNullOrEmpty(tenantPrefix) ? tenantPrefix + path : path;
-    }
-    <code>@path</code>
+    <code>@Model.Value.Path</code>
 
     @if (selectedDisplayNames.Any())
     {

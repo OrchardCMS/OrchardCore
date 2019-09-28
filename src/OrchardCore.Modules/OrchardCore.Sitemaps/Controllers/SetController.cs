@@ -14,6 +14,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
+using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.ViewModels;
 
@@ -141,11 +142,10 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                var tree = new Models.SitemapSet
+                var tree = new SitemapSet
                 {
                     Id = _sitemapIdGenerator.GenerateUniqueId(),
-                    Name = model.Name,
-                    RootPath = model.RootPath
+                    Name = model.Name
                 };
 
                 await _sitemapSetService.SaveAsync(tree);
@@ -174,8 +174,7 @@ namespace OrchardCore.Sitemaps.Controllers
             var model = new SitemapSetEditViewModel
             {
                 Id = tree.Id,
-                Name = tree.Name,
-                RootPath = tree.RootPath
+                Name = tree.Name
             };
 
             return View(model);
@@ -199,7 +198,6 @@ namespace OrchardCore.Sitemaps.Controllers
             if (ModelState.IsValid)
             {
                 tree.Name = model.Name;
-                tree.RootPath = model.RootPath;
 
                 await _sitemapSetService.SaveAsync(tree);
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Routing;
@@ -41,9 +42,14 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 var sitemapNode = await _sitemapSetService.GetSitemapNodeByIdAsync(sitemapNodeId);
 
-                //TODO sort prefix url. see media, so request.pathbase + originalPathBase
+                if (sitemapNode == null)
+                {
+                    return NotFound();
+                }
+
                 var context = new SitemapBuilderContext()
                 {
+                    HostPrefix = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}",
                     UrlHelper = Url,
                     Builder = _sitemapBuilder
                 };
@@ -53,7 +59,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 document.Declaration = new XDeclaration("1.0", "utf-8", null);
                 StringWriter writer = new Utf8StringWriter();
                 document.Save(writer, SaveOptions.None);
-                //TODO check size for > 10MB and log or move these type of checks into a ValidateAsync as part of google ping
+                //TODO check size for > 50MB and log or move these type of checks into a ValidateAsync as part of google ping
                 return Content(writer.ToString(), "application/xml", Encoding.UTF8);
             };
 

@@ -2,7 +2,6 @@
 
 @inject OrchardCore.DisplayManagement.IDisplayManager<SitemapNode> SitemapNodeDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
-@inject OrchardCore.Environment.Shell.ShellSettings ShellSettings
 @{
     SitemapNode sitemapNode = Model.SitemapNode;
     var sitemapNodeType = sitemapNode.GetType();
@@ -15,10 +14,11 @@
     disabledClass = sitemapNode.Enabled ? "" : "disabled-sitemap-node";
     toggleButtonText = sitemapNode.Enabled ? T["Disable"].Value : T["Enable"].Value;
 
-    var tenantPrefix = (ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
-    var path =  sitemapNode.SitemapSet.RootPath + sitemapNode.Path;
-    //TODO resolve this better. We need to strip / append paths automatically and consistently.
-    path = !String.IsNullOrEmpty(tenantPrefix) ? "/" + tenantPrefix + path : path;
+    //var tenantPrefix = (ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
+    ////TODO resolve this better. We need to strip / append paths automatically and consistently.
+    //var path = !String.IsNullOrEmpty(tenantPrefix) ? "/" + tenantPrefix + sitemapNode.Path : sitemapNode.Path;
+
+    var path = Context.Request.PathBase + "/" + sitemapNode.Path;
 }
 
 <li class="sitemap-node display-summary @(!sitemapNode.CanSupportChildNodes ? "cannot-support-child-node" : "") @(!sitemapNode.CanBeChildNode ? "cannot-be-child": "")" id="sitemap-node-id-@Model.Index" data-index="@Model.Index" data-treenode-id="@Model.SitemapNode.Id">

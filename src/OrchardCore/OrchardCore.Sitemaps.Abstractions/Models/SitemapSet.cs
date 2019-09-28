@@ -8,7 +8,6 @@ namespace OrchardCore.Sitemaps.Models
         public string Id { get; set; }
         public string Name { get; set; }
         public bool Enabled { get; set; } = true;
-        public string RootPath { get; set; }
         public List<SitemapNode> SitemapNodes { get; } = new List<SitemapNode>();
 
         public SitemapNode GetSitemapNodeById(string id)

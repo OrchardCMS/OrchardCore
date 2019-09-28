@@ -63,7 +63,7 @@ namespace OrchardCore.Sitemaps
             var sitemapSets = sitemapSetService.GetAsync().GetAwaiter().GetResult();
             foreach (var sitemapSet in sitemapSets.Where(x => x.Enabled))
             {
-                var rootPath = sitemapSet.RootPath.TrimStart('/');
+                var rootPath = String.Empty; // sitemapSet.BasePath.ToString().TrimStart('/');
                 sitemapSetService.BuildSitemapRouteEntries(sitemapSet.SitemapNodes, rootPath);
             }
         }

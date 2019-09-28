@@ -17,7 +17,7 @@ namespace OrchardCore.Sitemaps.SitemapNodes
             {
                 var sitemap = new XElement(defaultNamespace + "sitemap");
                 var loc = new XElement(defaultNamespace + "loc");
-                loc.Add(context.UrlHelper.GetBaseUrl() + sitemapNode.SitemapSet.RootPath + node.Path);
+                loc.Add(context.HostPrefix + context.UrlHelper.ActionContext.HttpContext.Request.PathBase + "/" + node.Path);
                 sitemap.Add(loc);
 
                 var lastModDate = await context.Builder.GetLastModifiedDateAsync(node, context);
