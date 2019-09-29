@@ -26,18 +26,20 @@
             @await DisplayAsync(Model.Meta)
         </div>
     }
-    
+
     @if (Model.Tags != null)
     {
-        <div class="col-xl-2 col-sm-6 tags float-right">
+        <div class="col-xl-2 col-sm-6 tags">
             @await DisplayAsync(Model.Tags)
         </div>
     }
 
     @if (Model.Actions != null)
     {
-        <div class="col-xl-3 col-sm-6 related float-right">
-            @await DisplayAsync(Model.Actions)
+        <div class="col-xl-3 col-sm-6 related">
+            <div class="float-right">
+                @await DisplayAsync(Model.Actions)
+            </div>
         </div>
     }
 </div>

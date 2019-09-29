@@ -37,8 +37,10 @@
 
     @if (Model.Actions != null)
     {
-        <div class="col-xl-3 col-sm-6 related float-right">
-            @await DisplayAsync(Model.Actions)
+        <div class="col-xl-3 col-sm-6 related">
+            <div class="float-right">
+                @await DisplayAsync(Model.Actions)
+            </div>
         </div>
     }
 </div>
