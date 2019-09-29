@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -19,10 +22,13 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
+using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Models;
 using YesSql;
 using YesSql.Services;
 
@@ -33,11 +39,13 @@ namespace OrchardCore.Contents.Controllers
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
-        private readonly ISession _session;
+        private readonly YesSql.ISession _session;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly ILocalizationService _localizationService;
 
         public AdminController(
             IContentManager contentManager,
@@ -45,12 +53,14 @@ namespace OrchardCore.Contents.Controllers
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             INotifier notifier,
-            ISession session,
+            YesSql.ISession session,
             IShapeFactory shapeFactory,
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> localizer,
             IAuthorizationService authorizationService,
-            IEnumerable<IContentAdminFilter> contentAdminFilters
+            IEnumerable<IContentAdminFilter> contentAdminFilters,
+            IHttpContextAccessor contextAccessor,
+            ILocalizationService localizationService
             )
         {
             _contentAdminFilters = contentAdminFilters;
@@ -61,6 +71,8 @@ namespace OrchardCore.Contents.Controllers
             _siteService = siteService;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
+            _contextAccessor = contextAccessor;
+            _localizationService = localizationService;
 
             T = localizer;
             New = shapeFactory;
@@ -101,7 +113,12 @@ namespace OrchardCore.Contents.Controllers
                     break;
             }
 
-            if (contentTypeId != "")
+            if (model.Options.ContentsStatus == ContentsStatus.Owner)
+            {
+                query = query.With<ContentItemIndex>(x => x.Owner == _contextAccessor.HttpContext.User.Identity.Name);
+            }
+
+            if (!string.IsNullOrEmpty(contentTypeId))
             {
                 model.Options.SelectedContentType = contentTypeId;
             }
@@ -144,17 +161,36 @@ namespace OrchardCore.Contents.Controllers
                     break;
             }
 
+            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
+            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
+            var creatableList = new List<SelectListItem>();
+            if (contentTypes.Any())
+            {
+                foreach (var contentTypeDefinition in contentTypes)
+                {
+                    creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
+                }
+            }
+            model.Options.CreatableTypes = creatableList;
+
+            if (!string.IsNullOrEmpty(model.Options.SelectedAuthor))
+            {
+                query = query.With<ContentItemIndex>(cr => cr.Author == model.Options.SelectedAuthor || cr.Owner == model.Options.SelectedAuthor);
+            }
+
+            var supportedCultures = (await _localizationService.GetSupportedCulturesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
+            model.Options.Cultures = supportedCultures.Select(c => new SelectListItem(c.DisplayName, c.Name)).ToList();
+
+            var users = _session.Query<User, UserIndex>();
+            // Todo: Filter users?
+            var usersList = await users.ListAsync();
+            model.Options.Users = usersList.OrderBy(u => u.UserName).Select(u => new SelectListItem(u.UserName, u.UserName)).ToList();
+
+            //// Todo: Filter culture
             //if (!String.IsNullOrWhiteSpace(model.Options.SelectedCulture))
             //{
             //    query = _cultureFilter.FilterCulture(query, model.Options.SelectedCulture);
             //}
-
-            //if (model.Options.ContentsStatus == ContentsStatus.Owner)
-            //{
-            //    query = query.Where<CommonPartRecord>(cr => cr.OwnerId == Services.WorkContext.CurrentUser.Id);
-            //}
-
-            //model.Options.Cultures = _cultureManager.ListCultures();
 
             // Invoke any service that could alter the query
             await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
@@ -180,7 +216,7 @@ namespace OrchardCore.Contents.Controllers
             //We populate the SelectLists
             model.Options.ContentStatuses = new List<SelectListItem>() {
                 new SelectListItem() { Text = T["Latest"].Value, Value = ContentsStatus.Latest.ToString() },
-                new SelectListItem() { Text = T["Owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
+                //new SelectListItem() { Text = T["Owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
                 new SelectListItem() { Text = T["Published"].Value, Value = ContentsStatus.Published.ToString() },
                 new SelectListItem() { Text = T["Unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
                 new SelectListItem() { Text = T["All versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
@@ -225,6 +261,7 @@ namespace OrchardCore.Contents.Controllers
         public ActionResult ListFilterPOST(ListContentsViewModel model)
         {
             return RedirectToAction("List", new RouteValueDictionary {
+                { "Options.SelectedAuthor", model.Options.SelectedAuthor },
                 { "Options.SelectedCulture", model.Options.SelectedCulture },
                 { "Options.OrderBy", model.Options.OrderBy },
                 { "Options.ContentsStatus", model.Options.ContentsStatus },
