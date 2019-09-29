@@ -35,12 +35,12 @@
                         @T["Filters"]
                     </button>
                     <div class="dropdown-menu" aria-labelledby="filter-dropdown">
-                        <a class="dropdown-item" href="javascript:void(0)" data-action="status:draft">Only draft items</a>
-                        <a class="dropdown-item" href="javascript:void(0)" data-action="status:published">Only published items</a>
-                        <a class="dropdown-item" href="javascript:void(0)" data-action="author:admin">Your items</a>
+                        <a class="dropdown-item" href="?Options.ContentsStatus=Draft" data-action="status:draft">Only draft items</a>
+                        <a class="dropdown-item" href="?Options.ContentsStatus=Published" data-action="status:published">Only published items</a>
+                        <a class="dropdown-item" href="?Options.Author=admin" data-action="author:admin">Your items</a>
                     </div>
                 </div>
-                <input asp-for="Options.DisplayText" class="form-control" />
+                <input asp-for="Options.DisplayText" class="form-control" placeholder="@T["Search all content items"]" type="search" />
             </div>
         </div>
         <div class="form-group col-xl-8 col-sm-6">
@@ -80,20 +80,20 @@
                             </span>
                         </span>
                     </div>
-                    <div class="form-group col-xl-2 mb-xl-n1">
-                        <select asp-for="Options.SelectedContentType" asp-items="Model.Options.ContentTypeOptions" data-header="@T["Filter by content type"]" data-live-search="true" title="@T["Type"]">
+                    <div class="form-group col-xl-2 mb-xl-n1 filter">
+                        <select asp-for="Options.SelectedContentType" asp-items="Model.Options.ContentTypeOptions" class="selectpicker show-tick" data-header="@T["Filter by content type"]" data-live-search="true" title="@T["Type"]">
                         </select>
                     </div>
-                    <div class="form-group col-xl-2 mb-xl-n1">
-                        <select data-live-search="true" data-header="@T["Filter by author"]" title="@T["Author"]">
+                    <div class="form-group col-xl-2 mb-xl-n1 filter">
+                        <select class="selectpicker show-tick" data-live-search="true" data-header="@T["Filter by author"]" title="@T["Author"]">
                             <option value="Admin">Admin</option>
                             <option value="Username 1">Username 1</option>
                             <option value="Username 2">Username 2</option>
                         </select>
                     </div>
                     @*@if (cultures.Count() > 1) {*@
-                    <div class="form-group col-xl-2 mb-xl-n1">
-                        <select name="Options.SelectedCulture" data-header="@T["Filter by culture"]" data-live-search="true" title="Culture">
+                    <div class="form-group col-xl-2 mb-xl-n1 filter">
+                        <select name="Options.SelectedCulture" class="selectpicker show-tick" data-header="@T["Filter by culture"]" data-live-search="true" title="Culture">
                             <option value="">@T["All cultures"]</option>
                             <option value="">@T["English"]</option>
                             <option value="">@T["French"]</option>
@@ -105,11 +105,11 @@
                         </select>
                     </div>
                     @*}*@
-                    <div class="form-group col-xl-1 mb-xl-n1">
-                        <select asp-for="Options.ContentsStatus" asp-items="@Model.Options.ContentStatuses" data-header="@T["Status"]" data-width="fit" title="@T["Show"]"></select>
+                    <div class="form-group col-xl-2 mb-xl-n1 filter">
+                        <select asp-for="Options.ContentsStatus" asp-items="@Model.Options.ContentStatuses" class="selectpicker show-tick" data-header="@T["Filter by status"]" title="@T["Show"]"></select>
                     </div>
-                    <div class="form-group col-xl-1 mb-n1">
-                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.ContentSorts" data-header="@T["Sort by"]" data-width="fit" title="@T["Sort"]"></select>
+                    <div class="form-group col-xl-1 mb-n1 filter">
+                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.ContentSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" title="@T["Sort"]"></select>
                     </div>
                 </div>
             </li>
@@ -138,6 +138,7 @@
         
         var actions = $("#actions");
         var items = $("#items");
+        var filters = $(".filter");
         var bulkActionButton = $("#bulk-action-menu-button");
         var selectAllCtrl = $("#select-all");
         var selectedItems = $("#selected-items");
@@ -169,37 +170,33 @@
                 }});
             }
         });
-
-        selectAllCtrl.click(function(){
-            contentItemsCheckboxes.not(this).prop("checked", this.checked);
-            bulkActionButton.attr("disabled", !this.checked);
+        
+        function displayActionsOrFilters() {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 actions.show();
+                filters.hide();
                 selectedItems.show();
                 items.hide();
             }
             else {
                 actions.hide();
+                filters.show();
                 selectedItems.hide();
                 items.show();
             }
+        }
 
+        selectAllCtrl.click(function(){
+            contentItemsCheckboxes.not(this).prop("checked", this.checked);
+            bulkActionButton.attr("disabled", !this.checked);
             selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
         });
 
         contentItemsCheckboxes.on("click", function () {
             bulkActionButton.attr("disabled", !($(":checkbox[name='itemIds']:checked").length > 1));
             selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                actions.show();
-                selectedItems.show();
-                items.hide();
-            }
-            else {
-                actions.hide();
-                selectedItems.hide();
-                items.show();
-            }
+            displayActionsOrFilters();
         });
     })
 </script>

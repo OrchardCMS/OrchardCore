@@ -179,18 +179,18 @@ namespace OrchardCore.Contents.Controllers
 
             //We populate the SelectLists
             model.Options.ContentStatuses = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString() },
-                new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
-                new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString() },
-                new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
-                new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
+                new SelectListItem() { Text = T["Latest"].Value, Value = ContentsStatus.Latest.ToString() },
+                new SelectListItem() { Text = T["Owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
+                new SelectListItem() { Text = T["Published"].Value, Value = ContentsStatus.Published.ToString() },
+                new SelectListItem() { Text = T["Unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
+                new SelectListItem() { Text = T["All versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
             };
 
             model.Options.ContentSorts = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
-                new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
-                new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
-                new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
+                new SelectListItem() { Text = T["Recently created"].Value, Value = ContentsOrder.Created.ToString() },
+                new SelectListItem() { Text = T["Recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
+                new SelectListItem() { Text = T["Recently published"].Value, Value = ContentsOrder.Published.ToString() },
+                new SelectListItem() { Text = T["Title"].Value, Value = ContentsOrder.Title.ToString() }
             };
 
             model.Options.ContentsBulkAction = new List<SelectListItem>() {
