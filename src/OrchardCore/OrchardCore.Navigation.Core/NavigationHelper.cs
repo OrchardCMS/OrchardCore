@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Navigation
 {
@@ -20,7 +21,7 @@ namespace OrchardCore.Navigation
         public static async Task PopulateMenuAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
         {
             await PopulateMenuLevelAsync(shapeFactory, parentShape, menu, menuItems, viewContext);
-            ApplySelection(parentShape);
+            ApplySelection(parentShape, viewContext);
         }
 
         /// <summary>
@@ -65,8 +66,9 @@ namespace OrchardCore.Navigation
                 .Menu(menu)
                 .Parent(parentShape)
                 .Level(parentShape.Level == null ? 1 : (int)parentShape.Level + 1)
-                .SelectionPriority(menuItem.Priority)
-                .Local(menuItem.LocalNav);
+                .Priority(menuItem.Priority)
+                .Local(menuItem.LocalNav)
+                .Score(0);
 
             menuItemShape.Id = menuItem.Id;
 
@@ -83,12 +85,15 @@ namespace OrchardCore.Navigation
         private static void MarkAsSelectedIfMatchesRouteOrUrl(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
         {
             // compare route values (if any) first
-            bool match = menuItem.RouteValues != null && RouteMatches(menuItem.RouteValues, viewContext.RouteData.Values);
-
-            // if route match failed, try comparing URL strings, if
-            if (!match && !String.IsNullOrWhiteSpace(menuItem.Href) && menuItem.Href[0] == '/')
+            if (RouteMatches(menuItem.RouteValues, viewContext.RouteData.Values))
             {
-                PathString path = menuItem.Href.TrimEnd('/');
+                menuItemShape.Score = 10000;
+            }
+
+            // if route match failed, try comparing URL strings
+            else if (!String.IsNullOrWhiteSpace(menuItem.Href) && menuItem.Href[0] == '/')
+            {
+                PathString path = menuItem.Href;
 
                 if (viewContext.HttpContext.Request.PathBase.HasValue)
                 {
@@ -98,10 +103,19 @@ namespace OrchardCore.Navigation
                     }
                 }
 
-                match = viewContext.HttpContext.Request.Path.StartsWithSegments(path, StringComparison.OrdinalIgnoreCase);
+                if (viewContext.HttpContext.Request.Path.Equals(path, StringComparison.OrdinalIgnoreCase))
+                {
+                    menuItemShape.Score += 2;
+                }
+
+                var cookie = viewContext.HttpContext.Request.Cookies["selectedMenuItem_" + ShellScope.Context.Settings.Name];
+                if (cookie == menuItemShape.Parent?.Text?.Value + menuItem.Text.Value + menuItem.Href)
+                {
+                    menuItemShape.Score += 1;
+                }
             }
 
-            menuItemShape.Selected = match;
+            menuItemShape.Selected = menuItemShape.Score > 0;
         }
 
         /// <summary>
@@ -122,26 +136,29 @@ namespace OrchardCore.Navigation
                 return false;
             }
 
-            if (itemValues.Keys.Any(key => requestValues.ContainsKey(key) == false))
+            foreach (var key in itemValues.Keys)
             {
-                return false;
+                if (!String.Equals(itemValues[key]?.ToString(), requestValues[key]?.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
             }
 
-            return itemValues.Keys.All(key => string.Equals(Convert.ToString(itemValues[key]), Convert.ToString(requestValues[key]), StringComparison.OrdinalIgnoreCase));
+            return true;
         }
-
 
         /// <summary>
         /// Ensures only one menuitem (and its ancestors) are marked as selected for the menu.
         /// </summary>
         /// <param name="parentShape">The menu shape.</param>    
-        private static void ApplySelection(dynamic parentShape)
+        private static void ApplySelection(dynamic parentShape, ViewContext viewContext)
         {
             var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);
 
             // Apply the selection to the hierarchy
             if (selectedItem != null)
             {
+                viewContext.HttpContext.Response.Cookies.Append("selectedMenuItem_" + ShellScope.Context.Settings.Name, selectedItem.Parent?.Text?.Value + selectedItem.Text.Value + selectedItem.Href);
                 while (selectedItem.Parent != null)
                 {
                     selectedItem = selectedItem.Parent;
@@ -149,7 +166,6 @@ namespace OrchardCore.Navigation
                 }
             }
         }
-
 
         /// <summary>
         /// Traverses the menu and returns the selected item with the highest priority
@@ -167,7 +183,6 @@ namespace OrchardCore.Navigation
                 // evaluate first
                 dynamic item = tempStack.Pop();
 
-
                 if (item.Selected == true)
                 {
                     if (result == null) // found the first one
@@ -176,7 +191,12 @@ namespace OrchardCore.Navigation
                     }
                     else // found more selected: tie break required.
                     {
-                        if (item.Priority > result.Priority)
+                        if (item.Score > result.Score)
+                        {
+                            result.Selected = false;
+                            result = item;
+                        }
+                        else if (item.Priority > result.Priority)
                         {
                             result.Selected = false;
                             result = item;
