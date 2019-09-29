@@ -37,6 +37,7 @@ namespace OrchardCore.Sitemaps.Models
         /// </summary>
         public List<SitemapNode> ChildNodes { get; set; } = new List<SitemapNode>();
 
+        // TODO also extension method
         public SitemapNode GetSitemapNodeById(string id, SitemapSet sitemapSet)
         {
             var tempStack = new Stack<SitemapNode>(new SitemapNode[] { this });

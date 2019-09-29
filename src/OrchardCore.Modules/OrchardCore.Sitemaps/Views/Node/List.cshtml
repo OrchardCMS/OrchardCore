@@ -15,7 +15,7 @@
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
             <!-- Button trigger modal -->
-            <a asp-route-action="Create" class="btn btn-primary" role="button" data-toggle="modal" data-target="#modalTreeNodes">
+            <a asp-route-action="Create" class="btn btn-primary" role="button" data-toggle="modal" data-target="#modalSitemapNodes">
                 @T["Add Node"]
             </a>
         </li>
@@ -30,7 +30,7 @@
         {
             var updater = ModelUpdaterAccessor.ModelUpdater;
 
-            <ol id="sitemap-node" data-treenode-id="content-preset">
+            <ol id="sitemap-node" data-sitemap-node-id="content-preset">
                 @foreach (var sitemapNode in Model.SitemapSet.SitemapNodes)
                 {
                     if (sitemapNode != null)
@@ -59,7 +59,7 @@
 </form>
 
 <!-- Modal -->
-<div class="modal fade" id="modalTreeNodes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalSitemapNodes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -96,7 +96,7 @@
             method: 'POST',
             data: {
                 __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-                treeId: sitemapSetId,
+                sitemapSetId: sitemapSetId,
                 nodeToMoveId: nodeToMoveId,
                 destinationNodeId: destinationNodeId,
                 position: position
@@ -123,10 +123,11 @@
                 relocate: function (event, helper) {
                     // get var required by rest api
                     var sitemapSetId = '@Model.SitemapSet.Id';
-                    var nodeToMoveId = helper.item.data('treenode-id');
-                    var destinationNodeId = helper.item.parent().closest('[data-treenode-id]').data('treenode-id'); // get the id of the new parent
+                    var nodeToMoveId = helper.item.data('sitemap-node-id');
+                    var destinationNodeId = helper.item.parent().closest('[data-sitemap-node-id]').data('sitemap-node-id'); // get the id of the new parent
                     var position = helper.item.index();
                     console.log(sitemapSetId + ' ' + nodeToMoveId + ' ' + destinationNodeId + ' ' + position);
+
                     // make request to rest api
                     moveNode(sitemapSetId, nodeToMoveId, destinationNodeId, position);
                 }

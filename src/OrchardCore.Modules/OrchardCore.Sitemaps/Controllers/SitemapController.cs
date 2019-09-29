@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Routing;
@@ -14,23 +13,23 @@ using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Controllers
 {
-    public class SitemapsController : Controller
+    public class SitemapController : Controller
     {
         private readonly SitemapEntries _sitemapEntries;
         private readonly ISitemapBuilder _sitemapBuilder;
-        private readonly ISitemapSetService _sitemapSetService;
+        private readonly ISitemapService _sitemapService;
         private readonly ILogger _logger;
-        public SitemapsController(
-            ILogger<SitemapsController> logger,
+        public SitemapController(
+            ILogger<SitemapController> logger,
             SitemapEntries sitemapEntries,
             ISitemapBuilder sitemapBuilder,
-            ISitemapSetService sitemapSetService
+            ISitemapService sitemapService
             )
         {
             _logger = logger;
             _sitemapEntries = sitemapEntries;
             _sitemapBuilder = sitemapBuilder;
-            _sitemapSetService = sitemapSetService;
+            _sitemapService = sitemapService;
         }
 
         public async Task<IActionResult> Index()
@@ -40,7 +39,8 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (_sitemapEntries.TryGetSitemapNodeId(sitemapPath, out var sitemapNodeId))
             {
-                var sitemapNode = await _sitemapSetService.GetSitemapNodeByIdAsync(sitemapNodeId);
+                var sitemapDocument = await _sitemapService.LoadSitemapDocumentAsync();
+                var sitemapNode = sitemapDocument.GetSitemapNodeById(sitemapNodeId);
 
                 if (sitemapNode == null)
                 {

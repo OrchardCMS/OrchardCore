@@ -9,12 +9,15 @@ namespace OrchardCore.Sitemaps.Models
         public string Name { get; set; }
         public bool Enabled { get; set; } = true;
         public List<SitemapNode> SitemapNodes { get; } = new List<SitemapNode>();
+    }
 
-        public SitemapNode GetSitemapNodeById(string id)
+    public static class SitemapSetExtensions
+    {
+        public static SitemapNode GetSitemapNodeById(this SitemapSet sitemapSet, string id)
         {
-            foreach (var sitemapNode in SitemapNodes)
+            foreach (var sitemapNode in sitemapSet.SitemapNodes)
             {
-                var found = sitemapNode.GetSitemapNodeById(id, this);
+                var found = sitemapNode.GetSitemapNodeById(id, sitemapSet);
                 if (found != null)
                 {
                     return found;
@@ -25,16 +28,16 @@ namespace OrchardCore.Sitemaps.Models
             return null;
         }
 
-        public bool RemoveSitemapNode(SitemapNode sitemapNodeToRemove)
+        public static bool RemoveSitemapNode(this SitemapSet sitemapSet, SitemapNode sitemapNodeToRemove)
         {
-            if (SitemapNodes.Contains(sitemapNodeToRemove)) // todo: avoid this check by having a single TreeNode as a property of the content tree preset.
+            if (sitemapSet.SitemapNodes.Contains(sitemapNodeToRemove))
             {
-                SitemapNodes.Remove(sitemapNodeToRemove);
+                sitemapSet.SitemapNodes.Remove(sitemapNodeToRemove);
                 return true;
             }
             else
             {
-                foreach (var firstLevelSitemapNode in SitemapNodes)
+                foreach (var firstLevelSitemapNode in sitemapSet.SitemapNodes)
                 {
                     if (firstLevelSitemapNode.RemoveSitemapNode(sitemapNodeToRemove))
                     {
@@ -46,7 +49,7 @@ namespace OrchardCore.Sitemaps.Models
             return false;
         }
 
-        public bool InsertSitemapNodeAt(SitemapNode sitemapNodeToInsert, SitemapNode destinationSitemapNode, int position)
+        public static bool InsertSitemapNodeAt(this SitemapSet sitemapSet, SitemapNode sitemapNodeToInsert, SitemapNode destinationSitemapNode, int position)
         {
             if (sitemapNodeToInsert == null)
             {
@@ -56,12 +59,12 @@ namespace OrchardCore.Sitemaps.Models
             // insert the node at the destination node
             if (destinationSitemapNode == null)
             {
-                SitemapNodes.Insert(position, sitemapNodeToInsert);
+                sitemapSet.SitemapNodes.Insert(position, sitemapNodeToInsert);
                 return true;
             }
             else
             {
-                foreach (var firstLevelSitemapNode in SitemapNodes)
+                foreach (var firstLevelSitemapNode in sitemapSet.SitemapNodes)
                 {
                     if (firstLevelSitemapNode.InsertSitemapNode(sitemapNodeToInsert, destinationSitemapNode, position))
                     {

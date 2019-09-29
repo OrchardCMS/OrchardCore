@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -36,15 +33,16 @@ namespace OrchardCore.Sitemaps
 
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<ISitemapSetService, SitemapSetService>();
+            services.AddScoped<ISitemapService, SitemapService>();
             services.AddScoped<IDisplayManager<SitemapNode>, DisplayManager<SitemapNode>>();
             services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();
 
-            // index treeNode
+            // Sitemap Index node
             services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<SitemapIndexNode>>();
             services.AddSingleton<ISitemapNodeBuilder, SitemapIndexNodeBuilder>();
             services.AddScoped<IDisplayDriver<SitemapNode>, SitemapIndexNodeDriver>();
-            //sitemap part
+
+            // Sitemap Part.
             services.AddScoped<IContentPartDisplayDriver, SitemapPartDisplay>();
             services.AddContentPart<SitemapPart>();
         }
@@ -53,19 +51,15 @@ namespace OrchardCore.Sitemaps
         {
             routes.MapAreaControllerRoute(
                  name: SitemapRouteConstraint.RouteKey,
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: "{*sitemaps}",
+                 areaName: "OrchardCore.Sitemap",
+                 pattern: "{*sitemap}",
                  constraints: new { sitemaps = new SitemapRouteConstraint() },
-                 defaults: new { controller = "Sitemaps", action = "Index" }
+                 defaults: new { controller = "Sitemap", action = "Index" }
              );
 
-            var sitemapSetService = serviceProvider.GetService<ISitemapSetService>();
-            var sitemapSets = sitemapSetService.GetAsync().GetAwaiter().GetResult();
-            foreach (var sitemapSet in sitemapSets.Where(x => x.Enabled))
-            {
-                var rootPath = String.Empty; // sitemapSet.BasePath.ToString().TrimStart('/');
-                sitemapSetService.BuildSitemapRouteEntries(sitemapSet.SitemapNodes, rootPath);
-            }
+            var sitemapSetService = serviceProvider.GetService<ISitemapService>();
+            var document = sitemapSetService.LoadSitemapDocumentAsync().GetAwaiter().GetResult();
+            sitemapSetService.BuildAllSitemapRouteEntries(document);
         }
     }
 }

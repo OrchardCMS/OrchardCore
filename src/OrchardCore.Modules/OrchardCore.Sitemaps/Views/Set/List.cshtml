@@ -21,10 +21,10 @@
 <form asp-action="Index">
     @* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
 
-    @if (Model.SitemapSet.Any())
+    @if (Model.SitemapSets.Any())
     {
         <ul id="content-items-list-body" class="list-group">
-            @foreach (var entry in Model.SitemapSet)
+            @foreach (var entry in Model.SitemapSets)
             {
                 <li class="list-group-item @(entry.SitemapSet.Enabled ? "" : "disabled-tree")">
                     <div class="related">

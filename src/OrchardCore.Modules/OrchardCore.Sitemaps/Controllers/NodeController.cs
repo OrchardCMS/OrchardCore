@@ -21,14 +21,14 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<SitemapNode> _displayManager;
         private readonly IEnumerable<ISitemapNodeProviderFactory> _factories;
-        private readonly ISitemapSetService _sitemapSetService;
+        private readonly ISitemapService _sitemapService;
         private readonly INotifier _notifier;
 
         public NodeController(
             IAuthorizationService authorizationService,
             IDisplayManager<SitemapNode> displayManager,
             IEnumerable<ISitemapNodeProviderFactory> factories,
-            ISitemapSetService sitemapSetService,
+            ISitemapService sitemapService,
             IShapeFactory shapeFactory,
             IStringLocalizer<NodeController> stringLocalizer,
             IHtmlLocalizer<NodeController> htmlLocalizer,
@@ -36,7 +36,7 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             _displayManager = displayManager;
             _factories = factories;
-            _sitemapSetService = sitemapSetService;
+            _sitemapService = sitemapService;
             _authorizationService = authorizationService;
 
             New = shapeFactory;
@@ -56,22 +56,23 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _sitemapSetService.GetByIdAsync(id);
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
+            var sitemapSet = document.GetSitemapSetById(id);
 
-            if (tree == null)
+            if (sitemapSet == null)
             {
                 return NotFound();
             }
 
-            return View(await BuildDisplayViewModel(tree));
+            return View(await BuildDisplayViewModel(sitemapSet));
         }
 
-        private async Task<SitemapNodeListViewModel> BuildDisplayViewModel(Models.SitemapSet tree)
+        private async Task<SitemapNodeListViewModel> BuildDisplayViewModel(SitemapSet sitemapSet)
         {
             var thumbnails = new Dictionary<string, dynamic>();
             foreach (var factory in _factories)
             {
-                var treeNode = factory.Create(tree);
+                var treeNode = factory.Create(sitemapSet);
                 dynamic thumbnail = await _displayManager.BuildDisplayAsync(treeNode, this, "TreeThumbnail");
                 thumbnail.TreeNode = treeNode;
                 thumbnails.Add(factory.Name, thumbnail);
@@ -79,7 +80,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var model = new SitemapNodeListViewModel
             {
-                SitemapSet = tree,
+                SitemapSet = sitemapSet,
                 Thumbnails = thumbnails,
             };
 
@@ -93,16 +94,17 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _sitemapSetService.GetByIdAsync(id);
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
+            var sitemapSet = document.GetSitemapSetById(id);
 
-            if (tree == null)
+            if (sitemapSet == null)
             {
                 return NotFound();
             }
 
-            var treeNode = _factories.FirstOrDefault(x => x.Name == type)?.Create(tree);
+            var sitemapNode = _factories.FirstOrDefault(x => x.Name == type)?.Create(sitemapSet);
 
-            if (treeNode == null)
+            if (sitemapNode == null)
             {
                 return NotFound();
             }
@@ -110,10 +112,10 @@ namespace OrchardCore.Sitemaps.Controllers
             var model = new SitemapNodeEditViewModel
             {
                 SitemapSetId = id,
-                SitemapNode = treeNode,
-                SitemapNodeId = treeNode.Id,
+                SitemapNode = sitemapNode,
+                SitemapNodeId = sitemapNode.Id,
                 SitemapNodeType = type,
-                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: this, isNew: true)
+                Editor = await _displayManager.BuildEditorAsync(sitemapNode, updater: this, isNew: true)
             };
 
             return View(model);
@@ -127,28 +129,29 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _sitemapSetService.GetByIdAsync(model.SitemapSetId);
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
+            var sitemapSet = document.GetSitemapSetById(model.SitemapSetId);
 
-            if (tree == null)
+            if (sitemapSet == null)
             {
                 return NotFound();
             }
 
-            var treeNode = _factories.FirstOrDefault(x => x.Name == model.SitemapNodeType)?.Create(tree);
+            var sitemapNode = _factories.FirstOrDefault(x => x.Name == model.SitemapNodeType)?.Create(sitemapSet);
 
-            if (treeNode == null)
+            if (sitemapNode == null)
             {
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(treeNode, updater: this, isNew: true);
-            editor.TreeNode = treeNode;
+            dynamic editor = await _displayManager.UpdateEditorAsync(sitemapNode, updater: this, isNew: true);
+            editor.TreeNode = sitemapNode;
 
             if (ModelState.IsValid)
             {
-                treeNode.Id = model.SitemapNodeId;
-                tree.SitemapNodes.Add(treeNode);
-                await _sitemapSetService.SaveAsync(tree);
+                sitemapNode.Id = model.SitemapNodeId;
+                sitemapSet.SitemapNodes.Add(sitemapNode);
+                _sitemapService.SaveSitemapDocument(document);
 
                 _notifier.Success(H["Sitemap node added successfully"]);
                 return RedirectToAction("List", new { id = model.SitemapSetId });
@@ -160,23 +163,24 @@ namespace OrchardCore.Sitemaps.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(string id, string treeNodeId)
+        public async Task<IActionResult> Edit(string id, string sitemapNodeId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
                 return Unauthorized();
             }
 
-            var tree = await _sitemapSetService.GetByIdAsync(id);
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
+            var sitemapSet = document.GetSitemapSetById(id);
 
-            if (tree == null)
+            if (sitemapSet == null)
             {
                 return NotFound();
             }
 
-            var treeNode = tree.GetSitemapNodeById(treeNodeId);
+            var sitemapNode = sitemapSet.GetSitemapNodeById(sitemapNodeId);
 
-            if (treeNode == null)
+            if (sitemapNode == null)
             {
                 return NotFound();
             }
@@ -184,13 +188,13 @@ namespace OrchardCore.Sitemaps.Controllers
             var model = new SitemapNodeEditViewModel
             {
                 SitemapSetId = id,
-                SitemapNode = treeNode,
-                SitemapNodeId = treeNode.Id,
-                SitemapNodeType = treeNode.GetType().Name,
-                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: this, isNew: false)
+                SitemapNode = sitemapNode,
+                SitemapNodeId = sitemapNode.Id,
+                SitemapNodeType = sitemapNode.GetType().Name,
+                Editor = await _displayManager.BuildEditorAsync(sitemapNode, updater: this, isNew: false)
             };
 
-            model.Editor.TreeNode = treeNode;
+            model.Editor.TreeNode = sitemapNode;
 
             return View(model);
         }
@@ -203,26 +207,26 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _sitemapSetService.GetByIdAsync(model.SitemapSetId);
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
+            var sitemapSet = document.GetSitemapSetById(model.SitemapSetId);
 
-            if (tree == null)
+            if (sitemapSet == null)
             {
                 return NotFound();
             }
 
-            var treeNode = tree.GetSitemapNodeById(model.SitemapNodeId);
+            var sitemapNode = sitemapSet.GetSitemapNodeById(model.SitemapNodeId);
 
-            if (treeNode == null)
+            if (sitemapNode == null)
             {
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(treeNode, updater: this, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(sitemapNode, updater: this, isNew: false);
 
             if (ModelState.IsValid)
             {
-                await _sitemapSetService.SaveAsync(tree);
-
+                _sitemapService.SaveSitemapDocument(document);
                 _notifier.Success(H["Sitemap node updated successfully"]);
                 return RedirectToAction(nameof(List), new { id = model.SitemapSetId });
             }
@@ -235,33 +239,34 @@ namespace OrchardCore.Sitemaps.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(string id, string treeNodeId)
+        public async Task<IActionResult> Delete(string id, string sitemapNodeId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
                 return Unauthorized();
             }
 
-            var tree = await _sitemapSetService.GetByIdAsync(id);
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
+            var sitemapSet = document.GetSitemapSetById(id);
 
-            if (tree == null)
+            if (sitemapSet == null)
             {
                 return NotFound();
             }
 
-            var treeNode = tree.GetSitemapNodeById(treeNodeId);
+            var sitemapNode = sitemapSet.GetSitemapNodeById(sitemapNodeId);
 
-            if (treeNode == null)
+            if (sitemapNode == null)
             {
                 return NotFound();
             }
 
-            if (tree.RemoveSitemapNode(treeNode) == false)
+            if (sitemapSet.RemoveSitemapNode(sitemapNode) == false)
             {
                 return new StatusCodeResult(500);
             }
 
-            await _sitemapSetService.SaveAsync(tree);
+            _sitemapService.SaveSitemapDocument(document);
 
             _notifier.Success(H["Sitemap node deleted successfully"]);
 
@@ -269,30 +274,31 @@ namespace OrchardCore.Sitemaps.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Toggle(string id, string treeNodeId)
+        public async Task<IActionResult> Toggle(string id, string sitemapNodeId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
                 return Unauthorized();
             }
 
-            var tree = await _sitemapSetService.GetByIdAsync(id);
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
+            var sitemapSet = document.GetSitemapSetById(id);
 
-            if (tree == null)
+            if (sitemapSet == null)
             {
                 return NotFound();
             }
 
-            var treeNode = tree.GetSitemapNodeById(treeNodeId);
+            var sitemapNode = sitemapSet.GetSitemapNodeById(sitemapNodeId);
 
-            if (treeNode == null)
+            if (sitemapNode == null)
             {
                 return NotFound();
             }
 
-            treeNode.Enabled = !treeNode.Enabled;
+            sitemapNode.Enabled = !sitemapNode.Enabled;
 
-            await _sitemapSetService.SaveAsync(tree);
+            _sitemapService.SaveSitemapDocument(document);
 
             _notifier.Success(H["Sitemap node toggled successfully"]);
 
@@ -301,7 +307,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> MoveNode(string treeId, string nodeToMoveId,
+        public async Task<IActionResult> MoveNode(string sitemapSetId, string nodeToMoveId,
             string destinationNodeId, int position)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
@@ -309,20 +315,21 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _sitemapSetService.GetByIdAsync(treeId);
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
+            var sitemapSet = document.GetSitemapSetById(sitemapSetId);
 
-            if ((tree == null) || (tree.SitemapNodes == null))
+            if ((sitemapSet == null) || (sitemapSet.SitemapNodes == null))
             {
                 return NotFound();
             }
 
-            var nodeToMove = tree.GetSitemapNodeById(nodeToMoveId);
+            var nodeToMove = sitemapSet.GetSitemapNodeById(nodeToMoveId);
             if (nodeToMove == null)
             {
                 return NotFound();
             }
 
-            var destinationNode = tree.GetSitemapNodeById(destinationNodeId); // don't check for null. When null the item will be moved to the root.
+            var destinationNode = sitemapSet.GetSitemapNodeById(destinationNodeId); // don't check for null. When null the item will be moved to the root.
 
             if (destinationNode != null && !destinationNode.CanSupportChildNodes)
             {
@@ -334,17 +341,17 @@ namespace OrchardCore.Sitemaps.Controllers
                 return BadRequest();
             }
 
-            if (tree.RemoveSitemapNode(nodeToMove) == false)
+            if (sitemapSet.RemoveSitemapNode(nodeToMove) == false)
             {
                 return StatusCode(500);
             }
 
-            if (tree.InsertSitemapNodeAt(nodeToMove, destinationNode, position) == false)
+            if (sitemapSet.InsertSitemapNodeAt(nodeToMove, destinationNode, position) == false)
             {
                 return StatusCode(500);
             }
 
-            await _sitemapSetService.SaveAsync(tree);
+            _sitemapService.SaveSitemapDocument(document);
 
             return Ok();
         }

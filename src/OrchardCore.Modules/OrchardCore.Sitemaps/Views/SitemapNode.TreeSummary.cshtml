@@ -14,14 +14,10 @@
     disabledClass = sitemapNode.Enabled ? "" : "disabled-sitemap-node";
     toggleButtonText = sitemapNode.Enabled ? T["Disable"].Value : T["Enable"].Value;
 
-    //var tenantPrefix = (ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
-    ////TODO resolve this better. We need to strip / append paths automatically and consistently.
-    //var path = !String.IsNullOrEmpty(tenantPrefix) ? "/" + tenantPrefix + sitemapNode.Path : sitemapNode.Path;
-
     var path = Context.Request.PathBase + "/" + sitemapNode.Path;
 }
 
-<li class="sitemap-node display-summary @(!sitemapNode.CanSupportChildNodes ? "cannot-support-child-node" : "") @(!sitemapNode.CanBeChildNode ? "cannot-be-child": "")" id="sitemap-node-id-@Model.Index" data-index="@Model.Index" data-treenode-id="@Model.SitemapNode.Id">
+<li class="sitemap-node display-summary @(!sitemapNode.CanSupportChildNodes ? "cannot-support-child-node" : "") @(!sitemapNode.CanBeChildNode ? "cannot-be-child": "")" id="sitemap-node-id-@Model.Index" data-index="@Model.Index" data-sitemap-node-id="@Model.SitemapNode.Id">
     <div class="sitemap-node sitemap-node-title border rounded p-2 pl-3 mb-1 d-flex flex-row justify-content-between align-items-center @disabledClass" title="@Model.SitemapNode.Id">
         @if (Model.Content.Items.Count < 1)
         {
@@ -29,7 +25,7 @@
                 <a asp-action="Delete"
                    asp-controller="Node"
                    asp-route-id="@Model.SitemapSetId"
-                   asp-route-treeNodeId="@Model.SitemapNode.Id"
+                   asp-route-sitemapNodeId="@Model.SitemapNode.Id"
                    class="btn btn-danger btn-sm"
                    itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
             </div>
@@ -42,7 +38,7 @@
                 <a asp-action="Edit"
                    asp-controller="Node"
                    asp-route-id="@Model.SitemapSetId"
-                   asp-route-treeNodeId="@Model.SitemapNode.Id"
+                   asp-route-sitemapNodeId="@Model.SitemapNode.Id"
                    class="btn btn-primary btn-sm">@T["Edit"]</a>
                 @* should see this through the defined route, not with a controller action, and as outside OC, i.e. xml _target=blank *@
                 <a href="@path" target="_blank" class="btn btn-success btn-sm">@T["View"]</a>
@@ -51,7 +47,7 @@
                     <a asp-action="Delete"
                        asp-controller="Node"
                        asp-route-id="@Model.SitemapSetId"
-                       asp-route-treeNodeId="@Model.SitemapNode.Id"
+                       asp-route-sitemapNodeId="@Model.SitemapNode.Id"
                        class="btn btn-danger" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                     <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="sr-only">@T["Toggle Dropdown"]</span>
@@ -60,7 +56,7 @@
                         <a asp-controller="Node"
                            asp-action="Toggle"
                            asp-route-id="@Model.SitemapSetId"
-                           asp-route-treeNodeId="@Model.SitemapNode.Id"
+                           asp-route-sitemapNodeId="@Model.SitemapNode.Id"
                            class="dropdown-item btn-sm" itemprop="UnsafeUrl">@toggleButtonText</a>
                     </div>
                 </div>

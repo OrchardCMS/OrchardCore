@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +23,7 @@ namespace OrchardCore.Sitemaps.Controllers
     public class SetController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISitemapSetService _sitemapSetService;
+        private readonly ISitemapService _sitemapService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly ISitemapIdGenerator _sitemapIdGenerator;
@@ -32,7 +31,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
         public SetController(
             IAuthorizationService authorizationService,
-            ISitemapSetService sitemapSetService,
+            ISitemapService sitemapService,
             ISiteService siteService,
             IShapeFactory shapeFactory,
             INotifier notifier,
@@ -43,7 +42,7 @@ namespace OrchardCore.Sitemaps.Controllers
             )
         {
             _authorizationService = authorizationService;
-            _sitemapSetService = sitemapSetService;
+            _sitemapService = sitemapService;
             _siteService = siteService;
             New = shapeFactory;
             _notifier = notifier;
@@ -74,24 +73,21 @@ namespace OrchardCore.Sitemaps.Controllers
                 options = new SitemapSetListOptions();
             }
 
-            var trees = await _sitemapSetService.GetAsync();
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                trees = trees.Where(dp => dp.Name.Contains(options.Search)).ToList();
+                document.SitemapSets = document.SitemapSets.Where(dp => dp.Name.Contains(options.Search)).ToList();
             }
 
-            var count = trees.Count();
+            var count = document.SitemapSets.Count();
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
-            IEnumerable<Models.SitemapSet> results = new List<Models.SitemapSet>();
 
-            //todo: handle the case where there is a deserialization exception on some of the presets.
-            // load at least the ones without error. Provide a way to delete the ones on error.
             try
             {
-                results = trees
+                document.SitemapSets = document.SitemapSets
                 .Skip(startIndex)
                 .Take(pageSize)
                 .ToList();
@@ -111,7 +107,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var model = new SitemapSetListViewModel
             {
-                SitemapSet = results.Select(x => new SitemapSetEntry { SitemapSet = x }).ToList(),
+                SitemapSets = document.SitemapSets.Select(x => new SitemapSetEntry { SitemapSet = x }).ToList(),
                 Options = options,
                 Pager = pagerShape
             };
@@ -142,17 +138,18 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                var tree = new SitemapSet
+                var document = await _sitemapService.LoadSitemapDocumentAsync();
+
+                var sitemapSet = new SitemapSet
                 {
                     Id = _sitemapIdGenerator.GenerateUniqueId(),
                     Name = model.Name
                 };
-
-                await _sitemapSetService.SaveAsync(tree);
+                document.SitemapSets.Add(sitemapSet);
+                _sitemapService.SaveSitemapDocument(document);
 
                 return RedirectToAction(nameof(List));
             }
-
 
             return View(model);
         }
@@ -164,17 +161,18 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _sitemapSetService.GetByIdAsync(id);
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
+            var sitemapSet = document.GetSitemapSetById(id);
 
-            if (tree == null)
+            if (sitemapSet == null)
             {
                 return NotFound();
             }
 
             var model = new SitemapSetEditViewModel
             {
-                Id = tree.Id,
-                Name = tree.Name
+                Id = sitemapSet.Id,
+                Name = sitemapSet.Name
             };
 
             return View(model);
@@ -188,18 +186,18 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _sitemapSetService.GetByIdAsync(model.Id);
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
+            var sitemapSet = document.GetSitemapSetById(model.Id);
 
-            if (tree == null)
+            if (sitemapSet == null)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                tree.Name = model.Name;
-
-                await _sitemapSetService.SaveAsync(tree);
+                sitemapSet.Name = model.Name;
+                _sitemapService.SaveSitemapDocument(document);
 
                 _notifier.Success(H["Sitemap set updated successfully"]);
 
@@ -217,19 +215,20 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _sitemapSetService.GetByIdAsync(id);
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
+            var sitemapSet = document.GetSitemapSetById(id);
 
-            if (tree == null)
+            if (sitemapSet == null)
             {
                 _notifier.Error(H["Can't find the sitemap set."]);
                 return RedirectToAction(nameof(List));
             }
 
-            var removed = await _sitemapSetService.DeleteAsync(tree);
+            var result = document.SitemapSets.Remove(sitemapSet);
 
-
-            if (removed == 1)
+            if (result)
             {
+                _sitemapService.SaveSitemapDocument(document);
                 _notifier.Success(H["Sitemap set deleted successfully"]);
             }
             else
@@ -249,16 +248,17 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _sitemapSetService.GetByIdAsync(id);
+            var document = await _sitemapService.LoadSitemapDocumentAsync();
+            var sitemapSet = document.GetSitemapSetById(id);
 
-            if (tree == null)
+            if (sitemapSet == null)
             {
                 return NotFound();
             }
 
-            tree.Enabled = !tree.Enabled;
+            sitemapSet.Enabled = !sitemapSet.Enabled;
 
-            await _sitemapSetService.SaveAsync(tree);
+            _sitemapService.SaveSitemapDocument(document);
 
             _notifier.Success(H["Sitemap set toggled successfully"]);
 
