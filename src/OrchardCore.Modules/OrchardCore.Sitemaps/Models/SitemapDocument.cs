@@ -42,8 +42,11 @@ namespace OrchardCore.Sitemaps.Models
             {
                 var sitemapNode = sitemapSet.GetSitemapNodeById(sitemapNodeId);
                 if (sitemapNode != null)
+                {
                     return sitemapNode;
+                }
             }
+
             return null;
         }
     }

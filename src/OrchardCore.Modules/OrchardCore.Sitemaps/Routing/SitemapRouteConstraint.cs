@@ -8,7 +8,7 @@ namespace OrchardCore.Sitemaps.Routing
 {
     public class SitemapRouteConstraint : IRouteConstraint
     {
-        public const string RouteKey = "sitemaps";
+        public const string RouteKey = "sitemap";
 
         public bool Match(HttpContext httpContext, IRouter route, string routeKey, RouteValueDictionary values, RouteDirection routeDirection)
         {

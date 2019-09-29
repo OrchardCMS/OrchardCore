@@ -13,18 +13,17 @@ namespace OrchardCore.Sitemaps.Models
 
     public static class SitemapSetExtensions
     {
-        public static SitemapNode GetSitemapNodeById(this SitemapSet sitemapSet, string id)
+        public static SitemapNode GetSitemapNodeById(this SitemapSet sitemapSet, string sitemapNodeId)
         {
             foreach (var sitemapNode in sitemapSet.SitemapNodes)
             {
-                var found = sitemapNode.GetSitemapNodeById(id, sitemapSet);
+                var found = sitemapNode.GetSitemapNodeById(sitemapNodeId, sitemapSet);
                 if (found != null)
                 {
                     return found;
                 }
             }
 
-            // not found
             return null;
         }
 

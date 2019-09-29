@@ -36,11 +36,13 @@ namespace OrchardCore.Sitemaps.Models
         /// The child nodes.
         /// </summary>
         public List<SitemapNode> ChildNodes { get; set; } = new List<SitemapNode>();
+    }
 
-        // TODO also extension method
-        public SitemapNode GetSitemapNodeById(string id, SitemapSet sitemapSet)
+    public static class SitemapNodeExtensions
+    {
+        public static SitemapNode GetSitemapNodeById(this SitemapNode sitemapNode, string id, SitemapSet sitemapSet)
         {
-            var tempStack = new Stack<SitemapNode>(new SitemapNode[] { this });
+            var tempStack = new Stack<SitemapNode>(new SitemapNode[] { sitemapNode });
 
             while (tempStack.Any())
             {
@@ -60,10 +62,9 @@ namespace OrchardCore.Sitemaps.Models
             return null;
         }
 
-        // Return bool so that caller can check for success.
-        public bool RemoveSitemapNode(SitemapNode nodeToRemove)
+        public static bool RemoveSitemapNode(this SitemapNode sitemapNode, SitemapNode nodeToRemove)
         {
-            var tempStack = new Stack<SitemapNode>(new SitemapNode[] { this });
+            var tempStack = new Stack<SitemapNode>(new SitemapNode[] { sitemapNode });
 
             while (tempStack.Any())
             {
@@ -83,10 +84,9 @@ namespace OrchardCore.Sitemaps.Models
             return false;
         }
 
-
-        public bool InsertSitemapNode(SitemapNode nodeToInsert, SitemapNode destinationNode, int position)
+        public static bool InsertSitemapNode(this SitemapNode sitemapNode, SitemapNode nodeToInsert, SitemapNode destinationNode, int position)
         {
-            var tempStack = new Stack<SitemapNode>(new SitemapNode[] { this });
+            var tempStack = new Stack<SitemapNode>(new SitemapNode[] { sitemapNode });
             while (tempStack.Any())
             {
                 // evaluate first

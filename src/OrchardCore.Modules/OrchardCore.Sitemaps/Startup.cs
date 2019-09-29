@@ -51,9 +51,9 @@ namespace OrchardCore.Sitemaps
         {
             routes.MapAreaControllerRoute(
                  name: SitemapRouteConstraint.RouteKey,
-                 areaName: "OrchardCore.Sitemap",
+                 areaName: "OrchardCore.Sitemaps",
                  pattern: "{*sitemap}",
-                 constraints: new { sitemaps = new SitemapRouteConstraint() },
+                 constraints: new { sitemap = new SitemapRouteConstraint() },
                  defaults: new { controller = "Sitemap", action = "Index" }
              );
 
