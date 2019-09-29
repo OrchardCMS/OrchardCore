@@ -27,7 +27,7 @@ $(function () {
         var prefix = guid();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
-            url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata
+            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata
         }).done(function (data) {
             var result = JSON.parse(data);
             $(document.getElementById(targetId)).append(widgetTemplate(result.Content, prefixesName, prefix, contentTypesName, type));
@@ -49,7 +49,7 @@ $(function () {
         var prefix = guid();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
-            url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata
+            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata
         }).done(function (data) {
             var result = JSON.parse(data);
             $(widgetTemplate(result.Content, prefixesName, prefix, contentTypesName, type)).insertBefore(target);
