@@ -1,9 +1,12 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Azure.Controllers
@@ -19,13 +22,14 @@ namespace OrchardCore.Media.Azure.Controllers
 
         public MediaCacheController(
             IAuthorizationService authorizationService,
-            IMediaFileStoreCache mediaFileStoreCache,
+            IServiceProvider serviceProvider,
             INotifier notifier,
             IHtmlLocalizer<MediaCacheController> htmlLocalizer
             )
         {
             _authorizationService = authorizationService;
-            _mediaFileStoreCache = mediaFileStoreCache;
+            // Resolve from service provider as the service will not be registered if configuration is invalid.
+            _mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
             _notifier = notifier;
             H = htmlLocalizer;
         }
@@ -36,8 +40,12 @@ namespace OrchardCore.Media.Azure.Controllers
             {
                 return Unauthorized();
             }
+            var model = new MediaCacheViewModel
+            {
+                IsConfigured = _mediaFileStoreCache != null
+            };
 
-            return View();
+            return View(model);
         }
 
         [HttpPost]
@@ -46,6 +54,12 @@ namespace OrchardCore.Media.Azure.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, MediaCachePermissions.ManageAssetCache))
             {
                 return Unauthorized();
+            }
+
+            if (_mediaFileStoreCache == null)
+            {
+                _notifier.Error(H["The asset cache feature is enabled, but a remote media store feature is not enabled, or not configured with appsettings.json."]);
+                RedirectToAction("Index");
             }
 
             var hasErrors = await _mediaFileStoreCache.PurgeAsync();
