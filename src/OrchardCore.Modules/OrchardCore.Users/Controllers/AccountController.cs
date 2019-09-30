@@ -169,28 +169,36 @@ namespace OrchardCore.Users.Controllers
 
             if (ModelState.IsValid)
             {
-                await _accountEvents.InvokeAsync(i => i.LoggingInAsync(model.UserName, (key, message) => ModelState.AddModelError(key, message)), _logger);
-                var user = await _userManager.FindByNameAsync(model.UserName);
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                if (user != null)
+                var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
+                if (disableLocalLogin)
                 {
-                    var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
-                    if (result.Succeeded)
+                    ModelState.AddModelError("", T["Local login is disabled."]);
+                }
+                else
+                {
+                    await _accountEvents.InvokeAsync(i => i.LoggingInAsync(model.UserName, (key, message) => ModelState.AddModelError(key, message)), _logger);
+                    var user = await _userManager.FindByNameAsync(model.UserName);
+                    // This doesn't count login failures towards account lockout
+                    // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+                    if (user != null)
                     {
-                        if (!await AddConfirmEmailError(user))
+                        var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
+                        if (result.Succeeded)
                         {
-                            result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-                            if (result.Succeeded)
+                            if (!await AddConfirmEmailError(user))
                             {
-                                _logger.LogInformation(1, "User logged in.");
-                                await _accountEvents.InvokeAsync(a => a.LoggedInAsync(model.UserName), _logger);
-                                return RedirectToLocal(returnUrl);
-                            }
+                                result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
 
-                            ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
-                            await _accountEvents.InvokeAsync(a => a.LoggingInFailedAsync(model.UserName), _logger);
+                                if (result.Succeeded)
+                                {
+                                    _logger.LogInformation(1, "User logged in.");
+                                    await _accountEvents.InvokeAsync(a => a.LoggedInAsync(model.UserName), _logger);
+                                    return RedirectToLocal(returnUrl);
+                                }
+
+                                ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
+                                await _accountEvents.InvokeAsync(a => a.LoggingInFailedAsync(model.UserName), _logger);
+                            }
                         }
                     }
                 }

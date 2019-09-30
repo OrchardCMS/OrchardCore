@@ -17,3 +17,12 @@
         <span class="hint">— @T["Requires only one defined external provider. You should set optional registration options"]</span>
     </div>
 </fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="DisableLocalLogin">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="DisableLocalLogin" />
+        <span asp-validation-for="DisableLocalLogin"></span>
+        <label class="custom-control-label" asp-for="DisableLocalLogin">@T["Disable local password login."]</label>
+        <span class="hint">— @T["Make sure there is at least one admin with linked account"]</span>
+    </div>
+</fieldset>
