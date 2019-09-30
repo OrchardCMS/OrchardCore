@@ -87,7 +87,7 @@ namespace OrchardCore.Navigation
             // compare route values (if any) first
             if (RouteMatches(menuItem.RouteValues, viewContext.RouteData.Values))
             {
-                menuItemShape.Score += 4;
+                menuItemShape.Score += 2;
             }
 
             // if route match failed, try comparing URL strings
