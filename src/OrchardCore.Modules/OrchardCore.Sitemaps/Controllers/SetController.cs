@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
@@ -33,27 +32,23 @@ namespace OrchardCore.Sitemaps.Controllers
             IAuthorizationService authorizationService,
             ISitemapService sitemapService,
             ISiteService siteService,
-            IShapeFactory shapeFactory,
             INotifier notifier,
             ISitemapIdGenerator sitemapIdGenerator,
             ILogger<SetController> logger,
-            IStringLocalizer<SetController> stringLocalizer,
+            IShapeFactory shapeFactory,
             IHtmlLocalizer<SetController> htmlLocalizer
             )
         {
             _authorizationService = authorizationService;
             _sitemapService = sitemapService;
             _siteService = siteService;
-            New = shapeFactory;
             _notifier = notifier;
             _sitemapIdGenerator = sitemapIdGenerator;
             _logger = logger;
-
-            T = stringLocalizer;
             H = htmlLocalizer;
+            New = shapeFactory;
         }
 
-        public IStringLocalizer T { get; }
         public IHtmlLocalizer H { get; }
         public dynamic New { get; }
 
@@ -88,16 +83,15 @@ namespace OrchardCore.Sitemaps.Controllers
             try
             {
                 document.SitemapSets = document.SitemapSets
-                .Skip(startIndex)
-                .Take(pageSize)
-                .ToList();
+                    .Skip(startIndex)
+                    .Take(pageSize)
+                    .ToList();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error when retrieving the list of sitemap sets");
                 _notifier.Error(H["Error when retrieving the list of sitemap sets"]);
             }
-
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();

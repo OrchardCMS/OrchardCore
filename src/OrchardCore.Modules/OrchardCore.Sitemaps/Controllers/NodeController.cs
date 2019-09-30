@@ -29,8 +29,6 @@ namespace OrchardCore.Sitemaps.Controllers
             IDisplayManager<SitemapNode> displayManager,
             IEnumerable<ISitemapNodeProviderFactory> factories,
             ISitemapService sitemapService,
-            IShapeFactory shapeFactory,
-            IStringLocalizer<NodeController> stringLocalizer,
             IHtmlLocalizer<NodeController> htmlLocalizer,
             INotifier notifier)
         {
@@ -38,15 +36,10 @@ namespace OrchardCore.Sitemaps.Controllers
             _factories = factories;
             _sitemapService = sitemapService;
             _authorizationService = authorizationService;
-
-            New = shapeFactory;
             _notifier = notifier;
-            T = stringLocalizer;
             H = htmlLocalizer;
         }
 
-        public dynamic New { get; }
-        public IStringLocalizer T { get; }
         public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> List(string id)

@@ -10,27 +10,18 @@ namespace OrchardCore.Sitemaps.Models
     {
         public int Id { get; set; }
         public IList<SitemapSet> SitemapSets { get; set; } = new List<SitemapSet>();
+    }
 
-        public void SetNodeSet()
+    public static class SitemapDocumentExtensions
+    {
+        public static void SetNodeSet(this SitemapDocument document)
         {
-            foreach (var set in SitemapSets)
+            foreach (var set in document.SitemapSets)
             {
                 RecurseNodes(set, set.SitemapNodes);
             }
         }
 
-        private void RecurseNodes(SitemapSet set, IList<SitemapNode> nodes)
-        {
-            foreach (var node in nodes)
-            {
-                node.SitemapSet = set;
-                RecurseNodes(set, node.ChildNodes);
-            }
-        }
-    }
-
-    public static class SitemapDocumentExtensions
-    {
         public static SitemapSet GetSitemapSetById(this SitemapDocument document, string id)
         {
             return document.SitemapSets.FirstOrDefault(x => x.Id == id);
@@ -49,6 +40,14 @@ namespace OrchardCore.Sitemaps.Models
 
             return null;
         }
-    }
 
+        private static void RecurseNodes(SitemapSet set, IList<SitemapNode> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                node.SitemapSet = set;
+                RecurseNodes(set, node.ChildNodes);
+            }
+        }
+    }
 }

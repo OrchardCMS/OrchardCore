@@ -10,7 +10,7 @@ namespace OrchardCore.Sitemaps.Services
 {
     public class SitemapService : ISitemapService
     {
-        private const string SitemapSetCacheKey = "SitemapSetService";
+        private const string SitemapDocumentTokenKey = "SitemapDocumentTokenKey";
 
         private readonly ISignal _signal;
         private readonly SitemapEntries _sitemapEntries;
@@ -27,7 +27,7 @@ namespace OrchardCore.Sitemaps.Services
             _sitemapEntries = sitemapEntries;
         }
 
-        public IChangeToken ChangeToken => _signal.GetToken(SitemapSetCacheKey);
+        public IChangeToken ChangeToken => _signal.GetToken(SitemapDocumentTokenKey);
 
         public void SaveSitemapDocument(SitemapDocument document)
         {
@@ -35,7 +35,7 @@ namespace OrchardCore.Sitemaps.Services
             BuildAllSitemapRouteEntries(document);
 
             _session.Save(document);
-            _signal.SignalToken(SitemapSetCacheKey);
+            _signal.SignalToken(SitemapDocumentTokenKey);
         }
 
         public void BuildAllSitemapRouteEntries(SitemapDocument document)
@@ -60,7 +60,7 @@ namespace OrchardCore.Sitemaps.Services
                 {
                     sitemapDocument = new SitemapDocument();
                     _session.Save(sitemapDocument);
-                    _signal.SignalToken(SitemapSetCacheKey);
+                    _signal.SignalToken(SitemapDocumentTokenKey);
                 }
             }
             else

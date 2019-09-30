@@ -35,7 +35,7 @@ namespace OrchardCore.Sitemaps.Controllers
         public async Task<IActionResult> Index()
         {
             var sitemapPath = HttpContext.GetRouteValue(SitemapRouteConstraint.RouteKey)?.ToString();
-            _logger.LogDebug("Sitemap path {SitemapPath}", sitemapPath);
+            _logger.LogDebug("Sitemap request path {SitemapPath}", sitemapPath);
 
             if (_sitemapEntries.TryGetSitemapNodeId(sitemapPath, out var sitemapNodeId))
             {

@@ -10,7 +10,6 @@ namespace OrchardCore.Contents.SitemapNodes
         /// </summary>
         [Required]
         public string Description { get; set; }
-        public bool IndexAll { get; set; }
         public ChangeFrequency ChangeFrequency { get; set; } 
         public float Priority { get; set; } = 0.5f;
         public ContentTypeSitemapEntry[] ContentTypes { get; set; } = new ContentTypeSitemapEntry[] { };

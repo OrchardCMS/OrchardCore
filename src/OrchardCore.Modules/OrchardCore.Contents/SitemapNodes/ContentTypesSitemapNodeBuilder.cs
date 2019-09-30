@@ -61,28 +61,19 @@ namespace OrchardCore.Contents.SitemapNodes
         public override async Task<DateTime?> GetNodeLastModifiedDateAsync(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context)
         {
             ContentItem mostRecentModifiedContentItem;
-            if (sitemapNode.IndexAll)
-            {
-                var query = _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => x.Published)
-                    .OrderByDescending(x => x.ModifiedUtc);
 
-                mostRecentModifiedContentItem = await query.FirstOrDefaultAsync();
-            }
-            else
-            {
-                var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(ctd => sitemapNode.ContentTypes.ToList()
-                    .Any(s => ctd.Name == s.ContentTypeName))
-                    .Select(x => x.Name);
+            var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
+                .Where(ctd => sitemapNode.ContentTypes.ToList()
+                .Any(s => ctd.Name == s.ContentTypeName))
+                .Select(x => x.Name);
 
-                var contentTypes = sitemapNode.ContentTypes.Select(x => x.ContentTypeName);
-                // This is just an estimate, so doesn't take into account Take/Skip values.
-                var query = _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
-                    .OrderByDescending(x => x.ModifiedUtc);
-                mostRecentModifiedContentItem = await query.FirstOrDefaultAsync();
-            }
+            var contentTypes = sitemapNode.ContentTypes.Select(x => x.ContentTypeName);
+            // This is just an estimate, so doesn't take into account Take/Skip values.
+            var query = _session.Query<ContentItem>()
+                .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
+                .OrderByDescending(x => x.ModifiedUtc);
+            mostRecentModifiedContentItem = await query.FirstOrDefaultAsync();
+
             return mostRecentModifiedContentItem.ModifiedUtc;
         }
 
@@ -101,65 +92,51 @@ namespace OrchardCore.Contents.SitemapNodes
         private async Task<IEnumerable<ContentItem>> GetContentItemsToBuildAsync(ContentTypesSitemapNode sitemapNode)
         {
             var contentItems = new List<ContentItem>();
-            if (sitemapNode.IndexAll)
+
+            // Should allow selection of multiple content types, though recommendation when
+            // splitting a sitemap is to restrict to a single content item. 
+            //TODO make a note in readme -> large content item recommendations
+            if (sitemapNode.ContentTypes.Any(x => !x.TakeAll))
             {
-                var query = _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => x.Published)
+                // Process content types that have a skip/take value.
+                var tasks = new List<Task<IEnumerable<ContentItem>>>();
+                foreach (var takeSomeType in sitemapNode.ContentTypes.Where(x => !x.TakeAll))
+                {
+                    var query = _session.Query<ContentItem>()
+                        .With<ContentItemIndex>(x => x.ContentType == takeSomeType.ContentTypeName && x.Published)
+                        .OrderByDescending(x => x.ModifiedUtc)
+                        .Skip(takeSomeType.Skip)
+                        .Take(takeSomeType.Take);
+                    tasks.Add(query.ListAsync());
+                }
+                // Process content types without skip/take value.
+                var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
+                    .Where(ctd => sitemapNode.ContentTypes.Where(x => x.TakeAll).Any(s => ctd.Name == s.ContentTypeName))
+                    .Select(x => x.Name);
+                var othersQuery = _session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
                     .OrderByDescending(x => x.ModifiedUtc);
 
-                contentItems = (await query.ListAsync()).ToList();
-                if (contentItems.Count() > 50000)
-                {
-                    _logger.LogError($"Sitemap {sitemapNode.Description} count is over 50,000");
-                }
+                tasks.Add(othersQuery.ListAsync());
+                await Task.WhenAll(tasks);
+                tasks.ForEach(x => contentItems.AddRange(x.Result));
             }
             else
             {
-                // Should allow selection of multiple content types, though recommendation when
-                // splitting a sitemap is to restrict to a single content item. 
-                //TODO make a note in readme -> large content item recommendations
-                if (sitemapNode.ContentTypes.Any(x => !x.TakeAll))
-                {
-                    // Process content types that have a skip/take value.
-                    var tasks = new List<Task<IEnumerable<ContentItem>>>();
-                    foreach (var takeSomeType in sitemapNode.ContentTypes.Where(x => !x.TakeAll))
-                    {
-                        var query = _session.Query<ContentItem>()
-                            .With<ContentItemIndex>(x => x.ContentType == takeSomeType.ContentTypeName && x.Published)
-                            .OrderByDescending(x => x.ModifiedUtc)
-                            .Skip(takeSomeType.Skip)
-                            .Take(takeSomeType.Take);
-                        tasks.Add(query.ListAsync());
-                    }
-                    // Process content types without skip/take value.
-                    var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
-                        .Where(ctd => sitemapNode.ContentTypes.Where(x => x.TakeAll).Any(s => ctd.Name == s.ContentTypeName))
-                        .Select(x => x.Name);
-                    var othersQuery = _session.Query<ContentItem>()
-                        .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
-                        .OrderByDescending(x => x.ModifiedUtc);
+                var typeDef = _contentDefinitionManager.ListTypeDefinitions();
+                var typesTo = _contentDefinitionManager.ListTypeDefinitions()
+                   .Where(ctd => sitemapNode.ContentTypes.ToList().Any(s => ctd.Name == s.ContentTypeName))
+                   .Select(t => t.Name);
 
-                    tasks.Add(othersQuery.ListAsync());
-                    await Task.WhenAll(tasks);
-                    tasks.ForEach(x => contentItems.AddRange(x.Result));
-                }
-                else
-                {
-                    var typeDef = _contentDefinitionManager.ListTypeDefinitions();
-                    var typesTo = _contentDefinitionManager.ListTypeDefinitions()
-                       .Where(ctd => sitemapNode.ContentTypes.ToList().Any(s => ctd.Name == s.ContentTypeName))
-                       .Select(t => t.Name);
+                var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
+                   .Where(ctd => sitemapNode.ContentTypes.Any(s => ctd.Name == s.ContentTypeName))
+                   .Select(x => x.Name);
 
-                    var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
-                       .Where(ctd => sitemapNode.ContentTypes.Any(s => ctd.Name == s.ContentTypeName))
-                       .Select(x => x.Name);
+                var query = _session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
+                    .OrderByDescending(x => x.ModifiedUtc);
 
-                    var query = _session.Query<ContentItem>()
-                        .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
-                        .OrderByDescending(x => x.ModifiedUtc);
-
-                    contentItems = (await query.ListAsync()).ToList();
-                }
+                contentItems = (await query.ListAsync()).ToList();
             }
 
             return contentItems;
@@ -193,33 +170,16 @@ namespace OrchardCore.Contents.SitemapNodes
         {
             string changeFrequencyValue = null;
             string priorityValue = null;
-            if (sitemapNode.IndexAll)
+            var sitemapEntry = sitemapNode.ContentTypes.FirstOrDefault(x => x.ContentTypeName == contentItem.ContentType);
+            changeFrequencyValue = sitemapEntry.ChangeFrequency.ToString();
+            priorityValue = sitemapEntry.Priority.ToString();
+            if (contentItem.Has<SitemapPart>())
             {
-                changeFrequencyValue = sitemapNode.ChangeFrequency.ToString();
-                priorityValue = sitemapNode.Priority.ToString();
-                if (contentItem.Has<SitemapPart>())
+                var part = contentItem.As<SitemapPart>();
+                if (part.OverrideSitemapSetConfig)
                 {
-                    var part = contentItem.As<SitemapPart>();
-                    if (part.OverrideSitemapSetConfig)
-                    {
-                        changeFrequencyValue = part.ChangeFrequency.ToString();
-                        priorityValue = part.Priority.ToString();
-                    }
-                }
-            }
-            else
-            {
-                var sitemapEntry = sitemapNode.ContentTypes.FirstOrDefault(x => x.ContentTypeName == contentItem.ContentType);
-                changeFrequencyValue = sitemapEntry.ChangeFrequency.ToString();
-                priorityValue = sitemapEntry.Priority.ToString();
-                if (contentItem.Has<SitemapPart>())
-                {
-                    var part = contentItem.As<SitemapPart>();
-                    if (part.OverrideSitemapSetConfig)
-                    {
-                        changeFrequencyValue = part.ChangeFrequency.ToString();
-                        priorityValue = part.Priority.ToString();
-                    }
+                    changeFrequencyValue = part.ChangeFrequency.ToString();
+                    priorityValue = part.Priority.ToString();
                 }
             }
 
