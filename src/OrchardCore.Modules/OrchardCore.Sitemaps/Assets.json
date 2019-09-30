@@ -8,8 +8,7 @@
   },
   {
     "inputs": [
-      "Assets/js/jquery.mjs.nestedSortable.js",
-      "Assets/js/resizeTableBody.js"
+      "Assets/js/jquery.mjs.nestedSortable.js"
     ],
     "output": "wwwroot/Scripts/sitemaps.js"
   }

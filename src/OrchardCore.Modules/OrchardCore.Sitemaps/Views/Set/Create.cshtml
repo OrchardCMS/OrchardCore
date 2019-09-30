@@ -1,8 +1,4 @@
 @model SitemapSetCreateViewModel
-@inject OrchardCore.Settings.ISiteService SiteService
-@{
-    var site = await SiteService.GetSiteSettingsAsync();
-}
 <h1>@RenderTitleSegments(T["Create Sitemap Set {0}", Model.Name])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>

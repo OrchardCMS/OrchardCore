@@ -32,7 +32,7 @@ namespace OrchardCore.Contents.SitemapNodes
 
             var entries = contentTypeDefinitions.Select(x => new ContentTypeSitemapEntryViewModel
             {
-                ContentTypeName = x.Name,
+                ContentTypeName = x.DisplayName,
                 IsChecked = treeNode.ContentTypes.Any(selected => selected.ContentTypeName == x.Name),
                 ChangeFrequency = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.ChangeFrequency ?? ChangeFrequency.Daily,
                 Priority = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.Priority ?? 0.5f,

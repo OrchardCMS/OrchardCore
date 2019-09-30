@@ -40,8 +40,7 @@
                    asp-route-id="@Model.SitemapSetId"
                    asp-route-sitemapNodeId="@Model.SitemapNode.Id"
                    class="btn btn-primary btn-sm">@T["Edit"]</a>
-                @* should see this through the defined route, not with a controller action, and as outside OC, i.e. xml _target=blank *@
-                <a href="@path" target="_blank" class="btn btn-success btn-sm">@T["View"]</a>
+                <a href="@path" class="btn btn-success btn-sm">@T["View"]</a>
 
                 <div class="btn-group btn-group-sm">
                     <a asp-action="Delete"

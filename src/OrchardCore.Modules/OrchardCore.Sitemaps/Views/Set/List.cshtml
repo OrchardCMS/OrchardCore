@@ -23,7 +23,7 @@
 
     @if (Model.SitemapSets.Any())
     {
-        <ul id="content-items-list-body" class="list-group">
+        <ul class="list-group">
             @foreach (var entry in Model.SitemapSets)
             {
                 <li class="list-group-item @(entry.SitemapSet.Enabled ? "" : "disabled-tree")">

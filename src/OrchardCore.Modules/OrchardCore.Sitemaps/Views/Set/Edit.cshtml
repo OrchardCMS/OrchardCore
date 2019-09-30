@@ -1,8 +1,4 @@
 @model SitemapSetEditViewModel
-@inject OrchardCore.Settings.ISiteService SiteService
-@{
-    var site = await SiteService.GetSiteSettingsAsync();
-}
 <style asp-src="~/OrchardCore.Sitemaps/Styles/sitemaps.min.css" debug-src="~/OrchardCore.Sitemaps/Styles/sitemaps.css" at="Head" depends-on="admin"></style>
 
 <h1>@RenderTitleSegments(T["Edit Sitemap Set: {0}", Model.Name])</h1>

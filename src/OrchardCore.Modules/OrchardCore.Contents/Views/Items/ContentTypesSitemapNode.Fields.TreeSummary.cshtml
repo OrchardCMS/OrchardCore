@@ -1,9 +1,5 @@
 @model ShapeViewModel<ContentTypesSitemapNode>
-@using OrchardCore.ContentManagement.Metadata.Models
-
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-@inject OrchardCore.Settings.ISiteService SiteService
-@inject OrchardCore.Environment.Shell.ShellSettings ShellSettings
 @{
     var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
 
@@ -13,8 +9,6 @@
         .Where(ctd => selectedContentTypes.Any(sct => sct.ContentTypeName == ctd.Name))
         .Select(x => x.DisplayName)
         .ToList();
-
-    var site = await SiteService.GetSiteSettingsAsync();
 }
 
 <div class="@(Model.Value.Enabled ? " " : " disabled")">

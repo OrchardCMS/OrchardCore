@@ -47,7 +47,7 @@
         else
         {
             <div class="alert alert-info" role="alert">
-                @T["<strong>Nothing here!</strong> There are no nodes on this tree for the moment."]
+                @T["<strong>Nothing here!</strong> There are no sitemap nodes on this sitemap set for the moment."]
             </div>
         }
     </div>
@@ -86,7 +86,7 @@
 </div>
 
 
-<div id="move-error-message" class="d-none" data-message="@T["There was an error when moving the tree node."]"></div>
+<div id="move-error-message" class="d-none" data-message="@T["There was an error when moving the sitemap node."]"></div>
 
 <script at="Foot">
     function moveNode(sitemapSetId, nodeToMoveId, destinationNodeId, position) {
@@ -126,13 +126,10 @@
                     var nodeToMoveId = helper.item.data('sitemap-node-id');
                     var destinationNodeId = helper.item.parent().closest('[data-sitemap-node-id]').data('sitemap-node-id'); // get the id of the new parent
                     var position = helper.item.index();
-                    console.log(sitemapSetId + ' ' + nodeToMoveId + ' ' + destinationNodeId + ' ' + position);
 
                     // make request to rest api
                     moveNode(sitemapSetId, nodeToMoveId, destinationNodeId, position);
                 }
             });
     });
-
-
 </script>

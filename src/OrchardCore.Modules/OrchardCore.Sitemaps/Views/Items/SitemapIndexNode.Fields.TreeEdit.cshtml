@@ -3,29 +3,27 @@
 
 <h5>@T["Sitemap Index"]</h5>
 
-<fieldset class="form-group" asp-validation-class-for="Description">
+<div class="form-group" asp-validation-class-for="Description">
     <label asp-for="Description">@T["Description"]</label>
     <input asp-for="Description" class="form-control" />
     <span asp-validation-for="Description"></span>
     <span class="hint">@T["Description of the sitemap node"]</span>
-</fieldset>
-<fieldset>
-    <div class="form-group" asp-validation-class-for="Path">
-        <label asp-for="Path">@T["Path"]</label>
-        <div class="input-group">
-            @{
-                var prependPath = Context.Request.PathBase.HasValue ? Site.BaseUrl + Context.Request.PathBase.Value : Site.BaseUrl;
-                prependPath = prependPath + '/';
-            }
-            @if (!String.IsNullOrWhiteSpace(prependPath))
-            {
-                <div class="input-group-prepend">
-                    <div class="input-group-text">@prependPath</div>
-                </div>
-            }
-            <input asp-for="Path" class="form-control" />
-            <span asp-validation-for="Path"></span>
-        </div>
+</div>
+<div class="form-group" asp-validation-class-for="Path">
+    <label asp-for="Path">@T["Path"]</label>
+    <div class="input-group">
+        @{
+            var prependPath = Context.Request.PathBase.HasValue ? Site.BaseUrl + Context.Request.PathBase.Value : Site.BaseUrl;
+            prependPath = prependPath + '/';
+        }
+        @if (!String.IsNullOrWhiteSpace(prependPath))
+        {
+            <div class="input-group-prepend">
+                <div class="input-group-text">@prependPath</div>
+            </div>
+        }
+        <input asp-for="Path" class="form-control" />
+        <span asp-validation-for="Path"></span>
     </div>
-</fieldset>
+</div>
 
