@@ -107,12 +107,12 @@ namespace OrchardCore.Navigation
                 {
                     menuItemShape.Score += 2;
                 }
+            }
 
-                var cookie = viewContext.HttpContext.Request.Cookies["selectedMenuItem_" + ShellScope.Context.Settings.Name];
-                if (cookie == menuItemShape.Parent?.Text?.Value + menuItem.Text.Value + menuItem.Href)
-                {
-                    menuItemShape.Score += 1;
-                }
+            var cookie = viewContext.HttpContext.Request.Cookies["selectedMenuItem_" + ShellScope.Context.Settings.Name];
+            if (cookie == menuItemShape.Parent?.Text?.Value + menuItem.Text.Value + menuItem.Href)
+            {
+                menuItemShape.Score += 1;
             }
 
             menuItemShape.Selected = menuItemShape.Score > 0;
