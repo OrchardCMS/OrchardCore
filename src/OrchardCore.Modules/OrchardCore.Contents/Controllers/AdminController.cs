@@ -27,8 +27,6 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
-using OrchardCore.Users.Indexes;
-using OrchardCore.Users.Models;
 using YesSql;
 using YesSql.Services;
 
@@ -181,11 +179,6 @@ namespace OrchardCore.Contents.Controllers
             var supportedCultures = (await _localizationService.GetSupportedCulturesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
             model.Options.Cultures = supportedCultures.Select(c => new SelectListItem(c.DisplayName, c.Name)).ToList();
 
-            var users = _session.Query<User, UserIndex>();
-            // Todo: Filter users?
-            var usersList = await users.ListAsync();
-            model.Options.Users = usersList.OrderBy(u => u.UserName).Select(u => new SelectListItem(u.UserName, u.UserName)).ToList();
-
             //// Todo: Filter culture
             //if (!String.IsNullOrWhiteSpace(model.Options.SelectedCulture))
             //{
@@ -194,6 +187,10 @@ namespace OrchardCore.Contents.Controllers
 
             // Invoke any service that could alter the query
             await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
+
+            // Get distinct authors
+            var allContentsList = await query.ListAsync();
+            model.Options.Users = allContentsList.Select(u => u.Author).Distinct().OrderBy(a => a).Select(a => new SelectListItem(a, a)).ToList();
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
