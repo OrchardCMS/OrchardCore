@@ -22,7 +22,7 @@ $(function () {
         var prefix = guid();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
-            url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId
+            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId
         })
         .done(function (data) {
             var result = JSON.parse(data);
@@ -46,7 +46,7 @@ $(function () {
         var prefix = guid();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
-            url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId
+            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId
         })
         .done(function (data) {
             var result = JSON.parse(data);
