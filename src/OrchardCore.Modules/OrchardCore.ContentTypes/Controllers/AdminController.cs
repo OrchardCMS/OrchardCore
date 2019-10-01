@@ -24,7 +24,6 @@ namespace OrchardCore.ContentTypes.Controllers
 {
     public class AdminController : Controller, IUpdateModel
     {
-        private static readonly char[] _stereotypeSeparators = new char[] { ' ',  ',' }; 
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ShellSettings _settings;
@@ -171,7 +170,7 @@ namespace OrchardCore.ContentTypes.Controllers
             viewModel.DisplayName = contentTypeDefinition.DisplayName;
             viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, this);
 
-            if(viewModel.Settings["ContentTypeSettings"].Value<string>("Stereotype").Any(c => _stereotypeSeparators.Contains(c)))
+            if(IsAlphaNumeric(viewModel.Settings["ContentTypeSettings"].Value<string>("Stereotype")))
             {
                 ModelState.AddModelError(string.Empty, S["There should be only one stereotype associated with the content type."]);
             }
@@ -847,6 +846,20 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             return RedirectToAction("Edit", new { id });
+        }
+
+        private static bool IsAlphaNumeric(string value)
+        {
+            if(String.IsNullOrEmpty(value))
+            {
+                return false;
+            }
+
+            var startWithLetter = char.IsLetter(value[0]);
+
+            return value.Length == 1
+                ? startWithLetter
+                : startWithLetter && value.Skip(1).All(c => char.IsLetterOrDigit(c));
         }
 
         #endregion
