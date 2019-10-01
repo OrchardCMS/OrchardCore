@@ -24,6 +24,7 @@ namespace OrchardCore.ContentTypes.Controllers
 {
     public class AdminController : Controller, IUpdateModel
     {
+        private static readonly char[] _stereotypeSeparators = new char[] { ' ',  ',' }; 
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ShellSettings _settings;
@@ -169,6 +170,11 @@ namespace OrchardCore.ContentTypes.Controllers
             viewModel.TypeDefinition = contentTypeDefinition;
             viewModel.DisplayName = contentTypeDefinition.DisplayName;
             viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, this);
+
+            if(viewModel.Settings["ContentTypeSettings"].Value<string>("Stereotype").Any(c => _stereotypeSeparators.Contains(c)))
+            {
+                ModelState.AddModelError(string.Empty, S["There should be only one stereotype associated with the content type."]);
+            }
 
             if (!ModelState.IsValid)
             {
