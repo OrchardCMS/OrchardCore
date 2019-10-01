@@ -170,9 +170,9 @@ namespace OrchardCore.ContentTypes.Controllers
             viewModel.DisplayName = contentTypeDefinition.DisplayName;
             viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, this);
 
-            if(IsAlphaNumeric(viewModel.Settings["ContentTypeSettings"].Value<string>("Stereotype")))
+            if(!IsAlphaNumeric(viewModel.Settings["ContentTypeSettings"].Value<string>("Stereotype")))
             {
-                ModelState.AddModelError(string.Empty, S["There should be only one stereotype associated with the content type."]);
+                ModelState.AddModelError(string.Empty, S["There stereotype should be alpha numeric."]);
             }
 
             if (!ModelState.IsValid)
