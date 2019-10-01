@@ -55,6 +55,7 @@ nav:
         - Lists: OrchardCore.Modules/OrchardCore.Lists/README.md
         - Markdown: OrchardCore.Modules/OrchardCore.Markdown/README.md
         - Media: OrchardCore.Modules/OrchardCore.Media/README.md
+        - Media Azure: OrchardCore.Modules/OrchardCore.Media.Azure/README.md
         - Menu: OrchardCore.Modules/OrchardCore.Menu/README.md
         - Navigation: OrchardCore.Modules/OrchardCore.Navigation/README.md
         - Indexing: OrchardCore.Modules/OrchardCore.Indexing/README.md
