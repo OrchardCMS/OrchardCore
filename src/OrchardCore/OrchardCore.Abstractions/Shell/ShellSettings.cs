@@ -61,6 +61,9 @@ namespace OrchardCore.Environment.Shell
         public IShellConfiguration ShellConfiguration => _configuration;
 
         [JsonIgnore]
+        public IShellConfiguration Settings => _settings;
+
+        [JsonIgnore]
         public string this[string key]
         {
             get => _configuration[key];
