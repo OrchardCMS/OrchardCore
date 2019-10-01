@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Navigation
@@ -68,11 +66,17 @@ namespace OrchardCore.Navigation
                 .Level(parentShape.Level == null ? 1 : (int)parentShape.Level + 1)
                 .Priority(menuItem.Priority)
                 .Local(menuItem.LocalNav)
+                .Hash((parentShape.Hash + menuItem.Text.Value).GetHashCode().ToString())
                 .Score(0);
 
             menuItemShape.Id = menuItem.Id;
 
-            MarkAsSelectedIfMatchesRouteOrUrl(menuItem, menuItemShape, viewContext);
+            if (menuItem.Href?[0] == '/')
+            {
+                menuItemShape.Href = QueryHelpers.AddQueryString(menuItem.Href, menu.MenuName, menuItemShape.Hash);
+            }
+
+            MarkAsSelectedIfMatchesQueryOrCookie(menuItem, menuItemShape, viewContext);
 
             foreach (var className in menuItem.Classes)
             {
@@ -82,69 +86,31 @@ namespace OrchardCore.Navigation
             return menuItemShape;
         }
 
-        private static void MarkAsSelectedIfMatchesRouteOrUrl(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
+        private static void MarkAsSelectedIfMatchesQueryOrCookie(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
         {
-            // compare route values (if any) first
-            if (RouteMatches(menuItem.RouteValues, viewContext.RouteData.Values))
+            if (menuItem.Href?[0] == '/')
             {
-                menuItemShape.Score += 2;
-            }
+                viewContext.HttpContext.Request.Query.TryGetValue((string)menuItemShape.Menu.MenuName, out var hash);
 
-            // if route match failed, try comparing URL strings
-            else if (!String.IsNullOrWhiteSpace(menuItem.Href) && menuItem.Href[0] == '/')
-            {
-                PathString path = menuItem.Href;
-
-                if (viewContext.HttpContext.Request.PathBase.HasValue)
+                if (hash.Count > 0)
                 {
-                    if (path.StartsWithSegments(viewContext.HttpContext.Request.PathBase, StringComparison.OrdinalIgnoreCase, out var remaining))
+                    if (hash[0] == menuItemShape.Hash)
                     {
-                        path = remaining;
+                        menuItemShape.Score += 100;
                     }
                 }
-
-                if (viewContext.HttpContext.Request.Path.Equals(path, StringComparison.OrdinalIgnoreCase))
+                else
                 {
-                    menuItemShape.Score += 2;
-                }
-            }
+                    var cookie = viewContext.HttpContext.Request.Cookies[menuItemShape.Menu.MenuName + '_' + ShellScope.Context.Settings.Name];
 
-            var cookie = viewContext.HttpContext.Request.Cookies["selectedMenuItem_" + ShellScope.Context.Settings.Name];
-            if (cookie == menuItemShape.Parent?.Text?.Value + menuItem.Text.Value + menuItem.Href)
-            {
-                menuItemShape.Score += 1;
+                    if (cookie == menuItemShape.Hash)
+                    {
+                        menuItemShape.Score += 10;
+                    }
+                }
             }
 
             menuItemShape.Selected = menuItemShape.Score > 0;
-        }
-
-        /// <summary>
-        /// Determines if a menu item corresponds to a given route.
-        /// </summary>
-        /// <param name="itemValues">The menu item.</param>
-        /// <param name="requestValues">The route data.</param>
-        /// <returns>True if the menu item's action corresponds to the route data; false otherwise.</returns>
-        private static bool RouteMatches(RouteValueDictionary itemValues, RouteValueDictionary requestValues)
-        {
-            if (itemValues == null && requestValues == null)
-            {
-                return true;
-            }
-
-            if (itemValues == null || requestValues == null)
-            {
-                return false;
-            }
-
-            foreach (var key in itemValues.Keys)
-            {
-                if (!String.Equals(itemValues[key]?.ToString(), requestValues[key]?.ToString(), StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         /// <summary>
@@ -158,7 +124,8 @@ namespace OrchardCore.Navigation
             // Apply the selection to the hierarchy
             if (selectedItem != null)
             {
-                viewContext.HttpContext.Response.Cookies.Append("selectedMenuItem_" + ShellScope.Context.Settings.Name, selectedItem.Parent?.Text?.Value + selectedItem.Text.Value + selectedItem.Href);
+                viewContext.HttpContext.Response.Cookies.Append(selectedItem.Menu.MenuName + '_' + ShellScope.Context.Settings.Name, selectedItem.Hash);
+
                 while (selectedItem.Parent != null)
                 {
                     selectedItem = selectedItem.Parent;
