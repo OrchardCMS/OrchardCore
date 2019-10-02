@@ -9,7 +9,14 @@
 
 <fieldset class="form-group" asp-validation-class-for="Title">
     <label asp-for="Title">@T["Title"]</label>
-    <input asp-for="Title" class="form-control content-preview-text content-caption-text" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />
+    <input asp-for="Title" class="form-control content-preview-text content-caption-text" disabled="@(Model.Settings?.AllowCustomTitle == false)" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />
     <span asp-validation-for="Title"></span>
-    <span class="hint">@T["The title of the content item."]</span>
+    @if (!String.IsNullOrWhiteSpace(Model.Settings?.Pattern) && Model.Settings?.AllowCustomTitle == true)
+    {
+        <span class="hint">@T["The title of the content item. Set empty to generate it using the pattern."]</span>
+    }
+    else
+    {
+        <span class="hint">@T["The title of the content item. It will be automatically generated."]</span>
+    }
 </fieldset>
