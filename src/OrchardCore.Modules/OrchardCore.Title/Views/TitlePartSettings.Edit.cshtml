@@ -1,3 +1,4 @@
+@using OrchardCore.Title.Models
 @model OrchardCore.Title.ViewModels.TitlePartSettingsViewModel
 
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
@@ -9,15 +10,15 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="form-group">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="AllowCustomTitle" checked="@Model.AllowCustomTitle">
-        <label class="custom-control-label" asp-for="AllowCustomTitle">@T["Allow custom Title"]</label>
-        <span class="hint">@T["Check to allow users to set a custom Title, otherwise it will be automatically generated."]</span>
-    </div>
+<div class="row col-sm-6 mb-3">
+    <label asp-for="Options">@T["Options"]</label>
+    <select asp-for="Options" class="form-control">
+        <option value="@TitlePartOptions.Editable" selected="@(Model.Options == TitlePartOptions.Editable)">@T["Title is editable"]</option>
+        <option value="@TitlePartOptions.GeneratedDisabled" selected="@(Model.Options == TitlePartOptions.GeneratedDisabled)">@T["Title is generated and input is disabled"]</option>
+        <option value="@TitlePartOptions.GeneratedHidden" selected="@(Model.Options == TitlePartOptions.GeneratedHidden)">@T["Title is generated and input is hidden"]</option>
+    </select>
 </div>
-
-<div class="form-group row">
+<div class="row mb-3">
     <div class="col-lg">
         <label asp-for="Pattern">@T["Pattern"]</label>
         <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>

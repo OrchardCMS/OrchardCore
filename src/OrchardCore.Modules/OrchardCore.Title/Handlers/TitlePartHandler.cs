@@ -28,7 +28,7 @@ namespace OrchardCore.Title.Handlers
         {
             var settings = GetSettings(part);
             // Do not compute the title if the user can modify it and the text is already set.
-            if (settings.AllowCustomTitle == true && !String.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
+            if (settings.Options == TitlePartOptions.Editable && !String.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
             {
                 return;
             }

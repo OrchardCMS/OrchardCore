@@ -34,7 +34,7 @@ namespace OrchardCore.Title.Settings
             {
                 var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
 
-                model.AllowCustomTitle = settings.AllowCustomTitle;
+                model.Options = settings.Options;
                 model.Pattern = settings.Pattern;
                 model.TitlePartSettings = settings;
             }).Location("Content");
@@ -51,17 +51,15 @@ namespace OrchardCore.Title.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix, 
                 m => m.Pattern,
-                m => m.AllowCustomTitle);
+                m => m.Options);
 
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
                 context.Updater.ModelState.AddModelError(nameof(model.Pattern), T["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-            } else {
-                context.Builder.WithSettings(new TitlePartSettings
-                {
-                    Pattern = model.Pattern,
-                    AllowCustomTitle = model.AllowCustomTitle,
-                });
+            }
+            else
+            {
+                context.Builder.WithSettings(new TitlePartSettings {Pattern = model.Pattern, Options = model.Options,});
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

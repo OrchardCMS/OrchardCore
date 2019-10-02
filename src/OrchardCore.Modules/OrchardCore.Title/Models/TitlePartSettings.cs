@@ -2,13 +2,19 @@ using System.ComponentModel;
 
 namespace OrchardCore.Title.Models
 {
+    public enum TitlePartOptions
+    {
+        Editable,
+        GeneratedDisabled,
+        GeneratedHidden,
+    }
     public class TitlePartSettings
     {
         /// <summary>
         /// Gets or sets whether a user can define a custom title
         /// </summary>
-        [DefaultValue(true)]
-        public bool AllowCustomTitle { get; set; } = true;
+        [DefaultValue(TitlePartOptions.Editable)]
+        public TitlePartOptions Options { get; set; } = TitlePartOptions.Editable;
 
         /// <summary>
         /// The pattern used to build the Title.
