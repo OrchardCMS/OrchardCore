@@ -4,11 +4,6 @@ var widgetDragItem, lastContainer, widgetItemSourceId, widgetItemDestId;
 
 $(function () {
 
-    // function scopped variable    
-    var widgetTemplate = function (data, prefixesName, prefix, contentTypesName, contentType) {
-        return '<div class="widget-template col-md-12">' + data + '<input type="hidden" name="' + prefixesName + '" value="' + prefix + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /></div>';
-    };
-
     function guid() {
         function s4() {
             return Math
@@ -30,7 +25,7 @@ $(function () {
             url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata
         }).done(function (data) {
             var result = JSON.parse(data);
-            $(document.getElementById(targetId)).append(widgetTemplate(result.Content, prefixesName, prefix, contentTypesName, type));
+            $(document.getElementById(targetId)).append(result.Content);
 
             var dom = $(result.Scripts);
             dom.filter('script').each(function () {
