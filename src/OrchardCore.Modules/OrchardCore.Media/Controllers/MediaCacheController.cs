@@ -9,7 +9,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Media.Azure.Controllers
+namespace OrchardCore.Media.Controllers
 {
     [Feature("OrchardCore.Media.Cache")]
     [Admin]
