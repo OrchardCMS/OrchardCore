@@ -5,7 +5,7 @@ namespace OrchardCore.Title.ViewModels
 {
     public class TitlePartSettingsViewModel
     {
-        public bool AllowCustomTitle { get; set; } = true;
+        public bool AllowCustomTitle { get; set; }
         public string Pattern { get; set; }
 
         [BindNever]

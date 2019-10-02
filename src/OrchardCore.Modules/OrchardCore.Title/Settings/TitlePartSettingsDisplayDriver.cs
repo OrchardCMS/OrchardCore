@@ -34,7 +34,7 @@ namespace OrchardCore.Title.Settings
             {
                 var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
 
-                model.AllowCustomTitle = settings.AllowCustomTitle.HasValue ? settings.AllowCustomTitle.Value : true;
+                model.AllowCustomTitle = settings.AllowCustomTitle;
                 model.Pattern = settings.Pattern;
                 model.TitlePartSettings = settings;
             }).Location("Content");

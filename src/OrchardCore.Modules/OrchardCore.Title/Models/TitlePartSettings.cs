@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace OrchardCore.Title.Models
 {
     public class TitlePartSettings
@@ -5,7 +7,8 @@ namespace OrchardCore.Title.Models
         /// <summary>
         /// Gets or sets whether a user can define a custom title
         /// </summary>
-        public bool? AllowCustomTitle { get; set; }
+        [DefaultValue(true)]
+        public bool AllowCustomTitle { get; set; } = true;
 
         /// <summary>
         /// The pattern used to build the Title.
