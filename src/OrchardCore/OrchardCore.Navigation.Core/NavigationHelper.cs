@@ -91,13 +91,13 @@ namespace OrchardCore.Navigation
         {
             if (!String.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
             {
-                viewContext.HttpContext.Request.Query.TryGetValue((string)menuItemShape.Menu.MenuName, out var hash);
+                var hash = viewContext.HttpContext.Request.Query[(string)menuItemShape.Menu.MenuName];
 
                 if (hash.Count > 0)
                 {
                     if (hash[0] == menuItemShape.Hash)
                     {
-                        menuItemShape.Score += 100;
+                        menuItemShape.Score += 2;
                     }
                 }
                 else
@@ -106,7 +106,7 @@ namespace OrchardCore.Navigation
 
                     if (cookie == menuItemShape.Hash)
                     {
-                        menuItemShape.Score += 10;
+                        menuItemShape.Score++;
                     }
                 }
             }
