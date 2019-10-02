@@ -170,11 +170,6 @@ namespace OrchardCore.ContentTypes.Controllers
             viewModel.DisplayName = contentTypeDefinition.DisplayName;
             viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, this);
 
-            if(!IsAlphaNumeric(viewModel.Settings["ContentTypeSettings"].Value<string>("Stereotype")))
-            {
-                ModelState.AddModelError(string.Empty, S["There stereotype should be alpha numeric."]);
-            }
-
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
@@ -846,20 +841,6 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             return RedirectToAction("Edit", new { id });
-        }
-
-        private static bool IsAlphaNumeric(string value)
-        {
-            if(String.IsNullOrEmpty(value))
-            {
-                return false;
-            }
-
-            var startWithLetter = char.IsLetter(value[0]);
-
-            return value.Length == 1
-                ? startWithLetter
-                : startWithLetter && value.Skip(1).All(c => char.IsLetterOrDigit(c));
         }
 
         #endregion
