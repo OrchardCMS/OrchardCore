@@ -58,6 +58,8 @@ namespace OrchardCore.Localization.DynamicData
                 : GetAllStrings(culture);
         }
 
+        public IStringLocalizer WithCulture(CultureInfo culture) => this;
+
         private IEnumerable<LocalizedString> GetAllStringsFromCultureHierarchy(CultureInfo culture)
         {
             var currentCulture = culture;

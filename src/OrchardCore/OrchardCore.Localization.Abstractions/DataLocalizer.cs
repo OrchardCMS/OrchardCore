@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization
@@ -24,5 +25,7 @@ namespace OrchardCore.Localization
 
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
             => _localizer.GetAllStrings(includeParentCultures);
+
+        public IStringLocalizer WithCulture(CultureInfo culture) => _localizer;
     }
 }
