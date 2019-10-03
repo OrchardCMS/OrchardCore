@@ -1,3 +1,4 @@
+@*TODO : File to be renamed as ContentCard-FlowPart.Edit.cshtml*@
 @using OrchardCore.ContentManagement.Metadata.Settings;
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
@@ -33,6 +34,8 @@
                             data-target-id="@Model.TargetId"
                             data-prefixes-name="@Model.PrefixesName"
                             data-flowmetadata="true"
+                            data-parent-content-type="@Model.ParentContentType"
+                            data-part-name="@Model.CollectionPartName"
                             data-contenttypes-name="@Model.ContentTypesName"
                             data-widget-type="@type.Name"
                             href="javascript:;">@type.DisplayName</a>

@@ -1,4 +1,5 @@
 @using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.Flows.Models;
 @using OrchardCore.Flows.ViewModels;
 @using OrchardCore.Mvc.Utilities;
 
@@ -12,8 +13,6 @@
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
     var parentContentType = Model.BagPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
-    if (partName.Equals(nameof(Model.BagPart)))
-        partName = partName.Replace("Part","");
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>
@@ -28,7 +27,7 @@
                 // FOR Updater
                 CollectionShape: Model, 
                 //Shape Specific
-                CollectionShapeType: "Bag",
+                CollectionShapeType: nameof(BagPart),
                 ContentItem: widget,
                 BuildEditor: true,                        
                 ParentContentType: parentContentType,
@@ -65,6 +64,8 @@
                    data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
                    data-widget-type="@type.Name"
                    data-flowmetadata="false"
+                   data-parent-content-type="@parentContentType"
+                   data-part-name="@partName"                   
                    href="javascript:;">@type.DisplayName</a>
             }
         </div>

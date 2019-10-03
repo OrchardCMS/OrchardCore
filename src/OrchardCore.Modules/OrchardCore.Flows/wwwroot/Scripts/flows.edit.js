@@ -19,10 +19,12 @@ $(function () {
         var createEditorUrl = $('#' + targetId).data("buildeditorurl");
         var prefixesName = $(this).data("prefixes-name");
         var flowmetadata = $(this).data("flowmetadata");
+        var parentContentType = $(this).data("parent-content-type");
+        var partName = $(this).data("part-name");
         var prefix = guid();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
-            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata
+            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType +"&partName=" + partName
         }).done(function (data) {
             var result = JSON.parse(data);
             $(document.getElementById(targetId)).append(result.Content);
@@ -41,13 +43,15 @@ $(function () {
         var createEditorUrl = $('#' + targetId).data("buildeditorurl");
         var flowmetadata = $(this).data("flowmetadata");
         var prefixesName = $(this).data("prefixes-name");
+        var parentContentType = $(this).data("parent-content-type");
+        var partName = $(this).data("part-name");
         var prefix = guid();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
-            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata
+            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
         }).done(function (data) {
             var result = JSON.parse(data);
-            $(widgetTemplate(result.Content, prefixesName, prefix, contentTypesName, type)).insertBefore(target);
+            $(result.Content).insertBefore(target);
 
             var dom = $(result.Scripts);
             dom.filter('script').each(function () {

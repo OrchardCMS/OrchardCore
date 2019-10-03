@@ -48,22 +48,19 @@ namespace OrchardCore.Flows.Controllers
             var contentItem = await _contentManager.NewAsync(id);
 
             // Does this editor need the flow metadata editor?
-            if (flowmetadata)
-            {
-                contentItem.Weld(new FlowMetadata());
-            }
-
-            dynamic editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true, htmlFieldPrefix: prefix);
-
             string cardCollectionType = null;
-
+            int colSize = 12;
             if (flowmetadata)
             {
-                cardCollectionType = "Flow";
+                var metadata = new FlowMetadata();
+                contentItem.Weld(metadata);
+                colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
+
+                cardCollectionType = nameof(FlowPart);
             }
             else
             {
-                cardCollectionType = "Bag";
+                cardCollectionType = nameof(BagPart);
             }
 
             //Create a Card Shape
@@ -90,7 +87,11 @@ namespace OrchardCore.Flows.Controllers
                 ContentTypesId: contentTypesName.Replace(".","_"),
                 ContentTypesName : contentTypesName
             );
-            
+            //Only Add ColumnSize Property if Part has FlowMetadata
+            if (flowmetadata)
+            {
+                contentCard.ColumnSize = colSize;
+            }
 
             var model = new BuildEditorViewModel
             {
