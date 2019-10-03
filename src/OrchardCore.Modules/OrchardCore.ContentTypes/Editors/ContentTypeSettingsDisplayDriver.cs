@@ -59,7 +59,7 @@ namespace OrchardCore.ContentTypes.Editors
         
         private static bool IsAlphaNumericOrEmpty(string value)
         {
-            if(value == String.Empty)
+            if (value == String.Empty)
             {
                 return true;
             }
