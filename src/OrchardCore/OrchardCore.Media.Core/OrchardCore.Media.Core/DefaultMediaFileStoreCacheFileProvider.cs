@@ -47,9 +47,8 @@ namespace OrchardCore.Media.Core
 
         public async Task SetCacheAsync(Stream stream, IFileStoreEntry fileStoreEntry, CancellationToken cancellationToken)
         {
-            // File store semantics include a leading slash, and may included escaped characters.
+            // File store semantics include a leading slash.
             var cachePath = Path.Combine(Root, fileStoreEntry.Path.Substring(1));
-            cachePath = Uri.UnescapeDataString(cachePath);
             var directory = Path.GetDirectoryName(cachePath);
 
             if (!Directory.Exists(directory))
