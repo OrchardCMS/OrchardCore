@@ -16,6 +16,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentTypes
 {
@@ -138,6 +139,16 @@ namespace OrchardCore.ContentTypes
             services.AddTransient<IDeploymentSource, ContentDefinitionDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDefinitionDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDefinitionDeploymentStepDriver>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Localization")]
+    public class LocalizationStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
+            services.AddTransient<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
         }
     }
 }
