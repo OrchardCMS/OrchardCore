@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.Localization.DynamicData
 {
@@ -7,20 +7,7 @@ namespace OrchardCore.Localization.DynamicData
         public void LoadTranslations(string cultureName, CultureDictionary dictionary)
         {
             // TODO: Load the translation from the database
-            var records = new List<CultureDictionaryRecord>();
-
-            switch(cultureName)
-            {
-                case "ar":
-                    records.Add(new CultureDictionaryRecord("Hello", null, new string[] { "مرحباً" }));
-                    records.Add(new CultureDictionaryRecord("Bye", null, new string[] { "وداعاً" }));
-                    break;
-                case "fr":
-                    records.Add(new CultureDictionaryRecord("Hello", null, new string[] { "Bonjour" }));
-                    records.Add(new CultureDictionaryRecord("Bye", null, new string[] { "au revoir" }));
-                    break;
-            }
-
+            var records = Enumerable.Empty<CultureDictionaryRecord>();
             dictionary.MergeTranslations(records);
         }
     }
