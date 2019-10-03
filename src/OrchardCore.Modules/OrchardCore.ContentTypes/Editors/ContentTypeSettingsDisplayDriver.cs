@@ -49,7 +49,7 @@ namespace OrchardCore.ContentTypes.Editors
 
                 if (!IsAlphaNumericOrEmpty(stereotype))
                 {
-                    context.Updater.ModelState.AddModelError(string.Empty, S["The stereotype should be alphanumeric."]);
+                    context.Updater.ModelState.AddModelError(nameof(ContentTypeSettingsViewModel.Stereotype), S["The stereotype should be alphanumeric."]);
                 }
             }
 
