@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 using OrchardCore.Localization.PortableObject;
+using OrchardCore.Localization.DynamicData;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -36,10 +37,32 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IHtmlLocalizerFactory, PortableObjectHtmlLocalizerFactory>();
             services.TryAddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
+            services.AddDynamicDataLocalization();
+
             if (setupAction != null)
             {
                 services.Configure(setupAction);
             }
+
+            return services;
+        }
+
+        /// <summary>
+        /// Registers the services to enable localization using dynamic data storage.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        internal static IServiceCollection AddDynamicDataLocalization(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddSingleton<IPluralRuleProvider, DefaultPluralRuleProvider>();
+            services.AddSingleton<ITranslationProvider, DynamicDataTranslationsProvider>();
+            services.AddSingleton<ILocalizationManager, LocalizationManager>();
+            services.AddSingleton<IDataLocalizerFactory, DynamicDataLocalizerFactory>();
+            services.AddTransient<IDataLocalizer, DataLocalizer>();
 
             return services;
         }
