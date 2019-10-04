@@ -3,8 +3,6 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-"use strict";
-
 function debounce(func, wait, immediate) {
   var timeout;
   return function () {

@@ -3,8 +3,6 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-"use strict";
-
 // We add some classes to the body tag to restore the sidebar to the state is was before reload.
 // That state was saved to localstorage by userPreferencesPersistor.js
 // We need to apply the classes BEFORE the page is rendered. 

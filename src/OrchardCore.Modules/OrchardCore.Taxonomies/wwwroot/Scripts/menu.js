@@ -3,8 +3,6 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-"use strict";
-
 /*
  * jQuery UI Nested Sortable
  * v 2.1a / 2016-02-04

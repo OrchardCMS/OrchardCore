@@ -3,8 +3,6 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-"use strict";
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
@@ -42,7 +40,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     factory(global);
   } // Pass this if window is not defined yet
 
-})(typeof window !== "undefined" ? window : void 0, function (window, noGlobal) {
+})(typeof window !== "undefined" ? window : this, function (window, noGlobal) {
   // Edge <= 12 - 13+, Firefox <=18 - 45+, IE 10 - 11, Safari 5.1 - 9+, iOS 6 - 9.1
   // throw exceptions when non-strict code (e.g., ASP.NET 4.5) accesses strict mode
   // arguments.callee.caller (trac-13335). But as of jQuery 3.0 (2016), strict mode should be common

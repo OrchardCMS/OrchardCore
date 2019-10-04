@@ -3,8 +3,6 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-"use strict";
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -16,7 +14,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 // at http://marijnhaverbeke.nl/blog/#cm-internals .
 (function (global, factory) {
   (typeof exports === "undefined" ? "undefined" : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? module.exports = factory() : typeof define === 'function' && define.amd ? define(factory) : global.CodeMirror = factory();
-})(void 0, function () {
+})(this, function () {
   'use strict'; // Kludges for bugs and behavior differences that can't be feature
   // detected are enabled based on userAgent etc sniffing.
 
@@ -14442,7 +14440,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         if (textarea.form) {
           off(textarea.form, "submit", save);
 
-          if (typeof textarea.form.submit == "function") {
+          if (!options.leaveSubmitMethodAlone && typeof textarea.form.submit == "function") {
             textarea.form.submit = realSubmit;
           }
         }
@@ -14555,6 +14553,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.48.4";
+  CodeMirror.version = "5.49.0";
   return CodeMirror;
 });

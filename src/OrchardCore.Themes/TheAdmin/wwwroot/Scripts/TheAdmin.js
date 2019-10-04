@@ -3,13 +3,11 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-"use strict";
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /**!
  * @fileOverview Kickass library to create and place poppers near their reference elements.
- * @version 1.14.7
+ * @version 1.15.0
  * @license
  * Copyright (c) 2016 Federico Zivolo and contributors
  *
@@ -33,7 +31,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  */
 (function (global, factory) {
   (typeof exports === "undefined" ? "undefined" : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? module.exports = factory() : typeof define === 'function' && define.amd ? define(factory) : global.Popper = factory();
-})(void 0, function () {
+})(this, function () {
   'use strict';
 
   var isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -1609,8 +1607,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var overflowsBottom = floor(popperOffsets.bottom) > floor(boundaries.bottom);
       var overflowsBoundaries = placement === 'left' && overflowsLeft || placement === 'right' && overflowsRight || placement === 'top' && overflowsTop || placement === 'bottom' && overflowsBottom; // flip the variation if required
 
-      var isVertical = ['top', 'bottom'].indexOf(placement) !== -1;
-      var flippedVariation = !!options.flipVariations && (isVertical && variation === 'start' && overflowsLeft || isVertical && variation === 'end' && overflowsRight || !isVertical && variation === 'start' && overflowsTop || !isVertical && variation === 'end' && overflowsBottom);
+      var isVertical = ['top', 'bottom'].indexOf(placement) !== -1; // flips variation if reference element overflows boundaries
+
+      var flippedVariationByRef = !!options.flipVariations && (isVertical && variation === 'start' && overflowsLeft || isVertical && variation === 'end' && overflowsRight || !isVertical && variation === 'start' && overflowsTop || !isVertical && variation === 'end' && overflowsBottom); // flips variation if popper content overflows boundaries
+
+      var flippedVariationByContent = !!options.flipVariationsByContent && (isVertical && variation === 'start' && overflowsRight || isVertical && variation === 'end' && overflowsLeft || !isVertical && variation === 'start' && overflowsBottom || !isVertical && variation === 'end' && overflowsTop);
+      var flippedVariation = flippedVariationByRef || flippedVariationByContent;
 
       if (overlapsRef || overflowsBoundaries || flippedVariation) {
         // this boolean to detect any flip loop
@@ -2225,7 +2227,25 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
        * The popper will never be placed outside of the defined boundaries
        * (except if `keepTogether` is enabled)
        */
-      boundariesElement: 'viewport'
+      boundariesElement: 'viewport',
+
+      /**
+       * @prop {Boolean} flipVariations=false
+       * The popper will switch placement variation between `-start` and `-end` when
+       * the reference element overlaps its boundaries.
+       *
+       * The original placement should have a set variation.
+       */
+      flipVariations: false,
+
+      /**
+       * @prop {Boolean} flipVariationsByContent=false
+       * The popper will switch placement variation between `-start` and `-end` when
+       * the popper element overlaps its reference boundaries.
+       *
+       * The original placement should have a set variation.
+       */
+      flipVariationsByContent: false
     },
 
     /**
@@ -2454,8 +2474,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     /**
      * Creates a new Popper.js instance.
      * @class Popper
-     * @param {HTMLElement|referenceObject} reference - The reference element used to position the popper
-     * @param {HTMLElement} popper - The HTML element used as the popper
+     * @param {Element|referenceObject} reference - The reference element used to position the popper
+     * @param {Element} popper - The HTML / XML element used as the popper
      * @param {Object} options - Your custom options to override the ones defined in [Defaults](#defaults)
      * @return {Object} instance - The generated Popper.js instance
      */
@@ -2591,8 +2611,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   Popper.Defaults = Defaults;
   return Popper;
 });
-"use strict";
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
@@ -2602,7 +2620,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   */
 (function (global, factory) {
   (typeof exports === "undefined" ? "undefined" : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? factory(exports, require('jquery'), require('popper.js')) : typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'popper.js'], factory) : (global = global || self, factory(global.bootstrap = {}, global.jQuery, global.Popper));
-})(void 0, function (exports, $, Popper) {
+})(this, function (exports, $, Popper) {
   'use strict';
 
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
@@ -7018,8 +7036,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     value: true
   });
 });
-"use strict";
-
 function confirmDialog(_ref) {
   var title = _ref.title,
       message = _ref.message,
@@ -7277,8 +7293,6 @@ function isLetter(str) {
 function isNumber(str) {
   return str.length === 1 && str.match(/[0-9]/i);
 }
-"use strict";
-
 var leftMenuPS; // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
 
@@ -7386,8 +7400,6 @@ function unSetCompactStatus() {
   isCompactExplicit = false;
   persistAdminPreferences();
 }
-"use strict";
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
@@ -7397,7 +7409,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  */
 (function (global, factory) {
   (typeof exports === "undefined" ? "undefined" : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? module.exports = factory() : typeof define === 'function' && define.amd ? define(factory) : global.PerfectScrollbar = factory();
-})(void 0, function () {
+})(this, function () {
   'use strict';
 
   function get(element) {
@@ -8622,8 +8634,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   return PerfectScrollbar;
 });
-"use strict";
-
 /*
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -8911,8 +8921,6 @@ function removeDiacritics(str) {
     return diacriticsMap[a] || a;
   });
 }
-"use strict";
-
 // System to detect when the window's size reaches a given breakpoint
 // Right now it is only used to compact the lefbar when resizing under 768px
 // In the future maybe this is useful to do other things on resizing.
@@ -8955,8 +8963,6 @@ $(function () {
     lastWidth = width;
   });
 });
-"use strict";
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /**!
@@ -10176,8 +10182,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   Sortable.version = '1.4.2';
   return Sortable;
 });
-"use strict";
-
 // Each time the sidebar status is modified, that is persisted to localStorage.
 // When the page is loaded again, userPreferencesLoader.js will read that info to 
 // restore the sidebar to the previous state.

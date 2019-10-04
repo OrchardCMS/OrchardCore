@@ -3,8 +3,6 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-"use strict";
-
 // This script is used to add a class on the active link of a menu.
 // Because Menus are often cached, the class needs to be set dynamically using JavaScript.
 (function ($) {

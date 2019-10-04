@@ -3,8 +3,6 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-"use strict";
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
@@ -14,7 +12,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   */
 (function (global, factory) {
   (typeof exports === "undefined" ? "undefined" : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? factory(exports, require('jquery'), require('popper.js')) : typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'popper.js'], factory) : (global = global || self, factory(global.bootstrap = {}, global.jQuery, global.Popper));
-})(void 0, function (exports, $, Popper) {
+})(this, function (exports, $, Popper) {
   'use strict';
 
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
