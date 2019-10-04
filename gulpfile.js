@@ -21,6 +21,7 @@ var fs = require("file-system"),
     util = require('gulp-util');
     postcss = require('gulp-postcss');
     rtl = require('postcss-rtl');
+	babel = require('gulp-babel');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -254,7 +255,10 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
                     ext: ".js"
                 }))))
         .pipe(plumber())
-        .pipe(gulpif(generateSourceMaps, sourcemaps.init()))
+        .pipe(gulpif(generateSourceMaps, sourcemaps.init()))			
+        .pipe(babel({
+            presets: ['@babel/env','@babel/preset-flow']
+        }))
         .pipe(gulpif("*.ts", typescript({
             declaration: false,
             noImplicitAny: true,
