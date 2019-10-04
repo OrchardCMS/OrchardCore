@@ -53,7 +53,7 @@
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="new-dropdown">
                         @foreach (var item in Model.Options.CreatableTypes)
                         {
-                            <a class="dropdown-item" href="/Admin/Contents/ContentTypes/@item.Value/Create">@item.Text</a>
+                            <a class="dropdown-item" href="ContentTypes/@item.Value/Create">@item.Text</a>
                         }
                     </div>
                 }
@@ -73,8 +73,8 @@
                             <label id="selected-items" class="text-muted" for="select-all"></label>
                         </div>
                     </div>
-                    <div class="form-group col-xl-1 mb-xl-n1" id="actions" style="display:none">
-                        <span class="dropdown">
+                    <div class="form-group col-xl-2 mb-xl-n1">
+                        <span class="dropdown" id="actions" style="display:none">
                             <button class="btn btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Actions"]
                             </button>
@@ -87,24 +87,14 @@
                         </span>
                     </div>
                     <div class="form-group col-xl-2 mb-xl-n1 filter">
-                        <select asp-for="Options.SelectedContentType" asp-items="Model.Options.ContentTypeOptions" class="selectpicker show-tick" data-header="@T["Filter by content type"]" data-live-search="true" title="@T["Type"]">
+                        <select asp-for="Options.SelectedContentType" asp-items="Model.Options.ContentTypeOptions" class="selectpicker show-tick" data-header="@T["Filter by content type"]" data-live-search="true" data-width="fit" title="@T["Type"]">
                         </select>
                     </div>
                     <div class="form-group col-xl-2 mb-xl-n1 filter">
-                        <select asp-for="Options.SelectedAuthor" asp-items="Model.Options.Users" class="selectpicker show-tick" data-live-search="true" data-header="@T["Filter by author"]" title="@T["Author"]">
-                            <option value="">@T["All authors"]</option>
-                        </select>
+                        <select asp-for="Options.ContentsStatus" asp-items="@Model.Options.ContentStatuses" class="selectpicker show-tick" data-header="@T["Filter by status"]" data-width="fit" title="@T["Show"]"></select>
                     </div>
-                    <div class="form-group col-xl-2 mb-xl-n1 filter">
-                        <select asp-for="Options.SelectedCulture" asp-items="Model.Options.Cultures" class="selectpicker show-tick" data-header="@T["Filter by culture"]" data-live-search="true" title="Culture">
-                            <option value="">@T["All cultures"]</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-xl-2 mb-xl-n1 filter">
-                        <select asp-for="Options.ContentsStatus" asp-items="@Model.Options.ContentStatuses" class="selectpicker show-tick" data-header="@T["Filter by status"]" title="@T["Show"]"></select>
-                    </div>
-                    <div class="form-group col-xl-1 mb-n1 filter">
-                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.ContentSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" title="@T["Sort"]"></select>
+                    <div class="form-group col-xl-2 mb-n1 filter">
+                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.ContentSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" title="@T["Sort"]"></select>
                     </div>
                 </div>
             </li>

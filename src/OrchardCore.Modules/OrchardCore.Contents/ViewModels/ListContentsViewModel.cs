@@ -36,10 +36,6 @@ namespace OrchardCore.Contents.ViewModels
 
         public string SelectedContentType { get; set; }
 
-        public string SelectedAuthor { get; set; }
-
-        public string SelectedCulture { get; set; }
-
         public ContentsOrder OrderBy { get; set; }
 
         public ContentsStatus ContentsStatus { get; set; }

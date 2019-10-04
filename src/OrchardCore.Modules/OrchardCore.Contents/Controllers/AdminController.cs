@@ -22,7 +22,6 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -43,7 +42,6 @@ namespace OrchardCore.Contents.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly ILocalizationService _localizationService;
 
         public AdminController(
             IContentManager contentManager,
@@ -57,8 +55,7 @@ namespace OrchardCore.Contents.Controllers
             IHtmlLocalizer<AdminController> localizer,
             IAuthorizationService authorizationService,
             IEnumerable<IContentAdminFilter> contentAdminFilters,
-            IHttpContextAccessor contextAccessor,
-            ILocalizationService localizationService
+            IHttpContextAccessor contextAccessor
             )
         {
             _contentAdminFilters = contentAdminFilters;
@@ -70,7 +67,6 @@ namespace OrchardCore.Contents.Controllers
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _contextAccessor = contextAccessor;
-            _localizationService = localizationService;
 
             T = localizer;
             New = shapeFactory;
@@ -171,26 +167,8 @@ namespace OrchardCore.Contents.Controllers
             }
             model.Options.CreatableTypes = creatableList;
 
-            if (!string.IsNullOrEmpty(model.Options.SelectedAuthor))
-            {
-                query = query.With<ContentItemIndex>(cr => cr.Author == model.Options.SelectedAuthor || cr.Owner == model.Options.SelectedAuthor);
-            }
-
-            var supportedCultures = (await _localizationService.GetSupportedCulturesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
-            model.Options.Cultures = supportedCultures.Select(c => new SelectListItem(c.DisplayName, c.Name)).ToList();
-
-            //// Todo: Filter culture
-            //if (!String.IsNullOrWhiteSpace(model.Options.SelectedCulture))
-            //{
-            //    query = _cultureFilter.FilterCulture(query, model.Options.SelectedCulture);
-            //}
-
             // Invoke any service that could alter the query
             await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
-
-            // Get distinct authors
-            var allContentsList = await query.ListAsync();
-            model.Options.Users = allContentsList.Select(u => u.Author).Distinct().OrderBy(a => a).Select(a => new SelectListItem(a, a)).ToList();
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
@@ -213,7 +191,7 @@ namespace OrchardCore.Contents.Controllers
             //We populate the SelectLists
             model.Options.ContentStatuses = new List<SelectListItem>() {
                 new SelectListItem() { Text = T["Latest"].Value, Value = ContentsStatus.Latest.ToString() },
-                //new SelectListItem() { Text = T["Owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
+                new SelectListItem() { Text = T["Owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
                 new SelectListItem() { Text = T["Published"].Value, Value = ContentsStatus.Published.ToString() },
                 new SelectListItem() { Text = T["Unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
                 new SelectListItem() { Text = T["All versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
@@ -258,8 +236,6 @@ namespace OrchardCore.Contents.Controllers
         public ActionResult ListFilterPOST(ListContentsViewModel model)
         {
             return RedirectToAction("List", new RouteValueDictionary {
-                { "Options.SelectedAuthor", model.Options.SelectedAuthor },
-                { "Options.SelectedCulture", model.Options.SelectedCulture },
                 { "Options.OrderBy", model.Options.OrderBy },
                 { "Options.ContentsStatus", model.Options.ContentsStatus },
                 { "Options.SelectedContentType", model.Options.SelectedContentType },
