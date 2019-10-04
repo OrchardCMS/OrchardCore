@@ -1,4 +1,5 @@
 @* Based on https://getbootstrap.com/docs/4.0/examples/sticky-footer-navbar/ *@
+@using OrchardCore.DisplayManagement;
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()">
 <head>
@@ -16,6 +17,7 @@
     <resources type="HeadScript" />
 </head>
 <body dir="@Orchard.CultureDir()">
+    <p>here what about me</p>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="~/#">@Site.SiteName</a>
@@ -31,6 +33,14 @@
     @await RenderSectionAsync("Header", required: false)
     <main role="main" class="container">
         @await RenderSectionAsync("Messages", required: false)
+
+        @{
+            var shapedump = (Model as IShape).ShapeDump();
+        }
+        <h1>Layout shape</h1>
+        <pre>
+                @shapedump
+            </pre>
         @await RenderBodyAsync()
     </main>
     @await RenderSectionAsync("Footer", required: false)

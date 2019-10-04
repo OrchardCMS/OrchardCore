@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement
@@ -16,4 +19,14 @@ namespace OrchardCore.DisplayManagement
         IDictionary<string, string> Attributes { get; }
         IDictionary<string, object> Properties { get; }
 	}
+
+    //public static class IShapeExtensions
+    //{
+    //    public static JObject ShapeDump(this IShape shape)
+    //    {
+    //        var jObject = new JObject();
+    //        jObject.Add("ShapeType", JToken.FromObject(shape.Metadata.DisplayType));
+    //        return jObject;
+    //    }
+    //}
 }
