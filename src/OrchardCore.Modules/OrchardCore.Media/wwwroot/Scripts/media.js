@@ -835,11 +835,49 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             mediaNames.push(item.name);
                         });
 
+<<<<<<< HEAD
                         // in case the user drags an unselected item, we select it first
                         if (this.isMediaSelected(media) == false) {
                             mediaNames.push(media.name);
                             this.selectedMedias.push(media);
                         }
+=======
+                    signal.resolve();
+                }
+            },
+            fileSize: function () {
+                return Math.round(this.selectedMedia.size / 1024);
+            },
+            canAddMedia: function () {
+                var nonRemovedMediaItems = [];
+                for (var i = 0; i < this.mediaItems.length; i++) {
+                    if (!this.mediaItems[i].isRemoved) {
+                        nonRemovedMediaItems.push(this.mediaItems[i]);
+                    }
+                }
+
+                return nonRemovedMediaItems.length === 0 || nonRemovedMediaItems.length > 0 && allowMultiple;
+            },
+            thumbSize: function () {
+                return this.smallThumbs ? 120 : 240;
+            },
+            currentPrefs: {
+                get: function () {
+                    return {
+                        smallThumbs: this.smallThumbs
+                    };
+                },
+                set: function (newPrefs) {
+                    if (!newPrefs) {
+                        return;
+                    }
+                    this.smallThumbs = newPrefs.smallThumbs;
+                }
+            }
+        },
+        mounted: function () {
+            var self = this;
+>>>>>>> dev
 
                         e.dataTransfer.setData('mediaNames', JSON.stringify(mediaNames));
                         e.dataTransfer.setData('sourceFolder', this.selectedFolder.path);

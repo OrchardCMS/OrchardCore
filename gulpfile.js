@@ -11,7 +11,7 @@ var fs = require("file-system"),
     sourcemaps = require("gulp-sourcemaps"),
     less = require("gulp-less"),
     scss = require("gulp-sass"),
-    cssnano = require("gulp-cssnano"),
+    minify = require("gulp-minifier"),
     typescript = require("gulp-typescript"),
     terser = require("gulp-terser"),
     rename = require("gulp-rename"),
@@ -186,17 +186,20 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         })))
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
         .pipe(gulpif(generateRTL, postcss([rtl()])))
-        .pipe(cssnano({
-            autoprefixer: { browsers: ["last 2 versions"] },
-            discardComments: { removeAll: true },
-            discardUnused: false,
-            mergeIdents: false,
-            reduceIdents: false,
-            zindex: false
-        }))
-        .pipe(rename({
-            suffix: ".min"
-        }))
+        .pipe(minify({
+			minify: true,
+			minifyHTML: {
+			  collapseWhitespace: true,
+			  conservativeCollapse: true,
+			},
+			minifyJS: {
+			  sourceMap: true
+			},
+			minifyCSS: true
+		}))
+		.pipe(rename({
+			suffix: ".min"
+		}))
         .pipe(eol())
         .pipe(gulp.dest(assetGroup.outputDir));
         // Uncomment to copy assets to wwwroot
