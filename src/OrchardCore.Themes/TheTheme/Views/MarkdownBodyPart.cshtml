@@ -1,0 +1,8 @@
+@using OrchardCore.DisplayManagement;
+@model OrchardCore.Markdown.ViewModels.MarkdownBodyPartViewModel
+@{
+            var shapedump = ((IShape)Model).ShapeDump();
+    <h1>Markdwon Bodypart Shape</h1>
+    <pre>@shapedump</pre>
+}
+@Html.Raw(Model.Html)
