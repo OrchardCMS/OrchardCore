@@ -8,12 +8,14 @@ namespace OrchardCore.ContentTypes.Services
     {
         private readonly IContentDefinitionService _contentDefinitionService;
 
+        private static readonly string ContentTypesContext = "Content Types";
+
         public ContentTypeDataLocalizationProvider(IContentDefinitionService contentDefinitionService)
         {
             _contentDefinitionService = contentDefinitionService;
         }
         
-        public IEnumerable<string> GetAllStrings()
-            => _contentDefinitionService.GetTypes().Select(t => t.DisplayName);
+        public IEnumerable<DataLocalizedString> GetAllStrings()
+            => _contentDefinitionService.GetTypes().Select(t => new DataLocalizedString(ContentTypesContext, t.DisplayName));
     }
 }

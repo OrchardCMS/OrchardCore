@@ -8,16 +8,17 @@ namespace OrchardCore.ContentTypes.Services
     {
         private readonly IContentDefinitionService _contentDefinitionService;
 
+        private static readonly string ContentFieldsContext = "Content Fields";
+
         public ContentFieldDataLocalizationProvider(IContentDefinitionService contentDefinitionService)
         {
             _contentDefinitionService = contentDefinitionService;
         }
         
         // TODO: Check if there's a better way to get the fields
-        public IEnumerable<string> GetAllStrings()
+        public IEnumerable<DataLocalizedString> GetAllStrings()
             => _contentDefinitionService.GetTypes()
                     .SelectMany(t => t.TypeDefinition.Parts)
-                    .Where(p => p.PartDefinition.Fields.Count() > 0)
-                    .SelectMany(p => p.PartDefinition.Fields.Select(f => f.Name));
+                    .SelectMany(p => p.PartDefinition.Fields.Select(f => new DataLocalizedString(ContentFieldsContext, f.Name)));
     }
 }
