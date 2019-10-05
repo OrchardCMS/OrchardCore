@@ -31,7 +31,7 @@ Especially if mounting a volume at `/App_Data/` as mounting hides pre-existing f
 The PO files need to be included in the publish output directory. 
 Add the following configurations to your `[Web Project].csproj` file to include them as Content.
 
-``` xml
+```xml
   <ItemGroup>
     <Content Include="Localization\**" >
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -44,7 +44,7 @@ Add the following configurations to your `[Web Project].csproj` file to include 
 ## Recipe Step
 Cultures can be added during recipes using the settings step. Here is a sample step:
 
-``` json
+```json
 {
   "name": "settings",
   "LocalizationSettings": {
@@ -94,7 +94,7 @@ The context string must match the full name of the type the localizer is injecti
 
 #### Source
 
-``` cs
+```csharp
 namespace MyNamespace
 {
     public class MyService : IMyService
@@ -142,7 +142,7 @@ msgstr[1] "[{0} livres]"
 - Import the `using Microsoft.Extensions.Localization` namespace.
 - Inject an instance of `IStringLocalizer` or `IViewLocalizer` (represented as the `T` variable in the following example).
 
-``` cs
+```csharp
 T.Plural(count, "1 book", "{0} books")
 ```
 
@@ -152,7 +152,7 @@ In order to generate the .po files, you can use [this tool](https://github.com/l
 
 The simpler way to use it is to install it with this command:
 
-``` bash
+```bash
 dotnet tool install --global PoExtractor.OrchardCore
 ```
 

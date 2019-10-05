@@ -12,7 +12,7 @@ using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.Filters;
 using OrchardCore.Markdown.Handlers;
 using OrchardCore.Markdown.Indexing;
-using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 using OrchardCore.Modules;
@@ -30,15 +30,15 @@ namespace OrchardCore.Markdown
         public override void ConfigureServices(IServiceCollection services)
         {
             // Markdown Part
+            services.AddContentPart<MarkdownBodyPart>();
             services.AddScoped<IContentPartDisplayDriver, MarkdownBodyPartDisplay>();
-            services.AddSingleton<ContentPart, MarkdownBodyPart>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
             services.AddScoped<IContentPartHandler, MarkdownBodyPartHandler>();
 
             // Markdown Field
-            services.AddSingleton<ContentField, MarkdownField>();
+            services.AddContentField<MarkdownField>();
             services.AddScoped<IContentFieldDisplayDriver, MarkdownFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();

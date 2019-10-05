@@ -16,6 +16,9 @@ namespace OrchardCore.Alias.Drivers
 {
     public class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
     {
+        // Match the AutoRoutePart Length
+        public const int MaxAliasLength = 1024;
+
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly IStringLocalizer<AliasPartDisplayDriver> T;
@@ -66,6 +69,11 @@ namespace OrchardCore.Alias.Drivers
 
         private async Task ValidateAsync(AliasPart alias, IUpdateModel updater)
         {
+            if (alias.Alias?.Length > MaxAliasLength)
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(alias.Alias), T["Your alias is too long. The alias can only be up to {0} characters.", MaxAliasLength]);
+            }
+
             if (alias.Alias != null && (await _session.QueryIndex<AliasPartIndex>(o => o.Alias == alias.Alias && o.ContentItemId != alias.ContentItem.ContentItemId).CountAsync()) > 0)
             {
                 updater.ModelState.AddModelError(Prefix, nameof(alias.Alias), T["Your alias is already in use."]);

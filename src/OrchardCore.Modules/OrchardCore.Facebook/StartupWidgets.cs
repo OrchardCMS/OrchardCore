@@ -20,10 +20,11 @@ namespace OrchardCore.Facebook
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentPartDisplayDriver, FacebookPluginPartDisplayDriver>();
-            services.AddScoped<IShapeTableProvider, LiquidShapes>();
-            services.AddSingleton<ContentPart, FacebookPluginPart>();
             services.AddScoped<IDataMigration, WidgetMigrations>();
+            services.AddScoped<IShapeTableProvider, LiquidShapes>();
+
+            services.AddScoped<IContentPartDisplayDriver, FacebookPluginPartDisplayDriver>();
+            services.AddContentPart<FacebookPluginPart>();
             services.AddScoped<IContentPartHandler, FacebookPluginPartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, FacebookPluginPartSettingsDisplayDriver>();
         }

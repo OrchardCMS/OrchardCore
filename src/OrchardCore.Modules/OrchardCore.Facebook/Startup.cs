@@ -17,7 +17,7 @@ namespace OrchardCore.Facebook
 {
     public class Startup : StartupBase
     {
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             builder.UseMiddleware<ScriptsMiddleware>();
         }

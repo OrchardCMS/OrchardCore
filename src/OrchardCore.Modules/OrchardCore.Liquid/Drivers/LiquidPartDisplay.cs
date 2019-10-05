@@ -3,7 +3,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Liquid.Model;
+using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.ViewModels;
 
 namespace OrchardCore.Liquid.Drivers

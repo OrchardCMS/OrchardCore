@@ -24,7 +24,7 @@ namespace OrchardCore.Localization.PortableObject
 
         private void LoadFileToDictionary(IFileInfo fileInfo, CultureDictionary dictionary)
         {
-            if (fileInfo.Exists)
+            if (fileInfo.Exists && !fileInfo.IsDirectory)
             {
                 using (var stream = fileInfo.CreateReadStream())
                 {

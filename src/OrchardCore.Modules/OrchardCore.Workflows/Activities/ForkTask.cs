@@ -16,6 +16,7 @@ namespace OrchardCore.Workflows.Activities
         private IStringLocalizer T { get; }
 
         public override string Name => nameof(ForkTask);
+        public override LocalizedString DisplayText => T["Fork Task"];
         public override LocalizedString Category => T["Control Flow"];
 
         public IList<string> Forks

@@ -48,6 +48,12 @@ When a list of content item ids is available, the `content_item_id` filter shoul
 {% assign my_content = Content.ContentItemVersionId["49gq8g6zndfc736x0az3zsp4w3"] %}
 ```
 
+#### Rendering a content item from an alias
+
+```liquid
+{% contentitem alias:"alias:test" display_type="Detail" %}
+```
+
 ## Razor Helper
 
 The following methods are available from the Razor helper.

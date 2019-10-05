@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Cache;
 
@@ -80,10 +81,14 @@ namespace OrchardCore.DynamicCache.EventHandlers
             if (!_cached.ContainsKey(cacheContext.CacheId) && context.ChildContent != null)
             {
                 // The content is pre-encoded in the cache so we don't have to do it every time it's rendered
-                using (var sw = new StringWriter())
+                using (var sb = StringBuilderPool.GetInstance())
                 {
-                    context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
-                    await _dynamicCacheService.SetCachedValueAsync(cacheContext, sw.ToString());
+                    using (var sw = new StringWriter(sb.Builder))
+                    {
+                        context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
+                        await _dynamicCacheService.SetCachedValueAsync(cacheContext, sw.ToString());
+                        await sw.FlushAsync();
+                    }
                 }
             }
         }

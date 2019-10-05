@@ -13,11 +13,12 @@ namespace OrchardCore.ContentLocalization
     {
         public static IServiceCollection AddContentLocalization(this IServiceCollection services)
         {
+            services.AddContentPart<LocalizationPart>();
+
             services.TryAddScoped<IContentLocalizationManager, DefaultContentLocalizationManager>();
             services.AddSingleton<IIndexProvider, LocalizedContentItemIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentLocalizationHandler, ContentLocalizationPartHandlerCoordinator>();
-            services.AddSingleton<ContentPart, LocalizationPart>();
 
             return services;
         }

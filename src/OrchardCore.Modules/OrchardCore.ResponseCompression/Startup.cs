@@ -10,7 +10,7 @@ namespace OrchardCore.ResponseCompression
     {
         public override int Order => -5;
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             app.UseResponseCompression();
         }

@@ -20,6 +20,7 @@ namespace OrchardCore.Workflows.Activities
         private IStringLocalizer T { get; }
 
         public override string Name => nameof(IfElseTask);
+        public override LocalizedString DisplayText => T["If Else Task"];
         public override LocalizedString Category => T["Control Flow"];
 
         /// <summary>

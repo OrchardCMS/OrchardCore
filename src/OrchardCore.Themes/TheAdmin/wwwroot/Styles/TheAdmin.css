@@ -9034,6 +9034,9 @@ div.CodeMirror-dragcursors {
 /* Help users use markselection to safely style text background */
 span.CodeMirror-selectedtext {
   background: none; }
+#ui-datepicker-div {
+  z-index: 100 !important; }
+
 html[dir], [dir] body {
   background-color: #FFF; }
 
@@ -10191,6 +10194,3 @@ select[multiple] {
     overflow: auto !important;
   }
 }
-
-#ui-datepicker-div {
-  z-index: 100 !important; }

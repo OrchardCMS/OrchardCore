@@ -4,6 +4,7 @@ theme: readthedocs
 # Repository
 repo_name: OrchardCMS/OrchardCore
 repo_url: https://github.com/OrchardCMS/OrchardCore
+edit_uri: edit/dev/src/
 
 # Options
 docs_dir: src
@@ -54,6 +55,7 @@ nav:
         - Lists: OrchardCore.Modules/OrchardCore.Lists/README.md
         - Markdown: OrchardCore.Modules/OrchardCore.Markdown/README.md
         - Media: OrchardCore.Modules/OrchardCore.Media/README.md
+        - Media Azure: OrchardCore.Modules/OrchardCore.Media.Azure/README.md
         - Menu: OrchardCore.Modules/OrchardCore.Menu/README.md
         - Navigation: OrchardCore.Modules/OrchardCore.Navigation/README.md
         - Indexing: OrchardCore.Modules/OrchardCore.Indexing/README.md
@@ -74,6 +76,7 @@ nav:
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
         - GraphQL: OrchardCore.Modules/OrchardCore.Apis.GraphQL/README.md
         - GraphQL queries: OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/README.md
+        - Health Check: OrchardCore.Modules/OrchardCore.HealthChecks/README.md
         - Localization: OrchardCore.Modules/OrchardCore.Localization/README.md
         - Logging Serilog: OrchardCore/OrchardCore.Logging.Serilog/readme.md
         - OpenId: OrchardCore.Modules/OrchardCore.OpenId/README.md
@@ -90,5 +93,5 @@ nav:
         - Microsoft: OrchardCore.Modules/OrchardCore.Microsoft.Authentication/README.md
         - Facebook: OrchardCore.Modules/OrchardCore.Facebook/README.md
         - Twitter: OrchardCore.Modules/OrchardCore.Twitter/README.md
-        - Github: OrchardCore.Modules/OrchardCore.Github/README.md
+        - GitHub: OrchardCore.Modules/OrchardCore.GitHub/README.md
         - Google: OrchardCore.Modules/OrchardCore.Google/README.md
