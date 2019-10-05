@@ -1,6 +1,6 @@
 @model OrchardCore.Workflows.ViewModels.WorkflowTypePropertiesViewModel
 
-<h1>@RenderTitleSegments(T["Edit Workflow Type"])</h1>
+<zone name="Title"><h1>@RenderTitleSegments(T["Edit Workflow Type"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="EditProperties" method="post">
