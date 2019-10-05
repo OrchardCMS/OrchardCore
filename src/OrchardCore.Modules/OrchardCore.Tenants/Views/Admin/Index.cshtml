@@ -1,6 +1,5 @@
 @model AdminIndexViewModel
 @using Microsoft.AspNetCore.Http
-@using Microsoft.AspNetCore.WebUtilities
 @using OrchardCore.Environment.Shell
 @using OrchardCore.Environment.Shell.Models
 
@@ -17,7 +16,7 @@
 
         var hostString = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
         var port = requestHost.Port;
-        
+
         if (port.HasValue)
         {
             hostString += ":" + port;
@@ -34,7 +33,7 @@
 
         if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
         {
-            result = QueryHelpers.AddQueryString(result, "token", shellSettingsEntry.Token);
+            result += QueryString.Create("token", shellSettingsEntry.Token);
         }
 
         return result;
@@ -47,7 +46,7 @@
 
         var hostString = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
         var port = requestHost.Port;
-        
+
         if (port.HasValue)
         {
             hostString += ":" + port;
