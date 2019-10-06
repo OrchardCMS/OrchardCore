@@ -29,6 +29,7 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddIdGeneration();
 
+            services.AddSingleton<SitemapsTransformer>();
             services.AddSingleton<SitemapEntries>();
 
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
@@ -49,14 +50,14 @@ namespace OrchardCore.Sitemaps
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaControllerRoute(
-                 name: SitemapRouteConstraint.RouteKey,
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: "{*sitemap}",
-                 constraints: new { sitemap = new SitemapRouteConstraint() },
-                 defaults: new { controller = "Sitemap", action = "Index" }
-             );
-
+            //routes.MapAreaControllerRoute(
+            //     name: SitemapRouteConstraint.RouteKey,
+            //     areaName: "OrchardCore.Sitemaps",
+            //     pattern: "{*sitemap}",
+            //     constraints: new { sitemap = new SitemapRouteConstraint() },
+            //     defaults: new { controller = "Sitemap", action = "Index" }
+            // );
+            routes.MapDynamicControllerRoute<SitemapsTransformer>("/{**sitemap}");
             var sitemapSetService = serviceProvider.GetService<ISitemapService>();
             var document = sitemapSetService.LoadSitemapDocumentAsync().GetAwaiter().GetResult();
             sitemapSetService.BuildAllSitemapRouteEntries(document);
