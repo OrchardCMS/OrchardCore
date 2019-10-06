@@ -26,7 +26,8 @@ namespace OrchardCore.DisplayManagement
     {
         public static readonly JsonSerializer ShapeSerializer = new JsonSerializer
         {
-            DefaultValueHandling = DefaultValueHandling.Ignore
+            DefaultValueHandling = DefaultValueHandling.Ignore,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
 
         public static JObject ShapeDump(this IShape shape)
