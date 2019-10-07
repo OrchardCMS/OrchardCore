@@ -21,7 +21,7 @@ var fs = require("file-system"),
     util = require('gulp-util');
     postcss = require('gulp-postcss');
     rtl = require('postcss-rtl');
-	babel = require('gulp-babel');
+    babel = require('gulp-babel');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
