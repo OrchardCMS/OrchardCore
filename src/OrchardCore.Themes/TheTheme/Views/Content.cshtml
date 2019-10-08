@@ -1,5 +1,4 @@
 @using OrchardCore.Mvc.Utilities;
-@using OrchardCore.DisplayManagement;
 @{
     Model.Classes.Add("content-item");
 
@@ -22,16 +21,6 @@
                     </div>
                 }
             </header>
-        }
-        @{
-            var shapedump = (Model.Content as IShape).ShapeDump();
-            <pre>
-                @shapedump
-            </pre>
-<h3>@Model.ContentItem.Content.GetType().Name</h3>
-            <pre>
-            @Model.ContentItem.Content
-</pre>
         }
         @await DisplayAsync(Model.Content)
         @if (Model.Footer != null)

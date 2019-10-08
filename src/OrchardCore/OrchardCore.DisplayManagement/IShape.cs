@@ -21,7 +21,6 @@ namespace OrchardCore.DisplayManagement
         IDictionary<string, object> Properties { get; }
     }
 
-
     public static class IShapeExtensions
     {
         public static readonly JsonSerializer ShapeSerializer = new JsonSerializer

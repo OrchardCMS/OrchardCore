@@ -45,17 +45,14 @@ namespace OrchardCore.DisplayManagement.Shapes
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
-
         [JsonIgnore]
         public IEnumerable<Func<IShape, Task>> ProcessingAsync { get; private set; }
 
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
-
         [JsonIgnore]
         public IEnumerable<Action<ShapeDisplayContext>> Displayed { get; private set; }
-
 
         [JsonIgnore]
         public IList<string> BindingSources { get; set; }
