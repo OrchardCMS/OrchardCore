@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -167,7 +167,7 @@ namespace OrchardCore.OpenId.Configuration
                         throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                     }
 
-                    var tenant = _runningShellTable.Match(uri.Authority, uri.AbsolutePath);
+                    var tenant = _runningShellTable.Match(new HostString(uri.Authority), uri.AbsolutePath);
                     if (tenant == null || !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
                     {
                         throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
