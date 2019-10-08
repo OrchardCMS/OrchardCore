@@ -93,7 +93,8 @@ namespace OrchardCore.Modules
             var appBuilder = new ApplicationBuilder(ShellScope.Context.ServiceProvider, _features);
 
             // Create a nested pipeline to configure the tenant middleware pipeline
-            var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
+            //var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
+            var startupFilters = ShellScope.Services.GetService<IEnumerable<IStartupFilter>>();
 
             var shellPipeline = new ShellRequestPipeline();
 

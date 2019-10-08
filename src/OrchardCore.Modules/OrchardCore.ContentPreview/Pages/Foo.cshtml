@@ -1,0 +1,22 @@
+@page "/foo/{id?}"
+
+@using OrchardCore.ContentManagement;
+
+@functions
+{
+    [FromRoute]
+    public string Id { get; set; }
+}
+
+@{ 
+    ContentItem item = null;
+
+    if (Id != null)
+    {
+        item = await Orchard.GetContentItemByIdAsync(Id);
+    }
+}
+
+<h1>Module Foo Page</h1>
+
+<h3>@(item?.Content.HtmlBodyPart.Html ?? "Item not found")</h3>

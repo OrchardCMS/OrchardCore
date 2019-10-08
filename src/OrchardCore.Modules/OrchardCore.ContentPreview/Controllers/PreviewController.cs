@@ -91,6 +91,8 @@ namespace OrchardCore.ContentPreview.Controllers
 
             var contentItemId = Request.Form["PreviewContentItemId"];
             var contentItemVersionId = Request.Form["PreviewContentItemVersionId"];
+
+            // WARNING: The string value exists but doesn't represent an int.
             int.TryParse(Request.Form["PreviewId"], out var contentId);
 
             contentItem.Id = contentId;
