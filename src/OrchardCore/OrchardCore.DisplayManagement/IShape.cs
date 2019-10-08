@@ -41,7 +41,7 @@ namespace OrchardCore.DisplayManagement
             var metadata = JObject.FromObject(shape.Metadata, ShapeSerializer);
             if (metadata.HasValues)
             {
-                jObject.Add("Metadata", metadata);
+                jObject.Add(nameof(ShapeMetadata), metadata);
             }
 
             if (shape.Classes != null && shape.Classes.Any())
@@ -50,11 +50,11 @@ namespace OrchardCore.DisplayManagement
             }
             if (shape.Attributes != null && shape.Attributes.Any())
             {
-                jObject.Add("Attributes", JObject.FromObject(shape.Attributes, ShapeSerializer));
+                jObject.Add(nameof(shape.Attributes), JObject.FromObject(shape.Attributes, ShapeSerializer));
             }
             if (shape.Properties != null && shape.Properties.Any())
             {
-                jObject.Add("Properties", JObject.FromObject(shape.Properties, ShapeSerializer));
+                jObject.Add(nameof(shape.Properties), JObject.FromObject(shape.Properties, ShapeSerializer));
             }
 
             var actualShape = shape as Shape;
@@ -73,7 +73,7 @@ namespace OrchardCore.DisplayManagement
                 }
                 if (items.HasValues)
                 {
-                    jObject.Add("Items", items);
+                    jObject.Add(nameof(actualShape.Items), items);
                 }
             }
 

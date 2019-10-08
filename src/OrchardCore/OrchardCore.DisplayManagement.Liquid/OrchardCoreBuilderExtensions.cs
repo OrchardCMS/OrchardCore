@@ -39,6 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.AddLiquidFilter<AppendVersionFilter>("append_version");
                 services.AddLiquidFilter<ResourceUrlFilter>("resource_url");
+                services.AddLiquidFilter<ShapeDumpFilter>("shape_dump");
             });
 
             return builder;
