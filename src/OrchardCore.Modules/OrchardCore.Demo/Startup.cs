@@ -26,33 +26,33 @@ namespace OrchardCore.Demo
 {
     public class Startup : StartupBase
     {
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Home",
                 areaName: "OrchardCore.Demo",
-                template: "Home/Index",
+                pattern: "Home/Index",
                 defaults: new { controller = "Home", action = "Index" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Display",
                 areaName: "OrchardCore.Demo",
-                template: "Home/Display/{contentItemId}",
+                pattern: "Home/Display/{contentItemId}",
                 defaults: new { controller = "Home", action = "Display" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Error",
                 areaName: "OrchardCore.Demo",
-                template: "Home/IndexError",
+                pattern: "Home/IndexError",
                 defaults: new { controller = "Home", action = "IndexError" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "AdminDemo",
                 areaName: "OrchardCore.Demo",
-                template: "Admin/Demo/Index",
+                pattern: "Admin/Demo/Index",
                 defaults: new { controller = "Admin", action = "Index" }
             );
 
@@ -71,7 +71,7 @@ namespace OrchardCore.Demo
             services.AddScoped<IContentDisplayDriver, TestContentElementDisplay>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddSingleton<ContentPart, TestContentPartA>();
+            services.AddContentPart<TestContentPartA>();
 
             services.AddScoped<IDisplayDriver<User>, UserProfileDisplayDriver>();
 

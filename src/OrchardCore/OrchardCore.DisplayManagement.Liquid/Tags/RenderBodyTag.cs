@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
@@ -18,12 +17,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 throw new ArgumentException("ThemeLayout missing while invoking 'render_body'");
             }
 
-            if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
+            if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
             {
                 throw new ArgumentException("DisplayHelper missing while invoking 'render_body'");
             }
 
-            var htmlContent = await (Task<IHtmlContent>)displayHelper(layout.Content);
+            var htmlContent = await displayHelper.ShapeExecuteAsync(layout.Content);
             htmlContent.WriteTo(writer, HtmlEncoder.Default);
             return Completion.Normal;
         }

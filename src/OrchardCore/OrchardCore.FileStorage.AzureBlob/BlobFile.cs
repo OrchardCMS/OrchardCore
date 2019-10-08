@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.WindowsAzure.Storage.Blob;
 
@@ -7,15 +8,15 @@ namespace OrchardCore.FileStorage.AzureBlob
     public class BlobFile : IFileStoreEntry
     {
         private readonly string _path;
-        private readonly BlobProperties _blobProperties;
+        private readonly CloudBlockBlob _blobReference;
         private readonly string _name;
         private readonly string _directoryPath;
 
-        public BlobFile(string path, BlobProperties blobProperties)
+        public BlobFile(string path, CloudBlockBlob blobReference)
         {
             _path = path;
-            _blobProperties = blobProperties;
-            _name = _path.Split('/').Last();
+            _blobReference = blobReference;
+            _name = System.IO.Path.GetFileName(_path);
 
             if (_name == _path) // file is in root Directory
             {
@@ -24,7 +25,6 @@ namespace OrchardCore.FileStorage.AzureBlob
             else
             {
                 _directoryPath = _path.Substring(0, _path.Length - _name.Length - 1);
-
             }
         }
 
@@ -35,10 +35,12 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public string DirectoryPath => _directoryPath;
 
-        public long Length => _blobProperties.Length;
+        public long Length => _blobReference.Properties.Length;
 
-        public DateTime LastModifiedUtc => _blobProperties.LastModified.GetValueOrDefault().UtcDateTime;
+        public DateTime LastModifiedUtc => _blobReference.Properties.LastModified.GetValueOrDefault().UtcDateTime;
 
         public bool IsDirectory => false;
+
+        public CloudBlockBlob BlobReference => _blobReference;
     }
 }

@@ -9,7 +9,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Html.Model;
+using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Liquid;
@@ -52,22 +52,13 @@ namespace OrchardCore.Html.Drivers
             return Edit(model, context);
         }
 
-        private async Task BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart HtmlBodyPart, ContentTypePartDefinition definition)
+        private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart HtmlBodyPart, ContentTypePartDefinition definition)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(HtmlBodyPart.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.Name == nameof(HtmlBodyPart));
-            var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
-
             var templateContext = new TemplateContext();
             templateContext.SetValue("ContentItem", HtmlBodyPart.ContentItem);
             templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
 
-            using (var writer = new StringWriter())
-            {
-                await _liquidTemplatemanager.RenderAsync(HtmlBodyPart.Html, writer, HtmlEncoder.Default, templateContext);
-                model.Html = writer.ToString();
-            }
-
+            model.Html = await _liquidTemplatemanager.RenderAsync(HtmlBodyPart.Html, HtmlEncoder.Default, templateContext);
             model.ContentItem = HtmlBodyPart.ContentItem;
             model.Source = HtmlBodyPart.Html;
             model.HtmlBodyPart = HtmlBodyPart;

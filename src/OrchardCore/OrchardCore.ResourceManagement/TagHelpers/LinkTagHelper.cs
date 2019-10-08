@@ -8,11 +8,15 @@ namespace OrchardCore.ResourceManagement.TagHelpers
     public class LinkTagHelper : TagHelper
     {
         private const string SrcAttributeName = "asp-src";
+        private const string AppendVersionAttributeName = "asp-append-version";
 
         public string Rel { get; set; }
 
         [HtmlAttributeName(SrcAttributeName)]
         public string Src { get; set; }
+
+        [HtmlAttributeName(AppendVersionAttributeName)]
+        public bool? AppendVersion { get; set; }
 
         public string Title { get; set; }
 
@@ -54,6 +58,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             if (!string.IsNullOrEmpty(Type))
             {
                 linkEntry.Type = Type;
+            }
+
+            if (AppendVersion.HasValue)
+            {
+                linkEntry.AppendVersion = AppendVersion.Value;
             }
 
             foreach(var attribute in output.Attributes)

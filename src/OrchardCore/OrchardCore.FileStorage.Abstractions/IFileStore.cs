@@ -94,6 +94,14 @@ namespace OrchardCore.FileStorage
         Task<Stream> GetFileStreamAsync(string path);
 
         /// <summary>
+        /// Creates a stream to read the contents of a file in the file store.
+        /// </summary>
+        /// <param name="fileStoreEntry">The IFileStoreEntry to be read.</param>
+        /// <returns>An instance of <see cref="System.IO.Stream"/> that can be used to read the contents of the file. The caller must close the stream when finished.</returns>
+        /// <exception cref="FileStoreException">Thrown if the specified file does not exist.</exception>
+        Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry);
+
+        /// <summary>
         /// Creates a new file in the file store from the contents of an input stream.
         /// </summary>
         /// <param name="path">The path of the file to be created.</param>
@@ -104,7 +112,7 @@ namespace OrchardCore.FileStorage
         /// If the specified path contains one or more directories, then those directories are
         /// created if they do not already exist.
         /// </remarks>
-        Task CreateFileFromStream(string path, Stream inputStream, bool overwrite = false);
+        Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false);
     }
 
     public static class IFileStoreExtensions

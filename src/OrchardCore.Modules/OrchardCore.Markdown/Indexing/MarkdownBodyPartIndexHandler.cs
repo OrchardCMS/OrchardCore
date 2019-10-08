@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Models;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.Markdown.Indexing

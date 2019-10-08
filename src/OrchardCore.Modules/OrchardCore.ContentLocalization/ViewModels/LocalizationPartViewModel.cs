@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentLocalization.Models;
-using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentLocalization.ViewModels

@@ -20,8 +20,8 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using YesSql;
 using YesSql.Services;
@@ -73,7 +73,7 @@ namespace OrchardCore.Contents.Controllers
         public ILogger Logger { get; set; }
 
         [HttpGet]
-        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string contentTypeName = "")
+        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string contentTypeId = "")
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
@@ -101,9 +101,9 @@ namespace OrchardCore.Contents.Controllers
                     break;
             }
 
-            if (contentTypeName != "")
+            if (contentTypeId != "")
             {
-                model.Options.SelectedContentType = contentTypeName;
+                model.Options.SelectedContentType = contentTypeId;
             }
 
             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
@@ -235,7 +235,7 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> ListPOST(ContentOptions options, IEnumerable<int> itemIds)
+        public async Task<ActionResult> ListPOST(ViewModels.ContentOptions options, IEnumerable<int> itemIds)
         {
             if (itemIds?.Count() > 0)
             {
@@ -341,6 +341,8 @@ namespace OrchardCore.Contents.Controllers
             // pass a dummy content to the authorization check to check for "own" variations
             var dummyContent = await _contentManager.NewAsync(id);
 
+            // Set the current user as the owner to check for ownership permissions on creation
+            dummyContent.Owner = User.Identity.Name;
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, dummyContent))
             {
@@ -678,7 +680,7 @@ namespace OrchardCore.Contents.Controllers
             var creatable = new List<ContentTypeDefinition>();
             foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
             {
-                if (ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
+                if (ctd.GetSettings<ContentTypeSettings>().Creatable)
                 {
                     var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
                     if (authorized)
@@ -695,7 +697,7 @@ namespace OrchardCore.Contents.Controllers
             var listable = new List<ContentTypeDefinition>();
             foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
             {
-                if (ctd.Settings.ToObject<ContentTypeSettings>().Listable)
+                if (ctd.GetSettings<ContentTypeSettings>().Listable)
                 {
                     var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
                     if (authorized)

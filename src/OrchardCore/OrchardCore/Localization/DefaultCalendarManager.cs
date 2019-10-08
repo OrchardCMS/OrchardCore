@@ -7,6 +7,7 @@ namespace OrchardCore.Localization
     public class DefaultCalendarManager : ICalendarManager
     {
         private readonly IEnumerable<ICalendarSelector> _calendarSelectors;
+        private CalendarName? _calendarName;
 
         public DefaultCalendarManager(IEnumerable<ICalendarSelector> calendarSelectors)
         {
@@ -15,6 +16,11 @@ namespace OrchardCore.Localization
 
         public async Task<CalendarName> GetCurrentCalendar()
         {
+            if (_calendarName.HasValue)
+            {
+                return _calendarName.Value;
+            }
+
             var calendarResults = new List<CalendarSelectorResult>();
 
             foreach (var calendarSelector in _calendarSelectors)
@@ -36,9 +42,9 @@ namespace OrchardCore.Localization
                 calendarResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
             }
 
-            var calendarName = await calendarResults.First().CalendarName();
+            _calendarName = await calendarResults.First().CalendarName();
 
-            return calendarName;
+            return _calendarName.Value;
         }
     }
 }

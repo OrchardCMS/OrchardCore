@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Modules
@@ -10,7 +10,7 @@ namespace OrchardCore.Modules
     {
         private readonly List<string> _moduleNames;
 
-        public AssemblyAttributeModuleNamesProvider(IHostingEnvironment hostingEnvironment)
+        public AssemblyAttributeModuleNamesProvider(IHostEnvironment hostingEnvironment)
         {
             var assembly = Assembly.Load(new AssemblyName(hostingEnvironment.ApplicationName));
             _moduleNames = assembly.GetCustomAttributes<ModuleNameAttribute>().Select(m => m.Name).ToList();

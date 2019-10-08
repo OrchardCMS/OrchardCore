@@ -36,7 +36,7 @@ namespace OrchardCore.Layers
             });
 
             services.AddScoped<IDisplayDriver<ISite>, LayerSiteSettingsDisplayDriver>();
-            services.AddSingleton<ContentPart, LayerMetadata>();
+            services.AddContentPart<LayerMetadata>();
             services.AddScoped<IContentDisplayDriver, LayerMetadataWelder>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<ILayerService, LayerService>();
@@ -51,7 +51,7 @@ namespace OrchardCore.Layers
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllLayersDeploymentStepDriver>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var scriptingManager = serviceProvider.GetRequiredService<IScriptingManager>();
             scriptingManager.GlobalMethodProviders.Add(new DefaultLayersMethodProvider());

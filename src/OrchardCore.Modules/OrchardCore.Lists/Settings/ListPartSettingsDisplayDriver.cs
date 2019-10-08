@@ -38,7 +38,7 @@ namespace OrchardCore.Lists.Settings
 
             return Initialize<ListPartSettingsViewModel>("ListPartSettings_Edit", model =>
             {
-                model.ListPartSettings = contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
+                model.ListPartSettings = contentTypePartDefinition.GetSettings<ListPartSettings>();
                 model.PageSize = model.ListPartSettings.PageSize;
                 model.EnableOrdering = model.ListPartSettings.EnableOrdering;
                 model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
@@ -57,7 +57,7 @@ namespace OrchardCore.Lists.Settings
             {
                 return null;
             }
-            var settings = contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
+            var settings = contentTypePartDefinition.GetSettings<ListPartSettings>();
 
             var model = new ListPartSettingsViewModel();
 
@@ -69,9 +69,13 @@ namespace OrchardCore.Lists.Settings
             }
             else
             {
-                context.Builder.WithSetting(nameof(ListPartSettings.PageSize), model.PageSize.ToString());
-                context.Builder.WithSetting(nameof(ListPartSettings.EnableOrdering), model.EnableOrdering.ToString());
-                context.Builder.ContainedContentTypes(model.ContainedContentTypes);
+                context.Builder.WithSettings(new ListPartSettings
+                {
+                    PageSize = model.PageSize,
+		            EnableOrdering = model.EnableOrdering,
+                    ContainedContentTypes = model.ContainedContentTypes
+                });
+
                 // Update order of existing content if enable ordering has been turned on
                 if (settings.EnableOrdering != model.EnableOrdering && model.EnableOrdering == true)
                 {

@@ -11,5 +11,6 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(ContentPublishedEvent);
+        public override LocalizedString DisplayText => T["Content Published Event"];
     }
 }

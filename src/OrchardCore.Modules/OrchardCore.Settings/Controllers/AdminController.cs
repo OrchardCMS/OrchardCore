@@ -1,7 +1,3 @@
-using System;
-using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -84,11 +80,6 @@ namespace OrchardCore.Settings.Controllers
 
             if (ModelState.IsValid)
             {
-                if (site.Culture == CultureInfo.InvariantCulture.LCID.ToString())
-                {
-                    site.Culture = "";
-                }
-
                 await _siteService.UpdateSiteSettingsAsync(site);
 
                 _notifier.Success(H["Site settings updated successfully."]);
@@ -97,79 +88,6 @@ namespace OrchardCore.Settings.Controllers
             }
 
             return View(viewModel);
-        }
-
-        public async Task<IActionResult> Culture()
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
-            {
-                return Unauthorized();
-            }
-
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-            var model = new SiteCulturesViewModel
-            {
-                CurrentCulture = siteSettings.Culture,
-                SiteCultures = siteSettings.SupportedCultures
-            };
-
-            model.AvailableSystemCultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                .Select(ci => CultureInfo.GetCultureInfo(ci.Name))
-                .Where(s => !model.SiteCultures.Contains(s.Name));
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddCulture(string systemCultureName, string cultureName)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
-            {
-                return Unauthorized();
-            }
-
-            cultureName = String.IsNullOrWhiteSpace(cultureName) ? systemCultureName ?? String.Empty : cultureName;
-
-            if (!String.IsNullOrWhiteSpace(cultureName) && Regex.IsMatch(cultureName, "^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$"))
-            {
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                siteSettings.SupportedCultures = siteSettings.SupportedCultures.Union(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).Distinct().ToArray();
-                await _siteService.UpdateSiteSettingsAsync(siteSettings);
-
-                _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);
-            }
-            else if (String.IsNullOrWhiteSpace(cultureName))
-            {
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                siteSettings.SupportedCultures = siteSettings.SupportedCultures.Union(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).Distinct().ToArray();
-                await _siteService.UpdateSiteSettingsAsync(siteSettings);
-
-                _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);
-            }
-            else
-            {
-                ModelState.AddModelError(nameof(cultureName), S["Invalid culture name"]);
-            }
-
-            return RedirectToAction("Culture");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> DeleteCulture(string cultureName)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
-            {
-                return Unauthorized();
-            }
-
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            siteSettings.SupportedCultures = siteSettings.SupportedCultures.Except(new[] { cultureName ?? String.Empty }, StringComparer.OrdinalIgnoreCase).ToArray();
-            await _siteService.UpdateSiteSettingsAsync(siteSettings);
-
-            _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);
-
-            return RedirectToAction("Culture");
         }
     }
 }

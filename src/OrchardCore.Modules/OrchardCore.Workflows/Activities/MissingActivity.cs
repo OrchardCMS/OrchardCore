@@ -23,6 +23,7 @@ namespace OrchardCore.Workflows.Activities
         private IStringLocalizer T { get; }
 
         public override string Name => nameof(MissingActivity);
+        public override LocalizedString DisplayText => T["Missing Activity"];
         public override LocalizedString Category => T["Exceptions"];
 
         public ActivityRecord MissingActivityRecord { get; }

@@ -40,7 +40,7 @@ namespace OrchardCore.Localization
                     }
                 }
 
-                var dictionary = new CultureDictionary(culture.Name, rule);
+                var dictionary = new CultureDictionary(culture.Name, rule ?? DefaultPluralRule);
                 _translationProvider.LoadTranslations(culture.Name, dictionary);
 
                 return dictionary;

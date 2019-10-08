@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Html.Model;
+using OrchardCore.Html.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -17,7 +17,7 @@ namespace OrchardCore.Html.Settings
                 return null;
             }
 
-            return Initialize<HtmlBodyPartSettings>("HtmlBodyPartSettings_Edit", model => contentTypePartDefinition.Settings.Populate(model))
+            return Initialize<HtmlBodyPartSettings>("HtmlBodyPartSettings_Edit", model => contentTypePartDefinition.PopulateSettings<HtmlBodyPartSettings>(model))
                 .Location("Content");
         }
 
