@@ -44,8 +44,8 @@ namespace OrchardCore.Environment.Shell
 
         public ShellSettings Match(HostString host, PathString path, bool fallbackToDefault = true)
         {
-            // Also handles IPv6 addresses format.
-            GetHostParts(host.Value, out var hostOnly, out var port);
+            // Supports IPv6 format.
+            var hostOnly = host.Host;
 
             // Specific match?
             if (TryMatchInternal(host.Value, hostOnly, path.Value, out var result))
@@ -164,53 +164,6 @@ namespace OrchardCore.Environment.Shell
         private bool DefaultIsCatchAll()
         {
             return _default != null && string.IsNullOrEmpty(_default.RequestUrlHost) && string.IsNullOrEmpty(_default.RequestUrlPrefix);
-        }
-
-        /// <summary>
-        /// Parses the current value. IPv6 addresses will have brackets added if they are missing.
-        /// </summary>
-        /// <param name="value">The value to get the parts of.</param>
-        /// <param name="host">The portion of the <paramref name="value"/> which represents the host.</param>
-        /// <param name="port">The portion of the <paramref name="value"/> which represents the port.</param>
-        private static void GetHostParts(StringSegment value, out StringSegment host, out StringSegment port)
-        {
-            int index;
-            port = null;
-            host = null;
-
-            if (StringSegment.IsNullOrEmpty(value))
-            {
-                return;
-            }
-            else if ((index = value.IndexOf(']')) >= 0)
-            {
-                // IPv6 in brackets [::1], maybe with port
-                host = value.Subsegment(0, index + 1);
-                // Is there a colon and at least one character?
-                if (index + 2 < value.Length && value[index + 1] == ':')
-                {
-                    port = value.Subsegment(index + 2);
-                }
-            }
-            else if ((index = value.IndexOf(':')) >= 0
-                && index < value.Length - 1
-                && value.IndexOf(':', index + 1) >= 0)
-            {
-                // IPv6 without brackets ::1 is the only type of host with 2 or more colons
-                host = $"[{value}]";
-                port = null;
-            }
-            else if (index >= 0)
-            {
-                // Has a port
-                host = value.Subsegment(0, index);
-                port = value.Subsegment(index + 1);
-            }
-            else
-            {
-                host = value;
-                port = null;
-            }
         }
     }
 }
