@@ -31,6 +31,11 @@ namespace OrchardCore.ContentPreview.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IClock _clock;
 
+        internal PreviewController()
+        {
+
+        }
+
         public PreviewController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
