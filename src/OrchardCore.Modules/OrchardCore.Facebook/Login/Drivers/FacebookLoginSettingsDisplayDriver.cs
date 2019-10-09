@@ -40,7 +40,7 @@ namespace OrchardCore.Facebook.Login.Drivers
 
             return Initialize<FacebookLoginSettingsViewModel>("FacebookLoginSettings_Edit", model =>
             {
-                model.CallbackPath = settings.CallbackPath;
+                model.CallbackPath = settings.CallbackPath.Value;
             }).Location("Content:5").OnGroup(FacebookConstants.Features.Login);
         }
 
