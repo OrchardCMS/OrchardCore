@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
@@ -125,7 +126,7 @@ namespace OrchardCore.Tenants.Controllers
 
                     var token = CreateSetupToken(settings);
 
-                    return StatusCode(201, GetTenantUrl(settings, token));
+                    return StatusCode(201, GetEncodedUrl(settings, token));
                 }
                 else
                 {
@@ -134,7 +135,7 @@ namespace OrchardCore.Tenants.Controllers
 
                     var token = CreateSetupToken(shellSettings);
 
-                    return Ok(GetTenantUrl(shellSettings, token));
+                    return Ok(GetEncodedUrl(shellSettings, token));
                 }
             }
 
@@ -320,6 +321,36 @@ namespace OrchardCore.Tenants.Controllers
             if (!string.IsNullOrEmpty(token))
             {
                 result += "?token=" + WebUtility.UrlEncode(token);
+            }
+
+            return result;
+        }
+
+        private string GetEncodedUrl(ShellSettings shellSettings, string token)
+        {
+            var requestHost = Request.Host;
+
+            var hostString = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+            var port = requestHost.Port;
+
+            if (port.HasValue)
+            {
+                hostString += ":" + port;
+            }
+
+            var host = new HostString(hostString);
+            var originalPathBase = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
+
+            var result = $"{Request.Scheme}://{host}{originalPathBase}";
+
+            if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+            {
+                result += new PathString('/' + shellSettings.RequestUrlPrefix);
+            }
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                result += QueryString.Create("token", token);
             }
 
             return result;

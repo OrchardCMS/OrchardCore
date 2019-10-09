@@ -27,8 +27,8 @@ namespace OrchardCore.Contents.AdminNodes
         {
             _contentDefinitionManager = contentDefinitionManager;
 
-            var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
-            _contentItemlistUrl = pathBase + "/Admin/Contents/ContentItems/";
+            _contentItemlistUrl = httpContextAccessor.HttpContext.Request.PathBase
+                .Add("/Admin/Contents/ContentItems/").Value;
 
             _logger = logger;
         }
