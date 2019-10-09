@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -96,7 +95,7 @@ namespace OrchardCore.Media.Processing
 
         private bool IsMatch(HttpContext context)
         {
-            if (!context.Request.Path.StartsWithSegments(_assetsRequestPath))
+            if (!context.Request.Path.StartsWithSegments(_assetsRequestPath, StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }

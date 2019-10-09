@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -23,7 +24,7 @@ namespace OrchardCore.Facebook
 
         public async Task Invoke(HttpContext httpContext)
         {
-            if (httpContext.Request.Path.StartsWithSegments("/OrchardCore.Facebook/sdk"))
+            if (httpContext.Request.Path.StartsWithSegments("/OrchardCore.Facebook/sdk", StringComparison.OrdinalIgnoreCase))
             {
                 var script = default(string);
                 var site = (await _siteService.GetSiteSettingsAsync());

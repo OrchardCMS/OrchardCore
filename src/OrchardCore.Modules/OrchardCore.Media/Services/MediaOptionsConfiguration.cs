@@ -50,7 +50,7 @@ namespace OrchardCore.Media.Services
         private const int DefaultMaxFileSize = 30_000_000;
 
         private const string DefaultAssetsPath = "Media";
-        private static readonly PathString DefaultAssetsRequestPath = new PathString("/media");
+        private static readonly string DefaultAssetsRequestPath = new PathString("/media");
 
         private readonly IShellConfiguration _shellConfiguration;
 
@@ -76,7 +76,7 @@ namespace OrchardCore.Media.Services
             options.MaxCacheDays = section.GetValue("MaxCacheDays", DefaultMaxCacheDays);
             options.MaxFileSize = section.GetValue("MaxFileSize", DefaultMaxFileSize);
             options.CdnBaseUrl = section.GetValue("CdnBaseUrl", String.Empty).TrimEnd('/').ToLower();
-            options.AssetsRequestPath = section.GetValue("AssetsRequestPath", DefaultAssetsRequestPath);
+            options.AssetsRequestPath = section.GetValue("AssetsRequestPath", DefaultAssetsRequestPath).TrimEnd('/');
             options.AssetsPath = section.GetValue("AssetsPath", DefaultAssetsPath);
         }
     }
