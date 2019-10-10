@@ -64,17 +64,8 @@ namespace OrchardCore.Lucene.Controllers
 
             if (!_luceneIndexProvider.Exists(indexName))
             {
-                return NotFound();
-            }
-
-            if (string.IsNullOrWhiteSpace(q))
-            {
-                return View(new SearchIndexViewModel
-                {
-                    Pager = pager,
-                    IndexName = id,
-                    ContentItems = Enumerable.Empty<ContentItem>()
-                });
+                Logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
+                return BadRequest("Search is not configured.");
             }
 
             var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
@@ -82,11 +73,13 @@ namespace OrchardCore.Lucene.Controllers
             if (luceneSettings == null || luceneSettings?.DefaultSearchFields == null)
             {
                 Logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
+                return BadRequest("Search is not configured.");
+            }
 
+            if (string.IsNullOrWhiteSpace(q))
+            {
                 return View(new SearchIndexViewModel
                 {
-                    HasMoreResults = false,
-                    Query = q,
                     Pager = pager,
                     IndexName = id,
                     ContentItems = Enumerable.Empty<ContentItem>()

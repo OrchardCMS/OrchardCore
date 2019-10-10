@@ -1,4 +1,4 @@
-function confirmDialog({title, message, okText, cancelText, okCssClass, cancelCssClass, callback}) {
+function confirmDialog({ title, message, okText, cancelText, okCssClass, cancelCssClass, callback }) {
     var $confirmRemoveModalMetadata = $('#confirmRemoveModalMetadata')
     title = title || $confirmRemoveModalMetadata.data('title');
     message = message || $confirmRemoveModalMetadata.data('message');
