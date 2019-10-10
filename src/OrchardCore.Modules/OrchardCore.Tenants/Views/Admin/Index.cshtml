@@ -11,55 +11,59 @@
 {
     public string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
-        ShellSettings shellSettings = shellSettingsEntry.ShellSettings;
-        var requestHost = Context.Request.Host;
+        var shellSettings = shellSettingsEntry.ShellSettings;
 
-        var hostString = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+        var requestHost = Context.Request.Host;
+        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+
         var port = requestHost.Port;
 
         if (port.HasValue)
         {
-            hostString += ":" + port;
+            host += ":" + port;
         }
 
-        var host = new HostString(hostString);
+        var hostString = new HostString(host);
 
-        var result = $"{Context.Request.Scheme}://{host}{originalPathBase}";
+        var pathString = originalPathBase;
 
         if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
-            result += new PathString('/' + shellSettings.RequestUrlPrefix);
+            pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
+
+        QueryString queryString;
 
         if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
         {
-            result += QueryString.Create("token", shellSettingsEntry.Token);
+            queryString = QueryString.Create("token", shellSettingsEntry.Token);
         }
 
-        return result;
+        return $"{Context.Request.Scheme}://{hostString + pathString + queryString}";
     }
 
     public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
-        ShellSettings shellSettings = shellSettingsEntry.ShellSettings;
-        var requestHost = Context.Request.Host;
+        var shellSettings = shellSettingsEntry.ShellSettings;
 
-        var hostString = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+        var requestHost = Context.Request.Host;
+        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+
         var port = requestHost.Port;
 
         if (port.HasValue)
         {
-            hostString += ":" + port;
+            host += ":" + port;
         }
 
-        var result = $"{Context.Request.Scheme}://{hostString}{originalPathBase.Value}";
+        var pathString = originalPathBase;
 
         if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
-            result += '/' + shellSettings.RequestUrlPrefix;
+            pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        return result;
+        return $"{Context.Request.Scheme}://{host + pathString.Value}";
     }
 }
 

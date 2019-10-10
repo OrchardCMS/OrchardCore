@@ -221,7 +221,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                     return shapeBinding;
                 }
 
-                var delimiterIndex = shapeTypeScan.LastIndexOf("__");
+                var delimiterIndex = shapeTypeScan.LastIndexOf("__", StringComparison.Ordinal);
                 if (delimiterIndex < 0)
                 {
                     return null;

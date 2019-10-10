@@ -76,7 +76,7 @@ namespace OrchardCore.Media.Services
             options.MaxCacheDays = section.GetValue("MaxCacheDays", DefaultMaxCacheDays);
             options.MaxFileSize = section.GetValue("MaxFileSize", DefaultMaxFileSize);
             options.CdnBaseUrl = section.GetValue("CdnBaseUrl", String.Empty).TrimEnd('/').ToLower();
-            options.AssetsRequestPath = section.GetValue("AssetsRequestPath", DefaultAssetsRequestPath).TrimEnd('/');
+            options.AssetsRequestPath = section.GetValue("AssetsRequestPath", DefaultAssetsRequestPath);
             options.AssetsPath = section.GetValue("AssetsPath", DefaultAssetsPath);
         }
     }

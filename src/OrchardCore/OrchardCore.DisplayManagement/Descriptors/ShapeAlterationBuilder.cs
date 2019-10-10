@@ -19,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             _feature = feature;
             _bindingName = shapeType;
-            var delimiterIndex = shapeType.IndexOf("__");
+            var delimiterIndex = shapeType.IndexOf("__", StringComparison.Ordinal);
 
             if (delimiterIndex < 0)
             {

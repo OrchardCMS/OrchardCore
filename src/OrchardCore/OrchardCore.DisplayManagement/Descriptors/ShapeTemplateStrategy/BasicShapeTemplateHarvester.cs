@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
@@ -47,7 +48,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             {
                 return shapeType.ToLowerInvariant();
             }
-            var firstBreakingSeparator = shapeType.IndexOf("__");
+            var firstBreakingSeparator = shapeType.IndexOf("__", StringComparison.Ordinal);
             if (firstBreakingSeparator <= 0)
             {
                 return (shapeType + "_" + displayType).ToLowerInvariant();

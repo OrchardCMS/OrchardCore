@@ -50,7 +50,7 @@ namespace OrchardCore.Modules
                         if (asset != null)
                         {
                             // Resolve "{ModuleProjectDirectory}wwwroot/" from the project asset.
-                            var index = asset.ProjectAssetPath.IndexOf('/' + Module.WebRoot);
+                            var index = asset.ProjectAssetPath.IndexOf('/' + Module.WebRoot, StringComparison.Ordinal);
 
                             // Add the module project "wwwroot" folder.
                             roots[module.Name] = asset.ProjectAssetPath.Substring(0, index + Module.WebRoot.Length + 1);
