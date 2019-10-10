@@ -164,7 +164,10 @@ namespace OrchardCore.Templates.Controllers
                 return Unauthorized();
             }
 
-            var templatesDocument = await _templatesManager.GetTemplatesDocumentAsync();
+            var templatesDocument = adminTemplates
+                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
+                : await _templatesManager.GetTemplatesDocumentAsync()
+                ;
 
             if (!templatesDocument.Templates.ContainsKey(name))
             {
@@ -198,7 +201,10 @@ namespace OrchardCore.Templates.Controllers
                 return Unauthorized();
             }
 
-            var templatesDocument = await _templatesManager.GetTemplatesDocumentAsync();
+            var templatesDocument = model.AdminTemplates
+                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
+                : await _templatesManager.GetTemplatesDocumentAsync()
+                ;
 
             if (ModelState.IsValid)
             {
@@ -251,7 +257,10 @@ namespace OrchardCore.Templates.Controllers
                 return Unauthorized();
             }
 
-            var templatesDocument = await _templatesManager.GetTemplatesDocumentAsync();
+            var templatesDocument = adminTemplates
+                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
+                : await _templatesManager.GetTemplatesDocumentAsync()
+                ;
 
             if (!templatesDocument.Templates.ContainsKey(name))
             {
