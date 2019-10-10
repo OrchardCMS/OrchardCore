@@ -103,7 +103,7 @@ namespace OrchardCore.Localization.PortableObject
 
         private (PoContext context, string content) ParseLine(string line)
         {
-            if (line.StartsWith("\"", StringComparison.Ordinal))
+            if (line.StartsWith('\"'))
             {
                 return (PoContext.Text, Unescape(TrimQuote(line.Trim())));
             }

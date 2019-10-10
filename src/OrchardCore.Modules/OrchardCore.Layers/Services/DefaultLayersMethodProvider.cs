@@ -56,7 +56,9 @@ namespace OrchardCore.Layers.Services
                 Method = serviceProvider => (Func<string, object>)(url =>
                 {
                     if (url.StartsWith("~/", StringComparison.Ordinal))
+                    {
                         url = url.Substring(1);
+                    }
 
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
                     string requestPath = httpContext.Request.Path.Value;
@@ -64,7 +66,9 @@ namespace OrchardCore.Layers.Services
                     // Tenant home page could have an empty string as a request path, where
                     // the default tenant does not.
                     if (string.IsNullOrEmpty(requestPath))
+                    {
                         requestPath = "/";
+                    }
 
                     return url.EndsWith('*')
                         ? requestPath.StartsWith(url.TrimEnd('*'), StringComparison.OrdinalIgnoreCase)
