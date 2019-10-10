@@ -209,7 +209,7 @@ namespace OrchardCore.Roles.Controllers
             List<RoleClaim> rolePermissions = new List<RoleClaim>();
             foreach (string key in Request.Form.Keys)
             {
-                if (key.StartsWith("Checkbox.") && Request.Form[key] == "true")
+                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
                 {
                     string permissionName = key.Substring("Checkbox.".Length);
                     rolePermissions.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permissionName });

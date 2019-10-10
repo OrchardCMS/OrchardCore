@@ -55,7 +55,7 @@ namespace OrchardCore.Layers.Services
                 Name = "url",
                 Method = serviceProvider => (Func<string, object>)(url =>
                 {
-                    if (url.StartsWith("~/"))
+                    if (url.StartsWith("~/", StringComparison.Ordinal))
                         url = url.Substring(1);
 
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;

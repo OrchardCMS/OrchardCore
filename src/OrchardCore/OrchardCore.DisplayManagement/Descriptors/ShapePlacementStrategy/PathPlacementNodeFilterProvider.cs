@@ -50,7 +50,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         private string NormalizePath(string path)
         {
-            if (path.StartsWith("~/"))
+            if (path.StartsWith("~/", StringComparison.Ordinal))
             {
                 return path.Substring(1);
             }

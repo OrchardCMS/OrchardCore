@@ -67,7 +67,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var action = (string)httpContext.Request.Form["submit.Save"];
-            if (action?.StartsWith("user-task.") == true)
+            if (action?.StartsWith("user-task.", StringComparison.Ordinal) == true)
             {
                 action = action.Substring("user-task.".Length);
 

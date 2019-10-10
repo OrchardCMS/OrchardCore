@@ -25,7 +25,7 @@ namespace OrchardCore.Environment.Shell
 
             foreach (var hostAndPrefix in allHostsAndPrefix)
             {
-                _hasStarMapping = _hasStarMapping || hostAndPrefix.StartsWith("*");
+                _hasStarMapping = _hasStarMapping || hostAndPrefix.StartsWith('*');
                 _shellsByHostAndPrefix = _shellsByHostAndPrefix.SetItem(hostAndPrefix, settings);
             }
         }

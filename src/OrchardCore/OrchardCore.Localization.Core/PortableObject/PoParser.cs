@@ -119,7 +119,7 @@ namespace OrchardCore.Localization.PortableObject
             {
                 case "msgctxt": return (PoContext.MessageContext, content);
                 case "msgid": return (PoContext.MessageId, content);
-                case var key when key.StartsWith("msgstr"): return (PoContext.Translation, content);
+                case var key when key.StartsWith("msgstr", StringComparison.Ordinal): return (PoContext.Translation, content);
                 default: return (PoContext.Other, content);
             }
         }

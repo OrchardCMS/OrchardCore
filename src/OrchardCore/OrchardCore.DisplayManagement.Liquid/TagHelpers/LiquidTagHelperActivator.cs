@@ -39,7 +39,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 {
                     allNames.Add(htmlAttribute.Name.Replace('-', '_'));
 
-                    if (htmlAttribute.Name.StartsWith("asp-"))
+                    if (htmlAttribute.Name.StartsWith("asp-", StringComparison.Ordinal))
                     {
                         allNames.Add(htmlAttribute.Name.Substring(4).Replace('-', '_'));
                     }

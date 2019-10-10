@@ -48,7 +48,7 @@ namespace OrchardCore.Media.Filters
         {
             var url = input.ToStringValue();
 
-            if (!url.Contains("?"))
+            if (!url.Contains('?'))
             {
                 url += "?";
             }

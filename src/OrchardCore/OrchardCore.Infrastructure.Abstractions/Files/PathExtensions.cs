@@ -20,7 +20,7 @@ namespace System.IO
                 return path;
             }
 
-            if (other.StartsWith("/", StringComparison.Ordinal) || other.StartsWith("\\", StringComparison.Ordinal))
+            if (other.StartsWith('/') || other.StartsWith('\\'))
             {
                 // "other" is already an app-rooted path. Return it as-is.
                 return other;
