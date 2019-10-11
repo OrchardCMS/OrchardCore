@@ -15,23 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Pages\Article.cshtml" />
-    <Content Remove="Pages\_ViewImports.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Pages\_ViewImports.cshtml">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="wwwroot\" />
     <Folder Include="Localization\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Pages\Article.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

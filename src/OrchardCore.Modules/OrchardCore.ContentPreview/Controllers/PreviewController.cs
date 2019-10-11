@@ -10,42 +10,25 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentPreview.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
-using YesSql;
 
 namespace OrchardCore.ContentPreview.Controllers
 {
     public class PreviewController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManagerSession _contentManagerSession;
-        private readonly ISiteService _siteService;
-        private readonly ISession _session;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
-        private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IClock _clock;
-
-        internal PreviewController()
-        {
-
-        }
 
         public PreviewController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
-            IContentDefinitionManager contentDefinitionManager,
             IContentManagerSession contentManagerSession,
-            ISiteService siteService,
-            INotifier notifier,
-            ISession session,
             IShapeFactory shapeFactory,
             ILogger<PreviewController> logger,
             IHtmlLocalizer<PreviewController> localizer,
@@ -55,12 +38,8 @@ namespace OrchardCore.ContentPreview.Controllers
         {
             _authorizationService = authorizationService;
             _clock = clock;
-            _notifier = notifier;
             _contentItemDisplayManager = contentItemDisplayManager;
-            _session = session;
-            _siteService = siteService;
             _contentManager = contentManager;
-            _contentDefinitionManager = contentDefinitionManager;
             _contentManagerSession = contentManagerSession;
             T = localizer;
             New = shapeFactory;
