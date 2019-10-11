@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.ReverseProxy.ViewModels;
 using OrchardCore.Settings;
@@ -15,36 +16,32 @@ namespace OrchardCore.ReverseProxy.Drivers
 {
     public class ReverseProxySettingsDisplayDriver : SectionDisplayDriver<ISite, ReverseProxySettings>
     {
-        private const string RestartPendingCacheKey = "ReverseProxySiteSettings_RestartPending";
         private const string SettingsGroupId = "ReverseProxy";
-
-        private readonly INotifier _notifier;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IShellHost _orchardHost;
+        private readonly ShellSettings _currentShellSettings;
 
         public ReverseProxySettingsDisplayDriver(INotifier notifier,
-            IMemoryCache memoryCache,
+            IShellHost orchardHost,
+            ShellSettings currentShellSettings,
             IHtmlLocalizer<ReverseProxySettingsDisplayDriver> stringLocalizer)
         {
-            _notifier = notifier;
-            _memoryCache = memoryCache;
+            _orchardHost = orchardHost;
+            _currentShellSettings = currentShellSettings;
             T = stringLocalizer;
         }
         IHtmlLocalizer T { get; }
 
-        public override IDisplayResult Edit(ReverseProxySettings settings, BuildEditorContext context)
+        public override IDisplayResult Edit(ReverseProxySettings section, BuildEditorContext context)
         {
             return Initialize<ReverseProxySettingsViewModel>("ReverseProxySettings_Edit", model =>
             {
-                if (_memoryCache.Get(RestartPendingCacheKey) != null)
-                    _notifier.Warning(T["The site needs to be restarted for the settings to take effect"]);
-
-                model.EnableXForwardedFor = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
-                model.EnableXForwardedHost = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
-                model.EnableXForwardedProto = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
+                model.EnableXForwardedFor = section.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
+                model.EnableXForwardedHost = section.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
+                model.EnableXForwardedProto = section.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings section, BuildEditorContext context)
         {
             if (context.GroupId == SettingsGroupId)
             {
@@ -52,26 +49,23 @@ namespace OrchardCore.ReverseProxy.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.ForwardedHeaders = ForwardedHeaders.None;
+                section.ForwardedHeaders = ForwardedHeaders.None;
 
                 if (model.EnableXForwardedFor)
-                    settings.ForwardedHeaders |= ForwardedHeaders.XForwardedFor;
+                    section.ForwardedHeaders |= ForwardedHeaders.XForwardedFor;
 
                 if (model.EnableXForwardedHost)
-                    settings.ForwardedHeaders |= ForwardedHeaders.XForwardedHost;
+                    section.ForwardedHeaders |= ForwardedHeaders.XForwardedHost;
 
                 if (model.EnableXForwardedProto)
-                    settings.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
+                    section.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
 
             }
 
-            if (_memoryCache.Get(RestartPendingCacheKey) == null)
-            {
-                var entry = _memoryCache.CreateEntry(RestartPendingCacheKey);
-                _memoryCache.Set(entry.Key, entry, new MemoryCacheEntryOptions { Priority = CacheItemPriority.NeverRemove });
-            }
+            // Reload the tenant to apply the settings
+            await _orchardHost.ReloadShellContextAsync(_currentShellSettings);
 
-            return await EditAsync(settings, context);
+            return await EditAsync(section, context);
         }
     }
 }
