@@ -17,6 +17,9 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
+    <h2>@Model.AdminTemplates</h2>
+    <input type="hidden" asp-for="AdminTemplates" />
+
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
         <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
@@ -52,7 +55,11 @@
             {                
                 <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
             }
-            <a class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
+
+            @if (!Model.AdminTemplates)
+            {
+                <a class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
+            }
 
         </div>
     </fieldset>
