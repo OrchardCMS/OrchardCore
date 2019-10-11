@@ -98,6 +98,11 @@ namespace OrchardCore.Roles.Controllers
             {
                 model.RoleName = model.RoleName.Trim();
 
+                if (model.RoleName.Contains("/"))
+                {
+                    ModelState.AddModelError(string.Empty, T["Invalid role name."]);
+                }
+                
                 if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
                 {
                     ModelState.AddModelError(string.Empty, T["The role is already used."]);

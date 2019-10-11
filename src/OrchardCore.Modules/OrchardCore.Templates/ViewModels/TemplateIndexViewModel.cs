@@ -5,6 +5,7 @@ namespace OrchardCore.Templates.ViewModels
 {
     public class TemplateIndexViewModel
     {
+        public bool AdminTemplates { get; set; }
         public IList<TemplateEntry> Templates { get; set; }
         public dynamic Pager { get; set; }
     }

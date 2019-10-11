@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
@@ -25,6 +25,9 @@
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
             <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
+            <div class="mr-auto">
+                @await RenderSectionAsync("Title", required: false)
+            </div>
             <div class="collapse navbar-collapse" id="navbar-links">
                 <div class="mr-auto">
                     @await RenderSectionAsync("NavbarTop", required: false)
@@ -49,6 +52,7 @@
 
         <div class="ta-content">
             @await RenderSectionAsync("Messages", required: false)
+            @await RenderSectionAsync("Breadcrumbs", required: false)
 
             @await RenderBodyAsync()
         </div>
