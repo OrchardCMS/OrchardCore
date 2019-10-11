@@ -142,7 +142,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         private Task RemoveTagAsync(AutoroutePart part)
         {
-            return _tagCache.RemoveTagAsync($"alias:{part.Path}");
+            return _tagCache.RemoveTagAsync($"slug:{part.Path}");
         }
 
         /// <summary>
