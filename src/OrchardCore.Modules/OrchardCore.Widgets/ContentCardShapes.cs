@@ -35,16 +35,7 @@ namespace OrchardCore.Widgets
                         //Define edit card shape per collection type
                         // ContentCard_Edit__[CollectionType] e.g. ContentCard_Edit__FlowPart, ContentCard_Edit__BagPart, ContentCard_Edit__WidgetsListPart
                         contentCardEditor.Metadata.Alternates.Add($"{CONTENT_CARD_EDIT}__{collectionType}");
-
-                        //TODO: Rename Widget-Flow.Edit.cshtml, Widget-Bag.Edit.cshtml, Widget-List.Edit.cshtml to ContentCard-FlowPart.Edit.cshtml, ContentCard-BagPart.Edit.cshtml, ContentCard-WidgetsListPart.Edit.cshtml
-                        // and then remove following hardcoded if/else
-                        if(collectionType == "WidgetsListPart")
-                            contentCardEditor.Metadata.Alternates.Add($"Widget_Edit__List");
-                        else if (collectionType == "BagPart")
-                            contentCardEditor.Metadata.Alternates.Add($"Widget_Edit__Bag");
-                        else if (collectionType == "FlowPart")
-                            contentCardEditor.Metadata.Alternates.Add($"Widget_Edit__Flow");
-
+                        
                         //Define edit card shape per content type 
                         // ContentCard_Edit__[ContentType] e.g. ContentCard_Edit__Paragraph, ContentCard_Edit__Form, ContentCard_Edit__Input
                         contentCardEditor.Metadata.Alternates.Add($"{CONTENT_CARD_EDIT}__{collectionType}__{contentType}");
