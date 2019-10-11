@@ -140,7 +140,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (!string.IsNullOrEmpty(model.Resources))
             {
-                descriptor.Resources.UnionWith(model.Resources.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries));
+                descriptor.Resources.UnionWith(model.Resources.Split(" ", StringSplitOptions.RemoveEmptyEntries));
             }
 
             descriptor.Resources.UnionWith(model.Tenants
@@ -242,7 +242,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (!string.IsNullOrEmpty(model.Resources))
             {
-                descriptor.Resources.UnionWith(model.Resources.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries));
+                descriptor.Resources.UnionWith(model.Resources.Split(" ", StringSplitOptions.RemoveEmptyEntries));
             }
 
             descriptor.Resources.UnionWith(model.Tenants
