@@ -78,8 +78,8 @@ namespace System.IO
                 // Determine if we need to do any path resolution.
                 // We need to resolve paths with multiple path separators (e.g "//" or "\\") or, directory traversals e.g. ("../" or "./").
                 if (segment.Length == 0 ||
-                    segment.Equals(ParentDirectoryToken, StringComparison.Ordinal) ||
-                    segment.Equals(CurrentDirectoryToken, StringComparison.Ordinal))
+                    segment.Equals(ParentDirectoryToken) ||
+                    segment.Equals(CurrentDirectoryToken))
                 {
                     requiresResolution = true;
                     break;
@@ -99,7 +99,7 @@ namespace System.IO
                     // Ignore multiple directory separators
                     continue;
                 }
-                if (segment.Equals(ParentDirectoryToken, StringComparison.Ordinal))
+                if (segment.Equals(ParentDirectoryToken))
                 {
                     if (pathSegments.Count == 0)
                     {
@@ -109,7 +109,7 @@ namespace System.IO
                     }
                     pathSegments.RemoveAt(pathSegments.Count - 1);
                 }
-                else if (segment.Equals(CurrentDirectoryToken, StringComparison.Ordinal))
+                else if (segment.Equals(CurrentDirectoryToken))
                 {
                     // We already have the current directory
                     continue;
