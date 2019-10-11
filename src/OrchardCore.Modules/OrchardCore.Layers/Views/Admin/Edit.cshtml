@@ -1,6 +1,6 @@
 @model OrchardCore.Layers.ViewModels.LayerEditViewModel
 
-<zone name="Title"><h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1></zone>
+<h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1>
 
 <form asp-action="Edit" method="post">
     <fieldset class="form-group" asp-validation-class-for="Name">
