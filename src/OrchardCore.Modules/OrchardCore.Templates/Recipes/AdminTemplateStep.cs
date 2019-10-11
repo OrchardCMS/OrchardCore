@@ -11,30 +11,30 @@ namespace OrchardCore.Templates.Recipes
     /// <summary>
     /// This recipe step creates a set of templates.
     /// </summary>
-    public class TemplateStep : IRecipeStepHandler
+    public class AdminTemplateStep : IRecipeStepHandler
     {
-        private readonly TemplatesManager _templatesManager;
+        private readonly AdminTemplatesManager _adminTemplatesManager;
 
-        public TemplateStep(TemplatesManager templatesManager)
+        public AdminTemplateStep(AdminTemplatesManager templatesManager)
         {
-            _templatesManager = templatesManager;
+            _adminTemplatesManager = templatesManager;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Templates", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, "AdminTemplates", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
-            if (context.Step.Property("Templates").Value is JObject templates)
+            if (context.Step.Property("AdminTemplates").Value is JObject templates)
             {
                 foreach (var property in templates.Properties())
                 {
                     var name = property.Name;
                     var value = property.Value.ToObject<Template>();
 
-                    await _templatesManager.UpdateTemplateAsync(name, value);
+                    await _adminTemplatesManager.UpdateTemplateAsync(name, value);
                 }
             }
         }
