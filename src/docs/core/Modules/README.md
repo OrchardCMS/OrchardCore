@@ -1,4 +1,4 @@
-# Introduction
+# Modules
 
 The library Orchard Core Modules provides a mechanism to have a self-contained modular system where you can opt into a specific application framework and not have the design of your application be dictated to by such.
 
@@ -55,28 +55,6 @@ Next, within `Startup.cs`, modify the method `ConfigureServices` to look like th
 Asp.Net Mvc is now part of your pipeline.
 
 You can find a sample application here: [`OrchardCore.Mvc.Web`](../../../OrchardCore.Mvc.Web/Startup.cs)
-
-### NancyFx
-
-Install `OrchardCore.Application.Nancy.Targets` into the project by managing the project NuGet packages.
-
-Next, within `Startup.cs`, modify the method `ConfigureServices` to look like this:
-
-```csharp
-            // Add Nancy and support for modules
-            services
-                .AddOrchardCore()
-                .AddNancy()
-                ;
-);
-```
-
-!!! note
-    Note the addition of `.AddNancy()`
-
-NancyFx is now part of your pipeline. What this means is that Nancy modules will be automatically discovered.
-
-You can find an sample application here: [`OrchardCore.Nancy.Web`](../../../OrchardCore.Nancy.Web/Startup.cs)
 
 ## Configuration
 

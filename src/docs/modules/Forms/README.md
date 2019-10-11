@@ -91,11 +91,11 @@ Once you have generated a Site Key and Site Secret with Google, copy & paste tho
 
 The final form configuration should look something like this:
 
-![Contact Form - Expanded](./Docs/contact-form-expanded-1.png)
+![Contact Form - Expanded](./assets/contact-form-expanded-1.png)
 
 And on the front-end, it will look like this:
 
-![Contact Form - front-end](./Docs/contact-form-front-end-1.png)
+![Contact Form - front-end](./assets/contact-form-front-end-1.png)
 
 ### Create the Contact Form Workflow
 
@@ -213,7 +213,7 @@ To fix this, we must add the **Bind Form Model State** activity to the workflow,
 
 The final workflow should look like this:
 
-![Contact Form Workflow](./Docs/contact-form-workflow-1.png)
+![Contact Form Workflow](./assets/contact-form-workflow-1.png)
 
 ## Future Improvements
 

@@ -28,8 +28,8 @@ The following configuration values are used by default and can be customized:
 
 ```
 
-Refer also to the [Configuration Section](../../OrchardCore/OrchardCore/Environment/Shell/README.md), 
-and the [Media Section](../OrchardCore.Media/README.md) for other Media related configuration settings.
+Refer also to the [Configuration Section](../../core/Configuration/README.md), 
+and the [Media Section](../Media/README.md) for other Media related configuration settings.
 
 The Azure Media Storage module will check on Startup for a connection string, and container string.
 
