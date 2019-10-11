@@ -1,5 +1,6 @@
 @model TemplateIndexViewModel
 
+<zone name="Title">
 @if (Model.AdminTemplates)
 {
     <h1>@RenderTitleSegments(T["Admin Templates"])</h1>
@@ -8,6 +9,7 @@ else
 {
     <h1>@RenderTitleSegments(T["Templates"])</h1>
 }
+</zone>
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
