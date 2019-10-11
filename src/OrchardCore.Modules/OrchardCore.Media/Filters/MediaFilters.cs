@@ -33,7 +33,7 @@ namespace OrchardCore.Media.Filters
 
             foreach (var name in arguments.Names)
             {
-                imgTag += $" {name.Replace("_", "-")}=\"{arguments[name].ToStringValue()}\"";
+                imgTag += $" {name.Replace('_', '-')}=\"{arguments[name].ToStringValue()}\"";
             }
 
             imgTag += " />";

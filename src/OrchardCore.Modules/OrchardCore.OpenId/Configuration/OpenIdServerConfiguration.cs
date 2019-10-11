@@ -87,7 +87,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(string name, OpenIddictServerOptions options)
         {
             // Ignore OpenIddict handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, OpenIddictServerDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, OpenIddictServerDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -138,7 +138,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(string name, JwtBearerOptions options)
         {
             // Ignore JWT handler instances that don't correspond to the private instance managed by the OpenID module.
-            if (!string.Equals(name, OpenIdConstants.Schemes.Userinfo, StringComparison.Ordinal))
+            if (!string.Equals(name, OpenIdConstants.Schemes.Userinfo))
             {
                 return;
             }
@@ -168,7 +168,7 @@ namespace OrchardCore.OpenId.Configuration
                     }
 
                     var tenant = _runningShellTable.Match(new HostString(uri.Authority), uri.AbsolutePath);
-                    if (tenant == null || !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
+                    if (tenant == null || !string.Equals(tenant.Name, _shellSettings.Name))
                     {
                         throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                     }
@@ -183,7 +183,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(string name, OpenIddictValidationOptions options)
         {
             // Ignore validation handler instances that don't correspond to the private instance managed by the OpenID module.
-            if (!string.Equals(name, OpenIdConstants.Schemes.Userinfo, StringComparison.Ordinal))
+            if (!string.Equals(name, OpenIdConstants.Schemes.Userinfo))
             {
                 return;
             }

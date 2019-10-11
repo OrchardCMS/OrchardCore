@@ -48,7 +48,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             {
                 return shapeType.ToLowerInvariant();
             }
-            var firstBreakingSeparator = shapeType.IndexOf("__", StringComparison.Ordinal);
+            var firstBreakingSeparator = shapeType.IndexOf("__");
             if (firstBreakingSeparator <= 0)
             {
                 return (shapeType + "_" + displayType).ToLowerInvariant();

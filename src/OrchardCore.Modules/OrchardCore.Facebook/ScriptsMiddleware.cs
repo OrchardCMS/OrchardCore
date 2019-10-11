@@ -31,7 +31,7 @@ namespace OrchardCore.Facebook
                 var settings = site.As<FacebookSettings>();
                 if (Path.GetFileName(httpContext.Request.Path.Value) == "fbsdk.js")
                 {
-                    var locale = CultureInfo.CurrentUICulture.Name.Replace("-", "_");
+                    var locale = CultureInfo.CurrentUICulture.Name.Replace('-', '_');
                     script = $@"(function(d){{
                         var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {{ return; }}
                         js = d.createElement('script'); js.id = id; js.async = true;

@@ -111,7 +111,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
                 }
 
-                var attr = new TagHelperAttribute(name.Replace("_", "-"), arguments[name].ToObjectValue());
+                var attr = new TagHelperAttribute(name.Replace('_', '-'), arguments[name].ToObjectValue());
 
                 contextAttributes.Add(attr);
 

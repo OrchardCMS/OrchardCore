@@ -97,7 +97,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(string name, JwtBearerOptions options)
         {
             // Ignore JWT handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, JwtBearerDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, JwtBearerDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -161,7 +161,7 @@ namespace OrchardCore.OpenId.Configuration
                         }
 
                         var tenant = _runningShellTable.Match(new HostString(uri.Authority), uri.AbsolutePath);
-                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant, StringComparison.Ordinal))
+                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant))
                         {
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }
@@ -177,7 +177,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(string name, OpenIddictValidationOptions options)
         {
             // Ignore validation handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, OpenIddictValidationDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, OpenIddictValidationDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -191,7 +191,7 @@ namespace OrchardCore.OpenId.Configuration
             // If the tokens are issued by an authorization server located in a separate tenant,
             // resolve the isolated data protection provider associated with the specified tenant.
             if (!string.IsNullOrEmpty(settings.Tenant) &&
-                !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
+                !string.Equals(settings.Tenant, _shellSettings.Name))
             {
                 _shellHost.GetScopeAsync(settings.Tenant).GetAwaiter().GetResult().UsingAsync(async scope =>
                 {
@@ -218,7 +218,7 @@ namespace OrchardCore.OpenId.Configuration
         private ShellScope CreateTenantScope(string tenant)
         {
             // Optimization: if the specified name corresponds to the current tenant, use the current 'ShellScope'.
-            if (string.IsNullOrEmpty(tenant) || string.Equals(tenant, _shellSettings.Name, StringComparison.Ordinal))
+            if (string.IsNullOrEmpty(tenant) || string.Equals(tenant, _shellSettings.Name))
             {
                 return ShellScope.Current;
             }

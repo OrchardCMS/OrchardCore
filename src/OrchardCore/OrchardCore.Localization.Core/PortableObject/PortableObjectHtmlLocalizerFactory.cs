@@ -31,7 +31,7 @@ namespace OrchardCore.Localization.PortableObject
                 index += 1;
             }
 
-            if (baseName.Length > index && baseName.IndexOf("Areas.", index, StringComparison.Ordinal) == index)
+            if (baseName.Length > index && baseName.IndexOf("Areas.", index) == index)
             {
                 index += "Areas.".Length;
             }

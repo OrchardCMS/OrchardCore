@@ -63,7 +63,7 @@ namespace OrchardCore.Alias.Handlers
         private string GetPattern(AliasPart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AliasPart", StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AliasPart"));
             var pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
 
             return pattern;
@@ -92,7 +92,7 @@ namespace OrchardCore.Alias.Handlers
             clonedPart.Apply();
 
         }
-        
+
         private async Task<string> GenerateUniqueAliasAsync(string alias, AliasPart context)
         {
             var version = 1;

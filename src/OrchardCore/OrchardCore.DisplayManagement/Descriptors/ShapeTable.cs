@@ -86,7 +86,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             ShapeBinding shapeBinding;
             if (_shapeTable.ShapeBindings.TryGetValue(shapeAlternate, out shapeBinding))
             {
-                var index = shapeAlternate.IndexOf("__", StringComparison.Ordinal);
+                var index = shapeAlternate.IndexOf("__");
                 var shapeType = index < 0 ? shapeAlternate : shapeAlternate.Substring(0, index);
 
                 ShapeDescriptor descriptor;

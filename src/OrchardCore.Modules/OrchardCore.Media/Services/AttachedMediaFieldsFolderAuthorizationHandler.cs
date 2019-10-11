@@ -74,13 +74,13 @@ namespace OrchardCore.Media.Services
             childPath = _fileStore.NormalizePath(childPath)
                         .TrimEnd(_pathSeparator) + _pathSeparator;
 
-            return childPath.Equals(_mediaFieldsFolder, StringComparison.InvariantCultureIgnoreCase);
+            return childPath.Equals(_mediaFieldsFolder);
         }
 
         private bool IsDescendantOfMediaFieldsFolder(string childPath)
         {
             childPath = _fileStore.NormalizePath(childPath);
-            return childPath.StartsWith(_mediaFieldsFolder, StringComparison.InvariantCultureIgnoreCase);
+            return childPath.StartsWith(_mediaFieldsFolder, StringComparison.Ordinal);
         }
     }
 }
