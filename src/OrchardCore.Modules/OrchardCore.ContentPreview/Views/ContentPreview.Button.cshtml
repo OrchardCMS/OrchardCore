@@ -1,5 +1,5 @@
 @{ 
-    var previewId = Guid.NewGuid().ToString().GetHashCode();
+    var previewId = Guid.NewGuid();
 }
 
 <a id="previewButton" target="_blank" class="publish-button btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.ContentPreview", id = previewId })">@T["Preview"]</a>

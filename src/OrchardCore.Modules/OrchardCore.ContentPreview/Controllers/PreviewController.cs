@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentPreview.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -24,6 +25,7 @@ namespace OrchardCore.ContentPreview.Controllers
     {
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentManagerSession _contentManagerSession;
         private readonly ISiteService _siteService;
         private readonly ISession _session;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -40,6 +42,7 @@ namespace OrchardCore.ContentPreview.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
+            IContentManagerSession contentManagerSession,
             ISiteService siteService,
             INotifier notifier,
             ISession session,
@@ -58,7 +61,7 @@ namespace OrchardCore.ContentPreview.Controllers
             _siteService = siteService;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
-
+            _contentManagerSession = contentManagerSession;
             T = localizer;
             New = shapeFactory;
             Logger = logger;
@@ -92,15 +95,16 @@ namespace OrchardCore.ContentPreview.Controllers
             var contentItemId = Request.Form["PreviewContentItemId"];
             var contentItemVersionId = Request.Form["PreviewContentItemVersionId"];
 
-            // WARNING: The string value exists but doesn't represent an int.
-            int.TryParse(Request.Form["PreviewId"], out var contentId);
+             // Unique contentItem.Id that only Preview is using such that another
+             // stored document can't have the same one in the IContentManagerSession index
 
-            contentItem.Id = contentId;
+            contentItem.Id = -1;
             contentItem.ContentItemId = contentItemId;
             contentItem.ContentItemVersionId = contentItemVersionId;
             contentItem.CreatedUtc = _clock.UtcNow;
             contentItem.ModifiedUtc = _clock.UtcNow;
             contentItem.PublishedUtc = _clock.UtcNow;
+            contentItem.Published = true;
 
             // TODO: we should probably get this value from the main editor as it might impact validators
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
@@ -119,6 +123,23 @@ namespace OrchardCore.ContentPreview.Controllers
                 }
 
                 return StatusCode(500, new { errors = errors });
+            }
+
+            var previewAspect = await _contentManager.PopulateAspectAsync(contentItem, new PreviewAspect());
+
+            if (!String.IsNullOrEmpty(previewAspect.PreviewUrl))
+            {
+                // The PreviewPart is configured, we need to set the fake content item
+                _contentManagerSession.Store(contentItem);
+
+                if (!previewAspect.PreviewUrl.StartsWith('/'))
+                {
+                    previewAspect.PreviewUrl = "/" + previewAspect.PreviewUrl;
+                }
+
+                Request.HttpContext.Items["PreviewPath"] = previewAspect.PreviewUrl;
+
+                return Ok();
             }
 
             model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "Detail");
