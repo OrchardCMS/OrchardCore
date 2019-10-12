@@ -7,7 +7,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Media.Deployment
 {
-    public class MediaDeploymentSource : IDeploymentSource
+    public class MediaDeploymentSource : DeploymentSourceBase
     {
         private readonly IMediaFileStore _mediaFileStore;
 
@@ -15,10 +15,7 @@ namespace OrchardCore.Media.Deployment
         {
             _mediaFileStore = mediaFileStore;
         }
-
-        public int Order { get; }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             if (!(step is MediaDeploymentStep mediaStep))
             {

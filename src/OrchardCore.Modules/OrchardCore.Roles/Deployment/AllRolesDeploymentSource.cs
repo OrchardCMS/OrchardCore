@@ -11,7 +11,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Deployment
 {
-    public class AllRolesDeploymentSource : IDeploymentSource
+    public class AllRolesDeploymentSource : DeploymentSourceBase
     {
         private readonly RoleManager<IRole> _roleManager;
         private readonly IRoleService _roleService;
@@ -21,10 +21,7 @@ namespace OrchardCore.Roles.Deployment
             _roleManager = roleManager;
             _roleService = roleService;
         }
-
-        public int Order { get; }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allRolesState = step as AllRolesDeploymentStep;
 

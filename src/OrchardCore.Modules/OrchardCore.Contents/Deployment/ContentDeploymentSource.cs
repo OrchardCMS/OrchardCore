@@ -8,7 +8,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Contents.Deployment
 {
-    public class ContentDeploymentSource : IDeploymentSource
+    public class ContentDeploymentSource : DeploymentSourceBase
     {
         private readonly ISession _session;
 
@@ -17,9 +17,7 @@ namespace OrchardCore.Contents.Deployment
             _session = session;
         }
         
-        public int Order { get; }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             // TODO: Batch and create separate content files in the result.
 

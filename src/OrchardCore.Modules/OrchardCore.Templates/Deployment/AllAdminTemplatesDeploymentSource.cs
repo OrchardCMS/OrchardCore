@@ -5,7 +5,7 @@ using OrchardCore.Templates.Services;
 
 namespace OrchardCore.Templates.Deployment
 {
-    public class AllAdminTemplatesDeploymentSource : IDeploymentSource
+    public class AllAdminTemplatesDeploymentSource : DeploymentSourceBase
     {
         private readonly AdminTemplatesManager _templatesManager;
 
@@ -14,9 +14,7 @@ namespace OrchardCore.Templates.Deployment
             _templatesManager = templatesManager;
         }
 
-        public int Order { get; }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allTemplatesState = step as AllAdminTemplatesDeploymentStep;
 

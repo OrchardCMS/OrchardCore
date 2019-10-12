@@ -4,7 +4,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Settings.Deployment
 {
-    public class SiteSettingsDeploymentSource : IDeploymentSource
+    public class SiteSettingsDeploymentSource : DeploymentSourceBase
     {
         private readonly ISiteService _siteService;
 
@@ -12,10 +12,7 @@ namespace OrchardCore.Settings.Deployment
         {
             _siteService = siteService;
         }
-
-        public int Order { get; }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var settingsState = step as SiteSettingsDeploymentStep;
             if (settingsState == null)

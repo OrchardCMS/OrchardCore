@@ -7,7 +7,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.CustomSettings.Deployment
 {
-    public class CustomSettingsDeploymentSource : IDeploymentSource
+    public class CustomSettingsDeploymentSource : DeploymentSourceBase
     {
         private readonly CustomSettingsService _customSettingsService;
 
@@ -16,9 +16,7 @@ namespace OrchardCore.CustomSettings.Deployment
             _customSettingsService = customSettingsService;
         }
 
-        public int Order { get; }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var customSettingsStep = step as CustomSettingsDeploymentStep;
             if (customSettingsStep == null)

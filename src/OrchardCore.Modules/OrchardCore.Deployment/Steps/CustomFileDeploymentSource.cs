@@ -3,11 +3,9 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Deployment.Steps
 {
-    public class CustomFileDeploymentSource : IDeploymentSource
-    {
-        public int Order { get; }
-        
-        public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public class CustomFileDeploymentSource : DeploymentSourceBase
+    {       
+        public override Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var customFile = step as CustomFileDeploymentStep;
 

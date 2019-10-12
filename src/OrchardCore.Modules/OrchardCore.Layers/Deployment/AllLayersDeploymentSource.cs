@@ -9,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Layers.Deployment
 {
-    public class AllLayersDeploymentSource : IDeploymentSource
+    public class AllLayersDeploymentSource : DeploymentSourceBase
     {
         private readonly ILayerService _layerService;
         private readonly ISiteService _siteService;
@@ -19,10 +19,7 @@ namespace OrchardCore.Layers.Deployment
             _layerService = layerService;
             _siteService = siteService;
         }
-
-        public int Order { get; }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allLayersState = step as AllLayersDeploymentStep;
 

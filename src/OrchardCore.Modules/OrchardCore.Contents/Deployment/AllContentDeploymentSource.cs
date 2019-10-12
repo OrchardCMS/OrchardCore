@@ -7,7 +7,7 @@ using YesSql;
 
 namespace OrchardCore.Contents.Deployment
 {
-    public class AllContentDeploymentSource : IDeploymentSource
+    public class AllContentDeploymentSource : DeploymentSourceBase
     {
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
@@ -18,9 +18,7 @@ namespace OrchardCore.Contents.Deployment
             _session = session;
         }
 
-        public int Order { get; }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allContentState = step as AllContentDeploymentStep;
 

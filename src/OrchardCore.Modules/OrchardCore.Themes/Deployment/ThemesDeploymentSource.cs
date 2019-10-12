@@ -7,7 +7,7 @@ using OrchardCore.Themes.Services;
 
 namespace OrchardCore.Themes.Deployment
 {
-    public class ThemesDeploymentSource : IDeploymentSource
+    public class ThemesDeploymentSource : DeploymentSourceBase
     {
         private readonly ISiteThemeService _siteThemeService;
         private readonly IAdminThemeService _adminThemeService;
@@ -18,9 +18,7 @@ namespace OrchardCore.Themes.Deployment
             _adminThemeService = adminThemeService;
         }
 
-        public int Order { get; }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var themesState = step as ThemesDeploymentStep;
 

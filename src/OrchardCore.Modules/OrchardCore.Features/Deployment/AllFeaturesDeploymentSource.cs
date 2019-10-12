@@ -6,7 +6,7 @@ using OrchardCore.Features.Services;
 
 namespace OrchardCore.Features.Deployment
 {
-    public class AllFeaturesDeploymentSource : IDeploymentSource
+    public class AllFeaturesDeploymentSource : DeploymentSourceBase
     {
         private readonly IModuleService _moduleService;
 
@@ -15,9 +15,7 @@ namespace OrchardCore.Features.Deployment
             _moduleService = moduleService;
         }
 
-        public int Order { get; }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allFeaturesState = step as AllFeaturesDeploymentStep;
 
