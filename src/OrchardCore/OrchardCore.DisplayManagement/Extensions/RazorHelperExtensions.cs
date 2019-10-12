@@ -35,6 +35,16 @@ public static class RazorHelperExtensions
         // Will throw a InvalidCastException if object is not a shape.
         var iShape = (IShape)shape;
 
+
+        iShape.Metadata.Wrappers.Add("ShapeTracingWrapper");
+        iShape.Metadata.OnDisplaying(context =>
+        {
+            var shape = context.Shape;
+            var iShape = (IShape)shape;
+            var dump = iShape.ShapeDump();
+            shape._Dump = dump;
+
+        });
         // Hmm so make this create a dump shape and return it
         // the dump shape could load code mirror, in readonly, with js syntax, and probably would format ok.
         var jObject = iShape.ShapeDump();
