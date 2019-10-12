@@ -8,6 +8,7 @@ namespace OrchardCore.Security.Services
     public interface IRoleService
     {
         Task<IEnumerable<string>> GetRoleNamesAsync();
+        Task<IEnumerable<IRole>> GetRolesAsync();
         Task<IEnumerable<Claim>> GetRoleClaimsAsync(string role, CancellationToken cancellationToken = default);
     }
 
