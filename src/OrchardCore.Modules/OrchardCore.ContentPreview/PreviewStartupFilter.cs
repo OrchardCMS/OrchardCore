@@ -17,12 +17,9 @@ namespace OrchardCore.ContentPreview
         {
             return app =>
             {
-                // Need to be called before as we use 'IAuthorizationService'. 
-                app.UseAuthentication();
-
-                app.Use(async  (context, next) =>
+                app.Use(async (context, next) =>
                 {
-                    if (context.Request.Method == "POST" && context.Request.Path == "/OrchardCore.ContentPreview/Preview/Render")
+                    if (context.Request.Method == "POST" && context.Request.Path.Value == "/OrchardCore.ContentPreview/Preview/Render")
                     {
                         await next();
 
@@ -42,8 +39,7 @@ namespace OrchardCore.ContentPreview
                             context.Items.Remove("PreviewPath");
 
                             context.SetEndpoint(endpoint: null);
-                            var routeValuesFeature = context.Features.Get<IRouteValuesFeature>();
-                            routeValuesFeature?.RouteValues?.Clear();
+                            context.Request.RouteValues.Clear();
 
                             try
                             {
@@ -53,10 +49,8 @@ namespace OrchardCore.ContentPreview
                             {
                                 context.Request.QueryString = originalQueryString;
                                 context.Request.Path = originalPath;
-                                //context.Features.Set<IStatusCodeReExecuteFeature>(null);
                             }
                         }
-
                     }
                     else
                     {
