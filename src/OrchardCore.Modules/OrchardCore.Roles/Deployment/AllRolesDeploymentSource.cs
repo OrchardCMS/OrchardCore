@@ -22,6 +22,8 @@ namespace OrchardCore.Roles.Deployment
             _roleService = roleService;
         }
 
+        public int Order { get; }
+
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allRolesState = step as AllRolesDeploymentStep;

@@ -13,6 +13,8 @@ namespace OrchardCore.Settings.Deployment
             _siteService = siteService;
         }
 
+        public int Order { get; }
+
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var settingsState = step as SiteSettingsDeploymentStep;

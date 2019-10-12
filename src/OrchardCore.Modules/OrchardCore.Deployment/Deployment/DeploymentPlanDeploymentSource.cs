@@ -13,6 +13,8 @@ namespace OrchardCore.Deployment.Deployment
             _deploymentPlanService = deploymentPlanService;
         }
 
+        public int Order { get; }
+
         public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
         {
             if (!(deploymentStep is DeploymentPlanDeploymentStep deploymentPlanStep))

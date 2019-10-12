@@ -5,6 +5,8 @@ namespace OrchardCore.Deployment.Steps
 {
     public class CustomFileDeploymentSource : IDeploymentSource
     {
+        public int Order { get; }
+        
         public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var customFile = step as CustomFileDeploymentStep;

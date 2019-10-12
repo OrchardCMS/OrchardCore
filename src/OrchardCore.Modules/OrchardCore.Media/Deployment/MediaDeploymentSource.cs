@@ -16,6 +16,8 @@ namespace OrchardCore.Media.Deployment
             _mediaFileStore = mediaFileStore;
         }
 
+        public int Order { get; }
+
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             if (!(step is MediaDeploymentStep mediaStep))

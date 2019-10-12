@@ -14,6 +14,8 @@ namespace OrchardCore.AdminMenu.Deployment
             _adminMenuService = adminMenuervice;
         }
 
+        public int Order { get; }
+
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var AdminMenuState = step as AdminMenuDeploymentStep;

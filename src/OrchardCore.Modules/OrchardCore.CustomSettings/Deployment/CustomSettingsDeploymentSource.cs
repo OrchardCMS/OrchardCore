@@ -16,6 +16,8 @@ namespace OrchardCore.CustomSettings.Deployment
             _customSettingsService = customSettingsService;
         }
 
+        public int Order { get; }
+
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var customSettingsStep = step as CustomSettingsDeploymentStep;

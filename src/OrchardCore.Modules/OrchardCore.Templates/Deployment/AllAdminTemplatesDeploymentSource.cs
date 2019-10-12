@@ -14,6 +14,8 @@ namespace OrchardCore.Templates.Deployment
             _templatesManager = templatesManager;
         }
 
+        public int Order { get; }
+
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allTemplatesState = step as AllAdminTemplatesDeploymentStep;

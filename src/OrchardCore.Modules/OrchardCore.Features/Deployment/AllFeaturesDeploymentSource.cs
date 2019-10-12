@@ -15,6 +15,8 @@ namespace OrchardCore.Features.Deployment
             _moduleService = moduleService;
         }
 
+        public int Order { get; }
+
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allFeaturesState = step as AllFeaturesDeploymentStep;

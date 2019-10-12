@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Deployment.Services;
@@ -25,7 +26,7 @@ namespace OrchardCore.Deployment.Core.Services
         {
             foreach (var step in deploymentPlan.DeploymentSteps)
             {
-                foreach (var source in _deploymentSources)
+                foreach (var source in _deploymentSources.OrderBy(s => s.Order))
                 {
                     await source.ProcessDeploymentStepAsync(step, result);
                 }

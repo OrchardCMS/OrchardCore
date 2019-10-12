@@ -18,6 +18,8 @@ namespace OrchardCore.Themes.Deployment
             _adminThemeService = adminThemeService;
         }
 
+        public int Order { get; }
+
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var themesState = step as ThemesDeploymentStep;

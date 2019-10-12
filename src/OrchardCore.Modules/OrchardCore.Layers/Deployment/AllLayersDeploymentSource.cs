@@ -20,6 +20,8 @@ namespace OrchardCore.Layers.Deployment
             _siteService = siteService;
         }
 
+        public int Order { get; }
+
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allLayersState = step as AllLayersDeploymentStep;

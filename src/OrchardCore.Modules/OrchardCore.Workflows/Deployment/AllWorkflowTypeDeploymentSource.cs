@@ -18,6 +18,8 @@ namespace OrchardCore.Workflows.Deployment
             _session = session;
         }
 
+        public int Order { get; }
+
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allContentState = step as AllWorkflowTypeDeploymentStep;

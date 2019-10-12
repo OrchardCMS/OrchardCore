@@ -7,6 +7,8 @@ namespace OrchardCore.Deployment
     /// </summary>
     public interface IDeploymentSource
     {
+        int Order { get; }
+
         Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result);
     }
 }
