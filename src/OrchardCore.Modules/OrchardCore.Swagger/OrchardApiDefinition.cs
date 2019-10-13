@@ -27,6 +27,6 @@ namespace OrchardCore.Swagger
             }
         };
 
-        public Func<string, ApiDescription, bool> ApiDescriptionFilterPredicate => (name, description) => description.RelativePath.Contains("api/tenants");
+        public Func<string, ApiDescription, bool> ApiDescriptionFilterPredicate => (name, description) => name == "OrchardCoreAPI";
     }
 }
