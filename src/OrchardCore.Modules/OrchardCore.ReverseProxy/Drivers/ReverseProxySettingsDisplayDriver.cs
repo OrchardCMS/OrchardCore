@@ -60,10 +60,12 @@ namespace OrchardCore.ReverseProxy.Drivers
                 if (model.EnableXForwardedProto)
                     section.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
 
+                // If the settings are valid, reload the current tenant.
+                if (context.Updater.ModelState.IsValid)
+                {
+                    await _orchardHost.ReloadShellContextAsync(_currentShellSettings);
+                }
             }
-
-            // Reload the tenant to apply the settings
-            await _orchardHost.ReloadShellContextAsync(_currentShellSettings);
 
             return await EditAsync(section, context);
         }
