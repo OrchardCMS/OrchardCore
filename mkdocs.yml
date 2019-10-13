@@ -1,5 +1,5 @@
 site_name: Orchard Core Documentation
-theme: readthedocs
+theme: material
 
 # Repository
 repo_name: OrchardCMS/OrchardCore
