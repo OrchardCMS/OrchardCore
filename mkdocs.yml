@@ -3,8 +3,6 @@ theme:
   name: 'material'
   logo: 'docs/assets/images/orchard-logo.png'
   favicon: 'docs/assets/images/favicon.png'
-  feature:
-    tabs: true
   font:
     text: 'Open Sans'
   palette:
