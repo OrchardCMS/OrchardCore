@@ -59,7 +59,7 @@ You should override this shape in your theme.
 
 ##### ContentCulturePickerContainer Example
 
-```liquid
+``` liquid tab="Liquid"
 <ul>
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{Model.CurrentCulture.DisplayName}}</a>
@@ -75,7 +75,7 @@ You should override this shape in your theme.
 
 ```
 
-```razor
+``` razor tab="Razor"
 <ul>
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
