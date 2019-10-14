@@ -336,7 +336,7 @@ The alias is now `this-is-a-new-day`:
 ![This Is A New Day](images/this-is-a-new-day.jpg)
 
 !!! note "Assignment"
-Create a new Blog Post with a __Title__ and verify that the alias is auto-generated, and that it can be displayed using its own custom url.
+    Create a new Blog Post with a __Title__ and verify that the alias is auto-generated, and that it can be displayed using its own custom url.
 
 ## Configuring the Preview feature for Blog Posts
 
@@ -362,7 +362,7 @@ The CMS doesn't know what Razor Page to use when rendering a content item, and w
 As you can see the preview is not using the specific route we set up for displaying a Blog Post, and editor have a full fidelity experience when editing the content.
 
 !!! hint "Suggestion"
-A dedicated template can also be used for previews, which would provide hints for editors, or detect mistakes, and render them in the preview window. Users can also change the size of the window to test the rendering on different clients.
+    A dedicated template can also be used for previews, which would provide hints for editors, or detect mistakes, and render them in the preview window. Users can also change the size of the window to test the rendering on different clients.
 
 ## Summary
 
