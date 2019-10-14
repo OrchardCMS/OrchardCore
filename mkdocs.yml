@@ -76,25 +76,22 @@ nav:
         - Content Preview: docs/modules/ContentPreview/README.md
         - Content Localization: docs/modules/ContentLocalization/README.md
         - Layers: docs/modules/Layers/README.md
-        - Widgets: docs/modules/Widgets/README.md
-        - Localization: docs/modules/Localize/README.md
+        - Widgets: docs/modules/Widgets/README.mdmd
+        - Forms: docs/modules/Forms/README.md
         - Templates: docs/modules/Templates/README.md
         - Themes: docs/modules/Themes/README.md
         - Liquid: docs/modules/Liquid/README.md
-        - GraphQL: docs/modules/Apis.GraphQL/README.md
         - Indexing: docs/modules/Indexing/README.md
         - SQL: docs/modules/SQL/README.md
         - Lucene: docs/modules/Lucene/README.md
         - Queries: docs/modules/Queries/README.md
         - Media: docs/modules/Media/README.md
-        - Resources: docs/modules/Resources/README.md
+        - ReCaptcha: docs/modules/ReCaptcha/README.md
+        - Resources: docs/modules/Resources/README.
         - Menu: docs/modules/Menu/README.md
         - Navigation: docs/modules/Navigation/README.md
         - Admin Menu: docs/modules/AdminMenu/README.md
         - Taxonomies: docs/modules/Taxonomies/README.md
-        - ReCaptcha: docs/modules/ReCaptcha/README.md
-        - Forms: docs/modules/Forms/README.md
-        - Workflows: docs/modules/Workflows/README.md
     - Core Modules: 
 #        - How to use Core Modules: docs/core/README.md
         - Contents: docs/modules/Contents/README.md
@@ -102,10 +99,11 @@ nav:
         - Custom Settings: docs/modules/CustomSettings/README.md
         - Placement: docs/display/Placement/README.md
         - Data: docs/core/Data/README.md
-        - DataProtection (Azure Storage): docs/modules/DataProtection.Azure/README.md
         - Dynamic Cache: docs/modules/DynamicCache/README.md
+        - GraphQL: docs/modules/Apis.GraphQL/README.md
         - GraphQL queries: docs/core/Apis.GraphQL.Abstractions/README.md
         - Health Check: docs/modules/HealthChecks/README.md
+        - Localization: docs/modules/Localize/README.md
         - Logging Serilog: docs/core/Logging.Serilog/readme.md
         - Media Azure: docs/modules/Media.Azure/README.md
         - Modules: docs/core/Modules/README.md
@@ -113,6 +111,8 @@ nav:
         - Scripting: docs/modules/Scripting/README.md
         - Setup: docs/modules/Setup/README.md
         - Tenants: docs/modules/Tenants/README.md
+        - Workflows: docs/modules/Workflows/README.md
+        - DataProtection (Azure Storage): docs/modules/DataProtection.Azure/README.md
     - Manage your Content: docs/content-management/README.md
     - Customize the Display: docs/display/README.md
     - Localize your site: docs/localization/README.md
