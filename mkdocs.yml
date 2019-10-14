@@ -1,5 +1,26 @@
 site_name: Orchard Core Documentation
-theme: readthedocs
+theme:
+  name: 'material'
+  logo: 'docs/assets/images/orchard-logo.png'
+  favicon: 'docs/assets/images/favicon.png'
+  feature:
+    tabs: true
+  font:
+    text: 'Open Sans'
+  palette:
+    primary: 'blue'
+    accent: 'light blue'
+  static_templates:
+    - 404.html
+    
+extra:
+  social:
+    - type: 'globe'
+      link: 'http://orchardproject.net'
+    - type: 'github-alt'
+      link: 'https://github.com/OrchardCMS/OrchardCore'
+    - type: 'twitter'
+      link: 'https://twitter.com/OrchardCMS'
 
 # Repository
 repo_name: OrchardCMS/OrchardCore
@@ -23,6 +44,7 @@ markdown_extensions:
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
+  - pymdownx.superfences
 #  - markdown.extensions.nl2br
   - markdown_fenced_code_tabs:
       template: 'default'
