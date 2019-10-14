@@ -17,18 +17,19 @@ namespace OrchardCore.ReverseProxy.Drivers
     public class ReverseProxySettingsDisplayDriver : SectionDisplayDriver<ISite, ReverseProxySettings>
     {
         private const string SettingsGroupId = "ReverseProxy";
-        private readonly IShellHost _orchardHost;
-        private readonly ShellSettings _currentShellSettings;
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
 
-        public ReverseProxySettingsDisplayDriver(INotifier notifier,
-            IShellHost orchardHost,
-            ShellSettings currentShellSettings,
+        public ReverseProxySettingsDisplayDriver(
+            IShellHost shellHost,
+            ShellSettings shellSettings,
             IHtmlLocalizer<ReverseProxySettingsDisplayDriver> stringLocalizer)
         {
-            _orchardHost = orchardHost;
-            _currentShellSettings = currentShellSettings;
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
             T = stringLocalizer;
         }
+
         IHtmlLocalizer T { get; }
 
         public override IDisplayResult Edit(ReverseProxySettings section, BuildEditorContext context)
@@ -63,7 +64,7 @@ namespace OrchardCore.ReverseProxy.Drivers
                 // If the settings are valid, reload the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    await _orchardHost.ReloadShellContextAsync(_currentShellSettings);
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 
