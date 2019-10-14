@@ -44,8 +44,6 @@ markdown_extensions:
   - markdown.extensions.meta
   - pymdownx.superfences
 #  - markdown.extensions.nl2br
-  - markdown_fenced_code_tabs:
-      template: 'default'
 
 # Page tree
 nav:
