@@ -366,7 +366,7 @@ As you can see the preview is not using the specific route we set up for display
 
 ## Summary
 
-In this tutorial we have learnt how to
+In this tutorial we have learned how to
 
 - Start a new Orchard Core CMS project
 - Create custom content types
