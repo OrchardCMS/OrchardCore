@@ -79,11 +79,12 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static Task<ShellScope> CreateChildScopeAsync()
         {
-            return CreateChildScopeAsync(ShellScope.Context.Settings);
+            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            return shellHost.GetScopeAsync(ShellScope.Context.Settings);
         }
 
         /// <summary>
-        /// Creates a child scope from the shell settings.
+        /// Creates a child scope from the current one.
         /// </summary>
         public static Task<ShellScope> CreateChildScopeAsync(ShellSettings settings)
         {
@@ -92,7 +93,7 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// Creates a child scope from the tenant name.
+        /// Creates a child scope from the current one.
         /// </summary>
         public static Task<ShellScope> CreateChildScopeAsync(string tenant)
         {
@@ -109,7 +110,7 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// Execute a delegate using a child scope created from the shell settings.
+        /// Execute a delegate using a child scope created from the current one.
         /// </summary>
         public static async Task UsingChildScopeAsync(ShellSettings settings, Func<ShellScope, Task> execute)
         {
@@ -117,7 +118,7 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// Execute a delegate using a child scope created from the tenant name.
+        /// Execute a delegate using a child scope created from the current one.
         /// </summary>
         public static async Task UsingChildScopeAsync(string tenant, Func<ShellScope, Task> execute)
         {
