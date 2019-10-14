@@ -43,6 +43,8 @@ markdown_extensions:
   - markdown.extensions.footnotes
   - markdown.extensions.meta
   - pymdownx.superfences
+  - toc:
+      permalink: true
 #  - markdown.extensions.nl2br
 
 # Page tree
