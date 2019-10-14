@@ -16,13 +16,9 @@ namespace OrchardCore.ContentFields.Media
                     {
                         editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlField");
                     }
-                    else if(editor.Metadata.Type == "HtmlField_Edit__MoreWysiwyg")
+                    else if(editor.Metadata.Type == "HtmlField_Edit__WysiwygRszTbl")
                     {
-                        editor.Metadata.Wrappers.Add("Media_MoreWrapper__HtmlField");
-                    }
-                    else if(editor.Metadata.Type == "HtmlField_Edit__TinyMceWysiwyg")
-                    {
-                        editor.Metadata.Wrappers.Add("Media_TinyMceWrapper__HtmlField");
+                        editor.Metadata.Wrappers.Add("Media_RszTblWrapper__HtmlField");
                     }
                 });
         }
