@@ -12,6 +12,31 @@
     };
 
     $.extend(true, $.trumbowyg, {
+        btns: [
+            ['viewHTML'],
+            ['undo', 'redo'], // Only supported in Blink browsers
+            ['formatting'],
+            ['strong', 'em', 'del'],
+            ['superscript', 'subscript'],
+            ['link'],
+            ['insertImage'],
+            ['justifyLeft'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+            ['removeformat'],
+            ['table'],
+            ['fullscreen']
+        ],
+        btnsDef: {
+            align: {
+                dropdown: ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+                ico: 'justifyLeft'
+            },
+            image: {
+                dropdown: ['insertImage', 'base64', 'noembed'],
+                ico: 'insertImage'
+            }
+        },
         langs: {
             en: {
                 insertImage: 'Insert Media'

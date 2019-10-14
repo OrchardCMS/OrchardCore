@@ -7,14 +7,6 @@
     };
 
     $.extend(true, $.trumbowyg, {
-        langs: {
-            en: {
-                insertImage: 'Insert Media'
-            },
-            it: {
-                insertImage: 'Aggiungi Immagine'
-            }
-        },
         plugins: {
             insertImage: {
                 init: function (trumbowyg) {
