@@ -57,86 +57,80 @@ nav:
     - Guides: 
         - Follow the Guides: docs/guides/README.md
         - Create a modular application: docs/guides/create-modular-application-mvc/index.md
-        - Run code on startup: docs/guides/run-code-on-startup/index.md
         - Create a website: docs/guides/create-cms-application/index.md
-    - Content Management: 
-        - How to Create Contents : docs/content-management/README.md
-        - Define your Content Types: docs/modules/ContentTypes/README.md
-        - Contents: docs/modules/Contents/README.md
+        - Add an admin menu: docs/guides/add-admin-menu/index.md
+        - Install localization files: docs/guides/install-localization-files/index.md
+        - Run code on startup: docs/guides/run-code-on-startup/index.md
+    - CMS Modules: 
+        - Content Types: docs/modules/ContentTypes/README.md
         - Content Parts: 
-            - How to use Content Parts: docs/content-management/content-parts/README.md
-            - Title: docs\modules\Title\README.md
-            - Autoroute: docs\modules\Autoroute\README.md
-            - Alias: docs\modules\Alias\README.md
-            - Html: docs\modules\Html\README.md
-            - Markdown: docs\modules\Markdown\README.md
-            - List: docs\modules\List\README.md
-            - Flow: docs\modules\Flow\README.md
-            - ReCaptcha: docs\modules\ReCaptcha\README.md
+            - Add Parts to your Content: docs/content-management/content-parts/README.md
+            - Title: docs/modules/Title/README.md
+            - Autoroute: docs/modules/Autoroute/README.md
+            - Alias: docs/modules/Alias/README.md
+            - Html: docs/modules/Html/README.md
+            - Markdown: docs/modules/Markdown/README.md
+            - List: docs/modules/List/README.md
+            - Flow: docs/modules/Flow/README.md        
         - Content Fields: docs/modules/ContentFields/README.md
         - Content Preview: docs/modules/ContentPreview/README.md
-        - Layers: docs\modules\Layers\README.md
+        - Content Localization: docs/modules/ContentLocalization/README.md
+        - Layers: docs/modules/Layers/README.md
         - Widgets: docs/modules/Widgets/README.md
-    - Display:
-        - How to Customize the Display: docs/display/README.md
+        - Localization: docs/modules/Localize/README.md
         - Templates: docs/modules/Templates/README.md
         - Themes: docs/modules/Themes/README.md
         - Liquid: docs/modules/Liquid/README.md
-        - Placement: docs/display/Placement/README.md
-    - Localization:
-        - How to Localize your Site: docs/localization/README.md
-        - Install localization files: docs/guides/install-localization-files/index.md
-        - Localization: docs/modules/Localize/README.md
-        - Content Localization: docs/modules/ContentLocalization/README.md
-    - Media:
-        - How to Manage Media: docs/media/README.md
-        - Media: docs/modules/Media/README.md
-        - Media Azure: docs/modules/Media.Azure/README.md
-        - Resources: docs/modules/Resources/README.md
-    - Navigation:
-        - How to Navigate between Pages: docs/navigation/README.md
-        - Menu: docs/modules/Menu/README.md
-        - Navigation: docs/modules/Navigation/README.md
-        - Admin Menu: docs/modules/AdminMenu/README.md
-        - Add an item to the admin menu: docs/guides/add-admin-menu/index.md
-        - Taxonomies: docs/modules/Taxonomies/README.md
-    - Search:
-        - How to Query and Search: docs/search/README.md
+        - GraphQL: docs/modules/Apis.GraphQL/README.md
         - Indexing: docs/modules/Indexing/README.md
         - SQL: docs/modules/SQL/README.md
         - Lucene: docs/modules/Lucene/README.md
         - Queries: docs/modules/Queries/README.md
-    - Security:
-        - How to Secure your Application: docs/security/README.md
+        - Media: docs/modules/Media/README.md
+        - Resources: docs/modules/Resources/README.md
+        - Menu: docs/modules/Menu/README.md
+        - Navigation: docs/modules/Navigation/README.md
+        - Admin Menu: docs/modules/AdminMenu/README.md
+        - Taxonomies: docs/modules/Taxonomies/README.md
+        - ReCaptcha: docs/modules/ReCaptcha/README.md
+        - Forms: docs/modules/Forms/README.md
+        - Workflows: docs/modules/Workflows/README.md
+    - Core Modules: 
+#        - How to use Core Modules: docs/core/README.md
+        - Contents: docs/modules/Contents/README.md
+        - Configuration: docs/core/Configuration/README.md
+        - Custom Settings: docs/modules/CustomSettings/README.md
+        - Placement: docs/display/Placement/README.md
+        - Data: docs/core/Data/README.md
+        - DataProtection (Azure Storage): docs/modules/DataProtection.Azure/README.md
+        - Dynamic Cache: docs/modules/DynamicCache/README.md
+        - GraphQL queries: docs/core/Apis.GraphQL.Abstractions/README.md
+        - Health Check: docs/modules/HealthChecks/README.md
+        - Logging Serilog: docs/core/Logging.Serilog/readme.md
+        - Media Azure: docs/modules/Media.Azure/README.md
+        - Modules: docs/core/Modules/README.md
+        - Recipes: docs/modules/Recipes/README.md
+        - Scripting: docs/modules/Scripting/README.md
+        - Setup: docs/modules/Setup/README.md
+        - Tenants: docs/modules/Tenants/README.md
+    - Manage your Content: docs/content-management/README.md
+    - Customize the Display: docs/display/README.md
+    - Localize your site: docs/localization/README.md
+    - Handle the Media: docs/media/README.md
+    - Navigate between pages: docs/navigation/README.md
+    - Query and Search data: docs/search/README.md
+    - Secure your application:
+        - How to Secure your app: docs/security/README.md
+        - OpenId: docs/modules/OpenId/README.md
+        - Roles: docs/modules/Roles/README.md
         - Authentication:
             - Microsoft: docs/modules/Microsoft.Authentication/README.md
             - Facebook: docs/modules/Facebook/README.md
             - Twitter: docs/modules/Twitter/README.md
             - GitHub: docs/modules/GitHub/README.md
             - Google: docs/modules/Google/README.md
-        - OpenId: docs/modules/OpenId/README.md
-        - Roles: docs/modules/Roles/README.md
-        - DataProtection (Azure Storage): docs/modules/DataProtection.Azure/README.md
-    - Data: 
-        - How to Expose the Data : docs/data/README.md
-        - Data: docs/core/Data/README.md
-        - GraphQL: docs/modules/Apis.GraphQL/README.md
-        - GraphQL queries: docs/core/Apis.GraphQL.Abstractions/README.md
-    - Configuration:
-        - How to Configure your Settings: docs/configuration/README.md
-        - Configuration: docs/core/Configuration/README.md
-        - Setup: docs/modules/Setup/README.md
-        - Recipes: docs/modules/Recipes/README.md
-        - Scripting: docs/modules/Scripting/README.md
-        - Tenants: docs/modules/Tenants/README.md
-    - Workflows:
-        - How to automate Workflows: docs/workflows/README.md
-        - Workflows: docs/modules/Workflows/README.md
-        - Forms: docs/modules/Forms/README.md
-    - Core: 
-        - How to use Core Modules: docs/core/README.md
-        - Custom Settings: docs/modules/CustomSettings/README.md
-        - Dynamic Cache: docs/modules/DynamicCache/README.md
-        - Health Check: docs/modules/HealthChecks/README.md
-        - Logging Serilog: docs/core/Logging.Serilog/readme.md
-        - Modules: docs/core/Modules/README.md
+ #   - Data: 
+ #       - How to Expose the Data : docs/data/README.md
+ #   - Configuration:
+ #       - How to Configure your Settings: docs/configuration/README.md
+    - Workflows: docs/workflows/README.md
