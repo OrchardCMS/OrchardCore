@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
+using OrchardCore.Setup.Options;
 
 namespace OrchardCore.Setup
 {
@@ -16,9 +17,11 @@ namespace OrchardCore.Setup
     {
         private readonly string _defaultCulture;
         private string[] _supportedCultures;
+        private readonly IShellConfiguration _shellConfiguration;
 
-        public Startup(IShellConfiguration shellConfiguration)
+        public Startup(IShellConfiguration shellConfiguration, IConfiguration configuration)
         {
+            _shellConfiguration =shellConfiguration;
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Setup");
 
             _defaultCulture = configurationSection["DefaultCulture"];
@@ -30,6 +33,8 @@ namespace OrchardCore.Setup
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
 
+            services.AddTransient<Microsoft.AspNetCore.Hosting.IStartupFilter, AutoSetupStartupFilter>();
+            services.Configure<AutoSetupOptions>(_shellConfiguration.GetSection("OrchardCore.Setup.AutoSetup"));
             services.AddSetup();
         }
 
