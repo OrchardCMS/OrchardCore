@@ -10,7 +10,6 @@
     //AJAX will not have CollectionShape.
     var updater = Model.CollectionShape?.Updater ?? Model.Updater;
 
-
     if (Model.BuildEditor == true)
     {
         //Assign prefix
@@ -36,8 +35,7 @@
 
         contentCardFrame.ChildContent = Model;
 
-        contentCardFrame.ColumnSize = Model.ColumnSize;
-       
+        contentCardFrame.ColumnSize = Model.ColumnSize;       
     }
     else
     {
@@ -48,13 +46,12 @@
         //Hide the Delete
         Model.CanDelete = false;
 
-        //Change Shape type to Editor, this shape will be rendered from within Other Frame
+        //Change Shape type to Preview, this shape will be rendered from within Other Frame
         Model.Metadata.Alternates.Clear();
         Model.Metadata.Type = "ContentCard_Preview";
 
         contentCardFrame.ContentPreview = Model;
     }
-
     //Display Outer Frame
     @await DisplayAsync(contentCardFrame)
 }
