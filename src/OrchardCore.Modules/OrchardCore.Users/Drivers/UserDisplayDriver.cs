@@ -17,7 +17,6 @@ namespace OrchardCore.Users.Drivers
     public class UserDisplayDriver : DisplayDriver<User>
     {
         private readonly UserManager<IUser> _userManager;
-        private readonly IUserService _userService;
         private readonly IRoleService _roleService;
         private readonly IUserEmailStore<IUser> _userEmailStore;
         private readonly IUserRoleStore<IUser> _userRoleStore;
@@ -25,14 +24,12 @@ namespace OrchardCore.Users.Drivers
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
-            IUserService userService,
             IRoleService roleService,
             IUserEmailStore<IUser> userEmailStore,
             IUserRoleStore<IUser> userRoleStore,
             IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
-            _userService = userService;
             _roleService = roleService;
             _userEmailStore = userEmailStore;
             _userRoleStore = userRoleStore;
