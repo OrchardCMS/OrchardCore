@@ -3,6 +3,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+
+using OrchardCore.ContentLocalization.Records;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
@@ -11,6 +13,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Liquid;
+using YesSql;
 
 namespace OrchardCore.ContentLocalization.Handlers
 {
@@ -19,17 +22,16 @@ namespace OrchardCore.ContentLocalization.Handlers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILocalizationEntries _entries;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IContentLocalizationManager _contentLocalizationManager;
+        private readonly ISession _session;
 
         public LocalizationPartHandler(ILocalizationEntries entries,
             IContentDefinitionManager contentDefinitionManager,
-            ILiquidTemplateManager liquidTemplateManager,
-            IContentLocalizationManager contentLocalizationManager)
+            ILiquidTemplateManager liquidTemplateManager, ISession session)
         {
             _entries = entries;
             _contentDefinitionManager = contentDefinitionManager;
             _liquidTemplateManager = liquidTemplateManager;
-            _contentLocalizationManager = contentLocalizationManager;
+            _session = session;
         }
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, LocalizationPart part)
@@ -91,10 +93,17 @@ namespace OrchardCore.ContentLocalization.Handlers
 
                 var json = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
 
-                var jObject = JObject.FromObject(json);
-                // this does not call UpdatedAsync on all Related LocalizationPart handlers. 
+                var jObject = JObject.Parse(json);
+                // this does not call UpdatedAsync on all Related LocalizationPart handlers.
                 // If it did, and infinite loop would occur.
-                await _contentLocalizationManager.SyncJson(part.LocalizationSet, jObject);
+                var items = await _session.Query<ContentItem, LocalizedContentItemIndex>(o => o.LocalizationSet == part.LocalizationSet).ListAsync();
+
+                foreach (var item in items)
+                {
+                    var content = (JObject)item.ContentItem.Content;
+                    content.Merge(jObject, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+                    _session.Save(item);
+                }
             }
         }
 
