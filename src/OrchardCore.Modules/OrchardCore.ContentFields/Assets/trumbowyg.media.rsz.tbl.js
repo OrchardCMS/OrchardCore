@@ -19,6 +19,9 @@
                             mediaApp.selectedMedias = [];
                             var modal = $('#mediaModalHtmlField').modal();
                             $('#mediaHtmlFieldSelectButton').on('click', function (v) {
+                                //set focus on editor to avoid strange issue on image insertion
+                                t.$ed.focus();
+                                
                                 t.restoreRange();
                                 t.range.deleteContents();
 
@@ -29,12 +32,12 @@
                                     img.src = mediaApp.selectedMedias[i].url; //mediaApp.selectedMedias[i].mediaPath;
                                     img.alt = mediaApp.selectedMedias[i].name;
                                     t.range.insertNode(img);
-
-                                    t.syncCode();
                                 }
 
+                                t.syncCode();
+
                                 t.$c.trigger('tbwchange');
-                                t.$c.focus();
+                                
 
                                 $('#mediaModalHtmlField').modal('hide');
                                 return true;
@@ -75,9 +78,9 @@
                                     return false;
                                 },
                                 onDragEnd: function () {
-                                    trumbowyg.syncCode();
                                     //resize update canvas information
                                     rszwtcanvas.refresh();
+                                    trumbowyg.syncCode();
                                 }
                             }
                         }
@@ -88,8 +91,9 @@
                             .off('click')
                             .on('click', function (ev) {
                                 //if I'm already do a resize, reset it
-                                if (rszwtcanvas.isActive())
+                                if (rszwtcanvas.isActive()){
                                     rszwtcanvas.reset();
+                                }
                                 //initialize resize of image
                                 rszwtcanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
                             })
@@ -108,7 +112,7 @@
 
                         rszwtcanvas.reset();
 
-                        trumbowyg.syncTextarea();
+                        trumbowyg.syncCode();
                     }
 
                     // Init
@@ -124,7 +128,8 @@
                             //check if I've clicked out of canvas or image to reset it
                             if (!($(ev.target).is('img') || ev.target.id === rszwtcanvas.canvasId())) {
                                 rszwtcanvas.reset();
-                                //reset the onclick event on images
+                                
+                                //save changes
                                 trumbowyg.$c.trigger('tbwchange');
                             }
                         });
