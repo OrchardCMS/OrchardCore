@@ -18,10 +18,10 @@ namespace OrchardCore.Google
 
             public Task<IEnumerable<Permission>> GetPermissionsAsync()
             {
-                return Task.FromResult(new[]
+                return Task.FromResult(new []
                 {
-                ManageGoogleAuthentication
-            }
+                    ManageGoogleAuthentication
+                }
                 .AsEnumerable());
             }
 
@@ -30,10 +30,10 @@ namespace OrchardCore.Google
                 yield return new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[]
+                    Permissions = new []
                     {
-                    ManageGoogleAuthentication
-                }
+                        anageGoogleAuthentication
+                    }
                 };
             }
         }
@@ -43,10 +43,10 @@ namespace OrchardCore.Google
 
             public Task<IEnumerable<Permission>> GetPermissionsAsync()
             {
-                return Task.FromResult(new[]
+                return Task.FromResult(new []
                 {
-                ManageGoogleAnalytics
-            }
+                    ManageGoogleAnalytics
+                }
                 .AsEnumerable());
             }
 
@@ -55,14 +55,12 @@ namespace OrchardCore.Google
                 yield return new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[]
+                    Permissions = new []
                     {
-                    ManageGoogleAnalytics
-                }
+                        ManageGoogleAnalytics
+                    }
                 };
             }
         }
-
     }
-
 }
