@@ -1,5 +1,6 @@
 @model ShapeViewModel<ContentTypesSitemap>
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@using OrchardCore.Contents.SitemapNodes
 @{
     var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
 

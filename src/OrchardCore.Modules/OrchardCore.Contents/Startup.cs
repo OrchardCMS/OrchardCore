@@ -21,13 +21,13 @@ using OrchardCore.Contents.Recipes;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.Settings;
+using OrchardCore.Contents.SitemapNodes;
 using OrchardCore.Contents.TagHelpers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Entities;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
@@ -37,10 +37,9 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Contents.SitemapNodes;
-using OrchardCore.Sitemaps.Services;
-using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Builders;
+using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Contents
 {

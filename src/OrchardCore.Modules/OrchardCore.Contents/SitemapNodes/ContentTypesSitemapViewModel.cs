@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Sitemaps.Models;
 
-namespace OrchardCore.Contents.Sitemaps
+namespace OrchardCore.Contents.SitemapNodes
 {
     public class ContentTypesSitemapViewModel
     {
