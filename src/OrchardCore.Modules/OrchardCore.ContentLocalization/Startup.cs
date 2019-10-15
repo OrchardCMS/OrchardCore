@@ -15,14 +15,17 @@ using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.Security;
 using OrchardCore.ContentLocalization.Services;
+using OrchardCore.ContentLocalization.Settings;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using YesSql;
@@ -46,6 +49,9 @@ namespace OrchardCore.ContentLocalization
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
+
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, LocalizationPartSettingsDisplayDriver>();
+            services.AddSingleton<IGlobalMethodProvider, ContentLocalizationMethodsProvider>();
         }
     }
 
@@ -57,10 +63,7 @@ namespace OrchardCore.ContentLocalization
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
             services.AddScoped<IDisplayDriver<ISite>, ContentCulturePickerSettingsDriver>();
-            services.Configure<RequestLocalizationOptions>(options =>
-            {
-                options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider());
-            });
+            services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

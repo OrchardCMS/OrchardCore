@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentLocalization
@@ -11,11 +12,13 @@ namespace OrchardCore.ContentLocalization
         /// </summary>
         /// <returns>List of all items matching a localizationSet</returns>
         Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet);
+
         /// <summary>
         /// Get the content item that matches the localizationSet / culture combinaison
         /// </summary>
         /// <returns>ContentItem or null if not found</returns>
         Task<ContentItem> GetContentItemAsync(string localizationSet, string culture);
+
         /// <summary>
         /// Localizes the content item to the target culture.
         /// This method will clone the ContentItem of the default locale
@@ -23,6 +26,11 @@ namespace OrchardCore.ContentLocalization
         /// </summary>
         /// <returns>The localized content item</returns>
         Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture);
+        
+        /// <summary>
+        /// Merge Json to all ContentItems that are part of the LocalizationSet
+        /// </summary>
+        Task SyncJson(string localizationSet, JObject json);
 
         /// Deduplicate the list of contentItems to only keep a single contentItem per LocalizationSet.
         /// Each ContentItem is chosen with the following rules:
@@ -32,6 +40,7 @@ namespace OrchardCore.ContentLocalization
         /// </summary
         /// <returns>Cleaned list of ContentItem</returns>
         Task<IDictionary<string, ContentItem>> DeduplicateContentItemsAsync(IEnumerable<ContentItem> contentItems);
+
         /// <summary>
         /// Gets a list of ContentItemId for the LocalizationSet based on some rules
         /// Order of elements is kept.
@@ -43,6 +52,7 @@ namespace OrchardCore.ContentLocalization
         /// - OR First ContentItemId found in the set
         /// </returns>
         Task<IDictionary<string, string>> GetFirstItemIdForSetsAsync(IEnumerable<string> localizationSets);
+        
         /// <summary>
         /// Get the ContenItems that match the culture and localizationSet.
         /// A single ContentItem is returned per set if it exists.

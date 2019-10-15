@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
@@ -109,6 +110,17 @@ namespace OrchardCore.ContentLocalization
             return cloned;
         }
 
+        public async Task SyncJson(string localizationSet, JObject json)
+        {
+            var items = await GetItemsForSetAsync(localizationSet);
+            foreach (var item in items)
+            {
+                var content = (JObject)item.ContentItem.Content;
+                content.Merge(json, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+                _session.Save(item);
+            }
+        }
+
         public async Task<IDictionary<string, ContentItem>> DeduplicateContentItemsAsync(IEnumerable<ContentItem> contentItems)
         {
             var contentItemIds = contentItems.Select(c => c.ContentItemId);
@@ -126,6 +138,7 @@ namespace OrchardCore.ContentLocalization
             }
             return dictionary;
         }
+
         public async Task<IDictionary<string, string>> GetFirstItemIdForSetsAsync(IEnumerable<string> localizationSets)
         {
             var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(o => o.LocalizationSet.IsIn(localizationSets)).ListAsync();
