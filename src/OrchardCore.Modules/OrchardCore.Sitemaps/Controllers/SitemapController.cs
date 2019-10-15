@@ -16,33 +16,29 @@ namespace OrchardCore.Sitemaps.Controllers
     public class SitemapController : Controller
     {
         private readonly SitemapEntries _sitemapEntries;
-        private readonly ISitemapBuilder _sitemapBuilder;
-        private readonly ISitemapService _sitemapService;
+        private readonly ISitemapManager _sitemapManager;
         private readonly ILogger _logger;
         public SitemapController(
             ILogger<SitemapController> logger,
             SitemapEntries sitemapEntries,
-            ISitemapBuilder sitemapBuilder,
-            ISitemapService sitemapService
+            ISitemapManager sitemapManager
             )
         {
             _logger = logger;
             _sitemapEntries = sitemapEntries;
-            _sitemapBuilder = sitemapBuilder;
-            _sitemapService = sitemapService;
+            _sitemapManager = sitemapManager;
         }
 
         public async Task<IActionResult> Index()
         {
-            var sitemapPath = HttpContext.GetRouteValue(SitemapRouteConstraint.RouteKey)?.ToString();
+            var sitemapPath = HttpContext.GetRouteValue(SitemapsTransformer.RouteKey)?.ToString();
             _logger.LogDebug("Sitemap request path {SitemapPath}", sitemapPath);
 
-            if (_sitemapEntries.TryGetSitemapNodeId(sitemapPath, out var sitemapNodeId))
+            if (_sitemapEntries.TryGetSitemapNodeId(sitemapPath, out var sitemapId))
             {
-                var sitemapDocument = await _sitemapService.LoadSitemapDocumentAsync();
-                var sitemapNode = sitemapDocument.GetSitemapNodeById(sitemapNodeId);
+                var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
 
-                if (sitemapNode == null)
+                if (sitemap == null)
                 {
                     return NotFound();
                 }
@@ -50,11 +46,10 @@ namespace OrchardCore.Sitemaps.Controllers
                 var context = new SitemapBuilderContext()
                 {
                     HostPrefix = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}",
-                    UrlHelper = Url,
-                    Builder = _sitemapBuilder
+                    UrlHelper = Url
                 };
 
-                var document = await _sitemapBuilder.BuildAsync(sitemapNode, context);
+                var document = await _sitemapManager.BuildSitemapAsync(sitemap, context);
 
                 document.Declaration = new XDeclaration("1.0", "utf-8", null);
                 StringWriter writer = new Utf8StringWriter();

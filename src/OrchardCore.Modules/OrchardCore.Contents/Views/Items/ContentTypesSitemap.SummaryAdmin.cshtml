@@ -1,0 +1,34 @@
+@model ShapeViewModel<ContentTypesSitemap>
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@{
+    var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
+
+    var selectedContentTypes = Model.Value.ContentTypes ?? new ContentTypeSitemapEntry[] { };
+
+    var selectedDisplayNames = allContentTypes
+        .Where(ctd => selectedContentTypes.Any(sct => sct.ContentTypeName == ctd.Name))
+        .Select(x => x.DisplayName)
+        .ToList();
+}
+
+<div>
+    <span>@Model.Value.Name</span>
+    <code>@Model.Value.Path</code>
+
+    @if (Model.Value.IndexAll)
+    {
+        <span class="badge badge-info">@T["All"]</span>
+    }
+    else if (selectedDisplayNames.Any())
+    {
+        foreach (var displayName in selectedDisplayNames)
+        {
+            <span class="badge badge-info">@displayName</span>
+        }
+    }
+    else
+    {
+        <span class="badge badge-warning">@T["Nothing here!"]</span>
+    }
+    <span class="text-muted">- @T["Sitemap Content Types"]</span>
+</div>

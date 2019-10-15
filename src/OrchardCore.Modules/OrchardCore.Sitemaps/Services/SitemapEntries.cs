@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
@@ -23,7 +22,7 @@ namespace OrchardCore.Sitemaps.Services
             var builder = ImmutableDictionary.CreateBuilder<string, string>();
             foreach (var entry in entries)
             {
-                builder.Add(entry.Path, entry.SitemapNodeId);
+                builder.Add(entry.Path, entry.SitemapId);
             }
             _sitemapPaths = builder.ToImmutable();
         }

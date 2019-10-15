@@ -204,13 +204,13 @@ namespace OrchardCore.Contents
     }
 
     [RequireFeatures("OrchardCore.Sitemaps")]
-    public class SitemapMenuStartup : StartupBase
+    public class SitemapsStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<ContentTypesSitemapNode>>();
-            services.AddScoped<ISitemapNodeBuilder, ContentTypesSitemapBuilder>();
-            services.AddScoped<IDisplayDriver<SitemapNode>, ContentTypesSitemapNodeDriver>();
+            services.AddScoped<ISitemapProviderFactory, SitemapProviderFactory<ContentTypesSitemap>>();
+            services.AddScoped<ISitemapBuilder, ContentTypesSitemapBuilder>();
+            services.AddScoped<IDisplayDriver<Sitemap>, ContentTypesSitemapDriver>();
         }
     }
 }

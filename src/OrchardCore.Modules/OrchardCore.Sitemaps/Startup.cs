@@ -16,7 +16,7 @@ using OrchardCore.Sitemaps.Drivers;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Routing;
 using OrchardCore.Sitemaps.Services;
-using OrchardCore.Sitemaps.SitemapNodes;
+using OrchardCore.Sitemaps.Sitemaps;
 
 namespace OrchardCore.Sitemaps
 {
@@ -29,19 +29,19 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddIdGeneration();
 
+            //TODO add AddressScheme
             services.AddSingleton<SitemapsTransformer>();
             services.AddSingleton<SitemapEntries>();
 
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<ISitemapService, SitemapService>();
-            services.AddScoped<IDisplayManager<SitemapNode>, DisplayManager<SitemapNode>>();
-            services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();
+            services.AddScoped<ISitemapManager, SitemapManager>();
+            services.AddScoped<IDisplayManager<Sitemap>, DisplayManager<Sitemap>>();
 
             // Sitemap Index node
-            services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<SitemapIndexNode>>();
-            services.AddSingleton<ISitemapNodeBuilder, SitemapIndexNodeBuilder>();
-            services.AddScoped<IDisplayDriver<SitemapNode>, SitemapIndexNodeDriver>();
+            services.AddScoped<ISitemapProviderFactory, SitemapProviderFactory<SitemapIndex>>();
+            services.AddSingleton<ISitemapBuilder, SitemapIndexBuilder>();
+            services.AddScoped<IDisplayDriver<Sitemap>, SitemapIndexDriver>();
 
             // Sitemap Part.
             services.AddScoped<IContentPartDisplayDriver, SitemapPartDisplay>();
@@ -50,17 +50,9 @@ namespace OrchardCore.Sitemaps
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            //routes.MapAreaControllerRoute(
-            //     name: SitemapRouteConstraint.RouteKey,
-            //     areaName: "OrchardCore.Sitemaps",
-            //     pattern: "{*sitemap}",
-            //     constraints: new { sitemap = new SitemapRouteConstraint() },
-            //     defaults: new { controller = "Sitemap", action = "Index" }
-            // );
             routes.MapDynamicControllerRoute<SitemapsTransformer>("/{**sitemap}");
-            var sitemapSetService = serviceProvider.GetService<ISitemapService>();
-            var document = sitemapSetService.LoadSitemapDocumentAsync().GetAwaiter().GetResult();
-            sitemapSetService.BuildAllSitemapRouteEntries(document);
+            var sitemapManager = serviceProvider.GetService<ISitemapManager>();
+            sitemapManager.BuildAllSitemapRouteEntriesAsync().GetAwaiter().GetResult();
         }
     }
 }

@@ -24,7 +24,7 @@ namespace OrchardCore.Sitemaps.Drivers
         {
             await updater.TryUpdateModelAsync(model,
                 Prefix,
-                t => t.OverrideSitemapSetConfig,
+                t => t.OverrideSitemapConfig,
                 t => t.ChangeFrequency,
                 t => t.Exclude, t => t.Priority
             );
@@ -34,7 +34,7 @@ namespace OrchardCore.Sitemaps.Drivers
 
         private void BuildViewModel(SitemapPartViewModel model, SitemapPart part)
         {
-            model.OverrideSitemapSetConfig = part.OverrideSitemapSetConfig;
+            model.OverrideSitemapSetConfig = part.OverrideSitemapConfig;
             model.ChangeFrequency = part.ChangeFrequency;
             model.Exclude = part.Exclude;
             model.Priority = part.Priority;

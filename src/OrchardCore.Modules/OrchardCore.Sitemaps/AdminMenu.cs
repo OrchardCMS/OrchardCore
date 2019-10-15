@@ -28,7 +28,7 @@ namespace OrchardCore.Sitemaps
             builder.Add(S["Configuration"], cfg => cfg
                     .Add(S["Sitemaps"], "1.6", admt => admt
                         .Permission(Permissions.ManageSitemaps)
-                        .Action("List", "Set", new { area = "OrchardCore.Sitemaps" })
+                        .Action("List", "Admin", new { area = "OrchardCore.Sitemaps" })
                         .LocalNav()
                     ));
             return Task.CompletedTask;

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Sitemaps.Builders;
+using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Models
 {
@@ -7,6 +7,5 @@ namespace OrchardCore.Sitemaps.Models
     {
         public string HostPrefix { get; set; }
         public IUrlHelper UrlHelper { get; set; }
-        public ISitemapBuilder Builder { get; set; }
     }
 }
