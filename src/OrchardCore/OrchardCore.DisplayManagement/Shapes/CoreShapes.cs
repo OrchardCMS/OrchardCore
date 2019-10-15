@@ -104,8 +104,8 @@ namespace OrchardCore.DisplayManagement.Shapes
             TagBuilder tagBuilder = OrchardCore.DisplayManagement.Shapes.Shape.GetTagBuilder(Shape, "div");
             string type = Shape.Type.ToString().ToLowerInvariant();
             IHtmlContent message = Shape.Message;
-            tagBuilder.AddCssClass("message");
-            tagBuilder.AddCssClass("message-" + type);
+            tagBuilder.AddCssClass("alert");
+            tagBuilder.AddCssClass("alert-" + type);
             tagBuilder.Attributes["role"] = "alert";
             tagBuilder.InnerHtml.AppendHtml(message);
             return tagBuilder;
