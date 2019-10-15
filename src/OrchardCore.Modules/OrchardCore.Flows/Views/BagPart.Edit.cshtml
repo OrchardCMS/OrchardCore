@@ -14,12 +14,12 @@
 <script asp-name="jQuery-ui" at="Foot"></script>
 
 <fieldset class="form-group">
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart row" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.BagPart.ContentItems)
         {
             var prefix = Guid.NewGuid().ToString("n");
-            <div class="widget-template">
+            <div class="widget-template col-md-12">
                 @{
                     dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
 
@@ -62,9 +62,8 @@
     @if (Context.Items["BagPart.Edit"] == null)
     {
         Context.Items["BagPart.Edit"] = new object();
-        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
-
         <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
         <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
     }
 
@@ -82,12 +81,53 @@
     }
 
     <script at="Foot">
+    @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
+    if ($('#@widgetTemplatePlaceholderId').length == 1) {
         $("#@widgetTemplatePlaceholderId").sortable({
-            handle: ".widget-editor-header",
+            handle: ".widget-editor-handle",
             cursor: "move",
+            opacity: 0.7,
+            tolerance: "pointer",
+            placeholder: {
+                element: function(currentItem) {
+                    return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
+                },
+                update: function (container, p) {
+                    return;
+                }
+            },
+            toleranceElement: '> div',
+            start: function (event, ui) {
+                widgetDragItem = ui.item;
+                lastContainer = ui.item.parent();
+                lastContainer.toggleClass('widget-dropzone-hint');
+                widgetDragItem.find('.card').first().toggleClass('border-primary');
+                var classList = widgetDragItem.attr('class').split(' ');
+                $.each(classList, function (id, item) {
+                    if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
+                });
+
+            },
             stop: function (event, ui) {
+                lastContainer.toggleClass('widget-dropzone-hint');
+                widgetDragItem.find('.card').first().toggleClass('border-primary');
+
+                //clear the global variables
+                widgetDragItem = null;
+                lastContainer = null;
+                widgetItemSourceId = null;
+                widgetItemDestId = null;
                 $(document).trigger('contentpreview:render');
+            },
+            over: function (event, ui) {
+                var $self = $(this);
+                if (lastContainer[0] != this) {
+                    lastContainer.toggleClass('widget-dropzone-hint');
+                    lastContainer = $self;
+                    $self.toggleClass('widget-dropzone-hint');
+                }
             }
         });
+    }
     </script>
 </fieldset>

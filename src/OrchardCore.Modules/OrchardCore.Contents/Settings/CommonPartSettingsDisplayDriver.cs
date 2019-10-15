@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
@@ -13,13 +12,8 @@ namespace OrchardCore.Lists.Settings
 {
     public class CommonPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-
-        public CommonPartSettingsDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            IStringLocalizer<CommonPartSettingsDisplayDriver> localizer)
+        public CommonPartSettingsDisplayDriver(IStringLocalizer<CommonPartSettingsDisplayDriver> localizer)
         {
-            _contentDefinitionManager = contentDefinitionManager;
             TS = localizer;
         }
 

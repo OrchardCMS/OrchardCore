@@ -109,6 +109,7 @@ namespace OrchardCore.Mvc
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
             services.AddScoped<IViewLocationExpanderProvider, ComponentViewLocationExpanderProvider>();
+            services.AddScoped<IViewLocationExpanderProvider, SharedViewLocationExpanderProvider>();
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());

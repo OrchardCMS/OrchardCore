@@ -2,7 +2,7 @@
 
 Orchard Core extends ASP.NET Core `IConfiguration` with `IShellConfiguration`.
 
-To learn more about ASP.NET Core `IConfiguration` visit https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration
+To learn more about ASP.NET Core `IConfiguration` visit <https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration>
 
 ### Config Sources
 

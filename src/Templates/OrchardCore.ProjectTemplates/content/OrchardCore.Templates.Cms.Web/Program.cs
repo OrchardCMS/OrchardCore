@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 #if (UseNLog || UseSerilog)
 using OrchardCore.Logging;
 #endif
@@ -16,8 +17,8 @@ namespace OrchardCore.Templates.Cms.Web
         public static IHost BuildHost(string[] args)
         {
             var host = Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                    webBuilder
+                .ConfigureLogging(logging => logging.ClearProviders())
+                .ConfigureWebHostDefaults(webBuilder => webBuilder
 #if (UseNLog)
                         .UseNLogWeb()
 #endif
@@ -26,8 +27,6 @@ namespace OrchardCore.Templates.Cms.Web
 #endif
                         .UseStartup<Startup>())
                 .Build();
-
-            Console.WriteLine("Application started.");
 
             return host;
         }

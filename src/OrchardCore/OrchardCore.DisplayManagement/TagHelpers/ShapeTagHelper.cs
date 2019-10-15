@@ -9,8 +9,6 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         public ShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
 			:base(shapeFactory, displayHelper)
         {
-            _shapeFactory = shapeFactory;
-            _displayHelper = displayHelper;
         }
     }
 }

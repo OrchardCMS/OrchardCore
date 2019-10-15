@@ -5,9 +5,9 @@
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto"></ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
-        </form>
+    <form class="form-inline my-2 my-lg-0">
+        <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+    </form>
 </nav>
 
 <form asp-action="Edit" method="post">
@@ -28,7 +28,14 @@
                         @foreach (var permission in Model.RoleCategoryPermissions[category])
                         {
                             <tr data-text="@permission.Description">
-                                <td class="col-10">@permission.Description</td>
+                                <td class="col-10">@permission.Description
+                                    @if (permission.IsSecurityCritical)
+                                    {
+                                        <div class="float-right">
+                                            <span class="badge badge-danger" data-toggle="tooltip" data-html="true" title="@T["This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."]">@T["Security Critical"]</span>
+                                        </div>
+                                    }
+                                </td>
                                 <td class="col-1">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input" id="Checkbox.@permission.Name" name="Checkbox.@permission.Name" checked="@(Model.Role.RoleClaims.Any(x => x.ClaimValue == permission.Name))" value="true">
@@ -41,6 +48,7 @@
                                         <label class="custom-control-label" for="Effective.@permission.Name">&nbsp;</label>
                                     </div>
                                 </td>
+
                             </tr>
                         }
                     </tbody>
@@ -58,7 +66,6 @@
 </form>
 
 <script at="Foot" type="text/javascript">
-//<![CDATA[
     $(function () {
         var searchBox = $('#search-box');
 
@@ -92,5 +99,4 @@
             }
         });
     })
-//]]>
 </script>

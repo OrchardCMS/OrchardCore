@@ -1,7 +1,8 @@
 @model MarkdownBodyPartViewModel
+@using OrchardCore.ContentLocalization
 @using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.Markdown.ViewModels;
-@using OrchardCore.Markdown.Settings;
+@using OrchardCore.Markdown.ViewModels
+@using OrchardCore.Markdown.Settings
 
 @{
     var settings = Model.TypePartDefinition.GetSettings<MarkdownBodyPartSettings>();

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
@@ -49,6 +49,7 @@
 
         <div class="ta-content">
             @await RenderSectionAsync("Messages", required: false)
+            @await RenderSectionAsync("Breadcrumbs", required: false)
 
             @await RenderBodyAsync()
         </div>
