@@ -31,7 +31,7 @@ Follow this option if you want to use Visual Studio .NET.
 ![New project](images/new-project.jpg)
 
 - Enter a __Project name__ and a __Location__. For this tutorial we'll use "OrchardSite" for the name. Then click __Create__.
-- Select the __Web Application__ template and click _Create__.
+- Select the __Web Application__ template and click __Create__.
 
 #### Option 2 - From the command line
 
