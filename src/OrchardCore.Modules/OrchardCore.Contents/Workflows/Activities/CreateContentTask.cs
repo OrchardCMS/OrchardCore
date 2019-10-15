@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Workflows.Handlers;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -69,12 +67,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             }
 
             var versionOptions = Publish ? VersionOptions.Published : VersionOptions.Draft;
-
-            await ShellScope.UsingChildScopeAsync(async scope =>
-            {
-                var contentManager = ShellScope.Services.GetRequiredService<IContentManager>();
-                await contentManager.CreateAsync(contentItem, versionOptions);
-            });
+            await ContentManager.CreateAsync(contentItem, versionOptions);
 
             workflowContext.LastResult = contentItem;
             workflowContext.CorrelationId = contentItem.ContentItemId;
