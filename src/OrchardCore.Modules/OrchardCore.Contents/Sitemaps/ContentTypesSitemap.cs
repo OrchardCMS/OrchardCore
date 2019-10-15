@@ -1,6 +1,6 @@
 using OrchardCore.Sitemaps.Models;
 
-namespace OrchardCore.Contents.SitemapNodes
+namespace OrchardCore.Contents.Sitemaps
 {
     public class ContentTypesSitemap : Sitemap
     {

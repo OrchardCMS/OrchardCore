@@ -21,7 +21,7 @@ using OrchardCore.Contents.Recipes;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.Settings;
-using OrchardCore.Contents.SitemapNodes;
+using OrchardCore.Contents.Sitemaps;
 using OrchardCore.Contents.TagHelpers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;

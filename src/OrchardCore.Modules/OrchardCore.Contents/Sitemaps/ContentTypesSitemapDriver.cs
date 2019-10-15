@@ -7,7 +7,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Sitemaps.Models;
 
-namespace OrchardCore.Contents.SitemapNodes
+namespace OrchardCore.Contents.Sitemaps
 {
     public class ContentTypesSitemapDriver : DisplayDriver<Sitemap, ContentTypesSitemap>
     {

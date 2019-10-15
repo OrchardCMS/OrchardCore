@@ -12,7 +12,7 @@ using OrchardCore.Sitemaps.Models;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.Contents.SitemapNodes
+namespace OrchardCore.Contents.Sitemaps
 {
     public class ContentTypesSitemapBuilder : SitemapBuilderBase<ContentTypesSitemap>
     {
