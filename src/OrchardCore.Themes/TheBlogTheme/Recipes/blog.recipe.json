@@ -252,13 +252,6 @@
                   "Position": "3"
                 }
               }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "Position": "0"
-              }
             }
           ]
         },
@@ -289,7 +282,7 @@
               "PartName": "AutoroutePart",
               "Name": "AutoroutePart",
               "Settings": {
-                "Position": "2",
+                "Position": "1",
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
@@ -332,20 +325,6 @@
                     "BlogPost"
                   ]
                 }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "Position": "1"
-              }
-            },
-            {
-              "PartName": "HtmlBodyPart",
-              "Name": "HtmlBodyPart",
-              "Settings": {
-                "Position": "3"
               }
             }
           ]
