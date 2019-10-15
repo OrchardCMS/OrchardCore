@@ -6,6 +6,6 @@ namespace OrchardCore.BackgroundTasks.Models
     {
         public int Id { get; set; } // An identifier so that updates don't create new documents
 
-        public IImmutableDictionary<string, BackgroundTaskSettings> Settings { get; set; } = ImmutableDictionary.Create<string, BackgroundTaskSettings>();
+        public ImmutableDictionary<string, BackgroundTaskSettings> Settings { get; set; } = ImmutableDictionary.Create<string, BackgroundTaskSettings>();
     }
 }

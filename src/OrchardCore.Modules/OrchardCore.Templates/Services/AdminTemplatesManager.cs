@@ -31,26 +31,19 @@ namespace OrchardCore.Templates.Services
 
             if (!_memoryCache.TryGetValue(CacheKey, out document))
             {
+                var changeToken = ChangeToken;
                 document = await _session.Query<AdminTemplatesDocument>().FirstOrDefaultAsync();
 
                 if (document == null)
                 {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(CacheKey, out document))
-                        {
-                            document = new AdminTemplatesDocument();
+                    document = new AdminTemplatesDocument();
 
-                            _session.Save(document);
-                            _memoryCache.Set(CacheKey, document);
-                            _signal.SignalToken(CacheKey);
-                        }
-                    }
+                    _session.Save(document);
+                    _signal.DeferredSignalToken(CacheKey);
                 }
                 else
                 {
-                    _memoryCache.Set(CacheKey, document);
-                    _signal.SignalToken(CacheKey);
+                    _memoryCache.Set(CacheKey, document, changeToken);
                 }
             }
 
@@ -60,23 +53,19 @@ namespace OrchardCore.Templates.Services
         public async Task RemoveTemplateAsync(string name)
         {
             var document = await GetTemplatesDocumentAsync();
+            document.Templates = document.Templates.Remove(name);
 
-            document.Templates.Remove(name);
             _session.Save(document);
-
-            _memoryCache.Set(CacheKey, document);
-            _signal.SignalToken(CacheKey);
+            _signal.DeferredSignalToken(CacheKey);
         }
-        
+
         public async Task UpdateTemplateAsync(string name, Template template)
         {
             var document = await GetTemplatesDocumentAsync();
+            document.Templates = document.Templates.SetItem(name, template);
 
-            document.Templates[name] = template;
             _session.Save(document);
-
-            _memoryCache.Set(CacheKey, document);
-            _signal.SignalToken(CacheKey);
+            _signal.DeferredSignalToken(CacheKey);
         }
     }
 }

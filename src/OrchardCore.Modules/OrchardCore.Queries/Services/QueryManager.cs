@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -36,10 +35,7 @@ namespace OrchardCore.Queries.Services
         public async Task DeleteQueryAsync(string name)
         {
             var existing = await GetDocumentAsync();
-
-            existing.Queries = existing.Queries
-                .Remove(name)
-                .ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
+            existing.Queries = existing.Queries.Remove(name);
 
             _session.Save(existing);
             _signal.DeferredSignalToken(QueriesDocumentCacheKey);
@@ -67,7 +63,7 @@ namespace OrchardCore.Queries.Services
         public async Task SaveQueryAsync(string name, Query query)
         {
             var existing = await GetDocumentAsync();
-            existing.Queries = existing.Queries.Remove(name).SetItem(query.Name, query);
+            existing.Queries = existing.Queries.SetItem(query.Name, query);
 
             _session.Save(existing);
             _signal.DeferredSignalToken(QueriesDocumentCacheKey);
@@ -93,7 +89,7 @@ namespace OrchardCore.Queries.Services
                 }
                 else
                 {
-                    queries.Queries = queries.Queries.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
+                    queries.Queries = queries.Queries.WithComparers(StringComparer.OrdinalIgnoreCase);
                     _memoryCache.Set(QueriesDocumentCacheKey, queries, changeToken);
                 }
             }
