@@ -39,8 +39,6 @@ namespace OrchardCore.Tests.Shell
                 new StubHostingEnvironment(),
                 new StubExtensionManager(),
                 _applicationServiceProvider = applicationServices.BuildServiceProvider(),
-                new StubLoggerFactory(),
-                new NullLogger<ShellContainerFactory>(),
                 applicationServices
             );
         }

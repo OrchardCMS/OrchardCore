@@ -22,12 +22,13 @@ namespace OrchardCore.ContentManagement
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly ILogger _logger;
-        private readonly DefaultContentManagerSession _contentManagerSession;
+        private readonly IContentManagerSession _contentManagerSession;
         private readonly IContentItemIdGenerator _idGenerator;
         private readonly IClock _clock;
 
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
+            IContentManagerSession contentManagerSession,
             IEnumerable<IContentHandler> handlers,
             ISession session,
             IContentItemIdGenerator idGenerator,
@@ -39,7 +40,7 @@ namespace OrchardCore.ContentManagement
             ReversedHandlers = handlers.Reverse().ToArray();
             _session = session;
             _idGenerator = idGenerator;
-            _contentManagerSession = new DefaultContentManagerSession();
+            _contentManagerSession = contentManagerSession;
             _logger = logger;
             _clock = clock;
         }

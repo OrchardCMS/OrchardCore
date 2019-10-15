@@ -1,3 +1,4 @@
+@using OrchardCore.ContentManagement;
 @using OrchardCore.ContentManagement.Metadata.Settings;
 @using OrchardCore.Flows.ViewModels;
 
@@ -15,15 +16,18 @@
 <script asp-name="jQuery-ui" at="Foot"></script>
 
 <fieldset class="form-group">
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart row" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.FlowPart.Widgets)
         {
             var prefix = Guid.NewGuid().ToString("n");
-            <div class="widget-template">
-                @{
-                    dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
+            dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
 
+            var metadata = ((ContentItem)widgetEditor.ContentItem).As<OrchardCore.Flows.Models.FlowMetadata>();
+
+            var colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
+            <div class="widget-template col-md-@colSize">
+                @{
                     widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
                     widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
                     widgetEditor.TargetId = widgetTemplatePlaceholderId;
@@ -62,8 +66,6 @@
     @if (Context.Items["FlowPart.Edit"] == null)
     {
         Context.Items["FlowPart.Edit"] = new object();
-        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
-
         @foreach (var type in widgetContentTypes)
         {
             // Render a mock widget so that its resources are included in the page
@@ -72,16 +74,111 @@
         }
 
         <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
         <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
     }
 
     <script at="Foot">
+    @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
+    if ($('#@widgetTemplatePlaceholderId').length == 1) {
         $("#@widgetTemplatePlaceholderId").sortable({
-            handle: ".widget-editor-header",
+            handle: ".widget-editor-handle",
             cursor: "move",
+            tolerance: "pointer",
+            opacity: 0.7,
+            placeholder: {
+                element: function(currentItem) {
+                    return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
+                },
+                update: function (container, p) {
+                    return;
+                }
+            },
+            toleranceElement: '> div',
+            connectWith: '.widget-template-placeholder.widget-template-placeholder-flowpart',
+            start: function (event, ui) {
+
+                widgetDragItem = ui.item;
+                lastContainer = ui.item.parent();
+                lastContainer.toggleClass('widget-dropzone-hint');
+
+                widgetDragItem.find('.card').first().toggleClass('border-primary')
+
+                widgetItemSourceId = widgetDragItem.parent().attr('id');
+
+                var classList = widgetDragItem.attr('class').split(' ');
+                $.each(classList, function (id, item) {
+                    if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
+                });
+
+            },
             stop: function (event, ui) {
+
+                lastContainer.toggleClass('widget-dropzone-hint');
+                widgetDragItem.find('.card').first().toggleClass('border-primary');
+
+                widgetItemDestId = widgetDragItem.parent().attr('id');
+
+                if (widgetItemDestId !== widgetItemSourceId) {
+
+                    var inputs = widgetDragItem.children("input[name*='FlowPart']");
+
+                    var destination = $('#' + widgetItemDestId).closest('.widget-template')
+                    var source = $('#' + widgetItemSourceId).closest('.widget-template');
+
+                    var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.indexOf('_') + 1);
+
+                    var sourceNameGuid = source.children("input[name*='Prefixes']").val() + '.';
+
+                    if (destination.length > 0) {
+
+                        var destGuid = widgetItemDestId.substring(0, widgetItemDestId.indexOf('_') + 1);
+
+                        var destNameGuid = destination.children("input[name*='Prefixes']").val() + '.';
+
+                        if (source.length) {
+
+                            inputs.each(function (index, item) {
+                                $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
+                                $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
+                            });
+
+                        } else {
+
+                            inputs.each(function (index, item) {
+                                $(this).attr('id', destGuid + $(this).attr('id'));
+                                $(this).attr('name', destNameGuid  + $(this).attr('name'));
+                            });
+                        }
+
+                    }
+                    else if (source.length > 0) {
+
+                        inputs.each(function (index, item) {
+                            $(this).attr('id', $(this).attr('id').replace(sourceGuid, '') );
+                            $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
+                        });
+                    }
+
+                }
+
                 $(document).trigger('contentpreview:render');
+
+                //clear the global variables
+                widgetDragItem = null;
+                lastContainer = null;
+                widgetItemSourceId = null;
+                widgetItemDestId = null;
+            },
+            over: function (event, ui) {
+                var $self = $(this); 
+                if (lastContainer[0] != this) {
+                    lastContainer.toggleClass('widget-dropzone-hint');
+                    lastContainer = $self;
+                    $self.toggleClass('widget-dropzone-hint');
+                }
             }
         });
+    }
     </script>
 </fieldset>

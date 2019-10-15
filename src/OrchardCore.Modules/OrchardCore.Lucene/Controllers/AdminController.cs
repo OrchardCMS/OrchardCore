@@ -115,7 +115,7 @@ namespace OrchardCore.Lucene.Controllers
                 return View(model);
             }
 
-            _notifier.Success(H["Index <em>{0}</em> created successfully", model.IndexName]);
+            _notifier.Success(H["Index <em>{0}</em> created successfully.", model.IndexName]);
 
             return RedirectToAction("Index");
         }
@@ -136,7 +136,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneIndexingService.ResetIndex(id);
             await _luceneIndexingService.ProcessContentItemsAsync();
 
-            _notifier.Success(H["Index <em>{0}</em> resetted successfully", id]);
+            _notifier.Success(H["Index <em>{0}</em> reset successfully.", id]);
 
             return RedirectToAction("Index");
         }
@@ -157,7 +157,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneIndexingService.RebuildIndex(id);
             await _luceneIndexingService.ProcessContentItemsAsync();
 
-            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully", id]);
+            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", id]);
 
             return RedirectToAction("Index");
         }
@@ -179,11 +179,11 @@ namespace OrchardCore.Lucene.Controllers
             {
                 _luceneIndexManager.DeleteIndex(model.IndexName);
 
-                _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
+                _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
             }
             catch(Exception e)
             {
-                _notifier.Error(H["An error occurred while deleting the index"]);
+                _notifier.Error(H["An error occurred while deleting the index."]);
                 Logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
             }
 

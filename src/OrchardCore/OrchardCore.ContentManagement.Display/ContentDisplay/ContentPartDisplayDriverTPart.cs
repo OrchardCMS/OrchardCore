@@ -18,7 +18,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     {
         private ContentTypePartDefinition _typePartDefinition;
 
-        public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
+        public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
             // e.g., HtmlBodyPart.Summary, HtmlBodyPart-BlogPost, BagPart-LandingPage-Services
             // context.Shape is the ContentItem shape, we need to alter the part shape
@@ -43,7 +43,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 {
                     stereotype = stereotype + "__";
                 }
-                
+
                 var partName = _typePartDefinition.Name;
                 var partType = _typePartDefinition.PartDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;

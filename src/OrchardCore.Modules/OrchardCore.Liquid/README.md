@@ -678,6 +678,26 @@ Example
 {% antiforgerytoken %}
 ```
 
+### `helper` and `block`
+
+Allows custom Razor [TagHelpers](https://docs.microsoft.com/en-us/aspnet/core/mvc/views/tag-helpers/intro?view=aspnetcore-3.0) to be called from liquid.
+
+For attributes (HtmlAttributeName) use camel-case and replace all `-` with `_`.
+
+Helper Tag example
+
+```liquid
+{% helper "mycustomtag", customAttribute: "foo" %}
+```
+
+Block Tag example
+
+```liquid
+{% block "mycustomtag", customAttribute: "foo" %}
+{% endblock %}
+```
+
+
 ## Razor Helpers
 
 ### `LiquidToHtmlAsync`

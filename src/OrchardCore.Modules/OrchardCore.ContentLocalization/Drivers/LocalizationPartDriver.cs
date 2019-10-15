@@ -60,7 +60,7 @@ namespace OrchardCore.ContentLocalization.Drivers
             return Edit(model, context);
         }
 
-        public async Task BuildViewModelAsync(LocalizationPartViewModel model, LocalizationPart localizationPart)
+        public async ValueTask BuildViewModelAsync(LocalizationPartViewModel model, LocalizationPart localizationPart)
         {
             var alreadyTranslated = await _contentLocalizationManager.GetItemsForSetAsync(localizationPart.LocalizationSet);
 

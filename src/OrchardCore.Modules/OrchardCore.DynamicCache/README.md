@@ -140,6 +140,11 @@ For example, to cache the menu shape in a liquid template, you would use this ma
 
 `{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}`
 
+To cache a contentitem shape in a liquid template, you could use this markup:
+
+`{% contentitem alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}`
+
+
 ### Liquid cache block
 The liquid `cache` block can be used to cache sections of markup. `cache` blocks can be nested.
 
