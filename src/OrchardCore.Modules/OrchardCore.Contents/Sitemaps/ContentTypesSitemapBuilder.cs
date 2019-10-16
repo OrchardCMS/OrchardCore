@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Services;
 using YesSql;
 using YesSql.Services;
 
@@ -19,18 +21,21 @@ namespace OrchardCore.Contents.Sitemaps
         private static readonly XNamespace Namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
         private readonly ISession _session;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IEnumerable<IRouteableContentTypeDefinitionProvider> _routeableContentTypeDefinitionProviders;
         private readonly IContentManager _contentManager;
+        private readonly ILogger _logger;
 
         public ContentTypesSitemapBuilder(
             ISession session,
-            IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager
+            IEnumerable<IRouteableContentTypeDefinitionProvider> routeableContentTypeDefinitionProviders,
+            IContentManager contentManager,
+            ILogger<ContentTypesSitemapBuilder> logger
             )
         {
             _session = session;
-            _contentDefinitionManager = contentDefinitionManager;
+            _routeableContentTypeDefinitionProviders = routeableContentTypeDefinitionProviders;
             _contentManager = contentManager;
+            _logger = logger;
         }
 
         public override async Task<XDocument> BuildSitemapsAsync(ContentTypesSitemap sitemap, SitemapBuilderContext context)
@@ -56,18 +61,29 @@ namespace OrchardCore.Contents.Sitemaps
         {
             ContentItem mostRecentModifiedContentItem;
 
-            var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => sitemap.ContentTypes.ToList()
-                .Any(s => ctd.Name == s.ContentTypeName))
-                .Select(x => x.Name);
+            if (sitemap.IndexAll)
+            {
+                var typesToIndex = _routeableContentTypeDefinitionProviders.SelectMany(ctd => ctd.ListRoutableTypeDefinitions());
 
-            var contentTypes = sitemap.ContentTypes.Select(x => x.ContentTypeName);
-            // This is just an estimate, so doesn't take into account Take/Skip values.
-            var query = _session.Query<ContentItem>()
-                .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
-                .OrderByDescending(x => x.ModifiedUtc);
-            mostRecentModifiedContentItem = await query.FirstOrDefaultAsync();
+                var query = _session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(typesToIndex))
+                    .OrderByDescending(x => x.ModifiedUtc);
 
+                mostRecentModifiedContentItem = await query.FirstOrDefaultAsync();
+            }
+            else
+            {
+                var typesToIndex = _routeableContentTypeDefinitionProviders.SelectMany(ctd => ctd.ListRoutableTypeDefinitions())
+                    .Where(ctd => sitemap.ContentTypes.Any(s => ctd.Name == s.ContentTypeName))
+                    .Select(x => x.Name);
+
+                // This is an estimate, so doesn't take into account Take/Skip values.
+                var query = _session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(typesToIndex))
+                    .OrderByDescending(x => x.ModifiedUtc);
+
+                mostRecentModifiedContentItem = await query.FirstOrDefaultAsync();
+            }
             return mostRecentModifiedContentItem.ModifiedUtc;
         }
 
@@ -90,50 +106,56 @@ namespace OrchardCore.Contents.Sitemaps
         {
             var contentItems = new List<ContentItem>();
 
-            // Should allow selection of multiple content types, though recommendation when
-            // splitting a sitemap is to restrict to a single content item. 
-            //TODO make a note in readme -> large content item recommendations
-            if (sitemap.ContentTypes.Any(x => !x.TakeAll))
-            {
-                // Process content types that have a skip/take value.
-                var tasks = new List<Task<IEnumerable<ContentItem>>>();
-                foreach (var takeSomeType in sitemap.ContentTypes.Where(x => !x.TakeAll))
-                {
-                    var query = _session.Query<ContentItem>()
-                        .With<ContentItemIndex>(x => x.ContentType == takeSomeType.ContentTypeName && x.Published)
-                        .OrderByDescending(x => x.ModifiedUtc)
-                        .Skip(takeSomeType.Skip)
-                        .Take(takeSomeType.Take);
-                    tasks.Add(query.ListAsync());
-                }
-                // Process content types without skip/take value.
-                var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(ctd => sitemap.ContentTypes.Where(x => x.TakeAll).Any(s => ctd.Name == s.ContentTypeName))
-                    .Select(x => x.Name);
-                var othersQuery = _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
-                    .OrderByDescending(x => x.ModifiedUtc);
+            var routeableContentTypeDefinitions = _routeableContentTypeDefinitionProviders
+                .SelectMany(ctd => ctd.ListRoutableTypeDefinitions());
 
-                tasks.Add(othersQuery.ListAsync());
-                await Task.WhenAll(tasks);
-                tasks.ForEach(x => contentItems.AddRange(x.Result));
+            if (sitemap.IndexAll)
+            {
+                var queryResults = await _session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(routeableContentTypeDefinitions))
+                    .OrderByDescending(x => x.ModifiedUtc)
+                    .ListAsync();
+
+                contentItems = queryResults.ToList();
+
+                if (contentItems.Count() > 50000)
+                {
+                    _logger.LogError("Sitemap {Name} content item count is over 50,000", sitemap.Name);
+                }
             }
             else
             {
-                var typeDef = _contentDefinitionManager.ListTypeDefinitions();
-                var typesTo = _contentDefinitionManager.ListTypeDefinitions()
-                   .Where(ctd => sitemap.ContentTypes.ToList().Any(s => ctd.Name == s.ContentTypeName))
-                   .Select(t => t.Name);
+                var validTypesToIndex = sitemap.ContentTypes
+                    .Where(t => routeableContentTypeDefinitions.Any(x => x.Name == t.ContentTypeName));
 
-                var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
-                   .Where(ctd => sitemap.ContentTypes.Any(s => ctd.Name == s.ContentTypeName))
-                   .Select(x => x.Name);
+                // Allow selection of multiple content types, but recommendation when
+                // splitting a sitemap is to restrict the sitemap to a single content item.
+                // TODO document this.
 
-                var query = _session.Query<ContentItem>()
+                // Process content types that have a skip/take value.
+                foreach (var entry in validTypesToIndex.Where(x => !x.TakeAll))
+                {
+                    var takeSomeQueryResults = await _session.Query<ContentItem>()
+                        .With<ContentItemIndex>(x => x.ContentType == entry.ContentTypeName && x.Published)
+                        .OrderByDescending(x => x.ModifiedUtc)
+                        .Skip(entry.Skip)
+                        .Take(entry.Take)
+                        .ListAsync();
+
+                    contentItems.AddRange(takeSomeQueryResults);
+                }
+
+                // Process content types without skip/take value.
+                var typesToIndex = routeableContentTypeDefinitions
+                    .Where(ctd => sitemap.ContentTypes.Where(x => x.TakeAll).Any(s => ctd.Name == s.ContentTypeName))
+                    .Select(x => x.Name);
+
+                var queryResults = await _session.Query<ContentItem>()
                     .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
-                    .OrderByDescending(x => x.ModifiedUtc);
+                    .OrderByDescending(x => x.ModifiedUtc)
+                    .ListAsync();
 
-                contentItems = (await query.ListAsync()).ToList();
+                contentItems.AddRange(queryResults);
             }
 
             return contentItems;

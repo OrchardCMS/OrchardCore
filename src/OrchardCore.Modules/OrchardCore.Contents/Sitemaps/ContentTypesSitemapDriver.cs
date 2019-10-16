@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
@@ -6,16 +8,17 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Contents.Sitemaps
 {
     public class ContentTypesSitemapDriver : DisplayDriver<Sitemap, ContentTypesSitemap>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IEnumerable<IRouteableContentTypeDefinitionProvider> _routeableContentTypeDefinitionProviders;
 
-        public ContentTypesSitemapDriver(IContentDefinitionManager contentDefinitionManager)
+        public ContentTypesSitemapDriver(IEnumerable<IRouteableContentTypeDefinitionProvider> routeableContentTypeDefinitionProviders)
         {
-            _contentDefinitionManager = contentDefinitionManager;
+            _routeableContentTypeDefinitionProviders = routeableContentTypeDefinitionProviders;
         }
         public override IDisplayResult Display(ContentTypesSitemap sitemap)
         {
@@ -27,10 +30,8 @@ namespace OrchardCore.Contents.Sitemaps
 
         public override IDisplayResult Edit(ContentTypesSitemap sitemap)
         {
-            // TODO Prefer IsRoutable() to reduce list size, and allow SelectAll
-            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
-
-            //TODO implement IRouteableContentDefinitionProvider in Autoroute.
+            var contentTypeDefinitions = _routeableContentTypeDefinitionProviders
+                .SelectMany(x => x.ListRoutableTypeDefinitions());
 
             var entries = contentTypeDefinitions
                 .Select(ctd => new ContentTypeSitemapEntryViewModel
