@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement
@@ -30,21 +28,6 @@ namespace OrchardCore.DisplayManagement
             DefaultValueHandling = DefaultValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
-
-        public static void Displaying(dynamic shape)
-        {
-            var shapeMetadata = (ShapeMetadata)shape.Metadata;
-            shapeMetadata.OnDisplaying(OnDisplaying);
-        }
-
-        private static void OnDisplaying(ShapeDisplayContext context)
-        {
-            var shape = context.Shape;
-            var iShape = (IShape)shape;
-            var dump = iShape.ShapeDump();
-            shape._Dump = dump;
-
-        }
 
         public static JObject ShapeDump(this IShape shape)
         {
@@ -81,16 +64,6 @@ namespace OrchardCore.DisplayManagement
                 var shapeItems = actualShape.Items.ToImmutableArray();
                 foreach (IShape item in shapeItems)
                 {
-                    item.Metadata.Wrappers.Add("ShapeTracingWrapper");
-                    item.Metadata.OnDisplaying(context =>
-                    {
-                        var shape = context.Shape;
-                        var iShape = (IShape)shape;
-                        var dump = iShape.ShapeDump();
-                        shape._Dump = dump;
-
-                    });
-
                     var itemResult = item.ShapeDump();
                     if (itemResult.HasValues)
                     {
