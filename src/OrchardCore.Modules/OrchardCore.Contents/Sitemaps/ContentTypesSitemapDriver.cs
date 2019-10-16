@@ -32,18 +32,20 @@ namespace OrchardCore.Contents.Sitemaps
 
             //TODO implement IRouteableContentDefinitionProvider in Autoroute.
 
-            var entries = contentTypeDefinitions.Select(x => new ContentTypeSitemapEntryViewModel
-            {
-                ContentTypeName = x.Name,
-                ContentTypeDisplayName = x.DisplayName,
-                IsChecked = sitemap.ContentTypes.Any(selected => selected.ContentTypeName == x.Name),
-                ChangeFrequency = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.ChangeFrequency ?? ChangeFrequency.Daily,
-                Priority = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.Priority ?? 0.5f,
-                TakeAll = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.TakeAll ?? true,
-                Skip = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.Skip ?? 0,
-                Take = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.Take ?? 50000,
-            }).ToArray();
-
+            var entries = contentTypeDefinitions
+                .Select(ctd => new ContentTypeSitemapEntryViewModel
+                {
+                    ContentTypeName = ctd.Name,
+                    ContentTypeDisplayName = ctd.DisplayName,
+                    IsChecked = sitemap.ContentTypes.Any(selected => selected.ContentTypeName == ctd.Name),
+                    ChangeFrequency = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == ctd.Name)?.ChangeFrequency ?? ChangeFrequency.Daily,
+                    Priority = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == ctd.Name)?.Priority ?? 0.5f,
+                    TakeAll = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == ctd.Name)?.TakeAll ?? true,
+                    Skip = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == ctd.Name)?.Skip ?? 0,
+                    Take = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == ctd.Name)?.Take ?? 50000,
+                })
+                .OrderBy(ctd => ctd.ContentTypeDisplayName)
+                .ToArray();
 
             return Initialize<ContentTypesSitemapViewModel>("ContentTypesSitemap_Edit", model =>
             {

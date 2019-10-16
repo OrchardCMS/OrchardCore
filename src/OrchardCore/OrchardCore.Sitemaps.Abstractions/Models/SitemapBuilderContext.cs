@@ -7,5 +7,6 @@ namespace OrchardCore.Sitemaps.Models
     {
         public string HostPrefix { get; set; }
         public IUrlHelper UrlHelper { get; set; }
+        public ISitemapManager SitemapManager { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace OrchardCore.Sitemaps.Routing
             // Need to check path keys conventions, here they never start with a '/' but
             // e.g autoroute path keys always have a leading '/' but never a trailing one.
             if (!String.IsNullOrEmpty(values[RouteKey]?.ToString()) &&
-                _entries.TryGetSitemapNodeId(httpContext.Request.Path.Value.Trim('/'), out var sitemapNodeId))
+                _entries.TryGetSitemapId(httpContext.Request.Path.Value.Trim('/'), out var sitemapNodeId))
             {
                 var routeValues = new RouteValueDictionary();
 

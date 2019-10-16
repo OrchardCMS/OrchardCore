@@ -12,7 +12,7 @@ namespace OrchardCore.Sitemaps.Services
             _sitemapPaths = ImmutableDictionary<string, string>.Empty;
         }
 
-        public bool TryGetSitemapNodeId(string path, out string sitemapNodeId)
+        public bool TryGetSitemapId(string path, out string sitemapNodeId)
         {
             return _sitemapPaths.TryGetValue(path, out sitemapNodeId);
         }

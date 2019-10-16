@@ -12,8 +12,17 @@ namespace OrchardCore.Sitemaps.Sitemaps
         [Required]
         public string Path { get; set; }
 
-        [BindNever]
-        public Sitemap SitemapNode { get; set; }
+        public ContainableSitemapEntryViewModel[] ContainableSitemaps { get; set; } = new ContainableSitemapEntryViewModel[] { };
 
+        [BindNever]
+        public Sitemap Sitemap { get; set; }
+
+    }
+
+    public class ContainableSitemapEntryViewModel
+    {
+        public bool IsChecked { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
     }
 }

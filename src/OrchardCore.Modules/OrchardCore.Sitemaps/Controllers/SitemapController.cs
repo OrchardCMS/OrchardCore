@@ -34,7 +34,7 @@ namespace OrchardCore.Sitemaps.Controllers
             var sitemapPath = HttpContext.GetRouteValue(SitemapsTransformer.RouteKey)?.ToString();
             _logger.LogDebug("Sitemap request path {SitemapPath}", sitemapPath);
 
-            if (_sitemapEntries.TryGetSitemapNodeId(sitemapPath, out var sitemapId))
+            if (_sitemapEntries.TryGetSitemapId(sitemapPath, out var sitemapId))
             {
                 var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
 
@@ -46,7 +46,8 @@ namespace OrchardCore.Sitemaps.Controllers
                 var context = new SitemapBuilderContext()
                 {
                     HostPrefix = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}",
-                    UrlHelper = Url
+                    UrlHelper = Url,
+                    SitemapManager = _sitemapManager
                 };
 
                 var document = await _sitemapManager.BuildSitemapAsync(sitemap, context);
