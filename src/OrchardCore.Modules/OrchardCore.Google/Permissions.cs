@@ -32,7 +32,7 @@ namespace OrchardCore.Google
                     Name = "Administrator",
                     Permissions = new []
                     {
-                        anageGoogleAuthentication
+                        ManageGoogleAuthentication
                     }
                 };
             }
