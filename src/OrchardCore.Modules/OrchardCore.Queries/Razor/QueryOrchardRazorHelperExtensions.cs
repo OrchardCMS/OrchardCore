@@ -23,7 +23,7 @@ public static class QueryOrchardRazorHelperExtensions
             return null;
         }
 
-        var queryResult = (IQueryResult)await queryManager.ExecuteQueryAsync(query, parameters);
-        return (IEnumerable)queryResult.Items;
+        var result = await queryManager.ExecuteQueryAsync(query, parameters);
+        return (IEnumerable)result.Items;
     }
 }
