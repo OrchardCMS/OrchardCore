@@ -152,7 +152,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         private static Func<object, string, object> _getter => (o, n) =>
         {
             if (o is Shape shape)
-            {                
+            {
                 if (shape.Properties.TryGetValue(n, out object result))
                 {
                     return result;
