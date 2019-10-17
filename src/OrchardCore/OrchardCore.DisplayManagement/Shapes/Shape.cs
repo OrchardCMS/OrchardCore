@@ -180,13 +180,11 @@ namespace OrchardCore.DisplayManagement.Shapes
         public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
         {
             var name = binder.Name;
-
             if (!base.TryGetMember(binder, out result) || (null == result))
             {
                 //Try to get Named shape
                 result = Named(name.Replace("__", "-"));
             }
-
             return true;
         }
     }
