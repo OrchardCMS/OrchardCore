@@ -83,17 +83,7 @@
             @foreach (var document in Model.Documents)
             {
                 <tr>
-                    <td>
-                        <form asp-action="IndexAction" method="post">
-                            <input type="hidden" asp-for="IndexName" />
-                            <input type="hidden" asp-for="DecodedQuery" />
-                            <input type="hidden" asp-for="Parameters" />
-                            <input type="hidden" name="ContentItemId" value="@(document.GetField("ContentItemId")?.GetStringValue() ?? String.Empty)" />
-                            <input type="hidden" name="ContentItemVersionId" value="@(document.GetField("Content.ContentItem.ContentItemVersionId")?.GetStringValue() ?? String.Empty)" />
-                            <button name="action" type="submit" class="btn btn-danger" value="remove">@T["Remove"]</button>
-                        </form>
-                    </td>
-                    <td scope="row">@(row++)</td>
+                    <th scope="row">@(row++)</th>
                     @foreach (var name in fieldNames)
                     {
                         <td>@(document.GetField(name)?.GetStringValue() ?? String.Empty)</td>
