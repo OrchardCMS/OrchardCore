@@ -32,7 +32,7 @@ namespace OrchardCore.Queries.Sql
             return new SqlQuery();
         }
 
-        public async Task<IQueryResult> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var sqlQuery = query as SqlQuery;
             var queryResult = new SQLQueryResult();

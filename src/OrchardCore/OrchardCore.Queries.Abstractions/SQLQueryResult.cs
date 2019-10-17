@@ -1,7 +1,9 @@
+using System.Collections.Generic;
+
 namespace OrchardCore.Queries
 {
-    public class SQLQueryResult : IQueryResult
+    public class SQLQueryResult : IQueryResults
     {
-        public object Items { get; set; }
+        public IEnumerable<object> Items { get; set; }
     }
 }

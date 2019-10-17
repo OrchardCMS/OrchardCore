@@ -24,6 +24,6 @@ public static class QueryOrchardRazorHelperExtensions
         }
 
         var result = await queryManager.ExecuteQueryAsync(query, parameters);
-        return (IEnumerable)result.Items;
+        return result.Items;
     }
 }

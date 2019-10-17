@@ -8,6 +8,6 @@ namespace OrchardCore.Queries
     {
         string Name { get; }
         Query Create();
-        Task<IQueryResult> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
+        Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
     }
 }

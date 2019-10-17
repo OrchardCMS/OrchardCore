@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+
 namespace OrchardCore.Queries
 {
-    public class LuceneQueryResult: IQueryResult
+    public class LuceneQueryResult: IQueryResults
     {
-        public object Items { get; set; }
+        public IEnumerable<object> Items { get; set; }
         public int Count { get; set; }
     }
 }
