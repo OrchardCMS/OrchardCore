@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,21 @@ namespace OrchardCore.Sitemaps
             services.AddIdGeneration();
 
             //TODO add AddressScheme
+            services.Configure<SitemapOptions>(options =>
+            {
+                if (options.GlobalRouteValues.Count == 0)
+                {
+                    options.GlobalRouteValues = new RouteValueDictionary
+                    {
+                        {"Area", "OrchardCore.Sitemaps"},
+                        {"Controller", "Sitemaps"},
+                        {"Action", "Index"}
+                    };
+
+                    options.SitemapIdKey = "sitemapId";
+                }
+            });
+
             services.AddSingleton<SitemapsTransformer>();
             services.AddSingleton<SitemapEntries>();
 
@@ -50,6 +66,13 @@ namespace OrchardCore.Sitemaps
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.MapAreaControllerRoute(
+                   name: "Sitemaps",
+                   areaName: "OrchardCore.Sitemaps",
+                   pattern: "{sitemapId}",
+                   defaults: new { controller = "Sitemap", action = "Index" }
+               );
+
             routes.MapDynamicControllerRoute<SitemapsTransformer>("/{**sitemap}");
             var sitemapManager = serviceProvider.GetService<ISitemapManager>();
             sitemapManager.BuildAllSitemapRouteEntriesAsync().GetAwaiter().GetResult();

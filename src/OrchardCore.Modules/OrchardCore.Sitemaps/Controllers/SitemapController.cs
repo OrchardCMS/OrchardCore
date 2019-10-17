@@ -29,14 +29,17 @@ namespace OrchardCore.Sitemaps.Controllers
             _sitemapManager = sitemapManager;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sitemapId)
         {
-            var sitemapPath = HttpContext.GetRouteValue(SitemapsTransformer.RouteKey)?.ToString();
-            _logger.LogDebug("Sitemap request path {SitemapPath}", sitemapPath);
+            //TODO resolve. Currently the routedata is passing in the routepath as sitemapId, not the sitemapId.
+            // bad pattern in maparearoute
 
-            if (_sitemapEntries.TryGetSitemapId(sitemapPath, out var sitemapId))
+            //var sitemapPath = HttpContext.GetRouteValue(SitemapsTransformer.RouteKey)?.ToString();
+            //_logger.LogDebug("Sitemap request path {SitemapPath}", sitemapPath);
+
+            if (_sitemapEntries.TryGetSitemapId(sitemapId, out var verifiedSitemapId))
             {
-                var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
+                var sitemap = await _sitemapManager.GetSitemapAsync(verifiedSitemapId);
 
                 if (sitemap == null)
                 {

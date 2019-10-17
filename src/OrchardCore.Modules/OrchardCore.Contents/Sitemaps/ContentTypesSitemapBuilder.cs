@@ -111,8 +111,10 @@ namespace OrchardCore.Contents.Sitemaps
 
             if (sitemap.IndexAll)
             {
+                var rctdNames = routeableContentTypeDefinitions.Select(rctd => rctd.Name);
+
                 var queryResults = await _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(routeableContentTypeDefinitions))
+                    .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(rctdNames))
                     .OrderByDescending(x => x.ModifiedUtc)
                     .ListAsync();
 
@@ -190,9 +192,19 @@ namespace OrchardCore.Contents.Sitemaps
         {
             string changeFrequencyValue = null;
             string priorityValue = null;
-            var sitemapEntry = sitemap.ContentTypes.FirstOrDefault(x => x.ContentTypeName == contentItem.ContentType);
-            changeFrequencyValue = sitemapEntry.ChangeFrequency.ToString();
-            priorityValue = sitemapEntry.Priority.ToString();
+            if (sitemap.IndexAll)
+            {
+                changeFrequencyValue = sitemap.ChangeFrequency.ToString();
+                priorityValue = sitemap.Priority.ToString();
+            }
+            else
+            {
+                var sitemapEntry = sitemap.ContentTypes.FirstOrDefault(x => x.ContentTypeName == contentItem.ContentType);
+                changeFrequencyValue = sitemapEntry.ChangeFrequency.ToString();
+                priorityValue = sitemapEntry.Priority.ToString();
+            }
+
+            //TODO move this to a validation provider and move sitemap part back to sitmapes.
             if (contentItem.Has<SitemapPart>())
             {
                 var part = contentItem.As<SitemapPart>();
