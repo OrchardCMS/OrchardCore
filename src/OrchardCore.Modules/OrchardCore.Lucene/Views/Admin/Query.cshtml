@@ -51,7 +51,7 @@
 <div class="form-group">
     @if (Model.Elapsed != TimeSpan.Zero)
     {
-        <p><span class="text-muted">@T["Found {0} result(s) in {1} ms", new string[] { Model.Count.ToString(), Model.Elapsed.TotalMilliseconds.ToString() } ]</span></p>
+        <p><span class="text-muted">@T["Found {0} result(s) in {1} ms", Model.Count.ToString(), Model.Elapsed.TotalMilliseconds.ToString()]</span></p>
     }
 </div>
 @if (Model.Documents.Any())
