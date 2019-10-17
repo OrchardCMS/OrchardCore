@@ -48,7 +48,7 @@ namespace OrchardCore.Lucene
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var luceneQuery = query as LuceneQuery;
-            var luceneQueryResult = new LuceneQueryResult();
+            var luceneQueryResults = new LuceneQueryResults();
 
             await _luceneIndexProvider.SearchAsync (luceneQuery.Index, async searcher =>
             {
@@ -68,7 +68,7 @@ namespace OrchardCore.Lucene
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
                 var docs = await _queryService.SearchAsync(context, parameterizedQuery);
-                luceneQueryResult.Count = docs.Count;
+                luceneQueryResults.Count = docs.Count;
 
                 if (luceneQuery.ReturnContentItems)
                 {
@@ -78,7 +78,7 @@ namespace OrchardCore.Lucene
 
                     // Reorder the result to preserve the one from the lucene query
                     var indexed = contentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
-                    luceneQueryResult.Items = contentItemVersionIds.Select(x => indexed[x]).ToArray();
+                    luceneQueryResults.Items = contentItemVersionIds.Select(x => indexed[x]).ToArray();
                 }
                 else
                 {
@@ -88,11 +88,11 @@ namespace OrchardCore.Lucene
                         results.Add(new JObject(document.Select(x => new JProperty(x.Name, x.GetStringValue()))));
                     }
 
-                    luceneQueryResult.Items = results;
+                    luceneQueryResults.Items = results;
                 }
             });
 
-            return luceneQueryResult;
+            return luceneQueryResults;
         }
     }
 }

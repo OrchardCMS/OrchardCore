@@ -35,7 +35,7 @@ namespace OrchardCore.Queries.Sql
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var sqlQuery = query as SqlQuery;
-            var queryResult = new SQLQueryResult();
+            var sqlQueryResults = new SQLQueryResults();
 
             var templateContext = new TemplateContext();
 
@@ -54,8 +54,8 @@ namespace OrchardCore.Queries.Sql
 
             if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
-                queryResult.Items = new object[0];
-                return queryResult;
+                sqlQueryResults.Items = new object[0];
+                return sqlQueryResults;
             }
 
             if (sqlQuery.ReturnDocuments)
@@ -67,8 +67,9 @@ namespace OrchardCore.Queries.Sql
                     connection.Open();
                     documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
                 }
-                queryResult.Items = await _session.GetAsync<object>(documentIds.ToArray());
-                return queryResult;
+                
+                var test = await _session.GetAsync<object>(documentIds.ToArray());
+                return sqlQueryResults;
             }
             else
             {
@@ -87,8 +88,8 @@ namespace OrchardCore.Queries.Sql
                     results.Add(JObject.FromObject(document));
                 }
 
-                queryResult.Items = results;
-                return queryResult;
+                sqlQueryResults.Items = results;
+                return sqlQueryResults;
             }
         }
     }
