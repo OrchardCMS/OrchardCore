@@ -60,7 +60,7 @@ namespace OrchardCore.Queries.Services
         {
             var document = await GetDocumentAsync();
 
-            if(document.Queries.TryGetValue(name, out var query))
+            if (document.Queries.TryGetValue(name, out var query))
             {
                 return query;
             }
@@ -127,10 +127,10 @@ namespace OrchardCore.Queries.Services
             return queries;
         }
 
-        public Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        public Task<IQueryResult> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var querySource = _querySources.FirstOrDefault(q => q.Name == query.Source);
-            
+
             if (querySource == null)
             {
                 throw new ArgumentException("Query source not found: " + query.Source);

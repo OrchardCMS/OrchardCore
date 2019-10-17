@@ -36,7 +36,7 @@ namespace OrchardCore.Queries
         /// </summary>
         /// <param name="query">The query to execute.</param>
         /// <returns>The result of the query.</returns>
-        Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
+        Task<IQueryResult> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
 
         /// <summary>
         /// Returns a change token that is set when queries have changed.

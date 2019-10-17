@@ -33,7 +33,7 @@ namespace OrchardCore.Queries.Liquid
 
             var result = await _queryManager.ExecuteQueryAsync(query, parameters);
 
-            return FluidValue.Create(result);
+            return FluidValue.Create(result.Items);
         }
     }
 }

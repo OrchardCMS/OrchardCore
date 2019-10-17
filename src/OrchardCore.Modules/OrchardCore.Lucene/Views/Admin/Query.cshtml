@@ -2,11 +2,11 @@
 @using OrchardCore.ContentManagement;
 @inject IContentManager ContentManager
 
-@{ 
+@{
     var matchAllQuery = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"{
-  ""query"": {
-    ""match_all"": { }
-  }
+""query"": {
+""match_all"": { }
+}
 }"));
 
 }
@@ -48,11 +48,17 @@
     </div>
 </form>
 
-@if (Model.Elapsed != TimeSpan.Zero)
-{
-    <span class="text-muted">@T["Query executed in {0} ms", Model.Elapsed.TotalMilliseconds]</span>
-}
+<div class="form-group">
+    @if (Model.Elapsed != TimeSpan.Zero)
+    {
+        <p><span class="text-muted">@T["Query executed in {0} ms", Model.Elapsed.TotalMilliseconds]</span></p>
+    }
 
+    @if (Model.Count != 0)
+    {
+        <p><span class="text-muted">@T["Total hits : {0}", Model.Count]</span></p>
+    }
+</div>
 @if (Model.Documents.Any())
 {
     var fieldNames = Model.Documents.SelectMany(d => d.Fields.Select(f => f.Name)).Distinct();
@@ -64,10 +70,11 @@
     <table class="table table-striped table-hover table-responsive">
         <thead>
             <tr>
+                <th>Action</th>
                 <th>#</th>
                 @foreach (var name in fieldNames)
                 {
-                <th>@name</th>
+                    <th>@name</th>
                 }
             </tr>
         </thead>
@@ -75,13 +82,23 @@
             @{ int row = 1; }
             @foreach (var document in Model.Documents)
             {
-            <tr>
-                <th scope="row">@(row++)</th>
-                @foreach (var name in fieldNames)
-                {
-                    <td>@(document.GetField(name)?.GetStringValue() ?? String.Empty)</td>
-                }
-            </tr>
+                <tr>
+                    <td>
+                        <form asp-action="IndexAction" method="post">
+                            <input type="hidden" asp-for="IndexName" />
+                            <input type="hidden" asp-for="DecodedQuery" />
+                            <input type="hidden" asp-for="Parameters" />
+                            <input type="hidden" name="ContentItemId" value="@(document.GetField("ContentItemId")?.GetStringValue() ?? String.Empty)" />
+                            <input type="hidden" name="ContentItemVersionId" value="@(document.GetField("Content.ContentItem.ContentItemVersionId")?.GetStringValue() ?? String.Empty)" />
+                            <button name="action" type="submit" class="btn btn-danger" value="remove">@T["Remove"]</button>
+                        </form>
+                    </td>
+                    <td scope="row">@(row++)</td>
+                    @foreach (var name in fieldNames)
+                    {
+                        <td>@(document.GetField(name)?.GetStringValue() ?? String.Empty)</td>
+                    }
+                </tr>
             }
         </tbody>
     </table>

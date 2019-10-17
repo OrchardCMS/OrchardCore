@@ -32,9 +32,10 @@ namespace OrchardCore.Queries.Sql
             return new SqlQuery();
         }
 
-        public async Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        public async Task<IQueryResult> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var sqlQuery = query as SqlQuery;
+            var queryResult = new SQLQueryResult();
 
             var templateContext = new TemplateContext();
 
@@ -46,7 +47,6 @@ namespace OrchardCore.Queries.Sql
                 }
             }
 
-
             var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, NullEncoder.Default, templateContext);
 
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
@@ -54,7 +54,8 @@ namespace OrchardCore.Queries.Sql
 
             if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
-                return new object[0];
+                queryResult.Items = new object[0];
+                return queryResult;
             }
 
             if (sqlQuery.ReturnDocuments)
@@ -66,8 +67,8 @@ namespace OrchardCore.Queries.Sql
                     connection.Open();
                     documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
                 }
-
-                return await _session.GetAsync<object>(documentIds.ToArray());
+                queryResult.Items = await _session.GetAsync<object>(documentIds.ToArray());
+                return queryResult;
             }
             else
             {
@@ -86,7 +87,8 @@ namespace OrchardCore.Queries.Sql
                     results.Add(JObject.FromObject(document));
                 }
 
-                return results;
+                queryResult.Items = results;
+                return queryResult;
             }
         }
     }
