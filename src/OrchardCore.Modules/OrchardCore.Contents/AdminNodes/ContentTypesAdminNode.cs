@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using OrchardCore.AdminMenu.Models;
 
 namespace OrchardCore.Contents.AdminNodes
@@ -6,7 +7,7 @@ namespace OrchardCore.Contents.AdminNodes
     {
         public bool ShowAll { get; set; }
         public string IconClass { get; set; }
-        public ContentTypeEntry[] ContentTypes { get; set; } = new ContentTypeEntry[] { };
+        public ImmutableArray<ContentTypeEntry> ContentTypes { get; set; } = ImmutableArray<ContentTypeEntry>.Empty;
     }
 
     public class ContentTypeEntry

@@ -60,31 +60,31 @@ namespace OrchardCore.Queries.Drivers
             );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(Query model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(Query model, UpdateEditorContext context)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Source, m => m.Schema);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Source, m => m.Schema);
 
             if (String.IsNullOrEmpty(model.Name))
             {
-                updater.ModelState.AddModelError(nameof(model.Name), S["Name is required"]);
+                context.Updater.ModelState.AddModelError(nameof(model.Name), S["Name is required"]);
             }
 
             var safeName = model.Name.ToSafeName();
             if (String.IsNullOrEmpty(safeName) || model.Name != safeName)
             {
-                updater.ModelState.AddModelError(nameof(model.Name), S["Name contains illegal characters"]);
+                context.Updater.ModelState.AddModelError(nameof(model.Name), S["Name contains illegal characters"]);
             }
             else
             {
                 var existing = await _queryManager.GetQueryAsync(safeName);
 
-                if (existing != null && existing != model)
+                if (existing != null && context.IsNew)
                 {
-                    updater.ModelState.AddModelError(nameof(model.Name), S["A query with the same name already exists"]);
+                    context.Updater.ModelState.AddModelError(nameof(model.Name), S["A query with the same name already exists"]);
                 }
             }
 
-            return await EditAsync(model, updater);
+            return await EditAsync(model, context.Updater);
         }
     }
 }

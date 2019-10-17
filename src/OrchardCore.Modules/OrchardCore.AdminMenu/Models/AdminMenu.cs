@@ -102,7 +102,7 @@ namespace OrchardCore.AdminMenu.Models
         /// <summary>
         /// Creates a shallow copy of this menu.
         /// </summary>
-        public AdminMenu Clone()
+        public virtual AdminMenu Clone()
         {
             return new AdminMenu()
             {

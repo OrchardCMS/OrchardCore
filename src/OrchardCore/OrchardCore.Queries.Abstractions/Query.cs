@@ -23,5 +23,13 @@ namespace OrchardCore.Queries
         /// This is used runtime determination of the results returned when Content Items are not returned.
         /// </summary>
         public string Schema { get; set; }
+
+        /// <summary>
+        /// Creates a shallow copy of this query.
+        /// </summary>
+        public virtual Query Clone()
+        {
+            return MemberwiseClone() as Query;
+        }
     }
 }

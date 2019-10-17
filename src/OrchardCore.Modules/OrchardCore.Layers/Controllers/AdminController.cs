@@ -189,9 +189,12 @@ namespace OrchardCore.Layers.Controllers
                     return NotFound();
                 }
 
-                layer.Name = model.Name;
-                layer.Rule = model.Rule;
-                layer.Description = model.Description;
+                layers.Layers = layers.Layers.Replace(layer, new Layer
+                {
+                    Name = model.Name,
+                    Rule = model.Rule,
+                    Description = model.Description
+                });
 
                 await _layerService.UpdateAsync(layers);
 
@@ -222,7 +225,7 @@ namespace OrchardCore.Layers.Controllers
 
             if (!widgets.Any(x => String.Equals(x.Layer, name, StringComparison.OrdinalIgnoreCase)))
             {
-                layers.Layers.Remove(layer);
+                layers.Layers = layers.Layers.Remove(layer);
                 _notifier.Success(H["Layer deleted successfully."]);
             }
             else

@@ -196,7 +196,7 @@ namespace OrchardCore.Queries.Controllers
                 return Unauthorized();
             }
 
-            var query = await _queryManager.GetQueryAsync(model.Name);
+            var query = (await _queryManager.GetQueryAsync(model.Name))?.Clone();
 
             if (query == null)
             {

@@ -6,14 +6,14 @@
 @{
     var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
 
-    var selectedContentTypes = Model.Value.ContentTypes ?? new ContentTypeEntry[] { } ;
+    var selectedContentTypes = Model.Value.ContentTypes;
 
     var selectedDisplayNames = allContentTypes
         .Where(x => isSelected(x, selectedContentTypes))
         .Select(x => x.DisplayName)
         .ToList();
 
-    bool isSelected(ContentTypeDefinition ctd, ContentTypeEntry[] selectedList)
+    bool isSelected(ContentTypeDefinition ctd, IEnumerable<ContentTypeEntry> selectedList)
     {
         return selectedList.Any(selected => String.Equals(ctd.Name, selected.ContentTypeId, StringComparison.OrdinalIgnoreCase));
     }

@@ -128,7 +128,7 @@ namespace OrchardCore.AdminMenu.Models
         /// <summary>
         /// Creates a shallow copy of this node.
         /// </summary>
-        public AdminNode Clone()
+        public virtual AdminNode Clone()
         {
             return MemberwiseClone() as AdminNode;
         }

@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
@@ -53,7 +53,7 @@ namespace OrchardCore.Contents.AdminNodes
         public override async Task<IDisplayResult> UpdateAsync(ContentTypesAdminNode treeNode, IUpdateModel updater)
         {
             // Initializes the value to empty otherwise the model is not updated if no type is selected.
-            treeNode.ContentTypes = Array.Empty<ContentTypeEntry>();
+            treeNode.ContentTypes = ImmutableArray<ContentTypeEntry>.Empty;
 
             var model = new ContentTypesAdminNodeViewModel();
 
@@ -65,7 +65,7 @@ namespace OrchardCore.Contents.AdminNodes
                 treeNode.ContentTypes = model.ContentTypes
                     .Where(x => x.IsChecked == true)
                     .Select(x => new ContentTypeEntry { ContentTypeId = x.ContentTypeId, IconClass = x.IconClass })
-                    .ToArray();
+                    .ToImmutableArray();
             };
 
             return Edit(treeNode);
