@@ -52,9 +52,9 @@ namespace OrchardCore.Users.Drivers
                 var userRoleNames = await _userManager.GetRolesAsync(user);
                 var roles = roleNames.Select(x => new RoleViewModel { Role = x, IsSelected = userRoleNames.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
 
-                model.Id = user.Id.ToString();
-                model.UserName = user.UserName;
-                model.Email = user.Email;
+                model.Id = await _userManager.GetUserIdAsync(user);
+                model.UserName = await _userManager.GetUserNameAsync(user);
+                model.Email = await _userManager.GetEmailAsync(user);
                 model.Roles = roles;
                 model.EmailConfirmed = user.EmailConfirmed;
             }).Location("Content:1"));
