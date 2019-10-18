@@ -17,7 +17,6 @@ namespace Trivest.Connect.Security.Recipes
     {
         private readonly IUserService _userService;
         private readonly ILogger _logger;
-        private readonly UserManager<IUser> _userManager;
 
         public UsersRecipeStep(IUserService userService, ILogger<UsersRecipeStep> logger)
         {

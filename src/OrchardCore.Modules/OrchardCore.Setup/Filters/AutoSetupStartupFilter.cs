@@ -126,11 +126,14 @@ namespace OrchardCore.Setup
 
         private void CreateDatabase(IServiceScope scope, AutoSetupOptions options, SetupContext setupContext)
         {
-            var store = scope.ServiceProvider.GetRequiredService<IStore>();
+            // maybe this should be moved to yessql?
+
             switch (options.DatabaseProvider)
             {
                 case "Postgres":
-                    var connection = store.Configuration.ConnectionFactory.CreateConnection();
+                    var connectionStringBuilder = new Npgsql.NpgsqlConnectionStringBuilder(options.DatabaseConnectionString);
+                    connectionStringBuilder.Database = connectionStringBuilder["EntityAdminDatabase"].ToString();
+                    var connection = new Npgsql.NpgsqlConnection(connectionStringBuilder.ConnectionString);
                     connection.Open();
                     try
                     {

@@ -18,12 +18,13 @@ namespace OrchardCore.Setup
         private readonly string _defaultCulture;
         private string[] _supportedCultures;
         private readonly IShellConfiguration _shellConfiguration;
+        private readonly IConfiguration _configuration;
 
         public Startup(IShellConfiguration shellConfiguration, IConfiguration configuration)
         {
             _shellConfiguration =shellConfiguration;
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Setup");
-
+            _configuration = configuration;
             _defaultCulture = configurationSection["DefaultCulture"];
             _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<string[]>();
         }
@@ -32,9 +33,9 @@ namespace OrchardCore.Setup
         {
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
-
             services.AddTransient<Microsoft.AspNetCore.Hosting.IStartupFilter, AutoSetupStartupFilter>();
-            services.Configure<AutoSetupOptions>(_shellConfiguration.GetSection("OrchardCore.Setup.AutoSetup"));
+            var configuration = _shellConfiguration.GetSection("OrchardCore.Setup.AutoSetup");
+            services.Configure<AutoSetupOptions>(configuration);
             services.AddSetup();
         }
 
