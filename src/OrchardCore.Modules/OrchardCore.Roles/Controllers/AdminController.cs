@@ -98,7 +98,7 @@ namespace OrchardCore.Roles.Controllers
             {
                 model.RoleName = model.RoleName.Trim();
 
-                if (model.RoleName.Contains("/"))
+                if (model.RoleName.Contains('/'))
                 {
                     ModelState.AddModelError(string.Empty, T["Invalid role name."]);
                 }
