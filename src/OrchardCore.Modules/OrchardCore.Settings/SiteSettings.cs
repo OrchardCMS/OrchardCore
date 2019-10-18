@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Entities;
 
@@ -18,9 +17,9 @@ namespace OrchardCore.Settings
         public string SiteSalt { get; set; }
         public string PageTitleFormat { get; set; }
         public string SuperUser { get; set; }
-        public bool UseCdn { get; set; }
+        public bool UseCdn { get; set; } = true;
         public string CdnBaseUrl { get; set; }
         public RouteValueDictionary HomeRoute { get; set; } = new RouteValueDictionary();
-        public bool AppendVersion { get; set; }
+        public bool AppendVersion { get; set; } = true;
     }
 }
