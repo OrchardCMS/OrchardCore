@@ -97,7 +97,7 @@ namespace OrchardCore.Queries.Services
             return queries;
         }
 
-        public Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        public Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var querySource = _querySources.FirstOrDefault(q => q.Name == query.Source);
 
