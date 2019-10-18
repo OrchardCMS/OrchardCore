@@ -2,7 +2,7 @@ namespace OrchardCore.ResourceManagement
 {
     public class ResourceManagementOptions
     {
-        public bool UseCdn { get; set; }
+        public bool UseCdn { get; set; } = true;
 
         public string CdnBaseUrl { get; set; }
 
@@ -10,7 +10,7 @@ namespace OrchardCore.ResourceManagement
 
         public string Culture { get; set; }
 
-        public bool AppendVersion { get; set; }
+        public bool AppendVersion { get; set; } = true;
 
         /// <summary>
         /// The prefix path that is used when a url starts with "~/".

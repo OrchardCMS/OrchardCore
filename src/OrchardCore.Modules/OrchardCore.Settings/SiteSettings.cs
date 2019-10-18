@@ -3,6 +3,7 @@ using OrchardCore.Entities;
 
 namespace OrchardCore.Settings
 {
+    // When updating class also update SiteSettingsDeploymentSource and SettingsStep.
     public class SiteSettings : Entity, ISite
     {
         public int Id { get; set; }
