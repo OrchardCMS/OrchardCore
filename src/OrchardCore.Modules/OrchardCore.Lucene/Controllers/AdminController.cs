@@ -197,7 +197,7 @@ namespace OrchardCore.Lucene.Controllers
                 return View(model);
             }
 
-            _notifier.Success(H["Index <em>{0}</em> created successfully", model.IndexName]);
+            _notifier.Success(H["Index <em>{0}</em> created successfully.", model.IndexName]);
 
             return RedirectToAction("Index");
         }
@@ -218,7 +218,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneIndexingService.ResetIndex(id);
             await _luceneIndexingService.ProcessContentItemsAsync(id);
 
-            _notifier.Success(H["Index <em>{0}</em> resetted successfully", id]);
+            _notifier.Success(H["Index <em>{0}</em> reset successfully.", id]);
 
             return RedirectToAction("Index");
         }
@@ -239,7 +239,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneIndexingService.RebuildIndex(id);
             await _luceneIndexingService.ProcessContentItemsAsync(id);
 
-            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully", id]);
+            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", id]);
 
             return RedirectToAction("Index");
         }
@@ -262,11 +262,11 @@ namespace OrchardCore.Lucene.Controllers
                 var settings = _luceneIndexSettingsService.List().Where(x => x.IndexName == model.IndexName).FirstOrDefault();
                 _luceneIndexingService.DeleteIndex(settings);
 
-                _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
+                _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
             }
             catch (Exception e)
             {
-                _notifier.Error(H["An error occurred while deleting the index"]);
+                _notifier.Error(H["An error occurred while deleting the index."]);
                 Logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
             }
 
@@ -339,7 +339,8 @@ namespace OrchardCore.Lucene.Controllers
                 {
                     var parameterizedQuery = JObject.Parse(tokenizedContent);
                     var docs = await _queryService.SearchAsync(context, parameterizedQuery);
-                    model.Documents = docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                    model.Documents = docs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                    model.Count = docs.Count;
                 }
                 catch (Exception e)
                 {

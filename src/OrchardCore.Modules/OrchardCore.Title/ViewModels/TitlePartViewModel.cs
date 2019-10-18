@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Title.Models;
 
 namespace OrchardCore.Title.ViewModels
@@ -9,5 +9,7 @@ namespace OrchardCore.Title.ViewModels
 
         [BindNever]
         public TitlePart TitlePart { get; set; }
+        [BindNever]
+        public TitlePartSettings Settings { get; set; }
     }
 }

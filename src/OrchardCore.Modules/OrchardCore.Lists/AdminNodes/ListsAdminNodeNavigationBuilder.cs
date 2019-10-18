@@ -44,7 +44,7 @@ namespace OrchardCore.Lists.AdminNodes
         {
             _node = menuItem as ListsAdminNode;
 
-            if ((_node == null) || (!_node.Enabled))
+            if (_node == null || !_node.Enabled || String.IsNullOrEmpty(_node.ContentType))
             {
                 return;
             }
@@ -55,7 +55,7 @@ namespace OrchardCore.Lists.AdminNodes
             {
                 if (_contentType == null)
                 {
-                    _logger.LogError("Can't find The content type {0} for list admin node.", _node.ContentType);
+                    _logger.LogError("Can't find The content type '{ContentType}' for list admin node.", _node.ContentType);
                 }
 
                 await builder.AddAsync(new LocalizedString(_contentType.DisplayName, _contentType.DisplayName), async listTypeMenu =>

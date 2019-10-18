@@ -190,6 +190,16 @@ Import-PfxCertificate -FilePath C:\securelocation\connect.example.com.pfx cert:\
 + `WinHttpCertCfg.exe` (grants Full Control)
     1. For example: `winhttpcertcfg -g -c LOCAL_MACHINE\My -s connect.example.com -a AppPoolIdentityName` https://msdn.microsoft.com/en-us/library/windows/desktop/aa384088(v=vs.85).aspx
 
+### Use the Certificate in Azure
+
+To use the certificate on an Azure hosted site. 
+
+1. Upload the certificate to the 'TLS/SSL settings' page of the site Azure portal page.
+2. Add a new entry to the Azure site setting page with the following:
+    - Key: WEBSITE_LOAD_CERTIFICATES
+    - Value: [Thumbprint of the certificate]
+3. Select the certificate under `CurrentUser` > `My` certificate store.
+
 ## Token Validation
 + Validates tokens issued by the Orchard OpenID server
     + Configure the validation feature to transparently use the server configuration of another tenant, which has the authorization server feature enabled.

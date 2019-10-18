@@ -34,7 +34,7 @@ For instance the `HtmlBodyPart` of a custom settings section named `BlogSettings
 Custom Settings are a ContentItem, and by accessing it as a `ContentItem` you can access its parts and metadata.
 
 !!! note
-    You'll need to register your `ContentPart`s with Dependency Injection as demonstrated in the [ContentTypes documentation](../../OrchardCore.Modules.CMS/OrchardCore.ContentTypes/README/).
+    You'll need to register your `ContentPart`s with Dependency Injection as demonstrated in the [ContentTypes documentation](../../OrchardCore.Modules/OrchardCore.ContentTypes/).
 
 Here is an example of getting the `HtmlBodyPart` of a custom settings section named `BlogSettings`:
 

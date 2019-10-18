@@ -174,9 +174,19 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class LiquidViewTemplateExtensions
     {
-        public static async Task RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
-            IServiceProvider services, TextWriter writer, TextEncoder encoder, TemplateContext templateContext)
+        public static ValueTask RenderAsync(
+            this LiquidViewTemplate template,
+            LiquidOptions options,
+            IServiceProvider services,
+            TextWriter writer,
+            TextEncoder encoder,
+            TemplateContext templateContext)
         {
+            async ValueTask Awaited(Task task)
+            {
+                await task;
+            }
+
             templateContext.AddAsyncFilters(options, services);
 
             // Check if a 'ViewContext' has been cached for rendering.
@@ -187,13 +197,16 @@ namespace OrchardCore.DisplayManagement.Liquid
                 viewContext.Writer = writer;
 
                 // Use the view engine to render the liquid page.
-                await viewContext.View.RenderAsync(viewContext);
-
-                return;
+                var task = viewContext.View.RenderAsync(viewContext);
+                if (task.IsCompletedSuccessfully)
+                {
+                    return new ValueTask();
+                }
+                return Awaited(task);
             }
 
             // Otherwise, we don't need the view engine for rendering.
-            await template.RenderAsync(writer, encoder, templateContext);
+            return template.RenderAsync(writer, encoder, templateContext);
         }
 
         public static async Task<string> RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
@@ -230,12 +243,12 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         internal static void AddAsyncFilters(this TemplateContext templateContext, LiquidOptions options, IServiceProvider services)
         {
+            templateContext.Filters.EnsureCapacity(options.FilterRegistrations.Count);
             foreach (var registration in options.FilterRegistrations)
             {
                 templateContext.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
                 {
-                    var type = registration.Value;
-                    var filter = services.GetRequiredService(registration.Value) as ILiquidFilter;
+                    var filter = (ILiquidFilter) services.GetRequiredService(registration.Value);
                     return filter.ProcessAsync(input, arguments, ctx);
                 });
             }
@@ -249,11 +262,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 viewContext.View is RazorView razorView &&
                 razorView.RazorPage is LiquidPage liquidPage)
             {
-                liquidPage.RenderAsync = async output =>
-                {
-                    // Render the template through the default liquid page.
-                    await template.RenderAsync(output, encoder, templateContext);
-                };
+                liquidPage.RenderAsync = output => template.RenderAsync(output, encoder, templateContext);
 
                 return viewContext;
             }
@@ -268,7 +277,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
-                await context.ContextualizeAsync(new DisplayContext()
+                await context.ContextualizeAsync(new DisplayContext
                 {
                     ServiceProvider = services,
                     DisplayAsync = displayHelper,
@@ -282,7 +291,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             var services = page.Context.RequestServices;
             var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
-            return context.ContextualizeAsync(new DisplayContext()
+            return context.ContextualizeAsync(new DisplayContext
             {
                 ServiceProvider = page.Context.RequestServices,
                 DisplayAsync = displayHelper,
@@ -293,8 +302,9 @@ namespace OrchardCore.DisplayManagement.Liquid
         public static async Task ContextualizeAsync(this TemplateContext context, DisplayContext displayContext)
         {
             var services = displayContext.ServiceProvider;
-            context.AmbientValues.Add("Services", services);
+            context.AmbientValues.EnsureCapacity(9);
 
+            context.AmbientValues.Add("Services", services);
             context.AmbientValues.Add("DisplayHelper", displayContext.DisplayAsync);
 
             var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();

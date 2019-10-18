@@ -18,7 +18,7 @@ namespace OrchardCore.Lucene
             _queryProviders = queryProviders;
         }
 
-        public Task<TopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj)
+        public Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj)
         {
             var queryProp = queryObj["query"] as JObject;
 
@@ -90,7 +90,12 @@ namespace OrchardCore.Lucene
                 docs = new TopDocs(docs.TotalHits - from, docs.ScoreDocs.Skip(from).ToArray(), docs.MaxScore);
             }
 
-            return Task.FromResult(docs);
+            var collector = new TotalHitCountCollector();
+            context.IndexSearcher.Search(query, collector);
+
+            var result = new LuceneTopDocs { TopDocs = docs, Count = collector.TotalHits };
+
+            return Task.FromResult(result);
         }
 
         public Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj)

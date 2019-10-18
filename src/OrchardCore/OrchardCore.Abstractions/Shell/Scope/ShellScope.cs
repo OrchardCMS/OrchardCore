@@ -75,6 +75,57 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
+        /// Creates a child scope from the current one.
+        /// </summary>
+        public static Task<ShellScope> CreateChildScopeAsync()
+        {
+            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            return shellHost.GetScopeAsync(ShellScope.Context.Settings);
+        }
+
+        /// <summary>
+        /// Creates a child scope from the current one.
+        /// </summary>
+        public static Task<ShellScope> CreateChildScopeAsync(ShellSettings settings)
+        {
+            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            return shellHost.GetScopeAsync(settings);
+        }
+
+        /// <summary>
+        /// Creates a child scope from the current one.
+        /// </summary>
+        public static Task<ShellScope> CreateChildScopeAsync(string tenant)
+        {
+            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            return shellHost.GetScopeAsync(tenant);
+        }
+
+        /// <summary>
+        /// Execute a delegate using a child scope created from the current one.
+        /// </summary>
+        public static async Task UsingChildScopeAsync(Func<ShellScope, Task> execute)
+        {
+            await (await CreateChildScopeAsync()).UsingAsync(execute);
+        }
+
+        /// <summary>
+        /// Execute a delegate using a child scope created from the current one.
+        /// </summary>
+        public static async Task UsingChildScopeAsync(ShellSettings settings, Func<ShellScope, Task> execute)
+        {
+            await (await CreateChildScopeAsync(settings)).UsingAsync(execute);
+        }
+
+        /// <summary>
+        /// Execute a delegate using a child scope created from the current one.
+        /// </summary>
+        public static async Task UsingChildScopeAsync(string tenant, Func<ShellScope, Task> execute)
+        {
+            await (await CreateChildScopeAsync(tenant)).UsingAsync(execute);
+        }
+
+        /// <summary>
         /// Start holding this shell scope along the async flow.
         /// </summary>
         public void StartAsyncFlow() => _current.Value = this;
