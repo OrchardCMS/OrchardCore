@@ -158,13 +158,13 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return result;
                 }
 
-                if(n == "Items")
+                if (n == "Items")
                 {
                     return shape.Items;
                 }
                 // Resolve Model.Content.MyNamedPart
                 // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
-                return shape.Named(n.Replace("__","-"));
+                return shape.Named(n.Replace("__", "-"));
             }
 
             return null;
