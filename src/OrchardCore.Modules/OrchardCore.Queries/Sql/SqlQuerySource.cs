@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Fluid;
 using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 using YesSql;
 
@@ -68,7 +69,7 @@ namespace OrchardCore.Queries.Sql
                     documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
                 }
 
-                sqlQueryResults.Items = await _session.GetAsync<IEnumerable<object>>(documentIds.ToArray());
+                sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
                 return sqlQueryResults;
             }
             else
