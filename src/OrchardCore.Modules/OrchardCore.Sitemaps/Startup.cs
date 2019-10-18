@@ -38,7 +38,7 @@ namespace OrchardCore.Sitemaps
                     options.GlobalRouteValues = new RouteValueDictionary
                     {
                         {"Area", "OrchardCore.Sitemaps"},
-                        {"Controller", "Sitemaps"},
+                        {"Controller", "Sitemap"},
                         {"Action", "Index"}
                     };
 
@@ -66,13 +66,6 @@ namespace OrchardCore.Sitemaps
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaControllerRoute(
-                   name: "Sitemaps",
-                   areaName: "OrchardCore.Sitemaps",
-                   pattern: "{sitemapId}",
-                   defaults: new { controller = "Sitemap", action = "Index" }
-               );
-
             routes.MapDynamicControllerRoute<SitemapsTransformer>("/{**sitemap}");
             var sitemapManager = serviceProvider.GetService<ISitemapManager>();
             sitemapManager.BuildAllSitemapRouteEntriesAsync().GetAwaiter().GetResult();

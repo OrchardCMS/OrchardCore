@@ -10,7 +10,6 @@ namespace OrchardCore.Sitemaps.Routing
 {
     public class SitemapsTransformer : DynamicRouteValueTransformer
     {
-        public const string RouteKey = "sitemap";
         private readonly SitemapEntries _entries;
         private readonly SitemapOptions _options;
 
@@ -22,12 +21,8 @@ namespace OrchardCore.Sitemaps.Routing
 
         public override ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
         {
-            //TODO resolve /
-
-            // Need to check path keys conventions, here they never start with a '/' but
-            // e.g autoroute path keys always have a leading '/' but never a trailing one.
-
-            if (_entries.TryGetSitemapId(httpContext.Request.Path.Value.Trim('/'), out var sitemapId))
+            // Use route value provided by SitemapTransformer template.
+            if (_entries.TryGetSitemapId(values["sitemap"] as string, out var sitemapId))
             {
                 var routeValues = new RouteValueDictionary(_options.GlobalRouteValues);
                 routeValues[_options.SitemapIdKey] = sitemapId;
