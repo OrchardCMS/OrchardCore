@@ -62,6 +62,10 @@ namespace OrchardCore.Settings.Deployment
                         data.Add(new JProperty(nameof(ISite.SiteName), site.SiteName));
                         break;
 
+                    case "PageTitleFormat":
+                        data.Add(new JProperty(nameof(ISite.PageTitleFormat), site.PageTitleFormat));
+                        break;
+
                     case "SiteSalt":
                         data.Add(new JProperty(nameof(ISite.SiteSalt), site.SiteSalt));
                         break;
@@ -76,6 +80,14 @@ namespace OrchardCore.Settings.Deployment
 
                     case "UseCdn":
                         data.Add(new JProperty(nameof(ISite.UseCdn), site.UseCdn));
+                        break;
+
+                    case "CdnBaseUrl":
+                        data.Add(new JProperty(nameof(ISite.CdnBaseUrl), site.CdnBaseUrl));
+                        break;
+
+                    case "AppendVersion":
+                        data.Add(new JProperty(nameof(ISite.AppendVersion), site.AppendVersion));
                         break;
 
                     case "HomeRoute":
