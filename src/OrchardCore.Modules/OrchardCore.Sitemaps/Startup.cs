@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Drivers;
@@ -30,7 +31,6 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddIdGeneration();
 
-            //TODO add AddressScheme
             services.Configure<SitemapOptions>(options =>
             {
                 if (options.GlobalRouteValues.Count == 0)
@@ -46,6 +46,7 @@ namespace OrchardCore.Sitemaps
                 }
             });
 
+            services.AddSingleton<IShellRouteValuesAddressScheme, SitemapValuesAddressScheme>();
             services.AddSingleton<SitemapsTransformer>();
             services.AddSingleton<SitemapEntries>();
 

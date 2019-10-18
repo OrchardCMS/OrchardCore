@@ -6,25 +6,35 @@ namespace OrchardCore.Sitemaps.Services
     public class SitemapEntries
     {
         private IImmutableDictionary<string, string> _sitemapPaths;
+        private IImmutableDictionary<string, string> _sitemapIds;
 
         public SitemapEntries()
         {
             _sitemapPaths = ImmutableDictionary<string, string>.Empty;
+            _sitemapIds = ImmutableDictionary<string, string>.Empty;
         }
 
-        public bool TryGetSitemapId(string path, out string sitemapNodeId)
+        public bool TryGetPath(string sitemapId, out string path)
         {
-            return _sitemapPaths.TryGetValue(path, out sitemapNodeId);
+            return _sitemapIds.TryGetValue(sitemapId, out path);
+        }
+
+        public bool TryGetSitemapId(string path, out string sitemapId)
+        {
+            return _sitemapPaths.TryGetValue(path, out sitemapId);
         }
 
         public void BuildEntries(IEnumerable<SitemapEntry> entries)
         {
-            var builder = ImmutableDictionary.CreateBuilder<string, string>();
+            var pathBuilder = ImmutableDictionary.CreateBuilder<string, string>();
+            var idBuilder = ImmutableDictionary.CreateBuilder<string, string>();
             foreach (var entry in entries)
             {
-                builder.Add(entry.Path, entry.SitemapId);
+                pathBuilder.Add(entry.Path, entry.SitemapId);
+                idBuilder.Add(entry.SitemapId, entry.Path);
             }
-            _sitemapPaths = builder.ToImmutable();
+            _sitemapPaths = pathBuilder.ToImmutable();
+            _sitemapIds = idBuilder.ToImmutable();
         }
     }
 }

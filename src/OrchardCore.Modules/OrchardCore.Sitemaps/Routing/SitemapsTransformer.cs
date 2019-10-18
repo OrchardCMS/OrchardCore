@@ -22,7 +22,8 @@ namespace OrchardCore.Sitemaps.Routing
         public override ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
         {
             // Use route value provided by SitemapTransformer template.
-            if (_entries.TryGetSitemapId(values["sitemap"] as string, out var sitemapId))
+            var path = values["sitemap"] as string;
+            if (!String.IsNullOrEmpty(path) && _entries.TryGetSitemapId(path, out var sitemapId))
             {
                 var routeValues = new RouteValueDictionary(_options.GlobalRouteValues);
                 routeValues[_options.SitemapIdKey] = sitemapId;

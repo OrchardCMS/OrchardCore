@@ -63,7 +63,9 @@ namespace OrchardCore.Contents.Sitemaps
 
             if (sitemap.IndexAll)
             {
-                var typesToIndex = _routeableContentTypeDefinitionProviders.SelectMany(ctd => ctd.ListRoutableTypeDefinitions());
+                var typesToIndex = _routeableContentTypeDefinitionProviders
+                    .SelectMany(ctd => ctd.ListRoutableTypeDefinitions())
+                    .Select(ctd => ctd.Name);
 
                 var query = _session.Query<ContentItem>()
                     .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(typesToIndex))
@@ -75,7 +77,7 @@ namespace OrchardCore.Contents.Sitemaps
             {
                 var typesToIndex = _routeableContentTypeDefinitionProviders.SelectMany(ctd => ctd.ListRoutableTypeDefinitions())
                     .Where(ctd => sitemap.ContentTypes.Any(s => ctd.Name == s.ContentTypeName))
-                    .Select(x => x.Name);
+                    .Select(ctd => ctd.Name);
 
                 // This is an estimate, so doesn't take into account Take/Skip values.
                 var query = _session.Query<ContentItem>()
@@ -120,7 +122,7 @@ namespace OrchardCore.Contents.Sitemaps
 
                 contentItems = queryResults.ToList();
 
-                if (contentItems.Count() > 50000)
+                if (contentItems.Count > 50000)
                 {
                     _logger.LogError("Sitemap {Name} content item count is over 50,000", sitemap.Name);
                 }

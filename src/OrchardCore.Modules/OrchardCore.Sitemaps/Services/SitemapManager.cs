@@ -41,9 +41,7 @@ namespace OrchardCore.Sitemaps.Services
         public async Task BuildAllSitemapRouteEntriesAsync()
         {
             var document = await GetDocumentAsync();
-            var entries = document.Sitemaps.Values.Where(x => x.Enabled)
-                .Select(sitemap => new SitemapEntry { Path = sitemap.Path, SitemapId = sitemap.Id });
-            _sitemapEntries.BuildEntries(entries);
+            BuildAllSitemapRouteEntries(document);
         }
 
         public async Task DeleteSitemapAsync(string id)
@@ -92,9 +90,10 @@ namespace OrchardCore.Sitemaps.Services
             _memoryCache.Set(SitemapsDocumentCacheKey, document);
             _signal.SignalToken(SitemapsDocumentCacheKey);
 
+            BuildAllSitemapRouteEntries(document);
+
             return;
         }
-
 
         public async Task<XDocument> BuildSitemapAsync(Sitemap sitemap, SitemapBuilderContext context)
         {
@@ -154,8 +153,13 @@ namespace OrchardCore.Sitemaps.Services
 
         private void BuildAllSitemapRouteEntries(SitemapDocument document)
         {
-            var entries = document.Sitemaps.Values.Where(x => x.Enabled)
-                .Select(sitemap => new SitemapEntry { Path = sitemap.Path, SitemapId = sitemap.Id });
+            var entries = document.Sitemaps.Values
+                .Where(x => x.Enabled)
+                .Select(sitemap => new SitemapEntry {
+                    Path = sitemap.Path,
+                    SitemapId = sitemap.Id
+                });
+
             _sitemapEntries.BuildEntries(entries);
         }
     }
