@@ -67,8 +67,8 @@ namespace OrchardCore.Queries.Sql
                     connection.Open();
                     documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
                 }
-                
-                var test = await _session.GetAsync<object>(documentIds.ToArray());
+
+                sqlQueryResults.Items = await _session.GetAsync<IEnumerable<object>>(documentIds.ToArray());
                 return sqlQueryResults;
             }
             else
