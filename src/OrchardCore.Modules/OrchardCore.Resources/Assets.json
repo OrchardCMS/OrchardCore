@@ -6,6 +6,12 @@
     "output": "wwwroot/Styles/bootstrap.css"
   },
   {
+    "generateRTL": false,
+    "generateSourceMaps": false,
+    "inputs": [ "wwwroot/scss/bootstrap-oc.scss" ],
+    "output": "wwwroot/Styles/bootstrap-oc.css"
+  },
+  {
     "inputs": [ "../../../node_modules/bootstrap/dist/js/bootstrap.js" ],
     "output": "wwwroot/Scripts/bootstrap.js"
   },
