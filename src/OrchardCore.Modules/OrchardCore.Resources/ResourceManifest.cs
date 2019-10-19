@@ -95,11 +95,6 @@ namespace OrchardCore.Resources
                 .SetVersion("4.3.1");
 
             manifest
-                .DefineStyle("bootstrap-oc")
-                .SetUrl("~/OrchardCore.Resources/Styles/bootstrap-oc.min.css", "~/OrchardCore.Resources/Styles/bootstrap-oc.css")
-                .SetVersion("4.3.1");
-				
-            manifest
                 .DefineScript("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.js")
