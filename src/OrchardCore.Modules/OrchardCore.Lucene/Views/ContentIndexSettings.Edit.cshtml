@@ -3,7 +3,7 @@
 <fieldset class="form-group">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="ContentIndexSettings.Included" data-toggle="collapse" data-target="#index-settings" checked="@Model.ContentIndexSettings.Included" />
-        <label class="custom-control-label" asp-for="ContentIndexSettings.Included">@T["Include this element index"]</label>
+        <label class="custom-control-label" asp-for="ContentIndexSettings.Included">@T["Include this element in the index"]</label>
         <span class="hint">— @T["Check to include the value of this element in the index."]</span>
     </div>
     <div id="index-settings" class="collapse">

@@ -61,6 +61,10 @@ namespace OrchardCore.Settings.Recipes
                         site.SiteName = property.Value.ToString();
                         break;
 
+                    case "PageTitleFormat":
+                        site.PageTitleFormat = property.Value.ToString();
+                        break;
+
                     case "SiteSalt":
                         site.SiteSalt = property.Value.ToString();
                         break;
@@ -75,6 +79,10 @@ namespace OrchardCore.Settings.Recipes
 
                     case "UseCdn":
                         site.UseCdn = property.Value.Value<bool>();
+                        break;
+
+                    case "CdnBaseUrl":
+                        site.CdnBaseUrl = property.Value.ToString();
                         break;
 
                     case "AppendVersion":

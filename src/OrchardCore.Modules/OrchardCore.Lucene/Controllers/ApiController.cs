@@ -78,7 +78,7 @@ namespace OrchardCore.Lucene.Controllers
 
             var result = await _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
 
-            return new ObjectResult(result);
+            return new ObjectResult(result.Items);
         }
     }
 }
