@@ -117,7 +117,8 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    return await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    return result.Items;
                 }),
                 Type = typeof(ListGraphType<ObjectGraphType<JObject>>)
             };
@@ -148,7 +149,8 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    return await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    return result.Items;
                 }),
                 Type = typetype.Type
             };
