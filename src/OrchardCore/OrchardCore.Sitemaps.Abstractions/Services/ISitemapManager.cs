@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Services
@@ -45,5 +46,9 @@ namespace OrchardCore.Sitemaps.Services
 
         Task<XDocument> BuildSitemapAsync(Sitemap sitemap, SitemapBuilderContext context);
         Task<DateTime?> GetSitemapLastModifiedDateAsync(Sitemap sitemap, SitemapBuilderContext context);
+
+        Task ValidatePathAsync(Sitemap sitemap, IUpdateModel updater);
+
+        string GetSitemapSlug(string path);
     }
 }

@@ -196,7 +196,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Unauthorized();
             }
 
-            var sitemap = await _sitemapManager.GetSitemapAsync(model.Id);
+            var sitemap = (await _sitemapManager.GetSitemapAsync(model.Id)).Clone();
 
             if (sitemap == null)
             {

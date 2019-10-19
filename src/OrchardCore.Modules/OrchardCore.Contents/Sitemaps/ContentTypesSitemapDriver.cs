@@ -1,9 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -15,10 +13,15 @@ namespace OrchardCore.Contents.Sitemaps
     public class ContentTypesSitemapDriver : DisplayDriver<Sitemap, ContentTypesSitemap>
     {
         private readonly IEnumerable<IRouteableContentTypeDefinitionProvider> _routeableContentTypeDefinitionProviders;
+        private readonly ISitemapManager _sitemapManager;
 
-        public ContentTypesSitemapDriver(IEnumerable<IRouteableContentTypeDefinitionProvider> routeableContentTypeDefinitionProviders)
+        public ContentTypesSitemapDriver(
+            IEnumerable<IRouteableContentTypeDefinitionProvider> routeableContentTypeDefinitionProviders,
+            ISitemapManager sitemapManager
+            )
         {
             _routeableContentTypeDefinitionProviders = routeableContentTypeDefinitionProviders;
+            _sitemapManager = sitemapManager;
         }
         public override IDisplayResult Display(ContentTypesSitemap sitemap)
         {
@@ -40,7 +43,7 @@ namespace OrchardCore.Contents.Sitemaps
                     ContentTypeDisplayName = ctd.DisplayName,
                     IsChecked = sitemap.ContentTypes.Any(selected => selected.ContentTypeName == ctd.Name),
                     ChangeFrequency = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == ctd.Name)?.ChangeFrequency ?? ChangeFrequency.Daily,
-                    Priority = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == ctd.Name)?.Priority ?? 0.5f,
+                    Priority = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == ctd.Name)?.Priority ?? 5,
                     TakeAll = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == ctd.Name)?.TakeAll ?? true,
                     Skip = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == ctd.Name)?.Skip ?? 0,
                     Take = sitemap.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == ctd.Name)?.Take ?? 50000,
@@ -62,9 +65,6 @@ namespace OrchardCore.Contents.Sitemaps
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypesSitemap sitemap, IUpdateModel updater)
         {
-            // Initializes the value to empty otherwise the model is not updated if no type is selected.
-            sitemap.ContentTypes = Array.Empty<ContentTypeSitemapEntry>();
-
             var model = new ContentTypesSitemapViewModel();
 
             if (await updater.TryUpdateModelAsync(model,
@@ -93,6 +93,13 @@ namespace OrchardCore.Contents.Sitemaps
                         Take = x.Take
                     })
                     .ToArray();
+
+                if (String.IsNullOrEmpty(sitemap.Path))
+                {
+                    sitemap.Path = _sitemapManager.GetSitemapSlug(sitemap.Name);
+                }
+
+                await _sitemapManager.ValidatePathAsync(sitemap, updater);
             };
 
             return Edit(sitemap);

@@ -9,7 +9,7 @@ namespace OrchardCore.Sitemaps.ViewModels
 
         public ChangeFrequency ChangeFrequency { get; set; }
 
-        public float Priority { get; set; }
+        public int Priority { get; set; }
 
         public bool Exclude { get; set; }
 

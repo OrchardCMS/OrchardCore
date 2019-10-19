@@ -6,7 +6,7 @@ namespace OrchardCore.Sitemaps.Models
     {
         public bool OverrideSitemapConfig { get; set; }
         public ChangeFrequency ChangeFrequency { get; set; } = ChangeFrequency.Daily;
-        public float Priority { get; set; } = 0.5f;
+        public int Priority { get; set; } = 5;
         public bool Exclude { get; set; }
     }
 }

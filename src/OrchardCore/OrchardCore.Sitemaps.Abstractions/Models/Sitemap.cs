@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-
 namespace OrchardCore.Sitemaps.Models
 {
     /// <summary>
@@ -16,7 +13,6 @@ namespace OrchardCore.Sitemaps.Models
         /// <summary>
         /// Name of the sitemap.
         /// </summary>
-        [Required]
         public string Name { get; set; }
 
         /// <summary>
@@ -27,12 +23,19 @@ namespace OrchardCore.Sitemaps.Models
         /// <summary>
         /// Sitemap path.
         /// </summary>
-        [Required]
         public string Path { get; set; }
 
         /// <summary>
         /// Can sitemap be contained by another sitemap.
         /// </summary>
         public virtual bool IsContainable => true;
+
+        /// <summary>
+        /// Creates a shallow copy of this sitemap.
+        /// </summary>
+        public virtual Sitemap Clone()
+        {
+            return MemberwiseClone() as Sitemap;
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -23,18 +24,21 @@ namespace OrchardCore.Contents.Sitemaps
         private readonly ISession _session;
         private readonly IEnumerable<IRouteableContentTypeDefinitionProvider> _routeableContentTypeDefinitionProviders;
         private readonly IContentManager _contentManager;
+        private readonly ISitemapContentItemMetadataProvider _sitemapContentItemMetadataProvider;
         private readonly ILogger _logger;
 
         public ContentTypesSitemapBuilder(
             ISession session,
             IEnumerable<IRouteableContentTypeDefinitionProvider> routeableContentTypeDefinitionProviders,
             IContentManager contentManager,
+            ISitemapContentItemMetadataProvider sitemapContentItemMetadataProvider,
             ILogger<ContentTypesSitemapBuilder> logger
             )
         {
             _session = session;
             _routeableContentTypeDefinitionProviders = routeableContentTypeDefinitionProviders;
             _contentManager = contentManager;
+            _sitemapContentItemMetadataProvider = sitemapContentItemMetadataProvider;
             _logger = logger;
         }
 
@@ -75,7 +79,8 @@ namespace OrchardCore.Contents.Sitemaps
             }
             else
             {
-                var typesToIndex = _routeableContentTypeDefinitionProviders.SelectMany(ctd => ctd.ListRoutableTypeDefinitions())
+                var typesToIndex = _routeableContentTypeDefinitionProviders
+                    .SelectMany(ctd => ctd.ListRoutableTypeDefinitions())
                     .Where(ctd => sitemap.ContentTypes.Any(s => ctd.Name == s.ContentTypeName))
                     .Select(ctd => ctd.Name);
 
@@ -117,7 +122,7 @@ namespace OrchardCore.Contents.Sitemaps
 
                 var queryResults = await _session.Query<ContentItem>()
                     .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(rctdNames))
-                    .OrderByDescending(x => x.ModifiedUtc)
+                    .OrderByDescending(x => x.CreatedUtc)
                     .ListAsync();
 
                 contentItems = queryResults.ToList();
@@ -141,7 +146,7 @@ namespace OrchardCore.Contents.Sitemaps
                 {
                     var takeSomeQueryResults = await _session.Query<ContentItem>()
                         .With<ContentItemIndex>(x => x.ContentType == entry.ContentTypeName && x.Published)
-                        .OrderByDescending(x => x.ModifiedUtc)
+                        .OrderByDescending(x => x.CreatedUtc)
                         .Skip(entry.Skip)
                         .Take(entry.Take)
                         .ListAsync();
@@ -156,7 +161,7 @@ namespace OrchardCore.Contents.Sitemaps
 
                 var queryResults = await _session.Query<ContentItem>()
                     .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
-                    .OrderByDescending(x => x.ModifiedUtc)
+                    .OrderByDescending(x => x.CreatedUtc)
                     .ListAsync();
 
                 contentItems.AddRange(queryResults);
@@ -167,12 +172,7 @@ namespace OrchardCore.Contents.Sitemaps
 
         private async Task<bool> BuildUrlAsync(SitemapBuilderContext context, ContentItem contentItem, XElement url)
         {
-            // TODO resolve this dependance on SitemapPart through
-            // a Sitemap Content Item Validator
-
-            // SitemapPart is optional, but to exclude or override defaults add it to the ContentItem
-            var sitemapPart = contentItem.As<SitemapPart>();
-            if (sitemapPart != null && sitemapPart.OverrideSitemapConfig && sitemapPart.Exclude)
+            if (!_sitemapContentItemMetadataProvider.ValidateContentItem(contentItem))
             {
                 return false;
             }
@@ -192,30 +192,39 @@ namespace OrchardCore.Contents.Sitemaps
 
         private void BuildChangeFrequencyPriority(ContentTypesSitemap sitemap, ContentItem contentItem, XElement url)
         {
-            string changeFrequencyValue = null;
-            string priorityValue = null;
-            if (sitemap.IndexAll)
+            var changeFrequencyValue = _sitemapContentItemMetadataProvider.GetChangeFrequency(contentItem);
+            if (String.IsNullOrEmpty(changeFrequencyValue))
             {
-                changeFrequencyValue = sitemap.ChangeFrequency.ToString();
-                priorityValue = sitemap.Priority.ToString();
-            }
-            else
-            {
-                var sitemapEntry = sitemap.ContentTypes.FirstOrDefault(x => x.ContentTypeName == contentItem.ContentType);
-                changeFrequencyValue = sitemapEntry.ChangeFrequency.ToString();
-                priorityValue = sitemapEntry.Priority.ToString();
-            }
-
-            //TODO move this to a validation provider and move sitemap part back to sitmapes.
-            if (contentItem.Has<SitemapPart>())
-            {
-                var part = contentItem.As<SitemapPart>();
-                if (part.OverrideSitemapConfig)
+                if (sitemap.IndexAll)
                 {
-                    changeFrequencyValue = part.ChangeFrequency.ToString();
-                    priorityValue = part.Priority.ToString();
+                    changeFrequencyValue = sitemap.ChangeFrequency.ToString();
+                }
+                else
+                {
+                    var sitemapEntry = sitemap.ContentTypes
+                        .FirstOrDefault(x => x.ContentTypeName == contentItem.ContentType);
+
+                    changeFrequencyValue = sitemapEntry.ChangeFrequency.ToString();
                 }
             }
+
+            var priorityIntValue = _sitemapContentItemMetadataProvider.GetPriority(contentItem);
+            if (!priorityIntValue.HasValue)
+            {
+                if (sitemap.IndexAll)
+                {
+                    priorityIntValue = sitemap.Priority;
+                }
+                else
+                {
+                    var sitemapEntry = sitemap.ContentTypes
+                        .FirstOrDefault(x => x.ContentTypeName == contentItem.ContentType);
+
+                    priorityIntValue = sitemapEntry.Priority;
+                }
+            }
+
+            var priorityValue = (priorityIntValue * 0.1f).Value.ToString(CultureInfo.InvariantCulture);
 
             var changeFreq = new XElement(Namespace + "changefreq");
             changeFreq.Add(changeFrequencyValue.ToLower());
@@ -228,9 +237,13 @@ namespace OrchardCore.Contents.Sitemaps
 
         private void BuildLastMod(ContentItem contentItem, XElement url)
         {
-            var lastMod = new XElement(Namespace + "lastmod");
-            lastMod.Add(contentItem.ModifiedUtc.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz"));
-            url.Add(lastMod);
+            // Last modified is not required. Do not include if content item has no modified date.
+            if (contentItem.ModifiedUtc.HasValue)
+            {
+                var lastMod = new XElement(Namespace + "lastmod");
+                lastMod.Add(contentItem.ModifiedUtc.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz"));
+                url.Add(lastMod);
+            }
         }
     }
 }

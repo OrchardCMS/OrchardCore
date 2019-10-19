@@ -63,6 +63,8 @@ namespace OrchardCore.Sitemaps
             // Sitemap Part.
             services.AddScoped<IContentPartDisplayDriver, SitemapPartDisplay>();
             services.AddContentPart<SitemapPart>();
+
+            services.AddScoped<ISitemapContentItemMetadataProvider, DefaultSitemapContentItemMetadataProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

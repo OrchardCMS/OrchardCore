@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Immutable;
 
 namespace OrchardCore.Sitemaps.Models
 {
@@ -10,6 +9,6 @@ namespace OrchardCore.Sitemaps.Models
     public class SitemapDocument
     {
         public int Id { get; set; }
-        public Dictionary<string, Sitemap> Sitemaps { get; set; } = new Dictionary<string, Sitemap>(StringComparer.OrdinalIgnoreCase);
+        public ImmutableDictionary<string, Sitemap> Sitemaps { get; set; } = ImmutableDictionary.Create<string, Sitemap>(StringComparer.OrdinalIgnoreCase);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
@@ -53,6 +54,7 @@ namespace OrchardCore.Sitemaps.Sitemaps
         public override async Task<IDisplayResult> UpdateAsync(SitemapIndex sitemap, IUpdateModel updater)
         {
             var model = new SitemapIndexViewModel();
+
             if (await updater.TryUpdateModelAsync(model,
                 Prefix,
                 m => m.Name,
@@ -66,10 +68,15 @@ namespace OrchardCore.Sitemaps.Sitemaps
                     .Select(m => m.Id)
                     .ToArray();
 
-                //TODO path Validation as per Autoroute. And sort leading /
+                if (String.IsNullOrEmpty(sitemap.Path))
+                {
+                    sitemap.Path = _sitemapManager.GetSitemapSlug(sitemap.Name);
+                }
+
+                await _sitemapManager.ValidatePathAsync(sitemap, updater);
             };
 
-            return Edit(sitemap);
+            return await EditAsync(sitemap, updater);
         }
     }
 }

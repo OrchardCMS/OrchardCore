@@ -6,7 +6,9 @@ namespace OrchardCore.Contents.Sitemaps
     {
         public bool IndexAll { get; set; } = true;
         public ChangeFrequency ChangeFrequency { get; set; }
-        public float Priority { get; set; } = 0.5f;
+
+        // Handle as int, and convert to float, when building, to support localization.
+        public int Priority { get; set; } = 5;
         public ContentTypeSitemapEntry[] ContentTypes { get; set; } = new ContentTypeSitemapEntry[] { };
     }
 
@@ -14,7 +16,7 @@ namespace OrchardCore.Contents.Sitemaps
     {
         public string ContentTypeName { get; set; }
         public ChangeFrequency ChangeFrequency { get; set; }
-        public float Priority { get; set; }
+        public int Priority { get; set; }
         public bool TakeAll { get; set; }
         public int Skip { get; set; }
         public int Take { get; set; }

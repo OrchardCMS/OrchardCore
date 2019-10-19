@@ -9,7 +9,6 @@ namespace OrchardCore.Sitemaps.Sitemaps
         [Required]
         public string Name { get; set; }
 
-        [Required]
         public string Path { get; set; }
 
         public ContainableSitemapEntryViewModel[] ContainableSitemaps { get; set; } = new ContainableSitemapEntryViewModel[] { };

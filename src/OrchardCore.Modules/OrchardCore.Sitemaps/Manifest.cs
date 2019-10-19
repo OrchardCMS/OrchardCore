@@ -7,5 +7,5 @@ using OrchardCore.Modules.Manifest;
     Version = "2.0.0",
     Description = "Provides dynamic sitemap generation services",
     Category = "Content Management",
-    Dependencies = new[] { "OrchardCore.Contents" }
+    Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Liquid" }
 )]

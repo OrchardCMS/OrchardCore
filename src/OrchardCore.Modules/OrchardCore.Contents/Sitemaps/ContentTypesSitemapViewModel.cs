@@ -10,12 +10,11 @@ namespace OrchardCore.Contents.Sitemaps
 
         public ChangeFrequency ChangeFrequency { get; set; }
 
-        public float Priority { get; set; } = 0.5f;
+        public int Priority { get; set; } = 5;
 
         [Required]
         public string Name { get; set; }
 
-        [Required]
         public string Path { get; set; }
 
         public ContentTypeSitemapEntryViewModel[] ContentTypes { get; set; } = new ContentTypeSitemapEntryViewModel[] { };
@@ -30,7 +29,7 @@ namespace OrchardCore.Contents.Sitemaps
         public string ContentTypeDisplayName { get; set; }
         public string ContentTypeName { get; set; }
         public ChangeFrequency ChangeFrequency { get; set; }
-        public float Priority { get; set; }
+        public int Priority { get; set; }
         public bool TakeAll { get; set; }
         public int Skip { get; set; }
         public int Take { get; set; }

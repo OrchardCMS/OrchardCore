@@ -1,14 +1,14 @@
 @model ShapeViewModel<ContentTypesSitemap>
-@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject IEnumerable<OrchardCore.Sitemaps.Services.IRouteableContentTypeDefinitionProvider> RoutableContentDefinitionProviders
 @{
-    var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
+    var allRoutableContentTypes = RoutableContentDefinitionProviders
+        .SelectMany(rctd => rctd.ListRoutableTypeDefinitions());
 
     var selectedContentTypes = Model.Value.ContentTypes ?? new ContentTypeSitemapEntry[] { };
 
-    var selectedDisplayNames = allContentTypes
+    var selectedDisplayNames = allRoutableContentTypes
         .Where(ctd => selectedContentTypes.Any(sct => sct.ContentTypeName == ctd.Name))
-        .Select(x => x.DisplayName)
-        .ToList();
+        .Select(x => x.DisplayName);
 }
 
 <div>

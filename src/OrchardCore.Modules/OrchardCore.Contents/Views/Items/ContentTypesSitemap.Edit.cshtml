@@ -12,21 +12,18 @@
             <span class="hint">@T["Name of the sitemap"]</span>
         </div>
         <div class="form-group" asp-validation-class-for="Path">
-            <label asp-for="Path">@T["Path"]</label>
+            <label asp-for="Path">@T["Permalink"]</label>
             <div class="input-group">
-                @{
-                    var prependPath = Context.Request.PathBase.HasValue ? Site.BaseUrl + Context.Request.PathBase.Value : Site.BaseUrl;
-                    prependPath = prependPath + '/';
-                }
-                @if (!String.IsNullOrWhiteSpace(prependPath))
+                @if (!String.IsNullOrWhiteSpace(Site.BaseUrl))
                 {
                     <div class="input-group-prepend">
-                        <div class="input-group-text">@prependPath</div>
+                        <div class="input-group-text">@Site.BaseUrl</div>
                     </div>
                 }
                 <input asp-for="Path" class="form-control" />
                 <span asp-validation-for="Path"></span>
             </div>
+            <span class="hint">@T["The url of the sitemap. Leave empty to auto-generate it."]</span>
         </div>
 
         @*Panel Switcher*@
@@ -49,23 +46,17 @@
                 <div class="form-group" asp-validation-class-for="Priority">
                     <label asp-for="Priority">@T["Priority"] </label>
                     <select asp-for="Priority" class="form-control w-25">
-                        <option value="0.0">0.0</option>
-                        <option value="0.1">0.1</option>
-                        <option value="0.2">0.2</option>
-                        <option value="0.3">0.3</option>
-                        <option value="0.4">0.4</option>
-                        <option value="0.5">0.5</option>
-                        <option value="0.6">0.6</option>
-                        <option value="0.7">0.7</option>
-                        <option value="0.8">0.8</option>
-                        <option value="0.9">0.9</option>
-                        <option value="1.0">1.0</option>
-                        @* TODO JT had problems. Convert the value of these to integers and convert back as producing is the simple answer.
-                            I was not able to set and save any Priority, the problem is due to the decimal separator in french culture, 
-                            i needed to switch to the en-us culture. It's always a problem with numbers, maybe you could just use integer values.
-                            Then , when a validation fails, the priority dropdown lists are not accessible anymore.
-                            
-                            *@
+                        <option value="0">@T["0.0"]</option>
+                        <option value="1">@T["0.1"]</option>
+                        <option value="2">@T["0.2"]</option>
+                        <option value="3">@T["0.3"]</option>
+                        <option value="4">@T["0.4"]</option>
+                        <option value="5">@T["0.5"]</option>
+                        <option value="6">@T["0.6"]</option>
+                        <option value="7">@T["0.7"]</option>
+                        <option value="8">@T["0.8"]</option>
+                        <option value="9">@T["0.9"]</option>
+                        <option value="10">@T["1.0"]</option>
                     </select>
                     <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
                 </div>
@@ -104,17 +95,17 @@
                                 <div class="form-group" asp-validation-class-for="ContentTypes[i].Priority">
                                     <label asp-for="ContentTypes[i].Priority">@T["Priority"] </label>
                                     <select asp-for="ContentTypes[i].Priority" class="form-control" disabled="@notChecked">
-                                        <option value="0.0">0.0</option>
-                                        <option value="0.1">0.1</option>
-                                        <option value="0.2">0.2</option>
-                                        <option value="0.3">0.3</option>
-                                        <option value="0.4">0.4</option>
-                                        <option value="0.5">0.5</option>
-                                        <option value="0.6">0.6</option>
-                                        <option value="0.7">0.7</option>
-                                        <option value="0.8">0.8</option>
-                                        <option value="0.9">0.9</option>
-                                        <option value="1.0">1.0</option>
+                                        <option value="0">@T["0.0"]</option>
+                                        <option value="1">@T["0.1"]</option>
+                                        <option value="2">@T["0.2"]</option>
+                                        <option value="3">@T["0.3"]</option>
+                                        <option value="4">@T["0.4"]</option>
+                                        <option value="5">@T["0.5"]</option>
+                                        <option value="6">@T["0.6"]</option>
+                                        <option value="7">@T["0.7"]</option>
+                                        <option value="8">@T["0.8"]</option>
+                                        <option value="9">@T["0.9"]</option>
+                                        <option value="10">@T["1.0"]</option>
                                     </select>
                                     <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
                                 </div>
