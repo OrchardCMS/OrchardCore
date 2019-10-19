@@ -13,7 +13,6 @@ namespace OrchardCore.DisplayManagement.Handlers
         where TEditorContext : BuildEditorContext
         where TUpdateContext : UpdateEditorContext
     {
-        protected string PrefixRoot { get; set; } = typeof(TModel).Name;
 
         /// <summary>
         /// Returns <c>true</c> if the model can be handle by the current driver.
@@ -117,7 +116,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         protected virtual void BuildPrefix(TModel model, string htmlFieldPrefix)
         {
-            Prefix = PrefixRoot;
+            Prefix = typeof(TModel).Name;
 
             if (!String.IsNullOrEmpty(htmlFieldPrefix))
             {

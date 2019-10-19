@@ -24,11 +24,10 @@ namespace OrchardCore.Layers.Drivers
 
         protected override void BuildPrefix(ContentItem model, string htmlFieldPrefix)
         {
-            Prefix = "LayerMetadata";
-
-            if (!String.IsNullOrEmpty(htmlFieldPrefix))
-            {
-                Prefix = htmlFieldPrefix + "." + Prefix;
+            base.BuildPrefix(model, htmlFieldPrefix);
+            if (string.IsNullOrWhiteSpace(htmlFieldPrefix))
+            { 
+                Prefix = "LayerMetadata";
             }
         }
 
