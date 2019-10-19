@@ -16,7 +16,7 @@
     var returnUrl = ViewData["returnUrl"]?.ToString();
 }
 
-<zone name="Title"><h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", Model.DisplayName, Model.PartFieldDefinition.PartDefinition.DisplayName()])</h1></zone>
+<h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", Model.DisplayName, Model.PartFieldDefinition.PartDefinition.DisplayName()])</h1>
 
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()

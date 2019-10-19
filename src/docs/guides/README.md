@@ -22,5 +22,6 @@ These guides are specific to Orchard Core CMS
 
 Designed to be completed in 2-3 hours, these guides provide deeper, in-context explorations of enterprise application development topics, leaving you ready to implement real-world solutions.
 
+- [Building a decoupled website with Razor Pages](decoupled-cms/decoupled-cms.md)
 - Building a Website from a Web Template (TBD)
 - Implementing a Self-Service SaaS solution (TBD)

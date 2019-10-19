@@ -83,14 +83,14 @@ namespace OrchardCore.DisplayManagement.Razor
                     typeof(IViewEngine).FullName));
             }
 
-            var viewEngine = viewEngines[0] as IRazorViewEngine;
+            var viewEngine = viewEngines[0];
 
             var result = await RenderViewToStringAsync(viewName, displayContext.Value, viewEngine);
 
             return new HtmlString(result);
         }
 
-        public async Task<string> RenderViewToStringAsync(string viewName, object model, IRazorViewEngine viewEngine)
+        public async Task<string> RenderViewToStringAsync(string viewName, object model, IViewEngine viewEngine)
         {
             var actionContext = await GetActionContextAsync();
             var view = FindView(actionContext, viewName, viewEngine);
@@ -122,7 +122,7 @@ namespace OrchardCore.DisplayManagement.Razor
             }
         }
 
-        private IView FindView(ActionContext actionContext, string viewName, IRazorViewEngine viewEngine)
+        private IView FindView(ActionContext actionContext, string viewName, IViewEngine viewEngine)
         {
             var getViewResult = viewEngine.GetView(executingFilePath: null, viewPath: viewName, isMainPage: true);
             if (getViewResult.Success)

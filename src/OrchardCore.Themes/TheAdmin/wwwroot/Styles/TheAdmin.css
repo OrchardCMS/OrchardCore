@@ -9093,11 +9093,6 @@ html[dir], [dir] body {
   padding-right: 0px; }
   .ta-navbar-top .nav-link {
     font-size: 14px; }
-  .ta-navbar-top h1 {
-    line-height: 40px;
-    font-size: 28px;
-    letter-spacing: -.04em;
-    font-weight: bold; }
   [dir] .ta-navbar-top .breadcrumb {
     background-color: transparent;
     margin-top: 1rem; }
