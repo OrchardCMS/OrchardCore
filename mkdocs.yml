@@ -2,7 +2,9 @@ site_name: Orchard Core Documentation
 theme:
   name: 'material'
   logo: 'docs/assets/images/orchard-logo.png'
-  favicon: 'docs/assets/images/favicon.png'
+  favicon: 'docs/assets/images/favicon.png'  
+  feature:
+    tabs: true
   font:
     text: 'Open Sans'
   palette:
@@ -49,88 +51,88 @@ markdown_extensions:
 
 # Page tree
 nav:
-    - About Orchard Core: index.md
+    - About Orchard Core: README.md
     - Getting started: 
         - Create a CMS Web application: docs/getting-started/README.md
+        - Code Generation Templates: docs/getting-started/templates/README.md
         - Create a Theme: docs/getting-started/theme.md
-        - Code Generation Templates: docs/templates/README.md
-    - Guides: 
+    - How-to guides: 
         - Follow the Guides: docs/guides/README.md
-        - Create a modular application: docs/guides/create-modular-application-mvc/index.md
-        - Create a website: docs/guides/create-cms-application/index.md
-        - Add an admin menu: docs/guides/add-admin-menu/index.md
-        - Install localization files: docs/guides/install-localization-files/index.md
-        - Run code on startup: docs/guides/run-code-on-startup/index.md
-    - CMS Modules: 
-        - Content Types: docs/modules/ContentTypes/README.md
-        - Content Parts: 
-            - Add Parts to your Content: docs/content-management/content-parts/README.md
-            - Title: docs/modules/Title/README.md
-            - Autoroute: docs/modules/Autoroute/README.md
-            - Alias: docs/modules/Alias/README.md
-            - Html: docs/modules/Html/README.md
-            - Markdown: docs/modules/Markdown/README.md
-            - List: docs/modules/List/README.md
-            - Flow: docs/modules/Flow/README.md        
-        - Content Fields: docs/modules/ContentFields/README.md
-        - Content Preview: docs/modules/ContentPreview/README.md
-        - Content Localization: docs/modules/ContentLocalization/README.md
-        - Layers: docs/modules/Layers/README.md
-        - Widgets: docs/modules/Widgets/README.mdmd
-        - Forms: docs/modules/Forms/README.md
-        - Templates: docs/modules/Templates/README.md
-        - Themes: docs/modules/Themes/README.md
-        - Liquid: docs/modules/Liquid/README.md
-        - Indexing: docs/modules/Indexing/README.md
-        - SQL: docs/modules/SQL/README.md
-        - Lucene: docs/modules/Lucene/README.md
-        - Queries: docs/modules/Queries/README.md
-        - Media: docs/modules/Media/README.md
-        - ReCaptcha: docs/modules/ReCaptcha/README.md
-        - Resources: docs/modules/Resources/README.
-        - Menu: docs/modules/Menu/README.md
-        - Navigation: docs/modules/Navigation/README.md
-        - Admin Menu: docs/modules/AdminMenu/README.md
-        - Taxonomies: docs/modules/Taxonomies/README.md
-    - Core Modules: 
-#        - How to use Core Modules: docs/core/README.md
-        - Contents: docs/modules/Contents/README.md
-        - Configuration: docs/core/Configuration/README.md
-        - Custom Settings: docs/modules/CustomSettings/README.md
-        - Placement: docs/display/Placement/README.md
-        - Data: docs/core/Data/README.md
-        - Dynamic Cache: docs/modules/DynamicCache/README.md
-        - GraphQL: docs/modules/Apis.GraphQL/README.md
-        - GraphQL queries: docs/core/Apis.GraphQL.Abstractions/README.md
-        - Health Check: docs/modules/HealthChecks/README.md
-        - Localization: docs/modules/Localize/README.md
-        - Logging Serilog: docs/core/Logging.Serilog/readme.md
-        - Media Azure: docs/modules/Media.Azure/README.md
-        - Modules: docs/core/Modules/README.md
-        - Recipes: docs/modules/Recipes/README.md
-        - Scripting: docs/modules/Scripting/README.md
-        - Setup: docs/modules/Setup/README.md
-        - Tenants: docs/modules/Tenants/README.md
-        - Workflows: docs/modules/Workflows/README.md
-        - DataProtection (Azure Storage): docs/modules/DataProtection.Azure/README.md
-    - Manage your Content: docs/content-management/README.md
-    - Customize the Display: docs/display/README.md
-    - Localize your site: docs/localization/README.md
-    - Handle the Media: docs/media/README.md
-    - Navigate between pages: docs/navigation/README.md
-    - Query and Search data: docs/search/README.md
-    - Secure your application:
-        - How to Secure your app: docs/security/README.md
-        - OpenId: docs/modules/OpenId/README.md
-        - Roles: docs/modules/Roles/README.md
-        - Authentication:
-            - Microsoft: docs/modules/Microsoft.Authentication/README.md
-            - Facebook: docs/modules/Facebook/README.md
-            - Twitter: docs/modules/Twitter/README.md
-            - GitHub: docs/modules/GitHub/README.md
-            - Google: docs/modules/Google/README.md
- #   - Data: 
- #       - How to Expose the Data : docs/data/README.md
- #   - Configuration:
- #       - How to Configure your Settings: docs/configuration/README.md
-    - Workflows: docs/workflows/README.md
+        - Create a modular application: docs/guides/create-modular-application-mvc/README.md
+        - Create a website: docs/guides/create-cms-application/README.md
+        - Add an admin menu: docs/guides/add-admin-menu/README.md
+        - Install localization files: docs/guides/install-localization-files/README.md
+        - Integrate Facebook plugins: docs/guides/integrate-facebook-plugins/README.md
+        - Run code on startup: docs/guides/run-code-on-startup/README.md
+    - Key Topics: 
+        - Manage your Content: docs/topics/content-management/README.md
+        - Customize the Display: docs/topics/display/README.md
+        - Localize your site: docs/topics/localize/README.md
+        - Handle the Media: docs/topics/media/README.md
+        - Navigate between pages: docs/topics/navigation/README.md
+        - Query and Search data: docs/topics/search/README.md
+        - Secure your application: docs/topics/security/README.md
+#        - Data: docs/topics/data/README.md
+#        - Configuration: docs/topics/configuration/README.md
+        - Workflows: docs/topics/workflows/README.md
+    - Reference: 
+        - CMS Modules: 
+            - Content Types: docs/reference/modules/ContentTypes/README.md
+            - Content Parts: 
+                - Add Parts to your Content: docs/reference/modules/ContentParts/README.md
+                - Title: docs/reference/modules/Title/README.md
+                - Autoroute: docs/reference/modules/Autoroute/README.md
+                - Alias: docs/reference/modules/Alias/README.md
+                - Html: docs/reference/modules/Html/README.md
+                - Markdown: docs/reference/modules/Markdown/README.md
+                - List: docs/reference/modules/List/README.md
+                - Flow: docs/reference/modules/Flow/README.md        
+            - Content Fields: docs/reference/modules/ContentFields/README.md
+            - Content Preview: docs/reference/modules/ContentPreview/README.md
+            - Content Localization: docs/reference/modules/ContentLocalization/README.md
+            - Layers: docs/reference/modules/Layers/README.md
+            - Widgets: docs/reference/modules/Widgets/README.md
+            - Forms: docs/reference/modules/Forms/README.md
+            - Templates: docs/reference/modules/Templates/README.md
+            - Themes: docs/reference/modules/Themes/README.md
+            - Liquid: docs/reference/modules/Liquid/README.md
+            - Indexing: docs/reference/modules/Indexing/README.md
+            - SQL: docs/reference/modules/SQL/README.md
+            - Lucene: docs/reference/modules/Lucene/README.md
+            - Queries: docs/reference/modules/Queries/README.md
+            - Media: docs/reference/modules/Media/README.md
+            - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
+            - Resources: docs/reference/modules/Resources/README.md
+            - Menu: docs/reference/modules/Menu/README.md
+            - Navigation: docs/reference/modules/Navigation/README.md
+            - Admin Menu: docs/reference/modules/AdminMenu/README.md
+            - Taxonomies: docs/reference/modules/Taxonomies/README.md
+            - Authentication:
+                - Microsoft: docs/reference/modules/Microsoft.Authentication/README.md
+                - Facebook: docs/reference/modules/Facebook/README.md
+                - Twitter: docs/reference/modules/Twitter/README.md
+                - GitHub: docs/reference/modules/GitHub/README.md
+                - Google: docs/reference/modules/Google/README.md
+        - Core Modules: 
+    #        - How to use Core Modules: docs/reference/core/README.md
+            - Contents: docs/reference/modules/Contents/README.md
+            - Configuration: docs/reference/core/Configuration/README.md
+            - Custom Settings: docs/reference/modules/CustomSettings/README.md
+            - Placement: docs/reference/core/Placement/README.md
+            - Data: docs/reference/core/Data/README.md
+            - Dynamic Cache: docs/reference/modules/DynamicCache/README.md
+            - GraphQL: docs/reference/modules/Apis.GraphQL/README.md
+            - GraphQL queries: docs/reference/core/Apis.GraphQL.Abstractions/README.md
+            - Health Check: docs/reference/modules/HealthChecks/README.md
+            - Localization: docs/reference/modules/Localize/README.md
+            - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
+            - Media Azure: docs/reference/modules/Media.Azure/README.md
+            - Modules: docs/reference/core/Modules/README.md
+            - OpenId: docs/reference/modules/OpenId/README.md
+            - Recipes: docs/reference/modules/Recipes/README.md
+            - Roles: docs/reference/modules/Roles/README.md
+            - Scripting: docs/reference/modules/Scripting/README.md
+            - Setup: docs/reference/modules/Setup/README.md
+            - Tenants: docs/reference/modules/Tenants/README.md
+            - Workflows: docs/reference/modules/Workflows/README.md
+            - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
