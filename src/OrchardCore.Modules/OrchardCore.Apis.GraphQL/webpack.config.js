@@ -31,7 +31,16 @@ module.exports = {
         { 
             test: /\.flow$/, 
             use: 'null-loader' 
+        },
+        {
+            test: /\.(ts.map|js.map|d.ts)$/,
+            use: 'null-loader'
         }
       ]
+    },
+    performance: {
+        hints: false,
+        maxEntrypointSize: 1512000,
+        maxAssetSize: 1512000
     }
-  };
+};
