@@ -68,7 +68,7 @@ namespace OrchardCore.Roles.Controllers
                 return Unauthorized();
             }
 
-            var roles = await _roleService.GetRoleNamesAsync();
+            var roles = await _roleService.GetRolesAsync();
 
             var model = new RolesViewModel
             {
@@ -98,6 +98,11 @@ namespace OrchardCore.Roles.Controllers
             {
                 model.RoleName = model.RoleName.Trim();
 
+                if (model.RoleName.Contains("/"))
+                {
+                    ModelState.AddModelError(string.Empty, T["Invalid role name."]);
+                }
+                
                 if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
                 {
                     ModelState.AddModelError(string.Empty, T["The role is already used."]);
@@ -106,7 +111,7 @@ namespace OrchardCore.Roles.Controllers
 
             if (ModelState.IsValid)
             {
-                var role = new Role { RoleName = model.RoleName };
+                var role = new Role { RoleName = model.RoleName, RoleDescription = model.RoleDescription };
                 var result = await _roleManager.CreateAsync(role);
                 if (result.Succeeded)
                 {
@@ -226,11 +231,12 @@ namespace OrchardCore.Roles.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private RoleEntry BuildRoleEntry(string name)
+        private RoleEntry BuildRoleEntry(IRole role)
         {
             return new RoleEntry
             {
-                Name = name,
+                Name = role.RoleName,
+                Description = role.RoleDescription,
                 Selected = false
             };
         }

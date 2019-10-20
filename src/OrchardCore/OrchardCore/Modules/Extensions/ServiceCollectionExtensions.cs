@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -73,7 +74,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddLocalization();
 
             // For performance, prevents the 'ResourceManagerStringLocalizer' from being used.
-            services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+            services.AddSingleton<NullLocalizerFactory>();
+            services.AddSingleton<IStringLocalizerFactory>(sp => sp.GetRequiredService<NullLocalizerFactory>());
+            services.AddSingleton<IHtmlLocalizerFactory>(sp => sp.GetRequiredService<NullLocalizerFactory>());
 
             services.AddWebEncoders();
 

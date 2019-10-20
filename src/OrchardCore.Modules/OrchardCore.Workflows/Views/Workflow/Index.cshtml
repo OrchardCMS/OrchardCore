@@ -3,7 +3,7 @@
 @using OrchardCore.Workflows.ViewModels;
 
 <h1>@RenderTitleSegments(T["{0} Workflows", Model.WorkflowType.Name])</h1>
-
+<zone name="Breadcrumbs">
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflow Types"]</a></li>
@@ -11,7 +11,7 @@
         <li class="breadcrumb-item active" aria-current="page">@T["Workflows"]</li>
     </ol>
 </nav>
-
+</zone>
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
