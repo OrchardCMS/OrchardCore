@@ -211,7 +211,7 @@ namespace OrchardCore.Roles.Controllers
             }
 
             // Save
-            List<RoleClaim> rolePermissions = new List<RoleClaim>();
+            var rolePermissions = new List<RoleClaim>();
             foreach (string key in Request.Form.Keys)
             {
                 if (key.StartsWith("Checkbox.") && Request.Form[key] == "true")
@@ -221,8 +221,8 @@ namespace OrchardCore.Roles.Controllers
                 }
             }
 
-            role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-            role.RoleClaims.AddRange(rolePermissions);
+            role.RoleClaims = role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+            role.RoleClaims = role.RoleClaims.AddRange(rolePermissions);
 
             await _roleManager.UpdateAsync(role);
 

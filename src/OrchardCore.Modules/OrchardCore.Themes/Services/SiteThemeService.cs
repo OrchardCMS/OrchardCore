@@ -44,8 +44,7 @@ namespace OrchardCore.Themes.Services
 
         public async Task<string> GetCurrentThemeNameAsync()
         {
-            string themeName;
-            if (!_memoryCache.TryGetValue(CacheKey, out themeName))
+            if (!_memoryCache.TryGetValue(CacheKey, out string themeName))
             {
                 var changeToken = _siteService.ChangeToken;
                 var site = await _siteService.GetSiteSettingsAsync();

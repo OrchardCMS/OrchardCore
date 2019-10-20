@@ -49,32 +49,41 @@ namespace OrchardCore.Roles.Services
         {
         }
 
-        public IQueryable<IRole> Roles =>
-            GetRolesAsync().Result.Roles.AsQueryable();
+        public IQueryable<IRole> Roles => GetRolesAsync().GetAwaiter()
+            .GetResult().Roles.ToArray().AsQueryable();
 
-        public Task<RolesDocument> GetRolesAsync()
+        public async Task<RolesDocument> GetRolesAsync()
         {
-            return _memoryCache.GetOrCreateAsync(Key, async (entry) =>
+            RolesDocument document;
+
+            if (!_memoryCache.TryGetValue(Key, out document))
             {
-                var roles = await _session.Query<RolesDocument>().FirstOrDefaultAsync();
+                var changeToken = _signal.GetToken(Key);
+                document = await _session.Query<RolesDocument>().FirstOrDefaultAsync();
 
-                if (roles == null)
+                if (document == null)
                 {
-                    roles = new RolesDocument();
-                    _session.Save(roles);
+                    document = new RolesDocument();
+
+                    _session.Save(document);
+                    _signal.DeferredSignalToken(Key);
                 }
+                else
+                {
+                    _memoryCache.Set(Key, document, changeToken);
+                }
+            }
 
-                entry.ExpirationTokens.Add(_signal.GetToken(Key));
-
-                return roles;
-            });
+            return document;
         }
 
         public void UpdateRoles(RolesDocument roles)
         {
+            // Not thread safe but this property is never used.
             roles.Serial++;
+
             _session.Save(roles);
-            _memoryCache.Set(Key, roles);
+            _signal.DeferredSignalToken(Key);
         }
 
         #region IRoleStore<IRole>
@@ -86,7 +95,7 @@ namespace OrchardCore.Roles.Services
             }
 
             var roles = await GetRolesAsync();
-            roles.Roles.Add((Role)role);
+            roles.Roles = roles.Roles.Add((Role)role);
             UpdateRoles(roles);
 
             return IdentityResult.Success;
@@ -110,7 +119,7 @@ namespace OrchardCore.Roles.Services
             await roleRemovedEventHandlers.InvokeAsync(x => x.RoleRemovedAsync(orchardRole.RoleName), Logger);
 
             var roles = await GetRolesAsync();
-            roles.Roles.Remove(orchardRole);
+            roles.Roles = roles.Roles.Remove(orchardRole);
             UpdateRoles(roles);
 
             return IdentityResult.Success;
@@ -120,14 +129,14 @@ namespace OrchardCore.Roles.Services
         {
             var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.RoleName == roleId);
-            return role;
+            return role?.Clone();
         }
 
         public async Task<IRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.NormalizedRoleName == normalizedRoleName);
-            return role;
+            return role?.Clone();
         }
 
         public Task<string> GetNormalizedRoleNameAsync(IRole role, CancellationToken cancellationToken)
@@ -193,8 +202,7 @@ namespace OrchardCore.Roles.Services
 
             var roles = await GetRolesAsync();
             var existingRole = roles.Roles.FirstOrDefault(x => x.RoleName == role.RoleName);
-            roles.Roles.Remove(existingRole);
-            roles.Roles.Add((Role)role);
+            roles.Roles = roles.Roles.Replace(existingRole, (Role)role);
 
             UpdateRoles(roles);
 
@@ -216,7 +224,7 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            ((Role)role).RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
+            ((Role)role).RoleClaims = ((Role)role).RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
 
             return Task.CompletedTask;
         }
@@ -243,7 +251,7 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            ((Role)role).RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
+            ((Role)role).RoleClaims = ((Role)role).RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
 
             return Task.CompletedTask;
         }

@@ -205,7 +205,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Unauthorized();
             }
 
-            var tree = (await _AdminMenuService.GetByIdAsync(model.AdminMenuId))?.Clone();
+            var tree = (await _AdminMenuService.GetByIdAsync(model.AdminMenuId));
 
             if (tree == null)
             {

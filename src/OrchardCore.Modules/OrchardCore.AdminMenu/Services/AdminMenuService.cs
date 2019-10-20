@@ -58,7 +58,8 @@ namespace OrchardCore.AdminMenu
             return (await GetAdminMenuListAsync())
                 .AdminMenu
                 .Where(m => String.Equals(m.Id, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
+                .FirstOrDefault()
+                ?.Clone();
         }
 
         public async Task<int> DeleteAsync(Models.AdminMenu tree)

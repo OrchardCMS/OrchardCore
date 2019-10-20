@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace OrchardCore.Security
 {
@@ -6,6 +6,14 @@ namespace OrchardCore.Security
     {
         public string RoleName { get; set; }
         public string NormalizedRoleName { get; set; }
-        public List<RoleClaim> RoleClaims { get; } = new List<RoleClaim>();
+        public ImmutableArray<RoleClaim> RoleClaims { get; set; } = ImmutableArray<RoleClaim>.Empty;
+
+        /// <summary>
+        /// Creates a shallow copy of this role.
+        /// </summary>
+        public virtual Role Clone()
+        {
+            return MemberwiseClone() as Role;
+        }
     }
 }
