@@ -48,7 +48,7 @@ namespace OrchardCore.Themes.TheBlogTheme
             manifest
                 .DefineStyle("bootstrap-oc")
                 .SetUrl("~/TheBlogTheme/css/bootstrap-oc.min.css", "~/TheBlogTheme/css/bootstrap-oc.css")
-                .SetVersion("4.3.1");
+                .SetVersion("1");
 				
             manifest
                 .DefineStyle("vendor-font-awesome")

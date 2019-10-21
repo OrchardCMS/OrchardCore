@@ -56,7 +56,7 @@ namespace OrchardCore.Themes.TheAgencyTheme
             manifest
                 .DefineStyle("bootstrap-oc")
                 .SetUrl("~/TheAgencyTheme/css/bootstrap-oc.min.css", "~/TheAgencyTheme/css/bootstrap-oc.css")
-                .SetVersion("4.3.1");
+                .SetVersion("1");
 				
             manifest
                 .DefineStyle("vendor-font-awesome")
