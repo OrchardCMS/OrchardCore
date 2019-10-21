@@ -11,7 +11,7 @@
     "AddPart": {
       "type": "parameter",
       "dataType": "bool",
-      "description": "Add dependency injection for part in Startup.cs",
+      "description": "Add dependency injection for part in Startup.cs. If PartName is not provided, default name will be used",
       "defaultValue": "false"
     },
     "PartName": {
