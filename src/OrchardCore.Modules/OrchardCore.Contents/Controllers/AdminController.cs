@@ -41,7 +41,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AdminController(
             IContentManager contentManager,
@@ -55,7 +55,7 @@ namespace OrchardCore.Contents.Controllers
             IHtmlLocalizer<AdminController> localizer,
             IAuthorizationService authorizationService,
             IEnumerable<IContentAdminFilter> contentAdminFilters,
-            IHttpContextAccessor contextAccessor
+            IHttpContextAccessor httpContextAccessor
             )
         {
             _contentAdminFilters = contentAdminFilters;
@@ -66,7 +66,7 @@ namespace OrchardCore.Contents.Controllers
             _siteService = siteService;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
-            _contextAccessor = contextAccessor;
+            _httpContextAccessor = httpContextAccessor;
 
             T = localizer;
             New = shapeFactory;
@@ -109,7 +109,8 @@ namespace OrchardCore.Contents.Controllers
 
             if (model.Options.ContentsStatus == ContentsStatus.Owner)
             {
-                query = query.With<ContentItemIndex>(x => x.Owner == _contextAccessor.HttpContext.User.Identity.Name);
+                var httpContext = _httpContextAccessor.HttpContext;
+                query = query.With<ContentItemIndex>(x => x.Owner == httpContext.User.Identity.Name);
             }
 
             if (!string.IsNullOrEmpty(contentTypeId))
@@ -190,24 +191,24 @@ namespace OrchardCore.Contents.Controllers
 
             //We populate the SelectLists
             model.Options.ContentStatuses = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["Latest"].Value, Value = ContentsStatus.Latest.ToString() },
-                new SelectListItem() { Text = T["Owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
-                new SelectListItem() { Text = T["Published"].Value, Value = ContentsStatus.Published.ToString() },
-                new SelectListItem() { Text = T["Unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
-                new SelectListItem() { Text = T["All versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
+                new SelectListItem() { Text = T["Latest"].Value, Value = nameof(ContentsStatus.Latest) },
+                new SelectListItem() { Text = T["Owned by me"].Value, Value = nameof(ContentsStatus.Owner) },
+                new SelectListItem() { Text = T["Published"].Value, Value = nameof(ContentsStatus.Published) },
+                new SelectListItem() { Text = T["Unpublished"].Value, Value = nameof(ContentsStatus.Draft) },
+                new SelectListItem() { Text = T["All versions"].Value, Value = nameof(ContentsStatus.AllVersions) }
             };
 
             model.Options.ContentSorts = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["Recently created"].Value, Value = ContentsOrder.Created.ToString() },
-                new SelectListItem() { Text = T["Recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
-                new SelectListItem() { Text = T["Recently published"].Value, Value = ContentsOrder.Published.ToString() },
-                new SelectListItem() { Text = T["Title"].Value, Value = ContentsOrder.Title.ToString() }
+                new SelectListItem() { Text = T["Recently created"].Value, Value = nameof(ContentsOrder.Created) },
+                new SelectListItem() { Text = T["Recently modified"].Value, Value = nameof(ContentsOrder.Modified) },
+                new SelectListItem() { Text = T["Recently published"].Value, Value = nameof(ContentsOrder.Published) },
+                new SelectListItem() { Text = T["Title"].Value, Value = nameof(ContentsOrder.Title) }
             };
 
             model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["Publish Now"].Value, Value = ContentsBulkAction.PublishNow.ToString() },
-                new SelectListItem() { Text = T["Unpublish"].Value, Value = ContentsBulkAction.Unpublish.ToString() },
-                new SelectListItem() { Text = T["Delete"].Value, Value = ContentsBulkAction.Remove.ToString() }
+                new SelectListItem() { Text = T["Publish Now"].Value, Value = nameof(ContentsBulkAction.PublishNow) },
+                new SelectListItem() { Text = T["Unpublish"].Value, Value = nameof(ContentsBulkAction.Unpublish) },
+                new SelectListItem() { Text = T["Delete"].Value, Value = nameof(ContentsBulkAction.Remove) }
             };
 
             var ContentTypeOptions = (await GetListableTypesAsync())
