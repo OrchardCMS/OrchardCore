@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -14,6 +15,8 @@ namespace OrchardCore.Features.Deployment
         {
             _moduleService = moduleService;
         }
+
+        public override int Order => Int32.MinValue;
 
         public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
