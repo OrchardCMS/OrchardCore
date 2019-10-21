@@ -27,13 +27,14 @@ namespace OrchardCore.Twitter
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Twitter"], "15", settings => settings
+                builder.Add(T["Security"], security => security
+                        .Add(T["Twitter"], "15", settings => settings
                         .AddClass("twitter").Id("twitter")
                         .Add(T["Twitter Integration"], "10", client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Twitter })
                             .Permission(Permissions.ManageTwitter)
                             .LocalNav())
-                    );
+                    ));
             }
             return Task.CompletedTask;
         }
@@ -59,13 +60,14 @@ namespace OrchardCore.Twitter
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Twitter"], "15", settings => settings
+                builder.Add(T["Security"], security => security
+                        .Add(T["Twitter"], "15", settings => settings
                         .AddClass("twitter").Id("twitter")                        
                         .Add(T["Sign in with Twitter"], "15", client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Signin })
                             .Permission(Permissions.ManageTwitterSignin)
                             .LocalNav())
-                    );
+                    ));
             }
             return Task.CompletedTask;
         }

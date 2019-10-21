@@ -22,8 +22,8 @@ namespace OrchardCore.Templates
             }
 
             builder
-                .Add(T["Configuration"], content => content
-                    .Add(T["Templates"], "10", import => import
+                .Add(T["Display"], display => display
+                    .Add(T["Templates"], "11", import => import
                         .Action("Index", "Template", new { area = "OrchardCore.Templates" })
                         .Permission(Permissions.ManageTemplates)
                         .LocalNav()

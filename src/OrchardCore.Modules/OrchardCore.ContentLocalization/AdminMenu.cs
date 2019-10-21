@@ -25,7 +25,7 @@ namespace OrchardCore.ContentLocalization
             }
 
             builder
-                .Add(T["Configuration"], configuration => configuration
+                .Add(T["Localization"], localization => localization
                     .Add(T["Settings"], settings => settings
                         .Add(T["ContentCulturePicker"], T["ContentCulturePicker"], registration => registration
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ContentCulturePickerSettingsDriver.GroupId })

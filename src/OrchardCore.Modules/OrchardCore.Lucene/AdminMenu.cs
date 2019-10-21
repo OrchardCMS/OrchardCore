@@ -22,9 +22,9 @@ namespace OrchardCore.Lucene
             }
 
             builder
-                .Add(T["Configuration"], "10", configuration => configuration
-                    .AddClass("menu-configuration").Id("configuration")
-                    .Add(T["Site"], "10", import => import
+                .Add(T["Search"], "6", search => search
+                    .AddClass("search").Id("search")
+                    .Add(T["Indexing"], T["Indexing"], import => import
                         .Add(T["Lucene Indices"], "7", indexes => indexes
                             .Action("Index", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
@@ -33,7 +33,7 @@ namespace OrchardCore.Lucene
                             .Action("Query", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav())))
-                .Add(T["Configuration"], configuration => configuration
+                .Add(T["Search"], search => search
                     .Add(T["Settings"], settings => settings
                         .Add(T["Search"], T["Search"], entry => entry
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "search" })
