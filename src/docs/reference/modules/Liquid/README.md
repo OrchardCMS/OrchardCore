@@ -261,6 +261,12 @@ The following properties are available on the `User` object.
 
 Checks if the User has permission clearance, optionally on a resource
 
+
+##### user_email filter
+Returns the user's email.
+```liquid
+{{ User | user_email }}
+```
 ```liquid
 {{ User | has_permission:"EditContent",Model.ContentItem }}
 ```
