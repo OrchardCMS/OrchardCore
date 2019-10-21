@@ -78,7 +78,7 @@ namespace OrchardCore.OpenId.Recipes
                 from uri in model.PostLogoutRedirectUris?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
                 select new Uri(uri, UriKind.Absolute));
 
-            descriptor.PostLogoutRedirectUris.UnionWith(
+            descriptor.RedirectUris.UnionWith(
                 from uri in model.RedirectUris?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
                 select new Uri(uri, UriKind.Absolute));
 

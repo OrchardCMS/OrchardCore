@@ -1,0 +1,9 @@
+[
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "wwwroot/scss/bootstrap-grid-ext.scss"
+    ],
+    "output": "wwwroot/css/bootstrap-grid-ext.css"
+  }
+]
