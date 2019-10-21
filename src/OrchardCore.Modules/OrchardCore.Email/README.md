@@ -31,3 +31,12 @@ Enabling the `OrchardCore.Email` module will allow the user to set the following
             ...
     }
 ```
+
+## Credits
+
+### MailKit
+
+<https://github.com/jstedfast/MailKit>
+
+Copyright 2013-2019 Xamarin Inc
+Licensed under the MIT License
