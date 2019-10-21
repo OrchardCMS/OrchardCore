@@ -94,27 +94,14 @@ namespace OrchardCore.Settings.Services
         /// <inheritdoc/>
         public Task UpdateSiteSettingsAsync(ISite site)
         {
-            var existing = ScopedCache.SiteSettings;
-
-            existing.BaseUrl = site.BaseUrl;
-            existing.PageTitleFormat = site.PageTitleFormat;
-            existing.Calendar = site.Calendar;
-            existing.HomeRoute = site.HomeRoute;
-            existing.MaxPagedCount = site.MaxPagedCount;
-            existing.MaxPageSize = site.MaxPageSize;
-            existing.PageSize = site.PageSize;
-            existing.Properties = site.Properties;
-            existing.ResourceDebugMode = site.ResourceDebugMode;
-            existing.SiteName = site.SiteName;
-            existing.SiteSalt = site.SiteSalt;
-            existing.SuperUser = site.SuperUser;
-            existing.TimeZoneId = site.TimeZoneId;
-            existing.UseCdn = site.UseCdn;
-            existing.CdnBaseUrl = site.CdnBaseUrl;
-            existing.AppendVersion = site.AppendVersion;
+            // Check if it is the same instance.
+            if (ScopedCache.SiteSettings != site)
+            {
+                ScopedCache.SiteSettings.UpdateFrom(site);
+            }
 
             // Persists new data.
-            Session.Save(existing);
+            Session.Save(ScopedCache.SiteSettings);
 
             // Cache invalidation after committing the session.
             _signal.DeferredSignalToken(SiteCacheKey);

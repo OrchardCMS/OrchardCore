@@ -24,14 +24,32 @@ namespace OrchardCore.Settings
         public RouteValueDictionary HomeRoute { get; set; } = new RouteValueDictionary();
         public bool AppendVersion { get; set; } = true;
 
+        public SiteSettings UpdateFrom(ISite site)
+        {
+            BaseUrl = site.BaseUrl;
+            Calendar = site.Calendar;
+            MaxPagedCount = site.MaxPagedCount;
+            MaxPageSize = site.MaxPageSize;
+            PageSize = site.PageSize;
+            TimeZoneId = site.TimeZoneId;
+            ResourceDebugMode = site.ResourceDebugMode;
+            SiteName = site.SiteName;
+            SiteSalt = site.SiteSalt;
+            PageTitleFormat = site.PageTitleFormat;
+            SuperUser = site.SuperUser;
+            UseCdn = site.UseCdn;
+            CdnBaseUrl = site.CdnBaseUrl;
+            AppendVersion = site.AppendVersion;
+
+            Properties = new JObject(site.Properties);
+            HomeRoute = new RouteValueDictionary(site.HomeRoute);
+
+            return this;
+        }
+
         public SiteSettings Clone()
         {
-            var settings = MemberwiseClone() as SiteSettings;
-
-            settings.Properties = new JObject(Properties);
-            settings.HomeRoute = new RouteValueDictionary(HomeRoute);
-
-            return settings;
+            return new SiteSettings() { Id = Id }.UpdateFrom(this);
         }
     }
 }

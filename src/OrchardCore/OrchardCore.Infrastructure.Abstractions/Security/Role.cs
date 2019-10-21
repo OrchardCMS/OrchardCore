@@ -13,7 +13,12 @@ namespace OrchardCore.Security
         /// </summary>
         public virtual Role Clone()
         {
-            return MemberwiseClone() as Role;
+            return new Role()
+            {
+                RoleName = RoleName,
+                NormalizedRoleName = NormalizedRoleName,
+                RoleClaims = RoleClaims
+            };
         }
     }
 }
