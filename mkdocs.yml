@@ -5,8 +5,6 @@ theme:
   favicon: 'docs/assets/images/favicon.png'  
   feature:
     tabs: true
-  font:
-    text: 'Open Sans'
   palette:
     primary: 'blue'
     accent: 'light blue'
