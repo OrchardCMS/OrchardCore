@@ -15,7 +15,7 @@ theme:
     
 extra:
   social:
-    - type: 'globe'
+    - type: 'leaf'
       link: 'http://orchardproject.net'
     - type: 'github-alt'
       link: 'https://github.com/OrchardCMS/OrchardCore'
@@ -29,13 +29,6 @@ edit_uri: edit/dev/src/
 
 # Options
 docs_dir: src
-
-extra_css: 
-- docs/assets/css/code-tabs.css
-- docs/assets/css/extra.css
-
-extra_javascript:
-- docs/assets/js/extra.js
 
 # Extensions
 markdown_extensions:
