@@ -36,7 +36,7 @@ The following properties are available on the `DisplayTaxonomyFieldViewModel` cl
 
 Returns a the term from its content item id and taxonomy.
 
-```
+```csharp
 @foreach(var termId in Model.TermContentItemIds)
 {
     @await OrchardCore.GetTaxonomyTermAsync(Model.TaxonomyContentItemId, termId);
@@ -47,14 +47,14 @@ Returns a the term from its content item id and taxonomy.
 
 Returns the list of terms including their parents.
 
-```
+```csharp
 @foreach(var termId in Model.TermContentItemIds)
 {
     <div>
     @foreach(var parent in await OrchardCore.GetInheritedTermsAsync(Model.TaxonomyContentItemId, termId))
     {
         @parent
-    }    
+    }
     </div>
 }
 ```
@@ -63,14 +63,13 @@ Returns the list of terms including their parents.
 
 Provides a way to query content items that are categorized with specific terms.
 
-
 ## Liquid Tags
 
 ### taxonomy_terms
 
 The `taxonomy_terms` filter loads the specified term content items.
 
-#### Example 
+#### taxonomy_terms Example 
 
 The following example lists all the terms related to the **Colors** field on the **BlogPost**
 content type, then renders them.
@@ -110,7 +109,7 @@ item or content item id.
 
 ## Taxonomy Index
 
-The `TaxonomyIndex` SQL table containes a list of all content items that are associated 
+The `TaxonomyIndex` SQL table contains a list of all content items that are associated 
 with a Taxonomy field. Each record corresponds to a selected term for a field.
 
 | Column | Type | Description |
@@ -122,5 +121,4 @@ with a Taxonomy field. Each record corresponds to a selected term for a field.
 | ContentField | `string` | The name of the field in the content part |
 | TermContentItemId | `string` | The content item id of the categorized Term |
 
-For instance if a field has two selected terms, there will be two records with all 
-identical column values except for the `TermContentItemId`.
+For instance if a field has two selected terms, there will be two records with all identical column values except for the `TermContentItemId`.

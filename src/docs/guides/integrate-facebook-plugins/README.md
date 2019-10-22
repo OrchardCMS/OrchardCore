@@ -1,6 +1,6 @@
 # Integrate Facebook Social Plugins
 
-In order to intergate Social plugins from Facebook, you must enable and configure The `OrchardCore.Facebook.Widgets` module. You can learn more about [here](../../../modules/Facebook)
+In order to integrate Social plugins from Facebook, you must enable and configure The `OrchardCore.Facebook.Widgets` module. You can learn more about [here](../../../modules/Facebook)
 
 ## What you will build
 

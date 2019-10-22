@@ -4,7 +4,7 @@ The Flows module provides methods to display content items directly within anoth
 
 A good example of this would be a page with an FAQ section in it. A FAQ content type might have a question and an answer field, and the content editor can add new FAQs directly when editing the page.
 
-### Empty Flows and Bags
+## Empty Flows and Bags
 
 Flows and Bags that do not contain any content items will be displayed with a different shape name. For empty Flows, the shape name is `FlowPart_Empty`; for empty Bags, it's `BagPart_Empty`. 
 

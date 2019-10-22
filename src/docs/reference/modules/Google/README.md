@@ -42,7 +42,7 @@ Available settings are:
 + CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.  
 If no value is provided, setup Callback URL in Google API to use the default path /signin-google.
 
-*Users Registration*
+## Users Registration
 
 + If you want to enable new users to register to the site through their Google account, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
 + An existing user can link his account to his Google account through the External Logins link from User menu.

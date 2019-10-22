@@ -49,7 +49,7 @@ Another option is to use the `application/graphql` content-type header, and the 
 
 In addition to the above, If the "query" query string parameter is present (as in the GET example above), it will be parsed and handled in the same way as the HTTP GET case.
 
-### Response 
+### Response
 
 Regardless of the method by which the query and variables were sent, the response is returned in the body of the request in JSON format. 
 A query might result in some data and some errors, and those are returned in a JSON object of the form:
@@ -92,6 +92,7 @@ Configuration is done via the standard shell configuration, as follows.
   }
 }
 ```
+
 *ExposeExceptions (bool, Default: false for production, true for development)*
 
 If set to true stack traces are exposed to graphql clients
@@ -103,7 +104,8 @@ The default number of results returned by all paged fields/types.
 The maximum number of results returned by all paged fields/types.
 
 *MaxNumberOfResultsValidationMode (enum, Values: Default|Enabled|Disabled, Default: Default)()
-Specify the validation behaviour if the max number of results is exceeded in a pager paramater
+Specify the validation behaviour if the max number of results is exceeded in a pager parameter
+
 * Default - In production info will be logged and only the max number of results will be returned. In development a graphql validation error will be raised.
 * Enabled - a graphql validation error will be raised
 * Disabled - Info will be logged and only the max number of results will be returned
@@ -116,4 +118,4 @@ Enforces the total maximum nesting across all queries in a request.
 
 *FieldImpact (double?, Default: null)*
 
-For more information on MaxDepth, MaxComplexity, FieldImpact & protecting against malicious queries view the graphql-dot-net documentation at https://graphql-dotnet.github.io/docs/getting-started/malicious-queries/ 
+For more information on MaxDepth, MaxComplexity, FieldImpact & protecting against malicious queries view the graphql-dot-net documentation at <https://graphql-dotnet.github.io/docs/getting-started/malicious-queries/>

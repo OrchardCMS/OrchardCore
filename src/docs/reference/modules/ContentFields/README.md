@@ -55,7 +55,7 @@ Some view models have special properties that are computed from the actual field
 | --- | --- |
 | `Html` | The processed HTML, once all liquid tags have been processed. |
 
-#### Example
+#### Html Field Example
 
 ```liquid
 {{ Model.Html }}
@@ -75,7 +75,7 @@ or, to display the raw content before the tags are converted:
 | --- | --- |
 | `LocalDateTime` | The date time in the time zone of the site. |
 
-#### Example
+#### `DateTime Field Example
 
 ```liquid
 {{ Model.LocalDateTime }}
@@ -89,7 +89,7 @@ or, to display the UTC value before is it converted:
 
 ### `ContentPickerField`
 
-#### Example
+#### ContentPicker Field Example
 
 ```liquid
 {% assign contentItems = Model.ContentItemIds | content_item_id %}
@@ -129,7 +129,7 @@ This simplifies getting a content item of the correct culture on the frontend.
 The following example use the `localization_set` liquid filter which returns a single ContentItem 
 per set based on the request culture.
 
-#### Example
+#### LocalizationSet ContentPicker Field Example
 
 ```liquid
 {% assign contentItems = Model.LocalizationSets | localization_set %}
@@ -170,7 +170,7 @@ A field should represent some specific physical data and logical data. The same 
 to be edited and rendered differently using both Editors and Formatters. Editors are shapes that can
 be used to edit a field differently, for instance the WYSIWYG HTML editor is a custom editor for the HTML
 field. Formatters are alternate shapes that can be used to render a field on the front end, for instance
-a `Link` field could be rendered as a Youtube video player. 
+a `Link` field could be rendered as a Youtube video player.
 
 ### Model Class
 

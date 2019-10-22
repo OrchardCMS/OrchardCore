@@ -14,7 +14,7 @@ These trees of menu items are merged with the standard admin menu that Orchard C
 
 You can disable an Admin Menu and it won't be shown.
 
-You can disable an Admin Node and neither it nor their descendents will be shown.
+You can disable an Admin Node and neither it nor their descendants will be shown.
 
 
 ## How to create Admin Menu
@@ -27,8 +27,7 @@ You can disable an Admin Node and neither it nor their descendents will be shown
 
 4. As you keep adding Admin Nodes you will see them rendered automatically on TheAdmin Menu.
 
-
-##  Provided Admin Node Types 
+## Provided Admin Node Types
 
 At the time of writing this document there are 3 Admin Node Types provided out of the box by Orchard Core:
 
@@ -44,25 +43,25 @@ This node type is provided by the OrchardCore.Lists module.
 
 Note that each one of these nodes can have other nodes nested on it. The nesting is done through drag and drop on the UI.
 
+## How are the Admin Menu rendered as admin menu items
 
-## How are the Admin Menu rendered as admin menu items.
+### How it works without the Admin Menu Module
 
-### How it works without the Admin Menu Module.
 The Admin Menu that OrchardCore provides out of the box it's built broadly speaking like this:
+
 1. NavigationManager retrieves all classes that implement INavigationProvider. There are many of them through many modules with the file name of "AdminMenu.cs".
 
 2. On each AdminMenu the NavigationManager calls the BuildNavigationAsync method, passing a builder to it. The builder is the object where each AdminMenu can add their own menuItems.
 
 3. Once all the AdminMenu classes finished adding their own menu items to the builder, the NavigationManager uses the info on the builder to "render" the full menu.
 
-### What changes when the Admin Menu is Enabled.
+### What changes when the Admin Menu is Enabled
 
 1. The AdminMenu module declares it's own INavigationProvider and so it will be called too by NavigationManager. The name of that INavigationProvider is AdminMenuNavigationProvidersCoordinator.
 
 2. The coordinator retrieves all AdminMenu stored on the database and for each one of them call a BuildTreeAsync method, where each node add recursively its own menu items to the builder.
 
-
-## Deployment Plan Step and Recipe Step 
+## Deployment Plan Step and Recipe Step
 The module provides an Admin Menu Deployment Step. So an admin user can expend some time configuring a custom admin menu, add it to a deployment plan, export a json file, and use the generated json on a setup recipe. This way the sites that are built using that recipe will have the admin menu as the user prepared it.
 
 ## Permissions 
@@ -71,7 +70,6 @@ There are two kind of permissions associated with the module:
 1. Manage Admin Menus. It its about being able to create edit and delete admin menus from the admin.
 
 2. View Admin Menus. It enables the possibility to show or hide an admin menu per role. You can do that from the standard Edit Roles page
-
 
 ## Developing Custom Admin Node Types
 
@@ -89,13 +87,11 @@ Commonly the steps that you follow in order to do that are:
 
 5. Create the views required to create and edit the admin nodes based on your node type.
 
-
 By convention you should store all these non-view classes on a "AdminNodes" folder. This is optional.
 
 By convention you have to store the views on a "Items" folder inside the "Views" folder. This is required.
 
 Don't forget to register the corresponding classes on the Startup class.
-
 
 ### Code Snippets based on the LinkAdminNode
 
@@ -114,7 +110,7 @@ This is the LinkAdminNode.cs
     }
 ```
 
-This is how LinkAdminNodeBuilder builds a link. 
+This is how LinkAdminNodeBuilder builds a link.
 
 This class is  responsible for:
 
@@ -143,7 +139,6 @@ This pattern ensures that at the end of the process the full tree will be proces
                 // Add the actual link
                 itemBuilder.Url(ltn.LinkUrl);
                 AddIconPickerClassToLink(ltn.IconClass, itemBuilder);
-                
 
                 // Let children admin nodes build themselves inside this MenuItem
                 foreach (var childTreeNode in menuItem.Items)
@@ -153,7 +148,7 @@ This pattern ensures that at the end of the process the full tree will be proces
                         var treeBuilder = treeNodeBuilders
                                 .Where(x => x.Name == childTreeNode.GetType().Name)
                                 .FirstOrDefault();
-                        
+
                         await treeBuilder.BuildNavigationAsync(childTreeNode,itemBuilder,treeNodeBuilders);
                     }
                     catch (Exception e)
@@ -167,13 +162,12 @@ This pattern ensures that at the end of the process the full tree will be proces
 
             return Task.CompletedTask;
         }
-
 ```
 
 ## CREDITS
 
 ### Font Awesome Icon Picker
- 
+
 <https://farbelous.github.io/fontawesome-iconpicker/>
 
 Originally written by (c) 2016 Javi Aguilar
@@ -181,9 +175,8 @@ Originally written by (c) 2016 Javi Aguilar
 Licensed under the MIT License
 <https://github.com/farbelous/fontawesome-iconpicker/blob/master/LICENSE>
 
-
 ### jQuery UI Nested Sortable
- 
+
 v 2.1a / 2016-02-04
 <https://github.com/ilikenwf/nestedSortable>
 
@@ -193,4 +186,3 @@ jquery.ui.sortable.js 1.10+
 Copyright (c) 2010-2016 Manuele J Sarfatti and contributors
 Licensed under the MIT License
 <http://www.opensource.org/licenses/mit-license.php>
- 

@@ -10,7 +10,7 @@ Create a class inheriting from `Query` which will represent the state that is ne
 
 ### QuerySource
 
-Create a class implementing `IQuerySource` in order to expose the new type of query.
+Create a class implementing `IQuerySource` in order to expose the new type of query.  
 The query source can be registered like this:
 
 ```csharp
@@ -19,7 +19,7 @@ services.AddScoped<IQuerySource, LuceneQuerySource>();
 
 ### Editors
 
-Queries are edited by providing a custom implementation of a `DisplayDriver` for the type `Query`. 
+Queries are edited by providing a custom implementation of a `DisplayDriver` for the type `Query`.
 
 ```csharp
 public class LuceneQueryDisplayDriver : DisplayDriver<Query, LuceneQuery>
@@ -30,12 +30,12 @@ public class LuceneQueryDisplayDriver : DisplayDriver<Query, LuceneQuery>
 
 ### Queries dialog
 
-When the list of query types is displayed, a template for the shape `Query_Link__[QuerySource]` will be used.
+When the list of query types is displayed, a template for the shape `Query_Link__[QuerySource]` will be used.  
 For instance, if the source is `Lucene` then the file `Query-Lucene.Link.cshtml` will be used.
 
 ## Recipe step
 
-Queries can be created during recipes using the `queries` step.
+Queries can be created during recipes using the `queries` step.  
 Here is a sample step:
 
 ```json
@@ -66,7 +66,7 @@ Verbs: **POST** and **GET**
 | `name` | `myQuery` | The name of the query to execute. |
 | `parameters` | `{ size: 3}` | A Json object representing the parameters of the query. |
 
-# SQL Queries (`OrchardCore.Queries.Sql`)
+## SQL Queries (`OrchardCore.Queries.Sql`)
 
 This feature provide a new type of query targeting the SQL database.
 
@@ -83,11 +83,11 @@ Here is an example for creating a SQL query from a Queries recipe step:
 }
 ```
 
-# Liquid templates
+## Liquid templates
 
 You can access queries from liquid views and templates by using the `Queries` property. Queries are accessed by name, for example `Queries.RecentBlogPosts`.
 
-## query
+### query
 
 The `query` filter provides a way to execute queries. 
 
@@ -98,7 +98,7 @@ The `query` filter provides a way to execute queries.
 {% endfor %}
 ```
 
-The example above will iterate over all the results of the query name `RecentBlogPosts` and display the text representing the content item.
+The example above will iterate over all the results of the query name `RecentBlogPosts` and display the text representing the content item.  
 Any available property on the results of the queries can be used. This example assumes the results will be content items.
 
 ### Parameters
@@ -109,7 +109,7 @@ The `query` filter allows you to pass in parameters to your parameterized querie
 {% assign fiveBlogPosts = Queries.ContentItems | query: contentType: "BlogPost", limit: 5 %}
 ```
 
-# Razor Helpers
+## Razor Helpers
 
 The `QueryAsync` and `ContentQueryAsync` Orchard Helper extension methods (in the `OrchardCore.Queries` and `OrchardCore.ContentManagement` namespaces respectively) allow you to run queries directly from razor pages.
 
@@ -126,13 +126,14 @@ For example, to run a query called `LatestBlogPosts`, and display the results:
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
 
-# Executing SQL Queries
+## Executing SQL Queries
 
-## RDBMS support
-Because RDMBS vendors support different SQL flavors this module will analyze the query you defined and render a specific one based on the RDBMS that is used.
+### RDBMS support
+
+Because RDBMS vendors support different SQL flavors this module will analyze the query you defined and render a specific one based on the RDBMS that is used.  
 This also allows the queries to be exported and shared across website instances even if they run on different RDBMS.
 
-## Examples
+### Examples
 
 Here is an example of a query that returns all published Blog Posts:
 
@@ -147,8 +148,8 @@ By selecting the "Return documents" options, the content items associated with t
 The example below returns a custom set of values instead of content items:
 
 ```sql
-select 
-    month(CreatedUtc) as [Month], 
+select
+    month(CreatedUtc) as [Month],
     year(CreatedUtc) as [Year],
     day(CreatedUtc) as [Day],
     count(*) as [Count]
@@ -157,7 +158,7 @@ where Published = true and ContentType = 'BlogPost'
 group by day(CreatedUtc), month(CreatedUtc), year(CreatedUtc)
 ```
 
-## Parameters
+## SQL Parameters
 
 Parameters can be provided when running queries.
 Parameters are safe to use as they will always be parsed before being included in a query.
@@ -179,8 +180,8 @@ Parameter names are case-sensitive.
 
 ## Templates
 
-A SQL query is actually a Liquid template. This allows your queries to be shaped based on the parameters it gets. 
-When injecting user-provided values, be sure to encode these such that they can't be exploited.
+A SQL query is actually a Liquid template. This allows your queries to be shaped based on the parameters it gets.  
+When injecting user-provided values, be sure to encode these such that they can't be exploited.  
 It is recommended to use parameters to inject values in the queries, and only use Liquid templates to change the shape of the query.
 
 This example checks that a `limit` parameter is provided and if so uses it:
@@ -189,7 +190,7 @@ This example checks that a `limit` parameter is provided and if so uses it:
 {% if limit > 0 %}
     select ... limit @limit
 {% else %}
-    select ... 
+    select ...
 {% endif %}
 ```
 
@@ -221,4 +222,5 @@ The following JavaScript functions are available with this module.
 | `executeQuery` | Returns the result of the query. | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
 
 ## Tutorial
+
 <https://www.youtube.com/watch?v=6ZaqWmq8Pog&t=2891s>

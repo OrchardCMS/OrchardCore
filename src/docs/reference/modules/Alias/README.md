@@ -20,4 +20,3 @@ or
 ```liquid
 {% assign my_content = Content.Alias["footer-widget"] %}
 ```
-

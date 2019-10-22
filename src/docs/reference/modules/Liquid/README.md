@@ -1,20 +1,20 @@
 # Liquid (`OrchardCore.Liquid`)
 
-This module provides a way to create templates securely from the admin site.
+This module provides a way to create templates securely from the admin site.  
 For more information about the Liquid syntax, please refer to this site: <https://shopify.github.io/liquid/>
 
 ## General concepts
 
 ### HTML escaping
 
-All outputs are encoded into HTML by default.
-This means that any HTML reserved chars will be converted to the corresponding HTML entities.
+All outputs are encoded into HTML by default.  
+This means that any HTML reserved chars will be converted to the corresponding HTML entities.  
 If you need to render some raw HTML chars you can use the `raw` filter.
 
 ## Content Item Filters
 
-All the default filters that are available in the standard Liquid syntax are available in OrchardCore.
-On top of that each Orchard module can provide custom filters for their own purpose.
+All the default filters that are available in the standard Liquid syntax are available in OrchardCore.  
+On top of that each Orchard module can provide custom filters for their own purpose.  
 Here is a list of common filters that apply to content items.
 
 ### `display_url`
@@ -151,7 +151,7 @@ In this example we assume that `Model.ContentItem.Content.Paragraph.Content` rep
 
 Output
 
-```
+```html
 <p> <img src="/blog/media/kitten.jpg" /> </p>
 ```
 
@@ -169,7 +169,7 @@ Input
 
 Output
 
-```
+```html
 <h3>Services</h3>
 ```
 
@@ -208,7 +208,7 @@ The following properties are available on the `ContentItem` object.
 The `Content` property of a content item exposes all its elements, like parts and fields. It is possible to
 inspect all the available properties by evaluating `Content` directly. It will then render the full document.
 
-The convention is that each Part is exposed by its name as the first level.
+The convention is that each Part is exposed by its name as the first level.  
 If the content item has custom fields, they will be available under a part whose name will match the content type.
 
 For example, assuming the type `Product` has a Text field named `Size`, access the value of this field for a 
@@ -235,25 +235,32 @@ The following properties are available on the `User` object.
 | `Identity.Name` | `admin` | The name of the authenticated user. |
 | `Identity.Claims` |  | The claims of the authenticated user. |
 
-
 #### User Filters
+
 ##### has_permission filter
-checks if the User has permission clearance, optionally on a resource 
+
+Checks if the User has permission clearance, optionally on a resource
+
 ```liquid
 {{ User | has_permission:"EditContent",Model.ContentItem }}
 ```
+
 ##### is_in_role filter
-checks if the user is in role
+
+Cchecks if the user is in role
+
 ```liquid
 {{ User | is_in_role:"Administrator" }}
 ```
+
 ##### has_claim filter
-checks if the user has a claim of the specified type
+
+Checks if the user has a claim of the specified type
+
 ```liquid
 {{ User | has_claim:"email_verified","true" }}
 {{ User | has_claim:"Permission","ManageSettings" }}
 ```
-
 
 ### Site
 
@@ -322,8 +329,8 @@ Input
 {% assign date_time = "DateTime" | shape_new %}
 ```
 
-You can also pass properties when creating the shape.
-Property names get converted to PascalCase. Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template. 
+You can also pass properties when creating the shape.  
+Property names get converted to PascalCase. Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template.
 
 ```liquid
 {{ Model.Content | shape_new: prop_value1: "some value", prop_value2: 5 }}
@@ -358,7 +365,7 @@ Monday, September 11, 2017 3:29:26 PM
 ### `shape_properties`
 
 Returns a shape with the added properties.
-Property names get converted to PascalCase. Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template. 
+Property names get converted to PascalCase. Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template.
 
 Input
 
@@ -405,12 +412,13 @@ Input
 Alters and renders the title of the current page.
 
 Input
+
 ```liquid
 {% page_title Site.SiteName, position: "before", separator: " - " %}
 ```
 
-The default parameter is a text that is appended to the current value of the title.
-`position` is where the value is appended, in this example at the beginning.
+The default parameter is a text that is appended to the current value of the title.  
+`position` is where the value is appended, in this example at the beginning.  
 `separator` is a string that is used to separate all the fragments of the title.
 
 ## Shape Tags
@@ -500,8 +508,9 @@ Input
 
 ### `shape_add_properties`
 
-Adds properties to a shape. This can be useful to pass values from a parent shape. 
-Property names get converted to PascalCase. Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template. 
+Adds properties to a shape. This can be useful to pass values from a parent shape.  
+Property names get converted to PascalCase.  
+Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template.
 
 Input
 
@@ -705,6 +714,7 @@ Block Tag example
 To render a liquid string template as `IHtmlContent` within Razor use the `LiquidToHtmlAsync` helper extension method on the view's base `Orchard` property, e.g.:
 
 Input
+
 ```
 @await Orchard.LiquidToHtmlAsync((string)Model.ContentItem.Content.Paragraph.Content.Html)
 ```
@@ -713,7 +723,7 @@ In this example we assume that `Model.ContentItem.Content.Paragraph.Content` rep
 
 Output
 
-```
+```html
 <p> <img src="/media/kitten.jpg" /> </p>
 ```
 

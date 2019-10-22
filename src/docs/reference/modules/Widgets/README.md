@@ -59,7 +59,7 @@ be able to render a title, and uses it as a container for both the title and the
 
 The actual template for the `Widget` shape can be found in `src/OrchardCore.Modules/OrchardCore.Widgets/Views/Widgets.cshtml` but can be simplified to this:
 
-```liquid
+``` liquid tab="Liquid"
 <div class="{{ Model.Classes | join " "}}">
     <div class="widget-body">
     {{ Model.Content | shape_render }}
@@ -67,7 +67,7 @@ The actual template for the `Widget` shape can be found in `src/OrchardCore.Modu
 </div>
 ```
 
-```razor
+``` html tab="Razor"
 <div class="@String.Join(" ", Model.Classes.ToArray())">
     <div class="widget-body">
     @await DisplayAsync(Model.Content)
@@ -89,11 +89,11 @@ The actual template for this wrapper shape can be found in `src/OrchardCore.Modu
 
 A common requirement is to remove these tags, which can be done by creating this template instead:
 
-```liquid
+``` liquid tab="Liquid"
 {{ Model.Content | shape_render }}
 ```
 
-```razor
+``` html tab="Razor"
 @await DisplayAsync(Model.Content)
 ```
 

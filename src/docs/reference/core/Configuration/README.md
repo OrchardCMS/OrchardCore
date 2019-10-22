@@ -4,9 +4,9 @@ Orchard Core extends ASP.NET Core `IConfiguration` with `IShellConfiguration`.
 
 To learn more about ASP.NET Core `IConfiguration` visit <https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration>
 
-### Config Sources
+## Config Sources
 
-Orchard Core supports a hierachy of Configuration Sources
+Orchard Core supports a hierarchy of Configuration Sources
 
 * The `Startup` ASP.NET Core Project, e.g. `OrchardCore.Cms.Web.csproj`, `appsettings.json`, or by environment  `appsettings.Development.json`
 * Global Tenant Configuration `App_Data/appsettings.json`, or by environment `App_Data/appsettings.Development.json`  

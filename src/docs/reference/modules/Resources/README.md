@@ -6,29 +6,29 @@ The `Resources` module provides commonly used resources like JavaScript librarie
 so any module can describe what resources are necessary on any page or component. When the full page is rendered all the required
 resources are computed and custom `<script>` and `<link>` tags are rendered accordingly. You can also register custom `<meta>` tags.
 
-
 ## Resource Settings
 
 Resource Settings are configured through the site admin.
 
-#### UseCdn
+### UseCdn
 
 Enabling UseCdn will configure the `IResourceManager` to provide any scripts or styles, such as jQuery, from the configured CDN.
 
-#### ResourceDebugMode
+### ResourceDebugMode
 
-When enabled will serve scripts or styles, that have a CDN configured, or a debug-src, from the local server in non minified format.
+When enabled will serve scripts or styles, that have a CDN configured, or a debug-src, from the local server in non minified format.  
 This will also disabled the CdnBaseUrl prepending.
 
-#### CdnBaseUrl
+### CdnBaseUrl
 
 When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will
-be disabled in `ResourceDebugMode` 
+be disabled in `ResourceDebugMode`
 
 ## Named Resources
 
-Named resources are well-known scripts and stylesheets that are described in a module. They have a name, a type (script, stylesheet) 
-and optionally a version. The `OrchardCore.Resources` modules provides some commonly used ones:
+Named resources are well-known scripts and stylesheets that are described in a module.  
+They have a name, a type (script, stylesheet) and optionally a version.  
+The `OrchardCore.Resources` modules provides some commonly used ones:
 
 | Name | Type | Versions | Dependencies |
 | ---- | ---- | -------- | ------------ |
@@ -47,12 +47,12 @@ and optionally a version. The `OrchardCore.Resources` modules provides some comm
 
 ## Usage
 
-There are two ways to invoke a resource: either by using the `IResourceManager` API or a Tag Helper.
+There are two ways to invoke a resource: either by using the `IResourceManager` API or a Tag Helper.  
 The API is necessary if you need to inject a resource from code. However it is recommended to use a Tag Helper when inside a view.
 
 ### Using the API
 
-From your module, add a reference to the `OrchardCore.Resources.Abstractions` project.
+From your module, add a reference to the `OrchardCore.Resources.Abstractions` project.  
 From the class you want to use the API in, inject the `OrchardCore.ResourceManagement.IResourceManager` interface.
 
 #### Register a named resource
@@ -89,8 +89,7 @@ This will use the latest available version between `3.3` and `3.4`. If the versi
 settings.UseAppendVersion(true);
 ```
 
-This will append a version string that is calculated at runtime as an SHA256 hash of the file, the calculation cached, and 
-appended to the url as part of the query string, e.g. `my-script.js?v=eER9OO6zWGKaIq1RlNjImsrWN9y2oTgQKg2TrJnDUWk` 
+This will append a version string that is calculated at runtime as an SHA256 hash of the file, the calculation cached, and  appended to the url as part of the query string, e.g. `my-script.js?v=eER9OO6zWGKaIq1RlNjImsrWN9y2oTgQKg2TrJnDUWk`
 
 #### Register custom script
 
@@ -126,17 +125,17 @@ From your module, in the `_ViewImports.cshtml` or your view, add `@addTagHelper 
 
 This example registers the script named `bootstrap` and all its dependencies (jquery).
 
-```liquid
+``` liquid tab="Liquid"
 {% script name:"bootstrap" %}
 ```
 
-```razor
+``` html tab="Razor"
 <script asp-name="bootstrap"></script>
 ```
 
 And for a stylesheet:
 
-```razor
+``` html tab="Razor"
 <style asp-name="bootstrap"></style>
 ```
 
@@ -144,11 +143,11 @@ And for a stylesheet:
 
 You can force a resource to be used from its CDN. By default the behavior is defined by configuration.
 
-```liquid
+``` liquid tab="Liquid"
 {% script name:"bootstrap", use_cdn:"true" %}
 ```
 
-```razor
+``` html tab="Razor"
 <script asp-name="bootstrap" use-cdn="true"></script>
 ```
 
@@ -157,11 +156,11 @@ You can force a resource to be used from its CDN. By default the behavior is def
 This example will use the latest available version with a Major version of `3`, like `3.4.0`. If the version is not specified
 the latest one is always used.
 
-```liquid
+``` liquid tab="Liquid"
 {% script name:"bootstrap", version:"4" %}
 ```
 
-```razor
+``` html tab="Razor"
 <script asp-name="bootstrap" version="3"></script>
 ```
 
@@ -169,11 +168,11 @@ the latest one is always used.
 
 You can append a version hash that will be calculated, and calculation cached, and appended in the format ?v=eER9OO6zWGKaIq1RlNjImsrWN9y2oTgQKg2TrJnDUWk
 
-```liquid
+``` liquid tab="Liquid"
 {% script name:"bootstrap", append_version:"true" %}
 ```
 
-```razor
+``` html tab="Razor"
 <script asp-name="bootstrap" asp-append-version="true"></script>
 ```
 
@@ -181,11 +180,11 @@ You can append a version hash that will be calculated, and calculation cached, a
 
 By default all scripts are rendered in the footer. You can override it like this:
 
-```liquid
+``` liquid tab="Liquid"
 {% script name:"bootstrap", at:"Foot" %}
 ```
 
-```razor
+``` html tab="Razor"
 <script asp-name="bootstrap" at="Foot"></script>
 ```
 
@@ -195,11 +194,11 @@ Styles, however, are always injected in the header section of the HTML document.
 
 You can declare a new resource directly from a view, and it will be injected only once even if the view is called multiple time.
 
-```liquid
+``` liquid tab="Liquid"
 {% script src:"/TheTheme/js/foo.min.js", debug_src:"/TheTheme/js/foo.js" %}
 ```
 
-```razor
+``` html tab="Razor"
 <script asp-name="foo" asp-src="~/TheTheme/js/foo.min.js?v=1.0" debug-src="~/TheTheme/js/foo.js?v=1.0" depends-on="baz:1.0" version="1.0"></script>
 ```
 
@@ -208,11 +207,11 @@ the one with the highest number will be used.
 
 You can also do the same for a stylesheet:
 
-```liquid
+``` liquid tab="Liquid"
 {% style src:"/TheTheme/css/bar.min.css", debug_src:"/TheTheme/css/bar.css" %}
 ```
 
-```razor
+``` html tab="Razor"
 <style asp-src="~/TheTheme/css/bar.min.css" debug-src="~/TheTheme/css/bar.css"></style>
 ```
 
@@ -220,13 +219,13 @@ You can also do the same for a stylesheet:
 
 The following example demonstrates how to inject a custom script in the footer section.
 
-```liquid
+``` liquid tab="Liquid"
 {% scriptblock at: "Foot" %}
     document.write('<!-- some script -->');
 {% endscriptblock %}
 ```
 
-```razor
+``` html tab="Razor"
 <script at="Foot">
     document.write('<!-- some script -->');
 </script>
@@ -234,11 +233,11 @@ The following example demonstrates how to inject a custom script in the footer s
 
 #### Meta tags
 
-```liquid
+``` liquid tab="Liquid"
 {% meta name:"description", content:"This is a website" %}
 ```
 
-```razor
+``` html tab="Razor"
 <meta asp-name="description" content="This is a website" />
 ```
 

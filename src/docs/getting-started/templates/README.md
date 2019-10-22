@@ -1,6 +1,6 @@
 # Code Generation Templates
 
-Orchard Core Templates uses `dotnet new` template configurations for creating new websites, themes and modules from the command shell. 
+Orchard Core Templates uses `dotnet new` template configurations for creating new websites, themes and modules from the command shell.
 
 More information about `dotnet new` can be found at <https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new>
 
@@ -27,6 +27,7 @@ dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc1-* --nuget-source https://w
 ```CMD
 dotnet new occms  
 ```
+
 The above command will use the default options.
 
 You can pass the following CLI parameters to setup options

@@ -108,7 +108,7 @@ You can override the HTML editor for the `Default` editor by creating a shape fi
 
 To render a Markdown string to HTML within Razor use the `MarkdownToHtmlAsync` helper extension method on the view's base `Orchard` property, e.g.:
 
-```
+```csharp
 @await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown)
 ```
 
@@ -119,11 +119,13 @@ This helper will also parse any liquid included in the Markdown.
 ## CREDITS
 
 ### Markdig
+
 <https://github.com/lunet-io/markdig>  
 Copyright (c) 2016, Alexandre Mutel  
 BSD-2
 
 ### SimpleMDE
+
 <https://github.com/sparksuite/simplemde-markdown-editor>
 Copyright (c) 2015 Next Step Webs, Inc.  
 MIT

@@ -50,8 +50,9 @@ To enable Orchard Core CMS to use these new files, we need to enable the Localiz
 - In the __Modules__ page search for __Localization__ and click __Enable__. If the feature is already enabled you don't need to do anything.
 - In the current url, add `?culture=fr`, the link should look like <https://localhost:44300/blog/OrchardCore.Features/Admin/Features?culture=fr>.
 
-At that point most texts should be displayed in French. From now on if a browser is configured with French as its default culture, the Admin will be displayed using 
-the French text translations we downloaded. The `?culture=fr` is just one way to simulate that the current request should use French as the UI culture.
+At that point most texts should be displayed in French.  
+From now on if a browser is configured with French as its default culture, the Admin will be displayed using the French text translations we downloaded.  
+The `?culture=fr` is just one way to simulate that the current request should use French as the UI culture.
 
 ![image](assets/localized-french.jpg)
 

@@ -49,17 +49,17 @@ Placement information consists of:
 {
   "TextField": [
     {
-		"displayType": "Detail",
-		"differentiator": "Article-MyTextField",
+    "displayType": "Detail",
+    "differentiator": "Article-MyTextField",
         "contentType": ["Page", "BlogPost"],
         "contentPart": ["HtmlBodyPart"],
         "path": ["/mypage"],
 
-		"place": "Content",
-		"alternates": [ "TextField_Title" ],
-		"wrappers": [ "TextField_Title" ],
-		"shape": "AnotherShape"
-	}
+    "place": "Content",
+    "alternates": [ "TextField_Title" ],
+    "wrappers": [ "TextField_Title" ],
+    "shape": "AnotherShape"
+    }
   ],
 }
 ```
@@ -178,6 +178,6 @@ Result:
 3 days ago
 ```
 
-## Shape differentiators
+## Shape differenciators
 
 You can find information about shape differenciators in the [Templates documentation](../../OrchardCore.Modules/OrchardCore.Templates/#content-field-differentiator)

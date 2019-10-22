@@ -1,6 +1,6 @@
 # Media (`OrchardCore.Media`)
 
-The Media modules provides a UI to upload and organize binary files that can be used while creating content. 
+The Media modules provides a UI to upload and organize binary files that can be used while creating content.
 
 The media-processing liquid filters can also create custom sized images.
 
@@ -28,11 +28,11 @@ or when using your added content
 
 Renders an `<img src />` HTML tag.
 
-#### Input
+#### img_tag Input
 
 `{{ 'animals/kittens.jpg' | asset_url | img_tag }}`
 
-#### Output
+#### img_tag Output
 
 `<img src="~/media/animals/kittens.jpg" />`
 
@@ -45,20 +45,20 @@ You can add as many html attributes as you want with the img_tag.
 
 ### `resize_url`
 
-Convert the input URL to create a resized image with the specified size arguments. 
+Convert the input URL to create a resized image with the specified size arguments.
 
-#### Input
+#### resize_url Input
 
 `{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240 | img_tag }}`
 
-#### Output
+#### resize_url Output
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240" />`
 
 #### Arguments
 
-The `width` and `height` arguments are limited to a specific list of values to prevent 
-malicious clients from creating too many variations of the same image. The values can be
+The `width` and `height` arguments are limited to a specific list of values to prevent malicious clients from creating too many variations of the same image.  
+The values can be
 `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
 
 #### `width` (or first argument)
@@ -75,12 +75,12 @@ The resize mode.
 
 ##### `pad`
 
-Pads the resized image to fit the bounds of its container.
+Pads the resized image to fit the bounds of its container.  
 If only one dimension is passed, the original aspect ratio will be maintained.
 
 ##### `boxpad`
 
-Pads the image to fit the bounds of the container without resizing the original source.
+Pads the image to fit the bounds of the container without resizing the original source.  
 When downscaling, performs the same functionality as `pad`.
 
 ##### `max` (Default)
@@ -99,11 +99,11 @@ Stretches the resized image to fit the bounds of its container.
 
 Resizes the image using the same functionality as `max` then removes any image area falling outside the bounds of its container.
 
-### Input
+### mode Input
 
 `{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop' }}`
 
-### Output
+### mode Output
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=crop" />`
 
@@ -111,11 +111,11 @@ Resizes the image using the same functionality as `max` then removes any image a
 
 Appends a version hash for an asset. Can be piped together with the other media filters.
 
-#### Input
+#### version Input
 
 `{{ 'animals/kittens.jpg' | asset_url | append_version | img_tag }}`
 
-#### Output
+#### version Output
 
 `<img src="~/media/animals/kittens.jpg?v=Ailxbj_jQtYc9LRXKa21DygRzmQqc3OfN1XxSaQ3UWE" />`
 
@@ -150,6 +150,7 @@ Alternatively the Asset Url can be resolved independently and the `src` attribut
 `<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
 
 ### Razor append version
+
 `asp-append-version` support is available on the OrchardCore tag helpers and MVC tag helpers.
 
 `<img asset-src="Model.Paths[0]" alt="..." asp-append-version="true" />`
@@ -213,18 +214,18 @@ The following configuration values are used by default and can be customized:
             ".gif",
             ".ico",
             ".svg",
-            
+
             // Documents
             ".pdf", // Portable Document Format; Adobe Acrobat
             ".doc", // Microsoft Word Document
-            ".docx",    
+            ".docx",
             ".ppt", // Microsoft PowerPoint Presentation
-            ".pptx", 
-            ".pps", 
-            ".ppsx", 
+            ".pptx",
+            ".pps",
+            ".ppsx",
             ".odt", // OpenDocument Text Document
             ".xls", // Microsoft Excel Document
-            ".xlsx", 
+            ".xlsx",
             ".psd", // Adobe Photoshop Document
 
             // Audio
@@ -235,7 +236,7 @@ The following configuration values are used by default and can be customized:
 
             // Video
             ".mp4", // MPEG-4
-            ".m4v", 
+            ".m4v",
             ".mov", // QuickTime
             ".wmv", // Windows Media Video
             ".avi",

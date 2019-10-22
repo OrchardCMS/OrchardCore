@@ -3,7 +3,7 @@
 Custom Settings allows a site administrator to create a customized set of properties that are global to the web sites. These settings are 
 edited in the standard Settings section and can be protected with specific permissions.
 
-### Creating Custom Settings
+## Creating Custom Settings
 
 Custom Settings are organized in sections. Each section is represented by a Content Type with the `CustomSettings` stereotype.
 When creating such a section, remember to disable `Creatable`, `Listable`, `Draftable` and `Securable` metadata as they don't apply.
@@ -24,8 +24,8 @@ To edit this permission open the Roles editor and go to the `OrchardCore.CustomS
 
 ### Liquid
 
-The Custom Settings (like other settings) are available in the `{{ Site.Properties }}` object.
-Each section is made available using its name. 
+The Custom Settings (like other settings) are available in the `{{ Site.Properties }}` object.  
+Each section is made available using its name.
 
 For instance the `HtmlBodyPart` of a custom settings section named `BlogSettings` would be accessible using `{{ Site.Properties.BlogSettings.HtmlBodyPart }}`.
 

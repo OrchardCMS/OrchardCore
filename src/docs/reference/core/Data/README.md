@@ -14,14 +14,14 @@ This service provides methods to build SQL queries that can will be use the synt
 ### Handling prefixed tables
 
 Each tenant in an Orchard Core application can have a table prefix. When building custom queries it 
-is necessary to take it into account. It is avaible by resolving `ShellSettings` and accessing the `TablePrefix` setting.
+is necessary to take it into account. It is available by resolving `ShellSettings` and accessing the `TablePrefix` setting.
 It is available from the `OrchardCore.Environment.Shell` namespace in the `OrchardCore.Abstractions` package.
 
 ## Example
 
 The following example uses Dapper to execute a SQL query.
 
-```C#
+```csharp
 using Dapper;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell
@@ -31,7 +31,7 @@ public class AdminController : Controller
     private readonly IDbConnectionAccessor _dbAccessor;
     private readonly string _tablePrefix;
 
-    public AdminController(IDbConnectionAccessor dbAccessor, ShellSettings shettings)
+    public AdminController(IDbConnectionAccessor dbAccessor, ShellSettings settings)
     {
         _dbAccessor = dbAccessor;
         _tablePrefix = settings["TablePrefix"];
@@ -44,7 +44,7 @@ public class AdminController : Controller
            using(var transaction = connection.BeginTransaction())
            {
                 var dialect = SqlDialectFactory.For(connection);
-                var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");             
+                var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
 
                 var selectCommand = $"SELECT * FROM {customTable}";
 
@@ -55,7 +55,7 @@ public class AdminController : Controller
 
                 return View(model);
             }
-        }      
-    }    
+        }
+    }
 }
 ```

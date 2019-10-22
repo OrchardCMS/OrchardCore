@@ -62,7 +62,6 @@ The following configuration values are used by default and can be customized:
 
 ```json
     "StaticFileOptions": {
-      
       // The CacheControl header sent with any static file served by modules
       "CacheControl": "public, max-age=2592000, s-max-age=31557600"
     }

@@ -242,10 +242,6 @@ The following activities are available with any default Orchard installation:
 | Delete Content | Task | Delete a content item. | [link] |
 | Publish Content | Task | Publish a content item. | [link] |
 
-## Walkthroughs
-
-### 
-
 ## Developing Custom Activities
 
 Orchard is built to be extended, and the `Workflows` module is no different. When creating your own module, you can develop custom workflow activities.
@@ -257,6 +253,7 @@ Developing custom activities involve the following steps:
 4. Implement the various Razor views for the various shapes provided by the driver. Although not required, it is recommended to store these files in the `Views/Items` folder. Note that it is required for your views to be discoverable by the display engine.  
 
 ### Activity Display Types
+
 An activity has the following display types:
 
 - Thumbnail
@@ -269,6 +266,7 @@ Used when the activity is rendered as part of the activity picker.
 Used when the activity is rendered as part of the workflow editor design surface.
 
 ### IActivity
+
 `IActivity` has the following members:
 
 - `Name`
@@ -317,7 +315,7 @@ public class NotifyTask : TaskActivity
     // The category to which this activity belongs. The activity picker groups activities by this category.
     public override LocalizedString Category => S["UI"];
 
-	// A description of this activity's purpose. 
+    // A description of this activity's purpose. 
     public override LocalizedString Description => S["Display a message."];
 
     // The notification type to display.
@@ -327,7 +325,7 @@ public class NotifyTask : TaskActivity
         set => SetProperty(value);
     }
 
-	// The message to display.
+    // The message to display.
     public WorkflowExpression<string> Message
     {
         get => GetProperty(() => new WorkflowExpression<string>());
@@ -418,11 +416,13 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 ## CREDITS
 
 ### jsPlumb
+
 <https://github.com/jsplumb/jsplumb>
 Copyright (c) 2010 - 2014 jsPlumb, http://jsplumbtoolkit.com/
 License: dual-licensed under both MIT and GPLv
 
 ### NCrontab
+
 <https://github.com/atifaziz/NCrontab>
 Copyright (C) Atif Aziz
 License: Apache License 2.0

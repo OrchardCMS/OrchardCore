@@ -9,7 +9,8 @@ In this guide you will setup Orchard Core as a Content Management System from a 
 
 ## Creating the projects
 
-There are different ways to create sites and modules for Orchard Core. You can learn more about them [here](../../getting-started/templates/README.md). In this guide we will use our "Code Generation Templates".
+There are different ways to create sites and modules for Orchard Core. You can learn more about them [here](../../getting-started/templates/README.md).  
+In this guide we will use our "Code Generation Templates".
 
 You can install the latest released templates using this command:
 
@@ -22,7 +23,7 @@ Create an empty folder that will contain your site. Open a terminal, navigate to
 
 ```dotnet new occms -n MySite```
 
-This creates a new Ochard Core CMS project in a folder named `MySite`.
+This creates a new Orchard Core CMS project in a folder named `MySite`.
 
 ## Setting up the site
 

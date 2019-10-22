@@ -21,6 +21,7 @@ Enabling the `OrchardCore.Email` module will allow the user to set the following
 | `Password` | The password for the sender. |
 
 ## Configuration
+
 `OrchardCore.Email` can be configured through `appsettings.json` as the following:
 
 ```json

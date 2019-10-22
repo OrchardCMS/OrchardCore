@@ -86,7 +86,7 @@ At that point it already looks like something that could be shipped, and all the
 ### Loading the portfolio from the database
 
 When the url `/portfolio` is requested, a custom action is called to render the content item that is associated with this URL.
-The URL got associated with the portfolio thanks to the __Aurotoute__ part that provides this mechanism.
+The URL got associated with the portfolio thanks to the __Autoroute__ part that provides this mechanism.
 The autoroute registers a custom URL and stores the associated content item id.
 At this point the action will issue a database request to load the portfolio in its entirety, including the projects, as this is how it was modeled with the __Bag__ part.
 
@@ -268,7 +268,7 @@ This lets us customize the __Content__ shape template for __Project__.
         {% shape_remove_item Model.Content "MarkdownPart" %}
 
         {{ Model.Content | shape_render }}
-    
+
     <footer>
         @await DisplayAsync(Model.Footer)
     </footer>

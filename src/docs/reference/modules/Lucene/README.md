@@ -4,7 +4,7 @@ The Lucene module allows to manage Lucene indices.
 
 ## Recipe step
 
-Lucene indices can be created during recipe execution using the `lucene-index` step.
+Lucene indices can be created during recipe execution using the `lucene-index` step.  
 Here is a sample step:
 
 ```json
@@ -58,11 +58,10 @@ Verbs: `POST` and `GET`
 ## Lucene Worker (`OrchardCore.Lucene.Worker`)
 
 This feature creates a background task that will keep the local file system index synchronized with
-other instances that could have their own local index. It is recommended to use it only if you are 
-running the same tenant on multiple instances (farm) and are using a Lucene file system index.
+other instances that could have their own local index.  
+It is recommended to use it only if you are running the same tenant on multiple instances (farm) and are using a Lucene file system index.
 
-If you are running on Azure App Services or if you are using Elasticsearch, then you don't need this 
-feature.
+If you are running on Azure App Services or if you are using Elasticsearch, then you don't need this feature.
 
 ## CREDITS
 

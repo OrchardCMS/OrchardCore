@@ -27,7 +27,7 @@ For instance, for a content type with a `ListPart` and a `TitlePart` (e.g.: `Blo
 
 ### Using fields in patterns
 
-Fiels can also be used as part of the pattern. The following example uses a __Text field__ named `Color`, on a `Product` content type. The text is _slugified_ such that
+Fields can also be used as part of the pattern. The following example uses a __Text field__ named `Color`, on a `Product` content type. The text is _slugified_ such that
 it is compatible with a URL.
 
 ```liquid
@@ -51,4 +51,3 @@ or
 ```liquid
 {% assign my_content = Content.Slug["my-blog/my-blog-post"] %}
 ```
-

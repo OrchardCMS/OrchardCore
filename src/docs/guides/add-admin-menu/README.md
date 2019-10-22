@@ -100,12 +100,12 @@ Create a folder `.\MyModule\Views\DemoNav`, and add to it these two files:
 <p>View Two</p>
 ```
 
-## Adding the menu items ##
+## Adding the menu items
 
 Now you just need to add a class that implements `INavigationProvider` interface.
 By convention, we call these classes `AdminMenu.cs` and put it in the root of our module's folder.
 
-#### AdminMenu.cs
+### AdminMenu.cs
 
 ```csharp
 using System;
@@ -121,7 +121,7 @@ namespace MyModule
         {
             T = localizer;
         }
-        
+
         public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)

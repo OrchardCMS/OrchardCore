@@ -4,8 +4,8 @@
 
 ### `SelectContentTypes`
 
-Renders an editor to select a list of content types. 
-It can optionally filter content types of a specific stereotype.
+Renders an editor to select a list of content types.  
+It can optionally filter content types of a specific stereotype.  
 The editor returns the selection as a `string[]` on the model.
 
 #### Parameters
@@ -85,7 +85,6 @@ _contentDefinitionManager.AlterTypeDefinition("Product", type => type
 ```
 
 Each part can also be configured in the context of a type. For instance the `AutoroutePart` requires a __Liquid__ template as its pattern to generate custom routes. It's defined in a custom setting for this part.
-
 
 ```csharp
 _contentDefinitionManager.AlterTypeDefinition("Product", type => type

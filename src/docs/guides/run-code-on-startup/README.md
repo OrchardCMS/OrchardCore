@@ -4,7 +4,7 @@ The `Startup` classes are used to initialize the services and piece of middlewar
 They are called when a tenant is initialized.
 
 The interface `OrchardCore.Modules.IModularTenantEvents` provides a way to define user code that will 
-be executed when the tenant is first hit (tentant activation).
+be executed when the tenant is first hit (tenant activation).
 
 All tenants are lazy-loaded, meaning that when the app starts the event handlers are 
 not invoked. They are instead called when the first request is processed.

@@ -172,9 +172,9 @@ Now, if we would want to get the Favorite Movies of the Person items we query, t
 {
   person {
     name
-    favoriteMovies { 
+    favoriteMovies {
       contentItems {
-      	name
+        name
         releaseYear
       }
     }
@@ -206,10 +206,9 @@ The following query gives us the results we want:
 }
 ```
 
-
 ## More Info
 
 For more information on GraphQL you can visit the following links:
 
-- https://graphql.org/learn/
-- https://graphql-dotnet.github.io/docs/getting-started/introduction
+- <https://graphql.org/learn/>
+- <https://graphql-dotnet.github.io/docs/getting-started/introduction>

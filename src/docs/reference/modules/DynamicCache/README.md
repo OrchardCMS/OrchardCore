@@ -2,26 +2,27 @@
 
 ## Purpose
 
-Dynamic Cache allows you to cache sections of markup. 
+Dynamic Cache allows you to cache sections of markup.  
 Each cached section of markup can contain other (child) cached sections of markup.
 
 Cached sections can all have their own cache policies, which allows for finer configuration options than a page level cache would have.
 
-Cached values are stored using the `IDynamicCache` service.
+Cached values are stored using the `IDynamicCache` service.  
 Its default implementation is based on `IDistributedCache` which is itself based on `IMemoryCache`.
 
-### Example:
+### Example
 
 Layout (not cached)
 
 - Section A
-    - Section A1 (varies by role)
-    - Section A2
+  - Section A1 (varies by role)
+  - Section A2
 - Section B
-    - Section B1 (varies by query string)
-    - Section B2
+  - Section B1 (varies by query string)
+  - Section B2
 
 ## Rendering cached sections
+
 When this page is rendered for the first time, all shapes will be evaluated. Any blocks of markup that have been identified as cachable will be stored in the `IDynamicCache` service.
 
 On subsequent requests, if a cacheable section has already been cached (and the cache entry is still valid) then it won't be processed (`Processing` event in
@@ -36,16 +37,17 @@ If a cached section is invalidated, the markup for the section will be regenerat
 For instance, if `Section B2` is invalidated, `Section B` will also be invalidated. When the Layout is rendered, the `Section B` code will run 
 again, as will `Section B2`, but the cached content of `Section B1` will be reused.
 
-Cached sections can define dependencies, which allows the cache to know when the cached value should be invalidated. 
+Cached sections can define dependencies, which allows the cache to know when the cached value should be invalidated.
 
 For example, if a cache section includes the body of a content item, you may want to automatically invalidate this cache section whenever that content item changes.
 You can do this by adding the dependencies `contentitemid:{ContentItemId}` to the cache section. 
 
-Cached sections can also be configured with a sliding expiration window, an absolute expiration window, or both. 
-If no expiration window is provided, a default sliding window of one minute will be used.
-If both types of expiration windows are supplied, the sliding policy will be used, up to the maximum absolute time allowed by the absolute expiration window. 
+Cached sections can also be configured with a sliding expiration window, an absolute expiration window, or both.  
+If no expiration window is provided, a default sliding window of one minute will be used.  
+If both types of expiration windows are supplied, the sliding policy will be used, up to the maximum absolute time allowed by the absolute expiration window.
 
 ### Well-known Cache dependencies
+
 Here is a list of common cache dependency values that can be used to invalidate cache entries.
 
 | Dependency | Description |
@@ -56,7 +58,8 @@ Here is a list of common cache dependency values that can be used to invalidate 
 You can create your own dependencies by calling `RemoveTagAsync()` on `ITagCache` in response to events.
 
 ## Varying cached sections (Contexts)
-You may have a cached section that needs to be varied depending on the context of the request. 
+
+You may have a cached section that needs to be varied depending on the context of the request.  
 An example of this would be a header section that is included on every page on the site, but contains different markup for each user (e.g. a log in form, or the currently logged in user's username etc...').
 
 You can do this by adding 'vary by' values (called contexts) to the cache policy of a cached section.
@@ -84,7 +87,7 @@ You can create your own Contexts by implementing `ICacheContextProvider`.
 
 ### Fallback Contexts
 
-Sometimes you may want to vary by a known value that is not an available context. 
+Sometimes you may want to vary by a known value that is not an available context.
 
 For example: You may wish to cache all your blog posts so that you can quickly display lists of your posts throughout your site. If the cache ID for the cache block was `blog-post`, you can use a known value as a context to vary the cache item for each blog post. In this case, you could use the Content Item ID as a context:
 
@@ -95,6 +98,7 @@ For example: You may wish to cache all your blog posts so that you can quickly d
 ```
 
 ## Usage
+
 Cached sections can be configured to encompass a shape, or they can be explicitly added to markup with the `cache` liquid block, or the `cache` razor tag helper:
 
 ### Caching a shape
@@ -140,15 +144,16 @@ For example, to cache the menu shape in a liquid template, you would use this ma
 
 `{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}`
 
-To cache a contentitem shape in a liquid template, you could use this markup:
+To cache a content item shape in a liquid template, you could use this markup:
 
 `{% contentitem alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}`
 
-
 ### Liquid cache block
+
 The liquid `cache` block can be used to cache sections of markup. `cache` blocks can be nested.
 
 #### Arguments
+
 | Liquid Attribute | Description | Required |
 | --------- | ----------- | ----------- |
 | `id` | The identifier of the cached shape. | Yes (this is the default first argument --- no need to explicitly specify the name of this argument.)  |
@@ -160,6 +165,7 @@ The liquid `cache` block can be used to cache sections of markup. `cache` blocks
 #### Examples
 
 Simple block:
+
 ```liquid
 {% cache "my-cache-block" %}
     ...
@@ -167,6 +173,7 @@ Simple block:
 ```
 
 Nested blocks:
+
 ```liquid
 {% cache "a" %}
     A {{ "now" | date: "%T" }} (No Duration) <br />
@@ -184,7 +191,7 @@ Nested blocks:
 
 ### Altering a cache scope
 
-You may not yet know all the child dependencies, or even how long the cache block should be cached for when you enter a cache block. 
+You may not yet know all the child dependencies, or even how long the cache block should be cached for when you enter a cache block.  
 An example might be a cache block around a list of content items from a query --- because you do not know which content items will be displayed by the query, you cannot define the correct dependencies when you enter the cache block.
 
 There are four tags that allow you to alter the current cache scope. It's safe to use these tags even if you don't necessarily know if you're inside a cache block:
@@ -215,4 +222,5 @@ Displaying content items from a query:
 Each item that is displayed by the query will now add its own cache dependency to the `recent-blog-posts` cache block.
 
 ### Razor cache tag
+
 This has not yet been implemented. If you feel up to it, and you'd like to help out, then please raise a pull request.

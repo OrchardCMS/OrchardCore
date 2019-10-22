@@ -81,4 +81,5 @@ Restart the application and open the home page, which should display the same re
 You just created an ASP.NET Core application with a module containing a Controller and a View.
 
 ## Tutorial
+
 <https://www.youtube.com/watch?v=LoPlECp31Oo>

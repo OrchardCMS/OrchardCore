@@ -14,21 +14,22 @@ The ContentCulturePicker feature helps you manage cultures for the frontend.
 
 Enabling this module results in
 
--   A `ContentRequestCultureProvider` being added as the first method used to determine the current thread culture.
+- A `ContentRequestCultureProvider` being added as the first method used to determine the current thread culture.
     This Provider will set the thread culture based on the ContentItem that matches the current url.
--   2 shapes (described below) are available to the frontend theme.
+- 2 shapes (described below) are available to the frontend theme.
 
 The ContentculturePicker selects the url to redirect using the following rules
 
--   If the `ContentItem` has a related ContentItem for the selected culture, it redirects to that Item.
--   OR If a HomePage is specified, attempts to find a Localization of the Homepage `ContentItem` for the current culture.
--   OR redirects to the current page.
+- If the `ContentItem` has a related ContentItem for the selected culture, it redirects to that Item.
+- OR If a HomePage is specified, attempts to find a Localization of the Homepage `ContentItem` for the current culture.
+- OR redirects to the current page.
 
 ### Localization Cookie
 
 By default, the ContentCulturePicker sets a cookie for the `CookieRequestCultureProvider`. This can be disabled in the  `Configuration/Settings/ContentCulturePicker` settings page.
 
 #### Recipe Step
+
 The cookie can be set during recipes using the settings step. Here is a sample step:
 
 ```json

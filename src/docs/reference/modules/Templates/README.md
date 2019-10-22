@@ -4,18 +4,18 @@ The templates module allows editors to create custom Liquid templates.
 
 ## Available templates
 
-Templates can be defined using the web editor, or in a theme. Templates are distinguished by their name. 
+Templates can be defined using the web editor, or in a theme. Templates are distinguished by their name.  
 Orchard Core doesn't render HTML directly, but instead will usually render something called a **Shape**, which is an object that represents
-the thing to render and has all the necessary data and metatada to render HTML.
+the thing to render and has all the necessary data and metadata to render HTML.
 
-When rendering a Shape, Orchard Core will look for specific templates, passing the Shape to this template.
-Orchard Core can match with many templates for the same Shape.
-These potential templates are called **Alternates**.
-A Shape contains a list of acceptable template names (the alternates) and will look into providers to get the most appropriate one.
+When rendering a Shape, Orchard Core will look for specific templates, passing the Shape to this template.  
+Orchard Core can match with many templates for the same Shape.  
+These potential templates are called **Alternates**.  
+A Shape contains a list of acceptable template names (the alternates) and will look into providers to get the most appropriate one.  
 For instance, when rendering a Content Item of type Article, the corresponding Shape that is rendered will be configured
 to look for a template that handles all articles, but also one that handles an article when used in a list, and so on.
 
-This document provides a list of pre-defined templates that can be used when rendering shapes.
+This document provides a list of pre-defined templates that can be used when rendering shapes.  
 It uses the internal name of a template and also the filename in case it's provided by a Theme.
 
 ## Content templates
@@ -24,14 +24,14 @@ It uses the internal name of a template and also the filename in case it's provi
 
 This template is called when displaying a content item with the `Detail` display type, for instance when accessed from its own URL.
 
-#### Examples
+#### Content Examples
 
 | Template | Filename|
 | --------- | ------------ |
 | `Content__BlogPost` | `Content-BlogPost.cshtml` |
 | `Content__Article` | `Content-Article.cshtml` |
 
-#### Available properties
+#### Content Available properties
 
 | Property | Description |
 | --------- | ------------ |
@@ -44,7 +44,7 @@ This template is called when displaying a content item with the `Detail` display
 This template is called when displaying a content item with a specific display type.
 For instance, when a content item is displayed in a list, the `Summary` display type is commonly used.
 
-#### Examples
+#### Content with Display Type Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -57,14 +57,14 @@ For instance, when a content item is displayed in a list, the `Summary` display 
 
 This template is called when a widget is rendered on a page.
 
-#### Examples
+#### Widget Examples
 
 | Template | Filename|
 | --------- | ------------ |
 | `Widget__Paragraph` | `Widget-Paragraph.cshtml` |
 | `Widget__Blockquote` | `Widget-Blockquote.cshtml` |
 
-#### Available properties
+#### Widget Available properties
 
 | Property | Description |
 | --------- | ------------ |
@@ -93,7 +93,7 @@ part. Please refer to the documentation for each content part.
 
 This template is called when a Content Part is rendered.
 
-#### Examples
+#### Shape Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -104,7 +104,7 @@ This template is called when a Content Part is rendered.
 
 This template is called when a Content Part shape type is rendered in a specific display type.
 
-#### Examples
+#### Shape with Display Type Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -114,7 +114,7 @@ This template is called when a Content Part shape type is rendered in a specific
 
 This template is called when a content part type is rendered for a given content type, with or without a given display type.
 
-#### Examples
+#### Content with Part Name Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -127,7 +127,7 @@ This template is called when a content part type is rendered for a given content
 
 This template is called when a content part name is rendered for a given content type, with or without a given display type.
 
-#### Examples
+#### Content with Part Type Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -138,7 +138,7 @@ This template is called when a content part name is rendered for a given content
 
 This template is called when a shape type is rendered in a given content part type for a given content type, with or without a given display type.
 
-#### Examples
+#### Content with Part Name and Shape Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -149,7 +149,7 @@ This template is called when a shape type is rendered in a given content part ty
 
 This template is called when a shape type is rendered in a given content part name for a given content type, with or without a given display type.
 
-#### Examples
+#### Content with Part Name and Custom Shape Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -168,16 +168,16 @@ to render a content field using a shape with the same type name.
 For instance the `TextField` content field will return a single shape of type `TextField`,
 but other fields might return many shapes.
 
-### Properties
+### Shape Properties
 
 The properties available on a shape rendered for a content field are unique for each content
 field. Please refer to each content field documentation.
 
-### `[ShapeType]_[DisplayType]`
+### `[ShapeType]_[DisplayType]` Field
 
 This template is called when a content field type is rendered in a given display type.
 
-#### Examples
+#### Field And Display Type Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -187,7 +187,7 @@ This template is called when a content field type is rendered in a given display
 
 This template is called when a content field name is rendered for a given content part type when the shape type matches the field type, with or without a given display type.
 
-#### Examples
+#### Part Type and Field Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -198,7 +198,7 @@ This template is called when a content field name is rendered for a given conten
 
 This template is called when a content field name is rendered for a given content type and content part name when the shape type matches the field type, with or without a given display type.
 
-#### Examples
+#### Content Type, Part Name and Field Name Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -211,7 +211,7 @@ This template is called when a content field name is rendered for a given conten
 
 This template is called when a content field type is rendered for a given content type when the shape type matches the field type, with or without a given display type.
 
-#### Examples
+#### Content Type and Field Type Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -222,7 +222,7 @@ This template is called when a content field type is rendered for a given conten
 
 This template is called when a content field shape type is rendered for a given content field type, with or without a given display type.
 
-#### Examples
+#### Field Type and Shape Type Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -233,7 +233,7 @@ This template is called when a content field shape type is rendered for a given 
 
 This template is called when a content field shape type is rendered for a given content field name in a given content part type, with or without a given display type.
 
-#### Examples
+#### Part Type, Field Name and Shape Type Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -244,7 +244,7 @@ This template is called when a content field shape type is rendered for a given 
 
 This template is called when a content field shape type is rendered for a given content field name in a given content part name in a given content type, with or without a given display type.
 
-#### Examples
+#### Content Type, Part Name, Field Name and Shape Type Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -257,7 +257,7 @@ This template is called when a content field shape type is rendered for a given 
 
 This template is called when a content field shape type is rendered for a given content field type in a given content type, with or without a given display type.
 
-#### Examples
+#### Content Type, Field Type and Shape Type Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -273,22 +273,24 @@ Differentiators can be used to configure the placement information (c.f. [Placem
 
 ### Content Part differentiator
 
-If the shape type is the same as the content part name, the shape will be named `[PartName]`, e.g. `HtmlBodyPart`, `Services`.
+If the shape type is the same as the content part name, the shape will be named `[PartName]`, e.g. `HtmlBodyPart`, `Services`.  
 If the shape type is different than the content part name, it will be `[PartName]-[ShapeType]`, e.g. `ListPart-ListPartFeed`
 
 ### Content Field differentiator
 
-If the shape type is the same as the content field name, the shape will be named `[PartName]-[FieldName]`, e.g. `HtmlBodyPart-Description`, `Services-Image`.
+If the shape type is the same as the content field name, the shape will be named `[PartName]-[FieldName]`, e.g. `HtmlBodyPart-Description`, `Services-Image`.  
 If the shape type is different than the content field name, it will be `[PartName]-[FieldName]-[ShapeType]`, e.g. `HtmlBodyPart-Description-CustomFieldSummary`, `Services-Image-ImageFieldSummary`
 
 #### Razor
 
 Access a specific shape by name:
+
 ```csharp
 Model.Content.HtmlBodyPart
 ```
 
 Removing a specific shape by name:
+
 ```csharp
 Model.Content.Remove("HtmlBodyPart");
 ```
@@ -296,17 +298,19 @@ Model.Content.Remove("HtmlBodyPart");
 #### Liquid
 
 Display a shape after removing a specific shape by name:
+
 ```liquid
 {% shape_remove_item Model.Content "HtmlBodyPart" %}
 {{ Model.Content | shape_render }}
 ```
 
 Display a specific shape by name:
+
 ```liquid
 {{ Model.Content.HtmlBodyPart | shape_render }}
 ```
 
-To access or render the shapes for a field that is added to the content type directly, the `[PartName]` is equal to the content type.
+To access or render the shapes for a field that is added to the content type directly, the `[PartName]` is equal to the content type.  
 For instance, given a content type `Article` with a Text field named `Description`, the shapes for this field would be named `"Article-Description"`. To render these shapes in Liquid:
 
 ```liquid
@@ -323,10 +327,10 @@ Instead of rendering the shape directly, you can also access its properties. In 
 
 ## Overriding Views
 
-Some modules (namely the OrchardCore.Users module) allow you to override some of its views in your Theme. Since these views are not 
-shapes, the way to override them is a little different than mentionned above.
+Some modules (namely the OrchardCore.Users module) allow you to override some of its views in your Theme. Since these views are not shapes, the way to override them is a little different than mentioned above.
 
 ### View Resolution paths
+
 The `ThemeViewLocationExpanderProvider.cs` file defines the search paths used by the RazorViewEngine.
 
 ```
@@ -334,14 +338,13 @@ Views/{2}/{1}/{0}.cshtml
 Views/{2}/Shared/{0}.cshtml
 Views/Shared/{0}.cshtml
 ```
+
 - 2 = area / module
 - 1 = controller
 - 0 = action
 
 ### Overriding Login view
 
-For example, if you want to override the `OrchardCore.Users\Views\Account\Login.cshtml` view you would need to create a file in your theme and place 
-it under `YourTheme\Views\OrchardCore.Users\Account\Login.cshtml`. 
+For example, if you want to override the `OrchardCore.Users\Views\Account\Login.cshtml` view you would need to create a file in your theme and place it under `YourTheme\Views\OrchardCore.Users\Account\Login.cshtml`.  
 For this particular file, you would also need to select the `Use site theme for login page`
 option under the `Configuration->Login` page in the admin.
-

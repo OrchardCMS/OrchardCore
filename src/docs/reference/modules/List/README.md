@@ -33,7 +33,7 @@ The following properties are available on the `ListPart` class.
 
 ### Template
 
-The following example is used to render the items of a `ListPart` and customize the pager.
+The following example is used to render the items of a `ListPart` and customize the pager.  
 For instance it can be set in a file named `Blog-ListPart.liquid` to override the `Blog` content type only.
 
 ```liquid

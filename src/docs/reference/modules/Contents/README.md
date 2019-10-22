@@ -4,11 +4,11 @@ This module provides Content Management services.
 
 ## Liquid
 
-You can access content items from liquid views and templates by using the `Content` property. 
-By default, you can retrieve content by alias or content item ID.
+You can access content items from liquid views and templates by using the `Content` property.  
+By default, you can retrieve content by alias or content item ID.  
 Other modules (such as `Alias` and `Autoroute`) allow you to retrieve content by other identifiers.
 
-#### Loading from an alias
+### Loading from an alias
 
 ```liquid
 {% assign my_content = Content["alias:main-menu"] %}
@@ -22,7 +22,7 @@ Aliases can be in various forms, like when using Autoroute, with the `slug` pref
 
 > Aliases are provided by implementing `IContentAliasProvider`.
 
-#### Loading the latest version of a content item
+### Loading the latest version of a content item
 
 You can use the `Latest` property to retrieve the latest version of a content item (whether that's the published version or the latest draft version) by alias:
 
@@ -30,7 +30,7 @@ You can use the `Latest` property to retrieve the latest version of a content it
 {% assign my_content = Content.Latest["alias:main-menu"] %}
 ```
 
-#### Loading from a content item id
+### Loading from a content item id
 
 ```liquid
 {% assign my_content = Content.ContentItemId["417qsjrgv97e74wvp149h4da53"] %}
@@ -42,13 +42,13 @@ When a list of content item ids is available, the `content_item_id` filter shoul
 {% assign posts = postIds | content_item_id %}
 ```
 
-#### Loading from a content item version id
+### Loading from a content item version id
 
 ```liquid
 {% assign my_content = Content.ContentItemVersionId["49gq8g6zndfc736x0az3zsp4w3"] %}
 ```
 
-#### Rendering a content item from an alias
+### Rendering a content item from an alias
 
 ```liquid
 {% contentitem alias:"alias:test" display_type="Detail" %}
@@ -65,7 +65,6 @@ The following methods are available from the Razor helper.
 | `GetContentItemByIdAsync` | `string contentItemId, bool latest = false` | Loads a content item from its id, seeking the latest version or not. |
 | `GetContentItemsByIdAsync` | `IEnumerable<string> contentItemIds, bool latest = false` | Loads a list of content items by ids, seeking the latest version or not. |
 | `GetContentItemByVersionIdAsync` | `string contentItemVersionId` | Loads a content item from its version id. |
-
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
 
@@ -107,8 +106,8 @@ query {
 
 These fields are available at the content item level:
 
-| Property | 
-| -------- | 
+| Property |
+| -------- |
 | `contentItemId` |
 | `contentItemVersionId` |
 | `contentType` |
@@ -323,7 +322,7 @@ query {
 Notice how we nest the `AND` combinator inside the `OR` combinator.
 
 #### Pagination
- 
+
 When querying all content items of a specific content type, you can supply arguments that allow you to paginate the query response.
 
 ##### Limiting the number of results

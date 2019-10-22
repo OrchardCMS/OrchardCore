@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Data Protection (Azure Storage) enables data protection key rings that are segregated by tenant and stored in an Azure Blob Storage container. 
+Data Protection (Azure Storage) enables data protection key rings that are segregated by tenant and stored in an Azure Blob Storage container.  
 This is useful for load balanced environments where each active node will need to share the same key ring.
 
 ## Configuration
