@@ -45,7 +45,7 @@ namespace OrchardCore.DisplayManagement.ModelBinding
 
         public bool TryValidateModel(object model, string prefix)
         {
-            return TryValidateModel(model, Prefix(prefix));
+            return _updateModel.TryValidateModel(model, Prefix(prefix));
         }
     }
 }
