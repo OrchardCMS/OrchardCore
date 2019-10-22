@@ -38,8 +38,7 @@
 
             if(claims.Any())
             {
-                
-                message = T["Deleting this role will also reassign the associated users. Continue?"];
+                message = T["The role is associated to existing user(s). Are you sure you want to remove it?"];
             }
 
             <li class="list-group-item" data-role="@Model.RoleEntries[i].Name">
