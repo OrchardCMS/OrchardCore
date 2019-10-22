@@ -27,7 +27,7 @@ namespace OrchardCore.AdminMenu
             }
 
             // Configuration and settings menus for the AdminMenu module
-            builder.Add(S["Display"], display => display
+            builder.Add(S["Configuration"], configuration => configuration
                     .Add(S["Admin Menus"], "1.5", admt => admt
                         .Permission(Permissions.ManageAdminMenu)
                         .Action("List", "Menu", new { area = "OrchardCore.AdminMenu" })
