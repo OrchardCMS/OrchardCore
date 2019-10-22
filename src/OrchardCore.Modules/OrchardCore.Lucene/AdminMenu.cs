@@ -29,11 +29,10 @@ namespace OrchardCore.Lucene
                             .Action("Index", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav())
-                        .Add(T["Lucene Queries"], "8", queries => queries
+                        .Add(T["Run Lucene Query"], "8", queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
-                            .LocalNav())))
-                .Add(T["Search"], search => search
+                            .LocalNav()))
                     .Add(T["Settings"], settings => settings
                         .Add(T["Search"], T["Search"], entry => entry
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "search" })
