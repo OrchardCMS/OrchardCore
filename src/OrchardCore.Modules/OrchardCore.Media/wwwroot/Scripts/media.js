@@ -713,25 +713,29 @@ Vue.component('folder', {
         return;
       }
 
-      if (!confirm($('#moveMediaMessage').val())) {
-        return;
-      }
-
-      $.ajax({
-        url: $('#moveMediaListUrl').val(),
-        method: 'POST',
-        data: {
-          __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-          mediaNames: mediaNames,
-          sourceFolder: sourceFolder,
-          targetFolder: targetFolder
-        },
-        success: function success() {
-          bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
-        },
-        error: function error(_error2) {
-          console.error(_error2.responseText);
-          bus.$emit('mediaListMoved', _error2.responseText);
+      confirmDialog({
+        title: $("#moveMedia").data("title"),
+        message: $("#moveMedia").data("title"),
+        callback: function callback(resp) {
+          if (resp) {
+            $.ajax({
+              url: $('#moveMediaListUrl').val(),
+              method: 'POST',
+              data: {
+                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                mediaNames: mediaNames,
+                sourceFolder: sourceFolder,
+                targetFolder: targetFolder
+              },
+              success: function success() {
+                bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
+              },
+              error: function error(_error2) {
+                console.error(_error2.responseText);
+                bus.$emit('mediaListMoved', _error2.responseText);
+              }
+            });
+          }
         }
       });
     }
