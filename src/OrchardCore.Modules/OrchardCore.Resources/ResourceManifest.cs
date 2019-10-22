@@ -97,7 +97,7 @@ namespace OrchardCore.Resources
             manifest
                 .DefineStyle("bootstrap-select")
                 .SetUrl("~/OrchardCore.Resources/Styles/bootstrap-select.min.css", "~/OrchardCore.Resources/Styles/bootstrap-select.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/css/bootstrap-select.min.css", "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.11/css/bootstrap-select.css")
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/css/bootstrap-select.min.css", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/css/bootstrap-select.css")
                 .SetCdnIntegrity("sha384-BJPGVhka8+B49CO2MFRKLZ0fD0v142Ssd+px+a64YvT+EoCupeZSxIxPvxafQ4cJ", "sha384-JSuPufd1/O23uRXbGqmXAyb+8CKGRtjoK394uIUl1BbPpnBXoM1GYMY7wYcqeRSR")
                 .SetVersion("1.13.12");
 
