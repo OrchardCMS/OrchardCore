@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -35,12 +34,11 @@ namespace OrchardCore.Contents.Controllers
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
-        private readonly YesSql.ISession _session;
+        private readonly ISession _session;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AdminController(
             IContentManager contentManager,
@@ -48,13 +46,12 @@ namespace OrchardCore.Contents.Controllers
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             INotifier notifier,
-            YesSql.ISession session,
+            ISession session,
             IShapeFactory shapeFactory,
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> localizer,
             IAuthorizationService authorizationService,
-            IEnumerable<IContentAdminFilter> contentAdminFilters,
-            IHttpContextAccessor httpContextAccessor
+            IEnumerable<IContentAdminFilter> contentAdminFilters
             )
         {
             _contentAdminFilters = contentAdminFilters;
@@ -65,7 +62,6 @@ namespace OrchardCore.Contents.Controllers
             _siteService = siteService;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
-            _httpContextAccessor = httpContextAccessor;
 
             T = localizer;
             New = shapeFactory;
@@ -108,8 +104,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (model.Options.ContentsStatus == ContentsStatus.Owner)
             {
-                var httpContext = _httpContextAccessor.HttpContext;
-                query = query.With<ContentItemIndex>(x => x.Owner == httpContext.User.Identity.Name);
+                query = query.With<ContentItemIndex>(x => x.Owner == HttpContext.User.Identity.Name);
             }
 
             if (!string.IsNullOrEmpty(contentTypeId))
