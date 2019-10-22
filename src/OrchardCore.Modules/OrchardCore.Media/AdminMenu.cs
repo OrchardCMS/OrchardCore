@@ -22,9 +22,9 @@ namespace OrchardCore.Media
             }
 
             builder
-                .Add(S["Media"], "3", media => media
+                .Add(S["Content"], content => content
                     .AddClass("media").Id("media")
-                    .Add(S["Media library"], "1", layers => layers
+                    .Add(S["Media Library"], "1.1", layers => layers
                         .Permission(Permissions.ManageOwnMedia)
                         .Action("Index", "Admin", new { area = "OrchardCore.Media" })
                         .LocalNav()
