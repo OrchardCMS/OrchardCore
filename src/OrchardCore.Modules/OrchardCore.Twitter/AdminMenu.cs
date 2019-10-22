@@ -28,9 +28,9 @@ namespace OrchardCore.Twitter
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder.Add(T["Security"], security => security
-                        .Add(T["Twitter"], "15", settings => settings
+                        .Add(T["Authentication"], authentication => authentication
+                        .Add(T["Twitter"], "18", settings => settings
                         .AddClass("twitter").Id("twitter")
-                        .Add(T["Twitter Integration"], "10", client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Twitter })
                             .Permission(Permissions.ManageTwitter)
                             .LocalNav())
@@ -39,7 +39,6 @@ namespace OrchardCore.Twitter
             return Task.CompletedTask;
         }
     }
-
 
     [Feature(TwitterConstants.Features.Signin)]
     public class AdminMenuSignin: INavigationProvider

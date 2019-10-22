@@ -50,8 +50,8 @@ namespace OrchardCore.Media
                 return Task.CompletedTask;
             }
 
-            builder.Add(S["Media"], media => media
-                .Add(S["Asset Cache"], "1", contentItems => contentItems
+            builder.Add(S["Content"], content => content
+                .Add(S["Media Cache"], "1.2", contentItems => contentItems
                     .Action("Index", "MediaCache", new { area = "OrchardCore.Media" })
                     .Permission(MediaCachePermissions.ManageAssetCache)
                     .LocalNav())
