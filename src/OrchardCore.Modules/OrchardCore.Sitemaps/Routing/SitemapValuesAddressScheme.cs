@@ -13,9 +13,9 @@ namespace OrchardCore.Sitemaps.Routing
     internal sealed class SitemapValuesAddressScheme : IShellRouteValuesAddressScheme
     {
         private readonly SitemapEntries _entries;
-        private readonly SitemapOptions _options;
+        private readonly SitemapsOptions _options;
 
-        public SitemapValuesAddressScheme(SitemapEntries entries, IOptions<SitemapOptions> options)
+        public SitemapValuesAddressScheme(SitemapEntries entries, IOptions<SitemapsOptions> options)
         {
             _entries = entries;
             _options = options.Value;

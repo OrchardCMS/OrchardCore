@@ -12,11 +12,11 @@ namespace OrchardCore.Contents.Sitemaps
 {
     public class ContentTypesSitemapDriver : DisplayDriver<Sitemap, ContentTypesSitemap>
     {
-        private readonly IEnumerable<IRouteableContentTypeDefinitionProvider> _routeableContentTypeDefinitionProviders;
+        private readonly IEnumerable<IRouteableContentTypeProvider> _routeableContentTypeDefinitionProviders;
         private readonly ISitemapManager _sitemapManager;
 
         public ContentTypesSitemapDriver(
-            IEnumerable<IRouteableContentTypeDefinitionProvider> routeableContentTypeDefinitionProviders,
+            IEnumerable<IRouteableContentTypeProvider> routeableContentTypeDefinitionProviders,
             ISitemapManager sitemapManager
             )
         {

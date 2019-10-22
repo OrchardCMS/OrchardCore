@@ -1,8 +1,7 @@
 @model ShapeViewModel<ContentTypesSitemap>
-@inject IEnumerable<OrchardCore.Sitemaps.Services.IRouteableContentTypeDefinitionProvider> RoutableContentDefinitionProviders
+@inject OrchardCore.Sitemaps.Services.IRouteableContentTypeCoordinator RoutableContentTypeCoordinator
 @{
-    var allRoutableContentTypes = RoutableContentDefinitionProviders
-        .SelectMany(rctd => rctd.ListRoutableTypeDefinitions());
+    var allRoutableContentTypes = RoutableContentTypeCoordinator.ListRoutableTypeDefinitions();
 
     var selectedContentTypes = Model.Value.ContentTypes ?? new ContentTypeSitemapEntry[] { };
 

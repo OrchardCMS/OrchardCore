@@ -90,7 +90,7 @@ namespace OrchardCore.Autoroute
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IRouteableContentTypeDefinitionProvider, AutorouteContentTypeDefinitionProvider>();
+            services.AddScoped<IRouteableContentTypeProvider, AutorouteContentTypeProvider>();
         }
     }
 }

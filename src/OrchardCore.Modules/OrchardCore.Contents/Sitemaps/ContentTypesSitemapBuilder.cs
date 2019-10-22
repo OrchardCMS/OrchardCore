@@ -4,10 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
@@ -22,23 +20,26 @@ namespace OrchardCore.Contents.Sitemaps
         private static readonly XNamespace Namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
         private readonly ISession _session;
-        private readonly IEnumerable<IRouteableContentTypeDefinitionProvider> _routeableContentTypeDefinitionProviders;
-        private readonly IContentManager _contentManager;
+        private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
         private readonly ISitemapContentItemMetadataProvider _sitemapContentItemMetadataProvider;
+        private readonly IEnumerable<ISitemapContentItemValidationProvider> _sitemapContentItemValidationProviders;
+        private readonly IEnumerable<ISitemapContentItemExtendedMetadataProvider> _sitemapContentItemExtendedMetadataProviders;
         private readonly ILogger _logger;
 
         public ContentTypesSitemapBuilder(
             ISession session,
-            IEnumerable<IRouteableContentTypeDefinitionProvider> routeableContentTypeDefinitionProviders,
-            IContentManager contentManager,
+            IRouteableContentTypeCoordinator routeableContentTypeCoordinator,
             ISitemapContentItemMetadataProvider sitemapContentItemMetadataProvider,
+            IEnumerable<ISitemapContentItemValidationProvider> sitemapContentItemValidationProviders,
+            IEnumerable<ISitemapContentItemExtendedMetadataProvider> sitemapContentItemExtendedMetadataProviders,
             ILogger<ContentTypesSitemapBuilder> logger
             )
         {
             _session = session;
-            _routeableContentTypeDefinitionProviders = routeableContentTypeDefinitionProviders;
-            _contentManager = contentManager;
+            _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
             _sitemapContentItemMetadataProvider = sitemapContentItemMetadataProvider;
+            _sitemapContentItemValidationProviders = sitemapContentItemValidationProviders;
+            _sitemapContentItemExtendedMetadataProviders = sitemapContentItemExtendedMetadataProviders;
             _logger = logger;
         }
 
@@ -46,13 +47,19 @@ namespace OrchardCore.Contents.Sitemaps
         {
             var contentItems = await GetContentItemsToBuildAsync(sitemap);
 
-            var root = new XElement(Namespace + "urlset");
+            var root = new XElement(Namespace + "urlset",
+                new XAttribute("xmlns", Namespace));
+
+            foreach (var sciemp in _sitemapContentItemExtendedMetadataProviders)
+            {
+                root.Add(sciemp.GetExtendedAttribute);
+            }
 
             foreach (var contentItem in contentItems)
             {
                 var url = new XElement(Namespace + "url");
 
-                if (await BuildUrlsetMetadataAsync(sitemap, context, contentItem, url))
+                if (await BuildUrlsetMetadataAsync(sitemap, context, contentItems, contentItem, url))
                 {
                     root.Add(url);
                 }
@@ -67,8 +74,8 @@ namespace OrchardCore.Contents.Sitemaps
 
             if (sitemap.IndexAll)
             {
-                var typesToIndex = _routeableContentTypeDefinitionProviders
-                    .SelectMany(ctd => ctd.ListRoutableTypeDefinitions())
+                var typesToIndex = _routeableContentTypeCoordinator
+                    .ListRoutableTypeDefinitions()
                     .Select(ctd => ctd.Name);
 
                 var query = _session.Query<ContentItem>()
@@ -79,8 +86,8 @@ namespace OrchardCore.Contents.Sitemaps
             }
             else
             {
-                var typesToIndex = _routeableContentTypeDefinitionProviders
-                    .SelectMany(ctd => ctd.ListRoutableTypeDefinitions())
+                var typesToIndex = _routeableContentTypeCoordinator
+                    .ListRoutableTypeDefinitions()
                     .Where(ctd => sitemap.ContentTypes.Any(s => ctd.Name == s.ContentTypeName))
                     .Select(ctd => ctd.Name);
 
@@ -94,13 +101,18 @@ namespace OrchardCore.Contents.Sitemaps
             return mostRecentModifiedContentItem.ModifiedUtc;
         }
 
-        private async Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemap sitemap,
+        private async Task<bool> BuildUrlsetMetadataAsync(
+            ContentTypesSitemap sitemap,
             SitemapBuilderContext context,
+            IEnumerable<ContentItem> contentItems,
             ContentItem contentItem,
             XElement url)
         {
             if (await BuildUrlAsync(context, contentItem, url))
             {
+                // TODO Build any extra values.
+                // This will need the list to strip down localization sets.
+                await BuildExtendedMetadataAsync(context, contentItems, contentItem, url);
                 BuildLastMod(contentItem, url);
                 BuildChangeFrequencyPriority(sitemap, contentItem, url);
                 return true;
@@ -109,12 +121,19 @@ namespace OrchardCore.Contents.Sitemaps
             return false;
         }
 
+        private async Task BuildExtendedMetadataAsync(SitemapBuilderContext context, IEnumerable<ContentItem> contentItems, ContentItem contentItem, XElement url)
+        {
+            foreach (var sc in _sitemapContentItemExtendedMetadataProviders)
+            {
+                await sc.ApplyExtendedMetadataAsync(context, contentItems, contentItem, url);
+            }
+        }
+
         private async Task<IEnumerable<ContentItem>> GetContentItemsToBuildAsync(ContentTypesSitemap sitemap)
         {
             var contentItems = new List<ContentItem>();
 
-            var routeableContentTypeDefinitions = _routeableContentTypeDefinitionProviders
-                .SelectMany(ctd => ctd.ListRoutableTypeDefinitions());
+            var routeableContentTypeDefinitions = _routeableContentTypeCoordinator.ListRoutableTypeDefinitions();
 
             if (sitemap.IndexAll)
             {
@@ -172,17 +191,18 @@ namespace OrchardCore.Contents.Sitemaps
 
         private async Task<bool> BuildUrlAsync(SitemapBuilderContext context, ContentItem contentItem, XElement url)
         {
-            if (!_sitemapContentItemMetadataProvider.ValidateContentItem(contentItem))
+            var isValid = false;
+            foreach (var validationProvider in _sitemapContentItemValidationProviders)
+            {
+                isValid = await validationProvider.ValidateContentItem(contentItem);
+            }
+
+            if (!isValid)
             {
                 return false;
             }
 
-            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
-            var routes = contentItemMetadata.DisplayRouteValues;
-
-            // UrlHelper.Action includes BasePath automatically if present.
-            // If content item is assigned as home route, Urlhelper resolves as site root.
-            var locValue = context.HostPrefix + context.UrlHelper.Action(routes["Action"].ToString(), routes);
+            var locValue = await _routeableContentTypeCoordinator.GetRouteAsync(context, contentItem);
 
             var loc = new XElement(Namespace + "loc");
             loc.Add(locValue);

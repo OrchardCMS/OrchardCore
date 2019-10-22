@@ -31,7 +31,7 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddIdGeneration();
 
-            services.Configure<SitemapOptions>(options =>
+            services.Configure<SitemapsOptions>(options =>
             {
                 if (options.GlobalRouteValues.Count == 0)
                 {
@@ -64,7 +64,11 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<IContentPartDisplayDriver, SitemapPartDisplay>();
             services.AddContentPart<SitemapPart>();
 
-            services.AddScoped<ISitemapContentItemMetadataProvider, DefaultSitemapContentItemMetadataProvider>();
+            services.AddScoped<ISitemapContentItemMetadataProvider, SitemapPartContentItemMetadataProvider>();
+            services.AddScoped<ISitemapPartContentItemValidationProvider, SitemapPartContentItemValidationProvider>();
+            services.AddScoped<ISitemapContentItemValidationProvider>(serviceProvider =>
+                serviceProvider.GetRequiredService<ISitemapPartContentItemValidationProvider>());
+            services.AddScoped<IRouteableContentTypeCoordinator, DefaultRouteableContentTypeCoordinator>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -72,6 +76,16 @@ namespace OrchardCore.Sitemaps
             routes.MapDynamicControllerRoute<SitemapsTransformer>("/{**sitemap}");
             var sitemapManager = serviceProvider.GetService<ISitemapManager>();
             sitemapManager.BuildAllSitemapRouteEntriesAsync().GetAwaiter().GetResult();
+        }
+    }
+
+    [Feature("OrchardCore.Sitemaps.RazorPages")]
+    public class SitemapsRazorPagesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddOptions<SitemapsRazorPagesOptions>();
+            services.AddScoped<IRouteableContentTypeProvider, RazorPagesContentTypeProvider>();
         }
     }
 }

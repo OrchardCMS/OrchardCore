@@ -3,7 +3,7 @@ using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Services
 {
-    public class DefaultSitemapContentItemMetadataProvider : ISitemapContentItemMetadataProvider
+    public class SitemapPartContentItemMetadataProvider : ISitemapContentItemMetadataProvider
     {
         public string GetChangeFrequency(ContentItem contentItem)
         {
@@ -25,18 +25,6 @@ namespace OrchardCore.Sitemaps.Services
             }
 
             return null;
-        }
-
-        public bool ValidateContentItem(ContentItem contentItem)
-        {
-            // SitemapPart is optional, but to exclude or override defaults add it to the ContentItem
-            var sitemapPart = contentItem.As<SitemapPart>();
-            if (sitemapPart != null && sitemapPart.OverrideSitemapConfig && sitemapPart.Exclude)
-            {
-                return false;
-            }
-
-            return true;
         }
     }
 }

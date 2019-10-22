@@ -15,6 +15,7 @@ using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.Security;
 using OrchardCore.ContentLocalization.Services;
+using OrchardCore.ContentLocalization.Sitemaps;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -25,6 +26,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Sitemaps.Services;
 using YesSql;
 
 namespace OrchardCore.ContentLocalization
@@ -86,6 +88,17 @@ namespace OrchardCore.ContentLocalization
             }));
         }
     }
+
+    [Feature("OrchardCore.ContentLocalization.Sitemaps")]
+    public class SitemapsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ISitemapContentItemValidationProvider, SitemapLocalizedContentItemValidationProvider>();
+            services.AddScoped<ISitemapContentItemExtendedMetadataProvider, SitemapUrlHrefLangExtendedMetadataProvider>();
+        }
+    }
+
     [RequireFeatures("OrchardCore.Liquid")]
     public class LiquidStartup : StartupBase
     {

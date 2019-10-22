@@ -11,9 +11,9 @@ namespace OrchardCore.Sitemaps.Routing
     public class SitemapsTransformer : DynamicRouteValueTransformer
     {
         private readonly SitemapEntries _entries;
-        private readonly SitemapOptions _options;
+        private readonly SitemapsOptions _options;
 
-        public SitemapsTransformer(SitemapEntries entries, IOptions<SitemapOptions> options)
+        public SitemapsTransformer(SitemapEntries entries, IOptions<SitemapsOptions> options)
         {
             _entries = entries;
             _options = options.Value;

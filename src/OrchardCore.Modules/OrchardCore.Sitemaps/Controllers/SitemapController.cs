@@ -29,6 +29,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var context = new SitemapBuilderContext()
             {
+                //TODO Fail on load balanced sites, plus security flaw. Fix
                 HostPrefix = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}",
                 UrlHelper = Url,
                 SitemapManager = _sitemapManager

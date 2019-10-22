@@ -2,6 +2,23 @@
 
 The sitemaps module provides automatic generation of sitemaps.
 
+// TODO
+
+Example code for configuring a decoupled razor page
+            services.Configure<SitemapsRazorPagesOptions>(options =>
+            {
+                options.ConfigureContentType("DecoupledBlogPost", typeOptions =>
+                {
+                    typeOptions.PageName = "DBlogPost";
+                    typeOptions.RouteValues = (contentItem) =>
+                    {
+                        return new { area = "OrchardCore.Sitemaps", slug = contentItem.ContentItemId };
+                    };
+                });
+            });
+
+//TODO rewrite as per refactoring.
+
 ## General Concepts
 
 Sitemaps are configured by creating a Sitemap Set.
