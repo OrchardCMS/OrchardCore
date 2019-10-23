@@ -61,6 +61,8 @@ namespace OrchardCore.OpenId
             services.AddSingleton<IOpenIdClientService, OpenIdClientService>();
             services.AddScoped<IDisplayDriver<ISite>, OpenIdClientSettingsDisplayDriver>();
 
+            services.AddRecipeExecutionStep<OpenIdClientSettingsStep>();
+
             // Register the options initializers required by the OpenID Connect client handler.
             services.TryAddEnumerable(new[]
             {
