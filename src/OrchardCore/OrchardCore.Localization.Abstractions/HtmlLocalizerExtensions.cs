@@ -12,9 +12,7 @@ namespace Microsoft.AspNetCore.Mvc.Localization
                 throw new ArgumentNullException(nameof(plural), "Plural text can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extention.");
             }
 
-            var localizedString = localizer.GetString(singular, new PluralizationArgument { Count = count, Forms = new[] { singular, plural }, Arguments = arguments });
-
-            return new LocalizedHtmlString(singular, localizedString);
+            return localizer[singular, new PluralizationArgument { Count = count, Forms = new[] { singular, plural }, Arguments = arguments }];
         }
 
         public static LocalizedHtmlString Plural(this IHtmlLocalizer localizer, int count, string[] pluralForms, params object[] arguments)
@@ -30,9 +28,8 @@ namespace Microsoft.AspNetCore.Mvc.Localization
             }
 
             var name = pluralForms[0];
-            var localizedString = localizer.GetString(name, new PluralizationArgument { Count = count, Forms = pluralForms, Arguments = arguments });
 
-            return new LocalizedHtmlString(name, localizedString);
+            return localizer[name, new PluralizationArgument { Count = count, Forms = pluralForms, Arguments = arguments }];
         }
     }
 }
