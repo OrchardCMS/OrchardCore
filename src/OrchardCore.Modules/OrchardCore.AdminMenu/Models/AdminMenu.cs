@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu.Models
 {
     public class AdminMenu
     {
         public string Id { get; set; } = Guid.NewGuid().ToString("n");
+        public bool IsReadonly { get; set; }
         public string Name { get; set; }
         public bool Enabled { get; set; } = true;
         public List<AdminNode> MenuItems { get; } = new List<AdminNode>();
