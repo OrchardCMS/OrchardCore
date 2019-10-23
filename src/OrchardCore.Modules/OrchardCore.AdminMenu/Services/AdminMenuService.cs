@@ -95,7 +95,7 @@ namespace OrchardCore.AdminMenu
         /// </summary>
         public async Task<AdminMenuList> LoadAdminMenuListAsync()
         {
-            return _adminMenuList = _adminMenuList ?? await _session.Query<AdminMenuList>().FirstOrDefaultAsync();
+            return _adminMenuList = _adminMenuList ?? await _session.Query<AdminMenuList>().FirstOrDefaultAsync() ?? new AdminMenuList();
         }
 
         /// <summary>
