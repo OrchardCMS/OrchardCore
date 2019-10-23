@@ -289,7 +289,7 @@ namespace OrchardCore.Users.Controllers
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                _logger.LogError($"Could not get external login info");
+                _logger.LogError($"Could not get external login info.");
                 return RedirectToAction(nameof(Login));
             }
 
@@ -374,7 +374,7 @@ namespace OrchardCore.Users.Controllers
                                 var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
                                 if (identityResult.Succeeded)
                                 {
-                                    _logger.LogInformation(3, "User account linked to {Name} provider.", info.LoginProvider);
+                                    _logger.LogInformation(3, "User account linked to {loginProvider} provider.", info.LoginProvider);
 
                                     // We have created/linked to the local user, so we must verify the login.
                                     // If it does not succeed, the user is not allowed to login
@@ -410,13 +410,14 @@ namespace OrchardCore.Users.Controllers
 
             if (info == null)
             {
-                _logger.LogWarning("Error loading external login info. {externalLoginViewModel}", model);
+
+                _logger.LogWarning("Error loading external login info.");
                 return NotFound();
             }
 
             if (settings.UsersCanRegister == RegistrationSettings.UsersCanRegisterEnum.NoRegistration)
             {
-                _logger.LogWarning("Site does not allow user registration. {externalLoginViewModel}", model);
+                _logger.LogWarning("Site does not allow user registration.", model.UserName, model.Email);
                 return NotFound();
             }
 
@@ -459,7 +460,7 @@ namespace OrchardCore.Users.Controllers
                     var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
                     if (identityResult.Succeeded)
                     {
-                        _logger.LogInformation(3, "User account linked to {Name} provider.", info.LoginProvider);
+                        _logger.LogInformation(3, "User account linked to {provider} provider.", info.LoginProvider);
                         // we have created/linked to the local user, so we must verify the login. If it does not succeed,
                         // the user is not allowed to login
                         if ((await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false)).Succeeded)
@@ -485,20 +486,22 @@ namespace OrchardCore.Users.Controllers
             var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
             var info = await _signInManager.GetExternalLoginInfoAsync();
 
-            if (info == null)
-            {
-                _logger.LogWarning("Error loading external login info. {externalLoginViewModel}", model);
-                return NotFound();
-            }
-
             var email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                        ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email);
+            ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email);
 
             var user = await _userManager.FindByEmailAsync(email);
 
+            if (info == null)
+            {
+                _logger.LogWarning("Error loading external login info.");
+                return NotFound();
+            }
+
+
             if (user == null)
             {
-                _logger.LogWarning("Suspicious login detected from {externalLoginInfo}", info);
+                _logger.LogWarning("Suspicious login detected from external provider. {provider} with key [{providerKey}] for {identity}",
+                    info.LoginProvider, info.ProviderKey, info.Principal?.Identity?.Name);
                 return RedirectToAction(nameof(Login));
             }
 
@@ -515,7 +518,7 @@ namespace OrchardCore.Users.Controllers
                 var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
                 if (identityResult.Succeeded)
                 {
-                    _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
+                    _logger.LogInformation(3, "User account linked to {provider} provider.", info.LoginProvider);
                     // we have created/linked to the local user, so we must verify the login. If it does not succeed,
                     // the user is not allowed to login
                     if ((await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false)).Succeeded)
@@ -566,21 +569,21 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                _logger.LogError("Unable to load user with ID '{UserId}'.", _userManager.GetUserId(User));
+                _logger.LogError("Unable to load user with ID '{userId}'.", _userManager.GetUserId(User));
                 return RedirectToAction(nameof(Login));
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                _logger.LogError("Unexpected error occurred loading external login info for user '{UserName}'.", user.UserName);
+                _logger.LogError("Unexpected error occurred loading external login info");
                 return RedirectToAction(nameof(Login));
             }
 
             var result = await _userManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
             if (!result.Succeeded)
             {
-                _logger.LogError("Unexpected error occurred adding external login info for user '{UserName}'.", user.UserName);
+                _logger.LogError("Unexpected error occurred adding external login info");
                 return RedirectToAction(nameof(Login));
             }
 
@@ -598,14 +601,14 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                _logger.LogError("Unable to load user with ID '{UserId}'.", _userManager.GetUserId(User));
+                _logger.LogError("Unable to load user with ID '{userId}'.", _userManager.GetUserId(User));
                 return RedirectToAction(nameof(Login));
             }
 
             var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
             if (!result.Succeeded)
             {
-                _logger.LogError("Unexpected error occurred adding external login info for user '{UserName}'.", user.UserName);
+                _logger.LogError("Unexpected error occurred adding external login info.");
                 return RedirectToAction(nameof(Login));
             }
 
@@ -629,7 +632,12 @@ namespace OrchardCore.Users.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error evaluating GenerateUsernameScript( {context} ) ", info);
+
+                _logger.LogWarning("Suspicious login detected from external provider. {provider} with key [{providerKey}] for {identity}",
+                    info.LoginProvider, info.ProviderKey, info.Principal?.Identity?.Name);
+
+                _logger.LogError(ex, "Error evaluating GenerateUsernameScript( '{provider}',{claims} ) for {identity}",
+                    info?.LoginProvider, claims, info.Principal?.Identity?.Name);
             }
             var now = (new TimeSpan(DateTime.UtcNow.Ticks) - new TimeSpan(DateTime.UnixEpoch.Ticks));
             return string.Concat("u" + Convert.ToInt32(now.TotalSeconds).ToString());
