@@ -52,7 +52,7 @@ namespace OrchardCore.Roles.Services
         public IQueryable<IRole> Roles => GetRolesAsync().GetAwaiter()
             .GetResult().Roles.ToArray().AsQueryable();
 
-        public async Task<RolesDocument> GetRolesAsync()
+        private async Task<RolesDocument> GetRolesAsync()
         {
             RolesDocument document;
 
@@ -77,7 +77,7 @@ namespace OrchardCore.Roles.Services
             return document;
         }
 
-        public void UpdateRoles(RolesDocument roles)
+        private void UpdateRoles(RolesDocument roles)
         {
             // Not thread safe but this property is never used.
             roles.Serial++;

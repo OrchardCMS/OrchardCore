@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 
@@ -9,10 +8,16 @@ namespace OrchardCore.AdminMenu
     /// </summary>
     public interface IAdminMenuService
     {
+
         /// <summary>
-        /// Returns all the admin menus
+        /// Returns all the admin menus for udpate.
         /// </summary>
-        Task<ImmutableArray<Models.AdminMenu>> GetAsync();
+        Task<Models.AdminMenuList> LoadAdminMenuListAsync();
+
+        /// <summary>
+        /// Returns all the admin menus in read-only.
+        /// </summary>
+        Task<Models.AdminMenuList> GetAdminMenuListAsync();
 
         /// <summary>
         /// Persist an admin menu
@@ -24,7 +29,7 @@ namespace OrchardCore.AdminMenu
         /// <summary>
         /// Returns an admin menu.
         /// </summary>
-        Task<Models.AdminMenu> GetByIdAsync(string id);
+        Models.AdminMenu GetAdminMenuById(Models.AdminMenuList adminMenuList, string id);
 
         /// <summary>
         /// Deletes an admin menu
