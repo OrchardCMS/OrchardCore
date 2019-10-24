@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Users.ViewModels
 {
@@ -23,29 +25,30 @@ namespace OrchardCore.Users.ViewModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            var S = validationContext.GetService<IStringLocalizer<RegisterExternalLoginViewModel>>();
             if (string.IsNullOrWhiteSpace(Email) && !NoEmail)
             {
-                yield return new ValidationResult("Email is required!", new[] { "Email" });
+                yield return new ValidationResult(S["Email is required!"], new[] { "Email" });
             }
 
             if (string.IsNullOrWhiteSpace(UserName) && !NoUsername)
             {
-                yield return new ValidationResult("Username is required!", new[] { "UserName" });
+                yield return new ValidationResult(S["Username is required!"], new[] { "UserName" });
             }
 
             if (string.IsNullOrWhiteSpace(Password) && !NoPassword)
             {
-                yield return new ValidationResult("Password is required!", new[] { "Password" });
+                yield return new ValidationResult(S["Password is required!"], new[] { "Password" });
             }
 
             if (Password != ConfirmPassword)
             {
-                yield return new ValidationResult("Confirm Password do not match", new[] { "ConfirmPassword" });
+                yield return new ValidationResult(S["Confirm Password do not match"], new[] { "ConfirmPassword" });
             }
 
             if (Password != null && (Password.Length < 6 || Password.Length > 100))
             {
-                yield return new ValidationResult(string.Format("Password must be between {0} and {1} characters", 6, 100), new[] { "Password" });
+                yield return new ValidationResult(string.Format(S["Password must be between {0} and {1} characters"], 6, 100), new[] { "Password" });
             }
         }
     }
