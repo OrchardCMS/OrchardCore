@@ -12,6 +12,8 @@ namespace OrchardCore.Modules
 
         public DateTimeZone DateTimeZone { get; set; }
 
+        public string CountryCode { get; set; }
+
         public TimeZone(string timeZoneId, Offset standardOffset, Offset wallOffset, DateTimeZone dateTimeZone)
         {
             TimeZoneId = timeZoneId;

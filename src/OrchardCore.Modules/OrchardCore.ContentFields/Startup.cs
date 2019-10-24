@@ -42,6 +42,8 @@ namespace OrchardCore.ContentFields
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateFieldViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<TimeField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DateTimeOffsetField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateTimeOffsetFieldViewModel>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -83,6 +85,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, DateTimeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateTimeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, DateTimeFieldIndexHandler>();
+
+            // DateTime Field
+            services.AddContentField<DateTimeOffsetField>();
+            services.AddScoped<IContentFieldDisplayDriver, DateTimeOffsetFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateTimeOffsetFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, DateTimeOffsetFieldIndexHandler>();
 
             // Date Field
             services.AddContentField<DateField>();

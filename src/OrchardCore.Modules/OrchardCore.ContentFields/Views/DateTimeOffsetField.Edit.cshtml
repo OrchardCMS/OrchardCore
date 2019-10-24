@@ -1,0 +1,59 @@
+@model OrchardCore.ContentFields.ViewModels.EditDateTimeOffsetFieldViewModel
+@inject OrchardCore.Modules.IClock Clock
+
+@{
+    var settings = Model.PartFieldDefinition.GetSettings<DateTimeOffsetFieldSettings>();
+}
+
+    <div class="border rounded p-3 form-group">
+        <div class="form-group">
+            <div class="row col-sm-12 col-md-6 col-lg-3">
+                <label asp-for="LocalDateTime">@Model.PartFieldDefinition.DisplayName()</label>
+                <input asp-for="LocalDateTime" type="datetime-local" class="form-control content-preview-select" required="@settings.Required" />
+                <span class="hint">@settings.Hint</span>
+            </div>
+        </div>
+
+        <div class="form-group" asp-validation-class-for="Offset">
+            <label asp-for="Offset">@T["Offset"]</label>
+            <select asp-for="Offset" class="form-control">
+                @foreach (var offset in Clock.GetTimeZonesOffsets().OrderBy(t => t.ToString()))
+                {
+                    <option value="@offset.Offset" selected="@(Model.Offset == offset.Offset)">
+                        @offset
+                    </option>
+                }
+            </select>
+            <span asp-validation-for="Offset"></span>
+            <span class="hint">@T["Select a offset to filter list of countries."]</span>
+        </div>
+
+        <div class="form-group" asp-validation-class-for="CountryCode">
+            <label asp-for="CountryCode">@T["Country Code"]</label>
+            <select asp-for="CountryCode" class="form-control">
+                @foreach (var timezone in Clock.GetTimeZonesCountries().OrderBy(t => t.ToString()))
+                {
+                    <option value="@timezone.CountryCode" selected="@(Model.CountryCode == timezone.CountryCode)">
+                        @timezone
+                    </option>
+                }
+            </select>
+            <span asp-validation-for="CountryCode"></span>
+            <span class="hint">@T["Select a country code to filter list of time zones."]</span>
+        </div>
+
+        <div class="form-group" asp-validation-class-for="TimeZone">
+            <label asp-for="TimeZone">@T["Time Zone"]</label>
+            <select asp-for="TimeZone" class="form-control">
+                <option value="">@T["Local to server"]</option>
+                @foreach (var timezone in Clock.GetTimeZones().OrderBy(t => t.ToString()))
+                {
+                    <option value="@timezone.TimeZoneId" selected="@(Model.TimeZone == timezone.TimeZoneId)">
+                        @timezone
+                    </option>
+                }
+            </select>
+            <span asp-validation-for="TimeZone"></span>
+            <span class="hint">@T["Determines the time zone used when displaying and editing dates and times. DST (daylight saving time) will be applied automatically per time zone if available."]</span>
+        </div>
+    </div>

@@ -34,6 +34,35 @@ namespace OrchardCore.Modules
             return list.ToArray();
         }
 
+        public ITimeZoneCountry[] GetTimeZonesCountries()
+        {
+            var list =
+                from location in TzdbDateTimeZoneSource.Default.ZoneLocations
+                let countryCode = location.CountryCode
+                let countryName = location.CountryName
+                orderby countryCode, countryName
+                select new TimeZoneCountry(countryCode, countryName);
+
+            list = list.GroupBy(x => x.CountryCode).Select(group => group.First()).ToList();
+
+            return list.ToArray();
+        }
+
+        public ITimeZoneOffset[] GetTimeZonesOffsets()
+        {
+            var list =
+                from location in TzdbDateTimeZoneSource.Default.ZoneLocations
+                let zoneId = location.ZoneId
+                let tz = DateTimeZoneProviders.Tzdb[zoneId]
+                let zoneInterval = tz.GetZoneInterval(CurrentInstant)
+                orderby zoneInterval.StandardOffset
+                select new TimeZoneOffset(zoneInterval.StandardOffset, zoneInterval.WallOffset);
+
+            list = list.GroupBy(x => x.StandardOffset).Select(group => group.First()).ToList();
+
+            return list.ToArray();
+        }
+
         public ITimeZone GetTimeZone(string timeZoneId)
         {
             if (String.IsNullOrEmpty(timeZoneId))

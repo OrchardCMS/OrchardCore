@@ -30,8 +30,10 @@ namespace OrchardCore.ContentFields
             // Date time field
             _contentDefinitionManager.MigrateFieldSettings<DateTimeField, DateTimeFieldSettings>();
 
-            // Html field
+            // Date time offset field
+            _contentDefinitionManager.MigrateFieldSettings<DateTimeOffsetField, DateTimeOffsetFieldSettings>();
 
+            // Html field
             _contentDefinitionManager.MigrateFieldSettings<HtmlField, HtmlFieldSettings>();
 
             // Link field
