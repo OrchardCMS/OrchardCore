@@ -23,7 +23,7 @@ namespace OrchardCore.Localization
 
         IHtmlLocalizer IHtmlLocalizerFactory.Create(Type resourceSource) => NullLocalizer.Instance;
 
-        public class NullLocalizer : IStringLocalizer, IHtmlLocalizer
+        private class NullLocalizer : IStringLocalizer, IHtmlLocalizer
         {
             private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n == 1) ? 0 : 1;
 
