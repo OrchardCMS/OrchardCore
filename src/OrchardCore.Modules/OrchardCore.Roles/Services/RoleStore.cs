@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
 using OrchardCore.Security;
@@ -67,32 +68,19 @@ namespace OrchardCore.Roles.Services
             if (!_memoryCache.TryGetValue(Key, out document))
             {
                 var changeToken = _signal.GetToken(Key);
-                document = await _session.Query<RolesDocument>().FirstOrDefaultAsync();
 
-                if (document == null)
+                using (var scope = ShellScope.Context.ServiceProvider.CreateScope())
                 {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(Key, out document))
-                        {
-                            document = new RolesDocument();
-
-                            _session.Save(document);
-                            _signal.DeferredSignalToken(Key);
-
-                            _memoryCache.Set(Key, document, changeToken);
-                        }
-                    }
+                    var session = scope.ServiceProvider.GetService<ISession>();
+                    document = await _session.Query<RolesDocument>().FirstOrDefaultAsync() ?? new RolesDocument();
                 }
-                else
+
+                foreach (var role in document.Roles)
                 {
-                    foreach (var role in document.Roles)
-                    {
-                        role.IsReadonly = true;
-                    }
-
-                    _memoryCache.Set(Key, document, changeToken);
+                    role.IsReadonly = true;
                 }
+
+                _memoryCache.Set(Key, document, changeToken);
             }
 
             return document;

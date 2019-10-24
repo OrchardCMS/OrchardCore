@@ -2,9 +2,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.AdminMenu.Models;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
 namespace OrchardCore.AdminMenu
@@ -49,34 +51,19 @@ namespace OrchardCore.AdminMenu
             if (!_memoryCache.TryGetValue(AdminMenuCacheKey, out adminMenuList))
             {
                 var changeToken = ChangeToken;
-                adminMenuList = await _session.Query<AdminMenuList>().FirstOrDefaultAsync();
 
-                if (adminMenuList == null)
+                using (var scope = ShellScope.Context.ServiceProvider.CreateScope())
                 {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(AdminMenuCacheKey, out adminMenuList))
-                        {
-                            adminMenuList = new AdminMenuList();
-                            _session.Save(adminMenuList);
-                            _signal.DeferredSignalToken(AdminMenuCacheKey);
-
-                            // Here we set the cache just to prevent multiple session 'Save()', but the
-                            // deferred signal will invalidate it to keep data in sync from the database.
-
-                            _memoryCache.Set(AdminMenuCacheKey, adminMenuList, changeToken);
-                        }
-                    }
+                    var session = scope.ServiceProvider.GetService<ISession>();
+                    adminMenuList = await _session.Query<AdminMenuList>().FirstOrDefaultAsync() ?? new AdminMenuList();
                 }
-                else
+
+                foreach (var adminMenu in adminMenuList.AdminMenu)
                 {
-                    foreach (var adminMenu in adminMenuList.AdminMenu)
-                    {
-                        adminMenu.IsReadonly = true;
-                    }
-
-                    _memoryCache.Set(AdminMenuCacheKey, adminMenuList, changeToken);
+                    adminMenu.IsReadonly = true;
                 }
+
+                _memoryCache.Set(AdminMenuCacheKey, adminMenuList, changeToken);
             }
 
             return adminMenuList;
