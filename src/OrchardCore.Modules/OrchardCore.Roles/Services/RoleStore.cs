@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -52,7 +53,7 @@ namespace OrchardCore.Roles.Services
         public IQueryable<IRole> Roles =>
             GetRolesAsync().Result.Roles.AsQueryable();
 
-        public Task<RolesDocument> GetRolesAsync()
+        private Task<RolesDocument> GetRolesAsync()
         {
             return _memoryCache.GetOrCreateAsync(Key, async (entry) =>
             {
@@ -70,7 +71,7 @@ namespace OrchardCore.Roles.Services
             });
         }
 
-        public void UpdateRoles(RolesDocument roles)
+        private void UpdateRoles(RolesDocument roles)
         {
             roles.Serial++;
             _session.Save(roles);
