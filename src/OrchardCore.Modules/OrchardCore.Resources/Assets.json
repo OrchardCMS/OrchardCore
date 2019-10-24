@@ -103,8 +103,8 @@
     "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
-      "../../../node_modules/trumbowyg/dist/ui/sass/trumbowyg.scss",
-      "../../../node_modules/trumbowyg/plugins/*/ui/sass/*.scss"
+      "node_modules/trumbowyg/dist/ui/sass/trumbowyg.scss",
+      "node_modules/trumbowyg/plugins/*/ui/sass/*.scss"
     ],
     "output": "wwwroot/Styles/trumbowyg.css"
   },
