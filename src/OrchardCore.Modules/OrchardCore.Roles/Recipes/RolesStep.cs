@@ -43,8 +43,8 @@ namespace OrchardCore.Roles.Recipes
                     role = new Role { RoleName = importedRole.Name };
                 }
 
-                role.RoleClaims = role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-                role.RoleClaims = role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = p }));
+                role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+                role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = p }));
 
                 if (isNewRole)
                 {

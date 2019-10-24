@@ -31,55 +31,6 @@ namespace OrchardCore.AdminMenu
 
         public IChangeToken ChangeToken => _signal.GetToken(AdminMenuCacheKey);
 
-        public async Task SaveAsync(Models.AdminMenu tree)
-        {
-            if (tree.IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
-            }
-
-            var adminMenuList = await LoadAdminMenuListAsync();
-
-            var preexisting = adminMenuList.AdminMenu.FirstOrDefault(x => String.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
-
-            // it's new? add it
-            if (preexisting == null)
-            {
-                adminMenuList.AdminMenu.Add(tree);
-            }
-            else // not new: replace it
-            {
-                var index = adminMenuList.AdminMenu.IndexOf(preexisting);
-                adminMenuList.AdminMenu[index] = tree;
-            }
-
-            _session.Save(adminMenuList);
-            _signal.DeferredSignalToken(AdminMenuCacheKey);
-        }
-
-        public Models.AdminMenu GetAdminMenuById(AdminMenuList adminMenuList, string id)
-        {
-            return adminMenuList.AdminMenu
-                .FirstOrDefault(x => String.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public async Task<int> DeleteAsync(Models.AdminMenu tree)
-        {
-            if (tree.IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
-            }
-
-            var adminMenuList = await LoadAdminMenuListAsync();
-
-            var count = adminMenuList.AdminMenu.RemoveAll(x => String.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
-
-            _session.Save(adminMenuList);
-            _signal.DeferredSignalToken(AdminMenuCacheKey);
-
-            return count;
-        }
-
         /// <summary>
         /// Returns the document from the database to be updated
         /// </summary>
@@ -129,6 +80,55 @@ namespace OrchardCore.AdminMenu
             }
 
             return adminMenuList;
+        }
+
+        public async Task SaveAsync(Models.AdminMenu tree)
+        {
+            if (tree.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
+
+            var adminMenuList = await LoadAdminMenuListAsync();
+
+            var preexisting = adminMenuList.AdminMenu.FirstOrDefault(x => String.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
+
+            // it's new? add it
+            if (preexisting == null)
+            {
+                adminMenuList.AdminMenu.Add(tree);
+            }
+            else // not new: replace it
+            {
+                var index = adminMenuList.AdminMenu.IndexOf(preexisting);
+                adminMenuList.AdminMenu[index] = tree;
+            }
+
+            _session.Save(adminMenuList);
+            _signal.DeferredSignalToken(AdminMenuCacheKey);
+        }
+
+        public Models.AdminMenu GetAdminMenuById(AdminMenuList adminMenuList, string id)
+        {
+            return adminMenuList.AdminMenu
+                .FirstOrDefault(x => String.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public async Task<int> DeleteAsync(Models.AdminMenu tree)
+        {
+            if (tree.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
+
+            var adminMenuList = await LoadAdminMenuListAsync();
+
+            var count = adminMenuList.AdminMenu.RemoveAll(x => String.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
+
+            _session.Save(adminMenuList);
+            _signal.DeferredSignalToken(AdminMenuCacheKey);
+
+            return count;
         }
     }
 }
