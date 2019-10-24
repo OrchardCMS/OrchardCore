@@ -74,9 +74,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddLocalization();
 
             // For performance, prevents the 'ResourceManagerStringLocalizer' from being used.
-            services.AddSingleton<NullLocalizerFactory>();
-            services.AddSingleton<IStringLocalizerFactory>(sp => sp.GetRequiredService<NullLocalizerFactory>());
-            services.AddSingleton<IHtmlLocalizerFactory>(sp => sp.GetRequiredService<NullLocalizerFactory>());
+            // Also support pluralization.
+            services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+            services.AddSingleton<IHtmlLocalizerFactory, NullHtmlLocalizerFactory>();
 
             services.AddWebEncoders();
 

@@ -1,11 +1,6 @@
 using System.IO;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 using Xunit;
@@ -25,7 +20,7 @@ namespace OrchardCore.Tests.Localization
         [InlineData("there are more (2) &lt;br/&gt;", 2, "there is one ({0}) {1}", "there are more ({0}) {1}", "<br/>")]
         public void HtmlNullLocalizerSupportsPlural(string expected, int count, string singular, string plural, params object[] arguments)
         {
-            var localizer = ((IHtmlLocalizerFactory)new NullLocalizerFactory()).Create(typeof(object));
+            var localizer = new NullHtmlLocalizerFactory().Create(typeof(object));
 
             using (var writer = new StringWriter())
             {
@@ -45,7 +40,7 @@ namespace OrchardCore.Tests.Localization
         [InlineData("there are more (2) <br/>", 2, "there is one ({0}) {1}", "there are more ({0}) {1}", "<br/>")]
         public void StringNullLocalizerSupportsPlural(string expected, int count, string singular, string plural, params object[] arguments)
         {
-            var localizer = new NullLocalizerFactory().Create(typeof(object));
+            var localizer = new NullStringLocalizerFactory().Create(typeof(object));
 
             var value = localizer.Plural(count, singular, plural, arguments).Value;
             Assert.Equal(expected, value);
