@@ -11,6 +11,11 @@
         <span asp-validation-for="RoleName" class="text-danger">@T["The role name is required."]</span>
     </div>
 
+    <div class="form-group" asp-validation-class-for="RoleDescription">
+        <label asp-for="RoleDescription">@T["Role description"]</label>
+        <input asp-for="RoleDescription" class="form-control" autofocus/>
+    </div>
+
     <fieldset>
         <div class="form-group">
             <button class="btn btn-primary" type="submit">@T["Create"]</button>
