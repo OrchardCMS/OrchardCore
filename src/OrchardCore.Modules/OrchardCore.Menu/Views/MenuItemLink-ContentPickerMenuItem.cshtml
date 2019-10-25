@@ -1,0 +1,8 @@
+@using OrchardCore.ContentManagement
+@using OrchardCore.Menu
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var linkMenuItemPart = contentItem.As<ContentPickerMenuItemPart>();
+}
+<a href="@Url.Content(linkMenuItemPart.Url)">@linkMenuItemPart.Name</a>

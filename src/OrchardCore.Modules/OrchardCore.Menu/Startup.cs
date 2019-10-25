@@ -31,6 +31,10 @@ namespace OrchardCore.Menu
             services.AddScoped<IContentPartDisplayDriver, LinkMenuItemPartDisplayDriver>();
             services.AddContentPart<LinkMenuItemPart>();
 
+            // ContentPickerMenuItemPart
+            services.AddScoped<IContentPartDisplayDriver, ContentPickerMenuItemPartDisplayDriver>();
+            services.AddContentPart<ContentPickerMenuItemPart>();
+
             services.AddTagHelpers<MenuTagHelper>();
         }
     }

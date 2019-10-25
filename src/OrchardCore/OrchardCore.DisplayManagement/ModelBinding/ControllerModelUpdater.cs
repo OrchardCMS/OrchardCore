@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -41,5 +41,7 @@ namespace OrchardCore.DisplayManagement.ModelBinding
         {
             return _controller.TryValidateModel(model, prefix);
         }
+
+        public IUrlHelper Url => _controller.Url;
     }
 }

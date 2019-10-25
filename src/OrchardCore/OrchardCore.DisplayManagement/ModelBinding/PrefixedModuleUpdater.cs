@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.DisplayManagement.ModelBinding
@@ -47,5 +48,6 @@ namespace OrchardCore.DisplayManagement.ModelBinding
         {
             return TryValidateModel(model, Prefix(prefix));
         }
+        public IUrlHelper Url => _updateModel.Url;
     }
 }
