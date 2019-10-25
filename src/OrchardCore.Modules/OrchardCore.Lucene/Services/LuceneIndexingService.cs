@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,7 +63,9 @@ namespace OrchardCore.Lucene
 
             if (String.IsNullOrEmpty(indexName))
             {
-                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexInBackgroundTask).ToImmutableDictionary(x => x.IndexName, x => x);
+                //TODO use immutable dictionary
+                //indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexInBackgroundTask).ToImmutableDictionary(x => x.IndexName, x => x);
+                indexSettingsList = _luceneIndexSettingsService.List().ToList();
 
                 if (indexSettingsList == null)
                 {
@@ -81,7 +82,9 @@ namespace OrchardCore.Lucene
             }
             else
             {
-                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName).ToImmutableDictionary(x => x.IndexName, x => x);
+                //TODO use immutable dictionary
+                //indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName).ToImmutableDictionary(x => x.IndexName, x => x);
+                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName).ToList();
 
                 if (indexSettingsList == null)
                 {
