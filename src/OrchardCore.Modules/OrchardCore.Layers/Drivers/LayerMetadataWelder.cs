@@ -24,7 +24,11 @@ namespace OrchardCore.Layers.Drivers
 
         protected override void BuildPrefix(ContentItem model, string htmlFieldPrefix)
         {
-            Prefix = "LayerMetadata";
+            base.BuildPrefix(model, htmlFieldPrefix);
+            if (string.IsNullOrWhiteSpace(htmlFieldPrefix))
+            { 
+                Prefix = "LayerMetadata";
+            }
         }
 
         public override async Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
