@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,13 +56,14 @@ namespace OrchardCore.Lucene
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
             // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.
-            var allIndicesStatus = new Dictionary<string, int>();
+            var allIndices = new Dictionary<string, int>();
             var lastTaskId = Int32.MaxValue;
-            IDictionary indexSettingsList = null;
+            IEnumerable<LuceneIndexSettings> indexSettingsList = null;
+
 
             if (String.IsNullOrEmpty(indexName))
             {
-                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexInBackgroundTask).ToImmutableDictionary(x => x.IndexName, x => x);
+                indexSettingsList = _luceneIndexSettingsService.List();
 
                 if (indexSettingsList == null)
                 {
@@ -72,17 +71,16 @@ namespace OrchardCore.Lucene
                 }
 
                 // Find the lowest task id to process
-                foreach (DictionaryEntry item in indexSettingsList)
+                foreach (var indexSetting in indexSettingsList)
                 {
-                    var indexSetting = item.Value as LuceneIndexSettings;
                     var taskId = _indexingState.GetLastTaskId(indexSetting.IndexName);
                     lastTaskId = Math.Min(lastTaskId, taskId);
-                    allIndicesStatus.Add(indexSetting.IndexName, taskId);
+                    allIndices.Add(indexSetting.IndexName, taskId);
                 }
             }
             else
             {
-                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName).ToImmutableDictionary(x => x.IndexName, x => x);
+                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName);
 
                 if (indexSettingsList == null)
                 {
@@ -91,10 +89,10 @@ namespace OrchardCore.Lucene
 
                 var taskId = _indexingState.GetLastTaskId(indexName);
                 lastTaskId = Math.Min(lastTaskId, taskId);
-                allIndicesStatus.Add(indexName, taskId);
+                allIndices.Add(indexName, taskId);
             }
 
-            if (allIndicesStatus.Count == 0)
+            if (allIndices.Count == 0)
             {
                 return;
             }
@@ -119,58 +117,93 @@ namespace OrchardCore.Lucene
                     var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
                     var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
 
-                    foreach (DictionaryEntry item in indexSettingsList)
+                    // Pre-load all content items to prevent SELECT N+1
+                    var updatedContentItemIds = batch
+                        .Where(x => x.Type == IndexingTaskTypes.Update)
+                        .Select(x => x.ContentItemId)
+                        .ToArray();
+
+                    var allContentItems = await contentManager.GetAsync(updatedContentItemIds);
+
+                    // Group all DocumentIndex by index to batch update them
+                    var updatedDocumentsByIndex = new Dictionary<string, List<DocumentIndex>>();
+
+                    foreach (var index in allIndices)
                     {
-                        var indexSettings = item.Value as LuceneIndexSettings;
+                        updatedDocumentsByIndex[index.Key] = new List<DocumentIndex>();
+                    }
+
+                    if (indexName != null)
+                    {
+                        indexSettingsList = indexSettingsList.Where(x => x.IndexName == indexName);
+                    }
+                    else
+                    {
+                        indexSettingsList = indexSettingsList.Where(x => x.IndexInBackgroundTask);
+                    }
+
+                    foreach (var indexSettings in indexSettingsList)
+                    {
                         if (indexSettings.IndexedContentTypes.Length == 0)
                         {
                             continue;
                         }
 
-                        var contentItems = await contentManager.GetAsync(batch.Select(x => x.ContentItemId), indexSettings.IndexLatest);
-                        contentItems = contentItems.Where(x => indexSettings.IndexedContentTypes.Contains(x.ContentType));
-
                         foreach (var task in batch)
                         {
-                            var contentItem = contentItems.Where(x => x.ContentItemId == task.ContentItemId).FirstOrDefault();
-
-                            if (contentItem == null)
-                            {
-                                continue;
-                            }
-
-                            // Ignore if this index has no content type setted to be indexed
-                            if (!indexSettings.IndexedContentTypes.Contains(contentItem.ContentType))
-                            {
-                                continue;
-                            }
-
-                            var currentIndexStatus = allIndicesStatus.Where(x => x.Key == indexSettings.IndexName).FirstOrDefault();
-
-                            if (currentIndexStatus.Value < task.Id)
-                            {
-                                _indexManager.DeleteDocuments(currentIndexStatus.Key, new string[] { task.ContentItemId });
-                            }
-
                             if (task.Type == IndexingTaskTypes.Update)
                             {
+                                var contentItem = await contentManager.GetAsync(task.ContentItemId);
+
+                                if (contentItem == null)
+                                {
+                                    continue;
+                                }
+
                                 var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
 
                                 // Update the document from the index if its lastIndexId is smaller than the current task id. 
                                 await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), Logger);
 
-                                if (currentIndexStatus.Value < task.Id)
+                                foreach (var index in allIndices)
                                 {
-                                    _indexManager.StoreDocuments(currentIndexStatus.Key, new DocumentIndex[] { context.DocumentIndex });
+                                    // Ignore if the content item content type is not indexed in this index
+                                    if (!indexSettingsList.Where(x => x.IndexName == index.Key).FirstOrDefault().IndexedContentTypes.Contains(contentItem.ContentType))
+                                    {
+                                        continue;
+                                    }
+
+                                    if (index.Value < task.Id)
+                                    {
+                                        updatedDocumentsByIndex[index.Key].Add(context.DocumentIndex);
+                                    }
                                 }
                             }
                         }
                     }
 
+                    // Delete all the existing documents
+                    foreach (var index in allIndices)
+                    {
+                        var deletedDocuments = batch
+                            .Where(task => index.Value < task.Id)
+                            .Select(task => task.ContentItemId)
+                            .ToArray();
+
+                        _indexManager.DeleteDocuments(index.Key, deletedDocuments);
+                    }
+
+                    // Submits all the new documents to the index
+                    foreach (var index in allIndices)
+                    {
+                        _indexManager.StoreDocuments(index.Key, updatedDocumentsByIndex[index.Key]);
+                    }
+
+
                     // Update task ids
                     lastTaskId = batch.Last().Id;
 
-                    foreach (var indexStatus in allIndicesStatus)
+                    foreach (var indexStatus in allIndices)
                     {
                         if (indexStatus.Value < lastTaskId)
                         {
