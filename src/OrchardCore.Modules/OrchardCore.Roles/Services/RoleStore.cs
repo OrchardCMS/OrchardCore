@@ -55,11 +55,17 @@ namespace OrchardCore.Roles.Services
         public IQueryable<IRole> Roles =>
             GetRolesAsync().GetAwaiter().GetResult().Roles.AsQueryable();
 
+        /// <summary>
+        /// Returns the document from the database to be updated.
+        /// </summary>
         public async Task<RolesDocument> LoadRolesAsync()
         {
             return _rolesDocument = _rolesDocument ?? await _session.Query<RolesDocument>().FirstOrDefaultAsync() ?? new RolesDocument();
         }
 
+        /// <summary>
+        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// </summary>
         private async Task<RolesDocument> GetRolesAsync()
         {
             RolesDocument document;
@@ -125,6 +131,11 @@ namespace OrchardCore.Roles.Services
             }
 
             var roleToRemove = (Role)role;
+
+            if (roleToRemove.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
 
             if (String.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") ||
                 String.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))

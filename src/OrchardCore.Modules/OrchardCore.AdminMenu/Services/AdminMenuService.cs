@@ -32,7 +32,7 @@ namespace OrchardCore.AdminMenu
         public IChangeToken ChangeToken => _signal.GetToken(AdminMenuCacheKey);
 
         /// <summary>
-        /// Returns the document from the database to be updated
+        /// Returns the document from the database to be updated.
         /// </summary>
         public async Task<AdminMenuList> LoadAdminMenuListAsync()
         {
