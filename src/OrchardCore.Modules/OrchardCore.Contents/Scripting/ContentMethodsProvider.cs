@@ -49,10 +49,12 @@ namespace OrchardCore.Contents.Scripting
                 Name = "updateContentItem",
                 Method = serviceProvider => (Action<IContent, object>)((contentItem, properties) =>
                 {
+                    var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     var props = JObject.FromObject(properties);
                     var content = (JObject)contentItem.ContentItem.Content;
 
                     content.Merge(props, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+                    contentManager.UpdateAsync(contentItem);
                 })
             };
         }
