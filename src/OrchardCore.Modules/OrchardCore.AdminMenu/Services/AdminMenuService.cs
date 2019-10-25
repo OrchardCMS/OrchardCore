@@ -2,11 +2,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.AdminMenu.Models;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
 namespace OrchardCore.AdminMenu
@@ -52,15 +50,25 @@ namespace OrchardCore.AdminMenu
             {
                 var changeToken = ChangeToken;
 
-                using (var scope = ShellScope.Context.ServiceProvider.CreateScope())
+                if (_adminMenuList != null)
                 {
-                    var session = scope.ServiceProvider.GetService<ISession>();
-                    adminMenuList = await _session.Query<AdminMenuList>().FirstOrDefaultAsync() ?? new AdminMenuList();
+                    _session.Detach(_adminMenuList);
                 }
 
-                foreach (var adminMenu in adminMenuList.AdminMenu)
+                adminMenuList = await _session.Query<AdminMenuList>().FirstOrDefaultAsync();
+
+                if (adminMenuList != null)
                 {
-                    adminMenu.IsReadonly = true;
+                    _session.Detach(adminMenuList);
+
+                    foreach (var adminMenu in adminMenuList.AdminMenu)
+                    {
+                        adminMenu.IsReadonly = true;
+                    }
+                }
+                else
+                {
+                    adminMenuList = new AdminMenuList();
                 }
 
                 _memoryCache.Set(AdminMenuCacheKey, adminMenuList, changeToken);
