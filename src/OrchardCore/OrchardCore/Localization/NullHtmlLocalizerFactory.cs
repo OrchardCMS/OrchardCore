@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 
@@ -13,20 +12,20 @@ namespace OrchardCore.Localization
     /// </remarks>
     public class NullHtmlLocalizerFactory : IHtmlLocalizerFactory
     {
-        public IHtmlLocalizer Create(string baseName, string location) => NullLocalizer.Instance;
+         public IHtmlLocalizer Create(string baseName, string location) => NullHtmlLocalizer.Instance;
 
-        public IHtmlLocalizer Create(Type resourceSource) => NullLocalizer.Instance;
+        public IHtmlLocalizer Create(Type resourceSource) => NullHtmlLocalizer.Instance;
 
-        private class NullLocalizer : IHtmlLocalizer
+        private class NullHtmlLocalizer : IHtmlLocalizer
         {
             private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n == 1) ? 0 : 1;
 
-            public static NullLocalizer Instance { get; } = new NullLocalizer();
+            public static IHtmlLocalizer Instance { get; } = new NullHtmlLocalizer();
 
             public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
-                => Enumerable.Empty<LocalizedString>();
+                => StringLocalizer.GetAllStrings(includeParentCultures);
 
-            public LocalizedHtmlString this[string name] => new LocalizedHtmlString(name, name, true);
+            public LocalizedHtmlString this[string name] => ToHtmlString(StringLocalizer[name]);
 
             public LocalizedHtmlString this[string name, params object[] arguments]
             {
@@ -43,17 +42,26 @@ namespace OrchardCore.Localization
                         Array.Copy(pluralArgument.Arguments, 0, arguments, 1, pluralArgument.Arguments.Length);
                     }
 
-                    return new LocalizedHtmlString(name, translation, false, arguments);
+                    return ToHtmlString(StringLocalizer[name], translation, arguments);
                 }
             }
 
-            public LocalizedString GetString(string name) =>
-                NullStringLocalizerFactory.NullLocalizer.Instance.GetString(name);
+            public LocalizedString GetString(string name) => StringLocalizer.GetString(name);
 
-            public LocalizedString GetString(string name, params object[] arguments) =>
-                NullStringLocalizerFactory.NullLocalizer.Instance.GetString(name, arguments);
+            public LocalizedString GetString(string name, params object[] arguments)
+                => StringLocalizer.GetString(name, arguments);
 
-            IHtmlLocalizer IHtmlLocalizer.WithCulture(CultureInfo culture) => Instance;
+            IHtmlLocalizer IHtmlLocalizer.WithCulture(CultureInfo culture)
+                => new NullHtmlLocalizer();
+
+            private static IStringLocalizer StringLocalizer
+                => NullStringLocalizerFactory.NullStringLocalizer.Instance;
+
+            private LocalizedHtmlString ToHtmlString(LocalizedString localizedString)
+                => new LocalizedHtmlString(localizedString.Name, localizedString.Value, localizedString.ResourceNotFound);
+
+            private LocalizedHtmlString ToHtmlString(LocalizedString localizedString, string value, object[] arguments)
+                => new LocalizedHtmlString(localizedString.Name, value, localizedString.ResourceNotFound, arguments);
         }
     }
 }

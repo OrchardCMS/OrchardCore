@@ -12,15 +12,15 @@ namespace OrchardCore.Localization
     /// </remarks>
     public class NullStringLocalizerFactory : IStringLocalizerFactory
     {
-        public IStringLocalizer Create(Type resourceSource) => NullLocalizer.Instance;
+        public IStringLocalizer Create(Type resourceSource) => NullStringLocalizer.Instance;
 
-        public IStringLocalizer Create(string baseName, string location) => NullLocalizer.Instance;
+        public IStringLocalizer Create(string baseName, string location) => NullStringLocalizer.Instance;
 
-        internal class NullLocalizer : IStringLocalizer
+        internal class NullStringLocalizer : IStringLocalizer
         {
             private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n == 1) ? 0 : 1;
 
-            public static NullLocalizer Instance { get; } = new NullLocalizer();
+            public static NullStringLocalizer Instance { get; } = new NullStringLocalizer();
 
             public LocalizedString this[string name] => new LocalizedString(name, name, false);
 
