@@ -6,7 +6,7 @@
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
- * Bootstrap-select v1.13.11 (https://developer.snapappointments.com/bootstrap-select)
+ * Bootstrap-select v1.13.12 (https://developer.snapappointments.com/bootstrap-select)
  *
  * Copyright 2012-2019 SnapAppointments, LLC
  * Licensed under MIT (https://github.com/snapappointments/bootstrap-select/blob/master/LICENSE)
@@ -982,7 +982,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       this.init();
     };
 
-    Selectpicker.VERSION = '1.13.11'; // part of this is duplicated in i18n/defaults-en_US.js. Make sure to update both.
+    Selectpicker.VERSION = '1.13.12'; // part of this is duplicated in i18n/defaults-en_US.js. Make sure to update both.
 
     Selectpicker.DEFAULTS = {
       noneSelectedText: 'Nothing selected',
@@ -1155,7 +1155,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }
 
         if (this.options.liveSearch) {
-          searchbox = '<div class="bs-searchbox">' + '<input type="text" class="form-control" autocomplete="off"' + (this.options.liveSearchPlaceholder === null ? '' : ' placeholder="' + htmlEscape(this.options.liveSearchPlaceholder) + '"') + ' role="combobox" aria-label="Search" aria-controls="' + this.selectId + '" aria-autocomplete="list">' + '</div>';
+          searchbox = '<div class="bs-searchbox">' + '<input type="search" class="form-control" autocomplete="off"' + (this.options.liveSearchPlaceholder === null ? '' : ' placeholder="' + htmlEscape(this.options.liveSearchPlaceholder) + '"') + ' role="combobox" aria-label="Search" aria-controls="' + this.selectId + '" aria-autocomplete="list">' + '</div>';
         }
 
         if (this.multiple && this.options.actionsBox) {
@@ -1800,6 +1800,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         text.className = 'text';
         a.className = 'dropdown-item ' + (firstOption ? firstOption.className : '');
         newElement.className = this.$menu[0].parentNode.className + ' ' + classNames.SHOW;
+        newElement.style.width = 0; // ensure button width doesn't affect natural width of menu when calculating
+
         if (this.options.width === 'auto') menu.style.minWidth = 0;
         menu.className = classNames.MENU + ' ' + classNames.SHOW;
         menuInner.className = 'inner ' + classNames.SHOW;
@@ -2194,8 +2196,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         return this.$element[0].disabled;
       },
       checkDisabled: function checkDisabled() {
-        var that = this;
-
         if (this.isDisabled()) {
           this.$newElement[0].classList.add(classNames.DISABLED);
           this.$button.addClass(classNames.DISABLED).attr('tabindex', -1).attr('aria-disabled', true);
@@ -2209,10 +2209,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             this.$button.removeAttr('tabindex');
           }
         }
-
-        this.$button.on('click', function () {
-          return !that.isDisabled();
-        });
       },
       tabIndex: function tabIndex() {
         if (this.$element.data('tabindex') !== this.$element.attr('tabindex') && this.$element.attr('tabindex') !== -98 && this.$element.attr('tabindex') !== '-98') {
@@ -2611,7 +2607,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             isArrowKey = REGEXP_ARROW.test(e.which) || downOnTab,
             scrollTop = that.$menuInner[0].scrollTop,
             isVirtual = that.isVirtual(),
-            position0 = isVirtual === true ? that.selectpicker.view.position0 : 0;
+            position0 = isVirtual === true ? that.selectpicker.view.position0 : 0; // do nothing if a function key is pressed
+
+        if (e.which >= 112 && e.which <= 123) return;
         isActive = that.$newElement.hasClass(classNames.SHOW);
 
         if (!isActive && (isArrowKey || e.which >= 48 && e.which <= 57 || e.which >= 96 && e.which <= 105 || e.which >= 65 && e.which <= 90)) {
@@ -2924,7 +2922,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       return this;
     };
 
-    $(document).off('keydown.bs.dropdown.data-api').on('keydown' + EVENT_KEY, '.bootstrap-select [data-toggle="dropdown"], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input', Selectpicker.prototype.keydown).on('focusin.modal', '.bootstrap-select [data-toggle="dropdown"], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input', function (e) {
+    $(document).off('keydown.bs.dropdown.data-api', '.bootstrap-select [data-toggle="dropdown"], .bootstrap-select .dropdown-menu').on('keydown' + EVENT_KEY, '.bootstrap-select [data-toggle="dropdown"], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input', Selectpicker.prototype.keydown).on('focusin.modal', '.bootstrap-select [data-toggle="dropdown"], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input', function (e) {
       e.stopPropagation();
     }); // SELECTPICKER DATA-API
     // =====================
