@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Fluid;
 using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 using YesSql;
 
@@ -32,9 +33,10 @@ namespace OrchardCore.Queries.Sql
             return new SqlQuery();
         }
 
-        public async Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var sqlQuery = query as SqlQuery;
+            var sqlQueryResults = new SQLQueryResults();
 
             var templateContext = new TemplateContext();
 
@@ -46,7 +48,6 @@ namespace OrchardCore.Queries.Sql
                 }
             }
 
-
             var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, NullEncoder.Default, templateContext);
 
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
@@ -54,7 +55,8 @@ namespace OrchardCore.Queries.Sql
 
             if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
-                return new object[0];
+                sqlQueryResults.Items = new object[0];
+                return sqlQueryResults;
             }
 
             if (sqlQuery.ReturnDocuments)
@@ -67,7 +69,8 @@ namespace OrchardCore.Queries.Sql
                     documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
                 }
 
-                return await _session.GetAsync<object>(documentIds.ToArray());
+                sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
+                return sqlQueryResults;
             }
             else
             {
@@ -86,7 +89,8 @@ namespace OrchardCore.Queries.Sql
                     results.Add(JObject.FromObject(document));
                 }
 
-                return results;
+                sqlQueryResults.Items = results;
+                return sqlQueryResults;
             }
         }
     }

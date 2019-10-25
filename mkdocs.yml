@@ -4,6 +4,7 @@ theme: readthedocs
 # Repository
 repo_name: OrchardCMS/OrchardCore
 repo_url: https://github.com/OrchardCMS/OrchardCore
+edit_uri: edit/dev/src/
 
 # Options
 docs_dir: src
@@ -37,6 +38,7 @@ nav:
         - Creating a Modular ASP.NET Core Application: docs/guides/create-modular-application-mvc/index.md
         - Running Code on Startup: docs/guides/run-code-on-startup/index.md
         - Creating an Orchard Core CMS website: docs/guides/create-cms-application/index.md
+        - Creating an Orchard Core Decoupled CMS website: docs/guides/decoupled-cms/decoupled/
         - Adding a Menu Item to the Admin Navigation: docs/guides/add-admin-menu/index.md
         - Installing Localization Files: docs/guides/install-localization-files/index.md
     - Code Generation Templates: docs/templates/README.md
@@ -54,6 +56,7 @@ nav:
         - Lists: OrchardCore.Modules/OrchardCore.Lists/README.md
         - Markdown: OrchardCore.Modules/OrchardCore.Markdown/README.md
         - Media: OrchardCore.Modules/OrchardCore.Media/README.md
+        - Media Azure: OrchardCore.Modules/OrchardCore.Media.Azure/README.md
         - Menu: OrchardCore.Modules/OrchardCore.Menu/README.md
         - Navigation: OrchardCore.Modules/OrchardCore.Navigation/README.md
         - Indexing: OrchardCore.Modules/OrchardCore.Indexing/README.md
@@ -72,6 +75,7 @@ nav:
         - Configuration: OrchardCore/OrchardCore/Environment/Shell/README.md
         - Data: OrchardCore/OrchardCore.Data/README.md
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
+        - Email: OrchardCore.Modules/OrchardCore.Email/README.md
         - GraphQL: OrchardCore.Modules/OrchardCore.Apis.GraphQL/README.md
         - GraphQL queries: OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/README.md
         - Health Check: OrchardCore.Modules/OrchardCore.HealthChecks/README.md

@@ -24,6 +24,6 @@ else
     <label asp-for="SearchFields">@T["Default searched fields"]</label>
     <input asp-for="SearchFields" class="form-control" />
     <span asp-validation-for="SearchFields"></span>
-    <span class="hint">@T["A comma separated list of fields to use for search pages. (e.g., Content.ContentItem.DisplayText.Analyzed, Content.BodyAspect.Body)"]</span>
+    <span class="hint">@T["A comma separated list of fields to use for search pages. The default value is <code>Content.ContentItem.FullText</code>."]</span>
 </fieldset>
 

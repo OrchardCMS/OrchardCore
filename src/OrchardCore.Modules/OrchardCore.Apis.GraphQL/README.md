@@ -84,9 +84,9 @@ Configuration is done via the standard shell configuration, as follows.
       "ExposeExceptions": true,
       "MaxDepth": 50, 
       "MaxComplexity": 100, 
-      "FieldImpact": 2.0 ,
-      "DefaultNumberOfResults": 100
-      "MaxNumberOfResults": 1000
+      "FieldImpact": 2.0,
+      "DefaultNumberOfResults": 100,
+      "MaxNumberOfResults": 1000,
       "MaxNumberOfResultsValidationMode": "Default"
     }
   }

@@ -28,7 +28,6 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IHtmlLocalizer<ScopeController> H;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly ISiteService _siteService;
-        private readonly IShapeFactory _shapeFactory;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
@@ -47,7 +46,7 @@ namespace OrchardCore.OpenId.Controllers
             IShellHost shellHost)
         {
             _scopeManager = scopeManager;
-            _shapeFactory = shapeFactory;
+            New = shapeFactory;
             _siteService = siteService;
             T = stringLocalizer;
             H = htmlLocalizer;
@@ -58,6 +57,8 @@ namespace OrchardCore.OpenId.Controllers
             _shellHost = shellHost;
         }
 
+        public dynamic New { get; }
+
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
@@ -67,13 +68,11 @@ namespace OrchardCore.OpenId.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var count = await _scopeManager.CountAsync();
 
             var model = new OpenIdScopeIndexViewModel
             {
-                Pager = await _shapeFactory.CreateAsync("Pager", new
-                {
-                    TotalItemCount = await _scopeManager.CountAsync()
-                })
+                Pager = (await New.Pager(pager)).TotalItemCount(count)
             };
 
             foreach (var scope in await _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
