@@ -47,7 +47,7 @@ namespace OrchardCore.Contents.Scripting
             _updateContentItemMethod = new GlobalMethod
             {
                 Name = "updateContentItem",
-                Method = serviceProvider => (Action<IContent, object>)((contentItem, properties) =>
+                Method = serviceProvider => (Action<ContentItem, object>)((contentItem, properties) =>
                 {
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     var props = JObject.FromObject(properties);
