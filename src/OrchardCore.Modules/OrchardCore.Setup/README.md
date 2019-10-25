@@ -15,3 +15,18 @@ During setup, all recipes have access to the setup screen values using these par
 | `DatabaseTablePrefix` | The database table prefix. |
 
 These parameters can be used in the recipe using a scripted value like `[js: parameters('AdminUsername')]`.
+
+## Configuration
+`OrchardCore.Setup` can be configured through `appsettings.json` as the following:
+
+```json
+    "OrchardCore.Setup": {
+        "DefaultCulture": "",
+        "SupportedCultures": [ "en" ]
+    }
+```
+
+| Key | Description |
+| --- | --- |
+| `DefaultCulture` | The default culture that has been used for the setup screent. |
+| `SupportedCultures` | The list of the supported cultures for the setup screen. |
