@@ -80,7 +80,7 @@ namespace OrchardCore.Lucene
             }
             else
             {
-                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName).ToImmutableDictionary(x => x.IndexName, x => x);;
+                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName).ToImmutableDictionary(x => x.IndexName, x => x);
 
                 if (indexSettingsList == null)
                 {
