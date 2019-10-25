@@ -18,6 +18,8 @@ namespace OrchardCore.Tests.Localization
         [InlineData("there are more (2) thing", 2, "there is one ({0}) {1}", "there are more ({0}) {1}", "thing")]
         [InlineData("there is one (1) &lt;br/&gt;", 1, "there is one ({0}) {1}", "there are more ({0}) {1}", "<br/>")]
         [InlineData("there are more (2) &lt;br/&gt;", 2, "there is one ({0}) {1}", "there are more ({0}) {1}", "<br/>")]
+        [InlineData("1 minute ago", 1, "{0} minute ago", "{0} minutes ago")]
+        [InlineData("20 minutes ago", 20, "{0} minute ago", "{0} minutes ago")]
         public void HtmlNullLocalizerSupportsPlural(string expected, int count, string singular, string plural, params object[] arguments)
         {
             var localizer = new NullHtmlLocalizerFactory().Create(typeof(object));
@@ -38,6 +40,8 @@ namespace OrchardCore.Tests.Localization
         [InlineData("there are more (2) thing", 2, "there is one ({0}) {1}", "there are more ({0}) {1}", "thing")]
         [InlineData("there is one (1) <br/>", 1, "there is one ({0}) {1}", "there are more ({0}) {1}", "<br/>")]
         [InlineData("there are more (2) <br/>", 2, "there is one ({0}) {1}", "there are more ({0}) {1}", "<br/>")]
+        [InlineData("1 minute ago", 1, "{0} minute ago", "{0} minutes ago")]
+        [InlineData("20 minutes ago", 20, "{0} minute ago", "{0} minutes ago")]
         public void StringNullLocalizerSupportsPlural(string expected, int count, string singular, string plural, params object[] arguments)
         {
             var localizer = new NullStringLocalizerFactory().Create(typeof(object));
