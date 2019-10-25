@@ -29,7 +29,7 @@ namespace OrchardCore.Modules
         ITimeZoneCountry[] GetTimeZonesCountries();
 
         /// <summary>
-        /// Returns the list of all available <see cref="ITimeZoneCountry" />.
+        /// Returns the list of all available <see cref="ITimeZoneOffset" />.
         /// </summary>
         ITimeZoneOffset[] GetTimeZonesOffsets();
 

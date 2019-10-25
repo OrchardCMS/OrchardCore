@@ -4,11 +4,11 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<DateTimeOffsetFieldSettings>();
 }
-
+    <label asp-for="LocalDateTime">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="border rounded p-3 form-group">
         <div class="form-group">
             <div class="row col-sm-12 col-md-6 col-lg-3">
-                <label asp-for="LocalDateTime">@Model.PartFieldDefinition.DisplayName()</label>
+                
                 <input asp-for="LocalDateTime" type="datetime-local" class="form-control content-preview-select" required="@settings.Required" />
                 <span class="hint">@settings.Hint</span>
             </div>
@@ -17,6 +17,7 @@
         <div class="form-group" asp-validation-class-for="Offset">
             <label asp-for="Offset">@T["Offset"]</label>
             <select asp-for="Offset" class="form-control">
+                <!-- Not sure we should retrieve the list of Offsets from Nodatime as it returns a list of possible Offsets from Datetime.Now and it could possibly not list the offset you want. -->
                 @foreach (var offset in Clock.GetTimeZonesOffsets().OrderBy(t => t.ToString()))
                 {
                     <option value="@offset.Offset" selected="@(Model.Offset == offset.Offset)">
