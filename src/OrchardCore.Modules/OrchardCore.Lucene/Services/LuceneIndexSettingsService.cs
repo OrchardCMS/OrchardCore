@@ -57,7 +57,11 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                _indexSettings.Remove(settings);
+                var existing = _indexSettings.FirstOrDefault(x => String.Equals(x.IndexName, settings.IndexName, StringComparison.OrdinalIgnoreCase));
+                if (existing != null)
+                {
+                    _indexSettings.Remove(existing);
+                }
                 _indexSettings.Add(settings);
                 Update();
             }

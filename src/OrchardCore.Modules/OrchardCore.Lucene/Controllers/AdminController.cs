@@ -141,11 +141,7 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                var settings = _luceneIndexSettingsService.List().Where(x => x.IndexName == model.IndexName).FirstOrDefault();
-                settings.AnalyzerName = model.AnalyzerName;
-                settings.IndexLatest = model.IndexLatest;
-                settings.IndexInBackgroundTask = model.IndexInBackgroundTask;
-                settings.IndexedContentTypes = model.IndexedContentTypes;
+                var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes };
 
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.
