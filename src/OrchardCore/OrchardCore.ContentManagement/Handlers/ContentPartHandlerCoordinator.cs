@@ -329,7 +329,10 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.PublishingAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync(async handler => {
+                            Logger.LogWarning("The handler '{Handler}' should not be registerd as IContentPartHandler. Use WithHandler<T> instead.", handler.GetType());
+                            await handler.PublishingAsync(context, part);
+                        }, Logger);
                     }
                 }
             }

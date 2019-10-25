@@ -333,6 +333,7 @@ namespace OrchardCore.ContentManagement.Display
                     {
                         await _fieldDisplayDrivers.InvokeAsync(async contentDisplay =>
                         {
+                            Logger.LogWarning("The display driver '{DisplayDriver}' should not be registerd as IContentFieldDisplayDriver. Use WithDisplayDriver<T> instead.", contentDisplay.GetType());
                             var result = await contentDisplay.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
                             if (result != null)
                             {

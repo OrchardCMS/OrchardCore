@@ -16,6 +16,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             var builder = new ContentPartOptionBuilder(services, typeof(TContentPart));
             builder.Services.Configure<ContentDisplayOptions>(o => o.TryAddContentPart(builder.ContentPartType));
             builder.WithDisplayDriver<TContentPartDisplayDriver>();
+
             return builder;
         }
 
@@ -32,6 +33,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 o.TryAddContentPart(builder.ContentPartType);
                 o.WithPartDisplayDriver(builder.ContentPartType, typeof(TContentPartDisplayDriver));
             });
+
             return builder;
         }
 
@@ -47,6 +49,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             var builder = new ContentFieldOptionBuilder(services, typeof(TContentField));
             builder.Services.Configure<ContentDisplayOptions>(o => o.TryAddContentField(builder.ContentFieldType));
             builder.WithDisplayDriver<TContentFieldDisplayDriver>();
+
             return builder;
         }
 
@@ -64,6 +67,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 o.TryAddContentField(builder.ContentFieldType);
                 o.WithFieldDisplayDriver(builder.ContentFieldType, typeof(TContentFieldDisplayDriver));
             });
+
             return builder;
         }
     }

@@ -10,7 +10,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         private readonly List<ContentFieldDisplayOption> _contentFields = new List<ContentFieldDisplayOption>();
 
-        internal ContentPartDisplayOption TryAddContentPart(Type contentPartType)
+        public ContentPartDisplayOption TryAddContentPart(Type contentPartType)
         {
             if (!contentPartType.IsSubclassOf(typeof(ContentPart)))
             {
@@ -25,11 +25,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return option;
         }
 
-        internal void WithPartDisplayDriver(Type contentPartType, Type displayDriverType)
+        public void WithPartDisplayDriver(Type contentPartType, Type displayDriverType)
         {
             var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
             option.WithDisplayDriver(displayDriverType);
         }
+
         public ContentFieldDisplayOption TryAddContentField(Type contentFieldType)
         {
             if (!contentFieldType.IsSubclassOf(typeof(ContentField)))
@@ -46,7 +47,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return option;
         }
 
-        internal void WithFieldDisplayDriver(Type contentFieldType, Type displayDriverType)
+        public void WithFieldDisplayDriver(Type contentFieldType, Type displayDriverType)
         {
             var option = _contentFields.FirstOrDefault(x => x.Type == contentFieldType);
             option.WithDisplayDriver(displayDriverType);
@@ -54,6 +55,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         private Dictionary<string, ContentPartDisplayOption> _contentPartOptions;
         public IReadOnlyDictionary<string, ContentPartDisplayOption> ContentPartOptions => _contentPartOptions ??= _contentParts.ToDictionary(k => k.Type.Name);
+
 
         private Dictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
         public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions => _contentFieldOptions ??= _contentFields.ToDictionary(k => k.Type.Name);

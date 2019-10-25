@@ -12,12 +12,13 @@ namespace OrchardCore.ContentManagement
         private readonly List<ContentPartOption> _contentParts = new List<ContentPartOption>();
 
         private readonly List<ContentFieldOption> _contentFields = new List<ContentFieldOption>();
-        internal ContentPartOption AddContentPart<T>() where T : ContentPart
+
+        public ContentPartOption AddContentPart<T>() where T : ContentPart
         {
             return AddContentPart(typeof(T));
         }
 
-        internal ContentPartOption AddContentPart(Type contentPartType)
+        public ContentPartOption AddContentPart(Type contentPartType)
         {
             if (!contentPartType.IsSubclassOf(typeof(ContentPart)))
             {
@@ -30,33 +31,35 @@ namespace OrchardCore.ContentManagement
             return option;
         }
 
-        internal ContentPartOption TryAddContentPart(Type contentPartType)
+        public ContentPartOption TryAddContentPart(Type contentPartType)
         {
             if (!contentPartType.IsSubclassOf(typeof(ContentPart)))
             {
                 throw new ArgumentException("The type must inherit from " + nameof(ContentPart));
             }
+
             var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
             if (option == null)
             {
                 option = new ContentPartOption(contentPartType);
                 _contentParts.Add(option);
             }
+
             return option;
         }
 
-        internal void WithPartHandler(Type contentPartType, Type handlerType)
+        public void WithPartHandler(Type contentPartType, Type handlerType)
         {
             var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
             option.WithHandler(handlerType);
         }
 
-        internal ContentFieldOption AddContentField<T>() where T : ContentField
+        public ContentFieldOption AddContentField<T>() where T : ContentField
         {
             return AddContentField(typeof(T));
         }
 
-        internal ContentFieldOption AddContentField(Type contentFieldType)
+        public ContentFieldOption AddContentField(Type contentFieldType)
         {
             if (!contentFieldType.IsSubclassOf(typeof(ContentField)))
             {
@@ -69,10 +72,10 @@ namespace OrchardCore.ContentManagement
             return option;
         }
 
-        public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
-
         private IReadOnlyDictionary<string, ContentPartOption> _contentPartOptionsLookup;
         public IReadOnlyDictionary<string, ContentPartOption> ContentPartOptionsLookup => _contentPartOptionsLookup ??= ContentPartOptions.ToDictionary(k => k.Type.Name);
+
+        public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
 
         public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;
     }
