@@ -17,7 +17,7 @@ During setup, all recipes have access to the setup screen values using these par
 These parameters can be used in the recipe using a scripted value like `[js: parameters('AdminUsername')]`.
 
 ## Configuration
-`OrchardCore.Setup` can be configured through `appsettings.json` as the following:
+`OrchardCore.Setup` can be configured through `appsettings.json` as follows:
 
 ```json
     "OrchardCore.Setup": {
@@ -28,5 +28,5 @@ These parameters can be used in the recipe using a scripted value like `[js: par
 
 | Key | Description |
 | --- | --- |
-| `DefaultCulture` | The default culture that has been used for the setup screent. |
+| `DefaultCulture` | The default culture that will be used for the setup screen. |
 | `SupportedCultures` | The list of the supported cultures for the setup screen. |
