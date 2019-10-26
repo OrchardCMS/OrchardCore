@@ -8,7 +8,7 @@
     {% resources type: "Meta" %}
 
     <!-- Bootstrap core CSS -->
-    {% style name:"vendor-bootstrap", version:"4" %}
+    {% style name:"bootstrap-oc", version:"1" %}
 
     <!-- Custom fonts for this template -->
     {% style name:"vendor-font-awesome", version:"5" %}
@@ -19,7 +19,6 @@
 
     <!-- Custom styles for this template -->
     {% style src:"~/TheAgencyTheme/css/agency.min.css", debug_src:"~/TheAgencyTheme/css/agency.css" %}
-    {% style src:"~/TheAgencyTheme/css/bootstrap-grid-ext.min.css", debug_src:"~/TheAgencyTheme/css/bootstrap-grid-ext.css" %}
 
     <!-- Bootstrap core JavaScript -->
     {% script name:"vendor-jquery", at:"Foot" %}    
@@ -51,6 +50,7 @@
     </nav>
     {% render_section "Header", required: false %}
     <div class="container" id="main">
+		{% render_section "Messages", required: false %}
         {% render_section "Content" %}
     </div>
     {% render_section "Footer", required: false %}
