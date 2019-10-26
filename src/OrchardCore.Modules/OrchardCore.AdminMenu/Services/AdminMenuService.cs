@@ -44,9 +44,7 @@ namespace OrchardCore.AdminMenu
         /// </summary>
         public async Task<AdminMenuList> GetAdminMenuListAsync()
         {
-            AdminMenuList adminMenuList;
-
-            if (!_memoryCache.TryGetValue(AdminMenuCacheKey, out adminMenuList))
+            if (!_memoryCache.TryGetValue<AdminMenuList>(AdminMenuCacheKey, out var adminMenuList))
             {
                 var changeToken = ChangeToken;
 

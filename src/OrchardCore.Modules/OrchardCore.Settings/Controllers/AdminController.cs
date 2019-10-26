@@ -64,7 +64,7 @@ namespace OrchardCore.Settings.Controllers
                 return Unauthorized();
             }
 
-            var site = await _siteService.GetSiteSettingsAsync();
+            var site = await _siteService.LoadSiteSettingsAsync();
 
             var viewModel = new AdminIndexViewModel
             {

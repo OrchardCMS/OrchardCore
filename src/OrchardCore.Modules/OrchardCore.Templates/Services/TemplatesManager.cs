@@ -40,9 +40,7 @@ namespace OrchardCore.Templates.Services
         /// </summary>
         public async Task<TemplatesDocument> GetTemplatesDocumentAsync()
         {
-            TemplatesDocument document;
-
-            if (!_memoryCache.TryGetValue(CacheKey, out document))
+            if (!_memoryCache.TryGetValue<TemplatesDocument>(CacheKey, out var document))
             {
                 var changeToken = ChangeToken;
 

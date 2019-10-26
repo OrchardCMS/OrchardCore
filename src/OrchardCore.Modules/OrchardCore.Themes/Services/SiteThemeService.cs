@@ -37,7 +37,7 @@ namespace OrchardCore.Themes.Services
 
         public async Task SetSiteThemeAsync(string themeName)
         {
-            var site = await _siteService.GetSiteSettingsAsync();
+            var site = await _siteService.LoadSiteSettingsAsync();
             site.Properties["CurrentThemeName"] = themeName;
             await _siteService.UpdateSiteSettingsAsync(site);
         }

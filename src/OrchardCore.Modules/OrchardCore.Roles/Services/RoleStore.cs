@@ -68,9 +68,7 @@ namespace OrchardCore.Roles.Services
         /// </summary>
         private async Task<RolesDocument> GetRolesAsync()
         {
-            RolesDocument document;
-
-            if (!_memoryCache.TryGetValue(Key, out document))
+            if (!_memoryCache.TryGetValue<RolesDocument>(Key, out var document))
             {
                 var changeToken = _signal.GetToken(Key);
 

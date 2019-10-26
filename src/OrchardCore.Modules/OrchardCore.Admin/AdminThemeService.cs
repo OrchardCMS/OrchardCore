@@ -37,7 +37,7 @@ namespace OrchardCore.Admin
 
         public async Task SetAdminThemeAsync(string themeName)
         {
-            var site = await _siteService.GetSiteSettingsAsync();
+            var site = await _siteService.LoadSiteSettingsAsync();
             site.Properties["CurrentAdminThemeName"] = themeName;
             await _siteService.UpdateSiteSettingsAsync(site);
         }

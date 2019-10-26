@@ -54,7 +54,7 @@ namespace OrchardCore.Autoroute.Handlers
 
             if (part.SetHomepage)
             {
-                var site = await _siteService.GetSiteSettingsAsync();
+                var site = await _siteService.LoadSiteSettingsAsync();
 
                 if (site.HomeRoute == null)
                 {
