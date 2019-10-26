@@ -11,36 +11,50 @@ namespace OrchardCore.Queries.Services
 {
     public class QueryManager : IQueryManager
     {
-        private readonly IMemoryCache _memoryCache;
-        private readonly ISignal _signal;
-        private readonly ISession _session;
-        private IEnumerable<IQuerySource> _querySources;
-
         private const string QueriesDocumentCacheKey = nameof(QueriesDocumentCacheKey);
 
-        public IChangeToken ChangeToken => _signal.GetToken(QueriesDocumentCacheKey);
+        private readonly ISignal _signal;
+        private readonly ISession _session;
+        private readonly IMemoryCache _memoryCache;
+        private IEnumerable<IQuerySource> _querySources;
+
+        private QueriesDocument _queriesDocument;
 
         public QueryManager(
-            IMemoryCache memoryCache,
             ISignal signal,
             ISession session,
+            IMemoryCache memoryCache,
             IEnumerable<IQuerySource> querySources)
         {
-            _memoryCache = memoryCache;
             _signal = signal;
             _session = session;
+            _memoryCache = memoryCache;
             _querySources = querySources;
         }
 
+        public IChangeToken ChangeToken => _signal.GetToken(QueriesDocumentCacheKey);
+
         public async Task DeleteQueryAsync(string name)
         {
-            var existing = await GetDocumentAsync();
-            existing.Queries = existing.Queries.Remove(name);
+            var existing = await LoadDocumentAsync();
+            existing.Queries.Remove(name);
 
             _session.Save(existing);
             _signal.DeferredSignalToken(QueriesDocumentCacheKey);
 
             return;
+        }
+
+        public async Task<Query> LoadQueryAsync(string name)
+        {
+            var document = await LoadDocumentAsync();
+
+            if (document.Queries.TryGetValue(name, out var query))
+            {
+                return query;
+            }
+
+            return null;
         }
 
         public async Task<Query> GetQueryAsync(string name)
@@ -62,8 +76,14 @@ namespace OrchardCore.Queries.Services
 
         public async Task SaveQueryAsync(string name, Query query)
         {
-            var existing = await GetDocumentAsync();
-            existing.Queries = existing.Queries.SetItem(query.Name, query);
+            if (query.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
+
+            var existing = await LoadDocumentAsync();
+            existing.Queries.Remove(name);
+            existing.Queries[query.Name] = query;
 
             _session.Save(existing);
             _signal.DeferredSignalToken(QueriesDocumentCacheKey);
@@ -71,27 +91,45 @@ namespace OrchardCore.Queries.Services
             return;
         }
 
+        /// <summary>
+        /// Returns the document from the database to be updated.
+        /// </summary>
+        private async Task<QueriesDocument> LoadDocumentAsync()
+        {
+            return _queriesDocument = _queriesDocument ?? await _session.Query<QueriesDocument>().FirstOrDefaultAsync() ?? new QueriesDocument();
+        }
+
+        /// <summary>
+        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// </summary>
         private async Task<QueriesDocument> GetDocumentAsync()
         {
-            QueriesDocument queries;
-
-            if (!_memoryCache.TryGetValue(QueriesDocumentCacheKey, out queries))
+            if (!_memoryCache.TryGetValue<QueriesDocument>(QueriesDocumentCacheKey, out var queries))
             {
                 var changeToken = ChangeToken;
+
+                if (_queriesDocument != null)
+                {
+                    _session.Detach(_queriesDocument);
+                }
+
                 queries = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
 
-                if (queries == null)
+                if (queries != null)
                 {
-                    queries = new QueriesDocument();
+                    _session.Detach(queries);
 
-                    _session.Save(queries);
-                    _signal.DeferredSignalToken(QueriesDocumentCacheKey);
+                    foreach (var query in queries.Queries.Values)
+                    {
+                        query.IsReadonly = true;
+                    }
                 }
                 else
                 {
-                    queries.Queries = queries.Queries.WithComparers(StringComparer.OrdinalIgnoreCase);
-                    _memoryCache.Set(QueriesDocumentCacheKey, queries, changeToken);
+                    queries = new QueriesDocument();
                 }
+
+                _memoryCache.Set(QueriesDocumentCacheKey, queries, changeToken);
             }
 
             return queries;

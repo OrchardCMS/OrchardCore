@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 
 namespace OrchardCore.Queries.Services
 {
     public class QueriesDocument
     {
-        public int Id { get; set; } // An identifier so that updates don't create new documents
-        public ImmutableDictionary<string, Query> Queries { get; set; } = ImmutableDictionary.Create<string, Query>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, Query> Queries { get; set; } = new Dictionary<string, Query>(StringComparer.OrdinalIgnoreCase);
     }
 }

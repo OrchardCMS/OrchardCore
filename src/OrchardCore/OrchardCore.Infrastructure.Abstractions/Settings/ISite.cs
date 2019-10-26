@@ -5,7 +5,7 @@ namespace OrchardCore.Settings
 {
     public interface ISite : IEntity
     {
-        public bool IsReadonly { get; set; }
+        bool IsReadonly { get; set; }
         string SiteName { get; set; }
         string PageTitleFormat { get; set; }
         string SiteSalt { get; set; }
