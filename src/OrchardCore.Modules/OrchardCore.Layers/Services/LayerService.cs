@@ -15,42 +15,62 @@ namespace OrchardCore.Layers.Services
 {
     public class LayerService : ILayerService
     {
-        private readonly IMemoryCache _memoryCache;
-        private readonly ISession _session;
-        private readonly ISignal _signal;
-
         private const string LayersCacheKey = "LayersDocument";
 
+        private readonly ISignal _signal;
+        private readonly ISession _session;
+        private readonly IMemoryCache _memoryCache;
+
+        private LayersDocument _layersDocument;
+
         public LayerService(
-            IMemoryCache memoryCache,
             ISignal signal,
-            ISession session)
+            ISession session,
+            IMemoryCache memoryCache)
         {
             _signal = signal;
             _session = session;
             _memoryCache = memoryCache;
         }
 
+        /// <summary>
+        /// Returns the document from the database to be updated.
+        /// </summary>
+        public async Task<LayersDocument> LoadLayersAsync()
+        {
+            return _layersDocument ??= await _session.Query<LayersDocument>().FirstOrDefaultAsync() ?? new LayersDocument();
+        }
+
+        /// <summary>
+        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// </summary>
+        /// <inheritdoc/>
+
         public async Task<LayersDocument> GetLayersAsync()
         {
-            LayersDocument layers;
-
-            if (!_memoryCache.TryGetValue(LayersCacheKey, out layers))
+            if (!_memoryCache.TryGetValue<LayersDocument>(LayersCacheKey, out var layers))
             {
                 var changeToken = _signal.GetToken(LayersCacheKey);
+
+                if (_layersDocument != null)
+                {
+                    _session.Detach(_layersDocument);
+                }
+
                 layers = await _session.Query<LayersDocument>().FirstOrDefaultAsync();
 
-                if (layers == null)
+                if (layers != null)
                 {
-                    layers = new LayersDocument();
-
-                    _session.Save(layers);
-                    _signal.DeferredSignalToken(LayersCacheKey);
+                    _session.Detach(layers);
                 }
                 else
                 {
-                    _memoryCache.Set(LayersCacheKey, layers, changeToken);
+                    layers = new LayersDocument();
                 }
+
+                layers.IsReadonly = true;
+
+                _memoryCache.Set(LayersCacheKey, layers, changeToken);
             }
 
             return layers;
@@ -79,7 +99,12 @@ namespace OrchardCore.Layers.Services
 
         public async Task UpdateAsync(LayersDocument layers)
         {
-            var existing = await GetLayersAsync();
+            if (layers.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
+
+            var existing = await LoadLayersAsync();
             existing.Layers = layers.Layers;
 
             _session.Save(existing);

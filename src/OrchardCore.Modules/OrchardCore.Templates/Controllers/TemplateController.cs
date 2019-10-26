@@ -202,8 +202,8 @@ namespace OrchardCore.Templates.Controllers
             }
 
             var templatesDocument = model.AdminTemplates
-                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                : await _templatesManager.GetTemplatesDocumentAsync()
+                ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
+                : await _templatesManager.LoadTemplatesDocumentAsync()
                 ;
 
             if (ModelState.IsValid)
@@ -258,8 +258,8 @@ namespace OrchardCore.Templates.Controllers
             }
 
             var templatesDocument = adminTemplates
-                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                : await _templatesManager.GetTemplatesDocumentAsync()
+                ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
+                : await _templatesManager.LoadTemplatesDocumentAsync()
                 ;
 
             if (!templatesDocument.Templates.ContainsKey(name))

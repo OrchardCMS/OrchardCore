@@ -10,9 +10,18 @@ namespace OrchardCore.Layers.Services
 {
     public interface ILayerService
     {
-		Task<LayersDocument> GetLayersAsync();
-		Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(Expression<Func<ContentItemIndex, bool>> predicate);
+        /// <summary>
+        /// Returns all the layers for udpate.
+        /// </summary>
+        Task<LayersDocument> LoadLayersAsync();
+
+        /// <summary>
+        /// Returns all the layers in read-only.
+        /// </summary>
+        Task<LayersDocument> GetLayersAsync();
+
+        Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(Expression<Func<ContentItemIndex, bool>> predicate);
         Task<IEnumerable<LayerMetadata>> GetLayerWidgetsMetadataAsync(Expression<Func<ContentItemIndex, bool>> predicate);
-		Task UpdateAsync(LayersDocument layers);
-	}
+        Task UpdateAsync(LayersDocument layers);
+    }
 }

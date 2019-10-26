@@ -41,8 +41,8 @@ namespace OrchardCore.Settings.Services
         {
             var scopedCache = ShellScope.Services.GetRequiredService<SiteSettingsCache>();
 
-            return scopedCache.SiteSettings = scopedCache.SiteSettings
-                ?? await Session.Query<SiteSettings>().FirstOrDefaultAsync()
+            return scopedCache.SiteSettings
+                ??= await Session.Query<SiteSettings>().FirstOrDefaultAsync()
                 ?? GetDefaultSettings();
         }
 

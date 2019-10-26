@@ -121,13 +121,13 @@ namespace OrchardCore.Layers.Controllers
                 return Unauthorized();
             }
 
-            var layers = await _layerService.GetLayersAsync();
+            var layers = await _layerService.LoadLayersAsync();
 
             ValidateViewModel(model, layers, isNew: true);
 
             if (ModelState.IsValid)
             {
-                layers.Layers = layers.Layers.Add(new Layer
+                layers.Layers.Add(new Layer
                 {
                     Name = model.Name,
                     Rule = model.Rule,
@@ -176,7 +176,7 @@ namespace OrchardCore.Layers.Controllers
                 return Unauthorized();
             }
 
-            var layers = await _layerService.GetLayersAsync();
+            var layers = await _layerService.LoadLayersAsync();
 
             ValidateViewModel(model, layers, isNew: false);
 
@@ -189,12 +189,9 @@ namespace OrchardCore.Layers.Controllers
                     return NotFound();
                 }
 
-                layers.Layers = layers.Layers.Replace(layer, new Layer
-                {
-                    Name = model.Name,
-                    Rule = model.Rule,
-                    Description = model.Description
-                });
+                layer.Name = model.Name;
+                layer.Rule = model.Rule;
+                layer.Description = model.Description;
 
                 await _layerService.UpdateAsync(layers);
 
@@ -212,7 +209,7 @@ namespace OrchardCore.Layers.Controllers
                 return Unauthorized();
             }
 
-            var layers = await _layerService.GetLayersAsync();
+            var layers = await _layerService.LoadLayersAsync();
 
             var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
 
@@ -225,7 +222,8 @@ namespace OrchardCore.Layers.Controllers
 
             if (!widgets.Any(x => String.Equals(x.Layer, name, StringComparison.OrdinalIgnoreCase)))
             {
-                layers.Layers = layers.Layers.Remove(layer);
+                layers.Layers.Remove(layer);
+                await _layerService.UpdateAsync(layers);
                 _notifier.Success(H["Layer deleted successfully."]);
             }
             else

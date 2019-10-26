@@ -229,7 +229,7 @@ namespace OrchardCore.Queries.Controllers
                 return Unauthorized();
             }
 
-            var query = await _queryManager.GetQueryAsync(id);
+            var query = await _queryManager.LoadQueryAsync(id);
 
             if (query == null)
             {

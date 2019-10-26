@@ -52,8 +52,7 @@ namespace OrchardCore.Roles.Services
         {
         }
 
-        public IQueryable<IRole> Roles =>
-            GetRolesAsync().GetAwaiter().GetResult().Roles.AsQueryable();
+        public IQueryable<IRole> Roles => GetRolesAsync().GetAwaiter().GetResult().Roles.AsQueryable();
 
         /// <summary>
         /// Returns the document from the database to be updated.
@@ -236,6 +235,11 @@ namespace OrchardCore.Roles.Services
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
+            }
+
+            if (((Role)role).IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
             }
 
             var roles = await LoadRolesAsync();

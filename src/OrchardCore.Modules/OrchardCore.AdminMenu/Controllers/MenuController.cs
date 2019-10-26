@@ -143,7 +143,6 @@ namespace OrchardCore.AdminMenu.Controllers
                 return RedirectToAction(nameof(List));
             }
 
-
             return View(model);
         }
 
