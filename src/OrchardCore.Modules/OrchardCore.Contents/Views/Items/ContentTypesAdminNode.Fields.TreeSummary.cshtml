@@ -13,7 +13,7 @@
         .Select(x => x.DisplayName)
         .ToList();
 
-    bool isSelected(ContentTypeDefinition ctd, IEnumerable<ContentTypeEntry> selectedList)
+    bool isSelected(ContentTypeDefinition ctd, ContentTypeEntry[] selectedList)
     {
         return selectedList.Any(selected => String.Equals(ctd.Name, selected.ContentTypeId, StringComparison.OrdinalIgnoreCase));
     }

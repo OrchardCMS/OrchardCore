@@ -45,11 +45,7 @@ namespace OrchardCore.AdminMenu.Models
                 MenuItem item = tempStack.Pop();
                 if (item.Items.Contains(nodeToRemove))
                 {
-                    // Do the mutation on a new list.
-                    var items = item.Items.ToList();
-                    items.Remove(nodeToRemove);
-
-                    item.Items = items;
+                    item.Items.Remove(nodeToRemove);
                     return true; //success
                 }
 
@@ -73,11 +69,7 @@ namespace OrchardCore.AdminMenu.Models
                 MenuItem node = tempStack.Pop();
                 if (node.Equals(destinationNode))
                 {
-                    // Do the mutation on a new list.
-                    var items = node.Items.ToList();
-                    items.Insert(position, nodeToInsert);
-
-                    node.Items = items;
+                    node.Items.Insert(position, nodeToInsert);
                     return true; // success
                 }
 
@@ -90,47 +82,6 @@ namespace OrchardCore.AdminMenu.Models
 
             // failure
             return false;
-        }
-
-        /// <summary>
-        /// Creates a new parent list referencing a shallow copy of this node.
-        /// </summary>
-        public AdminNode Clone(AdminNode nodeToClone)
-        {
-            var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
-
-            while (tempStack.Any())
-            {
-                MenuItem item = tempStack.Pop();
-
-                var index = item.Items.IndexOf(nodeToClone);
-                if (index != -1)
-                {
-                    // Do the mutation on a new list.
-                    var items = item.Items.ToList();
-                    var clone = nodeToClone.Clone();
-
-                    items[index] = clone;
-                    item.Items = items;
-
-                    return clone;
-                }
-
-                foreach (var i in item.Items)
-                {
-                    tempStack.Push((AdminNode)i);
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Creates a shallow copy of this node.
-        /// </summary>
-        public virtual AdminNode Clone()
-        {
-            return MemberwiseClone() as AdminNode;
         }
     }
 }
