@@ -106,8 +106,13 @@ namespace OrchardCore.DisplayManagement.Shapes
             IHtmlContent message = Shape.Message;
             tagBuilder.AddCssClass("message");
             tagBuilder.AddCssClass("message-" + type);
+            tagBuilder.AddCssClass("alert-dismissible fade show");
             tagBuilder.Attributes["role"] = "alert";
             tagBuilder.InnerHtml.AppendHtml(message);
+            var dismissableButton = new HtmlString(@"<button type=""button"" class=""close"" data-dismiss=""alert"" aria-label=""Close"">
+    <span aria-hidden=""true"">&times;</span>
+         </button>");
+            tagBuilder.InnerHtml.AppendHtml(dismissableButton);
             return tagBuilder;
         }
     }
