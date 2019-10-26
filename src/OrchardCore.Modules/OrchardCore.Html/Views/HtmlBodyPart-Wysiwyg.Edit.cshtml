@@ -30,7 +30,7 @@
 
 <script at="Foot">
     $(function () {
-        $('#@Html.IdFor(m => m.Source)').trumbowyg().on('tbwchange', function () {
+        $('#@Html.IdFor(m => m.Source)').trumbowyg(@Html.Raw(settings.Options)).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
     });
