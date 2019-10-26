@@ -14,6 +14,7 @@
     "install:startbootstrap-agency": "cd src/OrchardCore.Themes/TheAgencyTheme/wwwroot && npm install",
     "install:startbootstrap-clean-blog": "cd src/OrchardCore.Themes/TheBlogTheme/wwwroot && npm install",
     "install:startbootstrap-coming-soon": "cd src/OrchardCore.Themes/TheComingSoonTheme/wwwroot && npm install",
+    "install:orchardcore.thetheme": "cd src/OrchardCore.Themes/TheTheme && npm install",
     "postinstall": "run-s install:*"
   },
   "devDependencies": {
