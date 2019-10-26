@@ -25,7 +25,15 @@ namespace OrchardCore.Localization
             public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
                 => StringLocalizer.GetAllStrings(includeParentCultures);
 
-            public LocalizedHtmlString this[string name] => ToHtmlString(StringLocalizer[name]);
+            public LocalizedHtmlString this[string name]
+            {
+                get
+                {
+                    var localizedString = StringLocalizer[name];
+
+                    return new LocalizedHtmlString(localizedString.Name, localizedString.Value, localizedString.ResourceNotFound);
+                }
+            }
 
             public LocalizedHtmlString this[string name, params object[] arguments]
             {
@@ -42,7 +50,9 @@ namespace OrchardCore.Localization
                         Array.Copy(pluralArgument.Arguments, 0, arguments, 1, pluralArgument.Arguments.Length);
                     }
 
-                    return ToHtmlString(StringLocalizer[name], translation, arguments);
+                    var localizedString = StringLocalizer[name];
+
+                    return new LocalizedHtmlString(localizedString.Name, translation, localizedString.ResourceNotFound, arguments);
                 }
             }
 
@@ -56,12 +66,6 @@ namespace OrchardCore.Localization
 
             private static IStringLocalizer StringLocalizer
                 => NullStringLocalizerFactory.NullStringLocalizer.Instance;
-
-            private LocalizedHtmlString ToHtmlString(LocalizedString localizedString)
-                => new LocalizedHtmlString(localizedString.Name, localizedString.Value, localizedString.ResourceNotFound);
-
-            private LocalizedHtmlString ToHtmlString(LocalizedString localizedString, string value, object[] arguments)
-                => new LocalizedHtmlString(localizedString.Name, value, localizedString.ResourceNotFound, arguments);
         }
     }
 }
