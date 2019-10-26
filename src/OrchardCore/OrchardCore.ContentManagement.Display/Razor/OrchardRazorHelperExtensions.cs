@@ -2,11 +2,13 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Razor;
 
@@ -20,7 +22,6 @@ public static class OrchardRazorHelperExtensions
         return await orchardDisplayHelper.DisplayHelper.ShapeExecuteAsync(shape);
     }
 
- 
     /// <summary>
     /// Renders an object in the browser's console.
     /// </summary>
@@ -30,7 +31,9 @@ public static class OrchardRazorHelperExtensions
     {
         const string FormatConsole = "<script>console.log({0})</script>";
 
-        if (content == null)
+        var env = orchardHelper.HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
+
+        if (content == null || env.IsProduction())
         {
             return new HtmlString(string.Format(FormatConsole, "null"));
         }
@@ -48,6 +51,11 @@ public static class OrchardRazorHelperExtensions
         if (content is ContentItem contentItem)
         {
             return new HtmlString(string.Format(FormatConsole, ConvertContentItem(contentItem).ToString()));
+        }
+
+        if (content is IShape shape)
+        {
+            return new HtmlString(string.Format(FormatConsole, shape.ShapeToJson().ToString()));
         }
 
         return new HtmlString(string.Format(FormatConsole, JsonConvert.SerializeObject(content)));

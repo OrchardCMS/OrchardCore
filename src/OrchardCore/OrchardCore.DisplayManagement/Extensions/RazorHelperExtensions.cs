@@ -21,15 +21,4 @@ public static class RazorHelperExtensions
     {
         return CultureInfo.CurrentUICulture.Name;
     }
-
-    /// <summary>
-    /// Dump a shape to JSON
-    /// </summary>
-    /// <returns>JObject representation of the shape, at time of invocation.</returns>
-    public static JObject ShapeDump(this IOrchardHelper orchardHelper, object shape)
-    {
-        // Will throw a InvalidCastException if object is not a shape.
-        var iShape = (IShape)shape;
-        return iShape.ShapeDump();
-    }
 }
