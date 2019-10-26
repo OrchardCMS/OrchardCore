@@ -31,7 +31,7 @@ namespace OrchardCore.ContentManagement
             IEnumerable<IContentHandler> handlers,
             ISession session,
             IContentItemIdGenerator idGenerator,
-            IContentManagerSession _contentManagerSession
+            IContentManagerSession contentManagerSession,
             ILogger<DefaultContentManager> logger,
             IClock clock)
         {
