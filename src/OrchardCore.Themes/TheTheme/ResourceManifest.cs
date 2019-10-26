@@ -11,7 +11,7 @@ namespace OrchardCore.Themes.TheTheme
             manifest
                 .DefineStyle("bootstrap-oc")
                 .SetUrl("~/TheTheme/css/bootstrap-oc.min.css", "~/TheTheme/css/bootstrap-oc.css")
-                .SetVersion("1");
+                .SetVersion("1.0.0");
 				
         }
     }
