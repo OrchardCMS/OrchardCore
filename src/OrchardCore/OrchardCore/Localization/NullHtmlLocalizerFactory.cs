@@ -12,15 +12,15 @@ namespace OrchardCore.Localization
     /// </remarks>
     public class NullHtmlLocalizerFactory : IHtmlLocalizerFactory
     {
-         public IHtmlLocalizer Create(string baseName, string location) => NullHtmlLocalizer.Instance;
+         public IHtmlLocalizer Create(string baseName, string location) => NullLocalizer.Instance;
 
-        public IHtmlLocalizer Create(Type resourceSource) => NullHtmlLocalizer.Instance;
+        public IHtmlLocalizer Create(Type resourceSource) => NullLocalizer.Instance;
 
-        private class NullHtmlLocalizer : IHtmlLocalizer
+        private class NullLocalizer : IHtmlLocalizer
         {
             private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n == 1) ? 0 : 1;
 
-            public static IHtmlLocalizer Instance { get; } = new NullHtmlLocalizer();
+            public static IHtmlLocalizer Instance { get; } = new NullLocalizer();
 
             public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
                 => StringLocalizer.GetAllStrings(includeParentCultures);
@@ -61,11 +61,10 @@ namespace OrchardCore.Localization
             public LocalizedString GetString(string name, params object[] arguments)
                 => StringLocalizer.GetString(name, arguments);
 
-            IHtmlLocalizer IHtmlLocalizer.WithCulture(CultureInfo culture)
-                => new NullHtmlLocalizer();
+            IHtmlLocalizer IHtmlLocalizer.WithCulture(CultureInfo culture) => Instance;
 
             private static IStringLocalizer StringLocalizer
-                => NullStringLocalizerFactory.NullStringLocalizer.Instance;
+                => NullStringLocalizerFactory.NullLocalizer.Instance;
         }
     }
 }
