@@ -1,10 +1,8 @@
 using System;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services
@@ -14,10 +12,8 @@ namespace OrchardCore.Email.Services
         private readonly ISiteService _site;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger<SmtpSettingsConfiguration> _logger;
-        private SmtpSettings _smtpSettings;
 
         public SmtpSettingsConfiguration(
-            IShellConfiguration shellConfiguration,
             ISiteService site,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<SmtpSettingsConfiguration> logger)
@@ -25,36 +21,32 @@ namespace OrchardCore.Email.Services
             _site = site;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
-            _smtpSettings = shellConfiguration.GetSection("OrchardCore.Email").Get<SmtpSettings>();
-
         }
 
         public void Configure(SmtpSettings options)
         {
-            if (_smtpSettings == null)
-            {
-                _smtpSettings = _site.GetSiteSettingsAsync()
-                    .GetAwaiter().GetResult().As<SmtpSettings>();
-            }
+            var settings = _site.GetSiteSettingsAsync()
+                .GetAwaiter().GetResult()
+                .As<SmtpSettings>();
 
-            options.DefaultSender = _smtpSettings.DefaultSender;
-            options.DeliveryMethod = _smtpSettings.DeliveryMethod;
-            options.PickupDirectoryLocation = _smtpSettings.PickupDirectoryLocation;
-            options.Host = _smtpSettings.Host;
-            options.Port = _smtpSettings.Port;
-            options.EncryptionMethod = _smtpSettings.EncryptionMethod;
-            options.AutoSelectEncryption = _smtpSettings.AutoSelectEncryption;
-            options.RequireCredentials = _smtpSettings.RequireCredentials;
-            options.UseDefaultCredentials = _smtpSettings.UseDefaultCredentials;
-            options.UserName = _smtpSettings.UserName;
+            options.DefaultSender = settings.DefaultSender;
+            options.DeliveryMethod = settings.DeliveryMethod;
+            options.PickupDirectoryLocation = settings.PickupDirectoryLocation;
+            options.Host = settings.Host;
+            options.Port = settings.Port;
+            options.EncryptionMethod = settings.EncryptionMethod;
+            options.AutoSelectEncryption = settings.AutoSelectEncryption;
+            options.RequireCredentials = settings.RequireCredentials;
+            options.UseDefaultCredentials = settings.UseDefaultCredentials;
+            options.UserName = settings.UserName;
 
             // Decrypt the password
-            if (!String.IsNullOrWhiteSpace(_smtpSettings.Password))
+            if (!String.IsNullOrWhiteSpace(settings.Password))
             {
                 try
                 {
                     var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
-                    options.Password = protector.Unprotect(_smtpSettings.Password);
+                    options.Password = protector.Unprotect(settings.Password);
                 }
                 catch
                 {
