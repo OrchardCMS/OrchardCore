@@ -17,7 +17,6 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
-    <h2>@Model.AdminTemplates</h2>
     <input type="hidden" asp-for="AdminTemplates" />
 
     <div class="form-group" asp-validation-class-for="Name">
