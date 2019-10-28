@@ -471,25 +471,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           if (config.multilineTagIndentPastTag !== false) return state.tagStart + state.tagName.length + 2;else return state.tagStart + indentUnit * (config.multilineTagIndentFactor || 1);
         }
 
-<<<<<<< HEAD
-    skipAttribute: function(state) {
-      if (state.state == attrValueState)
-        state.state = attrState
-    },
-
-    xmlCurrentTag: function(state) {
-      return state.tagName ? {name: state.tagName, close: state.type == "closeTag"} : null
-    },
-
-    xmlCurrentContext: function(state) {
-      var context = []
-      for (var cx = state.context; cx; cx = cx.prev)
-        if (cx.tagName) context.push(cx.tagName)
-      return context.reverse()
-    }
-  };
-});
-=======
         if (config.alignCDATA && /<!\[CDATA\[/.test(textAfter)) return 0;
         var tagAfter = textAfter && /^<(\/)?([\w_:\.-]*)/.exec(textAfter);
 
@@ -512,7 +493,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             if (grabbers && grabbers.hasOwnProperty(tagAfter[2])) context = context.prev;else break;
           }
         }
->>>>>>> upstream/dev
 
         while (context && context.prev && !context.startOfLine) {
           context = context.prev;

@@ -164,25 +164,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }
 
         return ret("operator", "operator", stream.current());
-<<<<<<< HEAD
-      }
-    } else if (ch == "`") {
-      state.tokenize = tokenQuasi;
-      return tokenQuasi(stream, state);
-    } else if (ch == "#") {
-      stream.skipToEnd();
-      return ret("error", "error");
-    } else if (ch == "<" && stream.match("!--") || ch == "-" && stream.match("->")) {
-      stream.skipToEnd()
-      return ret("comment", "comment")
-    } else if (isOperatorChar.test(ch)) {
-      if (ch != ">" || !state.lexical || state.lexical.type != ">") {
-        if (stream.eat("=")) {
-          if (ch == "!" || ch == "=") stream.eat("=")
-        } else if (/[<>*+\-]/.test(ch)) {
-          stream.eat(ch)
-          if (ch == ">") stream.eat(ch)
-=======
       } else if (wordRE.test(ch)) {
         stream.eatWhile(wordRE);
         var word = stream.current();
@@ -194,7 +175,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }
 
           if (word == "async" && stream.match(/^(\s|\/\*.*?\*\/)*[\[\(\w]/, false)) return ret("async", "keyword", word);
->>>>>>> upstream/dev
         }
 
         return ret("variable", "variable", word);

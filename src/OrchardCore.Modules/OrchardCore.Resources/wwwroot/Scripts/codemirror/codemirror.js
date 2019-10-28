@@ -14439,15 +14439,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
         if (textarea.form) {
           off(textarea.form, "submit", save);
-<<<<<<< HEAD
-          if (!options.leaveSubmitMethodAlone && typeof textarea.form.submit == "function")
-            { textarea.form.submit = realSubmit; }
-=======
 
           if (typeof textarea.form.submit == "function") {
             textarea.form.submit = realSubmit;
           }
->>>>>>> upstream/dev
         }
       };
     };
@@ -14558,12 +14553,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-<<<<<<< HEAD
-
-  CodeMirror.version = "5.49.0";
-
-=======
   CodeMirror.version = "5.48.4";
->>>>>>> upstream/dev
   return CodeMirror;
 });

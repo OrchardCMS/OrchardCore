@@ -21,13 +21,6 @@
   },
   {
     "generateRTL": true,
-<<<<<<< HEAD
-    "inputs": [ "./node_modules/bootstrap-slider/dist/css/bootstrap-slider.css" ],
-    "output": "wwwroot/Styles/bootstrap-slider.css"
-  },
-  {
-    "inputs": [ "./node_modules/bootstrap-slider/dist/bootstrap-slider.js" ],
-=======
     "inputs": [
       "node_modules/bootstrap-slider/dist/css/bootstrap-slider.css"
     ],
@@ -37,7 +30,6 @@
     "inputs": [
       "node_modules/bootstrap-slider/dist/bootstrap-slider.js"
     ],
->>>>>>> upstream/dev
     "output": "wwwroot/Scripts/bootstrap-slider.js"
   },
   {
@@ -90,13 +82,6 @@
     "output": "wwwroot/Scripts/codemirror/mode/xml/xml.js"
   },
   {
-<<<<<<< HEAD
-    "inputs": [ "./node_modules/jquery/dist/jquery.js" ],
-    "output": "wwwroot/Scripts/jquery.js"
-  },
-  {
-    "inputs": [ "./node_modules/jquery/dist/jquery.slim.js" ],
-=======
     "inputs": [
       "node_modules/jquery/dist/jquery.js"
     ],
@@ -106,7 +91,6 @@
     "inputs": [
       "node_modules/jquery/dist/jquery.slim.js"
     ],
->>>>>>> upstream/dev
     "output": "wwwroot/Scripts/jquery.slim.js"
   },
   {
