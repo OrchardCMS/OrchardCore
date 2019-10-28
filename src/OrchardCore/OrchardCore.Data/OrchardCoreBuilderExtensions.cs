@@ -118,6 +118,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 });
 
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
+                services.AddScoped<ISessionHelper, SessionHelper>();
             });
 
             return builder;

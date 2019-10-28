@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Models;
@@ -19,54 +20,36 @@ namespace OrchardCore.Layers.Services
 
         private readonly ISignal _signal;
         private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
         private readonly IMemoryCache _memoryCache;
-
-        private LayersDocument _layersDocument;
 
         public LayerService(
             ISignal signal,
             ISession session,
+            ISessionHelper sessionHelper,
             IMemoryCache memoryCache)
         {
             _signal = signal;
             _session = session;
+            _sessionHelper = sessionHelper;
             _memoryCache = memoryCache;
         }
 
         /// <summary>
         /// Returns the document from the database to be updated.
         /// </summary>
-        public async Task<LayersDocument> LoadLayersAsync()
-        {
-            return _layersDocument ??= await _session.Query<LayersDocument>().FirstOrDefaultAsync() ?? new LayersDocument();
-        }
+        public Task<LayersDocument> LoadLayersAsync() => _sessionHelper.LoadForUpdateAsync<LayersDocument>();
 
         /// <summary>
         /// Returns the document from the cache or creates a new one. The result should not be updated.
         /// </summary>
-        /// <inheritdoc/>
-
         public async Task<LayersDocument> GetLayersAsync()
         {
             if (!_memoryCache.TryGetValue<LayersDocument>(LayersCacheKey, out var layers))
             {
                 var changeToken = _signal.GetToken(LayersCacheKey);
 
-                if (_layersDocument != null)
-                {
-                    _session.Detach(_layersDocument);
-                }
-
-                layers = await _session.Query<LayersDocument>().FirstOrDefaultAsync();
-
-                if (layers != null)
-                {
-                    _session.Detach(layers);
-                }
-                else
-                {
-                    layers = new LayersDocument();
-                }
+                layers = await _sessionHelper.GetForCachingAsync<LayersDocument>();
 
                 layers.IsReadonly = true;
 
