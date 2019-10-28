@@ -38,7 +38,7 @@ nav:
         - Creating a Modular ASP.NET Core Application: docs/guides/create-modular-application-mvc/index.md
         - Running Code on Startup: docs/guides/run-code-on-startup/index.md
         - Creating an Orchard Core CMS website: docs/guides/create-cms-application/index.md
-        - Creating an Orchard Core Decoupled CMS website: docs/guides/decoupled-cms/decoupled-cms/decoupled-cms.md
+        - Creating an Orchard Core Decoupled CMS website: docs/guides/decoupled-cms/decoupled-cms.md
         - Adding a Menu Item to the Admin Navigation: docs/guides/add-admin-menu/index.md
         - Installing Localization Files: docs/guides/install-localization-files/index.md
     - Code Generation Templates: docs/templates/README.md
