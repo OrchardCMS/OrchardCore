@@ -28,7 +28,6 @@ namespace OrchardCore.Settings
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
-            services.AddScoped<SiteSettingsCache>();
             services.AddRecipeExecutionStep<SettingsStep>();
             services.AddSingleton<ISiteService, SiteService>();
 

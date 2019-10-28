@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
@@ -39,11 +40,7 @@ namespace OrchardCore.Settings.Services
         /// </summary>
         public async Task<ISite> LoadSiteSettingsAsync()
         {
-            var scopedCache = ShellScope.Services.GetRequiredService<SiteSettingsCache>();
-
-            return scopedCache.SiteSettings
-                ??= await Session.Query<SiteSettings>().FirstOrDefaultAsync()
-                ?? GetDefaultSettings();
+            return await SessionHelper.LoadForUpdateAsync(GetDefaultSettings);
         }
 
         /// <summary>
@@ -53,32 +50,13 @@ namespace OrchardCore.Settings.Services
         {
             if (!_memoryCache.TryGetValue<SiteSettings>(SiteCacheKey, out var site))
             {
-                var session = Session;
+                var sessionHelper = SessionHelper;
 
                 // First get a new token.
                 var changeToken = ChangeToken;
 
-                var scopedCache = ShellScope.Services.GetRequiredService<SiteSettingsCache>();
-
-                if (scopedCache.SiteSettings != null)
-                {
-                    // Isolates data from a previous loading.
-                    session.Detach(scopedCache.SiteSettings);
-                }
-
                 // The cache is always updated with the actual persisted data.
-                site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
-
-                if (site != null)
-                {
-                    // Isolates data from a next loading.
-                    session.Detach(site);
-                }
-                else
-                {
-                    // Use default values.
-                    site = GetDefaultSettings();
-                }
+                site = await sessionHelper.GetForCachingAsync(GetDefaultSettings);
 
                 // Prevent data from being updated.
                 site.IsReadonly = true;
@@ -121,5 +99,6 @@ namespace OrchardCore.Settings.Services
         }
 
         private ISession Session => ShellScope.Services.GetService<ISession>();
+        private ISessionHelper SessionHelper => ShellScope.Services.GetService<ISessionHelper>();
     }
 }
