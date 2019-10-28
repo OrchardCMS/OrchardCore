@@ -8,7 +8,7 @@
     {% resources type: "Meta" %}
 
     <!-- Bootstrap core CSS -->
-    {% style name:"vendor-bootstrap", version:"4" %}
+    {% style name:"bootstrap-oc", version:"1" %}
 
     <!-- Custom fonts for this template -->
     {% style name:"vendor-font-awesome", version:"5" %}
@@ -17,7 +17,6 @@
 
     <!-- Custom styles for this template -->
     {% style src:"~/TheBlogTheme/css/clean-blog.min.css", debug_src:"~/TheBlogTheme/css/clean-blog.css" %}
-    {% style src:"~/TheBlogTheme/css/bootstrap-grid-ext.min.css", debug_src:"~/TheBlogTheme/css/bootstrap-grid-ext.css" %}
 
     <!-- Bootstrap core JavaScript -->
     {% script name:"vendor-jquery", at:"Foot" %}    
@@ -49,6 +48,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto">
+				{% render_section "Messages", required: false %}
                 {% render_body %}
             </div>
         </div>

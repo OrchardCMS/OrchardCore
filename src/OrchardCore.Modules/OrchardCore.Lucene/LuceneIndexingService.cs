@@ -87,21 +87,27 @@ namespace OrchardCore.Lucene
                         return;
                     }
 
+                    var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
+                    var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
+
+                    // Pre-load all content items to prevent SELECT N+1
+                    var updatedContentItemIds = batch
+                        .Where(x => x.Type == IndexingTaskTypes.Update)
+                        .Select(x => x.ContentItemId)
+                        .ToArray();
+
+                    var allContentItems = await contentManager.GetAsync(updatedContentItemIds);
+
+                    // Group all DocumentIndex by index to batch update them
+                    var updatedDocumentsByIndex = new Dictionary<string, List<DocumentIndex>>();
+
+                    foreach (var index in allIndices)
+                    {
+                        updatedDocumentsByIndex[index.Key] = new List<DocumentIndex>();
+                    }
+
                     foreach (var task in batch)
                     {
-                        var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
-                        var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
-
-                        foreach (var index in allIndices)
-                        {
-                            // TODO: ignore if this index is not configured for the content type
-
-                            if (index.Value < task.Id)
-                            {
-                                _indexManager.DeleteDocuments(index.Key, new string[] { task.ContentItemId });
-                            }
-                        }
-
                         if (task.Type == IndexingTaskTypes.Update)
                         {
                             var contentItem = await contentManager.GetAsync(task.ContentItemId);
@@ -120,10 +126,27 @@ namespace OrchardCore.Lucene
                             {
                                 if (index.Value < task.Id)
                                 {
-                                    _indexManager.StoreDocuments(index.Key, new DocumentIndex[] { context.DocumentIndex });
+                                    updatedDocumentsByIndex[index.Key].Add(context.DocumentIndex);
                                 }
                             }
                         }
+                    }
+
+                    // Delete all the existing documents
+                    foreach (var index in allIndices)
+                    {
+                        var deletedDocuments = batch
+                            .Where(task => index.Value < task.Id)
+                            .Select(task => task.ContentItemId)
+                            .ToArray();
+
+                        _indexManager.DeleteDocuments(index.Key, deletedDocuments);
+                    }
+
+                    // Submits all the new documents to the index
+                    foreach (var index in allIndices)
+                    {
+                        _indexManager.StoreDocuments(index.Key, updatedDocumentsByIndex[index.Key]);
                     }
 
                     // Update task ids
