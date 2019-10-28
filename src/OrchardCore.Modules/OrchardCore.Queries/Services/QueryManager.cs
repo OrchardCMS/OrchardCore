@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using YesSql;
 
@@ -15,19 +16,20 @@ namespace OrchardCore.Queries.Services
 
         private readonly ISignal _signal;
         private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
         private readonly IMemoryCache _memoryCache;
         private IEnumerable<IQuerySource> _querySources;
-
-        private QueriesDocument _queriesDocument;
 
         public QueryManager(
             ISignal signal,
             ISession session,
+            ISessionHelper sessionHelper,
             IMemoryCache memoryCache,
             IEnumerable<IQuerySource> querySources)
         {
             _signal = signal;
             _session = session;
+            _sessionHelper = sessionHelper;
             _memoryCache = memoryCache;
             _querySources = querySources;
         }
@@ -94,10 +96,7 @@ namespace OrchardCore.Queries.Services
         /// <summary>
         /// Returns the document from the database to be updated.
         /// </summary>
-        private async Task<QueriesDocument> LoadDocumentAsync()
-        {
-            return _queriesDocument = _queriesDocument ?? await _session.Query<QueriesDocument>().FirstOrDefaultAsync() ?? new QueriesDocument();
-        }
+        public Task<QueriesDocument> LoadDocumentAsync() => _sessionHelper.LoadForUpdateAsync<QueriesDocument>();
 
         /// <summary>
         /// Returns the document from the cache or creates a new one. The result should not be updated.
@@ -108,25 +107,11 @@ namespace OrchardCore.Queries.Services
             {
                 var changeToken = ChangeToken;
 
-                if (_queriesDocument != null)
-                {
-                    _session.Detach(_queriesDocument);
-                }
+                queries = await _sessionHelper.GetForCachingAsync<QueriesDocument>();
 
-                queries = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
-
-                if (queries != null)
+                foreach (var query in queries.Queries.Values)
                 {
-                    _session.Detach(queries);
-
-                    foreach (var query in queries.Queries.Values)
-                    {
-                        query.IsReadonly = true;
-                    }
-                }
-                else
-                {
-                    queries = new QueriesDocument();
+                    query.IsReadonly = true;
                 }
 
                 _memoryCache.Set(QueriesDocumentCacheKey, queries, changeToken);

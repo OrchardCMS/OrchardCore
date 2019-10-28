@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
@@ -23,24 +24,25 @@ namespace OrchardCore.Roles.Services
 
         private readonly ISignal _signal;
         private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
         private readonly IMemoryCache _memoryCache;
         private readonly IServiceProvider _serviceProvider;
-
-        private RolesDocument _rolesDocument;
 
         public RoleStore(
             ISignal signal,
             ISession session,
+            ISessionHelper sessionHelper,
             IMemoryCache memoryCache,
-            IStringLocalizer<RoleStore> stringLocalizer,
             IServiceProvider serviceProvider,
+            IStringLocalizer<RoleStore> stringLocalizer,
             ILogger<RoleStore> logger)
         {
             _signal = signal;
             _session = session;
+            _sessionHelper = sessionHelper;
             _memoryCache = memoryCache;
-            T = stringLocalizer;
             _serviceProvider = serviceProvider;
+            T = stringLocalizer;
             Logger = logger;
         }
 
@@ -57,10 +59,7 @@ namespace OrchardCore.Roles.Services
         /// <summary>
         /// Returns the document from the database to be updated.
         /// </summary>
-        public async Task<RolesDocument> LoadRolesAsync()
-        {
-            return _rolesDocument = _rolesDocument ?? await _session.Query<RolesDocument>().FirstOrDefaultAsync() ?? new RolesDocument();
-        }
+        public Task<RolesDocument> LoadRolesAsync() => _sessionHelper.LoadForUpdateAsync<RolesDocument>();
 
         /// <summary>
         /// Returns the document from the cache or creates a new one. The result should not be updated.
@@ -71,25 +70,11 @@ namespace OrchardCore.Roles.Services
             {
                 var changeToken = _signal.GetToken(Key);
 
-                if (_rolesDocument != null)
-                {
-                    _session.Detach(_rolesDocument);
-                }
+                document = await _sessionHelper.GetForCachingAsync<RolesDocument>();
 
-                document = await _session.Query<RolesDocument>().FirstOrDefaultAsync();
-
-                if (document != null)
+                foreach (var role in document.Roles)
                 {
-                    _session.Detach(document);
-
-                    foreach (var role in document.Roles)
-                    {
-                        role.IsReadonly = true;
-                    }
-                }
-                else
-                {
-                    document = new RolesDocument();
+                    role.IsReadonly = true;
                 }
 
                 _memoryCache.Set(Key, document, changeToken);

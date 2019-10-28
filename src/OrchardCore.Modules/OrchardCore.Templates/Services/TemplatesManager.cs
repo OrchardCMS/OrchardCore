@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Templates.Models;
 using YesSql;
@@ -14,14 +15,18 @@ namespace OrchardCore.Templates.Services
 
         private readonly ISignal _signal;
         private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
         private readonly IMemoryCache _memoryCache;
 
-        private TemplatesDocument _templatesDocument;
-
-        public TemplatesManager(IMemoryCache memoryCache, ISignal signal, ISession session)
+        public TemplatesManager(
+            ISignal signal,
+            ISession session,
+            ISessionHelper sessionHelper,
+            IMemoryCache memoryCache)
         {
             _signal = signal;
             _session = session;
+            _sessionHelper = sessionHelper;
             _memoryCache = memoryCache;
         }
 
@@ -30,10 +35,7 @@ namespace OrchardCore.Templates.Services
         /// <summary>
         /// Returns the document from the database to be updated.
         /// </summary>
-        public async Task<TemplatesDocument> LoadTemplatesDocumentAsync()
-        {
-            return _templatesDocument = _templatesDocument ?? await _session.Query<TemplatesDocument>().FirstOrDefaultAsync() ?? new TemplatesDocument();
-        }
+        public Task<TemplatesDocument> LoadTemplatesDocumentAsync() => _sessionHelper.LoadForUpdateAsync<TemplatesDocument>();
 
         /// <summary>
         /// Returns the document from the cache or creates a new one. The result should not be updated.
@@ -44,25 +46,11 @@ namespace OrchardCore.Templates.Services
             {
                 var changeToken = ChangeToken;
 
-                if (_templatesDocument != null)
-                {
-                    _session.Detach(_templatesDocument);
-                }
+                document = await _sessionHelper.GetForCachingAsync<TemplatesDocument>();
 
-                document = await _session.Query<TemplatesDocument>().FirstOrDefaultAsync();
-
-                if (document != null)
+                foreach (var template in document.Templates.Values)
                 {
-                    _session.Detach(document);
-
-                    foreach (var template in document.Templates.Values)
-                    {
-                        template.IsReadonly = true;
-                    }
-                }
-                else
-                {
-                    document = new TemplatesDocument();
+                    template.IsReadonly = true;
                 }
 
                 _memoryCache.Set(CacheKey, document, changeToken);

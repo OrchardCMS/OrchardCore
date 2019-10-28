@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks.Models;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using YesSql;
 
@@ -14,17 +15,18 @@ namespace OrchardCore.BackgroundTasks.Services
 
         private readonly ISignal _signal;
         private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
         private readonly IMemoryCache _memoryCache;
-
-        private BackgroundTaskDocument _backgroundTaskDocument;
 
         public BackgroundTaskManager(
             ISignal signal,
             ISession session,
+            ISessionHelper sessionHelper,
             IMemoryCache memoryCache)
         {
             _signal = signal;
             _session = session;
+            _sessionHelper = sessionHelper;
             _memoryCache = memoryCache;
         }
 
@@ -33,10 +35,7 @@ namespace OrchardCore.BackgroundTasks.Services
         /// <summary>
         /// Returns the document from the database to be updated.
         /// </summary>
-        public async Task<BackgroundTaskDocument> LoadDocumentAsync()
-        {
-            return _backgroundTaskDocument = _backgroundTaskDocument ?? await _session.Query<BackgroundTaskDocument>().FirstOrDefaultAsync() ?? new BackgroundTaskDocument();
-        }
+        public Task<BackgroundTaskDocument> LoadDocumentAsync() => _sessionHelper.LoadForUpdateAsync<BackgroundTaskDocument>();
 
         /// <summary>
         /// Returns the document from the cache or creates a new one. The result should not be updated.
@@ -48,25 +47,11 @@ namespace OrchardCore.BackgroundTasks.Services
             {
                 var changeToken = ChangeToken;
 
-                if (_backgroundTaskDocument != null)
-                {
-                    _session.Detach(_backgroundTaskDocument);
-                }
+                document = await _sessionHelper.GetForCachingAsync<BackgroundTaskDocument>();
 
-                document = await _session.Query<BackgroundTaskDocument>().FirstOrDefaultAsync();
-
-                if (document != null)
+                foreach (var settings in document.Settings.Values)
                 {
-                    _session.Detach(document);
-
-                    foreach (var settings in document.Settings.Values)
-                    {
-                        settings.IsReadonly = true;
-                    }
-                }
-                else
-                {
-                    document = new BackgroundTaskDocument();
+                    settings.IsReadonly = true;
                 }
 
                 _memoryCache.Set(CacheKey, document, changeToken);
