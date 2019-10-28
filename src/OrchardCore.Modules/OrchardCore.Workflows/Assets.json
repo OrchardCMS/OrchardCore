@@ -1,13 +1,21 @@
 [
   {
     "inputs": [
+<<<<<<< HEAD
       "./node_modules/jsplumb/css/jsplumbtoolkit-defaults.css"
+=======
+      "node_modules/jsplumb/css/jsplumbtoolkit-defaults.css"
+>>>>>>> upstream/dev
     ],
     "output": "wwwroot/Styles/jsplumbtoolkit-defaults.css"
   },
   {
     "inputs": [
+<<<<<<< HEAD
       "./node_modules/jsplumb/dist/js/jsplumb.js"
+=======
+      "node_modules/jsplumb/dist/js/jsplumb.js"
+>>>>>>> upstream/dev
     ],
     "output": "wwwroot/Scripts/jsplumb.js"
   },

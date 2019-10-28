@@ -9093,6 +9093,9 @@ html[dir], [dir] body {
   padding-right: 0px; }
   .ta-navbar-top .nav-link {
     font-size: 14px; }
+  [dir] .ta-navbar-top .breadcrumb {
+    background-color: transparent;
+    margin-top: 1rem; }
 
 .ta-navbar-brand {
   overflow: hidden;
