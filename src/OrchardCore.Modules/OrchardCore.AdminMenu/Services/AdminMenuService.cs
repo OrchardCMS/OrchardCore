@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.AdminMenu.Models;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using YesSql;
 
@@ -15,17 +16,18 @@ namespace OrchardCore.AdminMenu
 
         private readonly ISignal _signal;
         private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
         private readonly IMemoryCache _memoryCache;
-
-        private AdminMenuList _adminMenuList;
 
         public AdminMenuService(
             ISignal signal,
             ISession session,
+            ISessionHelper sessionHelper,
             IMemoryCache memoryCache)
         {
             _signal = signal;
             _session = session;
+            _sessionHelper = sessionHelper;
             _memoryCache = memoryCache;
         }
 
@@ -34,10 +36,7 @@ namespace OrchardCore.AdminMenu
         /// <summary>
         /// Returns the document from the database to be updated.
         /// </summary>
-        public async Task<AdminMenuList> LoadAdminMenuListAsync()
-        {
-            return _adminMenuList ??= await _session.Query<AdminMenuList>().FirstOrDefaultAsync() ?? new AdminMenuList();
-        }
+        public Task<AdminMenuList> LoadAdminMenuListAsync() => _sessionHelper.LoadForUpdateAsync<AdminMenuList>();
 
         /// <summary>
         /// Returns the document from the cache or creates a new one. The result should not be updated.
@@ -48,25 +47,11 @@ namespace OrchardCore.AdminMenu
             {
                 var changeToken = ChangeToken;
 
-                if (_adminMenuList != null)
-                {
-                    _session.Detach(_adminMenuList);
-                }
+                adminMenuList = await _sessionHelper.GetForCachingAsync<AdminMenuList>();
 
-                adminMenuList = await _session.Query<AdminMenuList>().FirstOrDefaultAsync();
-
-                if (adminMenuList != null)
+                foreach (var adminMenu in adminMenuList.AdminMenu)
                 {
-                    _session.Detach(adminMenuList);
-
-                    foreach (var adminMenu in adminMenuList.AdminMenu)
-                    {
-                        adminMenu.IsReadonly = true;
-                    }
-                }
-                else
-                {
-                    adminMenuList = new AdminMenuList();
+                    adminMenu.IsReadonly = true;
                 }
 
                 _memoryCache.Set(AdminMenuCacheKey, adminMenuList, changeToken);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data;
@@ -35,6 +36,8 @@ namespace OrchardCore.Layers.Services
             _memoryCache = memoryCache;
         }
 
+        public IChangeToken ChangeToken => _signal.GetToken(LayersCacheKey);
+
         /// <summary>
         /// Returns the document from the database to be updated.
         /// </summary>
@@ -47,7 +50,7 @@ namespace OrchardCore.Layers.Services
         {
             if (!_memoryCache.TryGetValue<LayersDocument>(LayersCacheKey, out var layers))
             {
-                var changeToken = _signal.GetToken(LayersCacheKey);
+                var changeToken = ChangeToken;
 
                 layers = await _sessionHelper.GetForCachingAsync<LayersDocument>();
 

@@ -98,7 +98,7 @@ namespace OrchardCore.Settings.Services
             return Task.CompletedTask;
         }
 
-        private ISession Session => ShellScope.Services.GetService<ISession>();
-        private ISessionHelper SessionHelper => ShellScope.Services.GetService<ISessionHelper>();
+        private ISession Session => ShellScope.Services.GetRequiredService<ISession>();
+        private ISessionHelper SessionHelper => ShellScope.Services.GetRequiredService<ISessionHelper>();
     }
 }
