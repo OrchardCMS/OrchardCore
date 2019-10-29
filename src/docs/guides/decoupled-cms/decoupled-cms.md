@@ -82,6 +82,9 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
+!!! warning "Razor Pages"
+    `AddRazorPages` must not be called directly as `services.AddOrchardCms()` already invokes it internally.
+
 - Edit the `Startup.cs` file `Configure` method like this:
 
 ```cs

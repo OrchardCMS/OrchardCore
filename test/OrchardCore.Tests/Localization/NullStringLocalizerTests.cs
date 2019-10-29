@@ -1,45 +1,53 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using Xunit;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Tests.Localization
 {
     public class NullStringLocalizerTests
     {
         [Theory]
-        [InlineData("Welcome to {0}!!", "Welcome to OrchardCore!!", "OrchardCore")]
-        [InlineData("Welcome to {0} {1}!!", "Welcome to OrchardCore CMS!!", "OrchardCore", "CMS")]
-        public async void LocalizerReturnsFormattedString(string name, string expected, params object[] arguments)
+        [InlineData("there is one", 1, "there is one", "there are more")]
+        [InlineData("there are more", 2, "there is one", "there are more")]
+        [InlineData("there is one (1)", 1, "there is one ({0})", "there are more ({0})")]
+        [InlineData("there are more (2)", 2, "there is one ({0})", "there are more ({0})")]
+        [InlineData("there is one (1) thing", 1, "there is one ({0}) {1}", "there are more ({0}) {1}", "thing")]
+        [InlineData("there are more (2) thing", 2, "there is one ({0}) {1}", "there are more ({0}) {1}", "thing")]
+        [InlineData("there is one (1) &lt;br/&gt;", 1, "there is one ({0}) {1}", "there are more ({0}) {1}", "<br/>")]
+        [InlineData("there are more (2) &lt;br/&gt;", 2, "there is one ({0}) {1}", "there are more ({0}) {1}", "<br/>")]
+        [InlineData("1 minute ago", 1, "{0} minute ago", "{0} minutes ago")]
+        [InlineData("20 minutes ago", 20, "{0} minute ago", "{0} minutes ago")]
+        public void HtmlNullLocalizerSupportsPlural(string expected, int count, string singular, string plural, params object[] arguments)
         {
-            var webHostBuilder = new WebHostBuilder()
-                .ConfigureServices(services =>
-                {
-                    services.AddOrchardCore();
-                })
-                .Configure(app =>
-                {
-                    app.UseOrchardCore();
+            var localizer = new NullHtmlLocalizerFactory().Create(typeof(object));
 
-                    app.Run(context =>
-                    {
-                        var htmlLocalizer = context.RequestServices.GetService<IHtmlLocalizer>();
-
-                        Assert.Equal(expected, htmlLocalizer[name, arguments].Value);
-
-                        return Task.FromResult(0);
-                    });
-                });
-
-            using (var server = new TestServer(webHostBuilder))
+            using (var writer = new StringWriter())
             {
-                var client = server.CreateClient();
-                var response = await client.GetAsync("/");
+                localizer.Plural(count, singular, plural, arguments).WriteTo(writer, HtmlEncoder.Default);
+                Assert.Equal(expected, writer.ToString());
             }
+        }
+
+        [Theory]
+        [InlineData("there is one", 1, "there is one", "there are more")]
+        [InlineData("there are more", 2, "there is one", "there are more")]
+        [InlineData("there is one (1)", 1, "there is one ({0})", "there are more ({0})")]
+        [InlineData("there are more (2)", 2, "there is one ({0})", "there are more ({0})")]
+        [InlineData("there is one (1) thing", 1, "there is one ({0}) {1}", "there are more ({0}) {1}", "thing")]
+        [InlineData("there are more (2) thing", 2, "there is one ({0}) {1}", "there are more ({0}) {1}", "thing")]
+        [InlineData("there is one (1) <br/>", 1, "there is one ({0}) {1}", "there are more ({0}) {1}", "<br/>")]
+        [InlineData("there are more (2) <br/>", 2, "there is one ({0}) {1}", "there are more ({0}) {1}", "<br/>")]
+        [InlineData("1 minute ago", 1, "{0} minute ago", "{0} minutes ago")]
+        [InlineData("20 minutes ago", 20, "{0} minute ago", "{0} minutes ago")]
+        public void StringNullLocalizerSupportsPlural(string expected, int count, string singular, string plural, params object[] arguments)
+        {
+            var localizer = new NullStringLocalizerFactory().Create(typeof(object));
+
+            var value = localizer.Plural(count, singular, plural, arguments).Value;
+            Assert.Equal(expected, value);
         }
     }
 }
