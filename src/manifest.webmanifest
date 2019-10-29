@@ -3,9 +3,9 @@
   "name": "Orchard Core Documentation",
   "icons": [
     {
-      "src": "/src/docs/assets/images/orchard-logo-dark.png",
+      "src": "/src/docs/assets/images/orchard-logo-192.png",
       "type": "image/png",
-      "sizes": "128x128"
+      "sizes": "192x192"
     }
   ],
   "start_url": "/",
