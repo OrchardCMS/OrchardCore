@@ -23,7 +23,7 @@ namespace OrchardCore.Templates
 
             builder
                 .Add(T["Design"], design => design
-                    .Add(T["Admin Templates"], "10", import => import
+                    .Add(T["Admin Templates"], "Admin Templates", import => import
                         .Action("Admin", "Template", new { area = "OrchardCore.Templates" })
                         .Permission(AdminTemplatesPermissions.ManageAdminTemplates)
                         .LocalNav()
