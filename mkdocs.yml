@@ -3,15 +3,15 @@ theme:
   name: 'material'
   logo: 'docs/assets/images/orchard-logo.png'
   favicon: 'docs/assets/images/favicon.png'
-  font:
-    text: 'Open Sans'
+  font: false
   palette:
-    primary: 'blue'
-    accent: 'light blue'
+    primary: 'white'
+    accent: 'blue'
   static_templates:
     - 404.html
     
 extra:
+  manifest: 'manifest.webmanifest'
   social:
     - type: 'globe'
       link: 'http://orchardproject.net'
@@ -27,13 +27,6 @@ edit_uri: edit/dev/src/
 
 # Options
 docs_dir: src
-
-extra_css: 
-- docs/css/code-tabs.css
-- docs/css/extra.css
-
-extra_javascript:
-- docs/js/extra.js
 
 # Extensions
 markdown_extensions:

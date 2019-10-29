@@ -1,0 +1,16 @@
+{
+  "short_name": "Orchard Core",
+  "name": "Orchard Core Documentation",
+  "icons": [
+    {
+      "src": "/src/docs/assets/images/orchard-logo-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#3367D6",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#3367D6"
+}
