@@ -46,6 +46,11 @@ namespace OrchardCore.Themes.TheBlogTheme
                 .SetVersion("4.3.1");
 
             manifest
+                .DefineStyle("bootstrap-oc")
+                .SetUrl("~/TheBlogTheme/css/bootstrap-oc.min.css", "~/TheBlogTheme/css/bootstrap-oc.css")
+                .SetVersion("1.0.0");
+				
+            manifest
                 .DefineStyle("vendor-font-awesome")
                 .SetUrl("~/TheBlogTheme/vendor/fontawesome-free/css/all.min.css", "~/TheBlogTheme/vendor/fontawesome-free/css/all.css")
                 .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.10.2/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.10.2/css/all.css")

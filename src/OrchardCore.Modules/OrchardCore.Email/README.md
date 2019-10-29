@@ -20,14 +20,11 @@ Enabling the `OrchardCore.Email` module will allow the user to set the following
 | `UserName` | The username for the sender. |
 | `Password` | The password for the sender. |
 
-## Configuration
-`OrchardCore.Email` can be configured through `appsettings.json` as the following:
+## Credits
 
-```json
-    "OrchardCore.Email": {
-            "DefaultSender": "webmaster@orchardcore.info",
-            "Host": "Server",
-            "Port": 25,
-            ...
-    }
-```
+### MailKit
+
+<https://github.com/jstedfast/MailKit>
+
+Copyright 2013-2019 Xamarin Inc
+Licensed under the MIT License
