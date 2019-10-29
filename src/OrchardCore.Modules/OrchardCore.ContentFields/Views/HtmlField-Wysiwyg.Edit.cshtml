@@ -13,7 +13,6 @@
 
 <div class="form-group">
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
-    <textarea asp-for="Html" class="form-control"></textarea>
     @if (culture.IsRightToLeft())
     {
         <div style="text-align:right">
