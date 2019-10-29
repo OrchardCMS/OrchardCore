@@ -88,7 +88,6 @@ namespace OrchardCore.Tests.Apis.GraphQL.Client
             Assert.Equal("someContentType { someNestedField {} }", builder.Build());
         }
 
-
         [Fact]
         public void ShouldbeAbleToAddMultipleNestedFields()
         {
@@ -109,7 +108,6 @@ namespace OrchardCore.Tests.Apis.GraphQL.Client
 
             Assert.Equal("someContentType { field nestedField { nestedChild } }", builder.Build());
         }
-
 
         [Fact]
         public void ShouldbeAbleToAddNestedFieldsMultipleLevelsDeep()
