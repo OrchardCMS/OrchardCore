@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore;
 using OrchardCore.ContentManagement;
+using OrchardCore.Queries;
 
 public static class ContentQueryOrchardRazorHelperExtensions
 {
@@ -39,5 +40,40 @@ public static class ContentQueryOrchardRazorHelperExtensions
         }
 
         return contentItems;
+    }
+
+    public static async Task<IQueryResults> ContentQueryResultAsync(this IOrchardHelper orchardHelper, string queryName, Dictionary<string, object> parameters)
+    {
+        var contentItems = new List<ContentItem>();
+        var queryResult = await orchardHelper.QueryResultAsync(queryName, parameters);
+
+        if (queryResult.Items != null)
+        {
+            foreach (var item in queryResult.Items)
+            {
+                if (!(item is ContentItem contentItem))
+                {
+                    contentItem = null;
+
+                    if (item is JObject jObject)
+                    {
+                        contentItem = jObject.ToObject<ContentItem>();
+                    }
+                }
+
+                // If input is a 'JObject' but which not represents a 'ContentItem',
+                // a 'ContentItem' is still created but with some null properties.
+                if (contentItem?.ContentItemId == null)
+                {
+                    continue;
+                }
+
+                contentItems.Add(contentItem);
+            }
+
+            queryResult.Items = contentItems;
+        }
+
+        return queryResult;
     }
 }
