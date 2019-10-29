@@ -3,7 +3,7 @@
   "name": "Orchard Core Documentation",
   "icons": [
     {
-      "src": "/src/docs/assets/images/orchard-logo-192.png",
+      "src": "/docs/assets/images/orchard-logo-192.png",
       "type": "image/png",
       "sizes": "192x192"
     }
