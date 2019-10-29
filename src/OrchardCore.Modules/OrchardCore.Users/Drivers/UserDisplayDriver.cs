@@ -9,7 +9,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Security.Services;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
@@ -18,20 +17,17 @@ namespace OrchardCore.Users.Drivers
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
-        private readonly IUserEmailStore<IUser> _userEmailStore;
         private readonly IUserRoleStore<IUser> _userRoleStore;
         private readonly IStringLocalizer T;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
             IRoleService roleService,
-            IUserEmailStore<IUser> userEmailStore,
             IUserRoleStore<IUser> userRoleStore,
             IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
             _roleService = roleService;
-            _userEmailStore = userEmailStore;
             _userRoleStore = userRoleStore;
             T = stringLocalizer;
         }
@@ -83,9 +79,6 @@ namespace OrchardCore.Users.Drivers
                 context.Updater.ModelState.AddModelError("Email", T["An email is required."]);
             }
 
-            await _userManager.SetUserNameAsync(user, model.UserName);
-            await _userEmailStore.SetEmailAsync(user, model.Email, default(CancellationToken));
-
             var userWithSameName = await _userManager.FindByNameAsync(model.UserName);
             if (userWithSameName != null)
             {
@@ -96,7 +89,7 @@ namespace OrchardCore.Users.Drivers
                 }
             }
 
-            var userWithSameEmail = await _userEmailStore.FindByEmailAsync(_userManager.NormalizeEmail(model.Email), default(CancellationToken));
+            var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
             if (userWithSameEmail != null)
             {
                 var userWithSameEmailId = await _userManager.GetUserIdAsync(userWithSameEmail);
@@ -108,6 +101,9 @@ namespace OrchardCore.Users.Drivers
 
             if (context.Updater.ModelState.IsValid)
             {
+                await _userManager.SetUserNameAsync(user, model.UserName);
+                await _userManager.SetEmailAsync(user, model.Email);
+
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
 
                 if (context.IsNew)
