@@ -60,7 +60,6 @@ namespace OrchardCore.Lucene
             var lastTaskId = Int32.MaxValue;
             IEnumerable<LuceneIndexSettings> indexSettingsList = null;
 
-
             if (String.IsNullOrEmpty(indexName))
             {
                 //TODO use immutable dictionary
@@ -187,18 +186,15 @@ namespace OrchardCore.Lucene
                     }
 
                     // Delete all the existing documents
-                    foreach (var index in allIndices)
+                    foreach (var index in updatedDocumentsByIndex)
                     {
-                        var deletedDocuments = batch
-                            .Where(task => index.Value < task.Id)
-                            .Select(task => task.ContentItemId)
-                            .ToArray();
+                        var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
 
                         _indexManager.DeleteDocuments(index.Key, deletedDocuments);
                     }
 
                     // Submits all the new documents to the index
-                    foreach (var index in allIndices)
+                    foreach (var index in updatedDocumentsByIndex)
                     {
                         _indexManager.StoreDocuments(index.Key, updatedDocumentsByIndex[index.Key]);
                     }
