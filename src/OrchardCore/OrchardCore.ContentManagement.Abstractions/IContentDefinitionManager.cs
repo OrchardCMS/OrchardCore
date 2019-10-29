@@ -108,7 +108,7 @@ namespace OrchardCore.ContentManagement.Metadata
         public static void MigrateFieldSettings<TField, TSettings>(this IContentDefinitionManager manager)
             where TField : ContentField where TSettings : class
         {
-            var partDefinitions = manager.ListPartDefinitions();
+            var partDefinitions = manager.LoadPartDefinitions();
             foreach (var partDefinition in partDefinitions)
             {
                 manager.AlterPartDefinition(partDefinition.Name, partBuilder =>

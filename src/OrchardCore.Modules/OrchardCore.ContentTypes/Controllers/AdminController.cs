@@ -103,7 +103,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["The Content Type Id can't be empty."]);
             }
 
-            if (_contentDefinitionService.GetTypes().Any(t => String.Equals(t.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
+            if (_contentDefinitionService.LoadTypes().Any(t => String.Equals(t.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError("Name", S["A type with the same Id already exists."]);
             }
@@ -113,7 +113,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["The technical name must start with a letter."]);
             }
 
-            if (_contentDefinitionService.GetTypes().Any(t => String.Equals(t.DisplayName.Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
+            if (_contentDefinitionService.LoadTypes().Any(t => String.Equals(t.DisplayName.Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError("DisplayName", S["A type with the same Display Name already exists."]);
             }
@@ -197,7 +197,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var typeViewModel = _contentDefinitionService.GetType(id);
+            var typeViewModel = _contentDefinitionService.LoadType(id);
 
             if (typeViewModel == null)
                 return NotFound();
@@ -270,7 +270,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var typeViewModel = _contentDefinitionService.GetType(id);
+            var typeViewModel = _contentDefinitionService.LoadType(id);
 
             if (typeViewModel == null)
                 return NotFound();
@@ -303,7 +303,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var typeViewModel = _contentDefinitionService.GetType(id);
+            var typeViewModel = _contentDefinitionService.LoadType(id);
 
             if (typeViewModel == null)
                 return NotFound();
@@ -347,7 +347,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var typeViewModel = _contentDefinitionService.GetType(id);
+            var typeViewModel = _contentDefinitionService.LoadType(id);
 
             if (typeViewModel == null
                 || !typeViewModel.TypeDefinition.Parts.Any(p => p.Name == name))
@@ -471,7 +471,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var partViewModel = _contentDefinitionService.GetPart(id);
+            var partViewModel = _contentDefinitionService.LoadPart(id);
 
             if (partViewModel == null)
                 return NotFound();
@@ -488,7 +488,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var partViewModel = _contentDefinitionService.GetPart(id);
+            var partViewModel = _contentDefinitionService.LoadPart(id);
 
             if (partViewModel == null)
             {
@@ -511,7 +511,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var partViewModel = _contentDefinitionService.GetPart(id);
+            var partViewModel = _contentDefinitionService.LoadPart(id);
 
             if (partViewModel == null)
             {
@@ -626,7 +626,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var partViewModel = _contentDefinitionService.GetPart(id);
+            var partViewModel = _contentDefinitionService.LoadPart(id);
 
             if (partViewModel == null)
             {
@@ -652,7 +652,7 @@ namespace OrchardCore.ContentTypes.Controllers
                     ModelState.AddModelError("DisplayName", S["The Display Name name can't be empty."]);
                 }
 
-                if (_contentDefinitionService.GetPart(partViewModel.Name).PartDefinition.Fields.Any(t => t.Name != viewModel.Name && String.Equals(t.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
+                if (_contentDefinitionService.LoadPart(partViewModel.Name).PartDefinition.Fields.Any(t => t.Name != viewModel.Name && String.Equals(t.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
                 {
                     ModelState.AddModelError("DisplayName", S["A field with the same Display Name already exists."]);
                 }
@@ -695,7 +695,7 @@ namespace OrchardCore.ContentTypes.Controllers
             else
             {
                 // Redirect to the type editor if a type exists with this name
-                var typeViewModel = _contentDefinitionService.GetType(id);
+                var typeViewModel = _contentDefinitionService.LoadType(id);
                 if (typeViewModel != null)
                 {
                     return RedirectToAction("Edit", new { id });
@@ -711,7 +711,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var partViewModel = _contentDefinitionService.GetPart(id);
+            var partViewModel = _contentDefinitionService.LoadPart(id);
 
             if (partViewModel == null)
             {
@@ -729,7 +729,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(T["The \"{0}\" field has been removed.", field.DisplayName()]);
 
-            if (_contentDefinitionService.GetType(id) != null)
+            if (_contentDefinitionService.LoadType(id) != null)
             {
                 return RedirectToAction("Edit", new { id });
             }

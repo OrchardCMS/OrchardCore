@@ -21,8 +21,8 @@ namespace OrchardCore.ContentManagement
         private readonly IContentDefinitionStore _contentDefinitionStore;
         private readonly IMemoryCache _memoryCache;
 
-        private readonly ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
-        private readonly ConcurrentDictionary<string, ContentPartDefinition> _partDefinitions;
+        private readonly ConcurrentDictionary<string, ContentTypeDefinition> _cachedTypeDefinitions;
+        private readonly ConcurrentDictionary<string, ContentPartDefinition> _cachedPartDefinitions;
 
         private readonly Dictionary<string, ContentTypeDefinition> _scopedTypeDefinitions = new Dictionary<string, ContentTypeDefinition>();
         private readonly Dictionary<string, ContentPartDefinition> _scopedPartDefinitions = new Dictionary<string, ContentPartDefinition>();
@@ -36,8 +36,8 @@ namespace OrchardCore.ContentManagement
             _contentDefinitionStore = contentDefinitionStore;
             _memoryCache = memoryCache;
 
-            _typeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>());
-            _partDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>());
+            _cachedTypeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>());
+            _cachedPartDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>());
         }
 
         public IChangeToken ChangeToken => _signal.GetToken(CacheKey);
@@ -55,7 +55,7 @@ namespace OrchardCore.ContentManagement
                     .ContentTypeDefinitionRecords
                     .FirstOrDefault(x => x.Name == name);
 
-                _scopedTypeDefinitions[name] = typeDefinition = Build(contentTypeDefinitionRecord);
+                _scopedTypeDefinitions[name] = typeDefinition = Build(contentTypeDefinitionRecord, LoadContentDefinitionRecord().ContentPartDefinitionRecords);
             };
 
             return typeDefinition;
@@ -68,13 +68,13 @@ namespace OrchardCore.ContentManagement
                 throw new ArgumentException("Argument cannot be null or empty", nameof(name));
             }
 
-            return _typeDefinitions.GetOrAdd(name, n =>
+            return _cachedTypeDefinitions.GetOrAdd(name, n =>
             {
                 var contentTypeDefinitionRecord = GetContentDefinitionRecord()
                     .ContentTypeDefinitionRecords
                     .FirstOrDefault(x => x.Name == name);
 
-                return Build(contentTypeDefinitionRecord);
+                return Build(contentTypeDefinitionRecord, GetContentDefinitionRecord().ContentPartDefinitionRecords);
             });
         }
 
@@ -92,7 +92,7 @@ namespace OrchardCore.ContentManagement
 
         public ContentPartDefinition GetPartDefinition(string name)
         {
-            return _partDefinitions.GetOrAdd(name, n =>
+            return _cachedPartDefinitions.GetOrAdd(name, n =>
             {
                 return Build(GetContentDefinitionRecord()
                     .ContentPartDefinitionRecords
@@ -258,7 +258,7 @@ namespace OrchardCore.ContentManagement
             record.Settings = model.Settings;
         }
 
-        ContentTypeDefinition Build(ContentTypeDefinitionRecord source)
+        ContentTypeDefinition Build(ContentTypeDefinitionRecord source, IList<ContentPartDefinitionRecord> partDefinitionRecords)
         {
             if (source == null)
             {
@@ -268,16 +268,14 @@ namespace OrchardCore.ContentManagement
             var contentTypeDefinition = new ContentTypeDefinition(
                 source.Name,
                 source.DisplayName,
-                source.ContentTypePartDefinitionRecords.Select(Build),
+                source.ContentTypePartDefinitionRecords.Select(tp => Build(tp, partDefinitionRecords.FirstOrDefault(p => p.Name == tp.PartName))),
                 source.Settings);
 
             return contentTypeDefinition;
         }
 
-        ContentTypePartDefinition Build(ContentTypePartDefinitionRecord source)
+        ContentTypePartDefinition Build(ContentTypePartDefinitionRecord source, ContentPartDefinitionRecord partDefinitionRecord)
         {
-            var partDefinitionRecord = LoadContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => x.Name == source.PartName);
-
             return source == null ? null : new ContentTypePartDefinition(
                 source.Name,
                 Build(partDefinitionRecord) ?? new ContentPartDefinition(source.PartName, Enumerable.Empty<ContentPartFieldDefinition>(), new JObject()),
@@ -336,7 +334,8 @@ namespace OrchardCore.ContentManagement
                     {
                         partDefinitions.Clear();
                     }
-                }, state: _memoryCache);
+                },
+                state: _memoryCache);
 
                 record = _contentDefinitionStore.GetContentDefinitionAsync().GetAwaiter().GetResult();
 

@@ -58,12 +58,32 @@ namespace OrchardCore.ContentTypes.Services
         public ILogger Logger { get; }
         public IStringLocalizer T { get; set; }
 
+        public IEnumerable<EditTypeViewModel> LoadTypes()
+        {
+            return _contentDefinitionManager
+                .LoadTypeDefinitions()
+                .Select(ctd => new EditTypeViewModel(ctd))
+                .OrderBy(m => m.DisplayName);
+        }
+
         public IEnumerable<EditTypeViewModel> GetTypes()
         {
             return _contentDefinitionManager
                 .ListTypeDefinitions()
                 .Select(ctd => new EditTypeViewModel(ctd))
                 .OrderBy(m => m.DisplayName);
+        }
+
+        public EditTypeViewModel LoadType(string name)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(name);
+
+            if (contentTypeDefinition == null)
+            {
+                return null;
+            }
+
+            return new EditTypeViewModel(contentTypeDefinition);
         }
 
         public EditTypeViewModel GetType(string name)
@@ -160,6 +180,33 @@ namespace OrchardCore.ContentTypes.Services
             _contentDefinitionEventHandlers.Invoke(x => x.ContentPartDetached(new ContentPartDetachedContext { ContentTypeName = typeName, ContentPartName = partName }), Logger);
         }
 
+        public IEnumerable<EditPartViewModel> LoadParts(bool metadataPartsOnly)
+        {
+            var typeNames = new HashSet<string>(LoadTypes().Select(ctd => ctd.Name));
+
+            // user-defined parts
+            // except for those parts with the same name as a type (implicit type's part or a mistake)
+            var userContentParts = _contentDefinitionManager.LoadPartDefinitions()
+                .Where(cpd => !typeNames.Contains(cpd.Name))
+                .Select(cpd => new EditPartViewModel(cpd))
+                .ToDictionary(
+                    k => k.Name,
+                    v => v);
+
+            // code-defined parts
+            var codeDefinedParts = metadataPartsOnly
+                ? Enumerable.Empty<EditPartViewModel>()
+                : _contentPartTypes
+                        .Where(cpd => !userContentParts.ContainsKey(cpd.Name))
+                        .Select(cpi => new EditPartViewModel { Name = cpi.Name, DisplayName = cpi.Name })
+                    .ToList();
+
+            // Order by display name
+            return codeDefinedParts
+                .Union(userContentParts.Values)
+                .OrderBy(m => m.DisplayName);
+        }
+
         public IEnumerable<EditPartViewModel> GetParts(bool metadataPartsOnly)
         {
             var typeNames = new HashSet<string>(GetTypes().Select(ctd => ctd.Name));
@@ -185,6 +232,27 @@ namespace OrchardCore.ContentTypes.Services
             return codeDefinedParts
                 .Union(userContentParts.Values)
                 .OrderBy(m => m.DisplayName);
+        }
+
+        public EditPartViewModel LoadPart(string name)
+        {
+            var contentPartDefinition = _contentDefinitionManager.LoadPartDefinition(name);
+
+            if (contentPartDefinition == null)
+            {
+                var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(name);
+
+                if (contentTypeDefinition == null)
+                {
+                    return null;
+                }
+
+                contentPartDefinition = new ContentPartDefinition(name);
+            }
+
+            var viewModel = new EditPartViewModel(contentPartDefinition);
+
+            return viewModel;
         }
 
         public EditPartViewModel GetPart(string name)
