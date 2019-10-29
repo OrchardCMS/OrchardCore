@@ -272,6 +272,12 @@ namespace OrchardCore.Users.Controllers
                     user = new User() { UserName = model.UserName, Email = model.Email };
                     user = await _userService.CreateUserAsync(user, model.Password, (key, message) => ModelState.AddModelError(key, message));
                     _logger.LogInformation(3, "User created an account with password.");
+
+                    var role = model.Email = info.Principal.FindFirstValue(ClaimTypes.Role) ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Role);
+                    if (!string.IsNullOrEmpty(role))
+                    {
+                        await _userManager.AddToRoleAsync(user, role);
+                    }
                 }
                 else
                 {
