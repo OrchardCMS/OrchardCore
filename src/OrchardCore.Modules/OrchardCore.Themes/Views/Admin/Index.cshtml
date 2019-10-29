@@ -59,7 +59,14 @@ else
                         }
                         else
                         {
-                            @T["This is the default {0} theme", themeEntry.IsAdmin ? @T["Admin"] : @T["Site"]]
+                            if (themeEntry.IsAdmin)
+                            {
+                                @T["This is the default Admin theme"]
+                            }
+                            else
+                            {
+                                @T["This is the default Site theme"]
+                            }
                         }
                     </div>
                 </div>
