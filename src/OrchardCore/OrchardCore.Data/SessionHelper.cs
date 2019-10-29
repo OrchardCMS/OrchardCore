@@ -17,7 +17,7 @@ namespace OrchardCore.Data
         }
 
         /// <summary>
-        /// Gets a single document (or create a new one) for updating and that should not be cached.
+        /// Loads a single document (or create a new one) for updating and that should not be cached.
         /// For a full isolation, it needs to be used in pair with <see cref="GetForCachingAsync"/>.
         /// </summary>
         public async Task<T> LoadForUpdateAsync<T>(Func<T> factory = null) where T : class, new()

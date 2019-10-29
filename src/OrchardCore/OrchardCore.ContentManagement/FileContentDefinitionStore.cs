@@ -12,15 +12,32 @@ namespace OrchardCore.ContentManagement
         private readonly IOptions<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
 
+        private ContentDefinitionRecord _contentDefinitionRecord;
+
         public FileContentDefinitionStore(IOptions<ShellOptions> shellOptions, ShellSettings shellSettings)
         {
             _shellOptions = shellOptions;
             _shellSettings = shellSettings;
         }
 
-        public Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
+        /// <summary>
+        /// Loads a single document (or create a new one) for updating and that should not be cached.
+        /// </summary>
+        public async Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
         {
+            if (_contentDefinitionRecord != null)
+            {
+                return _contentDefinitionRecord;
+            }
 
+            return _contentDefinitionRecord = await GetContentDefinitionAsync();
+        }
+
+        /// <summary>
+        /// Gets a single document (or create a new one) for caching and that should not be updated.
+        /// </summary>
+        public Task<ContentDefinitionRecord> GetContentDefinitionAsync()
+        {
             ContentDefinitionRecord result;
 
             if (!File.Exists(Filename))

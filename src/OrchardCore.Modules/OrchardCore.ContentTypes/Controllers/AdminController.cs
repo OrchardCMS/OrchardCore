@@ -158,7 +158,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(id);
+            var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(id);
 
             if (contentTypeDefinition == null)
             {
@@ -178,7 +178,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
             else
             {
-                var ownedPartDefinition = _contentDefinitionManager.GetPartDefinition(contentTypeDefinition.Name);
+                var ownedPartDefinition = _contentDefinitionManager.LoadPartDefinition(contentTypeDefinition.Name);
                 if (ownedPartDefinition != null && viewModel.OrderedFieldNames != null)
                 {
                     _contentDefinitionService.AlterPartFieldsOrder(ownedPartDefinition, viewModel.OrderedFieldNames);
@@ -394,7 +394,7 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 ModelState.AddModelError("Name", S["Name is Required."]);
             }
-            else if (_contentDefinitionManager.GetPartDefinition(viewModel.Name) != null)
+            else if (_contentDefinitionManager.LoadPartDefinition(viewModel.Name) != null)
             {
                 ModelState.AddModelError("Name", S["Cannot add part named '{0}'. It already exists.", viewModel.Name]);
             }
@@ -440,7 +440,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var contentPartDefinition = _contentDefinitionManager.GetPartDefinition(id);
+            var contentPartDefinition = _contentDefinitionManager.LoadPartDefinition(id);
 
             if (contentPartDefinition == null)
             {
@@ -633,7 +633,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var field = _contentDefinitionManager.GetPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
+            var field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
 
             if (field == null)
             {
@@ -671,7 +671,7 @@ namespace OrchardCore.ContentTypes.Controllers
             _contentDefinitionService.AlterField(partViewModel, viewModel);
 
             // Refresh the local field variable in case it has been altered
-            field = _contentDefinitionManager.GetPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
+            field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
 
             viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
 
@@ -784,7 +784,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(id);
+            var typeDefinition = _contentDefinitionManager.LoadTypeDefinition(id);
 
             if (typeDefinition == null)
             {
