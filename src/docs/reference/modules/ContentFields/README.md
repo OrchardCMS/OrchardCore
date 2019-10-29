@@ -126,8 +126,8 @@ Or to render the referenced content item:
 This field allows you to store the `LocalizationSet` of a `ContentItem`, when a reference shouldn't point to a specific culture of a content item. 
 This simplifies getting a content item of the correct culture on the frontend.
 
-The following example use the `localization_set` liquid filter which returns a single ContentItem 
-per set based on the request culture.
+The following example uses the `localization_set` liquid filter which returns a single ContentItem 
+per set based on the request culture, if no culture is specified.
 
 #### LocalizationSet ContentPicker Field Example
 

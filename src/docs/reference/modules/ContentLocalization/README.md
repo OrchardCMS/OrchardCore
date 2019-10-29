@@ -114,3 +114,19 @@ Output
 ```text
 /Loc1/RedirectToLocalizedContent?targetculture=fr&contentItemUrl=%2Fblog
 ```
+
+### `localization_set`
+
+Returns the content item in the specified culture (defaults to request culture).
+
+Input
+
+```liquid
+{{ Model.ContentItem.Content.LocalizationPart.LocalizationSet | localization_set: "en" }}
+```
+
+Output
+
+```text
+Title
+```

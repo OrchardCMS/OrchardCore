@@ -1,4 +1,4 @@
-﻿using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Commands;
 using OrchardCore.Hosting.HostContext;
 using OrchardCore.Environment.Commands.Parameters;
 using Microsoft.Extensions.Logging;
@@ -43,7 +43,7 @@ namespace OrchardCore.Hosting
             {
                 for (; e != null; e = e.InnerException)
                 {
-                    _logger.LogError("Unexpected exception while running commands:" + e.Message);
+                    _logger.LogError("Unexpected exception while running commands" + e.Message);
                 }
                 return Task.FromResult(CommandReturnCodes.Fail);
             }

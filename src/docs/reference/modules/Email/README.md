@@ -20,19 +20,6 @@ Enabling the `OrchardCore.Email` module will allow the user to set the following
 | `UserName` | The username for the sender. |
 | `Password` | The password for the sender. |
 
-## Configuration
-
-`OrchardCore.Email` can be configured through `appsettings.json` as the following:
-
-```json
-    "OrchardCore.Email": {
-            "DefaultSender": "webmaster@orchardcore.info",
-            "Host": "Server",
-            "Port": 25,
-            ...
-    }
-```
-
 ## Credits
 
 ### MailKit
