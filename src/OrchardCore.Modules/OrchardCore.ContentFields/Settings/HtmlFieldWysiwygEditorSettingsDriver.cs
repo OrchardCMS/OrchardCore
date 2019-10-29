@@ -37,14 +37,7 @@ namespace OrchardCore.ContentFields.Settings
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                try
-                {
-                    settings.Options = model.Options;
-                }
-                catch
-                {
-                    return Edit(partFieldDefinition);
-                }
+                settings.Options = model.Options;
 
                 context.Builder.WithSettings(settings);
             }

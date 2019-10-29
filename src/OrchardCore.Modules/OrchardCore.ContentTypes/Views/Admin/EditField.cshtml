@@ -96,12 +96,14 @@
         $('.field-editor').hide();
         $('#field-editor-container').show();
         var fieldEditorSelect = $('#field-editor-select');
-        $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();
-
-        fieldEditorSelect.change(function () {
-            $('.field-editor').hide();
+        if (fieldEditorSelect.length > 0) {
             $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();
-        });
+
+            fieldEditorSelect.change(function () {
+                $('.field-editor').hide();
+                $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();
+            });
+        }
 
         $('.field-display').hide();
         $('#field-display-container').show();
