@@ -45,7 +45,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
     public static async Task<IQueryResults> ContentQueryResultsAsync(this IOrchardHelper orchardHelper, string queryName, Dictionary<string, object> parameters)
     {
         var contentItems = new List<ContentItem>();
-        var queryResult = await orchardHelper.QueryResultAsync(queryName, parameters);
+        var queryResult = await orchardHelper.QueryResultsAsync(queryName, parameters);
 
         if (queryResult.Items != null)
         {
