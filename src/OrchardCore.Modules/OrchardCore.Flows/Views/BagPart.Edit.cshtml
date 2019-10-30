@@ -1,5 +1,7 @@
 @using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.Flows.Models;
 @using OrchardCore.Flows.ViewModels;
+@using OrchardCore.Mvc.Utilities;
 
 @model BagPartEditViewModel
 
@@ -9,33 +11,42 @@
 
 @{
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
+    var parentContentType = Model.BagPart.ContentItem.ContentType;
+    string partName = ((dynamic)Model).Metadata.Name;
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>
 
 <fieldset class="form-group">
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart row" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.BagPart.ContentItems)
         {
-            var prefix = Guid.NewGuid().ToString("n");
-            <div class="widget-template col-md-12">
-                @{
-                    dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
-
-                    widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
-                    widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
-                    widgetEditor.TargetId = widgetTemplatePlaceholderId;
-
-                    widgetEditor.Metadata.Alternates.Add("Widget_Edit__Bag");
-                }
-
-                @await DisplayAsync(widgetEditor)
-
-                @{ this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix; }
-                <input type="hidden" asp-for="Prefixes" value="@prefix" />
-                <input type="hidden" asp-for="ContentTypes" value="@widget.ContentType" />
-            </div>
+            //Create a Card Shape
+            dynamic contentCard = await New.ContentCard(
+                // FOR Updater
+                CollectionShape: Model, 
+                //Shape Specific
+                CollectionShapeType: nameof(BagPart),
+                ContentItem: widget,
+                BuildEditor: true,                        
+                ParentContentType: parentContentType,
+                CollectionPartName :partName,
+                //Card Specific Properties
+                TargetId: widgetTemplatePlaceholderId,
+                Inline: false,                        
+                CanMove: true,
+                CanDelete: true,
+                //Input hidden
+                //Prefixes
+                HtmlFieldPrefix: htmlFieldPrefix,                        
+                PrefixesId: Html.IdFor(x => x.Prefixes),
+                PrefixesName: Html.NameFor(x => x.Prefixes),
+                //Content Types
+                ContentTypesId: Html.IdFor(x => x.ContentTypes),
+                ContentTypesName: Html.NameFor(x => x.ContentTypes)
+            );
+            @await DisplayAsync(contentCard)       
         }
     </div>
 
@@ -52,6 +63,8 @@
                    data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
                    data-widget-type="@type.Name"
                    data-flowmetadata="false"
+                   data-parent-content-type="@parentContentType"
+                   data-part-name="@partName"                   
                    href="javascript:;">@type.DisplayName</a>
             }
         </div>
