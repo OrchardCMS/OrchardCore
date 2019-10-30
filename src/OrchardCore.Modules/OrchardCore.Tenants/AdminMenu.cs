@@ -34,7 +34,7 @@ namespace OrchardCore.Tenants
             builder
                 .Add(T["Configuration"], "10", configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
-                    .Add(T["Tenants"], "2", deployment => deployment
+                    .Add(T["Tenants"], "5", deployment => deployment
                         .Action("Index", "Admin", new { area = "OrchardCore.Tenants" })
                         .Permission(Permissions.ManageTenants)
                         .LocalNav()

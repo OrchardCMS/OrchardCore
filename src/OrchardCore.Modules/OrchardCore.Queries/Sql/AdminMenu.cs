@@ -24,8 +24,8 @@ namespace OrchardCore.Queries.Sql
             builder
                 .Add(T["Configuration"], "10", configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
-                    .Add(T["Queries"], "4", site => site
-                        .Add(T["SQL Query [test]"], "9", queries => queries
+                    .Add(T["Site"], "10", site => site
+                        .Add(T["SQL Queries"], "5", queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Queries" })
                             .Permission(Permissions.ManageSqlQueries)
                             .LocalNav())));
