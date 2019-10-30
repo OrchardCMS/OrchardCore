@@ -160,8 +160,8 @@ group by day(CreatedUtc), month(CreatedUtc), year(CreatedUtc)
 
 ## SQL Parameters
 
-Parameters can be provided when running queries.
-Parameters are safe to use as they will always be parsed before being included in a query.
+Parameters can be provided when running queries.  
+Parameters are safe to use as they will always be parsed before being included in a query.  
 The syntax of a parameter is `@name:default_value`,
 where `name` is the name of the parameter, and `default_value` an expression (usually a literal) to use in case
 the parameter is not defined.

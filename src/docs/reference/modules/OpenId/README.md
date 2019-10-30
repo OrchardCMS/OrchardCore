@@ -139,7 +139,7 @@ Several tools are available for generating a signing certificate on Windows and/
 
 - IIS Server Manager _(offers limited control)_
     1. Server Certificates
-    2. Create Self-Signed Certificate 
+    2. Create Self-Signed Certificate
 - PowerShell _(offers full control)_
     1. `New-SelfSignedCertificate`, for example:
 
@@ -266,5 +266,5 @@ A sample of OpenID Connect Client Settings recipe step:
 
 ### OpenIddict
 
-<https://github.com/openiddict>
+<https://github.com/openiddict>  
 License under Apache License 2.0

@@ -17,6 +17,7 @@ During setup, all recipes have access to the setup screen values using these par
 These parameters can be used in the recipe using a scripted value like `[js: parameters('AdminUsername')]`.
 
 ## Configuration
+
 `OrchardCore.Setup` can be configured through `appsettings.json` as follows:
 
 ```json

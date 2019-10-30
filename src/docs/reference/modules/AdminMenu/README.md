@@ -16,7 +16,6 @@ You can disable an Admin Menu and it won't be shown.
 
 You can disable an Admin Node and neither it nor their descendants will be shown.
 
-
 ## How to create Admin Menu
 
 1. Ensure the Admin Menu module is enabled.
@@ -62,10 +61,12 @@ The Admin Menu that OrchardCore provides out of the box it's built broadly speak
 2. The coordinator retrieves all AdminMenu stored on the database and for each one of them call a BuildTreeAsync method, where each node add recursively its own menu items to the builder.
 
 ## Deployment Plan Step and Recipe Step
+
 The module provides an Admin Menu Deployment Step. So an admin user can expend some time configuring a custom admin menu, add it to a deployment plan, export a json file, and use the generated json on a setup recipe. This way the sites that are built using that recipe will have the admin menu as the user prepared it.
 
-## Permissions 
-There are two kind of permissions associated with the module: 
+## Permissions
+
+There are two kind of permissions associated with the module:
 
 1. Manage Admin Menus. It its about being able to create edit and delete admin menus from the admin.
 
@@ -112,7 +113,7 @@ This is the LinkAdminNode.cs
 
 This is how LinkAdminNodeBuilder builds a link.
 
-This class is  responsible for:
+This class is responsible for:
 
 * Converting the admin node info in the database to menuItems and adding them to the global builder.
 
@@ -153,7 +154,7 @@ This pattern ensures that at the end of the process the full tree will be proces
                     }
                     catch (Exception e)
                     {
-                        _logger.LogError(e, 
+                        _logger.LogError(e,
                             "An exception occurred while building the '{MenuItem}' child Menu Item.",
                             childTreeNode.GetType().Name);
                     }

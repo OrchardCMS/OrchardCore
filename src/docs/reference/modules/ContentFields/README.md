@@ -81,7 +81,7 @@ or, to display the raw content before the tags are converted:
 {{ Model.LocalDateTime }}
 ```
 
-or, to display the UTC value before is it converted:
+or, to display the UTC value before it is converted:
 
 ```liquid
 {{ Model.Value }}
@@ -123,7 +123,7 @@ Or to render the referenced content item:
 
 ### `LocalizationSetContentPickerField`
 
-This field allows you to store the `LocalizationSet` of a `ContentItem`, when a reference shouldn't point to a specific culture of a content item. 
+This field allows you to store the `LocalizationSet` of a `ContentItem`, when a reference shouldn't point to a specific culture of a content item.  
 This simplifies getting a content item of the correct culture on the frontend.
 
 The following example uses the `localization_set` liquid filter which returns a single ContentItem 
@@ -163,8 +163,7 @@ foreach (var contentItem in contentItems)
 
 ### What to extend
 
-Before creating a new field, the solution might be to provide a custom editor and formatter 
-instead.
+Before creating a new field, the solution might be to provide a custom editor and formatter instead.
 
 A field should represent some specific physical data and logical data. The same field can be customized
 to be edited and rendered differently using both Editors and Formatters. Editors are shapes that can

@@ -54,6 +54,7 @@ The __Markdown Part__ editor can be different for each content type. In the __Ma
 content type, just select the one that needs to be used.
 
 There are two predefined editor names:
+
 - `Default` is the editor that is used by default.
 - `Wysiwyg` is the editor that provides a WYSIWYG experience.
 
@@ -126,6 +127,6 @@ BSD-2
 
 ### SimpleMDE
 
-<https://github.com/sparksuite/simplemde-markdown-editor>
+<https://github.com/sparksuite/simplemde-markdown-editor>  
 Copyright (c) 2015 Next Step Webs, Inc.  
 MIT
