@@ -38,7 +38,5 @@ namespace OrchardCore.DisplayManagement.ModelBinding
 
         public bool TryValidateModel(object model, string prefix)
             => _updateModel.TryValidateModel(model, Prefix(prefix));
-        
-        public IUrlHelper Url => _updateModel.Url;
     }
 }

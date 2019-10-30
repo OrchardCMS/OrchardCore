@@ -1,5 +1,7 @@
+@inject IOptions<AutorouteOptions> AutorouteOptions
 @{
     ContentPickerMenuItemPart part = Model.MenuItemPart;
+    Url.RouteUrl(AutorouteOptions.Value.GlobalRouteValues.TryGetValue(part.ContentItemIds, out var linkUrl));
 }
 
-<span>@part.Name <code>@part.Url</code><span class="text-muted">- ContentPickerLink</span></span>
+<span>@part.Name <code>@linkUrl</code><span class="text-muted">- ContentPickerLink</span></span>

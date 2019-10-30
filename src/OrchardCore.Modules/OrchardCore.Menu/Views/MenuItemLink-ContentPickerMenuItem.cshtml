@@ -1,8 +1,11 @@
+@inject IOptions<AutorouteOptions> AutorouteOptions
+
 @using OrchardCore.ContentManagement
 @using OrchardCore.Menu
 
 @{
     ContentItem contentItem = Model.ContentItem;
     var linkMenuItemPart = contentItem.As<ContentPickerMenuItemPart>();
+    Url.RouteUrl(AutorouteOptions.Value.GlobalRouteValues.TryGetValue(linkMenuItemPart.ContentItemIds, out var linkUrl));
 }
-<a href="@Url.Content(linkMenuItemPart.Url)">@linkMenuItemPart.Name</a>
+<a href="@linkUrl">@linkMenuItemPart.Name</a>

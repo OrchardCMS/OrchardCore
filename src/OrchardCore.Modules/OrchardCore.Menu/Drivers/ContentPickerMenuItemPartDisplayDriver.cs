@@ -63,11 +63,6 @@ namespace OrchardCore.Menu.Drivers
             //Update Part Name
             await updater.TryUpdateModelAsync(part, Prefix, x => x.Name);
 
-            //Update Part Url
-            var contentPickerItem = await _contentManager.GetAsync(part.ContentItemIds);
-            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentPickerItem);
-            part.Url = updater.Url.RouteUrl(contentItemMetadata.DisplayRouteValues);
-
             return Edit(part);
         }
     }

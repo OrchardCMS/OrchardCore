@@ -56,7 +56,5 @@ namespace OrchardCore.DisplayManagement.ModelBinding
 
             return result;
         }
-
-        public IUrlHelper Url => _updater.Url;
     }
 }

@@ -41,7 +41,5 @@ namespace OrchardCore.DisplayManagement.ModelBinding
         {
             return _controller.TryValidateModel(model, prefix);
         }
-
-        public IUrlHelper Url => _controller.Url;
     }
 }
