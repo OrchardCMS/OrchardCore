@@ -4,4 +4,5 @@
     <a href="{{ linkContentItem | display_url }}" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ link.Name }}<b class="caret"></b></a>
 {% else %}
     <a class="nav-link" href="{{ linkContentItem | display_url }}">{{ link.Name }}</a>
+    <a class="nav-link" href="{{ link.ContentItemIds | display_url:is_content_item_id:true }}">{{ link.Name }}</a>
 {% endif %}

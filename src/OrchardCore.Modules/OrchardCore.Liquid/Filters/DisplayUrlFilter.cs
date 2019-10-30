@@ -3,7 +3,12 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Routing;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Liquid.Filters
 {
@@ -18,21 +23,40 @@ namespace OrchardCore.Liquid.Filters
 
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            var contentItem = input.ToObjectValue() as ContentItem;
+            var isContentItemId = arguments["is_content_item_id"].Or(arguments.At(0)).ToBooleanValue();
+            RouteValueDictionary routeValues;
 
-            if (contentItem == null)
+            if (isContentItemId)
             {
-                return NilValue.Instance;
+                var autoRouteOption = ShellScope.Services.GetRequiredService<IOptions<AutorouteOptions>>()?.Value;
+                routeValues = new RouteValueDictionary(autoRouteOption.GlobalRouteValues);
+                if (string.IsNullOrEmpty(input.ToStringValue()))
+                {
+                    throw new ArgumentException("content_item_id is empty while invoking 'display_url'");
+                }
+                routeValues[autoRouteOption.ContentItemIdKey] = input.ToStringValue();
             }
+            else
+            {
+                var contentItem = input.ToObjectValue() as ContentItem;
 
-            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+                if (contentItem == null)
+                {
+                    return NilValue.Instance;
+                }
+
+                var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+                routeValues = contentItemMetadata.DisplayRouteValues;
+            }
 
             if (!ctx.AmbientValues.TryGetValue("UrlHelper", out var urlHelper))
             {
                 throw new ArgumentException("UrlHelper missing while invoking 'display_url'");
             }
 
-            return new StringValue(((IUrlHelper)urlHelper).RouteUrl(contentItemMetadata.DisplayRouteValues));
+            var linkUrl = ((IUrlHelper)urlHelper).RouteUrl(routeValues);
+
+            return new StringValue(linkUrl);
         }
     }
 }
