@@ -3,12 +3,13 @@
 // Because !default means that a variable is not assigned if it already contains a value,
 // we alter the variable before importing boostrap as _variables.scss will use !default
 
-@import "../../../../../node_modules/bootstrap/scss/bootstrap";
+@import "../../node_modules/bootstrap/scss/bootstrap";
 @import "modules/_sizes.scss";
 @import "modules/_cursors.scss";
 @import "modules/_word-wrap.scss";
 @import "bootstrap-switch.scss";
 @import "codemirror.scss";
+@import "jquery-ui-datepicker-override.scss";
 
 $top-nav-height: 49px;
 $footer-height: 40px;
@@ -73,6 +74,11 @@ body {
 
     .nav-link {
         font-size: 14px;
+    }
+
+    .breadcrumb {
+        background-color:transparent;
+        margin-top: 1rem;
     }
 }
 

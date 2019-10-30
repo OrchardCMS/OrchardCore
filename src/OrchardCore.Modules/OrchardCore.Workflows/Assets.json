@@ -1,13 +1,13 @@
 [
   {
     "inputs": [
-      "../../../node_modules/jsplumb/css/jsplumbtoolkit-defaults.css"
+      "node_modules/jsplumb/css/jsplumbtoolkit-defaults.css"
     ],
     "output": "wwwroot/Styles/jsplumbtoolkit-defaults.css"
   },
   {
     "inputs": [
-      "../../../node_modules/jsplumb/dist/js/jsplumb.js"
+      "node_modules/jsplumb/dist/js/jsplumb.js"
     ],
     "output": "wwwroot/Scripts/jsplumb.js"
   },
@@ -25,12 +25,6 @@
   },
   {
     "inputs": [
-      "Assets/Styles/admin-menu.scss"
-    ],
-    "output": "wwwroot/Styles/menu.workflows-admin.css"
-  },
-  {
-    "inputs": [
       "Assets/Scripts/activity-picker.ts",
       "Http/Assets/Scripts/workflow-url-generator.ts",
       "Assets/Scripts/workflow-canvas.ts",
@@ -40,7 +34,7 @@
   },
   {
     "inputs": [
-      "HTTP/Assets/Scripts/workflow-url-generator.ts"
+      "Http/Assets/Scripts/workflow-url-generator.ts"
     ],
     "output": "wwwroot/Scripts/orchard.http-request-event-editor.js"
   },
@@ -50,12 +44,5 @@
       "Assets/Scripts/workflow-viewer.ts"
     ],
     "output": "wwwroot/Scripts/orchard.workflows-viewer.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "Assets/Images/*"
-    ],
-    "output": "wwwroot/Styles/Images/@"
   }
 ]

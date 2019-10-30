@@ -238,8 +238,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 return null;
             }
 
-            var result = value as IHtmlContent;
-            if (result != null)
+            if (value is IHtmlContent result)
             {
                 return result;
 
@@ -258,14 +257,25 @@ namespace OrchardCore.DisplayManagement.Implementation
             return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
         }
 
-        static async Task<IHtmlContent> ProcessAsync(ShapeBinding shapeBinding, IShape shape, DisplayContext context)
+        private static ValueTask<IHtmlContent> ProcessAsync(ShapeBinding shapeBinding, IShape shape, DisplayContext context)
         {
-            if (shapeBinding == null || shapeBinding.BindingAsync == null)
+            static async ValueTask<IHtmlContent> Awaited(Task<IHtmlContent> task)
+            {
+                return CoerceHtmlString(await task);
+            }
+
+            if (shapeBinding?.BindingAsync == null)
             {
                 // todo: create result from all child shapes
-                return shape.Metadata.ChildContent ?? HtmlString.Empty;
+                return new ValueTask<IHtmlContent>(shape.Metadata.ChildContent ?? HtmlString.Empty);
             }
-            return CoerceHtmlString(await shapeBinding.BindingAsync(context));
+
+            var task = shapeBinding.BindingAsync(context);
+            if (!task.IsCompletedSuccessfully)
+            {
+                return Awaited(task);
+            }
+            return new ValueTask<IHtmlContent>(CoerceHtmlString(task.Result));
         }
     }
 }

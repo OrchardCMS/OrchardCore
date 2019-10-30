@@ -1,28 +1,34 @@
-using Microsoft.AspNetCore;
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 #if (UseNLog || UseSerilog)
 using OrchardCore.Logging;
 #endif
-using OrchardCore.Modules;
 
 namespace OrchardCore.Templates.Cms.Web
 {
     public class Program
     {
-        public static void Main(string[] args)
-        {
-            BuildWebHost(args).Run();
-        }
+        public static Task Main(string[] args)
+            => BuildHost(args).RunAsync();
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IHost BuildHost(string[] args)
+        {
+            var host = Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging => logging.ClearProviders())
+                .ConfigureWebHostDefaults(webBuilder => webBuilder
 #if (UseNLog)
-                .UseNLogWeb()
+                        .UseNLogWeb()
 #endif
 #if (UseSerilog)
-                .UseSerilogWeb()
+                        .UseSerilogWeb()
 #endif
-                .UseStartup<Startup>()
+                        .UseStartup<Startup>())
                 .Build();
+
+            return host;
+        }
     }
 }

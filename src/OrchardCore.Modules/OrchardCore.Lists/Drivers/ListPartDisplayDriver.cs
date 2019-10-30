@@ -214,7 +214,7 @@ namespace OrchardCore.Lists.Drivers
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(listPart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
-            return contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
+            return contentTypePartDefinition.GetSettings<ListPartSettings>();
         }
     }
 }

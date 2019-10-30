@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -10,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DynamicCache.Services;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
 
@@ -235,20 +234,27 @@ namespace OrchardCore.DynamicCache.TagHelpers
                             // The value is not cached, we need to render the tag helper output
                             var processedContent = await output.GetChildContentAsync();
 
-                            var stringBuilder = new StringBuilder();
-                            using (var writer = new StringWriter(stringBuilder))
+                            using (var sb = StringBuilderPool.GetInstance())
                             {
-                                processedContent.WriteTo(writer, HtmlEncoder);
+                                using (var writer = new StringWriter(sb.Builder))
+                                {
+                                    processedContent.WriteTo(writer, HtmlEncoder);
+                                    await writer.FlushAsync();
+                                }
+
+                                var html = sb.Builder.ToString();
+
+                                var formattingContext = new DistributedCacheTagHelperFormattingContext
+                                {
+                                    Html = new HtmlString(html)
+                                };
+
+                                await _dynamicCacheService.SetCachedValueAsync(cacheContext, html);
+
+                                content = formattingContext.Html;
                             }
 
-                            var formattingContext = new DistributedCacheTagHelperFormattingContext
-                            {
-                                Html = new HtmlString(stringBuilder.ToString())
-                            };
 
-                            await _dynamicCacheService.SetCachedValueAsync(cacheContext, formattingContext.Html.ToString());
-
-                            content = formattingContext.Html;
                         }
                         else
                         {

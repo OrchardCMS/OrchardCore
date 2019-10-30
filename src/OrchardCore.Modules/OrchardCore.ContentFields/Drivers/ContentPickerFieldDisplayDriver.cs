@@ -88,7 +88,7 @@ namespace OrchardCore.ContentFields.Fields
             field.ContentItemIds = viewModel.ContentItemIds == null
                 ? new string[0] : viewModel.ContentItemIds.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var settings = context.PartFieldDefinition.Settings.ToObject<ContentPickerFieldSettings>();
+            var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 
             if (settings.Required && field.ContentItemIds.Length == 0)
             {

@@ -25,8 +25,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     /// </summary>
     public class ContentItemsFieldType : FieldType
     {
-
         private static readonly List<string> ContentItemProperties;
+        private readonly int _defaultNumberOfItems;
 
         static ContentItemsFieldType()
         {
@@ -38,7 +38,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        public ContentItemsFieldType(string contentItemName, ISchema schema, IOptions<GraphQLContentOptions> optionsAccessor)
+        public ContentItemsFieldType(string contentItemName, ISchema schema, IOptions<GraphQLContentOptions> optionsAccessor, IOptions<GraphQLSettings> settingsAccessor)
         {
             Name = "ContentItems";
 
@@ -60,6 +60,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             schema.RegisterType(whereInput);
             schema.RegisterType(orderByInput);
             schema.RegisterType<PublicationStatusGraphType>();
+
+            _defaultNumberOfItems = settingsAccessor.Value.DefaultNumberOfResults;
         }
 
         private async Task<IEnumerable<ContentItem>> Resolve(ResolveFieldContext context)
@@ -97,7 +99,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             query = OrderBy(query, context);
 
             var contentItemsQuery = await FilterWhereArguments(query, where, context, session, graphContext);
-            contentItemsQuery = PageQuery(contentItemsQuery, context);
+            contentItemsQuery = PageQuery(contentItemsQuery, context, graphContext);
 
             var contentItems = await contentItemsQuery.ListAsync();
 
@@ -172,15 +174,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentQuery;
         }
 
-        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context)
+        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context, GraphQLContext graphQLContext)
         {
-            if (context.HasPopulatedArgument("first"))
-            {
-                var first = context.GetArgument<int>("first");
+            var first = context.GetArgument<int>("first");
 
-                contentItemsQuery = contentItemsQuery.Take(first);
+            if (first == 0)
+            {
+                first = _defaultNumberOfItems;
             }
 
+            contentItemsQuery = contentItemsQuery.Take(first);
+            
             if (context.HasPopulatedArgument("skip"))
             {
                 var skip = context.GetArgument<int>("skip");

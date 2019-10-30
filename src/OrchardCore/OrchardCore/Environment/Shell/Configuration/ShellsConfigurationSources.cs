@@ -1,6 +1,6 @@
 using System.IO;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Environment.Shell.Configuration
@@ -10,7 +10,7 @@ namespace OrchardCore.Environment.Shell.Configuration
         private readonly string _environment;
         private readonly string _appsettings;
 
-        public ShellsConfigurationSources(IHostingEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
+        public ShellsConfigurationSources(IHostEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
         {
             _environment = hostingEnvironment.EnvironmentName;
             _appsettings = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "appsettings");

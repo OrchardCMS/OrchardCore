@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.Autoroute.Model;
 using OrchardCore.Autoroute.Models;
 
 namespace OrchardCore.Autoroute.ViewModels

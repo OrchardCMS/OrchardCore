@@ -11,7 +11,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 .Describe("Layout")
                 .OnCreating(creating =>
                 {
-                    creating.CreateAsync = () => Task.FromResult<IShape>(new ZoneHolding(() => creating.ShapeFactory.CreateAsync("Zone")));
+                    creating.CreateAsync = () => new ValueTask<IShape>(new ZoneHolding(() => creating.ShapeFactory.CreateAsync("Zone")));
                 })
                 .OnCreated(async created =>
                 {

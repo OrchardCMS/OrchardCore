@@ -8,12 +8,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ResolvedFileToPublish Include="App_Data\**" Exclude="App_Data\**\*.log">
+    <ResolvedFileToPublish Include="App_Data\**" Exclude="$(DefaultItemExcludes);App_Data\**\*.log">
       <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
-    </ResolvedFileToPublish>
-
-    <ResolvedFileToPublish Include="Localization\**">
-      <RelativePath>Localization\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
     </ResolvedFileToPublish>
   </ItemGroup>
 
@@ -23,6 +19,22 @@
 
   <Target Name="MakeLocalizationFolder" BeforeTargets="Build" Condition="!Exists('Localization/.placeholder')">
     <WriteLinesToFile Lines="" Encoding="Unicode" File="Localization/.placeholder" />
+  </Target>
+
+  <Target Name="CopyPackageTranslationFiles" AfterTargets="Build">
+    <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
+    <Copy
+      SourceFiles="%(PackageTranslationFiles.FullPath)"
+      DestinationFolder="Localization\%(RecursiveDir)"
+      Condition="'@(PackageTranslationFiles)' != ''"
+      SkipUnchangedFiles="true" />
+
+    <ItemGroup>
+      <LocalizationFiles Include="Localization\**" Exclude="$(DefaultItemExcludes)" />
+      <ResolvedFileToPublish Include="@(LocalizationFiles)">
+        <RelativePath>Localization\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+      </ResolvedFileToPublish>
+    </ItemGroup>
   </Target>
 
 </Project>

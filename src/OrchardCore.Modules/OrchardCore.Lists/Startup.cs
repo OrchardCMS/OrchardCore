@@ -39,12 +39,12 @@ namespace OrchardCore.Lists
         {
             services.AddSingleton<IIndexProvider, ContainedPartIndexProvider>();
             services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
-            services.AddSingleton<ContentPart, ContainedPart>();
+            services.AddContentPart<ContainedPart>();
             services.AddTransient<IContentAdminFilter, ListPartContentAdminFilter>();
 
             // List Part
             services.AddScoped<IContentPartDisplayDriver, ListPartDisplayDriver>();
-            services.AddSingleton<ContentPart, ListPart>();
+            services.AddContentPart<ListPart>();
             services.AddScoped<IContentPartHandler, ListPartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
@@ -57,12 +57,12 @@ namespace OrchardCore.Lists
             services.AddScoped<IContentPartHandler, ListPartFeedHandler>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ListFeed",
                 areaName: "OrchardCore.Feeds",
-                template: "Contents/Lists/{contentItemId}/rss",
+                pattern: "Contents/Lists/{contentItemId}/rss",
                 defaults: new { controller = "Feed", action = "Index", format = "rss"}
             );
         }

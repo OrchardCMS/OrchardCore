@@ -46,13 +46,13 @@ namespace OrchardCore.Settings
             services.AddScoped<IDisplayDriver<DeploymentStep>, SiteSettingsDeploymentStepDriver>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             // Admin
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "AdminSettings",
                 areaName: "OrchardCore.Settings",
-                template: "Admin/Settings/{groupId}",
+                pattern: "Admin/Settings/{groupId}",
                 defaults: new { controller = "Admin", action = "Index" }
             );
         }

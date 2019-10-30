@@ -13,7 +13,7 @@ using OrchardCore.Liquid.Drivers;
 using OrchardCore.Liquid.Filters;
 using OrchardCore.Liquid.Handlers;
 using OrchardCore.Liquid.Indexing;
-using OrchardCore.Liquid.Model;
+using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
 using OrchardCore.Modules;
 
@@ -61,7 +61,7 @@ namespace OrchardCore.Liquid
             // Liquid Part
             services.AddScoped<IContentPartDisplayDriver, LiquidPartDisplay>();
             services.AddScoped<IShapeTableProvider, LiquidShapes>();
-            services.AddSingleton<ContentPart, LiquidPart>();
+            services.AddContentPart<LiquidPart>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
             services.AddScoped<IContentPartHandler, LiquidPartHandler>();
