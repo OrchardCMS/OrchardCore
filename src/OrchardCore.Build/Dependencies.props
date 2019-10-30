@@ -31,11 +31,11 @@
     <PackageManagement Include="OpenIddict.Core" Version="2.0.1" />
     <PackageManagement Include="OpenIddict.EntityFrameworkCore" Version="2.0.1" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc1-100729" />
-    <PackageManagement Include="Serilog" Version="2.8.0" />
-    <PackageManagement Include="Serilog.AspNetCore" Version="3.0.0" />
+    <PackageManagement Include="Serilog" Version="2.9.0" />
+    <PackageManagement Include="Serilog.AspNetCore" Version="3.1.0" />
     <PackageManagement Include="Serilog.Settings.Configuration" Version="3.1.0" />
     <PackageManagement Include="Serilog.Sinks.Console" Version="3.1.1" />
-    <PackageManagement Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageManagement Include="Serilog.Sinks.File" Version="4.1.0" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0009" />
     <PackageManagement Include="WindowsAzure.Storage" Version="9.3.3" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
