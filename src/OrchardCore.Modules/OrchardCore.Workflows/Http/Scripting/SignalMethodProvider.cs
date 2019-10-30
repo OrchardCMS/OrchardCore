@@ -44,19 +44,18 @@ namespace OrchardCore.Workflows.Http.Scripting
             _createWorkflowToken = new GlobalMethod
             {
                 Name = "createWorkflowToken",
-                Method = serviceProvider => (Func<string, string, string, string>)((workflowTypeId, activityId, lifetime) =>
+                Method = serviceProvider => (Func<string, string, int, string>)((workflowTypeId, activityId, days) =>
                 {
                     var securityTokenService = serviceProvider.GetRequiredService<ISecurityTokenService>();
 
                     var payload = new WorkflowPayload(workflowTypeId, activityId);
-                    if (!TimeSpan.TryParse(lifetime, out var timespan) || lifetime == "0")
+
+                    if (days == 0)
                     {
-                        // No expiration specified or 0 defaults to no expiry
-                        timespan = TimeSpan.FromDays(HttpWorkflowController.NoExpiryTokenLifespan);
+                        days = HttpWorkflowController.NoExpiryTokenLifespan;
                     }
 
-                    var token = securityTokenService.CreateToken(payload, timespan);
-                    return token;
+                    return securityTokenService.CreateToken(payload, TimeSpan.FromDays(days));
                 })
             };
         }
