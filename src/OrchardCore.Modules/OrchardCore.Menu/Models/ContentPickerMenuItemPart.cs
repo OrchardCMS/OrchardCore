@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Routing;
 
 namespace OrchardCore.Menu.Models
 {
@@ -18,5 +20,12 @@ namespace OrchardCore.Menu.Models
         /// The url of the content picker.
         /// </summary>
         public string Url { get; set; }
+
+        public RouteValueDictionary GetContentPickerItemRouteValue(AutorouteOptions autoRouteOption)
+        {
+            var routeValues = new RouteValueDictionary(autoRouteOption.GlobalRouteValues);
+            routeValues[autoRouteOption.ContentItemIdKey] = ContentItemIds;
+            return routeValues;
+        }
     }
 }

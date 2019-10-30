@@ -5,7 +5,7 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var linkMenuItemPart = contentItem.As<ContentPickerMenuItemPart>();
-    Url.RouteUrl(AutorouteOptions.Value.GlobalRouteValues.TryGetValue(linkMenuItemPart.ContentItemIds, out var linkUrl));
+    var menuItemPart = contentItem.As<ContentPickerMenuItemPart>();
+    var linkUrl = Url.RouteUrl(menuItemPart.GetContentPickerItemRouteValue(AutorouteOptions.Value));
 }
-<a href="@linkUrl">@linkMenuItemPart.Name</a>
+<a href="@linkUrl">@menuItemPart.Name</a>
