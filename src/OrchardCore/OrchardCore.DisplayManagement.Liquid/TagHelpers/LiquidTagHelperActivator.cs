@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
@@ -37,11 +35,11 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
                 if (htmlAttribute != null && htmlAttribute.Name != null)
                 {
-                    allNames.Add(htmlAttribute.Name.Replace('-', '_'));
+                    allNames.Add(htmlAttribute.Name.ToPascalCaseDash());
 
-                    if (htmlAttribute.Name.StartsWith("asp-"))
+                    if (htmlAttribute.Name.StartsWith("asp-", StringComparison.Ordinal))
                     {
-                        allNames.Add(htmlAttribute.Name.Substring(4).Replace('-', '_'));
+                        allNames.Add(htmlAttribute.Name.Substring(4).ToPascalCaseDash());
                     }
                 }
 
@@ -111,7 +109,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
                 }
 
-                var attr = new TagHelperAttribute(name.Replace("_", "-"), arguments[name].ToObjectValue());
+                var attr = new TagHelperAttribute(name.Replace('_', '-'), arguments[name].ToObjectValue());
 
                 contextAttributes.Add(attr);
 
