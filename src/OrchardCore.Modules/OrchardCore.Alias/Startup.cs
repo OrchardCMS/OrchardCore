@@ -1,7 +1,6 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Alias.Drivers;
-using OrchardCore.Alias.GraphQL;
 using OrchardCore.Alias.Handlers;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Indexing;
@@ -10,7 +9,6 @@ using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Services;
 using OrchardCore.Alias.Settings;
 using OrchardCore.Alias.ViewModels;
-using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -37,12 +35,11 @@ namespace OrchardCore.Alias
             services.AddScoped<IContentAliasProvider, AliasPartContentAliasProvider>();
 
             // Identity Part
+            services.AddContentPart<AliasPart>();
             services.AddScoped<IContentPartDisplayDriver, AliasPartDisplayDriver>();
-            services.AddSingleton<ContentPart, AliasPart>();
             services.AddScoped<IContentPartHandler, AliasPartHandler>();
             services.AddScoped<IContentPartIndexHandler, AliasPartIndexHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AliasPartSettingsDisplayDriver>();
-
 
             services.AddScoped<ILiquidTemplateEventHandler, ContentAliasLiquidTemplateEventHandler>();
         }

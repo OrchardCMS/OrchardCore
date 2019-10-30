@@ -1,5 +1,3 @@
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -10,7 +8,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
-using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 
 namespace OrchardCore.Markdown.Drivers
@@ -51,12 +48,8 @@ namespace OrchardCore.Markdown.Drivers
             return Edit(model);
         }
 
-        private async Task BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart MarkdownBodyPart, ContentTypePartDefinition definition)
+        private async ValueTask BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart MarkdownBodyPart, ContentTypePartDefinition definition)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(MarkdownBodyPart.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(MarkdownBodyPart));
-            var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
-
             var templateContext = new TemplateContext();
             templateContext.SetValue("ContentItem", MarkdownBodyPart.ContentItem);
             templateContext.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();

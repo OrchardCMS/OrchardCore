@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -12,8 +11,10 @@ namespace OrchardCore.Mvc.LocationExpander
 {
     public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        private const string CacheKey = "ModuleComponentViewLocations)";
-        private static IList<IExtensionInfo> _modulesWithComponentViews;
+        private static readonly string SharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
+        private static readonly string[] RazorExtensions = new[] { RazorViewEngine.ViewExtension };
+        private const string CacheKey = "ModuleComponentViewLocations";
+        private static List<IExtensionInfo> _modulesWithComponentViews;
         private static object _synLock = new object();
 
         private readonly IExtensionManager _extensionManager;
@@ -48,7 +49,7 @@ namespace OrchardCore.Mvc.LocationExpander
                     foreach (var module in orderedModules)
                     {
                         var moduleComponentsViewFilePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
-                            module.SubPath + "/Views/Shared/Components", new[] { RazorViewEngine.ViewExtension },
+                            module.SubPath + "/Views/Shared/Components", RazorExtensions,
                             viewsFolder: null, inViewsFolder: true, inDepth: true);
 
                         if (moduleComponentsViewFilePaths.Any())
@@ -82,19 +83,21 @@ namespace OrchardCore.Mvc.LocationExpander
 
             if (context.ViewName.StartsWith("Components/", StringComparison.Ordinal))
             {
-                if (!_memoryCache.TryGetValue(CacheKey, out IEnumerable<string> moduleComponentViewLocations))
+                if (!_memoryCache.TryGetValue(CacheKey, out string[] moduleComponentViewLocations))
                 {
                     var enabledIds = _extensionManager.GetFeatures().Where(f => _shellDescriptor
-                        .Features.Any(sf => sf.Id == f.Id)).Select(f => f.Extension.Id).Distinct().ToArray();
+                        .Features.Any(sf => sf.Id == f.Id)).Select(f => f.Extension.Id).ToHashSet();
 
-                    var enabledExtensions = _extensionManager.GetExtensions()
-                        .Where(e => enabledIds.Contains(e.Id)).ToArray();
-
-                    var sharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
+                    var enabledExtensionIds = _extensionManager
+                        .GetExtensions()
+                        .Where(e => enabledIds.Contains(e.Id))
+                        .Select(x => x.Id)
+                        .ToHashSet();
 
                     moduleComponentViewLocations = _modulesWithComponentViews
-                        .Where(m => enabledExtensions.Any(e => e.Id == m.Id))
-                        .Select(m => '/' + m.SubPath + sharedViewsPath);
+                        .Where(m => enabledExtensionIds.Contains(m.Id))
+                        .Select(m => '/' + m.SubPath + SharedViewsPath)
+                        .ToArray();
 
                     _memoryCache.Set(CacheKey, moduleComponentViewLocations);
                 }

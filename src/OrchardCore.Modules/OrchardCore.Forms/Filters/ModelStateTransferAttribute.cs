@@ -4,6 +4,6 @@ namespace OrchardCore.Forms.Filters
 {
     public abstract class ModelStateTransferAttribute : ActionFilterAttribute
     {
-        protected const string Key = nameof(ModelStateTransferAttribute);
+        internal const string Key = nameof(ModelStateTransferAttribute);
     }
 }

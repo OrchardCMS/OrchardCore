@@ -14,7 +14,8 @@ namespace OrchardCore.Security
         public static IServiceCollection AddSecurity(this IServiceCollection services)
         {
             services.AddAuthorization();
-            services.AddAuthentication((options) =>
+
+            services.Configure<AuthenticationOptions>((options) =>
             {
                 if (!options.Schemes.Any(x => x.Name == "Api"))
                 {
