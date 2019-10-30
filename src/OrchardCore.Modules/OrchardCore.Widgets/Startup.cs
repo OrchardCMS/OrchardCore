@@ -7,6 +7,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Widgets.Drivers;
 using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.Settings;
+using OrchardCore.DisplayManagement.Descriptors;
 
 namespace OrchardCore.Widgets
 {
@@ -14,6 +15,8 @@ namespace OrchardCore.Widgets
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            //Add Widget Card Shapes
+            services.AddScoped<IShapeTableProvider,ContentCardShapes>();
             // Widgets List Part
             services.AddScoped<IContentPartDisplayDriver, WidgetsListPartDisplay>();
             services.AddContentPart<WidgetsListPart>();
