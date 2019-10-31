@@ -39,8 +39,6 @@ Add the following configurations to your `[Web Project].csproj` file to include 
   </ItemGroup>
 ```
 
-
-
 ## Recipe Step
 Cultures can be added during recipes using the settings step. Here is a sample step:
 
