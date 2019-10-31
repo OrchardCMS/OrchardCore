@@ -2,8 +2,8 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Queries
 {
-    public interface IQueryResults
+    public interface IQueryResults<T>
     {
-        public IEnumerable<object> Items { get; set; }
+        public IEnumerable<T> Items { get; set; }
     }
 }

@@ -42,7 +42,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
         return contentItems;
     }
 
-    public static async Task<IQueryResults> ContentQueryResultsAsync(this IOrchardHelper orchardHelper, string queryName, Dictionary<string, object> parameters)
+    public static async Task<IQueryResults<ContentItem>> ContentQueryResultsAsync(this IOrchardHelper orchardHelper, string queryName, Dictionary<string, object> parameters)
     {
         var contentItems = new List<ContentItem>();
         var queryResult = await orchardHelper.QueryResultsAsync(queryName, parameters);
@@ -74,6 +74,6 @@ public static class ContentQueryOrchardRazorHelperExtensions
             queryResult.Items = contentItems;
         }
 
-        return queryResult;
+        return (IQueryResults<ContentItem>)queryResult;
     }
 }

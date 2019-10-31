@@ -27,7 +27,7 @@ public static class QueryOrchardRazorHelperExtensions
         return result.Items;
     }
 
-    public static async Task<IQueryResults> QueryResultsAsync(this IOrchardHelper orchardHelper, string queryName, IDictionary<string, object> parameters)
+    public static async Task<IQueryResults<object>> QueryResultsAsync(this IOrchardHelper orchardHelper, string queryName, IDictionary<string, object> parameters)
     {
         var queryManager = orchardHelper.HttpContext.RequestServices.GetService<IQueryManager>();
 
