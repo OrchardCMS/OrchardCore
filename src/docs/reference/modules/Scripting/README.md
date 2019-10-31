@@ -66,13 +66,43 @@ The JavaScript scripting module implements a `IScriptingEngine` that uses [Espri
 
 Here is a list of javascript methods provided by Orchard Modules.
 
+#### Generic functions
+
+| Function | Description 
+| -------- | ----------- |
+| `log(level: String, text: String, param: Object): void` | Formats and writes a log message at the specified log level. |
+| `uuid(): String` | Generates a unique identifier for a content item. |
+| `base64(String): String` | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64. |
+| `html(String): String` | Decodes the specified string from HTML encoding. |
+| `gzip(String): String` | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings. |
+| `variables()` | TODO |
+| `parameters()` | TODO |
+
 #### Content (`OrchardCore.Contents`)
 | Function | Description 
 | -------- | ----------- |
 |`newContentItem(contentTypeName: String): IContent`| Creates a new instance of a ContentType (does not persist)|
 |`createContentItem(contentTypeName: String, publish: Boolean, properties: Object): IContent`| Creates and persists a new ContentItem. Conditionally publishes it. |
 |`updateContentItem(contentItem: IContent, properties: Object)`| Updates an existing content item with the properties |
-|`getUrlPrefix(): `||
+|`getUrlPrefix(path: String): String `| Prefixes the path with the Tenant prefix (if specified) |
+
+#### Layers (`OrchardCore.Layers`)
+
+| Function | Description 
+| -------- | ----------- |
+| `isHomepage(): Boolean` | Returns true if the current request Url is the current homepage |
+| `isAnonymous(): Boolean` | Returns true if there is no authenticated user on the current request |
+| `isAuthenticated(): Boolean` | Returns true if there is an authenticated user on the current request |
+| `url(url: String): Boolean` | Returns true if the current url matches the provided url. Add a `*` to the end of the url parameter to match any url that start with  |
+| `culture(name: String): Boolean` | Returns true if the current culture name or the current culture's parent name matches the `name` argument |
+
+#### Queries (`OrchardCore.Queries`)
+
+| Function | Description 
+| -------- | ----------- |
+| `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` | Returns the result of the query. |
+
+
 #### HTTP (`OrchardCore.Workflows.Http`)
 
 | Function | Description 
@@ -87,3 +117,18 @@ Here is a list of javascript methods provided by Orchard Modules.
 | `requestFormAsJson(): JObject` | Returns the entire request form as a JSON object. Example: ` { "field1": [ "field1-value1", "field1-value2" ], "field2": [ "field2-value1", "field2-value2" ], ... }` |
 
 
+#### Workflows (`OrchardCore.Workflows.Http`)
+The following JavaScript functions are available by default to any workflow activity that supports script expressions:
+
+| Function | Description |
+| -------- | ----------- |
+| `workflow(): WorkflowExecutionContext` | Returns the `WorkflowExecutionContext` which provides access to all information related to the current workflow execution context. |
+| `workflowId(): String` | Returns the unique workflow ID. |
+| `input(name: String): Any` | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. |
+| `output(name: String, value: Any): void` | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. |
+|  `property(name: String): Any` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. |
+| `lastResult(): Any` | Returns the value that the previous activity provided, if any. |
+| `correlationId(): String` | Returns the correlation value of the workflow instance. |
+| `signalUrl(signal: String): String` | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is configured with the same signal name. |
+|`setOutcome(outcome: String): void` | Adds the provided outcome to the list of outcomes of the current activity |
+| `createWorkflowToken(workflowTypeId: String, activityId: String, expiresInDays: Integer): String` | Generates a workflow SAS token for the specidied workflowTypeid, activityId. You can also set the expiration date in number of days. |
