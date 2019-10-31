@@ -282,14 +282,14 @@ namespace OrchardCore.Users.Controllers
         {
             if (remoteError != null)
             {
-                _logger.LogError($"Error from external provider: {remoteError}");
+                _logger.LogError("Error from external provider: {Error}", remoteError);
                 return RedirectToAction(nameof(Login));
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                _logger.LogError($"Could not get external login info.");
+                _logger.LogError("Could not get external login info.");
                 return RedirectToAction(nameof(Login));
             }
 
@@ -569,21 +569,21 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                _logger.LogError("Unable to load user with ID '{userId}'.", _userManager.GetUserId(User));
+                _logger.LogError("Unable to load user with ID '{UserId}'.", _userManager.GetUserId(User));
                 return RedirectToAction(nameof(Login));
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                _logger.LogError("Unexpected error occurred loading external login info");
+                _logger.LogError("Unexpected error occurred loading external login info for user '{UserName}'.", user.UserName);
                 return RedirectToAction(nameof(Login));
             }
 
             var result = await _userManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
             if (!result.Succeeded)
             {
-                _logger.LogError("Unexpected error occurred adding external login info");
+                _logger.LogError("Unexpected error occurred adding external login info for user '{UserName}'.", user.UserName);
                 return RedirectToAction(nameof(Login));
             }
 
@@ -601,14 +601,14 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                _logger.LogError("Unable to load user with ID '{userId}'.", _userManager.GetUserId(User));
+                _logger.LogError("Unable to load user with ID '{UserId}'.", _userManager.GetUserId(User));
                 return RedirectToAction(nameof(Login));
             }
 
             var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
             if (!result.Succeeded)
             {
-                _logger.LogError("Unexpected error occurred adding external login info.");
+                _logger.LogError("Unexpected error occurred adding external login info for user '{UserName}'.", user.UserName);
                 return RedirectToAction(nameof(Login));
             }
 
