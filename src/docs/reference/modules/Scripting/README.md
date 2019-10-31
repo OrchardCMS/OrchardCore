@@ -79,6 +79,7 @@ Here is a list of javascript methods provided by Orchard Modules.
 | `parameters()` | TODO |
 
 #### Content (`OrchardCore.Contents`)
+
 | Function | Description 
 | -------- | ----------- |
 |`newContentItem(contentTypeName: String): IContent`| Creates a new instance of a ContentType (does not persist)|
@@ -118,6 +119,7 @@ Here is a list of javascript methods provided by Orchard Modules.
 
 
 #### Workflows (`OrchardCore.Workflows.Http`)
+
 The following JavaScript functions are available by default to any workflow activity that supports script expressions:
 
 | Function | Description |
