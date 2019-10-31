@@ -45,7 +45,7 @@ namespace OrchardCore.Lucene
             return new LuceneQuery();
         }
 
-        public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        public async Task<IQueryResults<object>> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var luceneQuery = query as LuceneQuery;
             var luceneQueryResults = new LuceneQueryResults();
@@ -91,7 +91,7 @@ namespace OrchardCore.Lucene
                     luceneQueryResults.Items = results;
                 }
             });
-
+            
             return luceneQueryResults;
         }
     }
