@@ -81,7 +81,7 @@ Everything you need to know about Shapes is in [this video](https://youtu.be/gKL
 
 You can use the `<shape>` tag helper to render any shape, even pass properties.
 
-```razor
+``` html tab="Razor"
 @{
     var intValue = 1;
     var stringValue = "a";
@@ -96,7 +96,7 @@ You can use the `<shape>` tag helper to render any shape, even pass properties.
 <shape type="MyShape" prop-foo="@intValue" prop-bar="@stringValue" />
 ```
 
-```liquid
+``` liquid tab="Liquid"
 {% assign customShape = "MyShape" | shape_new %}
 {% shape_add_properties customShape my_string: "String Test 3", my_int: 1 %}
 {{ customShape | shape_render }}
@@ -107,11 +107,11 @@ You can use the `<shape>` tag helper to render any shape, even pass properties.
 For rendering content items, you could also use the following tag helper.
 Note: you need to add `@addTagHelper *, OrchardCore.Contents` to your `_ViewImports.cshtml` file to load this tag helper.
 
-```razor
+``` html tab="Razor"
 <contentitem alias="alias:main-menu" display-type="Detail" />
 ```
 
-```liquid
+``` liquid tab="Liquid"
 {% contentitem alias:"alias:main-menu" display_type="Detail" %}
 ```
 

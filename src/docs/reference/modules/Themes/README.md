@@ -151,7 +151,7 @@ Changing how the title is rendered for every content items would mean creating o
 
 #### TitlePart.cshtml
 
-```razor
+```html
 <h1>@Model.Title</h1>
 ```
 
