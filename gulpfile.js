@@ -11,7 +11,7 @@ var fs = require("file-system"),
     sourcemaps = require("gulp-sourcemaps"),
     less = require("gulp-less"),
     scss = require("gulp-sass"),
-    cssnano = require("gulp-cssnano"),
+    minify = require("gulp-minifier"),
     typescript = require("gulp-typescript"),
     terser = require("gulp-terser"),
     rename = require("gulp-rename"),
@@ -21,6 +21,7 @@ var fs = require("file-system"),
     util = require('gulp-util');
     postcss = require('gulp-postcss');
     rtl = require('postcss-rtl');
+    babel = require('gulp-babel');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -186,17 +187,20 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         })))
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
         .pipe(gulpif(generateRTL, postcss([rtl()])))
-        .pipe(cssnano({
-            autoprefixer: { browsers: ["last 2 versions"] },
-            discardComments: { removeAll: true },
-            discardUnused: false,
-            mergeIdents: false,
-            reduceIdents: false,
-            zindex: false
-        }))
-        .pipe(rename({
-            suffix: ".min"
-        }))
+        .pipe(minify({
+			minify: true,
+			minifyHTML: {
+			  collapseWhitespace: true,
+			  conservativeCollapse: true,
+			},
+			minifyJS: {
+			  sourceMap: true
+			},
+			minifyCSS: true
+		}))
+		.pipe(rename({
+			suffix: ".min"
+		}))
         .pipe(eol())
         .pipe(gulp.dest(assetGroup.outputDir));
         // Uncomment to copy assets to wwwroot
@@ -251,7 +255,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
                     ext: ".js"
                 }))))
         .pipe(plumber())
-        .pipe(gulpif(generateSourceMaps, sourcemaps.init()))
+        .pipe(gulpif(generateSourceMaps, sourcemaps.init()))		
         .pipe(gulpif("*.ts", typescript({
             declaration: false,
             noImplicitAny: true,
@@ -263,7 +267,18 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
                 "es2015.iterable"
             ],
             target: "es5",
-        })))
+        })))	
+        .pipe(babel({
+		  "presets": [
+			[
+			  "@babel/preset-env",
+			  {
+				"modules": false
+			  },
+			  "@babel/preset-flow"
+			]
+		  ]
+		}))
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
         .pipe(header(
             "/*\n" +

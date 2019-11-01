@@ -63,7 +63,7 @@ namespace OrchardCore.Title
                         && UpdateTitle(contentItemVersion.Content))
                     {
                         _session.Save(contentItemVersion);
-                        _logger.LogInformation($"A content item version's Title was upgraded: '{contentItemVersion.ContentItemVersionId}'");
+                        _logger.LogInformation("A content item version's Title was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
                     }
 
                     lastDocumentId = contentItemVersion.Id;

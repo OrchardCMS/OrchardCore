@@ -72,7 +72,9 @@ namespace OrchardCore.ContentManagement.Display.Placement
         private string GetStereotype(ShapePlacementContext context)
         {
             var shape = context.ZoneShape as Shape;
-            return shape?.Properties["Stereotype"]?.ToString();
+            object stereotypeVal = null;
+            shape?.Properties?.TryGetValue("Stereotype", out stereotypeVal);
+            return stereotypeVal?.ToString();
         }
     }
 

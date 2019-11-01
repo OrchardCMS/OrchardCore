@@ -10,7 +10,7 @@ namespace OrchardCore.Entities.Scripting
         private static GlobalMethod Uuid = new GlobalMethod
         {
             Name = "uuid",
-            Method = serviceProvider => (Func<object>) (() =>
+            Method = serviceProvider => (Func<string>) (() =>
             {
                 var idGenerator = serviceProvider.GetRequiredService<IIdGenerator>();
                 return idGenerator.GenerateUniqueId();

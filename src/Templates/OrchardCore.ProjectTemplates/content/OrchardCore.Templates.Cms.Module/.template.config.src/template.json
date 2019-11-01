@@ -11,7 +11,7 @@
     "AddPart": {
       "type": "parameter",
       "dataType": "bool",
-      "description": "Add dependency injection for part in Startup.cs",
+      "description": "Add dependency injection for part in Startup.cs. If PartName is not provided, default name will be used",
       "defaultValue": "false"
     },
     "PartName": {
@@ -20,7 +20,7 @@
       "description": "Add all files required for a part",
       "replaces": "MyTest",
       "fileRename": "MyTest",
-      "defaultValue": ""
+      "defaultValue": "MyTest"
     },
     "OrchardVersion": {
       "type": "parameter",
@@ -34,7 +34,7 @@
     {
       "modifiers": [
         {
-          "condition": "(PartName=='')",
+          "condition": "(PartName=='' || AddPart == false)",
           "exclude": [
             "Migrations.cs",
             "Drivers/MyTestPartDisplayDriver.cs",

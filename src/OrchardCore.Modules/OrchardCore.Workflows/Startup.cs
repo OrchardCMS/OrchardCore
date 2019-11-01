@@ -64,6 +64,8 @@ namespace OrchardCore.Workflows
             services.AddActivity<ScriptTask, ScriptTaskDisplay>();
             services.AddActivity<LogTask, LogTaskDisplay>();
 
+            services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplay>();
+
             services.AddRecipeExecutionStep<WorkflowTypeStep>();
         }
 
