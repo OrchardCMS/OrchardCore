@@ -65,8 +65,12 @@ namespace OrchardCore.Queries.Sql
 
                 using (connection)
                 {
-                    connection.Open();
-                    documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction(_store.Configuration.IsolationLevel))
+                    {
+                        documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
+                    }
                 }
 
                 sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
@@ -78,8 +82,12 @@ namespace OrchardCore.Queries.Sql
 
                 using (connection)
                 {
-                    connection.Open();
-                    queryResults = await connection.QueryAsync(rawQuery, parameters);
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction(_store.Configuration.IsolationLevel))
+                    {
+                        queryResults = await connection.QueryAsync(rawQuery, parameters);
+                    }
                 }
 
                 var results = new List<JObject>();
