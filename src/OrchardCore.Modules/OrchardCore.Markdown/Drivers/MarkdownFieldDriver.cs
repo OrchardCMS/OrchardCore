@@ -35,9 +35,8 @@ namespace OrchardCore.Markdown.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "")
-            .Location("DetailAdmin", "");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(MarkdownField field, BuildFieldEditorContext context)
