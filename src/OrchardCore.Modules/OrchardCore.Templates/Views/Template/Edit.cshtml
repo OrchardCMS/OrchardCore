@@ -24,8 +24,8 @@
 
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
-        <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
         <input asp-for="Name" class="form-control" autofocus />
+        <span asp-validation-for="Name"></span>
         <span class="hint">@T["The name of the template."]</span>
     </div>
 
