@@ -17,7 +17,7 @@ namespace OrchardCore.Html.Settings
                 return null;
             }
 
-            return Initialize<HtmlBodyPartSettings>("HtmlBodyPartSettings_Edit", model => contentTypePartDefinition.Settings.Populate(model))
+            return Initialize<HtmlBodyPartSettings>("HtmlBodyPartSettings_Edit", model => contentTypePartDefinition.PopulateSettings<HtmlBodyPartSettings>(model))
                 .Location("Content");
         }
 

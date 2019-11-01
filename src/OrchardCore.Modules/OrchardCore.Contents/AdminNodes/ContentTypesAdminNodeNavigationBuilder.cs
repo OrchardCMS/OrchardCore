@@ -82,7 +82,7 @@ namespace OrchardCore.Contents.AdminNodes
         {
 
             var typesToShow = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Listable);
+                .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Listable);
 
 
             if (!node.ShowAll)

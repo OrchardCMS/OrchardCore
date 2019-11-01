@@ -24,12 +24,12 @@ namespace OrchardCore.Menu
             // MenuPart
             services.AddScoped<IContentHandler, MenuContentHandler>();
             services.AddScoped<IContentPartDisplayDriver, MenuPartDisplayDriver>();
-            services.AddSingleton<ContentPart, MenuPart>();
-            services.AddSingleton<ContentPart, MenuItemsListPart>();
+            services.AddContentPart<MenuPart>();
+            services.AddContentPart<MenuItemsListPart>();
 
             // LinkMenuItemPart
             services.AddScoped<IContentPartDisplayDriver, LinkMenuItemPartDisplayDriver>();
-            services.AddSingleton<ContentPart, LinkMenuItemPart>();
+            services.AddContentPart<LinkMenuItemPart>();
 
             services.AddTagHelpers<MenuTagHelper>();
         }

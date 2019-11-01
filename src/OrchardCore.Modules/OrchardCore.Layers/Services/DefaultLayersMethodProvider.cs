@@ -22,7 +22,7 @@ namespace OrchardCore.Layers.Services
             _isHomepage = new GlobalMethod
             {
                 Name = "isHomepage",
-                Method = serviceProvider => (Func<string, object>)(name =>
+                Method = serviceProvider => (Func<bool>)(() =>
                 {
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
                     var requestPath = httpContext.Request.Path;
@@ -33,27 +33,27 @@ namespace OrchardCore.Layers.Services
             _isAnonymous = new GlobalMethod
             {
                 Name = "isAnonymous",
-                Method = serviceProvider => (Func<string, object>)(name =>
+                Method = serviceProvider => (Func<bool>)(() =>
                 {
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    return !httpContext.User?.Identity.IsAuthenticated;
+                    return httpContext.User?.Identity.IsAuthenticated != true;
                 })
             };
 
             _isAuthenticated = new GlobalMethod
             {
                 Name = "isAuthenticated",
-                Method = serviceProvider => (Func<string, object>)(name =>
+                Method = serviceProvider => (Func<bool>)(() =>
                 {
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    return httpContext.User?.Identity.IsAuthenticated;
+                    return httpContext.User?.Identity.IsAuthenticated == true;
                 })
             };
 
             _url = new GlobalMethod
             {
                 Name = "url",
-                Method = serviceProvider => (Func<string, object>)(url =>
+                Method = serviceProvider => (Func<string, bool>)(url =>
                 {
                     if (url.StartsWith("~/"))
                         url = url.Substring(1);
@@ -75,7 +75,7 @@ namespace OrchardCore.Layers.Services
             _culture = new GlobalMethod
             {
                 Name = "culture",
-                Method = serviceProvider => (Func<string, object>)(culture =>
+                Method = serviceProvider => (Func<string, bool>)(culture =>
                 {
                     var currentCulture = CultureInfo.CurrentCulture;
 

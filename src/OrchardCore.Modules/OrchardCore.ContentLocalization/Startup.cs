@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentLocalization.Drivers;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Indexing;
@@ -58,16 +59,16 @@ namespace OrchardCore.ContentLocalization
             services.AddScoped<IDisplayDriver<ISite>, ContentCulturePickerSettingsDriver>();
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                options.RequestCultureProviders.Insert(0, new ContentRequestCultureProvider());
+                options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider());
             });
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                name: "RedirectToLocalizedContent",
                areaName: "OrchardCore.ContentLocalization",
-               template: "RedirectToLocalizedContent",
+               pattern: "RedirectToLocalizedContent",
                defaults: new { controller = "ContentCulturePicker", action = "RedirectToLocalizedContent" }
            );
 
@@ -88,6 +89,10 @@ namespace OrchardCore.ContentLocalization
     [RequireFeatures("OrchardCore.Liquid")]
     public class LiquidStartup : StartupBase
     {
+        static LiquidStartup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<CultureInfo>();
+        }
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddLiquidFilter<ContentLocalizationFilter>("localization_set");

@@ -9,12 +9,12 @@ using OrchardCore.Navigation;
 namespace OrchardCore.Google
 {
     [Feature(GoogleConstants.Features.GoogleAuthentication)]
-    public class AdminMenuGoogleAuthentication : INavigationProvider
+    public class GoogleAuthenticationAdminMenu : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
 
-        public AdminMenuGoogleAuthentication(
-            IStringLocalizer<AdminMenuGoogleAuthentication> localizer,
+        public GoogleAuthenticationAdminMenu(
+            IStringLocalizer<GoogleAuthenticationAdminMenu> localizer,
             ShellDescriptor shellDescriptor)
         {
             T = localizer;
@@ -40,12 +40,12 @@ namespace OrchardCore.Google
     }
 
     [Feature(GoogleConstants.Features.GoogleAnalytics)]
-    public class AdminMenuGoogleAnalytics : INavigationProvider
+    public class GoogleAnalyticsAdminMenu : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
 
-        public AdminMenuGoogleAnalytics(
-            IStringLocalizer<AdminMenuGoogleAuthentication> localizer,
+        public GoogleAnalyticsAdminMenu(
+            IStringLocalizer<GoogleAuthenticationAdminMenu> localizer,
             ShellDescriptor shellDescriptor)
         {
             T = localizer;

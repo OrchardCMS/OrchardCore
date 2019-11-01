@@ -59,13 +59,13 @@ namespace OrchardCore.Lucene
             services.AddRecipeExecutionStep<LuceneIndexStep>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Lucene.Search",
                 areaName: "OrchardCore.Lucene",
-                template: "Search/{id?}",
-                defaults: new { controller = "Search", action = "Index", id = "" }
+                pattern: "Search/{id?}",
+                defaults: new { controller = "Search", action = "Index" }
             );
         }
     }

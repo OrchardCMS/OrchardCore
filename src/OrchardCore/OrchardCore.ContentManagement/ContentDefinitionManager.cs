@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,11 @@ namespace OrchardCore.ContentManagement
 
         public ContentTypeDefinition GetTypeDefinition(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Argument cannot be null or empty", nameof(name));
+            }
+
             return _typeDefinitions.GetOrAdd(name, n =>
             {
                 var contentTypeDefinitionRecord = GetContentDefinitionRecord()

@@ -47,4 +47,26 @@ namespace OrchardCore.Media
             };
         }
     }
+
+    public class MediaCachePermissions : IPermissionProvider
+    {
+        public static readonly Permission ManageAssetCache = new Permission("ManageAssetCache", "Manage Asset Cache Folder");
+
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        {
+            return Task.FromResult(new[] { ManageAssetCache }.AsEnumerable());
+        }
+
+        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        {
+            return new[]
+            {
+                new PermissionStereotype
+                {
+                    Name = "Administrator",
+                    Permissions = new[] { ManageAssetCache }
+                }
+            };
+        }
+    }
 }

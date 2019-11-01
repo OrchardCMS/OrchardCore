@@ -84,7 +84,7 @@ namespace OrchardCore.Media.Drivers
                 field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? new string[] {};
 
 
-                var settings = context.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
                 
                 if (settings.Required && field.Paths.Length < 1)
                 {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Modules;
@@ -14,12 +14,12 @@ namespace OrchardCore.Recipes.Services
     {
         private readonly IRecipeReader _recipeReader;
         private readonly IExtensionManager _extensionManager;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
 
         public RecipeHarvester(
             IRecipeReader recipeReader,
             IExtensionManager extensionManager,
-            IHostingEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             ILogger<RecipeHarvester> logger)
         {
             _recipeReader = recipeReader;

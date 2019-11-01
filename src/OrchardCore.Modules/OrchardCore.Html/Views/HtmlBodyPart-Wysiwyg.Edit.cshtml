@@ -1,11 +1,12 @@
 @model HtmlBodyPartViewModel
 @using OrchardCore.Html.ViewModels;
 @using OrchardCore.Html.Settings;
+@using OrchardCore.ContentLocalization
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Localization
 
 @{
-    var settings = Model.TypePartDefinition.Settings.ToObject<HtmlBodyPartSettings>();
+    var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
 }
 

@@ -38,10 +38,10 @@
 }
 
 <div class="row">
-    <div class="form-group col-xl-6 mb-xl-n1">
+    <div class="form-group col mb-n1">
         <h1>@RenderTitleSegments(T["Tenants"])</h1>
     </div>
-    <div class="form-group col-xl-6 mb-xl-n1">
+    <div class="form-group col mb-n1">
         <div class="dropdown float-right order-md-1">
             <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 @T["Bulk Actions"]
@@ -104,57 +104,66 @@
 <form asp-action="Index" method="post">
     <input name="BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
-    <ul class="list-group">
-        @foreach (var entry in Model.ShellSettingsEntries)
-        {
-            <li class="list-group-item">
-                <div class="custom-control custom-checkbox float-left">
-                    <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
-                    <label class="custom-control-label" for="tenantNames-@entry.Name">&nbsp;</label>
-                </div>
-                <div class="properties">
-                    <div class="related">
-                        <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                        @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
-                        {
-                            <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
-                        }
-                        @if (entry.ShellSettings.State == TenantState.Disabled)
-                        {
-                            <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
-                        }
-                        @if (entry.ShellSettings.State == TenantState.Uninitialized)
-                        {
-                            <a class="btn btn-info btn-sm" id="btn-setup-@entry.Name" href="@GetTenantUrl(entry, originalPathBase)">@T["Setup"]</a>
-                        }
-                        <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
+    @if (Model.ShellSettingsEntries.Count > 0)
+    {
+        <ul class="list-group">
+            @foreach (var entry in Model.ShellSettingsEntries)
+            {
+                <li class="list-group-item">
+                    <div class="custom-control custom-checkbox float-left">
+                        <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
+                        <label class="custom-control-label" for="tenantNames-@entry.Name">&nbsp;</label>
                     </div>
-                    <a href="@GetTenantUrl(entry, originalPathBase)">@entry.Name</a>
-                    <code class="hint">@entry.ShellSettings.RequestUrlHost@originalPathBase/@entry.ShellSettings.RequestUrlPrefix</code>
-                    <div class="metadata">
-                        @switch (entry.ShellSettings.State)
-                        {
-                            case TenantState.Disabled:
-                                <span class="badge badge-danger">@T["Disabled"]</span>
-                                break;
-                            case TenantState.Initializing:
-                                <span class="badge badge-info">@T["Initializing"]</span>
-                                break;
-                            case TenantState.Invalid:
-                                <span class="badge badge-warning">@T["Invalid"]</span>
-                                break;
-                            case TenantState.Running:
-                                <span class="badge badge-success">@T["Running"]</span>
-                                break;
-                            case TenantState.Uninitialized:
-                                <span class="badge badge-secondary">@T["Uninitialized"]</span>
-                                break;
-                        }
+                    <div class="properties">
+                        <div class="related">
+                            <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
+                            {
+                                <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+                            }
+                            @if (entry.ShellSettings.State == TenantState.Disabled)
+                            {
+                                <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+                            }
+                            @if (entry.ShellSettings.State == TenantState.Uninitialized)
+                            {
+                                <a class="btn btn-info btn-sm" id="btn-setup-@entry.Name" href="@GetTenantUrl(entry, originalPathBase)">@T["Setup"]</a>
+                            }
+                            <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
+                        </div>
+                        <a href="@GetTenantUrl(entry, originalPathBase)">@entry.Name</a>
+                        <code class="hint">@entry.ShellSettings.RequestUrlHost@originalPathBase/@entry.ShellSettings.RequestUrlPrefix</code>
+                        <div class="metadata">
+                            @switch (entry.ShellSettings.State)
+                            {
+                                case TenantState.Disabled:
+                                    <span class="badge badge-danger">@T["Disabled"]</span>
+                                    break;
+                                case TenantState.Initializing:
+                                    <span class="badge badge-info">@T["Initializing"]</span>
+                                    break;
+                                case TenantState.Invalid:
+                                    <span class="badge badge-warning">@T["Invalid"]</span>
+                                    break;
+                                case TenantState.Running:
+                                    <span class="badge badge-success">@T["Running"]</span>
+                                    break;
+                                case TenantState.Uninitialized:
+                                    <span class="badge badge-secondary">@T["Uninitialized"]</span>
+                                    break;
+                            }
+                        </div>
                     </div>
-                </div>
-            </li>
-        }
-    </ul>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            @T["<strong>Nothing here!</strong> Your search returned no results."]
+        </div>
+    }
 </form>
 
 @await DisplayAsync(Model.Pager)

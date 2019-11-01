@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Users.Events;
 
@@ -15,13 +14,13 @@ namespace OrchardCore.ReCaptcha.Users.Handlers
             _reCaptchaService = reCaptchaService;
         }
 
-        public Task LoggedInAsync()
+        public Task LoggedInAsync(string userName)
         {
             _reCaptchaService.ThisIsAHuman();
             return Task.CompletedTask;
         }
 
-        public async Task LoggingInAsync(Action<string, string> reportError)
+        public async Task LoggingInAsync(string userName, Action<string, string> reportError)
         {
             if(_reCaptchaService.IsThisARobot())
             {
@@ -29,7 +28,7 @@ namespace OrchardCore.ReCaptcha.Users.Handlers
             }
         }
 
-        public Task LoggingInFailedAsync()
+        public Task LoggingInFailedAsync(string userName)
         {
             _reCaptchaService.MaybeThisIsARobot();
             return Task.CompletedTask;
