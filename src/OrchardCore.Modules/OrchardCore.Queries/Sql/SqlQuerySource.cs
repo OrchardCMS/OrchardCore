@@ -56,6 +56,7 @@ namespace OrchardCore.Queries.Sql
             if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 sqlQueryResults.Items = new object[0];
+                connection.Dispose();
                 return sqlQueryResults;
             }
 
