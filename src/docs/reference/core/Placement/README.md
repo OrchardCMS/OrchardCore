@@ -1,5 +1,7 @@
 # OrchardCore.DisplayManagement
 
+This article is about DisplayManagement and placement files.
+
 ## Placement files
 
 Any extension can contain an optional `placement.json` file providing custom placement logic.
@@ -30,7 +32,7 @@ Currently you can filter shapes by:
 - `displayType` (Optional): The display type, like `Summary` and `Detail` for the most common ones.
 - `differentiator` (Optional): The differentiator which is used to distinguish shape types that are reused for multiple elements, like field names.
 
-Additional custom filter providers can be added by implementing `IPlacementNodeFilterProvider`. 
+Additional custom filter providers can be added by implementing `IPlacementNodeFilterProvider`.
 
 For shapes that are built from a content item, you can filter by the following built in filter providers:
 
@@ -66,10 +68,10 @@ Placement information consists of:
 
 ### Placing Fields
 
-Fields have a custom differentiator as their shape is used in many places. It is built using the `Part` it's contained
-in, and the name of the field. For instance, if a field named `MyField` would be added to an `Article` content type,
-its differentiator would be `Article.MyField`. If a field named `City` was added to an `Address` part then its differentiator would
-be `Address.City`.
+Fields have a custom differentiator as their shape is used in many places.  
+It is built using the `Part` it's contained in, and the name of the field.  
+For instance, if a field named `MyField` would be added to an `Article` content type, its differentiator would be `Article.MyField`.  
+If a field named `City` was added to an `Address` part then its differentiator would be `Address.City`.
 
 ## Shapes
 
