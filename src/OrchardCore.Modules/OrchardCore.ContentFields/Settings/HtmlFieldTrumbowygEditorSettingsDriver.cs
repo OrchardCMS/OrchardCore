@@ -8,9 +8,9 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class HtmlFieldWysiwygEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
+    public class HtmlFieldTrumbowygEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
     {
-        public HtmlFieldWysiwygEditorSettingsDriver(IStringLocalizer<HtmlFieldWysiwygEditorSettingsDriver> localizer)
+        public HtmlFieldTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlFieldTrumbowygEditorSettingsDriver> localizer)
         {
             T = localizer;
         }
@@ -19,9 +19,9 @@ namespace OrchardCore.ContentFields.Settings
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<WysiwygSettingsViewModel>("HtmlFieldWysiwygEditorSettings_Edit", model =>
+            return Initialize<TrumbowygSettingsViewModel>("HtmlFieldTrumbowygEditorSettings_Edit", model =>
             {
-                var settings = partFieldDefinition.GetSettings<HtmlFieldWysiwygEditorSettings>();
+                var settings = partFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
                 
                 model.Options = settings.Options;
             })
@@ -30,10 +30,10 @@ namespace OrchardCore.ContentFields.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
-            if (partFieldDefinition.Editor() == "Wysiwyg")
+            if (partFieldDefinition.Editor() == "Trumbowyg")
             {
-                var model = new WysiwygSettingsViewModel();
-                var settings = new HtmlFieldWysiwygEditorSettings();
+                var model = new TrumbowygSettingsViewModel();
+                var settings = new HtmlFieldTrumbowygEditorSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 

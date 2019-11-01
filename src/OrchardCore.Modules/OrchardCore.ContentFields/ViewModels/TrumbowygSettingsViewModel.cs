@@ -2,7 +2,7 @@ using OrchardCore.ContentFields.Settings;
 
 namespace OrchardCore.ContentFields.ViewModels
 {
-    public class WysiwygSettingsViewModel
+    public class TrumbowygSettingsViewModel
     {
         public string Options { get; set; }
     }
