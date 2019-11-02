@@ -206,7 +206,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             {
                 foreach (var shapeBindingResolver in _shapeBindingResolvers)
                 {
-                    var binding = await shapeBindingResolver.GetDescriptorBindingAsync(shapeAlternate);
+                    var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeAlternate);
 
                     if (binding != null)
                     {
@@ -228,7 +228,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             {
                 foreach (var shapeBindingResolver in _shapeBindingResolvers)
                 {
-                    var binding = await shapeBindingResolver.GetDescriptorBindingAsync(shapeTypeScan);
+                    var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeTypeScan);
 
                     if (binding != null)
                     {

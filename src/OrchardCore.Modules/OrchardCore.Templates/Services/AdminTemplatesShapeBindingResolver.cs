@@ -32,7 +32,7 @@ namespace OrchardCore.Templates.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<ShapeBinding> GetDescriptorBindingAsync(string shapeType)
+        public async Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
         {
             if (!AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
             {

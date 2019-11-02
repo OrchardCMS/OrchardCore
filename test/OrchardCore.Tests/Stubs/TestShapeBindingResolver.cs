@@ -21,7 +21,7 @@ namespace OrchardCore.Tests.Stubs
             _shapeBindings = shapeBindings;
         }
 
-        public Task<ShapeBinding> GetDescriptorBindingAsync(string shapeType)
+        public Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
         {
             if (_shapeBindings.TryGetValue(shapeType, out var binding))
             {
