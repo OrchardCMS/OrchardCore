@@ -6,11 +6,20 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.ViewModels;
+using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Html.Settings
 {
     public class HtmlBodyPartTrumbowygEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver
     {
+        public HtmlBodyPartTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlBodyPartTrumbowygEditorSettingsDriver> localizer)
+        {
+            T = localizer;
+        }
+
+        public IStringLocalizer T { get; set; }
+
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
             if (!String.Equals(nameof(HtmlBodyPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
@@ -39,7 +48,16 @@ namespace OrchardCore.Html.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            settings.Options = model.Options;
+            try
+            {
+                settings.Options = model.Options;
+                JObject.Parse(settings.Options);
+            }
+            catch
+            {
+                context.Updater.ModelState.AddModelError(Prefix, T["The options are written in an incorrect format."]);
+                return Edit(contentTypePartDefinition, context.Updater);
+            }
 
             context.Builder.WithSettings(settings);
 

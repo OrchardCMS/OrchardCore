@@ -6,12 +6,6 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
     var trumbowygSettings = Model.PartFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
-    string jsonOptions = null;
-    try
-    {
-        jsonOptions = JObject.Parse(trumbowygSettings.Options).ToString();
-    }
-    catch { }
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
@@ -39,7 +33,7 @@
 
 <script at="Foot">
     $(function () {
-        $('#@Html.IdFor(m => m.Html)').trumbowyg(@Html.Raw(jsonOptions)).on('tbwchange', function () {
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(@Html.Raw(trumbowygSettings.Options)).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
     });
