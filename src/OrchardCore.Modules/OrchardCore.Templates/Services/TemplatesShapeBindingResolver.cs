@@ -68,7 +68,6 @@ namespace OrchardCore.Templates.Services
         {
             return new ShapeBinding()
             {
-                ShapeDescriptor = new ShapeDescriptor() { ShapeType = shapeType },
                 BindingName = shapeType,
                 BindingSource = shapeType,
                 BindingAsync = async displayContext =>
