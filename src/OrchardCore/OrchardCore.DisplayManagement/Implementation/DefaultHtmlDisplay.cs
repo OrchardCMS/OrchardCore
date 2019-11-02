@@ -79,16 +79,16 @@ namespace OrchardCore.DisplayManagement.Implementation
 
                 // Find base shape association using only the fundamental shape type.
                 // Alternates that may already be registered do not affect the "displaying" event calls.
-                var shapeBinding = await GetDescriptorBindingAsync(shapeMetadata.Type, Enumerable.Empty<string>(), shapeTable); ;
-                if (shapeBinding != null)
+                var shapeDescriptor = GetShapeDescriptor(shapeMetadata.Type, shapeTable); ;
+                if (shapeDescriptor != null)
                 {
-                    await shapeBinding.ShapeDescriptor.DisplayingAsync.InvokeAsync(action => action(displayContext), _logger);
+                    await shapeDescriptor.DisplayingAsync.InvokeAsync(action => action(displayContext), _logger);
 
                     // copy all binding sources (all templates for this shape) in order to use them as Localization scopes
-                    shapeMetadata.BindingSources = shapeBinding.ShapeDescriptor.BindingSources.Where(x => x != null).ToList();
+                    shapeMetadata.BindingSources = shapeDescriptor.BindingSources.Where(x => x != null).ToList();
                     if (!shapeMetadata.BindingSources.Any())
                     {
-                        shapeMetadata.BindingSources.Add(shapeBinding.ShapeDescriptor.BindingSource);
+                        shapeMetadata.BindingSources.Add(shapeDescriptor.BindingSource);
                     }
                 }
 
@@ -104,9 +104,9 @@ namespace OrchardCore.DisplayManagement.Implementation
                 if (shape.Metadata.ChildContent == null)
                 {
                     // There might be no shape binding for the main shape, and only for its alternates.
-                    if (shapeBinding != null)
+                    if (shapeDescriptor != null)
                     {
-                        await shapeBinding.ShapeDescriptor.ProcessingAsync.InvokeAsync(action => action(displayContext), _logger);
+                        await shapeDescriptor.ProcessingAsync.InvokeAsync(action => action(displayContext), _logger);
                     }
 
                     // now find the actual binding to render, taking alternates into account
@@ -149,9 +149,9 @@ namespace OrchardCore.DisplayManagement.Implementation
                         displayContext.ShapeMetadata.ChildContent = displayContext.ChildContent;
                 }, _logger);
 
-                if (shapeBinding != null)
+                if (shapeDescriptor != null)
                 {
-                    await shapeBinding.ShapeDescriptor.DisplayedAsync.InvokeAsync(async action =>
+                    await shapeDescriptor.DisplayedAsync.InvokeAsync(async action =>
                     {
                         var prior = displayContext.ChildContent = displayContext.ShapeMetadata.ChildContent;
 
@@ -174,6 +174,26 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             return shape.Metadata.ChildContent;
+        }
+
+        private ShapeDescriptor GetShapeDescriptor(string shapeType, ShapeTable shapeTable)
+        {
+            var shapeTypeScan = shapeType;
+            for (; ; )
+            {
+                if (shapeTable.Descriptors.TryGetValue(shapeTypeScan, out var shapeDescriptor))
+                {
+                    return shapeDescriptor;
+                }
+
+                var delimiterIndex = shapeTypeScan.LastIndexOf("__");
+                if (delimiterIndex < 0)
+                {
+                    return null;
+                }
+
+                shapeTypeScan = shapeTypeScan.Substring(0, delimiterIndex);
+            }
         }
 
         private async Task<ShapeBinding> GetDescriptorBindingAsync(string shapeType, IEnumerable<string> shapeAlternates, ShapeTable shapeTable)
