@@ -199,9 +199,10 @@ namespace OrchardCore.ContentManagement
                 var methodName = invocation.Method.Name[4..];
                 if (invocation.MethodInvocationTarget.ReturnType.IsSubclassOf(typeof(ContentPart)))
                 {
-                    // Tries to retrieve content elements from the content item.
+                    // Tries to retrieve the content part from the content item.
                     invocation.ReturnValue = contentItem.Get(invocation.MethodInvocationTarget.ReturnType, methodName);
                 } else if (invocation.MethodInvocationTarget.ReturnType.IsSubclassOf(typeof(ContentField))){
+                    // Tries to retrieve the content field from the content item field part.
                     var fieldContentPart = contentItem.Get(typeof(ContentPart), contentItem.ContentType);
                     invocation.ReturnValue = fieldContentPart.Get(invocation.MethodInvocationTarget.ReturnType, methodName);
                 } else
