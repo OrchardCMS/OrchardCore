@@ -1,5 +1,3 @@
-using Microsoft.WindowsAzure.Storage.Blob;
-
 namespace OrchardCore.FileStorage.AzureBlob
 {
     public abstract class BlobStorageOptions
