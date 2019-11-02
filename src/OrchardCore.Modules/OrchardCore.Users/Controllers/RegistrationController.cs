@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -6,15 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
-using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers
@@ -22,18 +17,14 @@ namespace OrchardCore.Users.Controllers
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationController : Controller
     {
-        private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
-        private readonly SignInManager<IUser> _signInManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
 
         private readonly INotifier _notifier;
 
         public RegistrationController(
-            IUserService userService,
             UserManager<IUser> userManager,
-            SignInManager<IUser> signInManager,
             IAuthorizationService authorizationService,
             ISiteService siteService,
             INotifier notifier,
@@ -41,9 +32,7 @@ namespace OrchardCore.Users.Controllers
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
             IStringLocalizer<RegistrationController> stringLocalizer)
         {
-            _userService = userService;
             _userManager = userManager;
-            _signInManager = signInManager;
             _authorizationService = authorizationService;
             _siteService = siteService;
             _notifier = notifier;
@@ -62,7 +51,7 @@ namespace OrchardCore.Users.Controllers
         public async Task<IActionResult> Register(string returnUrl = null)
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
-            if (settings.UsersCanRegister != RegistrationSettings.UsersCanRegisterEnum.AllowRegistration)
+            if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
             {
                 return NotFound();
             }
@@ -78,7 +67,7 @@ namespace OrchardCore.Users.Controllers
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
 
-            if (settings.UsersCanRegister != RegistrationSettings.UsersCanRegisterEnum.AllowRegistration)
+            if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
             {
                 return NotFound();
             }

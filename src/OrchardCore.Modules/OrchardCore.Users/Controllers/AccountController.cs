@@ -334,7 +334,7 @@ namespace OrchardCore.Users.Controllers
                 else
                 {
                     // no user could be matched, check if a new user can register
-                    if (registrationSettings.UsersCanRegister == RegistrationSettings.UsersCanRegisterEnum.NoRegistration)
+                    if (registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration)
                     {
                         string message = T["Site does not allow user registration."];
                         _logger.LogWarning(message);
@@ -415,7 +415,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (settings.UsersCanRegister == RegistrationSettings.UsersCanRegisterEnum.NoRegistration)
+            if (settings.UsersCanRegister == UserRegistrationType.NoRegistration)
             {
                 _logger.LogWarning("Site does not allow user registration.", model.UserName, model.Email);
                 return NotFound();

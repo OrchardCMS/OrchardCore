@@ -11,7 +11,7 @@
 <div class="form-group" asp-validation-class-for="UsersCanRegister">
     <label asp-for="UsersCanRegister">@T["Users can create new accounts on the site"]</label>
     <select asp-for="UsersCanRegister" class="form-control">
-        @foreach (RegistrationSettings.UsersCanRegisterEnum option in Enum.GetValues(typeof(RegistrationSettings.UsersCanRegisterEnum)))
+        @foreach (UserRegistrationType option in Enum.GetValues(typeof(UserRegistrationType)))
         {
             <option value="@option" selected="@(Model.UsersCanRegister == option)">@T[option.ToString()]</option>
         }

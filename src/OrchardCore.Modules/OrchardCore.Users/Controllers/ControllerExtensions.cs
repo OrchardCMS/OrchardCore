@@ -63,7 +63,7 @@ namespace OrchardCore.Users.Controllers
             var settings = (await controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSiteSettingsAsync()).As<RegistrationSettings>();
             var signInManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<SignInManager<IUser>>();
 
-            if (settings.UsersCanRegister != RegistrationSettings.UsersCanRegisterEnum.NoRegistration)
+            if (settings.UsersCanRegister != UserRegistrationType.NoRegistration)
             {
                 await registrationEvents.InvokeAsync(i => i.RegistrationValidationAsync((key, message) => controller.ModelState.AddModelError(key, message)), logger);
 

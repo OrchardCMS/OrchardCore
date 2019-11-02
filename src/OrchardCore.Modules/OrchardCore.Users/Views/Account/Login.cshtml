@@ -4,22 +4,22 @@
 @using OrchardCore.Users
 @using OrchardCore.Users.Models
 @model OrchardCore.Users.ViewModels.LoginViewModel
-@inject SignInManager<IUser> _signInManager
-@inject ISiteService _site
-@inject UserManager<IUser> _userManager;
+@inject SignInManager<IUser> SignInManager
+@inject ISiteService SiteService
+@inject UserManager<IUser> UserManager;
 @{
     ViewLayout = "Layout__Login";
 
-    var userCanRegister = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister == RegistrationSettings.UsersCanRegisterEnum.AllowRegistration;
-    var allowResetPassword = (await _site.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
-    var loginProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-    var disableLocalLogin = (await _site.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
+    var userCanRegister = (await SiteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister == UserRegistrationType.AllowRegistration;
+    var allowResetPassword = (await SiteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
+    var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+    var disableLocalLogin = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
 }
 
 <div class="row">
     @if (!disableLocalLogin)
     {
-        <div class="col-md-6 @(loginProviders.Count == 0 ? "offset-md-3" : "")">
+        <div class="col-md-6 @(loginProviders.Count == 0 ? "offset-md-3" : String.Empty)">
             <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form">
                 <h4>@T["Use a local account to log in."]</h4>
                 <hr />
@@ -30,7 +30,7 @@
                     <span asp-validation-for="UserName" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Password" class="">
+                    <label asp-for="Password">
                         @T["Password"]
                         @if (allowResetPassword)
                         {
@@ -59,7 +59,7 @@
     }
     @if (loginProviders.Count > 0)
     {
-        <div class="col-md-6 @(disableLocalLogin ? "offset-md-3" : "")">
+        <div class="col-md-6 @(disableLocalLogin ? "offset-md-3" : String.Empty)">
             <section>
                 <h4>@T["Use another service to log in."]</h4>
                 <hr />
@@ -68,7 +68,7 @@
                         <p>
                             @foreach (var provider in loginProviders)
                             {
-                                <button type="submit" class="btn btn-primary @(disableLocalLogin ? "w-100" : "")" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                <button type="submit" class="btn btn-primary @(disableLocalLogin ? "w-100" : String.Empty)" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
                                 @if (disableLocalLogin)
                                 {
                                     <br />
