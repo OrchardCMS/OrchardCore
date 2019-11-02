@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
@@ -17,6 +18,7 @@ namespace OrchardCore.Tests.DisplayManagement
     public class DefaultDisplayManagerTests
     {
         TestShapeTable _defaultShapeTable;
+        TestShapeBindingsDictionary _additionalBindings;
         IServiceProvider _serviceProvider;
 
         public DefaultDisplayManagerTests()
@@ -27,17 +29,21 @@ namespace OrchardCore.Tests.DisplayManagement
                 Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
             };
 
+            _additionalBindings = new TestShapeBindingsDictionary();
+
             IServiceCollection serviceCollection = new ServiceCollection();
 
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
+            serviceCollection.AddScoped<IShapeBindingResolver, TestShapeBindingResolver>();
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IStringLocalizer<DefaultHtmlDisplay>, NullStringLocalizer<DefaultHtmlDisplay>>();
             serviceCollection.AddLogging();
 
             serviceCollection.AddSingleton(_defaultShapeTable);
+            serviceCollection.AddSingleton(_additionalBindings);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
@@ -95,6 +101,28 @@ namespace OrchardCore.Tests.DisplayManagement
         }
 
         [Fact]
+        public async Task RenderIShapeBindingResolverProvidedShapes()
+        {
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+            var shape = new Shape();
+            shape.Metadata.Type = "Baz";
+
+            _additionalBindings["Baz"] = new ShapeBinding
+            {
+                BindingName = "Baz",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi from IShapeBindingResolver.")),
+            };
+
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+            // Cleanup
+            _additionalBindings.Clear();
+
+            Assert.Equal("Hi from IShapeBindingResolver.", result.ToString());
+        }
+
+        [Fact]
         public async Task RenderPreCalculatedShape()
         {
             var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
@@ -122,6 +150,47 @@ namespace OrchardCore.Tests.DisplayManagement
 
             var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
             Assert.Equal("Bar", result.ToString());
+        }
+
+        [Fact]
+        public async Task IShapeBindingResolverProvidedShapesDoesNotOverrideShapeDescriptor()
+        {
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+            var shape = new Shape();
+            shape.Metadata.Type = "Foo";
+
+            var descriptor = new ShapeDescriptor
+            {
+                ShapeType = "Foo",
+                ProcessingAsync = new Func<ShapeDisplayContext, Task>[] {
+                    context =>
+                    {
+                            context.Shape.Data = "some data";
+                            return Task.CompletedTask;
+                    }
+                }
+            };
+            descriptor.Bindings["Foo"] = new ShapeBinding
+            {
+                BindingName = "Foo",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Is there any data ?")),
+            };
+
+            AddShapeDescriptor(descriptor);
+
+            _additionalBindings["Foo"] = new ShapeBinding
+            {
+                BindingName = "Foo",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString($"Yes there is { ((dynamic)ctx.Value).Data }.")),
+            };
+
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+            // Cleanup
+            _additionalBindings.Clear();
+
+            Assert.Equal("Yes there is some data.", result.ToString());
         }
 
         [Fact]
