@@ -43,6 +43,13 @@ namespace OrchardCore.Demo
             );
 
             routes.MapAreaControllerRoute(
+                name: "DisplayCodeContentItem",
+                areaName: "OrchardCore.Demo",
+                pattern: "Home/DisplayCodeContentItem/{contentItemId}",
+                defaults: new { controller = "Home", action = "DisplayCodeContentItem" }
+            );
+
+            routes.MapAreaControllerRoute(
                 name: "Error",
                 areaName: "OrchardCore.Demo",
                 pattern: "Home/IndexError",
@@ -72,6 +79,7 @@ namespace OrchardCore.Demo
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddContentPart<TestContentPartA>();
+            services.AddCodeContentType<TestCodeContentType>();
 
             services.AddScoped<IDisplayDriver<User>, UserProfileDisplayDriver>();
 
