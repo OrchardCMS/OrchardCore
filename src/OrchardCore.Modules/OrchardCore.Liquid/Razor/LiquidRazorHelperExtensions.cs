@@ -39,4 +39,3 @@ public static class LiquidRazorHelperExtensions
         return new HtmlString(liquid);
     }
 }
-

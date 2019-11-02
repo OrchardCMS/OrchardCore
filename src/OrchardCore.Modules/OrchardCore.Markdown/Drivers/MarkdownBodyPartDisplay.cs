@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
@@ -22,7 +21,7 @@ namespace OrchardCore.Markdown.Drivers
 
         public override IDisplayResult Display(MarkdownBodyPart MarkdownBodyPart, BuildPartDisplayContext context)
         {
-            return Initialize<MarkdownBodyPartViewModel>("MarkdownBodyPart", m => BuildViewModel(m, MarkdownBodyPart, context.TypePartDefinition))
+            return Initialize<MarkdownBodyPartViewModel>("MarkdownBodyPart", m => BuildViewModel(m, MarkdownBodyPart))
                 .Location("Detail", "Content:10")
                 .Location("Summary", "Content:10");
         }
@@ -31,8 +30,8 @@ namespace OrchardCore.Markdown.Drivers
         {
             return Initialize<MarkdownBodyPartViewModel>(GetEditorShapeType(context), model =>
             {
-                model.ContentItem = MarkdownBodyPart.ContentItem;
                 model.Markdown = MarkdownBodyPart.Markdown;
+                model.ContentItem = MarkdownBodyPart.ContentItem;
                 model.MarkdownBodyPart = MarkdownBodyPart;
                 model.TypePartDefinition = context.TypePartDefinition;
             });
@@ -45,7 +44,7 @@ namespace OrchardCore.Markdown.Drivers
             return Edit(model);
         }
 
-        private async ValueTask BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart MarkdownBodyPart, ContentTypePartDefinition definition)
+        private async ValueTask BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart MarkdownBodyPart)
         {
             var templateContext = new TemplateContext();
             templateContext.SetValue("ContentItem", MarkdownBodyPart.ContentItem);
@@ -53,10 +52,10 @@ namespace OrchardCore.Markdown.Drivers
 
             var markdown = await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
 
-            model.Markdown = Markdig.Markdown.ToHtml(markdown ?? "");
+            model.Markdown = MarkdownBodyPart.Markdown;
+            model.Html = Markdig.Markdown.ToHtml(markdown ?? "");
             model.ContentItem = MarkdownBodyPart.ContentItem;
             model.MarkdownBodyPart = MarkdownBodyPart;
-            model.TypePartDefinition = definition;
         }
     }
 }
