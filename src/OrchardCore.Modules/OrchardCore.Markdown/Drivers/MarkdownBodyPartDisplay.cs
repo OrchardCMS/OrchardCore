@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -14,14 +13,10 @@ namespace OrchardCore.Markdown.Drivers
 {
     public class MarkdownBodyPartDisplay : ContentPartDisplayDriver<MarkdownBodyPart>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
 
-        public MarkdownBodyPartDisplay(
-            IContentDefinitionManager contentDefinitionManager,
-            ILiquidTemplateManager liquidTemplatemanager)
+        public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplatemanager)
         {
-            _contentDefinitionManager = contentDefinitionManager;
             _liquidTemplatemanager = liquidTemplatemanager;
         }
 
@@ -34,16 +29,18 @@ namespace OrchardCore.Markdown.Drivers
 
         public override IDisplayResult Edit(MarkdownBodyPart MarkdownBodyPart, BuildPartEditorContext context)
         {
-            return Initialize<MarkdownBodyPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, MarkdownBodyPart, context.TypePartDefinition));
+            return Initialize<MarkdownBodyPartViewModel>(GetEditorShapeType(context), model =>
+            {
+                model.ContentItem = MarkdownBodyPart.ContentItem;
+                model.Markdown = MarkdownBodyPart.Markdown;
+                model.MarkdownBodyPart = MarkdownBodyPart;
+                model.TypePartDefinition = context.TypePartDefinition;
+            });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MarkdownBodyPart model, IUpdateModel updater)
         {
-            var viewModel = new MarkdownBodyPartViewModel();
-
-            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Source);
-
-            model.Markdown = viewModel.Source;
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.Markdown);
 
             return Edit(model);
         }
@@ -55,10 +52,9 @@ namespace OrchardCore.Markdown.Drivers
             templateContext.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
 
             var markdown = await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
-            model.Html = Markdig.Markdown.ToHtml(markdown ?? "");
 
+            model.Markdown = Markdig.Markdown.ToHtml(markdown ?? "");
             model.ContentItem = MarkdownBodyPart.ContentItem;
-            model.Source = MarkdownBodyPart.Markdown;
             model.MarkdownBodyPart = MarkdownBodyPart;
             model.TypePartDefinition = definition;
         }

@@ -7,8 +7,7 @@ namespace OrchardCore.Markdown.ViewModels
 {
     public class MarkdownBodyPartViewModel
     {
-        public string Source { get; set; }
-        public string Html { get; set; }
+        public string Markdown { get; set; }
 
         [BindNever]
         public ContentItem ContentItem { get; set; }

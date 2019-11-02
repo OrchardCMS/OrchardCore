@@ -1,16 +1,12 @@
-using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
-using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Liquid;
 
@@ -18,14 +14,10 @@ namespace OrchardCore.Html.Drivers
 {
     public class HtmlBodyPartDisplay : ContentPartDisplayDriver<HtmlBodyPart>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
 
-        public HtmlBodyPartDisplay(
-            IContentDefinitionManager contentDefinitionManager,
-            ILiquidTemplateManager liquidTemplatemanager)
+        public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplatemanager)
         {
-            _contentDefinitionManager = contentDefinitionManager;
             _liquidTemplatemanager = liquidTemplatemanager;
         }
 
@@ -38,16 +30,18 @@ namespace OrchardCore.Html.Drivers
 
         public override IDisplayResult Edit(HtmlBodyPart HtmlBodyPart, BuildPartEditorContext context)
         {
-            return Initialize<HtmlBodyPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context.TypePartDefinition));
+            return Initialize<HtmlBodyPartViewModel>(GetEditorShapeType(context), model =>
+            {
+                model.Html = HtmlBodyPart.Html;
+                model.ContentItem = HtmlBodyPart.ContentItem;
+                model.HtmlBodyPart = HtmlBodyPart;
+                model.TypePartDefinition = context.TypePartDefinition;
+            });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(HtmlBodyPart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            var viewModel = new HtmlBodyPartViewModel();
-
-            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Source);
-
-            model.Html = viewModel.Source;
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.Html);
 
             return Edit(model, context);
         }
@@ -60,7 +54,6 @@ namespace OrchardCore.Html.Drivers
 
             model.Html = await _liquidTemplatemanager.RenderAsync(HtmlBodyPart.Html, HtmlEncoder.Default, templateContext);
             model.ContentItem = HtmlBodyPart.ContentItem;
-            model.Source = HtmlBodyPart.Html;
             model.HtmlBodyPart = HtmlBodyPart;
             model.TypePartDefinition = definition;
         }
