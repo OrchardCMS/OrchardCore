@@ -1,43 +1,24 @@
-using OrchardCore.Facebook.Widgets.Models;
-using OrchardCore.Facebook.Widgets.ViewModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Settings;
-using OrchardCore.Mvc.ModelBinding;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Facebook.Widgets.Settings;
+using OrchardCore.Facebook.Widgets.ViewModels;
 
 namespace OrchardCore.Facebook.Widgets.Drivers
 {
     public class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<FacebookPluginPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISiteService _siteService;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IStringLocalizer<FacebookPluginPartDisplayDriver> T;
 
-        public FacebookPluginPartDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            ISiteService siteService,
-            IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor,
-            IStringLocalizer<FacebookPluginPartDisplayDriver> localizer
-            )
+        public FacebookPluginPartDisplayDriver(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _siteService = siteService;
-            _authorizationService = authorizationService;
-            _httpContextAccessor = httpContextAccessor;
-            T = localizer;
         }
 
         public override IDisplayResult Display(FacebookPluginPart part)
@@ -87,20 +68,9 @@ namespace OrchardCore.Facebook.Widgets.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(FacebookPluginPart model, IUpdateModel updater)
         {
-            var viewModel = new FacebookPluginPartViewModel();
-
-            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid);
-
-            model.Liquid = viewModel.Liquid;
-
-            await ValidateAsync(model, updater);
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.Liquid);
 
             return Edit(model);
-        }
-
-        private Task ValidateAsync(FacebookPluginPart model, IUpdateModel updater)
-        {
-            return Task.CompletedTask;
         }
     }
 }
