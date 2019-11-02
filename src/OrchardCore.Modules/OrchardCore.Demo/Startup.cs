@@ -43,6 +43,13 @@ namespace OrchardCore.Demo
             );
 
             routes.MapAreaControllerRoute(
+                name: "Display",
+                areaName: "OrchardCore.Demo",
+                pattern: "Home/DisplayTypedContentItem/{contentItemId}",
+                defaults: new { controller = "Home", action = "DisplayTypedContentItem" }
+            );
+
+            routes.MapAreaControllerRoute(
                 name: "Error",
                 areaName: "OrchardCore.Demo",
                 pattern: "Home/IndexError",

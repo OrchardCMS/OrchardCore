@@ -1,10 +1,25 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
+using Castle.DynamicProxy;
 
 namespace OrchardCore.ContentManagement
 {
     public static class ContentItemExtensions
     {
+        internal static ProxyGenerator _proxyGenerator = new ProxyGenerator();
+
+        /// <summary>
+        /// Gets a content item as a strongly typed content item proxy.
+        /// </summary>
+        public static TTypedContentItem To<TTypedContentItem>(this ContentItem contentItem) where TTypedContentItem : TypedContentItem
+        {
+            var o = (TTypedContentItem)Activator.CreateInstance(typeof(TTypedContentItem), new object[] { contentItem });
+            var proxy = (TTypedContentItem)_proxyGenerator.CreateClassProxyWithTarget(o.GetType(),
+                o, new object[] { contentItem }, new TypedContentItemInterceptor<TTypedContentItem>());
+
+            return proxy;
+        }
+
         /// <summary>
         /// Gets a content part by its type.
         /// </summary>
@@ -13,7 +28,7 @@ namespace OrchardCore.ContentManagement
         {
             return contentItem.Get<TPart>(typeof(TPart).Name);
         }
-        
+
         /// <summary>
         /// Gets a content part by its type or create a new one.
         /// </summary>
@@ -23,7 +38,7 @@ namespace OrchardCore.ContentManagement
         {
             return contentItem.GetOrCreate<TPart>(typeof(TPart).Name);
         }
-        
+
         /// <summary>
         /// Adds a content part by its type.
         /// </summary>

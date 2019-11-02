@@ -1,0 +1,10 @@
+@model TestTypedContentItem
+@using Microsoft.AspNetCore.Html;
+@using OrchardCore.Demo.Models;
+
+<h1>@Model.DisplayText</h1>
+@{
+    ThemeLayout.Footer.Add("In the footer", "2.0");
+    ThemeLayout.Footer.Add("Before", "before");
+    ThemeLayout.Footer.Add(new HtmlString("AFTER"), "after");
+}

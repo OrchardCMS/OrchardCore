@@ -95,7 +95,6 @@ namespace OrchardCore.Demo.Controllers
             return View("Display", contentItem);
         }
 
-
         public async Task<ActionResult> DisplayShape(string contentItemId)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId);
@@ -110,6 +109,20 @@ namespace OrchardCore.Demo.Controllers
                 .Line(contentItem.As<TestContentPartA>().Line);
 
             return View(shape);
+        }
+
+        public async Task<ActionResult> DisplayTypedContentItem(string contentItemId)
+        {
+            var contentItem = await _contentManager.GetAsync(contentItemId);
+
+            if (contentItem == null)
+            {
+                return NotFound();
+            }
+
+            var typedItem = contentItem.To<TestTypedContentItem>();
+
+            return View("DisplayTypedContentItem", typedItem);
         }
 
         public ActionResult Raw()
