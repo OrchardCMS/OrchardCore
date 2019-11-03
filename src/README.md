@@ -77,9 +77,8 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 ### Command line
 
-- Install the latest version of the .NET Core SDK from this page <https://www.microsoft.com/net/download/core>
-- Call `dotnet build`.
-- Next, navigate to `D:\OrchardCore\src\OrchardCore.Cms.Web` or wherever your folder is on the commandline in Administrator mode.
+- Install the latest versions (current) for both Runtime and SDK of .NET Core from this page <https://www.microsoft.com/net/download/core>
+- Navigate to `D:\OrchardCore\src\OrchardCore.Cms.Web` or wherever your respective folder is on the command line in Administrator mode.
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.
 
@@ -87,11 +86,13 @@ You can also read the [Code Generation Templates documentation](./docs/templates
 
 ### Visual Studio 2017
 
-- Download Visual Studio 2017 (any edition) from <https://www.visualstudio.com/downloads/>.
+- Download Visual Studio 2019 (any edition) from <https://www.visualstudio.com/downloads/>.
 - Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages.
 - Ensure `OrchardCore.Cms.Web` is the startup project and run it.
 - Optionally install the [Lombiq Orchard Visual Studio Extension](https://marketplace.visualstudio.com/items?itemName=LombiqVisualStudioExtension.LombiqOrchardVisualStudioExtension) to add some useful utilities to your Visual Studio such as an error log watcher or a dependency injector.
 
-### Contributing
+### Docker
 
-We currently follow these [engineering guidelines](https://github.com/OrchardCMS/OrchardCore/wiki/Engineering-Guidelines).
+- Run `docker run --name orchardcms orchardproject/orchardcore-cms-linux:latest`
+
+Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>
