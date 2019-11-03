@@ -25,11 +25,11 @@ This modules provides common content fields.
 From a `Content` template, you can reference a field's value like this
 (if the content type is `Article` and has a Text Field named `MyField`):
 
-```liquid
+``` liquid tab="Liquid"
 {{ Model.ContentItem.Content.Article.MyField.Value }}
 ```
 
-```razor
+``` html tab="Razor"
 var fieldValue = Model.ContentItem.Content.Article.MyField.Text;
 ```
 
@@ -98,7 +98,7 @@ or, to display the UTC value before it is converted:
 {% endfor %}
 ```
 
-```razor
+`` `html tab="Razor"
 @foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
 {
     @contentItem.DisplayText
@@ -107,14 +107,14 @@ or, to display the UTC value before it is converted:
 
 Or to render the referenced content item:
 
-```liquid
+``` liquid tab="Liquid"
 {% assign contentItems = Model.ContentItemIds | content_item_id %}
 {% for contentItem in contentItems %}
     {{ contentItem | shape_build_display: "Detail" | shape_render }}
 {% endfor %}
 ```
 
-```razor
+``` html tab="Razor"
 @foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
 {
     @await Orchard.DisplayAsync(contentItem, "Detail")
@@ -138,7 +138,7 @@ per set based on the request culture, if no culture is specified.
 {% endfor %}
 ```
 
-```razor
+``` html tab="Razor"
 @model OrchardCore.ContentFields.ViewModels.DisplayLocalizationSetContentPickerFieldViewModel
 @using Microsoft.AspNetCore.Localization
 
@@ -215,7 +215,7 @@ This shape type will match a template file named `{FIELDTYPE}-{EDITORNAME}.Optio
 
 This template will need to render an `<option>` tag. Here is an example for a Wysiwyg options on the Html Field:
 
-```razor
+``` html tab="Razor"
 @{
     string currentEditor = Model.Editor;
 }
