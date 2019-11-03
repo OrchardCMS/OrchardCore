@@ -321,21 +321,16 @@ namespace OrchardCore.ContentManagement
             {
                 var changeToken = ChangeToken;
 
+                var typeDefinitions = _cachedTypeDefinitions;
+                var partDefinitions = _cachedPartDefinitions;
+
+                // Using local vars prevents the lambda from holding a ref on this scoped service.
                 changeToken.RegisterChangeCallback((state) =>
                 {
-                    if (((IMemoryCache)state).TryGetValue<ConcurrentDictionary<string,
-                        ContentTypeDefinition>>("TypeDefinitions", out var typeDefinitions))
-                    {
-                        typeDefinitions.Clear();
-                    }
-
-                    if (((IMemoryCache)state).TryGetValue<ConcurrentDictionary<string,
-                        ContentPartDefinition>>("PartDefinitions", out var partDefinitions))
-                    {
-                        partDefinitions.Clear();
-                    }
+                    typeDefinitions.Clear();
+                    partDefinitions.Clear();
                 },
-                state: _memoryCache);
+                state: null);
 
                 record = _contentDefinitionStore.GetContentDefinitionAsync().GetAwaiter().GetResult();
 
