@@ -67,10 +67,13 @@ namespace OrchardCore.Html.Drivers
             templateContext.SetValue("ContentItem", HtmlBodyPart.ContentItem);
             templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
 
-            model.Source = HtmlBodyPart.Html;
-            model.Html = await _liquidTemplatemanager.RenderAsync(HtmlBodyPart.Html, HtmlEncoder.Default, templateContext);
-            model.ContentItem = HtmlBodyPart.ContentItem;
             model.HtmlBodyPart = HtmlBodyPart;
+            model.ContentItem = HtmlBodyPart.ContentItem;
+            templateContext.LocalScope.SetValue("Model", model);
+
+            model.Html = await _liquidTemplatemanager.RenderAsync(HtmlBodyPart.Html, HtmlEncoder.Default, templateContext);
+
+            model.Source = HtmlBodyPart.Html;
         }
     }
 }

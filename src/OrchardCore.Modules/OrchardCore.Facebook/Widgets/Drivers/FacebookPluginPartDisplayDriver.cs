@@ -15,16 +15,16 @@ namespace OrchardCore.Facebook.Widgets.Drivers
 {
     public class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<FacebookPluginPart>
     {
-        private readonly ILiquidTemplateManager _liquidTemplatemanager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly ILiquidTemplateManager _liquidTemplatemanager;
 
         public FacebookPluginPartDisplayDriver(
-            ILiquidTemplateManager liquidTemplatemanager,
             IContentDefinitionManager contentDefinitionManager,
+            ILiquidTemplateManager liquidTemplatemanager,
             IStringLocalizer<FacebookPluginPartDisplayDriver> localizer)
         {
-            _liquidTemplatemanager = liquidTemplatemanager;
             _contentDefinitionManager = contentDefinitionManager;
+            _liquidTemplatemanager = liquidTemplatemanager;
             T = localizer;
         }
 
@@ -81,7 +81,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
             {
-                if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplatemanager.Validate(viewModel.Html, out var errors))
+                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
                 {
                     updater.ModelState.AddModelError(nameof(model.Liquid), T["The 'Body' contains an invalid Liquid expression. Details: {0}", string.Join(" ", errors)]);
                 }

@@ -57,7 +57,7 @@ namespace OrchardCore.ContentLocalization.Drivers
             {
                 model.LocalizationSet = _iidGenerator.GenerateUniqueId();
             }
-            return Edit(model, context);
+            return Edit(model);
         }
 
         public async ValueTask BuildViewModelAsync(LocalizationPartViewModel model, LocalizationPart localizationPart)
