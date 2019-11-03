@@ -111,11 +111,36 @@ namespace MyNewWebsite
 #### Module commands
 
 ```CMD
+dotnet new ocmodulecms
+```
+
+The above command will use the default options.
+
+You can pass the following CLI parameters to setup options
+
+```CMD
+Orchard Core Module (C#)
+Author: Orchard Project
+Options:
+  -A|--AddPart           Add dependency injection for part in Startup.cs. If PartName is not provided, default name will be used
+                         bool - Optional
+                         Default: false / (*) true
+
+  -P|--PartName          Add all files required for a part
+                         string - Optional
+                         Default: MyTest
+
+  -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
+                         string - Optional
+                         Default: 1.0.0-rc1
+```
+
+```CMD
 dotnet new ocmodulecms -n ModuleName.OrchardCore
 
-dotnet new ocmodulecms -n ModuleName.OrchardCore --PartName TestPart
+dotnet new ocmodulecms -n ModuleName.OrchardCore --AddPart true
 
-dotnet new ocmodulecms -n ModuleName.OrchardCore --PartName TestPart --AddPart true
+dotnet new ocmodulecms -n ModuleName.OrchardCore --AddPart true --PartName TestPart 
 ```
 
 ### New module from Visual Studio (manual way)
