@@ -16,6 +16,8 @@ namespace OrchardCore.Contents.Deployment
         {
             _session = session;
         }
+
+        public override int Order => -100;
         
         public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
