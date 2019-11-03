@@ -37,7 +37,7 @@ namespace OrchardCore.ContentFields.Settings
                 var settings = new HtmlFieldTrumbowygEditorSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
-
+                
                 try
                 {
                     settings.Options = model.Options;
@@ -49,7 +49,7 @@ namespace OrchardCore.ContentFields.Settings
                     return Edit(partFieldDefinition);
                 }
 
-                context.Builder.WithSettings(settings);
+                    context.Builder.WithSettings(settings);
             }
 
             return Edit(partFieldDefinition);
