@@ -750,6 +750,17 @@ body.trumbowyg-body-fullscreen {
     [dir=rtl] .trumbowyg-dropdown-foreColor button:hover::after, [dir=rtl] .trumbowyg-dropdown-foreColor button:focus::after, [dir=rtl] .trumbowyg-dropdown-backColor button:hover::after, [dir=rtl] .trumbowyg-dropdown-backColor button:focus::after {
       right: -5px; }
 
+[dir] .trumbowyg-highlight-form-group {
+  margin: 15px 10px; }
+  .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control {
+    width: 100%;
+    font-size: 14px; }
+  [dir] .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control {
+    border: 1px solid #DEDEDE;
+    padding: 7px; }
+    .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control.code {
+      height: 200px; }
+
 .trumbowyg-dropdown-emoji {
   width: 265px;
   height: 200px;
@@ -803,41 +814,6 @@ body.trumbowyg-body-fullscreen {
   height: 22px;
   display: inline-block; }
 
-[dir] .trumbowyg-highlight-form-group {
-  margin: 15px 10px; }
-  .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control {
-    width: 100%;
-    font-size: 14px; }
-  [dir] .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control {
-    border: 1px solid #DEDEDE;
-    padding: 7px; }
-    .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control.code {
-      height: 200px; }
-
-.mathMlContainer {
-  position: relative; }
-  .mathMlContainer[inline="false"] {
-    display: block;
-    width: 100%; }
-  .mathMlContainer:hover {
-    pointer-events: none; }
-    .mathMlContainer:hover:after {
-      content: '\270E';
-      pointer-events: auto;
-      position: absolute;
-      top: 0px;
-      bottom: 0px; }
-    [dir] .mathMlContainer:hover:after {
-      background-color: #ffffffd4;
-      cursor: pointer;
-      box-shadow: 0 0 5px 5px #ffffffd4; }
-    [dir=ltr] .mathMlContainer:hover:after {
-  left: 0px;
-  right: 0px; }
-    [dir=rtl] .mathMlContainer:hover:after {
-      right: 0px;
-      left: 0px; }
-
 .trumbowyg-dropdown-mention {
   height: calc(75%);
   width: 300px;
@@ -864,6 +840,30 @@ body.trumbowyg-body-fullscreen {
     [dir=rtl] .trumbowyg-dropdown-mention button:after {
       left: 0;
       background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%); }
+
+.mathMlContainer {
+  position: relative; }
+  .mathMlContainer[inline="false"] {
+    display: block;
+    width: 100%; }
+  .mathMlContainer:hover {
+    pointer-events: none; }
+    .mathMlContainer:hover:after {
+      content: '\270E';
+      pointer-events: auto;
+      position: absolute;
+      top: 0px;
+      bottom: 0px; }
+    [dir] .mathMlContainer:hover:after {
+      background-color: #ffffffd4;
+      cursor: pointer;
+      box-shadow: 0 0 5px 5px #ffffffd4; }
+    [dir=ltr] .mathMlContainer:hover:after {
+  left: 0px;
+  right: 0px; }
+    [dir=rtl] .mathMlContainer:hover:after {
+      right: 0px;
+      left: 0px; }
 
 .trumbowyg-editor table {
   width: 100%; }
