@@ -22,7 +22,7 @@ namespace OrchardCore.Html.Drivers
             T = localizer;
         }
 
-        public IStringLocalizer T { get; private set; }
+        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Display(HtmlBodyPart HtmlBodyPart, BuildPartDisplayContext context)
         {

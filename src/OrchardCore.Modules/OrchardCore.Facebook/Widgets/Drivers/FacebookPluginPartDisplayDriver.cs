@@ -28,7 +28,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             T = localizer;
         }
 
-        public IStringLocalizer T { get; private set; }
+        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Display(FacebookPluginPart part)
         {

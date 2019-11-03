@@ -21,7 +21,7 @@ namespace OrchardCore.Markdown.Drivers
             T = localizer;
         }
 
-        public IStringLocalizer T { get; private set; }
+        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Display(MarkdownBodyPart MarkdownBodyPart, BuildPartDisplayContext context)
         {
