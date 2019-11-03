@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -15,10 +16,13 @@ namespace OrchardCore.Html.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
 
-        public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplatemanager)
+        public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<HtmlBodyPartDisplay> localizer)
         {
             _liquidTemplatemanager = liquidTemplatemanager;
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; private set; }
 
         public override IDisplayResult Display(HtmlBodyPart HtmlBodyPart, BuildPartDisplayContext context)
         {
@@ -40,7 +44,19 @@ namespace OrchardCore.Html.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(HtmlBodyPart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Html);
+            var viewModel = new HtmlBodyPartViewModel();
+
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html))
+            {
+                if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplatemanager.Validate(viewModel.Html, out var errors))
+                {
+                    context.Updater.ModelState.AddModelError(nameof(model.Html), T["The 'HtmlBody' contains an invalid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                }
+                else
+                {
+                    model.Html = viewModel.Html;
+                }
+            }
 
             return Edit(model, context);
         }

@@ -51,7 +51,7 @@ namespace OrchardCore.Autoroute.Settings
 
             var model = new AutoroutePartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, 
+            await context.Updater.TryUpdateModelAsync(model, Prefix,
                 m => m.Pattern,
                 m => m.AllowCustomPath,
                 m => m.AllowUpdatePath,
@@ -60,7 +60,9 @@ namespace OrchardCore.Autoroute.Settings
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
                 context.Updater.ModelState.AddModelError(nameof(model.Pattern), T["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-            } else {
+            }
+            else
+            {
                 context.Builder.WithSettings(new AutoroutePartSettings
                 {
                     Pattern = model.Pattern,

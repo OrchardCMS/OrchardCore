@@ -9,17 +9,26 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Facebook.Widgets.Settings;
 using OrchardCore.Facebook.Widgets.ViewModels;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.Facebook.Widgets.Drivers
 {
     public class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<FacebookPluginPart>
     {
+        private readonly ILiquidTemplateManager _liquidTemplatemanager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public FacebookPluginPartDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+        public FacebookPluginPartDisplayDriver(
+            ILiquidTemplateManager liquidTemplatemanager,
+            IContentDefinitionManager contentDefinitionManager,
+            IStringLocalizer<FacebookPluginPartDisplayDriver> localizer)
         {
+            _liquidTemplatemanager = liquidTemplatemanager;
             _contentDefinitionManager = contentDefinitionManager;
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; private set; }
 
         public override IDisplayResult Display(FacebookPluginPart part)
         {
@@ -68,7 +77,19 @@ namespace OrchardCore.Facebook.Widgets.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(FacebookPluginPart model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Liquid);
+            var viewModel = new FacebookPluginPartViewModel();
+
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
+            {
+                if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplatemanager.Validate(viewModel.Html, out var errors))
+                {
+                    updater.ModelState.AddModelError(nameof(model.Liquid), T["The 'Body' contains an invalid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                }
+                else
+                {
+                    model.Liquid = viewModel.Liquid;
+                }
+            }
 
             return Edit(model);
         }

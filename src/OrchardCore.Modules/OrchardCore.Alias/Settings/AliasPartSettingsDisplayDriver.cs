@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Alias.Models;
 using OrchardCore.Liquid;
-using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Alias.Settings
 {
