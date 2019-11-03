@@ -7,8 +7,8 @@
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
-<script asp-name="trumbowyg" depends-on="admin" asp-src="~/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
-<style asp-src="~/OrchardCore.Resources/Styles/trumbowyg.min.css" debug-src="~/OrchardCore.Resources/Styles/trumbowyg.css"></style>
+<script asp-name="trumbowyg" depends-on="admin" version="2" at="Foot"></script>
+<style asp-name="trumbowyg" version="2"></style>
 
 <div class="form-group">
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
