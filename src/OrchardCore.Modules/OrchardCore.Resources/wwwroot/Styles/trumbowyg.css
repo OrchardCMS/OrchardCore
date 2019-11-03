@@ -936,6 +936,25 @@ body.trumbowyg-body-fullscreen {
     .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control.code {
       height: 200px; }
 
+.trumbowyg-dropdown-mention button {
+  position: relative;
+  white-space: nowrap; }
+  .trumbowyg-dropdown-mention button:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 15%;
+    height: 100%;
+    pointer-events: none; }
+  [dir] .trumbowyg-dropdown-mention button:after {
+    background-size: 100%; }
+  [dir=ltr] .trumbowyg-dropdown-mention button:after {
+  right: 0;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%); }
+  [dir=rtl] .trumbowyg-dropdown-mention button:after {
+    left: 0;
+    background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%); }
+
 .mathMlContainer {
   position: relative; }
   .mathMlContainer[inline="false"] {
@@ -959,25 +978,6 @@ body.trumbowyg-body-fullscreen {
     [dir=rtl] .mathMlContainer:hover::after {
       left: 0;
       right: 0; }
-
-.trumbowyg-dropdown-mention button {
-  position: relative;
-  white-space: nowrap; }
-  .trumbowyg-dropdown-mention button:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    width: 15%;
-    height: 100%;
-    pointer-events: none; }
-  [dir] .trumbowyg-dropdown-mention button:after {
-    background-size: 100%; }
-  [dir=ltr] .trumbowyg-dropdown-mention button:after {
-  right: 0;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%); }
-  [dir=rtl] .trumbowyg-dropdown-mention button:after {
-    left: 0;
-    background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%); }
 
 .trumbowyg-symbol-\&nbsp-dropdown-button {
   display: none !important; }
