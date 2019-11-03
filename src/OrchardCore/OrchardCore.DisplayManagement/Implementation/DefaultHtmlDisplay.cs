@@ -110,7 +110,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                     }
 
                     // now find the actual binding to render, taking alternates into account
-                    var actualBinding = await GetDescriptorBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable);
+                    var actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable);
                     if (actualBinding != null)
                     {
                         // invoking ShapeMetadata processing events, this includes the Drivers results
@@ -129,7 +129,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 {
                     foreach (var frameType in shape.Metadata.Wrappers)
                     {
-                        var frameBinding = await GetDescriptorBindingAsync(frameType, Enumerable.Empty<string>(), shapeTable);
+                        var frameBinding = await GetShapeBindingAsync(frameType, Enumerable.Empty<string>(), shapeTable);
                         if (frameBinding != null)
                         {
                             shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, localContext);
@@ -196,7 +196,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
         }
 
-        private async Task<ShapeBinding> GetDescriptorBindingAsync(string shapeType, IEnumerable<string> shapeAlternates, ShapeTable shapeTable)
+        private async Task<ShapeBinding> GetShapeBindingAsync(string shapeType, IEnumerable<string> shapeAlternates, ShapeTable shapeTable)
         {
             // shape alternates are optional, fully qualified binding names
             // the earliest added alternates have the lowest priority
