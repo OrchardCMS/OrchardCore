@@ -35,6 +35,7 @@ namespace OrchardCore.Markdown.Handlers
                 {
                     var model = new MarkdownBodyPartViewModel()
                     {
+                        Markdown = part.Markdown,
                         MarkdownBodyPart = part,
                         ContentItem = part.ContentItem
                     };

@@ -35,6 +35,8 @@ namespace OrchardCore.Html.Handlers
                 {
                     var model = new HtmlBodyPartViewModel()
                     {
+                        Html = part.Html,
+                        Source = part.Html,
                         HtmlBodyPart = part,
                         ContentItem = part.ContentItem
                     };

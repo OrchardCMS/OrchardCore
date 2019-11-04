@@ -1,13 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Title.Models;
-using OrchardCore.Title.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
+using OrchardCore.Title.Models;
+using OrchardCore.Title.ViewModels;
 
 namespace OrchardCore.Title.Settings
 {
@@ -49,7 +49,7 @@ namespace OrchardCore.Title.Settings
 
             var model = new TitlePartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, 
+            await context.Updater.TryUpdateModelAsync(model, Prefix,
                 m => m.Pattern,
                 m => m.Options);
 
@@ -59,7 +59,7 @@ namespace OrchardCore.Title.Settings
             }
             else
             {
-                context.Builder.WithSettings(new TitlePartSettings {Pattern = model.Pattern, Options = model.Options,});
+                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options, });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

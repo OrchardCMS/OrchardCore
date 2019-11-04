@@ -8,6 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.ViewModels;
+using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Markdown.Drivers
 {
@@ -49,7 +50,8 @@ namespace OrchardCore.Markdown.Drivers
             {
                 if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplatemanager.Validate(viewModel.Markdown, out var errors))
                 {
-                    context.Updater.ModelState.AddModelError(nameof(model.Markdown), T["The 'MarkdownBody' contains an invalid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    var partName = context.TypePartDefinition.DisplayName();
+                    context.Updater.ModelState.AddModelError(nameof(model.Markdown), T["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {
@@ -66,13 +68,13 @@ namespace OrchardCore.Markdown.Drivers
             templateContext.SetValue("ContentItem", MarkdownBodyPart.ContentItem);
             templateContext.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
 
+            model.Markdown = MarkdownBodyPart.Markdown;
             model.MarkdownBodyPart = MarkdownBodyPart;
             model.ContentItem = MarkdownBodyPart.ContentItem;
             templateContext.LocalScope.SetValue("Model", model);
 
             var markdown = await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
 
-            model.Markdown = MarkdownBodyPart.Markdown;
             model.Html = Markdig.Markdown.ToHtml(markdown ?? "");
         }
     }

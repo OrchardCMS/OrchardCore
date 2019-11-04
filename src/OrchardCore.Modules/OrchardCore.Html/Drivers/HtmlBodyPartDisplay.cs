@@ -4,6 +4,7 @@ using Fluid;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
@@ -50,7 +51,8 @@ namespace OrchardCore.Html.Drivers
             {
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplatemanager.Validate(viewModel.Html, out var errors))
                 {
-                    context.Updater.ModelState.AddModelError(nameof(model.Html), T["The 'HtmlBody' contains an invalid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    var partName = context.TypePartDefinition.DisplayName();
+                    context.Updater.ModelState.AddModelError(nameof(model.Html), T["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {
@@ -61,19 +63,19 @@ namespace OrchardCore.Html.Drivers
             return Edit(model, context);
         }
 
-        private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart HtmlBodyPart)
+        private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart htmlBodyPart)
         {
             var templateContext = new TemplateContext();
-            templateContext.SetValue("ContentItem", HtmlBodyPart.ContentItem);
+            templateContext.SetValue("ContentItem", htmlBodyPart.ContentItem);
             templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
 
-            model.HtmlBodyPart = HtmlBodyPart;
-            model.ContentItem = HtmlBodyPart.ContentItem;
+            model.Html = htmlBodyPart.Html;
+            model.Source = htmlBodyPart.Html;
+            model.HtmlBodyPart = htmlBodyPart;
+            model.ContentItem = htmlBodyPart.ContentItem;
             templateContext.LocalScope.SetValue("Model", model);
 
-            model.Html = await _liquidTemplatemanager.RenderAsync(HtmlBodyPart.Html, HtmlEncoder.Default, templateContext);
-
-            model.Source = HtmlBodyPart.Html;
+            model.Html = await _liquidTemplatemanager.RenderAsync(htmlBodyPart.Html, HtmlEncoder.Default, templateContext);
         }
     }
 }

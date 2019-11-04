@@ -5,6 +5,7 @@ using Fluid;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
+using OrchardCore.Alias.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -45,8 +46,17 @@ namespace OrchardCore.Alias.Handlers
 
             if (!String.IsNullOrEmpty(pattern))
             {
+                var model = new AliasPartViewModel()
+                {
+                    Alias = part.Alias,
+                    AliasPart = part,
+                    ContentItem = part.ContentItem
+                };
+
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", part.ContentItem);
+                templateContext.MemberAccessStrategy.Register<AliasPartViewModel>();
+                templateContext.LocalScope.SetValue("Model", model);
 
                 part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
                 part.Alias = part.Alias.Replace("\r", String.Empty).Replace("\n", String.Empty);

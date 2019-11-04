@@ -13,10 +13,12 @@ namespace OrchardCore.Title.Drivers
     public class TitlePartDisplay : ContentPartDisplayDriver<TitlePart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+
         public TitlePartDisplay(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
+
         public override IDisplayResult Display(TitlePart titlePart)
         {
             return Initialize<TitlePartViewModel>("TitlePart", model =>
@@ -47,13 +49,11 @@ namespace OrchardCore.Title.Drivers
             return Edit(model);
         }
 
-
         private TitlePartSettings GetSettings(TitlePart titlePart)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(titlePart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart), StringComparison.Ordinal));
             return contentTypePartDefinition?.GetSettings<TitlePartSettings>();
         }
-
     }
 }

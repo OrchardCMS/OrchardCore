@@ -35,6 +35,7 @@ namespace OrchardCore.Facebook.Widgets.Handlers
                 {
                     var model = new FacebookPluginPartViewModel()
                     {
+                        Liquid = part.Liquid,
                         FacebookPluginPart = part,
                         ContentItem = part.ContentItem
                     };
