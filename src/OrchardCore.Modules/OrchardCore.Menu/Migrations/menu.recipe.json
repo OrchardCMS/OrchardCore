@@ -97,8 +97,8 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "ContentPickerMenuItem",
-              "Name": "ContentPickerMenuItem",
+              "PartName": "ContentPickerMenuItemPart",
+              "Name": "ContentPickerMenuItemPart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
@@ -106,8 +106,8 @@
               }
             },
             {
-              "PartName": "ContentPickerMenuItemPart",
-              "Name": "ContentPickerMenuItemPart",
+              "PartName": "ContentPickerMenuItem",
+              "Name": "ContentPickerMenuItem",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "1"
