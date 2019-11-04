@@ -18,7 +18,6 @@ namespace OrchardCore.DisplayManagement.Implementation
         private readonly IEnumerable<IShapeBindingResolver> _shapeBindingResolvers;
         private readonly IThemeManager _themeManager;
         private readonly IServiceProvider _serviceProvider;
-
         private readonly ILogger _logger;
 
         public DefaultHtmlDisplay(
@@ -34,7 +33,6 @@ namespace OrchardCore.DisplayManagement.Implementation
             _shapeBindingResolvers = shapeBindingResolvers;
             _themeManager = themeManager;
             _serviceProvider = serviceProvider;
-
             _logger = logger;
         }
 
@@ -179,21 +177,16 @@ namespace OrchardCore.DisplayManagement.Implementation
         private ShapeDescriptor GetShapeDescriptor(string shapeType, ShapeTable shapeTable)
         {
             var shapeTypeScan = shapeType;
-            for (; ; )
+            do
             {
                 if (shapeTable.Descriptors.TryGetValue(shapeTypeScan, out var shapeDescriptor))
                 {
                     return shapeDescriptor;
                 }
-
-                var delimiterIndex = shapeTypeScan.LastIndexOf("__");
-                if (delimiterIndex < 0)
-                {
-                    return null;
-                }
-
-                shapeTypeScan = shapeTypeScan.Substring(0, delimiterIndex);
             }
+            while (TryGetParentShapeTypeName(ref shapeTypeScan));
+
+            return null;
         }
 
         private async Task<ShapeBinding> GetShapeBindingAsync(string shapeType, IEnumerable<string> shapeAlternates, ShapeTable shapeTable)
@@ -224,7 +217,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             // the shapetype name can break itself into shorter fallbacks at double-underscore marks
             // so the shapetype itself may contain a longer alternate forms that falls back to a shorter one
             var shapeTypeScan = shapeType;
-            for (; ; )
+            do
             {
                 foreach (var shapeBindingResolver in _shapeBindingResolvers)
                 {
@@ -240,15 +233,10 @@ namespace OrchardCore.DisplayManagement.Implementation
                 {
                     return shapeBinding;
                 }
-
-                var delimiterIndex = shapeTypeScan.LastIndexOf("__");
-                if (delimiterIndex < 0)
-                {
-                    return null;
-                }
-
-                shapeTypeScan = shapeTypeScan.Substring(0, delimiterIndex);
             }
+            while (TryGetParentShapeTypeName(ref shapeTypeScan));
+
+            return null;
         }
 
         static IHtmlContent CoerceHtmlString(object value)
@@ -275,6 +263,17 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             // Convert to a string and HTML-encode it
             return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
+        }
+
+        private static bool TryGetParentShapeTypeName(ref string shapeTypeScan)
+        {
+            var delimiterIndex = shapeTypeScan.LastIndexOf("__");
+            if (delimiterIndex > 0)
+            {
+                shapeTypeScan = shapeTypeScan.Substring(0, delimiterIndex);
+                return true;
+            }
+            return false;
         }
 
         private static ValueTask<IHtmlContent> ProcessAsync(ShapeBinding shapeBinding, IShape shape, DisplayContext context)
