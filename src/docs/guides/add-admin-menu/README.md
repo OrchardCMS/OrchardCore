@@ -186,7 +186,7 @@ Once your site is ready, you should see a __The page could not be found.__ messa
 
 Enter the Admin section by opening <https://localhost:5001/admin> and logging in.
 
-Using the left menu go to __Configuration: Modules__, search for your module, __MyModule__, and enable it.
+Using the left menu go to __Configuration: Features__, search for your module, __MyModule__, and enable it.
 
 Now your module is enabled and you should see a new entry on the admin.
 Click on the new menu items to render the Views we created earlier.
