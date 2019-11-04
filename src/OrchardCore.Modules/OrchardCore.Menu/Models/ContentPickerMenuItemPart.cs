@@ -16,11 +16,6 @@ namespace OrchardCore.Menu.Models
         /// </summary>
         public string ContentItemIds { get; set; }
 
-        /// <summary>
-        /// The url of the content picker.
-        /// </summary>
-        public string Url { get; set; }
-
         public RouteValueDictionary GetContentPickerItemRouteValue(AutorouteOptions autoRouteOption)
         {
             var routeValues = new RouteValueDictionary(autoRouteOption.GlobalRouteValues);

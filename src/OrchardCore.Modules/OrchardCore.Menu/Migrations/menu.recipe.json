@@ -152,6 +152,8 @@
                   "Position": "0"
                 },
                 "ContentPickerFieldSettings": {
+                  "Required": true,
+                  "Multiple": false,
                   "DisplayedContentTypes": []
                 },
                 "ContentIndexSettings": {}

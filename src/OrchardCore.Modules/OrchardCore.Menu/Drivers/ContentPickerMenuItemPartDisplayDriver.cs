@@ -46,7 +46,6 @@ namespace OrchardCore.Menu.Drivers
             return Initialize<ContentPickerMenuItemPartEditViewModel>("ContentPickerMenuItemPart_Edit", model =>
             {
                 model.Name = part.Name;
-                model.Url = part.Url;
                 model.MenuItemPart = part;
             });
         }
