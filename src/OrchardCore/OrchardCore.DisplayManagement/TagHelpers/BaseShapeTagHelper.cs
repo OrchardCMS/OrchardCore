@@ -24,6 +24,11 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         protected IDisplayHelper _displayHelper;
 
         public string Type { get; set; }
+
+        // The following properties are declared as internal to prevent any attribute with a
+        // matching name from being automatically bound and removed from the output attributes,
+        // and then not added to the properties of the shape we are building.
+
         internal string Cache { get; set; }
         internal TimeSpan? FixedDuration { get; set; }
         internal TimeSpan? SlidingDuration { get; set; }
