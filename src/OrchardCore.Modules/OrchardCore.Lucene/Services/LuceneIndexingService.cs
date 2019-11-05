@@ -62,9 +62,7 @@ namespace OrchardCore.Lucene
 
             if (String.IsNullOrEmpty(indexName))
             {
-                //TODO use immutable dictionary
-                //indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexInBackgroundTask).ToImmutableDictionary(x => x.IndexName, x => x);
-                indexSettingsList = _luceneIndexSettingsService.List().ToList();
+                indexSettingsList = _luceneIndexSettingsService.List();
 
                 if (indexSettingsList == null)
                 {
@@ -81,8 +79,6 @@ namespace OrchardCore.Lucene
             }
             else
             {
-                //TODO use immutable dictionary
-                //indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName).ToImmutableDictionary(x => x.IndexName, x => x);
                 indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName).ToList();
 
                 if (indexSettingsList == null)
