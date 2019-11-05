@@ -34,7 +34,7 @@ namespace OrchardCore.ContentLocalization.Drivers
         public override IDisplayResult Display(LocalizationPart part, BuildPartDisplayContext context)
         {
             return Combine(
-                Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdmin", model => BuildViewModelAsync(model, part)).Location("SummaryAdmin", "Meta:11"),
+                Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdmin", model => BuildViewModelAsync(model, part)).Location("SummaryAdmin", "Tags:11"),
                 Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdminLinks", model => BuildViewModelAsync(model, part)).Location("SummaryAdmin", "Actions:5")
             );
         }
