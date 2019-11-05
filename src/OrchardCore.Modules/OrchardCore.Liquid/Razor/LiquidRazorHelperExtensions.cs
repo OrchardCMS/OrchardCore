@@ -32,7 +32,7 @@ public static class LiquidRazorHelperExtensions
         if (model != null)
         {
             context.MemberAccessStrategy.Register(model.GetType());
-            context.LocalScope.SetValue("Model", model);
+            context.SetValue("Model", model);
         }
 
         liquid = await liquidTemplateManager.RenderAsync(liquid, context);

@@ -36,7 +36,6 @@ namespace OrchardCore.Html.Handlers
                     var model = new HtmlBodyPartViewModel()
                     {
                         Html = part.Html,
-                        Source = part.Html,
                         HtmlBodyPart = part,
                         ContentItem = part.ContentItem
                     };
@@ -44,7 +43,7 @@ namespace OrchardCore.Html.Handlers
                     var templateContext = new TemplateContext();
                     templateContext.SetValue("ContentItem", part.ContentItem);
                     templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
-                    templateContext.LocalScope.SetValue("Model", model);
+                    templateContext.SetValue("Model", model);
 
                     var result = await _liquidTemplateManager.RenderAsync(part.Html, HtmlEncoder.Default, templateContext);
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);

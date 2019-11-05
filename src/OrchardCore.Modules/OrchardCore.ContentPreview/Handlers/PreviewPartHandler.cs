@@ -51,7 +51,7 @@ namespace OrchardCore.ContentPreview.Handlers
                     var templateContext = new TemplateContext();
                     templateContext.SetValue("ContentItem", part.ContentItem);
                     templateContext.MemberAccessStrategy.Register<PreviewPartViewModel>();
-                    templateContext.LocalScope.SetValue("Model", model);
+                    templateContext.SetValue("Model", model);
 
                     previewAspect.PreviewUrl = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
                     previewAspect.PreviewUrl = previewAspect.PreviewUrl.Replace("\r", String.Empty).Replace("\n", String.Empty);

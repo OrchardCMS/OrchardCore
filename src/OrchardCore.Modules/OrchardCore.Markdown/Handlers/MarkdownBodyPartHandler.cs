@@ -43,7 +43,7 @@ namespace OrchardCore.Markdown.Handlers
                     var templateContext = new TemplateContext();
                     templateContext.SetValue("ContentItem", part.ContentItem);
                     templateContext.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
-                    templateContext.LocalScope.SetValue("Model", model);
+                    templateContext.SetValue("Model", model);
 
                     var markdown = await _liquidTemplateManager.RenderAsync(part.Markdown, HtmlEncoder.Default, templateContext);
                     var result = Markdig.Markdown.ToHtml(markdown ?? "");

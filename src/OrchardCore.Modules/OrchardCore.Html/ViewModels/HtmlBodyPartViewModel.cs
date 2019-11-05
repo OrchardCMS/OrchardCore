@@ -8,7 +8,6 @@ namespace OrchardCore.Html.ViewModels
     public class HtmlBodyPartViewModel
     {
         public string Html { get; set; }
-        public string Source { get; set; }
 
         [BindNever]
         public ContentItem ContentItem { get; set; }

@@ -128,7 +128,7 @@ namespace OrchardCore.Autoroute.Handlers
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", part.ContentItem);
                 templateContext.MemberAccessStrategy.Register<AutoroutePartViewModel>();
-                templateContext.LocalScope.SetValue("Model", model);
+                templateContext.SetValue("Model", model);
 
                 part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
                 part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);

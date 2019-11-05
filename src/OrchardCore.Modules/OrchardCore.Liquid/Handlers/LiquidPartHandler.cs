@@ -41,7 +41,7 @@ namespace OrchardCore.Liquid.Handlers
                     var templateContext = new TemplateContext();
                     templateContext.SetValue("ContentItem", part.ContentItem);
                     templateContext.MemberAccessStrategy.Register<LiquidPartViewModel>();
-                    templateContext.LocalScope.SetValue("Model", model);
+                    templateContext.SetValue("Model", model);
 
                     var result = await _liquidTemplateManager.RenderAsync(part.Liquid, HtmlEncoder.Default, templateContext);
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);

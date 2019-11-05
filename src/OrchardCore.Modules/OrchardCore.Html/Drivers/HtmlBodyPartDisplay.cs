@@ -70,10 +70,9 @@ namespace OrchardCore.Html.Drivers
             templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
 
             model.Html = htmlBodyPart.Html;
-            model.Source = htmlBodyPart.Html;
             model.HtmlBodyPart = htmlBodyPart;
             model.ContentItem = htmlBodyPart.ContentItem;
-            templateContext.LocalScope.SetValue("Model", model);
+            templateContext.SetValue("Model", model);
 
             model.Html = await _liquidTemplatemanager.RenderAsync(htmlBodyPart.Html, HtmlEncoder.Default, templateContext);
         }

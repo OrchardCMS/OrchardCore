@@ -56,7 +56,7 @@ namespace OrchardCore.Alias.Handlers
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", part.ContentItem);
                 templateContext.MemberAccessStrategy.Register<AliasPartViewModel>();
-                templateContext.LocalScope.SetValue("Model", model);
+                templateContext.SetValue("Model", model);
 
                 part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
                 part.Alias = part.Alias.Replace("\r", String.Empty).Replace("\n", String.Empty);

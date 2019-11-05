@@ -71,7 +71,7 @@ namespace OrchardCore.Markdown.Drivers
             model.Markdown = MarkdownBodyPart.Markdown;
             model.MarkdownBodyPart = MarkdownBodyPart;
             model.ContentItem = MarkdownBodyPart.ContentItem;
-            templateContext.LocalScope.SetValue("Model", model);
+            templateContext.SetValue("Model", model);
 
             var markdown = await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
 

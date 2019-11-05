@@ -37,7 +37,7 @@ namespace OrchardCore.Html.GraphQL
             var templateContext = new TemplateContext();
             templateContext.SetValue("ContentItem", ctx.Source.ContentItem);
             templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
-            templateContext.LocalScope.SetValue("Model", model);
+            templateContext.SetValue("Model", model);
 
             return await liquidTemplateManager.RenderAsync(ctx.Source.Html, templateContext);
         }
