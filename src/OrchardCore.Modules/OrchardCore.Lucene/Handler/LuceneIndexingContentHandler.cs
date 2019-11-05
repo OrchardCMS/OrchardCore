@@ -43,18 +43,22 @@ namespace OrchardCore.Lucene.Handlers
 
         private static async Task IndexingAsync(ShellScope scope, IEnumerable<ContentContextBase> contexts)
         {
-            // Multiple items may have been updated in the same scope.
-            var contextsGroupByItem = contexts.GroupBy(c => c.ContentItem, c => c);
+            var contextsGroupById = contexts
+               // Filter cancelled content items.
+               .Where(c => !c.ContentItem.IsCancelled)
+               // Multiple items may have been updated in the same scope.
+               .GroupBy(c => c.ContentItem.ContentItemId, c => c)
+               ;
 
             var luceneIndexManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
             var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
             var contentItemIndexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<LuceneIndexingContentHandler>>();
 
-            foreach (var itemContexts in contextsGroupByItem)
+            foreach (var idContexts in contextsGroupById)
             {
-                // Only process the last one for a given item.
-                var context = itemContexts.Last();
+                // Only process the last one for a given id.
+                var context = idContexts.Last();
 
                 var buildIndexContext = new BuildIndexContext(new DocumentIndex(context.ContentItem.ContentItemId), context.ContentItem, new string[] { context.ContentItem.ContentType });
 
@@ -77,7 +81,7 @@ namespace OrchardCore.Lucene.Handlers
                                 luceneIndexManager.StoreDocuments(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
                             }
                         }
-                        else if (context is VersionContentContext)
+                        else if (context is VersionContentContext versionContext && !versionContext.BuildingContentItem.IsCancelled)
                         {
                             if (indexSettings.IndexLatest)
                             {

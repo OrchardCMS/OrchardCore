@@ -511,6 +511,10 @@ namespace OrchardCore.Contents.Controllers
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
+
+                // Mark the content item as cancelled.
+                contentItem.IsCancelled = true;
+
                 return View("Edit", model);
             }
 
