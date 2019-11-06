@@ -84,7 +84,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 You can also read the [Code Generation Templates documentation](./docs/templates/) to create new applications from predefined templates.
 
-### Visual Studio 2017
+### Visual Studio
 
 - Download Visual Studio 2019 (any edition) from <https://www.visualstudio.com/downloads/>.
 - Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages.
