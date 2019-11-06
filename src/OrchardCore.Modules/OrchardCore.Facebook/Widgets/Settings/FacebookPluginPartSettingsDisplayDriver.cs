@@ -21,7 +21,7 @@ namespace OrchardCore.Facebook.Widgets.Settings
             T = localizer;
         }
 
-        public IStringLocalizer T { get; private set; }
+        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
