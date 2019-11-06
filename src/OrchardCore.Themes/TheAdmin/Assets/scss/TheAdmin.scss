@@ -1111,6 +1111,9 @@ ul.pager li a {
     min-height: $font-size-base;
 }
 
+.with-checkbox .list-group-item {
+    padding: 0.75rem 0.5rem;
+}
 .properties {
     @extend .w-100;
 }

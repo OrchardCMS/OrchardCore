@@ -640,7 +640,6 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
             viewModel.PartFieldDefinition = field;
-            viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
 
             if (field.DisplayName() != viewModel.DisplayName)
             {
@@ -659,6 +658,8 @@ namespace OrchardCore.ContentTypes.Controllers
 
                 if (!ModelState.IsValid)
                 {
+                    // Calls update to build editor shape with the display name validation failures, and other validation errors.
+                    viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
                     _session.Cancel();
 
                     ViewData["ReturnUrl"] = returnUrl;
