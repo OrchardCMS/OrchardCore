@@ -13,8 +13,8 @@
         createLinkText = T["Create New {0}", (string)contentTypeDisplayName];
     }
 
-    var formActionWithoutTypeName = Context.Request.PathBase + "/Admin/Contents/ContentItems";
-    var formActionCreate = Context.Request.PathBase + "/Admin/Contents/ContentTypes";
+    var formActionWithoutTypeName = Context.Request.PathBase.Value + "/Admin/Contents/ContentItems";
+    var formActionCreate = Context.Request.PathBase.Value + "/Admin/Contents/ContentTypes";
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.ContentItems.Count - 1;
 }
