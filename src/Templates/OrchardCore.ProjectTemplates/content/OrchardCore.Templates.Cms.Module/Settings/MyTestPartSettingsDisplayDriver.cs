@@ -22,8 +22,6 @@ namespace OrchardCore.Templates.Cms.Module.Settings
 
                 model.MySetting = settings.MySetting;
                 model.MyTestPartSettings = settings;
-
-                return Task.CompletedTask;
             }).Location("Content");
         }
 
@@ -41,7 +39,7 @@ namespace OrchardCore.Templates.Cms.Module.Settings
                 context.Builder.WithSettings(new MyTestPartSettings { MySetting = model.MySetting });
             }
 
-            return Edit(contentPartDefinition, context.Updater);
+            return Edit(contentPartDefinition);
         }
     }
 }
