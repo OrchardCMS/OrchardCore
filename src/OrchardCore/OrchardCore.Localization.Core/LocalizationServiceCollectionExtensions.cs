@@ -7,7 +7,7 @@ using OrchardCore.Localization.PortableObject;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class LocalizationServiceCollectionExtensions
     {
 
         /// <summary>
@@ -31,8 +31,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<ILocalizationFileLocationProvider, ContentRootPoFileLocationProvider>();
             services.AddSingleton<ILocalizationManager, LocalizationManager>();
             services.AddSingleton<IStringLocalizerFactory, PortableObjectStringLocalizerFactory>();
-
             services.AddSingleton<IHtmlLocalizerFactory, PortableObjectHtmlLocalizerFactory>();
+            services.TryAddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
             if (setupAction != null)
             {

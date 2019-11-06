@@ -1,6 +1,6 @@
 # Title (`OrchardCore.Title`)
 
-The `Title` module provides a **Title Part** that lets you customize the DisplayText property of a content item.
+The `Title` module provides a **Title Part** that lets you customize the DisplayText property of a content item.  
 The DisplayText property is used throughout the Admin interface to help you recognize your content items.
 
 ## TitlePart
@@ -13,7 +13,7 @@ By default, attaching the TitlePart will allow content editors to manually edit 
 
 You can also generate the Title by specifying a pattern using a Liquid expression.
 
-The Pattern has access the current ContentItem and is executed on ContentItem update.
+The Pattern has access the current ContentItem and is executed on ContentItem update.  
 For example, fields can be used to generate the pattern. The following example uses a __Text field__ named `Name`, on a `Product` content type.
 
 ```liquid

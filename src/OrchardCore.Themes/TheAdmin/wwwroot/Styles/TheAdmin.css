@@ -10014,6 +10014,9 @@ select[multiple] {
 .ui-sortable {
   min-height: 1rem; }
 
+[dir] .with-checkbox .list-group-item {
+  padding: 0.75rem 0.5rem; }
+
 .preload * {
   -moz-transition: none !important;
   -ms-transition: none !important;

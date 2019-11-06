@@ -1,6 +1,6 @@
 @model AdminIndexViewModel
 
-<h1>@RenderTitleSegments(T["Indexes"])</h1>
+<h1>@RenderTitleSegments(T["Indices"])</h1>
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto"></ul>
@@ -12,7 +12,7 @@
 </nav>
 
 <form asp-action="Index">
-    @* the form is nessecary to generate and antiforgery token for the delete action *@
+    @* the form is necessary to generate and antiforgery token for the delete action *@
     @if (Model.Indexes.Any())
     {
         <ul class="list-group">
@@ -35,7 +35,7 @@
     else
     {
         <div class="alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> There are no indexes for the moment."]
+            @T["<strong>Nothing here!</strong> There are no indices for the moment."]
         </div>
     }
 </form>

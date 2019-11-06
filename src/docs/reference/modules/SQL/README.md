@@ -173,7 +173,7 @@ public class MyClass(){
 
 From a Razor template.
 
-```razor
+```html
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentFields.Indexing
 @inject ISession Session

@@ -89,7 +89,7 @@ This will use the latest available version between `3.3` and `3.4`. If the versi
 settings.UseAppendVersion(true);
 ```
 
-This will append a version string that is calculated at runtime as an SHA256 hash of the file, the calculation cached, and  appended to the url as part of the query string, e.g. `my-script.js?v=eER9OO6zWGKaIq1RlNjImsrWN9y2oTgQKg2TrJnDUWk`
+This will append a version string that is calculated at runtime as an SHA256 hash of the file, the calculation cached, and appended to the url as part of the query string, e.g. `my-script.js?v=eER9OO6zWGKaIq1RlNjImsrWN9y2oTgQKg2TrJnDUWk`
 
 #### Register custom script
 
@@ -244,7 +244,7 @@ The following example demonstrates how to inject a custom script in the footer s
 These properties are available:
 
 | Name | Description |
-| ---- | ---- | 
+| ---- | ---- |
 | `name` (`asp-name` in Razor)| The `name` attribute of the tag |
 | `content` | The `content` attribute of the tag |
 | `httpequiv` | The `http-equiv` attribute of the tag |

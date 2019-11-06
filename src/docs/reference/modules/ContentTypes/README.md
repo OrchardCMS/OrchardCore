@@ -101,7 +101,7 @@ For a list of all the settings each type can use, please refer to their respecti
 
 ### Adding Content Fields to a part
 
-Fields can not be attached directly to a Content Type. To add fields to a content type, create a part with the same name as the type, and add fields to this part. 
+Fields can not be attached directly to a Content Type. To add fields to a content type, create a part with the same name as the type, and add fields to this part.
 
 ```csharp
  _contentDefinitionManager.AlterTypeDefinition("Product", type => type
