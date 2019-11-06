@@ -22,22 +22,20 @@ namespace OrchardCore.Settings.Drivers
             _shellSettings = shellSettings;
         }
 
-        public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
+        public override IDisplayResult Edit(ISite site)
         {
-            return Task.FromResult<IDisplayResult>(
-                    Initialize<SiteSettingsViewModel>("Settings_Edit", model =>
-                    {
-                        model.SiteName = site.SiteName;
-                        model.PageTitleFormat = site.PageTitleFormat;
-                        model.BaseUrl = site.BaseUrl;
-                        model.TimeZone = site.TimeZoneId;
-                        model.PageSize = site.PageSize;
-                        model.UseCdn = site.UseCdn;
-                        model.CdnBaseUrl = site.CdnBaseUrl;
-                        model.ResourceDebugMode = site.ResourceDebugMode;
-                        model.AppendVersion = site.AppendVersion;
-                    }).Location("Content:1").OnGroup(GroupId)
-            );
+            return Initialize<SiteSettingsViewModel>("Settings_Edit", model =>
+            {
+                model.SiteName = site.SiteName;
+                model.PageTitleFormat = site.PageTitleFormat;
+                model.BaseUrl = site.BaseUrl;
+                model.TimeZone = site.TimeZoneId;
+                model.PageSize = site.PageSize;
+                model.UseCdn = site.UseCdn;
+                model.CdnBaseUrl = site.CdnBaseUrl;
+                model.ResourceDebugMode = site.ResourceDebugMode;
+                model.AppendVersion = site.AppendVersion;
+            }).Location("Content:1").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
