@@ -31,12 +31,12 @@ namespace OrchardCore.Apis.GraphQL
 
         public static IEnumerable<GraphQLPermissionContext> GetPermissions(this IProvideMetadata type)
         {
-            return type.GetMetadata<List<GraphQLPermissionContext>>(MetaDataKey) ?? Enumerable.Empty<GraphQLPermissionContext>();
+            return type?.GetMetadata<List<GraphQLPermissionContext>>(MetaDataKey) ?? Enumerable.Empty<GraphQLPermissionContext>();
         }
 
         public static bool HasPermissions(this IProvideMetadata type)
         {
-            return type.HasMetadata(MetaDataKey);
+            return type != null && type.HasMetadata(MetaDataKey);
         }
     }
 }
