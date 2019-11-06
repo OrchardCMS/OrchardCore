@@ -51,7 +51,7 @@
 
     <div class="row">
         <div class="form-group col-xl-4 col-sm-6">
-            <div class="input-group input-group-sm filter-options">                
+            <div class="input-group input-group-sm filter-options">
                 <div class="input-group-prepend">
                     <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
                         @T["Filters"]
@@ -76,7 +76,7 @@
         <ul class="list-group with-checkbox">
             <li class="list-group-item bg-light">
                 <div class="row">
-                    <div class="form-group col-xl-3 mb-xl-n1">
+                    <div class="form-group col-xl-4 mb-xl-n1">
                         <div class="custom-control custom-checkbox mt-2 mr-n2">
                             <input type="checkbox" class="custom-control-input" id="select-all">
                             <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
@@ -97,11 +97,16 @@
                             </span>
                         </span>
                     </div>
-                    <div class="form-group col-xl-3 mb-xl-n1 filter">
-                        <select asp-for="Options.Filter" asp-items="@Model.Options.TenantsStates" class="selectpicker show-tick" data-header="@T["Filter by state"]" data-width="fit" title="@T["State"]"></select>
+                    <div class="col-4"></div>
+                    <div class="form-group col-xl-1 mb-xl-n1 filter">
+                        <div class="float-xl-right">
+                            <select asp-for="Options.Filter" asp-items="@Model.Options.TenantsStates" class="selectpicker show-tick" data-header="@T["Filter by state"]" data-width="fit" data-selected-text-format="static" title="@T["State"]"></select>
+                            </div>
                     </div>
-                    <div class="form-group col-xl-3 mb-n1 filter">
-                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.TenantsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" title="@T["Sort"]"></select>
+                    <div class="form-group col-xl-1 mb-n1 filter">
+                        <div class="float-xl-right">
+                            <select asp-for="Options.OrderBy" asp-items="@Model.Options.TenantsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Sort"]"></select>
+                        </div>
                     </div>
                 </div>
             </li>
@@ -169,14 +174,14 @@
 <script at="Foot" type="text/javascript">
     $(function () {
         $('select').selectpicker();
-        
+
         var actions = $("#actions");
         var items = $("#items");
         var filters = $(".filter");
         var selectAllCtrl = $("#select-all");
         var selectedItems = $("#selected-items");
         var tenantItemsCheckboxes = $(":checkbox[name='tenantNames']");
-        
+
         $(".filter-options select, .filter-options input").on("change", function () {
             $("[name='submit.Filter']").click();
         });
@@ -184,7 +189,7 @@
         $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
-        
+
         $(".dropdown-menu .dropdown-item").on("click", function () {
             if ($(":checkbox[name='tenantNames']:checked").length > 1) {
                 var $this = $(this);
