@@ -5,8 +5,8 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
-using GraphQLApi = OrchardCore.Apis.GraphQL;
 using Xunit;
+using GraphQLApi = OrchardCore.Apis.GraphQL;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {

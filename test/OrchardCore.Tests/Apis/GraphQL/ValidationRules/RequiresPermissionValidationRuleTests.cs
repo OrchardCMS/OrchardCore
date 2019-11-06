@@ -4,8 +4,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Conversion;
-using GraphQL.Execution;
-using GraphQL.Http;
 using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Authorization;
@@ -100,7 +98,6 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             Assert.Equal("Fantastic Fox Loves Multiple Permissions", result["data"]["test"]["permissionMultiple"].ToString());
         }
 
-
         private ExecutionOptions BuildExecutionOptions(string query, PermissionsContext permissionsContext)
         {
             var services = new ServiceCollection();
@@ -131,7 +128,6 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             };
         }
 
-
         private class ValidationSchema : Schema
         {
             public ValidationSchema()
@@ -152,7 +148,6 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
                     .Resolve(_ => new object());
             }
         }
-
         private class TestField : ObjectGraphType
         {
             public TestField()
