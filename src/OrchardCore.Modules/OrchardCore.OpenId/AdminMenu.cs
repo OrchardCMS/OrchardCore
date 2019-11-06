@@ -29,7 +29,8 @@ namespace OrchardCore.OpenId
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["OpenID Connect"], "15", category =>
+            builder.Add(T["Security"], security => security
+            .Add(T["OpenID Connect"], "15", category =>
             {
                 category.AddClass("openid").Id("openid");
 
@@ -81,7 +82,7 @@ namespace OrchardCore.OpenId
                                   .LocalNav());
                     });
                 }
-            });
+            }));
 
             return Task.CompletedTask;
         }

@@ -27,13 +27,14 @@ namespace OrchardCore.Google
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Google"], "15", settings => settings
+                builder.Add(T["Security"], security => security
+                        .Add(T["Authentication"], authentication => authentication
+                        .Add(T["Google"], "16", settings => settings
                         .AddClass("google").Id("google")
-                        .Add(T["Google Authentication"], "20", client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAuthentication })
                             .Permission(Permissions.ManageGoogleAuthentication)
                             .LocalNav())
-                    );
+                    ));
             }
             return Task.CompletedTask;
         }
@@ -58,13 +59,14 @@ namespace OrchardCore.Google
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Google"], "15", settings => settings
-                        .AddClass("google").Id("google")
-                        .Add(T["Google Analytics"], "10", client => client
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAnalytics })
-                            .Permission(Permissions.ManageGoogleAnalytics)
-                            .LocalNav())
-                    );
+                builder.Add(T["Configuration"], configuration => configuration
+                            .Add(T["Google"], "15", settings => settings
+                            .AddClass("google").Id("google"))
+                            .Add(T["Google Analytics"], "10", client => client
+                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAnalytics })
+                                .Permission(Permissions.ManageGoogleAnalytics)
+                                .LocalNav())
+                        );
             }
             return Task.CompletedTask;
         }

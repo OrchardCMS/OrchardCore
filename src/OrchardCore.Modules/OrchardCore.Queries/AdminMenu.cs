@@ -21,12 +21,14 @@ namespace OrchardCore.Queries
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Configuration"], content => content
-                .Add(T["Queries"], "1", contentItems => contentItems
-                    .Action("Index", "Admin", new { area = "OrchardCore.Queries" })
-                    .Permission(Permissions.ManageQueries)
-                    .LocalNav())
-                );
+            builder.Add(T["Search"], "6", search => search
+                    .AddClass("search").Id("search")
+                    .Add(T["Queries"], T["Queries"], contentItems => contentItems
+                    .Add(T["All queries"], "1", queries => queries
+                        .Action("Index", "Admin", new { area = "OrchardCore.Queries" })
+                        .Permission(Permissions.ManageQueries)
+                        .LocalNav())
+                    ));
 
             return Task.CompletedTask;
         }

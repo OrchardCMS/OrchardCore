@@ -31,6 +31,7 @@ namespace OrchardCore.Settings.Drivers
                         model.PageTitleFormat = site.PageTitleFormat;
                         model.BaseUrl = site.BaseUrl;
                         model.TimeZone = site.TimeZoneId;
+                        model.PageSize = site.PageSize;
                         model.UseCdn = site.UseCdn;
                         model.CdnBaseUrl = site.CdnBaseUrl;
                         model.ResourceDebugMode = site.ResourceDebugMode;
@@ -51,6 +52,7 @@ namespace OrchardCore.Settings.Drivers
                     site.PageTitleFormat = model.PageTitleFormat;
                     site.BaseUrl = model.BaseUrl;
                     site.TimeZoneId = model.TimeZone;
+                    site.PageSize = model.PageSize;
                     site.UseCdn = model.UseCdn;
                     site.CdnBaseUrl = model.CdnBaseUrl;
                     site.ResourceDebugMode = model.ResourceDebugMode;
