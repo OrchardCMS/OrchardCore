@@ -1,0 +1,8 @@
+@Model.Metadata.ChildContent
+
+@* Inject the modal window only once per page *@
+@if (!Context.Items.ContainsKey("Media_RszTblModal__HtmlField"))
+{
+    Context.Items["Media_RszTblModal__HtmlField"] = new object();
+    @await DisplayAsync(await New.Media_RszTblModal__HtmlField())
+}

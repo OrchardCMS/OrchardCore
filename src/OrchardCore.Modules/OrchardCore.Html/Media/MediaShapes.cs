@@ -16,6 +16,10 @@ namespace OrchardCore.Html.Media
                     {
                         editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlBodyPart");
                     }
+                    else if(editor.Metadata.Type == "HtmlBodyPart_Edit__WysiwygRszTbl")
+                    {
+                        editor.Metadata.Wrappers.Add("Media_RszTblWrapper__HtmlBodyPart");
+                    }
                 });
         }
     }

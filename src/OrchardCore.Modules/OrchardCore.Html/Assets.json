@@ -4,5 +4,29 @@
       "Assets/trumbowyg.media.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg.media.js"
+  },
+  {
+    "inputs": [
+      "Assets/jquery-resizable.js"
+    ],
+    "output": "wwwroot/Scripts/jquery-resizable.js"
+  },
+  {
+    "inputs": [
+      "Assets/resolveconflict-resizable.js"
+    ],
+    "output": "wwwroot/Scripts/resolveconflict-resizable.js"
+  },
+  {
+    "inputs": [
+      "Assets/resize.with.canvas.js"
+    ],
+    "output": "wwwroot/Scripts/resize.with.canvas.js"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg.media.rsz.tbl.js"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg.media.rsz.tbl.js"
   }
 ]
