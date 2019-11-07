@@ -26,7 +26,6 @@ namespace OrchardCore.Queries.Controllers
         private readonly IEnumerable<IQuerySource> _querySources;
         private readonly IDisplayManager<Query> _displayManager;
         private readonly ISession _session;
-        private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
 
         public AdminController(
@@ -34,7 +33,6 @@ namespace OrchardCore.Queries.Controllers
             IAuthorizationService authorizationService,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
             IQueryManager queryManager,

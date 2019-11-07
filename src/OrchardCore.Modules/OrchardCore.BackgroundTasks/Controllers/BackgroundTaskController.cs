@@ -28,7 +28,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
         
         public BackgroundTaskController(
             ShellSettings shellSettings,
@@ -38,7 +37,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             IShapeFactory shapeFactory,
             ISiteService siteService,
             IStringLocalizer<BackgroundTaskController> stringLocalizer,
-            IHtmlLocalizer<BackgroundTaskController> htmlLocalizer,
             INotifier notifier)
         {
             _tenant = shellSettings.Name;
@@ -49,7 +47,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             _siteService = siteService;
             _notifier = notifier;
             S = stringLocalizer;
-            H = htmlLocalizer;
         }
 
         public dynamic New { get; set; }

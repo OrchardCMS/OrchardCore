@@ -25,7 +25,6 @@ namespace OrchardCore.Deployment.Controllers
         private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
 
         public StepController(
@@ -35,7 +34,6 @@ namespace OrchardCore.Deployment.Controllers
             ISession session,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            IStringLocalizer<StepController> stringLocalizer,
             IHtmlLocalizer<StepController> htmlLocalizer,
             INotifier notifier)
         {
@@ -46,7 +44,6 @@ namespace OrchardCore.Deployment.Controllers
             _siteService = siteService;
             New = shapeFactory;
             _notifier = notifier;
-            S = stringLocalizer;
             H = htmlLocalizer;
         }
 

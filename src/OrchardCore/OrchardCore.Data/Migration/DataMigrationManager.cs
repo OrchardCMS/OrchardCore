@@ -22,7 +22,6 @@ namespace OrchardCore.Data.Migration
         private readonly ILogger _logger;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly List<string> _processedFeatures;
-        private readonly IStringLocalizer S;
 
         private DataMigrationRecord _dataMigrationRecord;
 
@@ -32,8 +31,7 @@ namespace OrchardCore.Data.Migration
             ISession session,
             IStore store,
             IExtensionManager extensionManager,
-            ILogger<DataMigrationManager> logger,
-            IStringLocalizer<DataMigrationManager> localizer)
+            ILogger<DataMigrationManager> logger)
         {
             _typeFeatureProvider = typeFeatureProvider;
             _dataMigrations = dataMigrations;

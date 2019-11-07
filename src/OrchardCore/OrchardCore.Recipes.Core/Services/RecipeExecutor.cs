@@ -23,7 +23,6 @@ namespace OrchardCore.Recipes.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
-        private readonly IStringLocalizer S;
 
         private VariablesMethodProvider _variablesMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
@@ -31,8 +30,7 @@ namespace OrchardCore.Recipes.Services
         public RecipeExecutor(IEnumerable<IRecipeEventHandler> recipeEventHandlers,
                               ShellSettings shellSettings,
                               IShellHost shellHost,
-                              ILogger<RecipeExecutor> logger,
-                              IStringLocalizer<RecipeExecutor> localizer)
+                              ILogger<RecipeExecutor> logger)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;

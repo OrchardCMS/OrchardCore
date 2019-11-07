@@ -23,16 +23,13 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly IEnumerable<IAdminNodeProviderFactory> _factories;
         private readonly IAdminMenuService _adminMenuService;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
-
         public NodeController(
             IAuthorizationService authorizationService,
             IDisplayManager<MenuItem> displayManager,
             IEnumerable<IAdminNodeProviderFactory> factories,
             IAdminMenuService adminMenuService,
             IShapeFactory shapeFactory,
-            IStringLocalizer<NodeController> stringLocalizer,
             IHtmlLocalizer<NodeController> htmlLocalizer,
             INotifier notifier)
         {
@@ -40,10 +37,8 @@ namespace OrchardCore.AdminMenu.Controllers
             _factories = factories;
             _adminMenuService = adminMenuService;
             _authorizationService = authorizationService;
-
             New = shapeFactory;
             _notifier = notifier;
-            S = stringLocalizer;
             H = htmlLocalizer;
         }
 
