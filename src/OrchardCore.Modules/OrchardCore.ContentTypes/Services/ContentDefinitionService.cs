@@ -21,6 +21,7 @@ namespace OrchardCore.ContentTypes.Services
         private readonly IEnumerable<IContentDefinitionEventHandler> _contentDefinitionEventHandlers;
         private readonly IEnumerable<Type> _contentPartTypes;
         private readonly IEnumerable<Type> _contentFieldTypes;
+        private readonly IStringLocalizer S;
 
         public ContentDefinitionService(
                 IContentDefinitionManager contentDefinitionManager,
@@ -52,11 +53,10 @@ namespace OrchardCore.ContentTypes.Services
             _contentFieldTypes = contentFields.Select(cf => cf.GetType())
                 .Union(contentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type));
             Logger = logger;
-            T = localizer;
+            S = localizer;
         }
 
         public ILogger Logger { get; }
-        public IStringLocalizer T { get; }
 
         public IEnumerable<EditTypeViewModel> LoadTypes()
         {
@@ -281,7 +281,7 @@ namespace OrchardCore.ContentTypes.Services
             var name = partViewModel.Name;
 
             if (_contentDefinitionManager.LoadPartDefinition(name) != null)
-                throw new Exception(T["Cannot add part named '{0}'. It already exists.", name]);
+                throw new Exception(S["Cannot add part named '{0}'. It already exists.", name]);
 
             if (!string.IsNullOrEmpty(name))
             {

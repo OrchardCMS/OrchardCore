@@ -23,6 +23,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOptions<GraphQLContentOptions> _contentOptionsAccessor;
         private readonly IOptions<GraphQLSettings> _settingsAccessor;
+        private readonly IStringLocalizer S;
 
         public ContentTypeQuery(IHttpContextAccessor httpContextAccessor,
             IOptions<GraphQLContentOptions> contentOptionsAccessor,
@@ -32,10 +33,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             _httpContextAccessor = httpContextAccessor;
             _contentOptionsAccessor = contentOptionsAccessor;
             _settingsAccessor = settingsAccessor;
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task<IChangeToken> BuildAsync(ISchema schema)
         {

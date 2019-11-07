@@ -23,6 +23,7 @@ namespace OrchardCore.Recipes.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
+        private readonly IStringLocalizer S;
 
         private VariablesMethodProvider _variablesMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
@@ -37,11 +38,10 @@ namespace OrchardCore.Recipes.Services
             _shellSettings = shellSettings;
             _recipeEventHandlers = recipeEventHandlers;
             Logger = logger;
-            T = localizer;
+            S = localizer;
         }
 
-        public ILogger Logger { get; }
-        public IStringLocalizer T { get; }
+        public ILogger Logger { get; set; }
 
         public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment, CancellationToken cancellationToken)
         {

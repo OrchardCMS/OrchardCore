@@ -23,6 +23,8 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly IEnumerable<IAdminNodeProviderFactory> _factories;
         private readonly IAdminMenuService _adminMenuService;
         private readonly INotifier _notifier;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public NodeController(
             IAuthorizationService authorizationService,
@@ -41,14 +43,11 @@ namespace OrchardCore.AdminMenu.Controllers
 
             New = shapeFactory;
             _notifier = notifier;
-            T = stringLocalizer;
+            S = stringLocalizer;
             H = htmlLocalizer;
         }
 
         public dynamic New { get; set; }
-        public IStringLocalizer T { get; }
-        public IHtmlLocalizer H { get; }
-
 
         public async Task<IActionResult> List(string id)
         {

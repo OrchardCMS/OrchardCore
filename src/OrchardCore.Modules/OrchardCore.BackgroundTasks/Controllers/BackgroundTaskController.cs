@@ -27,6 +27,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
         
         public BackgroundTaskController(
             ShellSettings shellSettings,
@@ -51,9 +53,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
         }
 
         public dynamic New { get; set; }
-
-        public IStringLocalizer T { get; }
-        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index(PagerParameters pagerParameters)
         {
@@ -127,7 +126,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
-                    ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), S["The name is mandatory."]);
                 }
             }
 
@@ -191,7 +190,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
-                    ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), S["The name is mandatory."]);
                 }
             }
 

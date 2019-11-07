@@ -10,12 +10,13 @@ namespace OrchardCore.Environment.Commands
 {
     public abstract class DefaultCommandHandler : ICommandHandler
     {
+        private readonly IStringLocalizer S;
+
         protected DefaultCommandHandler(IStringLocalizer localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; }
         public CommandContext Context { get; set; }
 
         public Task ExecuteAsync(CommandContext context)

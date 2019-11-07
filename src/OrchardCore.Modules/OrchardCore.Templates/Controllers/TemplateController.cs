@@ -25,6 +25,8 @@ namespace OrchardCore.Templates.Controllers
         private readonly AdminTemplatesManager _adminTemplatesManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
         
         public TemplateController(
             IAuthorizationService authorizationService,
@@ -47,9 +49,6 @@ namespace OrchardCore.Templates.Controllers
         }
 
         public dynamic New { get; }
-
-        public IStringLocalizer T { get; }
-        public IHtmlLocalizer H { get; }
 
         public Task<IActionResult> Admin(PagerParameters pagerParameters)
         {
@@ -129,7 +128,7 @@ namespace OrchardCore.Templates.Controllers
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
                 }
                 else
                 {
@@ -226,7 +225,7 @@ namespace OrchardCore.Templates.Controllers
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
                 }
                 else if(!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && templatesDocument.Templates.ContainsKey(model.Name))
                 {

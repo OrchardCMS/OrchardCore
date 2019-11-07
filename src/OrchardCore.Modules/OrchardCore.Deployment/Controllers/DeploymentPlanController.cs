@@ -28,6 +28,8 @@ namespace OrchardCore.Deployment.Controllers
         private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
         
         public DeploymentPlanController(
             IAuthorizationService authorizationService,
@@ -47,14 +49,11 @@ namespace OrchardCore.Deployment.Controllers
             _siteService = siteService;
             New = shapeFactory;
             _notifier = notifier;
-            T = stringLocalizer;
+            S = stringLocalizer;
             H = htmlLocalizer;
         }
 
         public dynamic New { get; }
-
-        public IStringLocalizer T { get; }
-        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index(DeploymentPlanIndexOptions options, PagerParameters pagerParameters)
         {
@@ -172,7 +171,7 @@ namespace OrchardCore.Deployment.Controllers
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
-                    ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["The name is mandatory."]);
                 }
             }
 
@@ -231,7 +230,7 @@ namespace OrchardCore.Deployment.Controllers
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
-                    ModelState.AddModelError(nameof(EditDeploymentPlanViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(EditDeploymentPlanViewModel.Name), S["The name is mandatory."]);
                 }
             }
 
