@@ -92,7 +92,7 @@ namespace OrchardCore.Media.Azure
 
                     if (originalPathBase.HasValue)
                     {
-                        mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
+                        mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                     }
 
                     return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);

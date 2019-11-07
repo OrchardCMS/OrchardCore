@@ -225,7 +225,7 @@ namespace OrchardCore.Recipes.Services
                     var value = node.Value<string>();
 
                     // Evaluate the expression while the result is another expression
-                    while (value.StartsWith("[") && value.EndsWith("]"))
+                    while (value.StartsWith('[') && value.EndsWith(']'))
                     {
                         value = value.Trim('[', ']');
                         value = (scriptingManager.Evaluate(value, context.RecipeDescriptor.FileProvider, context.RecipeDescriptor.BasePath, null) ?? "").ToString();

@@ -103,7 +103,7 @@ namespace OrchardCore.Navigation
         /// <returns></returns>
         private string EncodeAlternateElement(string alternateElement)
         {
-            return alternateElement.Replace("-", "__").Replace(".", "_");
+            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
     }
 }

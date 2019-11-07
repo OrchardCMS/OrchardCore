@@ -1,5 +1,6 @@
-using OrchardCore.Facebook.Widgets.Models;
-using OrchardCore.Facebook.Widgets.ViewModels;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -7,13 +8,10 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Settings;
-using OrchardCore.Mvc.ModelBinding;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Facebook.Widgets.Settings;
+using OrchardCore.Facebook.Widgets.ViewModels;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Widgets.Drivers
 {
@@ -81,7 +79,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             }
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart), StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart)));
             return contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
         }
 
