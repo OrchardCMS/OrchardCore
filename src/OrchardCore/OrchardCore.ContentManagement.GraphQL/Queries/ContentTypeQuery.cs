@@ -50,13 +50,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 var typeType = new ContentItemType(_contentOptionsAccessor)
                 {
                     Name = typeDefinition.Name,
-                    Description = T["Represents a {0}.", typeDefinition.DisplayName]
+                    Description = S["Represents a {0}.", typeDefinition.DisplayName]
                 };
 
                 var query = new ContentItemsFieldType(typeDefinition.Name, schema, _contentOptionsAccessor, _settingsAccessor)
                 {
                     Name = typeDefinition.Name,
-                    Description = T["Represents a {0}.", typeDefinition.DisplayName],
+                    Description = S["Represents a {0}.", typeDefinition.DisplayName],
                     ResolvedType = new ListGraphType(typeType)
                 };
 
