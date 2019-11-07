@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Net.Mail;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -25,13 +25,18 @@ namespace OrchardCore.Email.Controllers
             IAuthorizationService authorizationService,
             INotifier notifier,
             IShapeFactory shapeFactory,
-            ISmtpService smtpService)
+            ISmtpService smtpService,
+            IStringLocalizer<AdminController> stringLocalizer)
         {
             H = h;
             _authorizationService = authorizationService;
             _notifier = notifier;
             _smtpService = smtpService;
+
+            T = stringLocalizer;
         }
+
+        IStringLocalizer T { get; set; }
 
         [HttpGet]
         [ActionName("Index")]
@@ -58,21 +63,24 @@ namespace OrchardCore.Email.Controllers
             {
                 var message = CreateMessageFromViewModel(model);
 
-                // send email with DefaultSender
-                var result = await _smtpService.SendAsync(message);
-
-                if (!result.Succeeded)
+                if (ModelState.IsValid)
                 {
-                    foreach (var error in result.Errors)
+                    // send email with DefaultSender
+                    var result = await _smtpService.SendAsync(message);
+
+                    if (!result.Succeeded)
                     {
-                        ModelState.AddModelError("*", error.ToString());
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError("*", error.ToString());
+                        }
                     }
-                }
-                else
-                {
-                    _notifier.Success(H["Message sent successfully"]);
+                    else
+                    {
+                        _notifier.Success(H["Message sent successfully"]);
 
-                    return Redirect(Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId }));
+                        return Redirect(Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId }));
+                    }
                 }
             }
 
@@ -81,24 +89,13 @@ namespace OrchardCore.Email.Controllers
 
         private MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
         {
-            var message = new MailMessage();
-
-            message.To.Add(testSettings.To);
-
-            foreach (var address in ParseMailAddresses(testSettings.Cc))
+            var message = new MailMessage
             {
-                message.CC.Add(address);
-            }
-
-            foreach (var address in ParseMailAddresses(testSettings.Bcc))
-            {
-                message.Bcc.Add(address);
-            }
-
-            foreach (var address in ParseMailAddresses(testSettings.ReplyTo))
-            {
-                message.ReplyToList.Add(address);
-            }
+                To = testSettings.To,
+                Bcc = testSettings.Bcc,
+                Cc = testSettings.Cc,
+                ReplyTo = testSettings.ReplyTo
+            };
 
             if (!String.IsNullOrWhiteSpace(testSettings.Subject))
             {
@@ -113,14 +110,14 @@ namespace OrchardCore.Email.Controllers
             return message;
         }
 
-        private IEnumerable<string> ParseMailAddresses(string adresses)
+        private static bool ValidateEmail(string email)
         {
-            if (String.IsNullOrWhiteSpace(adresses))
-            {
-                return Array.Empty<string>();
-            }
+            var regexOptions = RegexOptions.Singleline | RegexOptions.IgnoreCase;
+            // From https://stackoverflow.com/questions/16167983/best-regular-expression-for-email-validation-in-c-sharp
+            // Retrieved 2018-11-16
+            string pattern = @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z";
 
-            return adresses.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            return Regex.IsMatch(email, pattern, regexOptions);
         }
     }
 }

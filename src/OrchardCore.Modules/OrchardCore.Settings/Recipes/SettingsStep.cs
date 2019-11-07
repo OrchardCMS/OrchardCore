@@ -41,14 +41,6 @@ namespace OrchardCore.Settings.Recipes
                         site.Calendar = property.Value.ToString();
                         break;
 
-                    case "Culture":
-                        site.Culture = property.Value.ToString();
-                        break;
-
-                    case "SupportedCultures":
-                        site.SupportedCultures = property.Value.ToObject<string[]>();
-                        break;
-
                     case "MaxPagedCount":
                         site.MaxPagedCount = property.Value.Value<int>();
                         break;
@@ -69,6 +61,10 @@ namespace OrchardCore.Settings.Recipes
                         site.SiteName = property.Value.ToString();
                         break;
 
+                    case "PageTitleFormat":
+                        site.PageTitleFormat = property.Value.ToString();
+                        break;
+
                     case "SiteSalt":
                         site.SiteSalt = property.Value.ToString();
                         break;
@@ -83,6 +79,14 @@ namespace OrchardCore.Settings.Recipes
 
                     case "UseCdn":
                         site.UseCdn = property.Value.Value<bool>();
+                        break;
+
+                    case "CdnBaseUrl":
+                        site.CdnBaseUrl = property.Value.ToString();
+                        break;
+
+                    case "AppendVersion":
+                        site.AppendVersion = property.Value.Value<bool>();
                         break;
 
                     case "HomeRoute":

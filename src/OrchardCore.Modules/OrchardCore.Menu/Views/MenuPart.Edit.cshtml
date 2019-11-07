@@ -9,14 +9,14 @@
     The shape is created from MenuPartDisplayDriver
 *@
 
-<script asp-src="/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="admin"></script>
-<style asp-src="/OrchardCore.Menu/Styles/menu.min.css" debug-src="/OrchardCore.Menu/Styles/menu.css"></style>
+<script asp-src="~/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="admin"></script>
+<style asp-src="~/OrchardCore.Menu/Styles/menu.min.css" debug-src="~/OrchardCore.Menu/Styles/menu.css"></style>
 
 @using OrchardCore.ContentManagement.Metadata.Settings;
 
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
-    var menuItemContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "MenuItem");
+    var menuItemContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "MenuItem");
     var canAddMenuItem = Model.MenuPart.ContentItem.Id != 0;
     var index = 0;
 }

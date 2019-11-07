@@ -27,19 +27,19 @@ namespace OrchardCore.Workflows.Services
             return _session.GetAsync<WorkflowType>(id);
         }
 
-        public async Task<IEnumerable<WorkflowType>> GetAsync(IEnumerable<int> ids)
+        public Task<IEnumerable<WorkflowType>> GetAsync(IEnumerable<int> ids)
         {
-            return await _session.GetAsync<WorkflowType>(ids.ToArray());
+            return _session.GetAsync<WorkflowType>(ids.ToArray());
         }
 
-        public async Task<WorkflowType> GetAsync(string workflowTypeId)
+        public Task<WorkflowType> GetAsync(string workflowTypeId)
         {
-            return await _session.Query<WorkflowType, WorkflowTypeIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync();
+            return _session.Query<WorkflowType, WorkflowTypeIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<WorkflowType>> ListAsync()
+        public Task<IEnumerable<WorkflowType>> ListAsync()
         {
-            return await _session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync();
+            return _session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync();
         }
 
         public async Task<IList<WorkflowType>> GetByStartActivityAsync(string activityName)
@@ -61,12 +61,12 @@ namespace OrchardCore.Workflows.Services
             if (isNew)
             {
                 var context = new WorkflowTypeCreatedContext(workflowType);
-                await _handlers.InvokeAsync(async x => await x.CreatedAsync(context), _logger);
+                await _handlers.InvokeAsync(x => x.CreatedAsync(context), _logger);
             }
             else
             {
                 var context = new WorkflowTypeUpdatedContext(workflowType);
-                await _handlers.InvokeAsync(async x => await x.UpdatedAsync(context), _logger);
+                await _handlers.InvokeAsync(x => x.UpdatedAsync(context), _logger);
             }
         }
 
@@ -85,7 +85,7 @@ namespace OrchardCore.Workflows.Services
             // Then delete the workflow type.
             _session.Delete(workflowType);
             var context = new WorkflowTypeDeletedContext(workflowType);
-            await _handlers.InvokeAsync(async x => await x.DeletedAsync(context), _logger);
+            await _handlers.InvokeAsync(x => x.DeletedAsync(context), _logger);
         }
     }
 }

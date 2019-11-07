@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Users
@@ -7,11 +9,13 @@ namespace OrchardCore.Users
     {
         public static readonly Permission ManageUsers = new Permission("ManageUsers", "Managing Users");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] {
-                ManageUsers,
-            };
+            return Task.FromResult(new[]
+            {
+                ManageUsers
+            }
+            .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -23,6 +27,5 @@ namespace OrchardCore.Users
                 },
             };
         }
-
     }
 }

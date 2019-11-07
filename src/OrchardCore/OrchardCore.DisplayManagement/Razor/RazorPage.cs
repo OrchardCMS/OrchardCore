@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.Settings;
@@ -16,23 +14,7 @@ namespace OrchardCore.DisplayManagement.Razor
 {
     public interface IRazorPage
     {
-        dynamic New { get; }
-        IShapeFactory Factory { get; }
-        Task<IHtmlContent> DisplayAsync(dynamic shape);
-        IOrchardDisplayHelper Orchard { get; }
-        dynamic ThemeLayout { get; set; }
         string ViewLayout { get; set; }
-        IPageTitleBuilder Title { get; }
-        IViewLocalizer T { get; }
-        IHtmlContent RenderTitleSegments(IHtmlContent segment, string position = "0", IHtmlContent separator = null);
-        IHtmlContent RenderTitleSegments(string segment, string position = "0", IHtmlContent separator = null);
-        IHtmlContent RenderLayoutBody();
-        TagBuilder Tag(dynamic shape);
-        Task<IHtmlContent> RenderBodyAsync();
-        Task<IHtmlContent> RenderSectionAsync(string name, bool required);
-        object OrDefault(object text, object other);
-        string FullRequestPath { get; }
-        ISite Site { get; }
     }
 
     public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>, IRazorPage
@@ -42,12 +24,22 @@ namespace OrchardCore.DisplayManagement.Razor
         private IOrchardDisplayHelper _orchardHelper;
         private ISite _site;
 
+        public override ViewContext ViewContext
+        {
+            get => base.ViewContext;
+            set
+            {
+                // We make the ViewContext available to other sub-systems that need it.
+                var viewContextAccessor = value.HttpContext.RequestServices.GetService<ViewContextAccessor>();
+                base.ViewContext = viewContextAccessor.ViewContext = value;
+            }
+        }
+
         private void EnsureDisplayHelper()
         {
             if (_displayHelper == null)
             {
-                IDisplayHelperFactory _factory = Context.RequestServices.GetService<IDisplayHelperFactory>();
-                _displayHelper = _factory.CreateHelper(ViewContext);
+                _displayHelper = Context.RequestServices.GetService<IDisplayHelper>();
             }
         }
 
@@ -121,14 +113,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 if (_themeLayout == null)
                 {
-                    var layoutAccessor = Context.RequestServices.GetService<ILayoutAccessor>();
-
-                    if (layoutAccessor == null)
-                    {
-                        throw new InvalidOperationException("Could not find a valid layout accessor");
-                    }
-
-                    _themeLayout = layoutAccessor.GetLayoutAsync().GetAwaiter().GetResult();
+                    _themeLayout = Context.Features.Get<RazorViewFeature>()?.ThemeLayout;
                 }
 
                 return _themeLayout;
@@ -235,7 +220,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
             }
-            
+
             return Title.GenerateTitle(separator);
         }
 
@@ -263,6 +248,10 @@ namespace OrchardCore.DisplayManagement.Razor
             return Shape.GetTagBuilder(shape, tag);
         }
 
+        // <summary>
+        /// In a Razor layout page, renders the portion of a content page that is not within a named zone.
+        /// </summary>
+        /// <returns>The HTML content to render.</returns>
         public Task<IHtmlContent> RenderBodyAsync()
         {
             return DisplayAsync(ThemeLayout.Content);
@@ -272,9 +261,60 @@ namespace OrchardCore.DisplayManagement.Razor
         /// Renders a zone from the layout.
         /// </summary>
         /// <param name="name">The name of the zone to render.</param>
+        public new IHtmlContent RenderSection(string name)
+        {
+            // We can replace the base implementation as it can't be called on a view that is not an actual MVC Layout.
+
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            return RenderSection(name, required: true);
+        }
+
+        /// <summary>
+        /// Renders a zone from the layout.
+        /// </summary>
+        /// <param name="name">The name of the zone to render.</param>
+        /// <param name="required">Whether the zone is required or not.</param>
+        public new IHtmlContent RenderSection(string name, bool required)
+        {
+            // We can replace the base implementation as it can't be called on a view that is not an actual MVC Layout.
+
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            return RenderSectionAsync(name, required).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Renders a zone from the layout.
+        /// </summary>
+        /// <param name="name">The name of the zone to render.</param>
+        public new Task<IHtmlContent> RenderSectionAsync(string name)
+        {
+            // We can replace the base implementation as it can't be called on a view that is not an actual MVC Layout.
+
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            return RenderSectionAsync(name, required: true);
+        }
+
+        /// <summary>
+        /// Renders a zone from the layout.
+        /// </summary>
+        /// <param name="name">The name of the zone to render.</param>
         /// <param name="required">Whether the zone is required or not.</param>
         public new Task<IHtmlContent> RenderSectionAsync(string name, bool required)
         {
+            // We can replace the base implementation as it can't be called on a view that is not an actual MVC Layout.
+
             if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));
@@ -301,7 +341,7 @@ namespace OrchardCore.DisplayManagement.Razor
         }
 
         /// <summary>
-        /// Returns the full path of the current request.
+        /// Returns the full escaped path of the current request.
         /// </summary>
         public string FullRequestPath => Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString;
 
@@ -314,7 +354,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 if (_site == null)
                 {
-                    _site = (ISite)Context.Items[typeof(ISite)];
+                    _site = Context.Features.Get<RazorViewFeature>()?.Site;
                 }
 
                 return _site;

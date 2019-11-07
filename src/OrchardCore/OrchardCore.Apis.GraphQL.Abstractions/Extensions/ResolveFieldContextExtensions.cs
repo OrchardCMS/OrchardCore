@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Builders;
 using GraphQL.Types;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -26,11 +28,17 @@ namespace OrchardCore.Apis.GraphQL
                 .Argument<IntGraphType, int>("skip", "the number of elements to skip", 0);
         }
 
-        public static IEnumerable<string> Page<T>(this ResolveFieldContext<T> context, IEnumerable<string> source)
+        public static IEnumerable<TSource> Page<T, TSource>(this ResolveFieldContext<T> context, IEnumerable<TSource> source)
         {
             var skip = context.GetArgument<int>("skip");
             var first = context.GetArgument<int>("first");
             var last = context.GetArgument<int>("last");
+
+            if (last == 0 && first == 0)
+            {
+                var serviceProvider = ((GraphQLContext)context.UserContext).ServiceProvider;
+                first = serviceProvider.GetService<IOptions<GraphQLSettings>>().Value.DefaultNumberOfResults;
+            }
 
             if (last > 0)
             {

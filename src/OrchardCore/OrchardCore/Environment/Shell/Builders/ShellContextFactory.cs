@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -37,7 +36,7 @@ namespace OrchardCore.Environment.Shell.Builders
             var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
 
             ShellDescriptor currentDescriptor;
-            using (var scope = describedContext.CreateScope())
+            using (var scope = describedContext.ServiceProvider.CreateScope())
             {
                 var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
                 currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();

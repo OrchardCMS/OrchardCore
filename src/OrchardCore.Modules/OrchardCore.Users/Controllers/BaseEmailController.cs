@@ -1,57 +1,47 @@
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Mail;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
 
 namespace OrchardCore.Users.Controllers
 {
-    [Admin]
-    public class BaseEmailController : Controller
+    public abstract class BaseEmailController : Controller
     {
         private readonly ISmtpService _smtpService;
-        private readonly IShapeFactory _shapeFactory;
-        private readonly IHtmlDisplay _displayManager;
+        private readonly IDisplayHelper _displayHelper;
 
         public BaseEmailController(
             ISmtpService smtpService,
-            IShapeFactory shapeFactory,
-            IHtmlDisplay displayManager)
+            IDisplayHelper displayHelper)
         {
             _smtpService = smtpService;
-            _shapeFactory = shapeFactory;
-            _displayManager = displayManager;
+            _displayHelper = displayHelper;
         }
 
-        protected async Task<bool> SendEmailAsync(string email, string subject, object model, string viewName)
+        protected async Task<bool> SendEmailAsync(string email, string subject, IShape model)
         {
-            var options = ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<MvcViewOptions>>();
+            var body = string.Empty;
 
-            // Just use the current context to get a view and then create a view context.
-            var view = options.Value.ViewEngines.Select(x => x.FindView(ControllerContext,
-                ControllerContext.ActionDescriptor.ActionName, false)).FirstOrDefault()?.View;
-
-            var displayContext = new DisplayContext()
+            using (var sb = StringBuilderPool.GetInstance())
             {
-                ServiceProvider = ControllerContext.HttpContext.RequestServices,
-                Value = await _shapeFactory.CreateAsync(viewName, model),
-                ViewContext = new ViewContext(ControllerContext, view, ViewData, TempData, new StringWriter(), new HtmlHelperOptions())
+                using (var sw = new StringWriter(sb.Builder))
+                {
+                    var htmlContent = await _displayHelper.ShapeExecuteAsync(model);
+                    htmlContent.WriteTo(sw, HtmlEncoder.Default);
+                    body = sw.ToString();
+                }
+            }
+
+            var message = new MailMessage()
+            {
+                To = email,
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true
             };
-            var htmlContent = await _displayManager.ExecuteAsync(displayContext);
 
-            var message = new MailMessage() { Body = WebUtility.HtmlDecode(htmlContent.ToString()), IsBodyHtml = true, Subject = subject };
-            message.To.Add(email);
-
-            // send email
             var result = await _smtpService.SendAsync(message);
 
             return result.Succeeded;

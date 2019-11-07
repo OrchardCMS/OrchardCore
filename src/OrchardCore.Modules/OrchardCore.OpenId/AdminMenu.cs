@@ -3,8 +3,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.OpenId
 {
@@ -29,7 +29,8 @@ namespace OrchardCore.OpenId
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["OpenID Connect"], "15", category =>
+            builder.Add(T["Security"], security => security
+            .Add(T["OpenID Connect"], "15", category =>
             {
                 category.AddClass("openid").Id("openid");
 
@@ -51,7 +52,7 @@ namespace OrchardCore.OpenId
                         if (features.Contains(OpenIdConstants.Features.Server))
                         {
                             settings.Add(T["Authorization server"], "2", server => server
-                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "OrchardCore.OpenId.Server" })
+                                    .Action("Index", "ServerConfiguration", "OrchardCore.OpenId")
                                     .Permission(Permissions.ManageServerSettings)
                                     .LocalNav());
                         }
@@ -59,7 +60,7 @@ namespace OrchardCore.OpenId
                         if (features.Contains(OpenIdConstants.Features.Validation))
                         {
                             settings.Add(T["Token validation"], "3", validation => validation
-                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "OrchardCore.OpenId.Validation" })
+                                    .Action("Index", "ValidationConfiguration", "OrchardCore.OpenId")
                                     .Permission(Permissions.ManageValidationSettings)
                                     .LocalNav());
                         }
@@ -81,7 +82,7 @@ namespace OrchardCore.OpenId
                                   .LocalNav());
                     });
                 }
-            });
+            }));
 
             return Task.CompletedTask;
         }

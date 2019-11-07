@@ -24,6 +24,7 @@ namespace OrchardCore.Workflows.Http.Activities
         private IStringLocalizer T { get; }
 
         public override string Name => EventName;
+        public override LocalizedString DisplayText => T["Signal Event"];
         public override LocalizedString Category => T["HTTP"];
 
         public WorkflowExpression<string> SignalName

@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Commands
 {
@@ -79,7 +79,7 @@ namespace OrchardCore.Environment.Commands
         {
             // Display header
             await output.WriteLineAsync();
-            await output.WriteLineAsync(T[$"{title}"]);
+            await output.WriteLineAsync(title);
 
             // Push exceptions in a stack so we display from inner most to outer most
             var errors = new Stack<Exception>();

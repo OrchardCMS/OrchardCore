@@ -1,9 +1,8 @@
 @model OrchardCore.ContentFields.ViewModels.EditNumericFieldViewModel
 @using System.Globalization
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.ContentFields.Settings;
+
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<NumericFieldSettings>();
     string name = Model.PartFieldDefinition.DisplayName();
     string step = Math.Pow(10, 0 - settings.Scale).ToString(CultureInfo.InvariantCulture);
     decimal min = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
@@ -11,8 +10,8 @@
     string id = Html.IdFor(m => m.Value);
 }
 
-<script asp-name="bootstrap-slider" depends-on="admin" asp-src="/OrchardCore.Resources/Scripts/bootstrap-slider.min.js" debug-src="/OrchardCore.Resources/Scripts/bootstrap-slider.js" at="Foot"></script>
-<style asp-name="bootstrap-slider" asp-src="/OrchardCore.Resources/Styles/bootstrap-slider.min.css" debug-src="/OrchardCore.Resources/Styles/bootstrap-slider.css"></style>
+<script asp-name="bootstrap-slider" depends-on="admin" asp-src="~/OrchardCore.Resources/Scripts/bootstrap-slider.min.js" debug-src="~/OrchardCore.Resources/Scripts/bootstrap-slider.js" at="Foot"></script>
+<style asp-name="bootstrap-slider" asp-src="~/OrchardCore.Resources/Styles/bootstrap-slider.min.css" debug-src="~/OrchardCore.Resources/Styles/bootstrap-slider.css"></style>
 
 <fieldset class="form-group">
     <div class="row col-sm-2">

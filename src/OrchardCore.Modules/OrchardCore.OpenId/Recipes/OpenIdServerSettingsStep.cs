@@ -1,8 +1,10 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -18,13 +20,11 @@ namespace OrchardCore.OpenId.Recipes
         private readonly IOpenIdServerService _serverService;
 
         public OpenIdServerSettingsStep(IOpenIdServerService serverService)
-        {
-            _serverService = serverService;
-        }
+            => _serverService = serverService;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "OpenIdServerSettings", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, nameof(OpenIdServerSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -32,9 +32,8 @@ namespace OrchardCore.OpenId.Recipes
             var model = context.Step.ToObject<OpenIdServerSettingsStepModel>();
 
             var settings = await _serverService.GetSettingsAsync();
-            settings.TestingModeEnabled = model.TestingModeEnabled;
             settings.AccessTokenFormat = model.AccessTokenFormat;
-            settings.Authority = model.Authority;
+            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
 
             settings.CertificateStoreLocation = model.CertificateStoreLocation;
             settings.CertificateStoreName = model.CertificateStoreName;
@@ -93,11 +92,11 @@ namespace OrchardCore.OpenId.Recipes
 
     public class OpenIdServerSettingsStepModel
     {
-        public bool TestingModeEnabled { get; set; } = false;
         public TokenFormat AccessTokenFormat { get; set; } = TokenFormat.Encrypted;
+        [Url]
         public string Authority { get; set; }
-        public StoreLocation CertificateStoreLocation { get; set; } = StoreLocation.LocalMachine;
-        public StoreName CertificateStoreName { get; set; } = StoreName.My;
+        public StoreLocation? CertificateStoreLocation  { get; set; }
+        public StoreName? CertificateStoreName { get; set; }
         public string CertificateThumbprint { get; set; }
         public bool EnableTokenEndpoint { get; set; }
         public bool EnableAuthorizationEndpoint { get; set; }

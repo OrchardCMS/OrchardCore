@@ -14,6 +14,8 @@ namespace OrchardCore.DynamicCache
         [Shape]
         public IHtmlContent CachedShapeWrapper(dynamic Shape)
         {
+            // No need to optimize this code as it will be used for debugging purpose
+
             var sb = new StringBuilder();
             var metadata = (ShapeMetadata) Shape.Metadata;
             var cache = metadata.Cache();

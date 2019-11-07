@@ -2,7 +2,7 @@
 using OrchardCore.XmlRpc;
 using OrchardCore.XmlRpc.Models;
 using OrchardCore.MetaWeblog;
-using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Models;
 using System;
 
 namespace OrchardCore.Autoroute.RemotePublishing

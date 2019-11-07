@@ -60,7 +60,7 @@
                 dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
                 menuItemShape.MenuPart = Model.MenuPart;
                 menuItemShape.Index = Model.Index + "-" + index++;
-                @await DisplayAsync(menuItemShape);
+                @await DisplayAsync(menuItemShape)
             }
         }
     </ol>

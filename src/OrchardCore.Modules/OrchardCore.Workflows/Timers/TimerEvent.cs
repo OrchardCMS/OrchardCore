@@ -23,11 +23,13 @@ namespace OrchardCore.Workflows.Timers
         private IStringLocalizer T { get; }
 
         public override string Name => EventName;
+        public override LocalizedString DisplayText => T["Timer Event"];
+
         public override LocalizedString Category => T["Background"];
 
         public string CronExpression
         {
-            get => GetProperty(() => "5 * * * *");
+            get => GetProperty(() => "*/5 * * * *");
             set => SetProperty(value);
         }
 

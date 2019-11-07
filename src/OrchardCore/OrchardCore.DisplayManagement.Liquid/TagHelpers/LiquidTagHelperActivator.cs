@@ -7,6 +7,7 @@ using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
@@ -14,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
     {
         public readonly static LiquidTagHelperActivator None = new LiquidTagHelperActivator();
         private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activator;
-        private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue>>();
+        private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue>>(StringComparer.OrdinalIgnoreCase);
 
         public LiquidTagHelperActivator() { }
 
@@ -29,29 +30,49 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 var invokeType = typeof(Action<,>).MakeGenericType(type, property.PropertyType);
                 var setterDelegate = Delegate.CreateDelegate(invokeType, property.GetSetMethod());
 
-                _setters.Add(property.Name, (h, v) =>
+                var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { property.Name };
+                var htmlAttribute = property.GetCustomAttribute<HtmlAttributeNameAttribute>();
+
+                if (htmlAttribute != null && htmlAttribute.Name != null)
                 {
-                    object value = null;
+                    allNames.Add(htmlAttribute.Name.ToPascalCaseDash());
 
-                    if (property.PropertyType.IsEnum)
+                    if (htmlAttribute.Name.StartsWith("asp-", StringComparison.Ordinal))
                     {
-                        value = Enum.Parse(property.PropertyType, v.ToStringValue());
+                        allNames.Add(htmlAttribute.Name.Substring(4).ToPascalCaseDash());
                     }
-                    else if (property.PropertyType == typeof(String))
-                    {
-                        value = v.ToStringValue();
-                    }
-                    else if (property.PropertyType == typeof(Boolean))
-                    {
-                        value = Convert.ToBoolean(v.ToStringValue());
-                    }
-                    else
-                    {
-                        value = v.ToObjectValue();
-                    }
+                }
 
-                    setterDelegate.DynamicInvoke(new[] { h, value });
-                });
+                foreach (var propertyName in allNames)
+                {
+                    _setters.Add(propertyName, (h, v) =>
+                    {
+                        object value = null;
+
+                        if (property.PropertyType.IsEnum)
+                        {
+                            value = Enum.Parse(property.PropertyType, v.ToStringValue());
+                        }
+                        else if (property.PropertyType == typeof(String))
+                        {
+                            value = v.ToStringValue();
+                        }
+                        else if (property.PropertyType == typeof(Boolean))
+                        {
+                            value = Convert.ToBoolean(v.ToStringValue());
+                        }
+                        else if (property.PropertyType == typeof(Nullable<Boolean>))
+                        {
+                            value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue());
+                        }
+                        else
+                        {
+                            value = v.ToObjectValue();
+                        }
+
+                        setterDelegate.DynamicInvoke(new[] { h, value });
+                    });
+                }
             }
 
             var genericFactory = typeof(ReusableTagHelperFactory<>).MakeGenericType(type);
@@ -71,7 +92,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             foreach (var name in arguments.Names)
             {
-                var propertyName = Filters.LiquidViewFilters.LowerKebabToPascalCase(name);
+                var propertyName = name.ToPascalCaseUnderscore();
 
                 var found = false;
 
@@ -88,7 +109,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
                 }
 
-                var attr = new TagHelperAttribute(name.Replace("_", "-"), arguments[name].ToObjectValue());
+                var attr = new TagHelperAttribute(name.Replace('_', '-'), arguments[name].ToObjectValue());
 
                 contextAttributes.Add(attr);
 
@@ -101,7 +122,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             return tagHelper;
         }
 
-        private class ReusableTagHelperFactory<T> where T : ITagHelper
+        private class ReusableTagHelperFactory<T> where T : class, ITagHelper
         {
             public static ITagHelper CreateTagHelper(ITagHelperFactory tagHelperFactory, ViewContext viewContext)
             {

@@ -95,7 +95,7 @@ namespace OrchardCore.Workflows.Services
             return query.ToList();
         }
 
-        public async Task<IEnumerable<Workflow>> ListAsync(string activityName, string correlationId = null)
+        public async Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null)
         {
             var query = await _session
                 .QueryIndex<WorkflowBlockingActivitiesIndex>(index =>
@@ -118,12 +118,12 @@ namespace OrchardCore.Workflows.Services
             if (isNew)
             {
                 var context = new WorkflowCreatedContext(workflow);
-                await _handlers.InvokeAsync(async x => await x.CreatedAsync(context), _logger);
+                await _handlers.InvokeAsync(x => x.CreatedAsync(context), _logger);
             }
             else
             {
                 var context = new WorkflowUpdatedContext(workflow);
-                await _handlers.InvokeAsync(async x => await x.UpdatedAsync(context), _logger);
+                await _handlers.InvokeAsync(x => x.UpdatedAsync(context), _logger);
             }
         }
 
@@ -132,7 +132,7 @@ namespace OrchardCore.Workflows.Services
             _session.Delete(workflow);
 
             var context = new WorkflowDeletedContext(workflow);
-            await _handlers.InvokeAsync(async x => await x.DeletedAsync(context), _logger);
+            await _handlers.InvokeAsync(x => x.DeletedAsync(context), _logger);
         }
 
         private IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)

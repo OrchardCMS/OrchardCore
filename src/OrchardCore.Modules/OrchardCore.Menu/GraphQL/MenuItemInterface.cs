@@ -10,7 +10,7 @@ namespace OrchardCore.Menu.GraphQL
         {
             Name = "MenuItem";
 
-            Field(typeof(MenuItemsListQueryObjectType), "menuItemsListPart", resolve: context => context.Source.As<MenuItemsListPart>());
+            Field(typeof(MenuItemsListQueryObjectType), "menuItemsList", resolve: context => context.Source.As<MenuItemsListPart>());
         }
     }
 }

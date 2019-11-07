@@ -23,14 +23,21 @@ namespace OrchardCore.Users
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Security"], "5", security => security
+            builder.Add(T["Security"], "7", security => security
+                    .AddClass("security").Id("security")
                         .Add(T["Users"], "5", installed => installed
                             .Action("Index", "Admin", "OrchardCore.Users")
                             .Permission(Permissions.ManageUsers)
                             .LocalNav()
-                         )));
+                         )
+                        .Add(T["Settings"], settings => settings
+                            .Add(T["Login"], T["Login"], registration => registration
+                                .Permission(Permissions.ManageUsers)
+                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LoginSettingsDisplayDriver.GroupId })
+                                .LocalNav()
+                                )
+                            )
+                       );
 
             return Task.CompletedTask;
         }
@@ -39,7 +46,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationAdminMenu : INavigationProvider
     {
-        public RegistrationAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public RegistrationAdminMenu(IStringLocalizer<RegistrationAdminMenu> localizer)
         {
             T = localizer;
         }
@@ -54,7 +61,7 @@ namespace OrchardCore.Users
             }
 
             builder
-                .Add(T["Configuration"], configuration => configuration
+                .Add(T["Security"], security => security
                     .Add(T["Settings"], settings => settings
                         .Add(T["Registration"], T["Registration"], registration => registration
                             .Permission(Permissions.ManageUsers)
@@ -69,7 +76,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.ResetPassword")]
     public class ResetPasswordAdminMenu : INavigationProvider
     {
-        public ResetPasswordAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public ResetPasswordAdminMenu(IStringLocalizer<ResetPasswordAdminMenu> localizer)
         {
             T = localizer;
         }
@@ -84,7 +91,7 @@ namespace OrchardCore.Users
             }
 
             builder
-                .Add(T["Configuration"], configuration => configuration
+                .Add(T["Security"], security => security
                     .Add(T["Settings"], settings => settings
                         .Add(T["Reset password"], T["Reset password"], password => password
                             .Permission(Permissions.ManageUsers)

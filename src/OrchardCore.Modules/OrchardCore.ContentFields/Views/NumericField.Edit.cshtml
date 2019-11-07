@@ -1,8 +1,7 @@
 @model OrchardCore.ContentFields.ViewModels.EditNumericFieldViewModel
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.ContentFields.Settings;
+
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<NumericFieldSettings>();
     string name = Model.PartFieldDefinition.DisplayName();
     decimal min = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
     decimal max = settings.Maximum.HasValue ? settings.Maximum.Value : 10000;

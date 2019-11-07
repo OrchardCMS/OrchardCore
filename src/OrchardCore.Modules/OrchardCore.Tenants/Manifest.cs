@@ -3,7 +3,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Module(
     Name = "Tenants",
     Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
+    Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
 
@@ -20,5 +20,5 @@ using OrchardCore.Modules.Manifest;
     Name = "Static File Provider",
     Description = "Provides a way to serve independent static files for each tenant.",
     Category = "Infrastructure",
-    DefaultTenantOnly = true
+    DefaultTenantOnly = false
 )]

@@ -20,9 +20,8 @@ namespace OrchardCore.ContentTypes {
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Content Definition"], "2", contentDefinition => contentDefinition
-                .AddClass("content-definition").Id("contentdefinition")
-                .LinkToFirstChild(true)
+            builder.Add(T["Content"], content => content
+                .Add(T["Content Definition"], "2", contentDefinition => contentDefinition
                     .Add(T["Content Types"], "1", contentTypes => contentTypes
                         .Action("List", "Admin", new { area = "OrchardCore.ContentTypes" })
                         .Permission(Permissions.ViewContentTypes)
@@ -31,7 +30,7 @@ namespace OrchardCore.ContentTypes {
                         .Action("ListParts", "Admin", new { area = "OrchardCore.ContentTypes" })
                         .Permission(Permissions.ViewContentTypes)
                         .LocalNav())
-                    );
+                    ));
 
             return Task.CompletedTask;
         }

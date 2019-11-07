@@ -91,7 +91,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
                     var filePaths = _fileProviderAccessor.FileProvider.GetViewFilePaths(
-                        PathExtensions.Combine(extensionDescriptor.SubPath, subPath), 
+                        PathExtensions.Combine(extensionDescriptor.SubPath, subPath),
                         _viewEnginesByExtension.Keys.ToArray(),
                         inViewsFolder: true, inDepth: false).ToArray();
 
@@ -151,7 +151,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
                         .From(feature)
                         .BoundAs(
-                            hit.shapeContext.harvestShapeInfo.RelativePath, shapeDescriptor => displayContext =>
+                            hit.shapeContext.harvestShapeInfo.RelativePath, displayContext =>
                             {
                                 var viewEngine = displayContext.ServiceProvider
                                     .GetServices<IShapeTemplateViewEngine>()

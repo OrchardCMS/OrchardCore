@@ -4,15 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
 using OrchardCore.Setup.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Modules;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Setup.Controllers
 {
@@ -51,7 +51,7 @@ namespace OrchardCore.Setup.Controllers
             var recipes = await _setupService.GetSetupRecipesAsync();
             var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
-            if (!string.IsNullOrWhiteSpace(_shellSettings.Secret))
+            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
             {
                 if (string.IsNullOrEmpty(token) || !await IsTokenValid(token))
                 {
@@ -70,10 +70,10 @@ namespace OrchardCore.Setup.Controllers
 
             CopyShellSettingsValues(model);
 
-            if (!String.IsNullOrEmpty(_shellSettings.TablePrefix))
+            if (!String.IsNullOrEmpty(_shellSettings["TablePrefix"]))
             {
                 model.DatabaseConfigurationPreset = true;
-                model.TablePrefix = _shellSettings.TablePrefix;
+                model.TablePrefix = _shellSettings["TablePrefix"];
             }
 
             return View(model);
@@ -82,7 +82,7 @@ namespace OrchardCore.Setup.Controllers
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
-            if (!string.IsNullOrWhiteSpace(_shellSettings.Secret))
+            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
             {
                 if (string.IsNullOrEmpty(model.Secret) || !await IsTokenValid(model.Secret))
                 {
@@ -115,9 +115,9 @@ namespace OrchardCore.Setup.Controllers
             }
 
             RecipeDescriptor selectedRecipe = null;
-            if (!string.IsNullOrEmpty(_shellSettings.RecipeName))
+            if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
             {
-                selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings.RecipeName);
+                selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
                 if (selectedRecipe == null)
                 {
                     ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
@@ -147,11 +147,11 @@ namespace OrchardCore.Setup.Controllers
                 SiteTimeZone = model.SiteTimeZone
             };
 
-            if (!string.IsNullOrEmpty(_shellSettings.ConnectionString))
+            if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
             {
-                setupContext.DatabaseProvider = _shellSettings.DatabaseProvider;
-                setupContext.DatabaseConnectionString = _shellSettings.ConnectionString;
-                setupContext.DatabaseTablePrefix = _shellSettings.TablePrefix;
+                setupContext.DatabaseProvider = _shellSettings["DatabaseProvider"];
+                setupContext.DatabaseConnectionString = _shellSettings["ConnectionString"];
+                setupContext.DatabaseTablePrefix = _shellSettings["TablePrefix"];
             }
             else
             {
@@ -178,22 +178,22 @@ namespace OrchardCore.Setup.Controllers
 
         private void CopyShellSettingsValues(SetupViewModel model)
         {
-            if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
+            if (!String.IsNullOrEmpty(_shellSettings["ConnectionString"]))
             {
                 model.DatabaseConfigurationPreset = true;
-                model.ConnectionString = _shellSettings.ConnectionString;
+                model.ConnectionString = _shellSettings["ConnectionString"];
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings.RecipeName))
+            if (!String.IsNullOrEmpty(_shellSettings["RecipeName"]))
             {
                 model.RecipeNamePreset = true;
-                model.RecipeName = _shellSettings.RecipeName;
+                model.RecipeName = _shellSettings["RecipeName"];
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
+            if (!String.IsNullOrEmpty(_shellSettings["DatabaseProvider"]))
             {
                 model.DatabaseConfigurationPreset = true;
-                model.DatabaseProvider = _shellSettings.DatabaseProvider;
+                model.DatabaseProvider = _shellSettings["DatabaseProvider"];
             }
             else
             {
@@ -205,7 +205,11 @@ namespace OrchardCore.Setup.Controllers
         {
             try
             {
-                using (var scope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
+                var result = false;
+
+                var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+
+                await shellScope.UsingAsync(scope =>
                 {
                     var dataProtectionProvider = scope.ServiceProvider.GetRequiredService<IDataProtectionProvider>();
                     var dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
@@ -214,12 +218,16 @@ namespace OrchardCore.Setup.Controllers
 
                     if (_clock.UtcNow < expiration.ToUniversalTime())
                     {
-                        if (_shellSettings.Secret == tokenValue)
+                        if (_shellSettings["Secret"] == tokenValue)
                         {
-                            return true;
+                            result = true;
                         }
                     }
-                }
+
+                    return Task.CompletedTask;
+                });
+
+                return result;
             }
             catch (Exception ex)
             {

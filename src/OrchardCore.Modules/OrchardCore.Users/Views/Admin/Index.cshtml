@@ -1,49 +1,33 @@
 @model UsersIndexViewModel
 
+<div class="row">
+    <div class="form-group col mb-n1">
+        <h1>@RenderTitleSegments(T["Users"])</h1>
+    </div>
+    <div class="form-group col mb-n1">
+        <div class="dropdown float-right order-md-1">
+            <a asp-route-action="Create" class="btn btn-primary float-right" role="button">@T["Add User"]</a>
+        </div>
+    </div>
+</div>
 
-<h1>@RenderTitleSegments(T["Users"])</h1>
-
-<nav class="admin-toolbar">
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add User"]</a>
-        </li>
-        @*<li class="nav-item">
-            <div class="btn-group">
-                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    @T["Actions"]
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">@T["Approve"]</a>
-                    <a class="dropdown-item" href="#">@T["Disable"]</a>
-                    <a class="dropdown-item" href="#">@T["Send challenge E-mail"]</a>
-                    <a class="dropdown-item" href="#">@T["Delete"]</a>
+<form asp-action="Index" method="get">
+    <div class="card mb-3">
+        <div class="card-body bg-light p-3">
+            <div class="input-group input-group-sm w-lg-50">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+                </div>
+                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" autofocus="autofocus" />
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
                 </div>
             </div>
-        </li>*@
-        @*@Html.TextBoxFor(m => m.Options.Search, new { @class = "text" })
-            <label for="filterResults">@T("Filter:")</label>
-            <select id="filterResults" name="@Html.NameOf(m => m.Options.Filter)">
-                @Html.SelectOption(Model.Options.Filter, UsersFilter.All, T("All Users").ToString())
-                @Html.SelectOption(Model.Options.Filter, UsersFilter.Approved, T("Approved Users").ToString())
-                @Html.SelectOption(Model.Options.Filter, UsersFilter.Pending, T("Pending Users").ToString())
-                @Html.SelectOption(Model.Options.Filter, UsersFilter.EmailPending, T("Pending Emails").ToString())
-            </select>
-            <label for="sortResults">@T("Sort by:")</label>
-            <select id="sortResults" name="@Html.NameOf(m => m.Options.Order)">
-                @Html.SelectOption(Model.Options.Order, UsersOrder.Name, T("Name").ToString())
-                @Html.SelectOption(Model.Options.Order, UsersOrder.Email, T("Email").ToString())
-                @Html.SelectOption(Model.Options.Order, UsersOrder.CreatedUtc, T("Creation Time").ToString())
-                @Html.SelectOption(Model.Options.Order, UsersOrder.LastLoginUtc, T("Last Login Time").ToString())
-            </select>*@
-    </ul>
-    <form asp-action="Index" method="get" class="form-inline">
-        <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
-        <button type="submit" class="btn btn-secondary my-2 my-sm-0">@T["Search"]</button>
-    </form>
-</nav>
+        </div>
+    </div>
+</form>
 
-@using (Html.BeginForm())
+@if (Model.Users.Count > 0)
 {
     <ul class="list-group">
         @foreach (var entry in Model.Users)
@@ -53,6 +37,12 @@
             </li>
         }
     </ul>
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        @T["<strong>Nothing here!</strong> Your search returned no results."]
+    </div>
 }
 
 @await DisplayAsync(Model.Pager)

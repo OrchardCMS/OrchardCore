@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
@@ -30,12 +32,13 @@ namespace OrchardCore.ContentFields.GraphQL
                 .Name("contentItems")
                 .Description("the content items")
                 .PagingArguments()
-                .ResolveAsync(x =>
+                .ResolveAsync(async x =>
                 {
                     var ids = x.Page(x.Source.ContentItemIds);
                     var context = (GraphQLContext)x.UserContext;
                     var session = context.ServiceProvider.GetService<ISession>();
-                    return session.Query<ContentItem, ContentItemIndex>(y => y.ContentItemId.IsIn(ids)).ListAsync();
+                    var contentItems = await session.Query<ContentItem, ContentItemIndex>(y => y.ContentItemId.IsIn(ids) && y.Published).ListAsync();
+                    return contentItems.OrderBy(c => Array.IndexOf(x.Source.ContentItemIds, c.ContentItemId));
                 });
         }
     }

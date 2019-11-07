@@ -1,10 +1,10 @@
 @model ContentTypesAdminNodeViewModel
 
-<style asp-src="/OrchardCore.Contents/Styles/Contents.min.css" debug-src="/OrchardCore.Contents/Styles/Contents.css"></style>
-<style asp-src="/OrchardCore.AdminTrees/Styles/admin-trees-icon-picker.css" debug-src="/OrchardCore.AdminTrees/Styles/admin-trees-icon-picker.css" at="Head" depends-on="admin"></style>
+<style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
 
-<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
-<script asp-src="/OrchardCore.AdminTrees/Scripts/admin-trees-icon-picker.js" at="Foot" depends-on="admin"></script>
+<script asp-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js" debug-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="admin"></script>
 
 <h5>@T["Content Types"]</h5>
 
@@ -13,9 +13,9 @@
     <div class="col col-xl-9">
 
         @*Panel Switcher*@
-        <div class="form-group form-check">
-            <input asp-for="ShowAll" class="form-check-input" id="ContentTypesAdminNode_ShowAll" />
-            <label asp-for="ShowAll" class="form-check-label">@T["Show All Content Types"]</label>
+        <div class="custom-control custom-checkbox">
+            <input asp-for="ShowAll" class="custom-control-input" id="ContentTypesAdminNode_ShowAll" />
+            <label asp-for="ShowAll" class="custom-control-label">@T["Show All Content Types"]</label>
         </div>
 
         @*Show All Panel*@
@@ -70,15 +70,12 @@
                             {
                                 var name = Model.ContentTypes[i].ContentTypeId;
                                 var checkd = Model.ContentTypes[i].IsChecked;
-                                <li class="list-group-item d-flex align-items-center  @(checkd ? "" : "disabled")">
-                                    <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeId)"
-                                           value="@Model.ContentTypes[i].ContentTypeId" />
+                                <li class="list-group-item d-flex align-items-center  @(checkd ? "" : "disabled-content-type")">
                                     <div class="flex-grow-1">
-                                        <div class="form-check">
-                                            <label class="form-check-label">
-                                                <input asp-for="ContentTypes[i].IsChecked" class="content-type-checkbox" />
-                                                @name
-                                            </label>
+                                        <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeId)" value="@Model.ContentTypes[i].ContentTypeId" />
+                                        <div class="custom-control custom-checkbox">
+                                            <input asp-for="ContentTypes[i].IsChecked" class="custom-control-input content-type-checkbox" />
+                                            <label class="custom-control-label" for="@Html.IdFor(m => m.ContentTypes[i].IsChecked)">@name</label>
                                         </div>
                                     </div>
                                     
@@ -167,7 +164,7 @@
             var listItem = $(e.target).closest('.list-group-item');
 
             var selected = $(e.target).prop('checked');            
-            selected ? listItem.removeClass('disabled') : listItem.addClass('disabled'); 
+            selected ? listItem.removeClass('disabled-content-type') : listItem.addClass('disabled-content-type'); 
 
         });
 

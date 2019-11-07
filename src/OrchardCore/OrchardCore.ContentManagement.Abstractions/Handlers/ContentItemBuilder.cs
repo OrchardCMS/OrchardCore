@@ -1,4 +1,6 @@
-﻿using OrchardCore.ContentManagement.Metadata.Models;
+using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement.Metadata.Builders;
+using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.Handlers
 {
@@ -25,26 +27,6 @@ namespace OrchardCore.ContentManagement.Handlers
         public ContentItem Build()
         {
             return _item;
-        }
-
-        /// <summary>
-        /// Welds a new part to the content item. If a part of the same type is already welded nothing is done.
-        /// </summary>
-        /// <typeparam name="TPart">The type of the part to be welded.</typeparam>
-        /// <returns>A new Content Item Builder with the item having the new part welded.</returns>
-        public ContentItemBuilder Weld<TPart>() where TPart : ContentPart, new()
-        {
-            // if the part hasn't be weld yet
-            if (_item.As<TPart>() == null)
-            {
-                var partName = typeof(TPart).Name;
-
-                // build and welded the part
-                var part = new TPart();
-                _item.Weld(partName, part);
-            }
-
-            return this;
         }
 
         /// <summary>

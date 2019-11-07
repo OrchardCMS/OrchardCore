@@ -1,9 +1,7 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
-@using OrchardCore.ContentFields.Settings
-@using OrchardCore.ContentManagement.Metadata.Models
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
     var listSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
 
     var options = new List<SelectListItem>();
@@ -27,7 +25,7 @@
         @foreach (var option in options)
         {
             <div class="custom-control custom-radio" asp-for="Text">
-                @Html.RadioButton("Text", option.Value, option.Selected, new { @class = "custom-control-input", id = Html.IdFor(m => m.Text) + "_" + i })
+                @Html.RadioButton("Text", option.Value, option.Selected, new { @class = "custom-control-input content-preview-text", id = Html.IdFor(m => m.Text) + "_" + i })
                 <label class="custom-control-label" for="@(Html.IdFor(m => m.Text) + "_" + i)">@option.Text</label>
             </div>
             i++;
@@ -37,12 +35,12 @@
     @if (listSettings.Editor == EditorOption.Dropdown)
     {
         <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
-        <select class="form-control" asp-for="Text" asp-items="options"></select>
+        <select class="form-control content-preview-select" asp-for="Text" asp-items="options"></select>
     }
 
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
-        <span class="hint">@T["— {0}", settings.Hint]</span>
+        <span class="hint">— @settings.Hint</span>
     }
 
 </fieldset>

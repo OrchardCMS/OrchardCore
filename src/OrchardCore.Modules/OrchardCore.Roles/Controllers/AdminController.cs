@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -30,7 +30,7 @@ namespace OrchardCore.Roles.Controllers
         private readonly RoleManager<IRole> _roleManager;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
-        private readonly IRoleProvider _roleProvider;
+        private readonly IRoleService _roleService;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer<AdminController> TH;
 
@@ -43,14 +43,14 @@ namespace OrchardCore.Roles.Controllers
             ISiteService siteService,
             IShapeFactory shapeFactory,
             RoleManager<IRole> roleManager,
-            IRoleProvider roleProvider,
+            IRoleService roleService,
             INotifier notifier,
             IEnumerable<IPermissionProvider> permissionProviders
             )
         {
             TH = htmlLocalizer;
             _notifier = notifier;
-            _roleProvider = roleProvider;
+            _roleService = roleService;
             _typeFeatureProvider = typeFeatureProvider;
             _permissionProviders = permissionProviders;
             _roleManager = roleManager;
@@ -68,13 +68,13 @@ namespace OrchardCore.Roles.Controllers
                 return Unauthorized();
             }
 
-            var roles = await _roleProvider.GetRoleNamesAsync();
+            var roles = await _roleService.GetRolesAsync();
 
             var model = new RolesViewModel
             {
                 RoleEntries = roles.Select(BuildRoleEntry).ToList()
             };
-            
+
             return View(model);
         }
 
@@ -97,6 +97,11 @@ namespace OrchardCore.Roles.Controllers
             if (ModelState.IsValid)
             {
                 model.RoleName = model.RoleName.Trim();
+
+                if (model.RoleName.Contains('/'))
+                {
+                    ModelState.AddModelError(string.Empty, T["Invalid role name."]);
+                }
                 
                 if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
                 {
@@ -106,7 +111,7 @@ namespace OrchardCore.Roles.Controllers
 
             if (ModelState.IsValid)
             {
-                var role = new Role { RoleName = model.RoleName };
+                var role = new Role { RoleName = model.RoleName, RoleDescription = model.RoleDescription };
                 var result = await _roleManager.CreateAsync(role);
                 if (result.Succeeded)
                 {
@@ -170,13 +175,13 @@ namespace OrchardCore.Roles.Controllers
                 return Unauthorized();
             }
 
-            var role = (Role) await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
+            var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
             if (role == null)
             {
                 return NotFound();
             }
 
-            var installedPermissions = GetInstalledPermissions();
+            var installedPermissions = await GetInstalledPermissionsAsync();
             var allPermissions = installedPermissions.SelectMany(x => x.Value);
 
             var model = new EditRoleViewModel
@@ -198,7 +203,7 @@ namespace OrchardCore.Roles.Controllers
                 return Unauthorized();
             }
 
-            var role = (Role) await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
+            var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
 
             if (role == null)
             {
@@ -209,7 +214,7 @@ namespace OrchardCore.Roles.Controllers
             List<RoleClaim> rolePermissions = new List<RoleClaim>();
             foreach (string key in Request.Form.Keys)
             {
-                if (key.StartsWith("Checkbox.") && Request.Form[key] == "true")
+                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
                 {
                     string permissionName = key.Substring("Checkbox.".Length);
                     rolePermissions.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permissionName });
@@ -226,23 +231,26 @@ namespace OrchardCore.Roles.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private RoleEntry BuildRoleEntry(string name)
+        private RoleEntry BuildRoleEntry(IRole role)
         {
             return new RoleEntry
             {
-                Name = name,
+                Name = role.RoleName,
+                Description = role.RoleDescription,
                 Selected = false
             };
         }
 
-        private IDictionary<string, IEnumerable<Permission>> GetInstalledPermissions()
+        private async Task<IDictionary<string, IEnumerable<Permission>>> GetInstalledPermissionsAsync()
         {
             var installedPermissions = new Dictionary<string, IEnumerable<Permission>>();
             foreach (var permissionProvider in _permissionProviders)
             {
                 var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
                 var featureName = feature.Id;
-                var permissions = permissionProvider.GetPermissions();
+
+                var permissions = await permissionProvider.GetPermissionsAsync();
+
                 foreach (var permission in permissions)
                 {
                     var category = permission.Category;
@@ -268,13 +276,13 @@ namespace OrchardCore.Roles.Controllers
             // Create a fake user to check the actual permissions. If the role is anonymous
             // IsAuthenticated needs to be false.
             var fakeUser = new ClaimsPrincipal(
-                new ClaimsIdentity(new[] { new Claim(ClaimTypes.Role, role.RoleName)},
+                new ClaimsIdentity(new[] { new Claim(ClaimTypes.Role, role.RoleName) },
                 role.RoleName != "Anonymous" ? "FakeAuthenticationType" : null)
             );
 
             var result = new List<string>();
 
-            foreach(var permission in allPermissions)
+            foreach (var permission in allPermissions)
             {
                 if (await _authorizationService.AuthorizeAsync(fakeUser, permission))
                 {

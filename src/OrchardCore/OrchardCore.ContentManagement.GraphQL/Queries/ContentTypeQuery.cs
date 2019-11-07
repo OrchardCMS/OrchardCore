@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -19,29 +22,41 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     public class ContentTypeQuery : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IOptions<GraphQLContentOptions> _contentOptionsAccessor;
+        private readonly IOptions<GraphQLSettings> _settingsAccessor;
 
-        public ContentTypeQuery(IHttpContextAccessor httpContextAccessor)
+        public ContentTypeQuery(IHttpContextAccessor httpContextAccessor,
+            IOptions<GraphQLContentOptions> contentOptionsAccessor,
+            IOptions<GraphQLSettings> settingsAccessor,
+            IStringLocalizer<ContentTypeQuery> localizer)
         {
             _httpContextAccessor = httpContextAccessor;
+            _contentOptionsAccessor = contentOptionsAccessor;
+            _settingsAccessor = settingsAccessor;
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; set; }
 
         public Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
 
             var contentDefinitionManager = serviceProvider.GetService<IContentDefinitionManager>();
-            var contentTypeBuilders = serviceProvider.GetService<IEnumerable<IContentTypeBuilder>>().ToList();
+            var contentTypeBuilders = serviceProvider.GetServices<IContentTypeBuilder>().ToList();
 
             foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
             {
-                var typeType = new ContentItemType
-                {
-                    Name = typeDefinition.Name
-                };
-
-                var query = new ContentItemsFieldType(typeDefinition.Name, schema)
+                var typeType = new ContentItemType(_contentOptionsAccessor)
                 {
                     Name = typeDefinition.Name,
+                    Description = T["Represents a {0}.", typeDefinition.DisplayName]
+                };
+
+                var query = new ContentItemsFieldType(typeDefinition.Name, schema, _contentOptionsAccessor, _settingsAccessor)
+                {
+                    Name = typeDefinition.Name,
+                    Description = T["Represents a {0}.", typeDefinition.DisplayName],
                     ResolvedType = new ListGraphType(typeType)
                 };
 
@@ -50,7 +65,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     builder.Build(query, typeDefinition, typeType);
                 }
 
-                var settings = typeDefinition.Settings?.ToObject<ContentTypeSettings>();
+                var settings = typeDefinition.GetSettings<ContentTypeSettings>();
 
                 // Only add queries over standard content types
                 if (settings == null || String.IsNullOrWhiteSpace(settings.Stereotype))

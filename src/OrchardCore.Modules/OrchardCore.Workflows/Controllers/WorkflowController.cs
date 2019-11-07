@@ -12,8 +12,8 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
@@ -115,7 +115,14 @@ namespace OrchardCore.Workflows.Controllers
             var blockingActivities = workflow.BlockingActivities.ToDictionary(x => x.ActivityId);
             var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowType, workflow);
             var activityContexts = await Task.WhenAll(workflowType.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
-            var activityDesignShapes = (await Task.WhenAll(activityContexts.Select(async x => await BuildActivityDisplayAsync(x, workflowType.Id, blockingActivities.ContainsKey(x.ActivityRecord.ActivityId), "Design")))).ToList();
+
+            var activityDesignShapes = new List<dynamic>();
+
+            foreach (var activityContext in activityContexts)
+            {
+                activityDesignShapes.Add(await BuildActivityDisplayAsync(activityContext, workflowType.Id, blockingActivities.ContainsKey(activityContext.ActivityRecord.ActivityId), "Design"));
+            }
+
             var activitiesDataQuery = activityContexts.Select(x => new
             {
                 Id = x.ActivityRecord.ActivityId,

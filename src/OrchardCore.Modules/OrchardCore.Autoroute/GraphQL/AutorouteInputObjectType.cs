@@ -1,17 +1,18 @@
 using GraphQL.Types;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Queries;
-using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Models;
 
 namespace OrchardCore.Autoroute.GraphQL
 {
     public class AutorouteInputObjectType : WhereInputObjectGraphType<AutoroutePart>
     {
-        public AutorouteInputObjectType()
+        public AutorouteInputObjectType(IStringLocalizer<AutorouteInputObjectType> T)
         {
             Name = "AutoroutePartInput";
-            Description = "the custom URL part of the content item";
+            Description = T["the custom URL part of the content item"];
 
-            AddScalarFilterFields<StringGraphType>("path", "the path of the content item to filter");
+            AddScalarFilterFields<StringGraphType>("path", T["the path of the content item to filter"]);
         }
     }
 }

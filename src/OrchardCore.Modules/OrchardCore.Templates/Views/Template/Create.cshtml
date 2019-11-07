@@ -3,24 +3,26 @@
     var returnUrl = ViewData["returnUrl"]?.ToString();
 }
 
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
 
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/simple.min.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/multiplex.min.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/xml/xml.min.js" at="Foot"></script>
-
-<script asp-src="/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
-<script asp-src="/OrchardCore.Templates/templatepreview.edit.js" at="Foot"></script>
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+<script asp-src="~/OrchardCore.Templates/templatepreview.edit.js" at="Foot"></script>
 
 <h1>@RenderTitleSegments(T["Create Template"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
+    <input type="hidden" asp-for="AdminTemplates" />
+
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
-        <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
-        <input asp-for="Name" class="form-control" autofocus/>
+        <input asp-for="Name" class="form-control" autofocus />
+        <span asp-validation-for="Name"></span>
         <span class="hint">@T["The name of the template."]</span>
     </div>
 
@@ -52,7 +54,11 @@
             {                
                 <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
             }
-            <a class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
+
+            @if (!Model.AdminTemplates)
+            {
+                <a class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
+            }
 
         </div>
     </fieldset>

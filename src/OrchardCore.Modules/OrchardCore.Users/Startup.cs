@@ -1,5 +1,5 @@
 using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -9,11 +9,12 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
-using OrchardCore.Navigation;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -21,8 +22,10 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
+using OrchardCore.Users.ViewModels;
 using YesSql.Indexes;
 
 namespace OrchardCore.Users
@@ -33,28 +36,28 @@ namespace OrchardCore.Users
         private const string ChangePasswordPath = "ChangePassword";
 
         private readonly string _tenantName;
-        private readonly string _tenantPrefix;
 
         public Startup(ShellSettings shellSettings)
         {
             _tenantName = shellSettings.Name;
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Login",
                 areaName: "OrchardCore.Users",
-                template: LoginPath,
+                pattern: LoginPath,
                 defaults: new { controller = "Account", action = "Login" }
             );
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ChangePassword",
                 areaName: "OrchardCore.Users",
-                template: ChangePasswordPath,
+                pattern: ChangePasswordPath,
                 defaults: new { controller = "Account", action = "ChangePassword" }
             );
+
+            builder.UseAuthorization();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -68,6 +71,10 @@ namespace OrchardCore.Users
             // and change telephone number operations, and for two factor authentication token generation.
             services.AddIdentity<IUser, IRole>().AddDefaultTokenProviders();
 
+            // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
+            // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
+            services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
+
             services.TryAddScoped<UserStore>();
             services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserRoleStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
@@ -75,21 +82,34 @@ namespace OrchardCore.Users
             services.TryAddScoped<IUserEmailStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserSecurityStampStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserLoginStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserClaimStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
             services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.Name = "orchauth_" + _tenantName;
-                options.Cookie.Path = _tenantPrefix;
+
+                // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
+                // set by the pipeline and comming from the request 'PathBase' which already ends with the
+                // tenant prefix but may also start by a path related e.g to a virtual folder.
+
                 options.LoginPath = "/" + LoginPath;
-                options.AccessDeniedPath = options.LoginPath;
+                options.AccessDeniedPath = "/Error/403";
+
+                // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
+                // Note: it has no practical impact on the security of the site since all endpoints are always
+                // protected by antiforgery checks, that are enforced with or without this setting being changed.
+                options.Cookie.SameSite = SameSiteMode.None;
             });
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
+            services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalFactory>();
+
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
@@ -98,25 +118,47 @@ namespace OrchardCore.Users
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
+            services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
+
             services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
 
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
+
+            services.AddScoped<IThemeSelector, UsersThemeSelector>();
         }
     }
+
+    [RequireFeatures("OrchardCore.Liquid")]
+    public class LiquidStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
+            services.AddLiquidFilter<HasPermissionFilter>("has_permission");
+            services.AddLiquidFilter<HasClaimFilter>("has_claim");
+            services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
+        }
+    }
+
 
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationStartup : StartupBase
     {
         private const string RegisterPath = "Register";
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        static RegistrationStartup()
         {
-            routes.MapAreaRoute(
+            TemplateContext.GlobalMemberAccessStrategy.Register<ConfirmEmailViewModel>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
                 name: "Register",
                 areaName: "OrchardCore.Users",
-                template: RegisterPath,
+                pattern: RegisterPath,
                 defaults: new { controller = "Registration", action = "Register" }
             );
         }
@@ -136,30 +178,35 @@ namespace OrchardCore.Users
         private const string ResetPasswordPath = "ResetPassword";
         private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        static ResetPasswordStartup()
         {
-            routes.MapAreaRoute(
+            TemplateContext.GlobalMemberAccessStrategy.Register<LostPasswordViewModel>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
                 name: "ForgotPassword",
                 areaName: "OrchardCore.Users",
-                template: ForgotPasswordPath,
+                pattern: ForgotPasswordPath,
                 defaults: new { controller = "ResetPassword", action = "ForgotPassword" }
             );
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ForgotPasswordConfirmation",
                 areaName: "OrchardCore.Users",
-                template: ForgotPasswordConfirmationPath,
+                pattern: ForgotPasswordConfirmationPath,
                 defaults: new { controller = "ResetPassword", action = "ForgotPasswordConfirmation" }
             );
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ResetPassword",
                 areaName: "OrchardCore.Users",
-                template: ResetPasswordPath,
+                pattern: ResetPasswordPath,
                 defaults: new { controller = "ResetPassword", action = "ResetPassword" }
             );
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ResetPasswordConfirmation",
                 areaName: "OrchardCore.Users",
-                template: ResetPasswordConfirmationPath,
+                pattern: ResetPasswordConfirmationPath,
                 defaults: new { controller = "ResetPassword", action = "ResetPasswordConfirmation" }
             );
         }

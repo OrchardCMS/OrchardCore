@@ -3,10 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Admin
 {
+    /// <summary>
+    /// This filter inject a Navigation shape in the Navigation zone of the Layout
+    /// for any ViewResult returned from an Admin controller.
+    /// </summary>
     public class AdminMenuFilter : IAsyncResultFilter
     {
         private readonly INavigationManager _navigationManager;
@@ -63,7 +68,15 @@ namespace OrchardCore.Admin
                 }));
 
             dynamic layout = await _layoutAccessor.GetLayoutAsync();
-            layout.Navigation.Add(menuShape);
+
+            if (layout.Navigation is ZoneOnDemand zoneOnDemand)
+            {
+                await zoneOnDemand.AddAsync(menuShape);
+            }
+            else
+            {
+                layout.Navigation.Add(menuShape);
+            }
 
             await next();
         }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Apis.GraphQL
@@ -7,11 +8,9 @@ namespace OrchardCore.Apis.GraphQL
     {
         public static readonly Permission ExecuteGraphQL = new Permission("ExecuteGraphQL", "Execute GraphQL.");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] {
-                ExecuteGraphQL
-            };
+            return Task.FromResult(GetPermissions());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -21,6 +20,14 @@ namespace OrchardCore.Apis.GraphQL
                     Name = "Administrator",
                     Permissions = GetPermissions()
                 }
+            };
+        }
+
+        private IEnumerable<Permission> GetPermissions()
+        {
+            return new[]
+            {
+                ExecuteGraphQL
             };
         }
     }

@@ -1,5 +1,5 @@
 ﻿using System;
-using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Models;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentManagement.Records

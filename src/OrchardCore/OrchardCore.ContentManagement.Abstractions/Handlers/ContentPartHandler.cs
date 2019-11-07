@@ -4,155 +4,151 @@ namespace OrchardCore.ContentManagement.Handlers
 {
     public abstract class ContentPartHandler<TPart> : IContentPartHandler where TPart : ContentPart, new()
     {
-        async Task IContentPartHandler.ActivatedAsync(ActivatedContentContext context, ContentPart part)
+        Task IContentPartHandler.ActivatedAsync(ActivatedContentContext context, ContentPart part)
         {
-            if (part is TPart)
+            return part is TPart tpart
+                ? ActivatedAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.ActivatingAsync(ActivatingContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? ActivatingAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.InitializingAsync(InitializingContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? InitializingAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.InitializedAsync(InitializingContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? InitializedAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.CreatingAsync(CreateContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? CreatingAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.CreatedAsync(CreateContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? CreatedAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.LoadingAsync(LoadContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? LoadingAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.LoadedAsync(LoadContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? LoadedAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.UpdatingAsync(UpdateContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? UpdatingAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.UpdatedAsync(UpdateContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? UpdatedAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.VersioningAsync(VersionContentContext context, ContentPart existing, ContentPart building)
+        {
+            return existing is TPart texisting && building is TPart tbuilding 
+                ? VersioningAsync(context, texisting, tbuilding)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.VersionedAsync(VersionContentContext context, ContentPart existing, ContentPart building)
+        {
+            return existing is TPart texisting && building is TPart tbuilding
+                ? VersionedAsync(context, texisting, tbuilding)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.PublishingAsync(PublishContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? PublishingAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.PublishedAsync(PublishContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? PublishedAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.UnpublishingAsync(PublishContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? UnpublishingAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.UnpublishedAsync(PublishContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? UnpublishedAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.RemovingAsync(RemoveContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? RemovingAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.RemovedAsync(RemoveContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? RemovedAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.GetContentItemAspectAsync(ContentItemAspectContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? GetContentItemAspectAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+        async Task IContentPartHandler.CloningAsync(CloneContentContext context, ContentPart part)
+        {
+            if (part is TPart tpart)
             {
-                await ActivatedAsync(context, (TPart)part);
+                await CloningAsync(context, tpart);
             }
         }
 
-        async Task IContentPartHandler.ActivatingAsync(ActivatingContentContext context, ContentPart part)
+        async Task IContentPartHandler.ClonedAsync(CloneContentContext context, ContentPart part)
         {
-            if (part is TPart)
+            if (part is TPart tpart)
             {
-                await ActivatingAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.InitializingAsync(InitializingContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await InitializingAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.InitializedAsync(InitializingContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await InitializedAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.CreatingAsync(CreateContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await CreatingAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.CreatedAsync(CreateContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await CreatedAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.LoadingAsync(LoadContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await LoadingAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.LoadedAsync(LoadContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await LoadedAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.UpdatingAsync(UpdateContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await UpdatingAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.UpdatedAsync(UpdateContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await UpdatedAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.VersioningAsync(VersionContentContext context, ContentPart existing, ContentPart building)
-        {
-            if (existing is TPart && building is TPart)
-            {
-                await VersioningAsync(context, (TPart)existing, (TPart)building);
-            }
-        }
-
-        async Task IContentPartHandler.VersionedAsync(VersionContentContext context, ContentPart existing, ContentPart building)
-        {
-            if (existing is TPart && building is TPart)
-            {
-                await VersionedAsync(context, (TPart)existing, (TPart)building);
-            }
-        }
-
-        async Task IContentPartHandler.PublishingAsync(PublishContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await PublishingAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.PublishedAsync(PublishContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await PublishedAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.UnpublishingAsync(PublishContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await UnpublishingAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.UnpublishedAsync(PublishContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await UnpublishedAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.RemovingAsync(RemoveContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await RemovingAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.RemovedAsync(RemoveContentContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await RemovedAsync(context, (TPart)part);
-            }
-        }
-
-        async Task IContentPartHandler.GetContentItemAspectAsync(ContentItemAspectContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                await GetContentItemAspectAsync(context, (TPart)part);
+                await ClonedAsync(context, tpart);
             }
         }
 
@@ -175,5 +171,9 @@ namespace OrchardCore.ContentManagement.Handlers
         public virtual Task RemovingAsync(RemoveContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task RemovedAsync(RemoveContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task GetContentItemAspectAsync(ContentItemAspectContext context, TPart part) => Task.CompletedTask;
+        public virtual Task CloningAsync(CloneContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task ClonedAsync(CloneContentContext context, TPart part) => Task.CompletedTask;
+
+
     }
 }

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Alias.Models;
 using OrchardCore.Apis;
-using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Alias.GraphQL

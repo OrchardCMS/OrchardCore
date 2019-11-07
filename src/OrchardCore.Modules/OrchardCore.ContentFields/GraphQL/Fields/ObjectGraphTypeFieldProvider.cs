@@ -34,12 +34,12 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Name = field.Name,
                     Description = field.FieldDefinition.Name,
                     Type = queryGraphType,
-                    Resolver = new FuncFieldResolver<ContentItem, ContentElement>(context =>
+                    Resolver = new FuncFieldResolver<ContentElement, ContentElement>(context =>
                     {
                         var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
                         var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
-                        var contentField = contentPart?.Get(typeToResolve, context.FieldName.ToPascalCase());
+                        var contentField = contentPart?.Get(typeToResolve, field.Name);
                         return contentField;
                     })
                 };

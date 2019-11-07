@@ -3,12 +3,15 @@ using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using OrchardCore.Navigation;
+using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
+using OrchardCore.Modules.FileProviders;
+using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
+using OrchardCore.Tenants.Services;
 
 namespace OrchardCore.Tenants
 {
@@ -17,6 +20,7 @@ namespace OrchardCore.Tenants
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSetup();
         }
     }
@@ -31,24 +35,44 @@ namespace OrchardCore.Tenants
 
         // Run after other middlewares
         public override int Order => 10;
-        
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+
+        public override void ConfigureServices(IServiceCollection services)
         {
-            var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
-            var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-
-            string contentRoot = GetContentRoot(shellOptions.Value, shellSettings);
-
-            if (!Directory.Exists(contentRoot))
+            services.AddSingleton<ITenantFileProvider>(serviceProvider =>
             {
-                Directory.CreateDirectory(contentRoot);
-            }
+                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+
+                string contentRoot = GetContentRoot(shellOptions.Value, shellSettings);
+
+                if (!Directory.Exists(contentRoot))
+                {
+                    Directory.CreateDirectory(contentRoot);
+                }
+                return new TenantFileProvider(contentRoot);
+            });
+
+            services.AddSingleton<IStaticFileProvider>(serviceProvider =>
+            {
+                return serviceProvider.GetRequiredService<ITenantFileProvider>();
+            });
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var tenantFileProvider = serviceProvider.GetRequiredService<ITenantFileProvider>();
 
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(contentRoot),
+                FileProvider = tenantFileProvider,
                 DefaultContentType = "application/octet-stream",
-                ServeUnknownFileTypes = true
+                ServeUnknownFileTypes = true,
+
+                // Cache the tenant static files for 7 days
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "public, max-age=2592000, s-max-age=31557600";
+                }
             });
         }
 
