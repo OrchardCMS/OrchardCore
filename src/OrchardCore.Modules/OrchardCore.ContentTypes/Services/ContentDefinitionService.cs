@@ -56,7 +56,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public ILogger Logger { get; }
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public IEnumerable<EditTypeViewModel> GetTypes()
         {

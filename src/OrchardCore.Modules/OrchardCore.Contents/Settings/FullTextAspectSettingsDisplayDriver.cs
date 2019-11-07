@@ -22,7 +22,7 @@ namespace OrchardCore.Contents.Settings
             T = localizer;
         }
 
-        public IStringLocalizer T { get; private set; }
+        public IStringLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {

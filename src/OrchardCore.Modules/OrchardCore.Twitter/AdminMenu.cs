@@ -21,7 +21,7 @@ namespace OrchardCore.Twitter
             _shellDescriptor = shellDescriptor;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -53,7 +53,7 @@ namespace OrchardCore.Twitter
             _shellDescriptor = shellDescriptor;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

@@ -25,7 +25,7 @@ namespace OrchardCore.Navigation
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public void Discover(ShapeTableBuilder builder)
         {
@@ -153,7 +153,7 @@ namespace OrchardCore.Navigation
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         [Shape]
         public async Task<IHtmlContent> Pager_Links(Shape Shape, dynamic DisplayAsync, dynamic New,

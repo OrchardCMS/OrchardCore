@@ -21,7 +21,7 @@ namespace OrchardCore.ContentFields.Fields
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(HtmlField field, BuildFieldDisplayContext context)
         {

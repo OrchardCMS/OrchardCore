@@ -33,7 +33,7 @@ namespace OrchardCore.ContentFields.Fields
 
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(LocalizationSetContentPickerField field, BuildFieldDisplayContext context)
         {

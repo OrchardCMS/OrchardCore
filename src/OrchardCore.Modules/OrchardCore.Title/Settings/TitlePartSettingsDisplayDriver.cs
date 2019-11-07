@@ -59,7 +59,7 @@ namespace OrchardCore.Title.Settings
             }
             else
             {
-                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options, });
+                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

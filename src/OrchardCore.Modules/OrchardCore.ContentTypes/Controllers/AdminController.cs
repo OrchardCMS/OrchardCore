@@ -58,9 +58,9 @@ namespace OrchardCore.ContentTypes.Controllers
             S = stringLocalizer;
         }
 
-        public IHtmlLocalizer T { get; set; }
-        public IStringLocalizer S { get; set; }
-        public ILogger Logger { get; set; }
+        public IHtmlLocalizer T { get; }
+        public IStringLocalizer S { get; }
+        public ILogger Logger { get; }
         public Task<ActionResult> Index() { return List(); }
 
         #region Types

@@ -19,7 +19,7 @@ namespace OrchardCore.Liquid.Drivers
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(LiquidPart liquidPart)
         {
