@@ -82,22 +82,6 @@ namespace OrchardCore.Lucene
             });
         }
 
-        public void DeleteDocumentVersions(string indexName, IEnumerable<string> contentItemVersionIds)
-        {
-            Write(indexName, writer =>
-            {
-                writer.DeleteDocuments(contentItemVersionIds.Select(x => new Term("Content.ContentItem.ContentItemVersionId", x)).ToArray());
-
-                writer.Commit();
-
-                if (_indexPools.TryRemove(indexName, out var pool))
-                {
-                    pool.MakeDirty();
-                    pool.Release();
-                }
-            });
-        }
-
         public void DeleteIndex(string indexName)
         {
             lock (this)
