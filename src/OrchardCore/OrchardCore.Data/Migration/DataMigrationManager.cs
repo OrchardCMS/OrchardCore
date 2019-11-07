@@ -40,7 +40,6 @@ namespace OrchardCore.Data.Migration
             _extensionManager = extensionManager;
             _logger = logger;
             _processedFeatures = new List<string>();
-            S = localizer;
         }
 
         public async Task<DataMigrationRecord> GetDataMigrationRecordAsync()

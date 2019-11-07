@@ -36,7 +36,6 @@ namespace OrchardCore.Recipes.Services
             _shellSettings = shellSettings;
             _recipeEventHandlers = recipeEventHandlers;
             Logger = logger;
-            S = localizer;
         }
 
         public ILogger Logger { get; set; }
