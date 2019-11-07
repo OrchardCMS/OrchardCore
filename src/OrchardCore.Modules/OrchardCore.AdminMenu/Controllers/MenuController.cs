@@ -49,8 +49,8 @@ namespace OrchardCore.AdminMenu.Controllers
 
         public IStringLocalizer T { get; }
         public IHtmlLocalizer H { get; }
-        public ILogger Logger { get; set; }
-        public dynamic New { get; set; }
+        public ILogger Logger { get; }
+        public dynamic New { get; }
 
         public async Task<IActionResult> List(AdminMenuListOptions options, PagerParameters pagerParameters)
         {
