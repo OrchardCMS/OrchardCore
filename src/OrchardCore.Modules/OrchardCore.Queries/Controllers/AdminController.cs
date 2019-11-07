@@ -47,8 +47,6 @@ namespace OrchardCore.Queries.Controllers
             _querySources = querySources;
             New = shapeFactory;
             _notifier = notifier;
-
-            S = stringLocalizer;
             H = htmlLocalizer;
         }
 
