@@ -44,7 +44,7 @@ namespace OrchardCore.Templates.Controllers
             New = shapeFactory;
             _siteService = siteService;
             _notifier = notifier;
-            T = stringLocalizer;
+            S = stringLocalizer;
             H = htmlLocalizer;
         }
 

@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields.Fields
         {
             _contentManager = contentManager;
             _session = session;
-            T = localizer;
+            S = localizer;
         }
 
         public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext context)
