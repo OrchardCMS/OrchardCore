@@ -5,6 +5,7 @@ using Dapper;
 using Fluid;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
+using OrchardCore.Data;
 using OrchardCore.Liquid;
 using YesSql;
 
@@ -12,17 +13,17 @@ namespace OrchardCore.Queries.Sql
 {
     public class SqlQuerySource : IQuerySource
     {
-        private readonly IStore _store;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly IDbConnectionAccessor _dbConnectionAccessor;
         private readonly ISession _session;
 
         public SqlQuerySource(
-            IStore store,
             ILiquidTemplateManager liquidTemplateManager,
+            IDbConnectionAccessor dbConnectionAccessor,
             ISession session)
         {
-            _store = store;
             _liquidTemplateManager = liquidTemplateManager;
+            _dbConnectionAccessor = dbConnectionAccessor;
             _session = session;
         }
 
@@ -50,12 +51,13 @@ namespace OrchardCore.Queries.Sql
 
             var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, NullEncoder.Default, templateContext);
 
-            var connection = _store.Configuration.ConnectionFactory.CreateConnection();
+            var connection = _dbConnectionAccessor.CreateConnection();
             var dialect = SqlDialectFactory.For(connection);
 
-            if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
+            if (!SqlParser.TryParse(tokenizedQuery, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 sqlQueryResults.Items = new object[0];
+                connection.Dispose();
                 return sqlQueryResults;
             }
 
@@ -65,8 +67,12 @@ namespace OrchardCore.Queries.Sql
 
                 using (connection)
                 {
-                    connection.Open();
-                    documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
+                    {
+                        documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
+                    }
                 }
 
                 sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
@@ -78,8 +84,12 @@ namespace OrchardCore.Queries.Sql
 
                 using (connection)
                 {
-                    connection.Open();
-                    queryResults = await connection.QueryAsync(rawQuery, parameters);
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
+                    {
+                        queryResults = await connection.QueryAsync(rawQuery, parameters);
+                    }
                 }
 
                 var results = new List<JObject>();

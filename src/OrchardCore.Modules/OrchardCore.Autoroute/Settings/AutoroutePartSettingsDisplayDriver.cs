@@ -25,7 +25,7 @@ namespace OrchardCore.Autoroute.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(AutoroutePart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(AutoroutePart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -44,7 +44,7 @@ namespace OrchardCore.Autoroute.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(AutoroutePart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(AutoroutePart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }

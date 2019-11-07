@@ -11,7 +11,7 @@ namespace OrchardCore.Templates.Cms.Module.Settings
     {
         public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
         {
-            if (!String.Equals(nameof(MyTestPart), contentPartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(MyTestPart), contentPartDefinition.Name))
             {
                 return null;
             }
@@ -27,7 +27,7 @@ namespace OrchardCore.Templates.Cms.Module.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartDefinition contentPartDefinition, UpdatePartEditorContext context)
         {
-            if (!String.Equals(nameof(MyTestPart), contentPartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(MyTestPart), contentPartDefinition.Name))
             {
                 return null;
             }

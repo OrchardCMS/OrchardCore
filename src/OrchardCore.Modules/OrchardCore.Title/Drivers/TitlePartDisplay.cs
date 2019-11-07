@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -52,7 +51,7 @@ namespace OrchardCore.Title.Drivers
         private TitlePartSettings GetSettings(TitlePart titlePart)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(titlePart.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart), StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart)));
             return contentTypePartDefinition?.GetSettings<TitlePartSettings>();
         }
     }

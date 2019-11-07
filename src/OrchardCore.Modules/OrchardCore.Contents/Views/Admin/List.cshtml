@@ -13,7 +13,8 @@
         createLinkText = T["Create New {0}", (string)contentTypeDisplayName];
     }
 
-    var formActionWithoutTypeName = Context.Request.PathBase + "/Admin/Contents/ContentItems";
+    var formActionWithoutTypeName = Context.Request.PathBase.Value + "/Admin/Contents/ContentItems";
+    var formActionCreate = Context.Request.PathBase.Value + "/Admin/Contents/ContentTypes";
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.ContentItems.Count - 1;
 }
@@ -30,7 +31,7 @@
 
     <div class="row">
         <div class="form-group col-xl-4 col-sm-6">
-            <div class="input-group input-group-sm">
+            <div class="input-group input-group-sm filter-options">
                 <div class="input-group-prepend">
                     <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
                         @T["Filters"]
@@ -52,7 +53,7 @@
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="new-dropdown">
                         @foreach (var item in Model.Options.CreatableTypes)
                         {
-                            <a class="dropdown-item" href="ContentTypes/@item.Value/Create">@item.Text</a>
+                            <a class="dropdown-item" href="@formActionCreate/@item.Value/Create">@item.Text</a>
                         }
                     </div>
                 }

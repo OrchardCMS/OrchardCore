@@ -161,7 +161,7 @@ namespace OrchardCore.Autoroute.Handlers
         private string GetPattern(AutoroutePart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AutoroutePart", StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AutoroutePart"));
             var pattern = contentTypePartDefinition.GetSettings<AutoroutePartSettings>().Pattern;
 
             return pattern;
