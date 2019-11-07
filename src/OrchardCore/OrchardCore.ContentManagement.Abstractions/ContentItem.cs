@@ -45,12 +45,6 @@ namespace OrchardCore.ContentManagement
         public bool Latest { get; set; }
 
         /// <summary>
-        /// Whether this content item will be persisted or not.
-        /// </summary>
-        [JsonIgnore]
-        public bool IsCancelled { get; set; }
-
-        /// <summary>
         /// When the content item version has been updated.
         /// </summary>
         public DateTime? ModifiedUtc { get; set; }

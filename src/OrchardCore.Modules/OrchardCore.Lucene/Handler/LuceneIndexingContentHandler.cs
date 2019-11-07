@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
@@ -15,9 +16,7 @@ namespace OrchardCore.Lucene.Handlers
     {
         private readonly List<ContentContextBase> _contexts = new List<ContentContextBase>();
 
-        public LuceneIndexingContentHandler()
-        {
-        }
+        public LuceneIndexingContentHandler() { }
 
         public override Task PublishedAsync(PublishContentContext context) => AddContextAsync(context);
         public override Task CreatedAsync(CreateContentContext context) => AddContextAsync(context);
@@ -42,67 +41,63 @@ namespace OrchardCore.Lucene.Handlers
 
         private static async Task IndexingAsync(ShellScope scope, IEnumerable<ContentContextBase> contexts)
         {
-            var contextsGroupById = contexts
-               // Filter cancelled content items.
-               .Where(c => !c.ContentItem.IsCancelled)
-               // Multiple items may have been updated in the same scope.
-               .GroupBy(c => c.ContentItem.ContentItemId, c => c)
-               ;
+            var services = scope.ServiceProvider;
 
-            var luceneIndexManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
-            var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
-            var contentItemIndexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<LuceneIndexingContentHandler>>();
+            var contentManager = services.GetRequiredService<IContentManager>();
+            var contentItemIndexHandlers = services.GetServices<IContentItemIndexHandler>();
+
+            var luceneIndexManager = services.GetRequiredService<LuceneIndexManager>();
+            var luceneIndexSettingsService = services.GetRequiredService<LuceneIndexSettingsService>();
+            var logger = services.GetRequiredService<ILogger<LuceneIndexingContentHandler>>();
+
+            // Multiple items may have been updated in the same scope.
+            var contextsGroupById = contexts.GroupBy(c => c.ContentItem.ContentItemId, c => c);
 
             // Get all contexts for each content item id.
-            foreach (var idContexts in contextsGroupById)
+            foreach (var ContextsById in contextsGroupById)
             {
                 // Only process the last context.
-                var context = idContexts.Last();
+                var context = ContextsById.Last();
+
+                // E.g if an item has been created but not saved.
+                if (context.ContentItem.ContentItemVersionId == null)
+                {
+                    continue;
+                }
 
                 var buildIndexContext = new BuildIndexContext(new DocumentIndex(context.ContentItem.ContentItemId), context.ContentItem, new string[] { context.ContentItem.ContentType });
 
                 await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
+                ContentItem published = null, latest = null;
+                bool publishedLoaded = false, latestLoaded = false;
+
                 foreach (var indexSettings in luceneIndexSettingsService.List())
                 {
                     if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                     {
-                        if (context is PublishContentContext publishContext)
+                        if (!indexSettings.IndexLatest && !publishedLoaded)
                         {
-                            // Check if it is really a publish context.
-                            if (publishContext.PublishingItem != null)
-                            {
-                                luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
-                                luceneIndexManager.StoreDocuments(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
-                            }
-                            // We go here for an unpublishing context.
-                            else if (!indexSettings.IndexLatest)
-                            {
-                                luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
-                            }
+                            publishedLoaded = true;
+                            published = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Published);
                         }
-                        else if (context is UpdateContentContext)
+
+                        if (indexSettings.IndexLatest && !latestLoaded)
                         {
-                            if (indexSettings.IndexLatest && context.ContentItem.Latest)
-                            {
-                                luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
-                                luceneIndexManager.StoreDocuments(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
-                            }
+                            latestLoaded = true;
+                            latest = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Latest);
                         }
-                        else if (context is CreateContentContext)
+
+                        var contentItem = !indexSettings.IndexLatest ? published : latest;
+
+                        if (contentItem == null)
                         {
-                            if (indexSettings.IndexLatest && context.ContentItem.Latest)
-                            {
-                                luceneIndexManager.StoreDocuments(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
-                            }
+                            luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
                         }
-                        else if (context is RemoveContentContext removeContext)
+                        else if (contentItem.ContentItemVersionId == context.ContentItem.ContentItemVersionId)
                         {
-                            if (removeContext.NoActiveVersionLeft)
-                            {
-                                luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
-                            }
+                            luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                            luceneIndexManager.StoreDocuments(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
                         }
                     }
                 }
