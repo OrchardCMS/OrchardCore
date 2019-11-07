@@ -116,6 +116,9 @@ namespace OrchardCore.OpenId
             services.AddScoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>();
 
             services.AddScoped<IDataMigration, OpenIdMigrations>();
+
+            services.AddRecipeExecutionStep<OpenIdApplicationStep>();
+            services.AddRecipeExecutionStep<OpenIdScopeStep>();
         }
     }
 
@@ -131,7 +134,6 @@ namespace OrchardCore.OpenId
             services.AddSingleton<IBackgroundTask, OpenIdBackgroundTask>();
 
             services.AddRecipeExecutionStep<OpenIdServerSettingsStep>();
-            services.AddRecipeExecutionStep<OpenIdApplicationStep>();
 
             // Note: both the OpenIddict server and validation services are registered for the
             // server feature as token validation may be required for the userinfo endpoint.
