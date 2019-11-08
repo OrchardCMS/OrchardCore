@@ -260,6 +260,8 @@ namespace OrchardCore.OpenId
                 // Built-in initializers (note: the OpenIddict initializers are registered by AddValidation()).
                 ServiceDescriptor.Singleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>()
             });
+
+            services.AddRecipeExecutionStep<OpenIdValidationSettingsStep>();
         }
     }
 
