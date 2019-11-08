@@ -139,7 +139,7 @@ namespace OrchardCore.Templates.Controllers
 
                     if (templatesDocument.Templates.ContainsKey(model.Name))
                     {
-                        ModelState.AddModelError(nameof(TemplateViewModel.Name), T["A template with the same name already exists."]);
+                        ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
                     }
                 }
             }
@@ -229,7 +229,7 @@ namespace OrchardCore.Templates.Controllers
                 }
                 else if(!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && templatesDocument.Templates.ContainsKey(model.Name))
                 {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Name), T["A template with the same name already exists."]);
+                    ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
                 }
             }
 
