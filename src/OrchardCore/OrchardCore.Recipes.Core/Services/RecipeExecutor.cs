@@ -40,8 +40,8 @@ namespace OrchardCore.Recipes.Services
             T = localizer;
         }
 
-        public ILogger Logger { get; set; }
-        public IStringLocalizer T { get; set; }
+        public ILogger Logger { get; }
+        public IStringLocalizer T { get; }
 
         public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment, CancellationToken cancellationToken)
         {
@@ -225,7 +225,7 @@ namespace OrchardCore.Recipes.Services
                     var value = node.Value<string>();
 
                     // Evaluate the expression while the result is another expression
-                    while (value.StartsWith("[") && value.EndsWith("]"))
+                    while (value.StartsWith('[') && value.EndsWith(']'))
                     {
                         value = value.Trim('[', ']');
                         value = (scriptingManager.Evaluate(value, context.RecipeDescriptor.FileProvider, context.RecipeDescriptor.BasePath, null) ?? "").ToString();

@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task<IChangeToken> BuildAsync(ISchema schema)
         {

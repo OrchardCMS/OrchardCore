@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -94,7 +94,6 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 {
                     binding = new ShapeBinding
                     {
-                        ShapeDescriptor = descriptor,
                         BindingName = shapeBinding.BindingName,
                         BindingSource = shapeBinding.BindingSource,
                         BindingAsync = shapeBinding.BindingAsync

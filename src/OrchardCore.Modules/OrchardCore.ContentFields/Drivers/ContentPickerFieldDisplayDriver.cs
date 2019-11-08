@@ -29,7 +29,7 @@ namespace OrchardCore.ContentFields.Fields
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext context)
         {
@@ -86,7 +86,7 @@ namespace OrchardCore.ContentFields.Fields
             }
 
             field.ContentItemIds = viewModel.ContentItemIds == null
-                ? new string[0] : viewModel.ContentItemIds.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                ? new string[0] : viewModel.ContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 

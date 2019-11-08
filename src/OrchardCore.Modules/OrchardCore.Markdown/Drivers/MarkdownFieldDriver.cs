@@ -1,8 +1,9 @@
-using System.IO;
 using System.Threading.Tasks;
 using Fluid;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
@@ -15,10 +16,13 @@ namespace OrchardCore.Markdown.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
 
-        public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplatemanager)
+        public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<MarkdownFieldDisplayDriver> localizer)
         {
             _liquidTemplatemanager = liquidTemplatemanager;
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(MarkdownField field, BuildFieldDisplayContext context)
         {
@@ -28,12 +32,14 @@ namespace OrchardCore.Markdown.Drivers
                 templateContext.SetValue("ContentItem", field.ContentItem);
                 templateContext.MemberAccessStrategy.Register<MarkdownFieldViewModel>();
 
-                model.Markdown = await _liquidTemplatemanager.RenderAsync(field.Markdown,  System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
-                model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
-
+                model.Markdown = field.Markdown;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
+                templateContext.SetValue("Model", model);
+
+                model.Markdown = await _liquidTemplatemanager.RenderAsync(field.Markdown, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
+                model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
             })
             .Location("Content")
             .Location("SummaryAdmin", "");
@@ -52,7 +58,20 @@ namespace OrchardCore.Markdown.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(MarkdownField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            await updater.TryUpdateModelAsync(field, Prefix, f => f.Markdown);
+            var viewModel = new EditMarkdownFieldViewModel();
+
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Markdown))
+            {
+                if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplatemanager.Validate(viewModel.Markdown, out var errors))
+                {
+                    var fieldName = context.PartFieldDefinition.DisplayName();
+                    context.Updater.ModelState.AddModelError(nameof(field.Markdown), T["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+                }
+                else
+                {
+                    field.Markdown = viewModel.Markdown;
+                }
+            }
 
             return Edit(field, context);
         }

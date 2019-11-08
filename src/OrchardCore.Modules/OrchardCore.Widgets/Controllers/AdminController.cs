@@ -71,13 +71,13 @@ namespace OrchardCore.Widgets.Controllers
                 //Input hidden
                 //Prefixes
                 HtmlFieldPrefix: prefix,
-                PrefixesId: prefixesName.Replace(".", "_"),
+                PrefixesId: prefixesName.Replace('.', '_'),
                 PrefixesName: prefixesName,
                 //ContentTypes
-                ContentTypesId: contentTypesName.Replace(".", "_"),
+                ContentTypesId: contentTypesName.Replace('.', '_'),
                 ContentTypesName: contentTypesName,
                 //Zones
-                ZonesId: zonesName.Replace(".", "_"),
+                ZonesId: zonesName.Replace('.', '_'),
                 ZonesName: zonesName
             );
 

@@ -47,12 +47,14 @@ namespace OrchardCore.Contents.Scripting
             _updateContentItemMethod = new GlobalMethod
             {
                 Name = "updateContentItem",
-                Method = serviceProvider => (Action<IContent, object>)((contentItem, properties) =>
+                Method = serviceProvider => (Action<ContentItem, object>)((contentItem, properties) =>
                 {
+                    var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     var props = JObject.FromObject(properties);
                     var content = (JObject)contentItem.ContentItem.Content;
 
                     content.Merge(props, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+                    contentManager.UpdateAsync(contentItem);
                 })
             };
         }

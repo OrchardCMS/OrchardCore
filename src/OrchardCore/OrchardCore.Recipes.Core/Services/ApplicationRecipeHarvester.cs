@@ -22,7 +22,7 @@ namespace OrchardCore.Recipes.Services
         {
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public override Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
         {

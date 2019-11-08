@@ -1,6 +1,6 @@
 # Taxonomies (OrchardCore.Taxonomies)
 
-This modules provides a Taxonomy content type that is used to define managed vocabularies (categories) of any type.
+This modules provides a Taxonomy content type that is used to define managed vocabularies (categories) of any type.  
 Taxonomy content items are made of terms organized as a hierarchy. Using the Taxonomy Field allows any content item
 to be associated with one or many terms of a taxonomy.
 
@@ -103,14 +103,14 @@ The following example displays all the colors and their hierarchy
 
 ### inherited_terms
 
-The `inherited_terms` filter loads all the parents of a given term. The input must be
-a term content item or content item id. The first argument must be the taxonomy content 
-item or content item id.
+The `inherited_terms` filter loads all the parents of a given term.  
+The input must be a term content item or content item id.  
+The first argument must be the taxonomy content item or content item id.
 
 ## Taxonomy Index
 
-The `TaxonomyIndex` SQL table contains a list of all content items that are associated 
-with a Taxonomy field. Each record corresponds to a selected term for a field.
+The `TaxonomyIndex` SQL table contains a list of all content items that are associated with a Taxonomy field.  
+Each record corresponds to a selected term for a field.
 
 | Column | Type | Description |
 | --------- | ---- |------------ |

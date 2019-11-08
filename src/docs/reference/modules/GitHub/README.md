@@ -4,7 +4,7 @@ This module adds GitHub Authentication to OrchardCore.
 
 ## Authenticate with GitHub
 
-Authenticates users with their GitHub Account. 
+Authenticates users with their GitHub Account.
 
 Create an OAuth app in the [GitHub Developer applications](https://GitHub.com/settings/developers).  
 In the app details, you must configure the Authorization Callback URL. The default url in OrchardCore is [tenant]/signin-github.

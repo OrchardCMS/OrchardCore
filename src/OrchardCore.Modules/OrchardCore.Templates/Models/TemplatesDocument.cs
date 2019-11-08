@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -5,7 +6,7 @@ namespace OrchardCore.Templates.Models
 {
     public class TemplatesDocument
     {
-        public Dictionary<string, Template> Templates { get; } = new Dictionary<string, Template>();
+        public Dictionary<string, Template> Templates { get; } = new Dictionary<string, Template>(StringComparer.OrdinalIgnoreCase);
     }
 
     public class Template

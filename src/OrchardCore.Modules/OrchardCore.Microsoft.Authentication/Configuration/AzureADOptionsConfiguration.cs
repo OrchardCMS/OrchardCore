@@ -1,18 +1,15 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Modules;
-using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Microsoft.Authentication.Services;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
@@ -59,7 +56,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, AzureADOptions options)
         {
-            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -82,7 +79,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, PolicySchemeOptions options)
         {
-            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme))
             {
                 return;
             }

@@ -48,7 +48,7 @@ namespace OrchardCore.Roles.Services
 
         public ILogger Logger { get; }
 
-        public IStringLocalizer<RoleStore> T;
+        public IStringLocalizer T { get; }
 
         public void Dispose()
         {

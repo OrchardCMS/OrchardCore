@@ -98,7 +98,7 @@ namespace OrchardCore.Roles.Controllers
             {
                 model.RoleName = model.RoleName.Trim();
 
-                if (model.RoleName.Contains("/"))
+                if (model.RoleName.Contains('/'))
                 {
                     ModelState.AddModelError(string.Empty, T["Invalid role name."]);
                 }
@@ -214,7 +214,7 @@ namespace OrchardCore.Roles.Controllers
             var rolePermissions = new List<RoleClaim>();
             foreach (string key in Request.Form.Keys)
             {
-                if (key.StartsWith("Checkbox.") && Request.Form[key] == "true")
+                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
                 {
                     string permissionName = key.Substring("Checkbox.".Length);
                     rolePermissions.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permissionName });

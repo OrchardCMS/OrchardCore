@@ -26,6 +26,15 @@
 </fieldset>
 
 <div class="row">
+    <fieldset class="col-xl-6 form-group" asp-validation-class-for="PageSize">
+        <label asp-for="PageSize">@T["Page size"]</label>
+        <input asp-for="PageSize" type="number" class="form-control" />
+        <span asp-validation-for="PageSize"></span>
+        <span class="hint">@T["The default page size."]</span>
+    </fieldset>
+</div>
+
+<div class="row">
     <fieldset class="form-group col-xl-6" asp-validation-class-for="TimeZone">
         <label asp-for="TimeZone">@T["Default Time Zone"]</label>
         <select asp-for="TimeZone" class="form-control">
