@@ -25,6 +25,7 @@ namespace OrchardCore.ContentLocalization.Handlers
                 {
                     cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
                 }
+
                 return Task.CompletedTask;
             });
         }
