@@ -19,19 +19,11 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override string Name => nameof(EnableTenantTask);
         public override LocalizedString Category => T["Tenant"];
+        public override LocalizedString DisplayText => T["Enable Tenant Task"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(T["Enabled"]);
         }
-
-    //    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    //    {
-    //        var shellSettings = await GetTenantAsync(workflowContext);
-    //        shellSettings.State = TenantState.Running;
-    //        await ShellHost.UpdateShellSettingsAsync(shellSettings);
-
-    //        return Outcomes("Enable");
-    //    }
     }
 }

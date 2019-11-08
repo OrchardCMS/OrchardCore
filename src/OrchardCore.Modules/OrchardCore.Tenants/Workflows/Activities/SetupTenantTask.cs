@@ -21,7 +21,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
-        public SetupTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, ISetupService setupService, IClock clock, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<SetupTenantTask> localizer) 
+        public SetupTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, ISetupService setupService, IClock clock, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<SetupTenantTask> localizer)
             : base(shellSettingsManager, shellHost, scriptEvaluator, localizer)
         {
             SetupService = setupService;
@@ -34,7 +34,8 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override string Name => nameof(SetupTenantTask);
         public override LocalizedString Category => T["Tenant"];
-        
+        public override LocalizedString DisplayText => T["Setup Tenant Task"];
+
         public WorkflowExpression<string> SiteName
         {
             get => GetProperty(() => new WorkflowExpression<string>());
@@ -82,7 +83,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
-        
+
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(T["Done"], T["Failed"]);
@@ -101,7 +102,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var recipeNameTask = _expressionEvaluator.EvaluateAsync(RecipeName, workflowContext);
 
             await Task.WhenAll(tenantNameTask, siteNameTask, adminUsernameTask, adminEmailTask, adminPasswordTask, databaseProviderTask, databaseConnectionStringTask, databaseTablePrefixTask, recipeNameTask);
-                        
+
             if (!ShellHost.TryGetSettings(tenantNameTask.Result?.Trim(), out var shellSettings))
             {
                 if (!string.IsNullOrWhiteSpace(tenantNameTask.Result))
@@ -109,16 +110,13 @@ namespace OrchardCore.Tenants.Workflows.Activities
                     shellSettings = new ShellSettings
                     {
                         Name = tenantNameTask.Result?.Trim(),
-                        RequestUrlPrefix = tenantNameTask.Result?.Trim(),
-                        //RequestUrlPrefix = requestUrlPrefixTask.Result?.Trim(),
-                        //RequestUrlHost = requestUrlHostTask.Result?.Trim(),
-                        ConnectionString = databaseConnectionStringTask.Result?.Trim(),
-                        TablePrefix = databaseTablePrefixTask.Result?.Trim(),
-                        DatabaseProvider = databaseProviderTask.Result?.Trim(),
-                        State = TenantState.Uninitialized,
-                        Secret = Guid.NewGuid().ToString(),
-                        RecipeName = recipeNameTask.Result.Trim()
+                        State = TenantState.Uninitialized
                     };
+                    shellSettings["ConnectionString"] = databaseConnectionStringTask.Result?.Trim();
+                    shellSettings["TablePrefix"] = databaseTablePrefixTask.Result?.Trim();
+                    shellSettings["DatabaseProvider"] = databaseProviderTask.Result?.Trim();
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
+                    shellSettings["RecipeName"] = recipeNameTask.Result.Trim();
                 }
 
                 ShellSettingsManager.SaveSettings(shellSettings);
@@ -126,7 +124,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             }
 
             var recipes = await SetupService.GetSetupRecipesAsync();
-            var recipe = recipes.FirstOrDefault(x => x.Name == shellSettings.RecipeName);
+            var recipe = recipes.FirstOrDefault(x => x.Name == shellSettings["RecipeName"]);
 
             var setupContext = new SetupContext
             {

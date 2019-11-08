@@ -23,6 +23,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override string Name => nameof(CreateTenantTask);
         public override LocalizedString Category => T["Tenant"];
+        public override LocalizedString DisplayText => T["Create Tenant Task"];
 
         public string ContentType
         {
@@ -65,12 +66,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
-
-        //public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        //{
-        //    return !string.IsNullOrEmpty(TenantName);
-        //}
-
+        
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(T["Done"]);
@@ -97,13 +93,13 @@ namespace OrchardCore.Tenants.Workflows.Activities
                     Name = tenantNameTask.Result?.Trim(),
                     RequestUrlPrefix = requestUrlPrefixTask.Result?.Trim(),
                     RequestUrlHost = requestUrlHostTask.Result?.Trim(),
-                    ConnectionString = connectionStringTask.Result?.Trim(),
-                    TablePrefix = tablePrefixTask.Result?.Trim(),
-                    DatabaseProvider = databaseProviderTask.Result?.Trim(),
-                    State = TenantState.Uninitialized,
-                    Secret = Guid.NewGuid().ToString(),
-                    RecipeName = recipeNameTask.Result.Trim()
+                    State = TenantState.Uninitialized
                 };
+                shellSettings["ConnectionString"] = connectionStringTask.Result?.Trim();
+                shellSettings["TablePrefix"] = tablePrefixTask.Result?.Trim();
+                shellSettings["DatabaseProvider"] = databaseProviderTask.Result?.Trim();
+                shellSettings["Secret"] = Guid.NewGuid().ToString();
+                shellSettings["RecipeName"] = recipeNameTask.Result.Trim();
             }
             
             ShellSettingsManager.SaveSettings(shellSettings);
