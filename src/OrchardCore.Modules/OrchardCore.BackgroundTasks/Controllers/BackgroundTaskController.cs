@@ -28,6 +28,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
+        private readonly dynamic New;
         
         public BackgroundTaskController(
             ShellSettings shellSettings,
@@ -48,8 +49,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             _notifier = notifier;
             S = stringLocalizer;
         }
-
-        public dynamic New { get; set; }
 
         public async Task<IActionResult> Index(PagerParameters pagerParameters)
         {

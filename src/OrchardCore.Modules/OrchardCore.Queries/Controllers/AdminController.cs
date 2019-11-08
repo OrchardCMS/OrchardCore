@@ -27,6 +27,7 @@ namespace OrchardCore.Queries.Controllers
         private readonly IDisplayManager<Query> _displayManager;
         private readonly ISession _session;
         private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public AdminController(
             IDisplayManager<Query> displayManager,
@@ -49,8 +50,6 @@ namespace OrchardCore.Queries.Controllers
             _notifier = notifier;
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; }
 
         public async Task<IActionResult> Index(QueryIndexOptions options, PagerParameters pagerParameters)
         {

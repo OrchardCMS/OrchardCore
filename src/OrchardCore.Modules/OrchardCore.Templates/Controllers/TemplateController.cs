@@ -27,6 +27,7 @@ namespace OrchardCore.Templates.Controllers
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
         
         public TemplateController(
             IAuthorizationService authorizationService,
@@ -47,8 +48,6 @@ namespace OrchardCore.Templates.Controllers
             S = stringLocalizer;
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; }
 
         public Task<IActionResult> Admin(PagerParameters pagerParameters)
         {

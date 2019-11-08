@@ -26,6 +26,7 @@ namespace OrchardCore.Deployment.Controllers
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public StepController(
             IAuthorizationService authorizationService,
@@ -46,8 +47,6 @@ namespace OrchardCore.Deployment.Controllers
             _notifier = notifier;
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; }
 
         public async Task<IActionResult> Create(int id, string type)
         {

@@ -17,13 +17,13 @@ namespace OrchardCore.Widgets.Controllers
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IShapeFactory _shapeFactory;
+        private readonly dynamic New;
 
         public AdminController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IShapeFactory shapeFactory,
-            ILogger<AdminController> logger,
-            IHtmlLocalizer<AdminController> localizer
+            ILogger<AdminController> logger
             )
         {
             _contentItemDisplayManager = contentItemDisplayManager;
@@ -32,9 +32,6 @@ namespace OrchardCore.Widgets.Controllers
             T = localizer;
             Logger = logger;
         }
-
-        public IHtmlLocalizer T { get; }
-        public dynamic New { get; set; }
 
         public ILogger Logger { get; set; }
 

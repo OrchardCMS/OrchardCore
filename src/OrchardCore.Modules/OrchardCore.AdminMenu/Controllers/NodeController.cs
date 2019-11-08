@@ -24,6 +24,8 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly IAdminMenuService _adminMenuService;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
+
         public NodeController(
             IAuthorizationService authorizationService,
             IDisplayManager<MenuItem> displayManager,
@@ -41,8 +43,6 @@ namespace OrchardCore.AdminMenu.Controllers
             _notifier = notifier;
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; set; }
 
         public async Task<IActionResult> List(string id)
         {

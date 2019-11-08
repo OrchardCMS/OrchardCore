@@ -26,6 +26,7 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public MenuController(
             IAuthorizationService authorizationService,
@@ -46,8 +47,6 @@ namespace OrchardCore.AdminMenu.Controllers
         }
 
         public ILogger Logger { get; }
-
-        public dynamic New { get; }
 
         public async Task<IActionResult> List(AdminMenuListOptions options, PagerParameters pagerParameters)
         {

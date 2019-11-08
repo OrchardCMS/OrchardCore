@@ -30,6 +30,7 @@ namespace OrchardCore.Deployment.Controllers
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
         
         public DeploymentPlanController(
             IAuthorizationService authorizationService,
@@ -52,8 +53,6 @@ namespace OrchardCore.Deployment.Controllers
             S = stringLocalizer;
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; }
 
         public async Task<IActionResult> Index(DeploymentPlanIndexOptions options, PagerParameters pagerParameters)
         {
