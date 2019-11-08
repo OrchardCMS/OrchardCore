@@ -41,28 +41,5 @@ namespace OrchardCore.Tenants.Workflows.Activities
         {
             return Outcomes("Done");
         }
-
-        //protected virtual async Task<ShellSettings> GetTenantAsync(WorkflowExecutionContext workflowContext)
-        //{
-        //    // Try and evaluate a content item from the Content expression, if provided.
-        //    //if (!string.IsNullOrWhiteSpace(Tenant.Expression))
-        //    //{
-        //        //var expression = new WorkflowExpression<object> { Expression = Tenant.Expression };
-        //        //var tenantJson = JsonConvert.SerializeObject(await ScriptEvaluator.EvaluateAsync(expression, workflowContext));
-        //        //var res = JsonConvert.DeserializeObject<ShellSettings>(tenantJson);
-        //        //return res;
-        //    //}
-
-        //    //// If no expression was provided, see if the content item was provided as an input or as a property.
-        //    //var content = workflowContext.Input.GetValue<IContent>(TenantsHandler.ContentItemInputKey)
-        //    //    ?? workflowContext.Properties.GetValue<IContent>(TenantsHandler.ContentItemInputKey);
-
-        //    //if (content != null)
-        //    //{
-        //    //    return content;
-        //    //}
-
-        //    return null;
-        //}
     }
 }
