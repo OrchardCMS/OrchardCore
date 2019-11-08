@@ -50,7 +50,7 @@ namespace OrchardCore.Lucene.Handlers
             var luceneIndexSettingsService = services.GetRequiredService<LuceneIndexSettingsService>();
             var logger = services.GetRequiredService<ILogger<LuceneIndexingContentHandler>>();
 
-            // Multiple items may have been updated in the same scope.
+            // Multiple items may have been updated in the same scope, e.g through a recipe.
             var contextsGroupById = contexts.GroupBy(c => c.ContentItem.ContentItemId, c => c);
 
             // Get all contexts for each content item id.
@@ -58,16 +58,6 @@ namespace OrchardCore.Lucene.Handlers
             {
                 // Only process the last context.
                 var context = ContextsById.Last();
-
-                // E.g if an item has been created but not saved.
-                if (context.ContentItem.ContentItemVersionId == null)
-                {
-                    continue;
-                }
-
-                var buildIndexContext = new BuildIndexContext(new DocumentIndex(context.ContentItem.ContentItemId), context.ContentItem, new string[] { context.ContentItem.ContentType });
-
-                await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
                 ContentItem published = null, latest = null;
                 bool publishedLoaded = false, latestLoaded = false;
@@ -94,9 +84,12 @@ namespace OrchardCore.Lucene.Handlers
                         {
                             luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
                         }
-                        else if (contentItem.ContentItemVersionId == context.ContentItem.ContentItemVersionId)
+                        else
                         {
-                            luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId), contentItem, new string[] { contentItem.ContentType });
+                            await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
+
+                            luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { contentItem.ContentItemId });
                             luceneIndexManager.StoreDocuments(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
                         }
                     }

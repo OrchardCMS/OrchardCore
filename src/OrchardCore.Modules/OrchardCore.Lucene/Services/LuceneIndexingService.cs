@@ -79,7 +79,7 @@ namespace OrchardCore.Lucene
             }
             else
             {
-                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName).ToArray();
+                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName);
 
                 if (!indexSettingsList.Any())
                 {
