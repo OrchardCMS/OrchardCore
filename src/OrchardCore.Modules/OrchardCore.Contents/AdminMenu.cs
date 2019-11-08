@@ -25,7 +25,7 @@ namespace OrchardCore.Contents
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

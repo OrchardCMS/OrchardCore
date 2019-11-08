@@ -17,7 +17,7 @@ namespace OrchardCore.Lists.Settings
             TS = localizer;
         }
 
-        public IStringLocalizer TS { get; set; }
+        public IStringLocalizer TS { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {

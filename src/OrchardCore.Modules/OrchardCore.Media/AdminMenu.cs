@@ -12,7 +12,7 @@ namespace OrchardCore.Media
             S = localizer;
         }
 
-        public IStringLocalizer S { get; set; }
+        public IStringLocalizer S { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -41,7 +41,7 @@ namespace OrchardCore.Media
             S = localizer;
         }
 
-        public IStringLocalizer S { get; set; }
+        public IStringLocalizer S { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

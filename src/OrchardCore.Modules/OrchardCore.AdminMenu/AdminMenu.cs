@@ -17,7 +17,7 @@ namespace OrchardCore.AdminMenu
             S = localizer;
         }
 
-        public IStringLocalizer S { get; set; }
+        public IStringLocalizer S { get; }
 
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

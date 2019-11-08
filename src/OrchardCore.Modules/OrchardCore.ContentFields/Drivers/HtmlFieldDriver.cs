@@ -1,9 +1,10 @@
-using System.IO;
 using System.Threading.Tasks;
 using Fluid;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
@@ -14,10 +15,13 @@ namespace OrchardCore.ContentFields.Fields
     {
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
 
-        public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplatemanager)
+        public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<HtmlFieldDisplayDriver> localizer)
         {
             _liquidTemplatemanager = liquidTemplatemanager;
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(HtmlField field, BuildFieldDisplayContext context)
         {
@@ -27,10 +31,13 @@ namespace OrchardCore.ContentFields.Fields
                 templateContext.SetValue("ContentItem", field.ContentItem);
                 templateContext.MemberAccessStrategy.Register<DisplayHtmlFieldViewModel>();
 
-                model.Html = await _liquidTemplatemanager.RenderAsync(field.Html, NullEncoder.Default, templateContext);
+                model.Html = field.Html;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
+                templateContext.SetValue("Model", model);
+
+                model.Html = await _liquidTemplatemanager.RenderAsync(field.Html, NullEncoder.Default, templateContext);
             })
             .Location("Content")
             .Location("SummaryAdmin", "");
@@ -49,7 +56,20 @@ namespace OrchardCore.ContentFields.Fields
 
         public override async Task<IDisplayResult> UpdateAsync(HtmlField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            await updater.TryUpdateModelAsync(field, Prefix, f => f.Html);
+            var viewModel = new EditHtmlFieldViewModel();
+
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html))
+            {
+                if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplatemanager.Validate(viewModel.Html, out var errors))
+                {
+                    var fieldName = context.PartFieldDefinition.DisplayName();
+                    context.Updater.ModelState.AddModelError(nameof(field.Html), T["{0} doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+                }
+                else
+                {
+                    field.Html = viewModel.Html;
+                }
+            }
 
             return Edit(field, context);
         }

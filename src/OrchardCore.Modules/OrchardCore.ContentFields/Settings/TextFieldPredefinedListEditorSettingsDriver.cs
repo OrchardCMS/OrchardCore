@@ -17,7 +17,7 @@ namespace OrchardCore.ContentFields.Settings
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {

@@ -21,7 +21,7 @@ namespace OrchardCore.Title.Settings
             T = localizer;
         }
 
-        public IStringLocalizer T { get; private set; }
+        public IStringLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
@@ -59,7 +59,7 @@ namespace OrchardCore.Title.Settings
             }
             else
             {
-                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options, });
+                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

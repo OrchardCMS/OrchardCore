@@ -5,6 +5,7 @@ using Fluid;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Models;
+using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -117,8 +118,17 @@ namespace OrchardCore.Autoroute.Handlers
 
             if (!String.IsNullOrEmpty(pattern))
             {
+                var model = new AutoroutePartViewModel()
+                {
+                    Path = part.Path,
+                    AutoroutePart = part,
+                    ContentItem = part.ContentItem
+                };
+
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", part.ContentItem);
+                templateContext.MemberAccessStrategy.Register<AutoroutePartViewModel>();
+                templateContext.SetValue("Model", model);
 
                 part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
                 part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);

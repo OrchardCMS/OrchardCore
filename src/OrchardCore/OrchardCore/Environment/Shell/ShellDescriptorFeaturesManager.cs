@@ -34,7 +34,7 @@ namespace OrchardCore.Environment.Shell
             _logger = logger;
             T = localizer;
         }
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public async Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(ShellDescriptor shellDescriptor,
             IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)

@@ -40,8 +40,8 @@ namespace OrchardCore.Recipes.Services
             T = localizer;
         }
 
-        public ILogger Logger { get; set; }
-        public IStringLocalizer T { get; set; }
+        public ILogger Logger { get; }
+        public IStringLocalizer T { get; }
 
         public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment, CancellationToken cancellationToken)
         {

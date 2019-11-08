@@ -46,7 +46,7 @@ namespace OrchardCore.Data.Migration
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public async Task<DataMigrationRecord> GetDataMigrationRecordAsync()
         {

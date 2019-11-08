@@ -24,7 +24,7 @@ namespace OrchardCore.Flows.Settings
             S = localizer;
         }
 
-        public IStringLocalizer S { get; set; }
+        public IStringLocalizer S { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {

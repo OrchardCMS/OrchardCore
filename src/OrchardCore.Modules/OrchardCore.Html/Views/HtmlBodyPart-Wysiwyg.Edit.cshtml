@@ -14,23 +14,23 @@
 <style asp-name="trumbowyg" asp-src="~/OrchardCore.Resources/Styles/trumbowyg.min.css" debug-src="~/OrchardCore.Resources/Styles/trumbowyg.css"></style>
 
 <fieldset class="form-group">
-    <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
+    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
     @if (culture.IsRightToLeft())
     {
         <div style="text-align:right">
-            <textarea asp-for="Source" rows="5" class="form-control"></textarea>
+            <textarea asp-for="Html" rows="5" class="form-control"></textarea>
         </div>
     }
     else
     {
-        <textarea asp-for="Source" rows="5" class="form-control"></textarea>
+        <textarea asp-for="Html" rows="5" class="form-control"></textarea>
     }
     <span class="hint">@T["The body of the content item."]</span>
 </fieldset>
 
 <script at="Foot">
     $(function () {
-        $('#@Html.IdFor(m => m.Source)').trumbowyg().on('tbwchange', function () {
+        $('#@Html.IdFor(m => m.Html)').trumbowyg().on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
     });
