@@ -158,14 +158,13 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return result;
                 }
 
-                foreach (var item in shape.Items)
+                if (n == "Items")
                 {
-                    // Resolve Model.Content.MyNamedPart
-                    if (item is IShape itemShape && itemShape.Metadata.Name == n)
-                    {
-                        return item;
-                    }
+                    return shape.Items;
                 }
+                // Resolve Model.Content.MyNamedPart
+                // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
+                return shape.Named(n.Replace("__", "-"));
             }
 
             return null;
@@ -248,7 +247,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 templateContext.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
                 {
-                    var filter = (ILiquidFilter) services.GetRequiredService(registration.Value);
+                    var filter = (ILiquidFilter)services.GetRequiredService(registration.Value);
                     return filter.ProcessAsync(input, arguments, ctx);
                 });
             }
@@ -358,7 +357,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             if (model != null)
             {
                 context.MemberAccessStrategy.Register(model.GetType());
-                context.LocalScope.SetValue("Model", model);
+                context.SetValue("Model", model);
             }
 
             context.CultureInfo = CultureInfo.CurrentUICulture;

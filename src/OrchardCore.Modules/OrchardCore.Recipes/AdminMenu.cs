@@ -14,7 +14,7 @@ namespace OrchardCore.Recipes
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -25,7 +25,7 @@ namespace OrchardCore.Recipes
 
             builder.Add(T["Configuration"], configuration => configuration
                 .AddClass("recipes").Id("recipes")
-                .Add(T["Recipes"], "1", recipes => recipes
+                .Add(T["Recipes"], "2", recipes => recipes
                     .Permission(StandardPermissions.SiteOwner)
                     .Action("Index", "Admin", new { area = "OrchardCore.Recipes" })
                     .LocalNav())

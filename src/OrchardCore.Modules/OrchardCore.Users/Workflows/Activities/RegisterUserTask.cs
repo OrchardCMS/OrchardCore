@@ -115,7 +115,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     if (request.Host.Port.HasValue)
                         uriBuilder.Port = request.Host.Port.Value;
 
-                    uriBuilder.Path = string.Concat(request.PathBase, "/OrchardCore.Users/Registration/ConfirmEmail");
+                    uriBuilder.Path = request.PathBase.Add("/OrchardCore.Users/Registration/ConfirmEmail").Value;
                     uriBuilder.Query = string.Format("userId={0}&code={1}", user.Id, UrlEncoder.Default.Encode(code));
                     workflowContext.Properties["EmailConfirmationUrl"] = uriBuilder.Uri.ToString();
 

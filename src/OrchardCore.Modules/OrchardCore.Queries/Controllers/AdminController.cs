@@ -52,9 +52,9 @@ namespace OrchardCore.Queries.Controllers
             H = htmlLocalizer;
         }
 
-        public dynamic New { get; set; }
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
+        public dynamic New { get; }
+        public IStringLocalizer T { get; }
+        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index(QueryIndexOptions options, PagerParameters pagerParameters)
         {
@@ -73,6 +73,7 @@ namespace OrchardCore.Queries.Controllers
             }
 
             var queries = await _queryManager.ListQueriesAsync();
+            queries = queries.OrderBy(x => x.Name);
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -100,7 +101,8 @@ namespace OrchardCore.Queries.Controllers
 
             foreach (var query in results)
             {
-                model.Queries.Add(new QueryEntry {
+                model.Queries.Add(new QueryEntry
+                {
                     Query = query,
                     Shape = await _displayManager.BuildDisplayAsync(query, this, "SummaryAdmin")
                 });
@@ -115,7 +117,7 @@ namespace OrchardCore.Queries.Controllers
             {
                 return Unauthorized();
             }
-            
+
             var query = _querySources.FirstOrDefault(x => x.Name == id)?.Create();
 
             if (query == null)
@@ -139,7 +141,7 @@ namespace OrchardCore.Queries.Controllers
             {
                 return Unauthorized();
             }
-            
+
             var query = _querySources.FirstOrDefault(x => x.Name == model.SourceName)?.Create();
 
             if (query == null)
@@ -183,7 +185,7 @@ namespace OrchardCore.Queries.Controllers
                 Name = query.Name,
                 Schema = query.Schema,
                 Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: false)
-            };   
+            };
 
             return View(model);
         }

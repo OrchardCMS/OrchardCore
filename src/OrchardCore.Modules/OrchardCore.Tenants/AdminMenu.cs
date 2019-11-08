@@ -16,7 +16,7 @@ namespace OrchardCore.Tenants
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -32,7 +32,7 @@ namespace OrchardCore.Tenants
             }
 
             builder
-                .Add(T["Configuration"], "10", configuration => configuration
+                .Add(T["Configuration"], configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
                     .Add(T["Tenants"], "5", deployment => deployment
                         .Action("Index", "Admin", new { area = "OrchardCore.Tenants" })

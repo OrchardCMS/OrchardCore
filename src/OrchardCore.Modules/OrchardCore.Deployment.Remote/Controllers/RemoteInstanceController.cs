@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,8 +38,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
             _service = service;
         }
 
-        public IStringLocalizer S { get; set; }
-        public IHtmlLocalizer H { get; set; }
+        public IStringLocalizer S { get; }
+        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index()
         {

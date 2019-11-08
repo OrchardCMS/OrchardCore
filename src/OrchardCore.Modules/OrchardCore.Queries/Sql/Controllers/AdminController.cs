@@ -72,7 +72,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
             var templateContext = new TemplateContext();
-            foreach(var parameter in parameters)
+            foreach (var parameter in parameters)
             {
                 templateContext.SetValue(parameter.Key, parameter.Value);
             }
@@ -90,11 +90,11 @@ namespace OrchardCore.Queries.Sql.Controllers
                 {
                     using (connection)
                     {
-                        connection.Open();
+                        await connection.OpenAsync();
                         model.Documents = await connection.QueryAsync(rawQuery, parameters);
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     ModelState.AddModelError("", _stringLocalizer["An error occurred while executing the SQL query: {0}", e.Message]);
                 }

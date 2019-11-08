@@ -41,7 +41,7 @@ namespace OrchardCore.ContentFields.GraphQL.Types
     {
         public static string StripQuotes(this string value)
         {
-            if (!string.IsNullOrEmpty(value) && value.Length > 2 && value.StartsWith("\"") && value.EndsWith("\""))
+            if (!string.IsNullOrEmpty(value) && value.Length > 2 && value.StartsWith('\"') && value.EndsWith('\"'))
             {
                 return value.Substring(1, value.Length - 2);
             }

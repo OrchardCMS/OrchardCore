@@ -49,12 +49,7 @@ namespace OrchardCore.Layers
             services.AddTransient<IDeploymentSource, AllLayersDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllLayersDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllLayersDeploymentStepDriver>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var scriptingManager = serviceProvider.GetRequiredService<IScriptingManager>();
-            scriptingManager.GlobalMethodProviders.Add(new DefaultLayersMethodProvider());
+            services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();
         }
     }
 }

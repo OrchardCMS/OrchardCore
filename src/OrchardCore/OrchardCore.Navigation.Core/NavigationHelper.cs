@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Routing;
 
 namespace OrchardCore.Navigation
 {
@@ -88,17 +89,17 @@ namespace OrchardCore.Navigation
             // if route match failed, try comparing URL strings, if
             if (!match && !String.IsNullOrWhiteSpace(menuItem.Href) && menuItem.Href[0] == '/')
             {
-                PathString path = menuItem.Href.TrimEnd('/');
+                PathString pathString = menuItem.Href;
 
                 if (viewContext.HttpContext.Request.PathBase.HasValue)
                 {
-                    if (path.StartsWithSegments(viewContext.HttpContext.Request.PathBase, StringComparison.OrdinalIgnoreCase, out var remaining))
+                    if (pathString.StartsWithNormalizedSegments(viewContext.HttpContext.Request.PathBase, StringComparison.OrdinalIgnoreCase, out var remaining))
                     {
-                        path = remaining;
+                        pathString = remaining;
                     }
                 }
 
-                match = viewContext.HttpContext.Request.Path.StartsWithSegments(path, StringComparison.OrdinalIgnoreCase);
+                match = viewContext.HttpContext.Request.Path.StartsWithNormalizedSegments(menuItem.Href, StringComparison.OrdinalIgnoreCase);
             }
 
             menuItemShape.Selected = match;

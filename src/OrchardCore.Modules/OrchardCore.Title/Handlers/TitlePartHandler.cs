@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Liquid;
 using OrchardCore.Title.Models;
+using OrchardCore.Title.ViewModels;
 
 namespace OrchardCore.Title.Handlers
 {
@@ -35,8 +36,17 @@ namespace OrchardCore.Title.Handlers
 
             if (!String.IsNullOrEmpty(settings.Pattern))
             {
+                var model = new TitlePartViewModel()
+                {
+                    Title = part.Title,
+                    TitlePart = part,
+                    ContentItem = part.ContentItem
+                };
+
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", part.ContentItem);
+                templateContext.MemberAccessStrategy.Register<TitlePartViewModel>();
+                templateContext.SetValue("Model", model);
 
                 var title = await _liquidTemplateManager.RenderAsync(settings.Pattern, NullEncoder.Default, templateContext);
                 title = title.Replace("\r", String.Empty).Replace("\n", String.Empty);
@@ -50,7 +60,7 @@ namespace OrchardCore.Title.Handlers
         private TitlePartSettings GetSettings(TitlePart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(TitlePart), StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(TitlePart)));
             return contentTypePartDefinition.GetSettings<TitlePartSettings>();
         }
     }

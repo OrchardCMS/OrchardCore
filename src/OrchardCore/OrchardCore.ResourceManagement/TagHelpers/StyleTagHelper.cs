@@ -141,12 +141,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (!String.IsNullOrEmpty(Culture))
                 {
-                    definition.SetCultures(Culture.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetCultures(Culture.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (!String.IsNullOrEmpty(DependsOn))
                 {
-                    definition.SetDependencies(DependsOn.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 // Also include the style

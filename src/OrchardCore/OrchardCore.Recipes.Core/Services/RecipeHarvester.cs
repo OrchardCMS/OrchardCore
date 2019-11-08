@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -52,7 +53,7 @@ namespace OrchardCore.Recipes.Services
             var recipeDescriptors = new List<RecipeDescriptor>();
 
             var recipeFiles = _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(path)
-                .Where(x => !x.IsDirectory && x.Name.EndsWith(".recipe.json"));
+                .Where(x => !x.IsDirectory && x.Name.EndsWith(".recipe.json", StringComparison.Ordinal));
 
             recipeDescriptors.AddRange(recipeFiles.Select(recipeFile => _recipeReader.GetRecipeDescriptor(path, recipeFile, _hostingEnvironment.ContentRootFileProvider).Result));
 
