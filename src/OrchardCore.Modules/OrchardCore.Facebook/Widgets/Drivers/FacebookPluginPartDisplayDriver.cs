@@ -71,7 +71,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             }
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart), StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart)));
             return contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
         }
 
