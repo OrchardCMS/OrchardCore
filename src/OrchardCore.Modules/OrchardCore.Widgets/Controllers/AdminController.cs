@@ -17,7 +17,6 @@ namespace OrchardCore.Widgets.Controllers
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IShapeFactory _shapeFactory;
-        private readonly dynamic New;
 
         public AdminController(
             IContentManager contentManager,
@@ -29,7 +28,6 @@ namespace OrchardCore.Widgets.Controllers
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
             _shapeFactory = shapeFactory;
-            T = localizer;
             Logger = logger;
         }
 
