@@ -92,8 +92,6 @@ $(function () {
             $("body").append(form);
 
             var unsafeUrlPrompt = _this.data("unsafe-url");
-            var title = _this.data("title");
-
 
             if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
                 confirmDialog({..._this.data(),

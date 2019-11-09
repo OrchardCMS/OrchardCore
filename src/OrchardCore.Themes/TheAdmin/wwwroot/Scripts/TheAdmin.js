@@ -7136,8 +7136,6 @@ $(function () {
 
       var unsafeUrlPrompt = _this.data("unsafe-url");
 
-      var title = _this.data("title");
-
       if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
         confirmDialog(_objectSpread({}, _this.data(), {
           callback: function callback(resp) {
