@@ -8,11 +8,18 @@
     }
 }
 
-<input id="filter" class="form-control" placeholder="@T["Filter"]" type="search" />
+<input id="filter" class="form-control" placeholder="@T["Filter"]" type="search" data-toggle="tooltip" data-html="true" title="Ctrl+Shift+F" />
 <nav id="left-nav">
     @tag
 </nav>
-<script at="Foot">
+<script at="Foot">        
+    $('[data-toggle="tooltip"]').tooltip();
+    $(document).bind('keydown', function(e) {
+        if (e.ctrlKey && e.shiftKey && e.which == 70) {
+            $('#filter').focus();
+            return false;
+        }
+    });
     // custom css expression for a case-insensitive contains()
     jQuery.expr[":"].contains = jQuery.expr.createPseudo(function (arg) {
         return function (elem) {
