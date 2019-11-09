@@ -119,7 +119,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                     shellSettings["RecipeName"] = recipeNameTask.Result.Trim();
                 }
 
-                ShellSettingsManager.SaveSettings(shellSettings);
+                await ShellSettingsManager.SaveSettingsAsync(shellSettings);
                 var shellContext = await ShellHost.GetOrCreateShellContextAsync(shellSettings);
             }
 
