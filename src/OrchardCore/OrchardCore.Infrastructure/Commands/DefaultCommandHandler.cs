@@ -15,7 +15,7 @@ namespace OrchardCore.Environment.Commands
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
         public CommandContext Context { get; set; }
 
         public Task ExecuteAsync(CommandContext context)

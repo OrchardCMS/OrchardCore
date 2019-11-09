@@ -12,7 +12,7 @@ namespace OrchardCore.Deployment
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -22,7 +22,7 @@ namespace OrchardCore.Deployment
             }
 
             builder
-                .Add(T["Configuration"], content => content
+                .Add(T["Configuration"], configuration => configuration
                     .Add(T["Import/Export"], "10", import => import
                         .Add(T["Deployment Plans"], "5", deployment => deployment
                             .Action("Index", "DeploymentPlan", new { area = "OrchardCore.Deployment" })

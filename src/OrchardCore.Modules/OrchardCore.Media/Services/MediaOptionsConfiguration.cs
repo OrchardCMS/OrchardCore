@@ -50,7 +50,7 @@ namespace OrchardCore.Media.Services
         private const int DefaultMaxFileSize = 30_000_000;
 
         private const string DefaultAssetsPath = "Media";
-        private static readonly PathString DefaultAssetsRequestPath = new PathString("/media");
+        private static readonly string DefaultAssetsRequestPath = "/media";
 
         private readonly IShellConfiguration _shellConfiguration;
 

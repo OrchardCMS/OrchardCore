@@ -3,6 +3,12 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var initialized;
 var mediaApp;
 var _root = {
@@ -261,9 +267,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return;
             }
 
-            confirmDialog({
-              title: $("#deleteFolder").data("title"),
-              message: $("#deleteFolder").data("title"),
+            confirmDialog(_objectSpread({}, $("#deleteFolder").data(), {
               callback: function callback(resp) {
                 if (resp) {
                   $.ajax({
@@ -281,7 +285,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                   });
                 }
               }
-            });
+            }));
           },
           createFolder: function createFolder() {
             $('#createFolderModal-errors').empty();
@@ -305,9 +309,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return;
             }
 
-            confirmDialog({
-              title: $("#deleteMedia").data("title"),
-              message: $("#deleteMedia").data("title"),
+            confirmDialog(_objectSpread({}, $("#deleteMedia").data(), {
               callback: function callback(resp) {
                 if (resp) {
                   var paths = [];
@@ -341,7 +343,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                   });
                 }
               }
-            });
+            }));
           },
           deleteMediaItem: function deleteMediaItem(media) {
             var self = this;
@@ -350,9 +352,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return;
             }
 
-            confirmDialog({
-              title: $("#deleteMedia").data("title"),
-              message: $("#deleteMedia").data("title"),
+            confirmDialog(_objectSpread({}, $("#deleteMedia").data(), {
               callback: function callback(resp) {
                 if (resp) {
                   $.ajax({
@@ -376,7 +376,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                   });
                 }
               }
-            });
+            }));
           },
           handleDragStart: function handleDragStart(media, e) {
             // first part of move media to folder:
@@ -544,6 +544,12 @@ $(document).bind('dragover', function (e) {
     }, 100);
   }
 });
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 // <folder> component
 Vue.component('folder', {
   template: '\
@@ -713,27 +719,29 @@ Vue.component('folder', {
         return;
       }
 
-      if (!confirm($('#moveMediaMessage').val())) {
-        return;
-      }
-
-      $.ajax({
-        url: $('#moveMediaListUrl').val(),
-        method: 'POST',
-        data: {
-          __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-          mediaNames: mediaNames,
-          sourceFolder: sourceFolder,
-          targetFolder: targetFolder
-        },
-        success: function success() {
-          bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
-        },
-        error: function error(_error2) {
-          console.error(_error2.responseText);
-          bus.$emit('mediaListMoved', _error2.responseText);
+      confirmDialog(_objectSpread({}, $("#moveMedia").data(), {
+        callback: function callback(resp) {
+          if (resp) {
+            $.ajax({
+              url: $('#moveMediaListUrl').val(),
+              method: 'POST',
+              data: {
+                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                mediaNames: mediaNames,
+                sourceFolder: sourceFolder,
+                targetFolder: targetFolder
+              },
+              success: function success() {
+                bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
+              },
+              error: function error(_error2) {
+                console.error(_error2.responseText);
+                bus.$emit('mediaListMoved', _error2.responseText);
+              }
+            });
+          }
         }
-      });
+      }));
     }
   }
 });

@@ -23,5 +23,4 @@ namespace OrchardCore.ContentManagement.Handlers
             return this;
         }
     }
-
 }

@@ -115,7 +115,7 @@ namespace OrchardCore.Mvc
                     // Try to get the module project root and
                     if (_roots.TryGetValue(module, out var root) &&
                         // check for a final or an intermadiate "Pages" segment.
-                        (folder.EndsWith("/Pages") || folder.Contains("/Pages/")))
+                        (folder.EndsWith("/Pages", StringComparison.Ordinal) || folder.Contains("/Pages/")))
                     {
                         // Resolve the subpath relative to "{ModuleProjectDirectory}".
                         folder = root + folder.Substring(module.Length + 1);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -87,7 +88,7 @@ namespace OrchardCore.Localization.PortableObject
 
         private string TrimQuote(string str)
         {
-            if (str.StartsWith("\"") && str.EndsWith("\""))
+            if (str.StartsWith('\"') && str.EndsWith('\"'))
             {
                 if (str.Length == 1)
                 {
@@ -102,7 +103,7 @@ namespace OrchardCore.Localization.PortableObject
 
         private (PoContext context, string content) ParseLine(string line)
         {
-            if (line.StartsWith("\""))
+            if (line.StartsWith('\"'))
             {
                 return (PoContext.Text, Unescape(TrimQuote(line.Trim())));
             }
@@ -118,7 +119,7 @@ namespace OrchardCore.Localization.PortableObject
             {
                 case "msgctxt": return (PoContext.MessageContext, content);
                 case "msgid": return (PoContext.MessageId, content);
-                case var key when key.StartsWith("msgstr"): return (PoContext.Translation, content);
+                case var key when key.StartsWith("msgstr", StringComparison.Ordinal): return (PoContext.Translation, content);
                 default: return (PoContext.Other, content);
             }
         }
@@ -154,8 +155,8 @@ namespace OrchardCore.Localization.PortableObject
                             {
                                 _values.Clear();
                             }
-                            
-                            MessageId = text; 
+
+                            MessageId = text;
                             break;
                         }
                     case PoContext.MessageContext: MessageContext = text; break;

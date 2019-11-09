@@ -13,7 +13,7 @@ namespace OrchardCore.ReCaptcha
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -23,7 +23,7 @@ namespace OrchardCore.ReCaptcha
             }
 
             builder
-                .Add(T["Configuration"], configuration => configuration
+                .Add(T["Security"], security => security
                     .Add(T["Settings"], settings => settings
                         .Add(T["reCaptcha"], T["reCaptcha"], registration => registration
                             .Permission(Permissions.ManageReCaptchaSettings)

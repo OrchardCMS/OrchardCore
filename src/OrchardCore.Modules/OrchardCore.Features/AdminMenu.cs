@@ -12,7 +12,7 @@ namespace OrchardCore.Features
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -22,9 +22,9 @@ namespace OrchardCore.Features
             }
 
             builder
-                .Add(T["Configuration"], "10", configuration => configuration
+                .Add(T["Configuration"], "100", configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
-                    .Add(T["Features"], "6", deployment => deployment
+                    .Add(T["Features"], "1.2", deployment => deployment
                         .Action("Features", "Admin", new { area = "OrchardCore.Features" })
                         .Permission(Permissions.ManageFeatures)
                         .LocalNav()

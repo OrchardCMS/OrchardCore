@@ -36,7 +36,7 @@ namespace OrchardCore.Themes.Services
             T = htmlLocalizer;
         }
 
-        public IHtmlLocalizer T { get; set; }
+        public IHtmlLocalizer T { get; }
 
         public async Task DisableThemeFeaturesAsync(string themeName)
         {

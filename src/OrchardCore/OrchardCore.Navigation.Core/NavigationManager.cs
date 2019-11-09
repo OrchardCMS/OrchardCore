@@ -15,8 +15,6 @@ namespace OrchardCore.Navigation
 {
     public class NavigationManager : INavigationManager
     {
-        private static string[] Schemes = { "http", "https", "tel", "mailto" };
-
         private readonly IEnumerable<INavigationProvider> _navigationProviders;
         private readonly ILogger _logger;
         protected readonly ShellSettings _shellSettings;
@@ -181,39 +179,34 @@ namespace OrchardCore.Navigation
         /// <returns></returns>
         private string GetUrl(string menuItemUrl, RouteValueDictionary routeValueDictionary, ActionContext actionContext)
         {
-            string url;
-            if (routeValueDictionary == null || routeValueDictionary.Count == 0)
-            {
-                if (String.IsNullOrEmpty(menuItemUrl))
-                {
-                    return "#";
-                }
-                else
-                {
-                    url = menuItemUrl;
-                }
-            }
-            else
+            if (routeValueDictionary?.Count > 0)
             {
                 if (_urlHelper == null)
                 {
                     _urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
                 }
 
-                url = _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
+                return _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
             }
 
-            if (!string.IsNullOrEmpty(url) && url[0] != '/' && url[0] != '#' && !Schemes.Any(scheme => url.StartsWith(scheme + ":")))
+            if (String.IsNullOrEmpty(menuItemUrl))
             {
-                if (url.StartsWith("~/"))
-                {
-                    url = url.Substring(2);
-                }
-
-                url = actionContext.HttpContext.Request.PathBase + new PathString("/" + url);
+                return "#";
             }
 
-            return url;
+            if (menuItemUrl[0] == '/' || menuItemUrl.IndexOf("://") >= 0)
+            {
+                // Return the unescaped url and let the browser generate all uri components.
+                return menuItemUrl;
+            }
+
+            if (menuItemUrl.StartsWith("~/", StringComparison.Ordinal))
+            {
+                menuItemUrl = menuItemUrl.Substring(2);
+            }
+
+            // Use the unescaped 'Value' to not encode some possible reserved delimiters.
+            return actionContext.HttpContext.Request.PathBase.Add('/' + menuItemUrl).Value;
         }
 
         /// <summary>

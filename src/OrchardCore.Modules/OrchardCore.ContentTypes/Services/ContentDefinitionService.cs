@@ -56,7 +56,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public ILogger Logger { get; }
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public IEnumerable<EditTypeViewModel> GetTypes()
         {
@@ -405,7 +405,7 @@ namespace OrchardCore.ContentTypes.Services
         private static string VersionName(string name)
         {
             int version;
-            var nameParts = name.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+            var nameParts = name.Split('-', StringSplitOptions.RemoveEmptyEntries);
 
             if (nameParts.Length > 1 && int.TryParse(nameParts.Last(), out version))
             {

@@ -20,9 +20,10 @@ namespace OrchardCore.Localization
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder
-                    .Add(T["Configuration"], configuration => configuration
+                    .Add(T["Configuration"], "100", localization => localization
+                    .AddClass("localization").Id("localization")
                         .Add(T["Settings"], settings => settings
-                            .Add(T["Localization"], T["Localization"], entry => entry
+                            .Add(T["Cultures"], T["Cultures"], entry => entry
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
                                 .Permission(Permissions.ManageCultures)
                                 .LocalNav()

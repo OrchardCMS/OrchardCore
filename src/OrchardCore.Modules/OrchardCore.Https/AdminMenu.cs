@@ -12,7 +12,7 @@ namespace OrchardCore.Https
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -22,7 +22,7 @@ namespace OrchardCore.Https
             }
 
             builder
-                .Add(T["Configuration"], configuration => configuration
+                .Add(T["Security"], security => security
                     .Add(T["Settings"], settings => settings
                         .Add(T["HTTPS"], T["HTTPS"], entry => entry
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "Https" })
