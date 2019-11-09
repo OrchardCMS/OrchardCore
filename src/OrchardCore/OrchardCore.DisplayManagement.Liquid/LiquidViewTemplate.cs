@@ -247,7 +247,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 templateContext.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
                 {
-                    var filter = (ILiquidFilter) services.GetRequiredService(registration.Value);
+                    var filter = (ILiquidFilter)services.GetRequiredService(registration.Value);
                     return filter.ProcessAsync(input, arguments, ctx);
                 });
             }
@@ -357,7 +357,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             if (model != null)
             {
                 context.MemberAccessStrategy.Register(model.GetType());
-                context.LocalScope.SetValue("Model", model);
+                context.SetValue("Model", model);
             }
 
             context.CultureInfo = CultureInfo.CurrentUICulture;

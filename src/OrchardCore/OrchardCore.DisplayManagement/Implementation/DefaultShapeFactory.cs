@@ -34,7 +34,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             var binderName = binder.Name;
 
-            if (binderName.EndsWith("Async"))
+            if (binderName.EndsWith("Async", StringComparison.Ordinal))
             {
                 binderName = binder.Name.Substring(binder.Name.Length - "Async".Length);
             }

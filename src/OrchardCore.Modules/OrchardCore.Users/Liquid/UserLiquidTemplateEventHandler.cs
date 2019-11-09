@@ -21,7 +21,7 @@ namespace OrchardCore.Users.Liquid
 
             context.MemberAccessStrategy.Register<ClaimsPrincipal>();
             context.MemberAccessStrategy.Register<ClaimsIdentity>();
-            context.LocalScope.SetValue("User", user);
+            context.SetValue("User", user);
 
             return Task.CompletedTask;
         }

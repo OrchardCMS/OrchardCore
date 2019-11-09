@@ -5,6 +5,7 @@ using Fluid;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
+using OrchardCore.Alias.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -45,8 +46,17 @@ namespace OrchardCore.Alias.Handlers
 
             if (!String.IsNullOrEmpty(pattern))
             {
+                var model = new AliasPartViewModel()
+                {
+                    Alias = part.Alias,
+                    AliasPart = part,
+                    ContentItem = part.ContentItem
+                };
+
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", part.ContentItem);
+                templateContext.MemberAccessStrategy.Register<AliasPartViewModel>();
+                templateContext.SetValue("Model", model);
 
                 part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
                 part.Alias = part.Alias.Replace("\r", String.Empty).Replace("\n", String.Empty);
@@ -89,7 +99,7 @@ namespace OrchardCore.Alias.Handlers
         private string GetPattern(AliasPart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AliasPart", StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AliasPart"));
             var pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
 
             return pattern;

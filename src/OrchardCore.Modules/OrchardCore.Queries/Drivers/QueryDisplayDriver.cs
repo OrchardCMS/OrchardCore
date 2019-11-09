@@ -84,7 +84,7 @@ namespace OrchardCore.Queries.Drivers
                 }
             }
 
-            return await EditAsync(model, updater);
+            return Edit(model, updater);
         }
     }
 }
