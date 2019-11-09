@@ -60,13 +60,14 @@ namespace OrchardCore.Google
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder.Add(T["Configuration"], configuration => configuration
-                            .Add(T["Google"], "Google", settings => settings
-                            .AddClass("google").Id("google")
-                            .Add(T["Google Analytics"], "10", client => client
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAnalytics })
+                        .Add(T["Settings"], settings => settings
+                            .Add(T["Google Analytics"], T["Google Analytics"], settings => settings
+                            .AddClass("googleAnalytics").Id("googleAnalytics")
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAnalytics })
                                 .Permission(Permissions.ManageGoogleAnalytics)
                                 .LocalNav())
-                        ));
+                            )
+                        );
             }
             return Task.CompletedTask;
         }
