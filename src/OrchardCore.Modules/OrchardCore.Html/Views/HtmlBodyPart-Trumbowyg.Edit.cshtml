@@ -16,23 +16,23 @@
 <style asp-name="trumbowyg-plugins" version="2"></style>
 
 <div class="form-group">
-    <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
+    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
     @if (culture.IsRightToLeft())
     {
         <div style="text-align:right">
-            <textarea asp-for="Source" rows="5" class="form-control"></textarea>
+            <textarea asp-for="Html" rows="5" class="form-control"></textarea>
         </div>
     }
     else
     {
-        <textarea asp-for="Source" rows="5" class="form-control"></textarea>
+        <textarea asp-for="Html" rows="5" class="form-control"></textarea>
     }
     <span class="hint">@T["The body of the content item."]</span>
 </div>
 
 <script at="Foot">
     $(function () {
-        $('#@Html.IdFor(m => m.Source)').trumbowyg(@Html.Raw(trumbowygSettings.Options)).on('tbwchange', function () {
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(@Html.Raw(trumbowygSettings.Options)).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
     });
