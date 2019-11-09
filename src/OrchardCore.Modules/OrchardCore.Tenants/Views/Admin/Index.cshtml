@@ -4,7 +4,7 @@
 @using OrchardCore.Environment.Shell.Models
 
 @{
-    var originalPathBase = Context.Features.Get<ShellContextFeature>().OriginalPathBase
+    var originalPathBase = Context.Features.Get<ShellContextFeature>().OriginalPathBase;
 
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.ShellSettingsEntries.Count - 1;
@@ -114,7 +114,7 @@
                             <label id="selected-items" class="text-muted" for="select-all"></label>
                         </div>
                     </div>
-                    <div class="form-group col-xl-2 mb-xl-n1">
+                    <div class="col-xl-4 mb-xl-n1">
                         <span class="dropdown" id="actions" style="display:none">
                             <button class="btn btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Actions"]
@@ -127,14 +127,11 @@
                             </span>
                         </span>
                     </div>
-                    <div class="col-4"></div>
-                    <div class="form-group col-xl-1 mb-xl-n1 filter">
-                        <div class="float-xl-right">
+                    <div class="col-xl-4 d-flex justify-content-xl-end">
+                        <div class="filter pr-xl-3">
                             <select asp-for="Options.Filter" asp-items="@Model.Options.TenantsStates" class="selectpicker show-tick" data-header="@T["Filter by state"]" data-width="fit" data-selected-text-format="static" title="@T["State"]"></select>
-                            </div>
-                    </div>
-                    <div class="form-group col-xl-1 mb-n1 filter">
-                        <div class="float-xl-right">
+                        </div>
+                        <div class="filter pr-xl-3">
                             <select asp-for="Options.OrderBy" asp-items="@Model.Options.TenantsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Sort"]"></select>
                         </div>
                     </div>
