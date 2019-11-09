@@ -162,7 +162,7 @@ Vue.component('folder', {
                 return;
             }
 
-            confirmDialog({title: $("#moveMedia").data("title"), message: $("#moveMedia").data("title"), callback: function (resp) {
+            confirmDialog({...$("#moveMedia").data(), callback: function (resp) {
                 if (resp) {
                     $.ajax({
                         url: $('#moveMediaListUrl').val(),
