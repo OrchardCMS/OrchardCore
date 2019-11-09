@@ -12,7 +12,7 @@ namespace OrchardCore.Apis.GraphQL
             S = localizer;
         }
 
-        public IStringLocalizer S { get; set; }
+        public IStringLocalizer S { get; }
         
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

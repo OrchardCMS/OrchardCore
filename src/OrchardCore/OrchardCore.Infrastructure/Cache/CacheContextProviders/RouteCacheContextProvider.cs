@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +20,7 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
             if (contexts.Any(ctx => String.Equals(ctx, "route", StringComparison.OrdinalIgnoreCase)))
             {
                 var httpContext = _httpContextAccessor.HttpContext;
-                entries.Add(new CacheContextEntry("route", httpContext.Request.Path.ToString().ToLowerInvariant()));
+                entries.Add(new CacheContextEntry("route", httpContext.Request.Path.Value.ToLowerInvariant()));
 
                 return Task.CompletedTask;
             }
