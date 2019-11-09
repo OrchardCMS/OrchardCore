@@ -27,7 +27,7 @@ namespace OrchardCore.Facebook
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder.Add(T["Configuration"], configuration => configuration
-                    .Add(T["Facebook"], "15", settings => settings
+                    .Add(T["Facebook"], "Facebook", settings => settings
                     .AddClass("facebook").Id("facebook")
                             .Add(T["Application"], "1", client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
