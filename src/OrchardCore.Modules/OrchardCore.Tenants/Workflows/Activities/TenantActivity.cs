@@ -12,10 +12,11 @@ namespace OrchardCore.Tenants.Workflows.Activities
 {
     public abstract class TenantActivity : Activity
     {
-        protected TenantActivity(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
+        protected TenantActivity(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
         {
             ShellSettingsManager = shellSettingsManager;
             ShellHost = shellHost;
+            ExpressionEvaluator = expressionEvaluator;
             ScriptEvaluator = scriptEvaluator;
             T = localizer;
         }
@@ -28,6 +29,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         protected IShellSettingsManager ShellSettingsManager { get; }
         protected IShellHost ShellHost { get; }
+        protected IWorkflowExpressionEvaluator ExpressionEvaluator { get; }
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
         protected IStringLocalizer T { get; }
         public override LocalizedString Category => T["Tenant"];

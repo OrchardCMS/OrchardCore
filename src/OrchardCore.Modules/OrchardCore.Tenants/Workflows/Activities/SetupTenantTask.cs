@@ -22,7 +22,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
         public SetupTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, ISetupService setupService, IClock clock, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<SetupTenantTask> localizer)
-            : base(shellSettingsManager, shellHost, scriptEvaluator, localizer)
+            : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
         {
             SetupService = setupService;
             _clock = clock;
@@ -33,7 +33,6 @@ namespace OrchardCore.Tenants.Workflows.Activities
         protected ISetupService SetupService { get; }
 
         public override string Name => nameof(SetupTenantTask);
-        public override LocalizedString Category => T["Tenant"];
         public override LocalizedString DisplayText => T["Setup Tenant Task"];
 
         public WorkflowExpression<string> SiteName
@@ -120,7 +119,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 }
 
                 ShellSettingsManager.SaveSettings(shellSettings);
-                var shellContext = await ShellHost.GetOrCreateShellContextAsync(shellSettings);
+                await ShellHost.UpdateShellSettingsAsync(shellSettings);
             }
 
             var recipes = await SetupService.GetSetupRecipesAsync();

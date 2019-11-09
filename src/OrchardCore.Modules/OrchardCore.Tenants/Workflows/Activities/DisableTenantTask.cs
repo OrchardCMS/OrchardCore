@@ -12,13 +12,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
 {
     public class DisableTenantTask : TenantTask
     {
-        public DisableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<DisableTenantTask> localizer) 
-            : base(shellSettingsManager, shellHost, scriptEvaluator, localizer)
+        public DisableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<DisableTenantTask> localizer) 
+            : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
         {
         }
 
         public override string Name => nameof(DisableTenantTask);
-        public override LocalizedString Category => T["Tenant"];
         public override LocalizedString DisplayText => T["Disable Tenant Task"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -26,13 +25,17 @@ namespace OrchardCore.Tenants.Workflows.Activities
             return Outcomes(T["Disabled"]);
         }
 
-        //public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        //{
-        //    //var shellSettings = await GetTenantAsync(workflowContext);
-        //    //shellSettings.State = TenantState.Disabled;
-        //    //await ShellHost.UpdateShellSettingsAsync(shellSettings);
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            var tenantNameTask = ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext);
 
-        //    return Outcomes("Disable");
-        //}
+            if (ShellHost.TryGetSettings(tenantNameTask.Result?.Trim(), out var shellSettings))
+            {
+                shellSettings.State = TenantState.Disabled;
+                await ShellHost.UpdateShellSettingsAsync(shellSettings);
+            }
+
+            return Outcomes("Disabled");
+        }
     }
 }

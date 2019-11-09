@@ -13,16 +13,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
 {
     public class CreateTenantTask : TenantTask
     {
-        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-
         public CreateTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CreateTenantTask> localizer)
-            : base(shellSettingsManager, shellHost, scriptEvaluator, localizer)
+            : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
         {
-            _expressionEvaluator = expressionEvaluator;
         }
 
         public override string Name => nameof(CreateTenantTask);
-        public override LocalizedString Category => T["Tenant"];
         public override LocalizedString DisplayText => T["Create Tenant Task"];
 
         public string ContentType
@@ -74,13 +70,13 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var tenantNameTask = _expressionEvaluator.EvaluateAsync(TenantName, workflowContext);
-            var requestUrlPrefixTask = _expressionEvaluator.EvaluateAsync(RequestUrlPrefix, workflowContext);
-            var requestUrlHostTask = _expressionEvaluator.EvaluateAsync(RequestUrlHost, workflowContext);
-            var databaseProviderTask = _expressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext);
-            var connectionStringTask = _expressionEvaluator.EvaluateAsync(ConnectionString, workflowContext);
-            var tablePrefixTask = _expressionEvaluator.EvaluateAsync(TablePrefix, workflowContext);
-            var recipeNameTask = _expressionEvaluator.EvaluateAsync(RecipeName, workflowContext);
+            var tenantNameTask = ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext);
+            var requestUrlPrefixTask = ExpressionEvaluator.EvaluateAsync(RequestUrlPrefix, workflowContext);
+            var requestUrlHostTask = ExpressionEvaluator.EvaluateAsync(RequestUrlHost, workflowContext);
+            var databaseProviderTask = ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext);
+            var connectionStringTask = ExpressionEvaluator.EvaluateAsync(ConnectionString, workflowContext);
+            var tablePrefixTask = ExpressionEvaluator.EvaluateAsync(TablePrefix, workflowContext);
+            var recipeNameTask = ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext);
 
             await Task.WhenAll(tenantNameTask, requestUrlPrefixTask, requestUrlHostTask, databaseProviderTask, connectionStringTask, tablePrefixTask, recipeNameTask);
 
@@ -100,10 +96,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 shellSettings["DatabaseProvider"] = databaseProviderTask.Result?.Trim();
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = recipeNameTask.Result.Trim();
+
+                ShellSettingsManager.SaveSettings(shellSettings);
+                await ShellHost.UpdateShellSettingsAsync(shellSettings);
             }
-            
-            ShellSettingsManager.SaveSettings(shellSettings);
-            var shellContext = await ShellHost.GetOrCreateShellContextAsync(shellSettings);
 
             workflowContext.LastResult = shellSettings;
             workflowContext.CorrelationId = shellSettings.Name;

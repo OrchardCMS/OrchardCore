@@ -12,18 +12,31 @@ namespace OrchardCore.Tenants.Workflows.Activities
 {
     public class EnableTenantTask : TenantTask
     {
-        public EnableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<EnableTenantTask> localizer) 
-            : base(shellSettingsManager, shellHost, scriptEvaluator, localizer)
+
+        public EnableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<EnableTenantTask> localizer) 
+            : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
         {
         }
 
         public override string Name => nameof(EnableTenantTask);
-        public override LocalizedString Category => T["Tenant"];
         public override LocalizedString DisplayText => T["Enable Tenant Task"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(T["Enabled"]);
+        }
+
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            var tenantNameTask = ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext);
+
+            if (ShellHost.TryGetSettings(tenantNameTask.Result?.Trim(), out var shellSettings))
+            {
+                shellSettings.State = TenantState.Running;
+                await ShellHost.UpdateShellSettingsAsync(shellSettings);
+            }
+
+            return Outcomes("Enabled");
         }
     }
 }
