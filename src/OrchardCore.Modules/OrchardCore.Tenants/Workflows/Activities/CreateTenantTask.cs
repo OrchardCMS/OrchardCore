@@ -65,7 +65,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(T["Done"], T["Failed"]);
         }
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -98,6 +98,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 shellSettings["RecipeName"] = recipeNameTask.Result.Trim();
 
                 await ShellHost.UpdateShellSettingsAsync(shellSettings);
+            }
+            else
+            {
+                return Outcomes("Failed");
             }
 
             workflowContext.LastResult = shellSettings;

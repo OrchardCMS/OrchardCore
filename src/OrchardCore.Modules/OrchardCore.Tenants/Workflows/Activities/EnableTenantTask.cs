@@ -23,7 +23,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Enabled"]);
+            return Outcomes(T["Enabled"], T["Failed"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -34,6 +34,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
             {
                 shellSettings.State = TenantState.Running;
                 await ShellHost.UpdateShellSettingsAsync(shellSettings);
+            }
+            else
+            {
+                return Outcomes("Failed");
             }
 
             return Outcomes("Enabled");
