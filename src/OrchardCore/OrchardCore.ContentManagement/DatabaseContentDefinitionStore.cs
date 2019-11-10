@@ -20,17 +20,13 @@ namespace OrchardCore.ContentManagement
         /// Loads a single document (or create a new one) for updating and that should not be cached.
         /// </summary>
         public Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
-        {
-            return _sessionHelper.LoadForUpdateAsync<ContentDefinitionRecord>();
-        }
+            => _sessionHelper.LoadForUpdateAsync<ContentDefinitionRecord>();
 
         /// <summary>
         /// Gets a single document (or create a new one) for caching and that should not be updated.
         /// </summary>
         public Task<ContentDefinitionRecord> GetContentDefinitionAsync()
-        {
-            return _sessionHelper.GetForCachingAsync<ContentDefinitionRecord>();
-        }
+            => _sessionHelper.GetForCachingAsync<ContentDefinitionRecord>();
 
         public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
         {
