@@ -8,7 +8,6 @@
     "bootstrap-slider": "10.6.2",
     "codemirror": "5.48.4",
     "jquery": "3.4.1",
-    "jquery-resizable-dom": "0.32.0",
     "popper.js": "1.14.7",
     "trumbowyg": "2.19.1"
   }

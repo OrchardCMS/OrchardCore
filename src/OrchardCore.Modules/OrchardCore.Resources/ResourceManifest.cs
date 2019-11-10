@@ -198,12 +198,6 @@ namespace OrchardCore.Resources
                 .SetVersion("5.10.2");
 
             manifest
-                .DefineScript("jquery-resizable")
-                .SetDependencies("jQuery")
-                .SetUrl("~/OrchardCore.Resources/Scripts/jquery-resizable.min.js", "~/OrchardCore.Resources/Scripts/jquery-resizable.js")
-                .SetVersion("0.32.0");
-
-            manifest
                 .DefineStyle("trumbowyg")
                 .SetUrl("~/OrchardCore.Resources/Styles/trumbowyg.min.css", "~/OrchardCore.Resources/Styles/trumbowyg.css")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.19.1/ui/trumbowyg.min.css", "https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.19.1/ui/trumbowyg.css")
@@ -212,7 +206,6 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("trumbowyg")
-                .SetDependencies("jquery-resizable")
                 .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg.js", "~/OrchardCore.Resources/Scripts/trumbowyg.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.19.1/trumbowyg.min.js", "https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.19.1/trumbowyg.js")
                 .SetCdnIntegrity("sha384-6T5zd/UY6O+/GBXh9vN5ePib6hyqnP59uZzmwjpVDxoNc08ia4etj/IDPyrJS7R1", "sha384-2Mr/QWbCuYpU62KR2U8ObtDO47hBIlbpqZlH2V6+i2e/KTfV3yCc2/7UdOvkxAf4")
