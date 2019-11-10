@@ -122,7 +122,8 @@ namespace OrchardCore.Lucene
                         .Select(x => x.ContentItemId)
                         .ToArray();
 
-                    var allContentItems = await contentManager.GetAsync(updatedContentItemIds);
+                    var allPublished = await contentManager.GetAsync(updatedContentItemIds);
+                    var allLatest = await contentManager.GetAsync(updatedContentItemIds, latest: true);
 
                     // Group all DocumentIndex by index to batch update them
                     var updatedDocumentsByIndex = new Dictionary<string, List<DocumentIndex>>();
@@ -141,42 +142,54 @@ namespace OrchardCore.Lucene
                         indexSettingsList = indexSettingsList.Where(x => x.IndexInBackgroundTask);
                     }
 
-                    foreach (var indexSettings in indexSettingsList)
-                    {
-                        if (indexSettings.IndexedContentTypes.Length == 0)
-                        {
-                            continue;
-                        }
+                    var needLatest = indexSettingsList.FirstOrDefault(x => x.IndexLatest) != null;
+                    var needPublished = indexSettingsList.FirstOrDefault(x => !x.IndexLatest) != null;
 
-                        foreach (var task in batch)
+                    var settingsByIndex = indexSettingsList.ToDictionary(x => x.IndexName, x => x);
+
+                    foreach (var task in batch)
+                    {
+                        if (task.Type == IndexingTaskTypes.Update)
                         {
-                            if (task.Type == IndexingTaskTypes.Update)
+                            BuildIndexContext publishedIndexContext = null, latestIndexContext = null;
+
+                            if (needPublished)
                             {
                                 var contentItem = await contentManager.GetAsync(task.ContentItemId);
+                                if (contentItem != null)
+                                {
+                                    publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
+                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), Logger);
+                                }
+                            }
 
-                                if (contentItem == null)
+                            if (needLatest)
+                            {
+                                var contentItem = await contentManager.GetAsync(task.ContentItemId, VersionOptions.Latest);
+                                if (contentItem != null)
+                                {
+                                    latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
+                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), Logger);
+                                }
+                            }
+
+                            // Update the document from the index if its lastIndexId is smaller than the current task id. 
+                            foreach (var index in allIndices)
+                            {
+                                if (index.Value >= task.Id || !settingsByIndex.TryGetValue(index.Key, out var settings))
                                 {
                                     continue;
                                 }
 
-                                var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
+                                var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
 
-                                // Update the document from the index if its lastIndexId is smaller than the current task id. 
-                                await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), Logger);
-
-                                foreach (var index in allIndices)
+                                // Ignore if the content item content type is not indexed in this index
+                                if (context.ContentItem == null || !settings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                                 {
-                                    // Ignore if the content item content type is not indexed in this index
-                                    if (!indexSettingsList.Where(x => x.IndexName == index.Key).FirstOrDefault().IndexedContentTypes.Contains(contentItem.ContentType))
-                                    {
-                                        continue;
-                                    }
-
-                                    if (index.Value < task.Id)
-                                    {
-                                        updatedDocumentsByIndex[index.Key].Add(context.DocumentIndex);
-                                    }
+                                    continue;
                                 }
+
+                                updatedDocumentsByIndex[index.Key].Add(context.DocumentIndex);
                             }
                         }
                     }
