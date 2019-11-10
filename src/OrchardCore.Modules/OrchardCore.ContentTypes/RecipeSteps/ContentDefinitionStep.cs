@@ -31,7 +31,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
             foreach (var contentType in step.ContentTypes)
             {
-                var newType = _contentDefinitionManager.GetTypeDefinition(contentType.Name)
+                var newType = _contentDefinitionManager.LoadTypeDefinition(contentType.Name)
                     ?? new ContentTypeDefinition(contentType.Name, contentType.DisplayName);
 
                 UpdateContentType(newType, contentType);
@@ -39,7 +39,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
             foreach (var contentPart in step.ContentParts)
             {
-                var newPart = _contentDefinitionManager.GetPartDefinition(contentPart.Name)
+                var newPart = _contentDefinitionManager.LoadPartDefinition(contentPart.Name)
                     ?? new ContentPartDefinition(contentPart.Name);
 
                 UpdateContentPart(newPart, contentPart);
