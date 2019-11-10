@@ -48,7 +48,7 @@ namespace OrchardCore.Html
             // This code can be removed in RC
 
             // Update content type definitions
-            foreach (var contentType in _contentDefinitionManager.ListTypeDefinitions())
+            foreach (var contentType in _contentDefinitionManager.LoadTypeDefinitions())
             {
                 if (contentType.Parts.Any(x => x.PartDefinition.Name == "BodyPart"))
                 {

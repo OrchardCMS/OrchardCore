@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.Settings;
 
@@ -14,14 +13,11 @@ namespace OrchardCore.GitHub.Services
     {
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<GitHubAuthenticationService> T;
-        private readonly ShellSettings _shellSettings;
 
         public GitHubAuthenticationService(
             ISiteService siteService,
-            ShellSettings shellSettings,
             IStringLocalizer<GitHubAuthenticationService> stringLocalizer)
         {
-            _shellSettings = shellSettings;
             _siteService = siteService;
             T = stringLocalizer;
         }
@@ -38,7 +34,7 @@ namespace OrchardCore.GitHub.Services
             {
                 throw new ArgumentNullException(nameof(settings));
             }
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<GitHubAuthenticationSettings>(nameof(GitHubAuthenticationSettings), aspect =>
             {
                 aspect.ClientID = settings.ClientID;
