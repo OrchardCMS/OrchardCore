@@ -211,7 +211,7 @@ namespace OrchardCore.Roles.Controllers
             }
 
             // Save
-            List<RoleClaim> rolePermissions = new List<RoleClaim>();
+            var rolePermissions = new List<RoleClaim>();
             foreach (string key in Request.Form.Keys)
             {
                 if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")

@@ -26,7 +26,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             get => GetProperty<string>();
             set => SetProperty(value);
         }
-        
+
         public WorkflowExpression<string> RequestUrlPrefix
         {
             get => GetProperty(() => new WorkflowExpression<string>());
@@ -62,7 +62,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
-        
+
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(T["Done"]);
@@ -97,7 +97,6 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = recipeNameTask.Result.Trim();
 
-                ShellSettingsManager.SaveSettings(shellSettings);
                 await ShellHost.UpdateShellSettingsAsync(shellSettings);
             }
 

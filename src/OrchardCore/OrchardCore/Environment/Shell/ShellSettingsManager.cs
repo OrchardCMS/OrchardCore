@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
@@ -79,7 +80,6 @@ namespace OrchardCore.Environment.Shell
                 .Build();
 
             var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
-            
             var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
 
             var allSettings = new List<ShellSettings>();
@@ -106,7 +106,28 @@ namespace OrchardCore.Environment.Shell
             return allSettings;
         }
 
-        public void SaveSettings(ShellSettings settings)
+        public ShellSettings LoadSettings(string tenant)
+        {
+            var tenantsSettings = new ConfigurationBuilder()
+                .AddSources(_settingsSources)
+                .Build();
+
+            var tenantSettings = new ConfigurationBuilder()
+                .AddConfiguration(_configuration)
+                .AddConfiguration(_configuration.GetSection(tenant))
+                .AddConfiguration(tenantsSettings.GetSection(tenant))
+                .Build();
+
+            var settings = new ShellConfiguration(tenantSettings);
+            var configuration = new ShellConfiguration(tenant, _configBuilderFactory);
+
+            return new ShellSettings(settings, configuration)
+            {
+                Name = tenant,
+            };
+        }
+
+        public async Task SaveSettingsAsync(ShellSettings settings)
         {
             if (settings == null)
             {
@@ -145,7 +166,7 @@ namespace OrchardCore.Environment.Shell
 
             tenantSettings.Remove("Name");
 
-            _settingsSources.Save(settings.Name, tenantSettings.ToObject<Dictionary<string, string>>());
+            await _settingsSources.SaveAsync(settings.Name, tenantSettings.ToObject<Dictionary<string, string>>());
 
             var tenantConfig = new JObject();
 
@@ -167,7 +188,7 @@ namespace OrchardCore.Environment.Shell
 
             tenantConfig.Remove("Name");
 
-            _tenantConfigSources.Save(settings.Name, tenantConfig.ToObject<Dictionary<string, string>>());
+            await _tenantConfigSources.SaveAsync(settings.Name, tenantConfig.ToObject<Dictionary<string, string>>());
         }
     }
 }

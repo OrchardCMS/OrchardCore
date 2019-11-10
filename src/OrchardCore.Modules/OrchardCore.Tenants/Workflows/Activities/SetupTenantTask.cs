@@ -116,10 +116,9 @@ namespace OrchardCore.Tenants.Workflows.Activities
                     shellSettings["DatabaseProvider"] = databaseProviderTask.Result?.Trim();
                     shellSettings["Secret"] = Guid.NewGuid().ToString();
                     shellSettings["RecipeName"] = recipeNameTask.Result.Trim();
+                    
+                    await ShellHost.UpdateShellSettingsAsync(shellSettings);
                 }
-
-                ShellSettingsManager.SaveSettings(shellSettings);
-                await ShellHost.UpdateShellSettingsAsync(shellSettings);
             }
 
             var recipes = await SetupService.GetSetupRecipesAsync();

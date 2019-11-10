@@ -8,7 +8,6 @@ namespace OrchardCore.AdminMenu
     /// </summary>
     public interface IAdminMenuService
     {
-
         /// <summary>
         /// Returns all the admin menus for udpate.
         /// </summary>
