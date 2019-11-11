@@ -22,7 +22,7 @@ namespace OrchardCore.Liquid.Filters
             if (!model.IsNil())
             {
                 context.MemberAccessStrategy.Register(model.GetType());
-                context.LocalScope.SetValue("Model", model);
+                context.SetValue("Model", model);
             }
 
             var content = await _liquidTemplateManager.RenderAsync(input.ToStringValue(), context);

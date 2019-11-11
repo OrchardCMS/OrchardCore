@@ -13,15 +13,15 @@
 <style name="simplemdecss" asp-src="~/OrchardCore.Markdown/Styles/simplemde.min.css" debug-src="~/OrchardCore.Markdown/Styles/simplemde.css"></style>
 
 <fieldset class="form-group">
-    <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
+    <label asp-for="Markdown">@Model.TypePartDefinition.DisplayName()</label>
     <span class="hint">@T["The markdown text of the content item."]</span>
-    <textarea asp-for="Source" rows="5" class="form-control content-preview-text"></textarea>
+    <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text"></textarea>
 </fieldset>
 
 <script at="Foot">
     $(function () {
         var simplemde = new SimpleMDE({
-            element: document.getElementById("@Html.IdFor(m => m.Source)"),
+            element: document.getElementById("@Html.IdFor(m => m.Markdown)"),
             forceSync: true,
             toolbar: simplemdeToolbar,
             autoDownloadFontAwesome: false

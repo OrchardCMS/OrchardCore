@@ -188,7 +188,6 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
     public class ShapeBinding
     {
-        public ShapeDescriptor ShapeDescriptor { get; set; }
         public string BindingName { get; set; }
         public string BindingSource { get; set; }
         public Func<DisplayContext, Task<IHtmlContent>> BindingAsync { get; set; }

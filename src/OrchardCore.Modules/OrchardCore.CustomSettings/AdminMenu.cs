@@ -18,7 +18,7 @@ namespace OrchardCore.CustomSettings
             _customSettingsService = customSettingsService;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

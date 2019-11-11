@@ -13,7 +13,7 @@ namespace OrchardCore.Layers
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -23,14 +23,14 @@ namespace OrchardCore.Layers
             }
 
             builder
-                .Add(T["Configuration"], configuration => configuration
+                .Add(T["Design"], design => design
                     .Add(T["Settings"], settings => settings
                         .Add(T["Zones"], T["Zones"], zones => zones
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
                             .Permission(Permissions.ManageLayers)
                             .LocalNav()
                         ))
-                .Add(T["Layers"], T["Layers"], layers => layers
+                    .Add(T["Widgets"], T["Widgets"], widgets => widgets
                         .Permission(Permissions.ManageLayers)
                         .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()

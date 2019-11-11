@@ -67,7 +67,7 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets"Version="1.0.0-rc1-10004" />
+  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.0.0-rc1-10004" />
 </ItemGroup>
 ```
 
@@ -85,16 +85,17 @@ public void ConfigureServices(IServiceCollection services)
 !!! warning "Razor Pages"
     `AddRazorPages` must not be called directly as `services.AddOrchardCms()` already invokes it internally.
 
-- Edit the `Startup.cs` file `Configure` method like this:
+- Edit the `Startup.cs` file `Configure`
+- Remove everything after `app.UseStaticFiles();` and replace it by `app.UserOrchardCore();` like this:
 
 ```cs
-...
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseOrchardCore();
-
+   ...
+   
+   app.UseHttpsRedirection();
+   app.UseStaticFiles();
+   
+   app.UseOrchardCore();
+}
 ```
 
 Start the application, the Setup screen shows up:
@@ -121,15 +122,21 @@ If you chose __Sqlite__, all the state of the application is now stored in a fol
 
 ## Creating Blog Posts
 
-This part covers the basic content management concepts of Orchard Core CMS like __Content Types__ and __Content Items__.
+This part covers the basic content management concepts of Orchard Core CMS, like __Content Types__ and __Content Items__.
 
 ### Content Modeling
 
-In Orchard Core CMS most of the content that is managed in a __Content Item__. A content item is a versioned document like a page, and article, a blog post, a news item, or anything you want to manage. Each of these documents is based on a __Content Type__ that defines which properties it's made of. For instance any article will have a title and some text. A blog post might also have tags. Orchard Core CMS lets you model the content types the way you want, which is known as _content modeling_.
+In Orchard Core CMS most of the content that is managed is called a __Content Item__. A content item is a versioned document like a page, and article, a blog post, a news item, or anything you need to edit. Each of these documents are based on a __Content Type__ that defines which properties it is made of. For instance any article will have a title and some text. A blog post might also have tags. Orchard Core CMS lets you model the content types the way you want, which is known as _content modeling_.
+
+!!! hint "For developers"
+    A Content Type is analogous to a class, where a Content Item can be seen as an instance of a Content Type.
 
 ### Creating a Blog Post content type
 
 Orchard comes pre-configured with a set of composable elements of data management called __Content Parts__ that can be used to create custom types like a LEGO. A __Title Part__ for instance will provide a nice editor to enter the title of a content item, and also set it to the text to display by default in the screens. Another important content part is the __Markdown Body Part__ which provides a way to store and render Markdown as the main text of a content item. This is also useful for a Blog Post.
+
+!!! hint "For developers"
+    A Content Part is analogous to a partial class, where each Content Parts are then aggregated to define a Content Type. Content Fields are analogous to custom properties that are added to the Content Type.
 
 Let's create a new content type named `Blog Post` and add some necessary content parts to it: 
 
@@ -269,6 +276,9 @@ Expanding the `MarkdownBodyPart` node reveals the `Markdown` field with the cont
 ...
 ```
 
+!!! waring "Release packages"
+    If you are not using the latest MyGet packages then this `ConsoleLog` method is not available and the project won't compile. You can then skip this line.
+
 - Refresh the blog post page to reveal the Markdown text.
 - Finally, we can process the Markdown content and convert it to HTML with this code:
 
@@ -317,6 +327,9 @@ The changes consist in using the `slug` name in both the route and the local pro
 
 ### Generating the slug using a custom pattern
 
+!!! warning "Skip on dev"
+    This step is unnecessary if you use the packages from the MyGet feed, or tge source code from the __dev__ branch. If you still follow these steps you'll notice the configuration is already defined.
+    
 The __Alias Part__ provides some custom settings in order to let it be generated automatically. In our case we want it to be generated from the __Title__, automatically. To provide such patterns the CMS uses a templating language named __Liquid__, together with some custom functions to manipulate content items properties.
 
 - Edit the content definition of Blog Post, and for the __Alias Part__ click on __Edit__.
@@ -362,7 +375,7 @@ The CMS doesn't know what Razor Page to use when rendering a content item, and w
 
 ![Custom Preview](images/custom-preview.jpg)
 
-As you can see the preview is not using the specific route we set up for displaying a Blog Post, and editor have a full fidelity experience when editing the content.
+As you can see the preview is now using the specific route we set up for displaying a Blog Post, and editors have a full fidelity experience when editing the content.
 
 !!! hint "Suggestion"
     A dedicated template can also be used for previews, which would provide hints for editors, or detect mistakes, and render them in the preview window. Users can also change the size of the window to test the rendering on different clients.

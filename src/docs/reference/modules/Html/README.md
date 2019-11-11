@@ -96,3 +96,7 @@ You can override the HTML editor for the `Default` editor by creating a shape fi
 <https://github.com/Alex-D/Trumbowyg>  
 Copyright (c) 2012-2016 Alexandre Demode (Alex-D)  
 License: MIT
+
+<https://github.com/RickStrahl/jquery-resizable>  
+Copyright (c) 2013-2019 West Wind Technologies
+License: MIT

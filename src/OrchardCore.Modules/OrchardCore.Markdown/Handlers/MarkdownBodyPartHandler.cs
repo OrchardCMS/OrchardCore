@@ -1,34 +1,59 @@
-using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
+using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
-using OrchardCore.Markdown.Settings;
+using OrchardCore.Markdown.ViewModels;
 
 namespace OrchardCore.Markdown.Handlers
 {
     public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
 
-        public MarkdownBodyPartHandler(IContentDefinitionManager contentDefinitionManager)
+        private HtmlString _bodyAspect;
+
+        public MarkdownBodyPartHandler(ILiquidTemplateManager liquidTemplateManager)
         {
-            _contentDefinitionManager = contentDefinitionManager;
+            _liquidTemplateManager = liquidTemplateManager;
         }
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, MarkdownBodyPart part)
         {
-            return context.ForAsync<BodyAspect>(bodyAspect =>
+            return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(MarkdownBodyPart));
-                var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
-                var html = Markdig.Markdown.ToHtml(part.Markdown ?? "");
+                if (_bodyAspect != null)
+                {
+                    bodyAspect.Body = _bodyAspect;
+                    return;
+                }
 
-                bodyAspect.Body = new HtmlString(html);
-                return Task.CompletedTask;
+                try
+                {
+                    var model = new MarkdownBodyPartViewModel()
+                    {
+                        Markdown = part.Markdown,
+                        MarkdownBodyPart = part,
+                        ContentItem = part.ContentItem
+                    };
+
+                    var templateContext = new TemplateContext();
+                    templateContext.SetValue("ContentItem", part.ContentItem);
+                    templateContext.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
+                    templateContext.SetValue("Model", model);
+
+                    var markdown = await _liquidTemplateManager.RenderAsync(part.Markdown, HtmlEncoder.Default, templateContext);
+                    var result = Markdig.Markdown.ToHtml(markdown ?? "");
+
+                    bodyAspect.Body = _bodyAspect = new HtmlString(result);
+                }
+                catch
+                {
+                    bodyAspect.Body = HtmlString.Empty;
+                }
             });
         }
     }

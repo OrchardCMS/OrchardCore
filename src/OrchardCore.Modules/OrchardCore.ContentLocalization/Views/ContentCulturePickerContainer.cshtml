@@ -9,7 +9,7 @@
                     <a asp-route="RedirectToLocalizedContent"
                        asp-route-area="OrchardCore.ContentLocalization"
                        asp-route-targetculture="@culture.Name"
-                       asp-route-contentItemUrl="@Context.Request.Path"
+                       asp-route-contentItemUrl="@Context.Request.Path.Value"
                        class="dropdown-item">@culture.DisplayName</a>
                 }
             }
