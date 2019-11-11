@@ -9,6 +9,6 @@
     "codemirror": "5.48.4",
     "jquery": "3.4.1",
     "popper.js": "1.14.7",
-    "trumbowyg": "2.12.2"
+    "trumbowyg": "2.19.1"
   }
 }
