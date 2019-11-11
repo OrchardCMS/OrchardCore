@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Routing;
@@ -13,27 +14,30 @@ namespace OrchardCore.Sitemaps.Services
 {
     public class SitemapManager : ISitemapManager
     {
+        private const string SitemapsDocumentCacheKey = nameof(SitemapsDocumentCacheKey);
+
         private readonly IMemoryCache _memoryCache;
         private readonly ISession _session;
         private readonly ISignal _signal;
+        private readonly ISessionHelper _sessionHelper;
         private readonly SitemapEntries _sitemapEntries;
 
-        private const string SitemapsDocumentCacheKey = nameof(SitemapsDocumentCacheKey);
-
-        public IChangeToken ChangeToken => _signal.GetToken(SitemapsDocumentCacheKey);
-
         public SitemapManager(
-            ISignal signal,
-            ISession session,
             IMemoryCache memoryCache,
+            ISession session,
+            ISignal signal,
+            ISessionHelper sessionHelper,
             SitemapEntries sitemapEntries
             )
         {
-            _session = session;
             _memoryCache = memoryCache;
+            _session = session;
             _signal = signal;
+            _sessionHelper = sessionHelper;
             _sitemapEntries = sitemapEntries;
         }
+
+        public IChangeToken ChangeToken => _signal.GetToken(SitemapsDocumentCacheKey);
 
         public async Task BuildAllSitemapRouteEntriesAsync()
         {
@@ -47,9 +51,8 @@ namespace OrchardCore.Sitemaps.Services
             existing.Sitemaps.Remove(sitemapId);
 
             _session.Save(existing);
+            _signal.DeferredSignalToken(SitemapsDocumentCacheKey);
 
-            _memoryCache.Set(SitemapsDocumentCacheKey, existing);
-            _signal.SignalToken(SitemapsDocumentCacheKey);
             BuildAllSitemapRouteEntries(existing);
 
             return;
@@ -82,21 +85,6 @@ namespace OrchardCore.Sitemaps.Services
             return (await GetDocumentAsync()).Sitemaps.Values;
         }
 
-        /// <summary>
-        /// Returns the document from the database to be updated.
-        /// </summary>
-        private async Task<SitemapDocument> LoadDocumentAsync()
-        {
-            // TODO move to sesson helper.
-            var document = await _session.Query<SitemapDocument>().FirstOrDefaultAsync();
-            if (document == null)
-            {
-                document = new SitemapDocument();
-            }
-            return document;
-        }
-
-
         public async Task SaveSitemapAsync(string sitemapId, SitemapType sitemap)
         {
             if (sitemap.IsReadonly)
@@ -105,42 +93,36 @@ namespace OrchardCore.Sitemaps.Services
             }
 
             var existing = await LoadDocumentAsync();
-            if (existing.Sitemaps.ContainsKey(sitemapId))
-            {
-                existing.Sitemaps.Remove(sitemapId);
-            }
+            existing.Sitemaps.Remove(sitemapId);
             existing.Sitemaps[sitemapId] = sitemap;
 
             _session.Save(existing);
-
-            _memoryCache.Set(SitemapsDocumentCacheKey, existing);
-            _signal.SignalToken(SitemapsDocumentCacheKey);
+            _signal.DeferredSignalToken(SitemapsDocumentCacheKey);
 
             BuildAllSitemapRouteEntries(existing);
 
             return;
         }
 
+        /// <summary>
+        /// Returns the document from the database to be updated.
+        /// </summary>
+        private Task<SitemapDocument> LoadDocumentAsync() => _sessionHelper.LoadForUpdateAsync<SitemapDocument>();
 
         private async Task<SitemapDocument> GetDocumentAsync()
         {
-            SitemapDocument document;
-
-            if (!_memoryCache.TryGetValue(SitemapsDocumentCacheKey, out document))
+            if (!_memoryCache.TryGetValue<SitemapDocument>(SitemapsDocumentCacheKey, out var document))
             {
-                document = await _session.Query<SitemapDocument>().FirstOrDefaultAsync();
-                if (document == null)
-                {
-                    document = new SitemapDocument();
-                }
+                var changeToken = ChangeToken;
+
+                document = await _sessionHelper.GetForCachingAsync<SitemapDocument>();
 
                 foreach (var sitemap in document.Sitemaps.Values)
                 {
                     sitemap.IsReadonly = true;
                 }
 
-                _memoryCache.Set(SitemapsDocumentCacheKey, document);
-                _signal.SignalToken(SitemapsDocumentCacheKey);
+                _memoryCache.Set(SitemapsDocumentCacheKey, document, changeToken);
 
             }
 

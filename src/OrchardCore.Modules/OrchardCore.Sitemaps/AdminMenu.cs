@@ -7,12 +7,12 @@ namespace OrchardCore.Sitemaps
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;
         }
-
-        public IStringLocalizer S { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -21,8 +21,8 @@ namespace OrchardCore.Sitemaps
                 return Task.CompletedTask;
             }
 
-            builder.Add(S["Configuration"], cfg => cfg
-                    .Add(S["Sitemaps"], "1.6", admt => admt
+            builder.Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, cfg => cfg
+                    .Add(S["Sitemaps"], S["Sitemaps"], admt => admt
                         .Permission(Permissions.ManageSitemaps)
                         .Add(S["Sitemaps"], "5", sitemaps => sitemaps
                             .Action("List", "Admin", new { area = "OrchardCore.Sitemaps" })
