@@ -56,7 +56,15 @@ namespace OrchardCore.Media.GraphQL
             var includeSubDirectories = resolveContext.GetArgument("includeSubDirectories", false);
 
             var allFiles = await mediaFileStore.GetDirectoryContentAsync(path, includeSubDirectories);
-            return allFiles.Where(x => !x.IsDirectory);
+
+            if (includeSubDirectories)
+            {
+                return allFiles;
+            }
+            else
+            {
+                return allFiles.Where(x => !x.IsDirectory);
+            }
         }
     }
 }
