@@ -23,7 +23,7 @@ namespace OrchardCore.Deployment
 
             builder
                 .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Import/Export"], "10", import => import
+                    .Add(T["Import/Export"], T["Import/Export"], import => import
                         .Add(T["Deployment Plans"], "5", deployment => deployment
                             .Action("Index", "DeploymentPlan", new { area = "OrchardCore.Deployment" })
                             .Permission(Permissions.Export)

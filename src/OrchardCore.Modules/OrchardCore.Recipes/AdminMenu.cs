@@ -25,7 +25,7 @@ namespace OrchardCore.Recipes
 
             builder.Add(T["Configuration"], configuration => configuration
                 .AddClass("recipes").Id("recipes")
-                .Add(T["Recipes"], "2", recipes => recipes
+                .Add(T["Recipes"], T["Recipes"], recipes => recipes
                     .Permission(StandardPermissions.SiteOwner)
                     .Action("Index", "Admin", new { area = "OrchardCore.Recipes" })
                     .LocalNav())
