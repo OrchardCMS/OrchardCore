@@ -43,12 +43,12 @@
         });
     };
     $('#filter').keyup(function () {
-        var list = '#adminMenu';
+        var list = $('#adminMenu');
         var filter = $('#filter').val();
         if (filter) {
-            hasChild($(list));
+            hasChild(list);
         } else {
-            $(list).find("li").show();
+            list.find("li").show();
         }
         return false;
     });
