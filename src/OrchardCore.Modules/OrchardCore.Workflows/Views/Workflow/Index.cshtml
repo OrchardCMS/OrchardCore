@@ -3,7 +3,7 @@
 @using OrchardCore.Workflows.ViewModels;
 
 <h1>@RenderTitleSegments(T["{0} Workflows", Model.WorkflowType.Name])</h1>
-
+<zone name="Breadcrumbs">
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflow Types"]</a></li>
@@ -11,7 +11,7 @@
         <li class="breadcrumb-item active" aria-current="page">@T["Workflows"]</li>
     </ol>
 </nav>
-
+</zone>
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
@@ -20,7 +20,9 @@
                     @T["Bulk Actions"]
                 </button>
                 <div class="dropdown-menu" aria-labelledby="bulk-actions-button">
-                    <button type="submit" name="BulkAction" value="@WorkflowBulkAction.Delete" form="workflows-form" class="dropdown-item"> @T["Delete"]</a>
+                    <button type="submit" name="BulkAction" value="@WorkflowBulkAction.Delete" form="workflows-form" class="dropdown-item">
+                        @T["Delete"]
+                    </button>
                 </div>
             </div>
         </li>
@@ -76,8 +78,37 @@
                             <div>
                                 <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.Workflow.CreatedUtc)))]</span>
                                 <div class="info">
-                                    <span class="badge badge-@statusCss">@entry.Workflow.Status</span>
-                                </div>
+                                    <span class="badge badge-@statusCss">@switch (entry.Workflow.Status)
+                                        {
+                                            case WorkflowStatus.Idle:
+                                                @T["Idle"]
+                                                break;
+                                            case WorkflowStatus.Starting:
+                                                @T["Starting"]
+                                                break;
+                                            case WorkflowStatus.Resuming:
+                                                @T["Resuming"]
+                                                break;
+                                            case WorkflowStatus.Executing:
+                                                @T["Executing"]
+                                                break;
+                                            case WorkflowStatus.Halted:
+                                                @T["Halted"]
+                                                break;
+                                            case WorkflowStatus.Finished:
+                                                @T["Finished"]
+                                                break;
+                                            case WorkflowStatus.Faulted:
+                                                @T["Faulted"]
+                                                break;
+                                            case WorkflowStatus.Aborted:
+                                                @T["Aborted"]
+                                                break;
+                                            default:
+                                                @entry.Workflow.Status
+                                                break;
+                                        }</span>
+                                 </div>
                             </div>
                         </div>
                     </li>

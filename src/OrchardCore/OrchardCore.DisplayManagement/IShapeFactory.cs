@@ -14,7 +14,11 @@ namespace OrchardCore.DisplayManagement
     /// </summary>
     public interface IShapeFactory
     {
-        Task<IShape> CreateAsync(string shapeType, Func<Task<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created);
+        ValueTask<IShape> CreateAsync(
+            string shapeType,
+            Func<ValueTask<IShape>> shapeFactory,
+            Action<ShapeCreatingContext> creating,
+            Action<ShapeCreatedContext> created);
 
         dynamic New { get; }
     }
@@ -22,7 +26,7 @@ namespace OrchardCore.DisplayManagement
     public static class ShapeFactoryExtensions
     {
         private static readonly ProxyGenerator ProxyGenerator = new ProxyGenerator();
-        private static readonly Func<Task<IShape>> NewShape = () => Task.FromResult<IShape>(new Shape());
+        private static readonly Func<ValueTask<IShape>> NewShape = () => new ValueTask<IShape>(new Shape());
 
         /// <summary>
         /// Creates a new shape by copying the properties of the specific model.
@@ -30,11 +34,11 @@ namespace OrchardCore.DisplayManagement
         /// <param name="shapeType">The type of shape to create.</param>
         /// <param name="model">The model to copy.</param>
         /// <returns></returns>
-        public static Task<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, TModel model)
+        public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, TModel model)
         {
             return factory.CreateAsync(shapeType, Arguments.From(model));
         }
-        
+
         private static IShape CreateShape(Type baseType)
         {
             // Don't generate a proxy for shape types
@@ -51,12 +55,12 @@ namespace OrchardCore.DisplayManagement
             }
         }
 
-        public static Task<IShape> CreateAsync(this IShapeFactory factory, string shapeType, Func<Task<IShape>> shapeFactory)
+        public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType, Func<ValueTask<IShape>> shapeFactory)
         {
             return factory.CreateAsync(shapeType, shapeFactory, null, null);
         }
 
-        public static Task<IShape> CreateAsync(this IShapeFactory factory, string shapeType)
+        public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType)
         {
             return factory.CreateAsync(shapeType, NewShape, null, null);
         }
@@ -68,14 +72,27 @@ namespace OrchardCore.DisplayManagement
         /// <param name="shapeType">The shape type to create.</param>
         /// <param name="initializeAsync">The initialization method.</param>
         /// <returns></returns>
-        public static Task<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Func<TModel, Task> initializeAsync)
+        public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Func<TModel, ValueTask> initializeAsync)
         {
-            return factory.CreateAsync(shapeType, async () =>
+            static async ValueTask<IShape> Awaited(ValueTask task, IShape shape)
+            {
+                await task;
+                return shape;
+            }
+
+            static ValueTask<IShape> ShapeFactory(Func<TModel, ValueTask> init)
             {
                 var shape = CreateShape(typeof(TModel));
-                await initializeAsync((TModel)shape);
-                return shape;
-            });
+                var task = init((TModel) shape);
+                if (!task.IsCompletedSuccessfully)
+                {
+                    return Awaited(task, shape);
+                }
+
+                return new ValueTask<IShape>(shape);
+            }
+
+            return factory.CreateAsync(shapeType, () => ShapeFactory(initializeAsync));
         }
 
         /// <summary>
@@ -85,20 +102,20 @@ namespace OrchardCore.DisplayManagement
         /// <param name="shapeType">The shape type to create.</param>
         /// <param name="initialize">The initialization method.</param>
         /// <returns></returns>
-        public static Task<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Action<TModel> initialize)
+        public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Action<TModel> initialize)
         {
             return factory.CreateAsync(shapeType, () =>
             {
                 var shape = CreateShape(typeof(TModel));
                 initialize((TModel)shape);
-                return Task.FromResult(shape);
+                return new ValueTask<IShape>(shape);
             });
         }
 
-        public static Task<IShape> CreateAsync(this IShapeFactory factory, string shapeType, INamedEnumerable<object> parameters = null)
+        public static ValueTask<IShape> CreateAsync<T>(this IShapeFactory factory, string shapeType, INamedEnumerable<T> parameters = null)
         {
-            return factory.CreateAsync(shapeType, NewShape, null, createdContext => {
-
+            return factory.CreateAsync(shapeType, NewShape, null, createdContext =>
+            {
                 var shape = (Shape)createdContext.Shape;
 
                 // If only one non-Type, use it as the source object to copy

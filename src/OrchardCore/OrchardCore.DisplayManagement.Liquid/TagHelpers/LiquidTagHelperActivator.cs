@@ -7,6 +7,7 @@ using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
@@ -32,13 +33,13 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { property.Name };
                 var htmlAttribute = property.GetCustomAttribute<HtmlAttributeNameAttribute>();
 
-                if (htmlAttribute != null)
+                if (htmlAttribute != null && htmlAttribute.Name != null)
                 {
-                    allNames.Add(htmlAttribute.Name.Replace('-', '_'));
+                    allNames.Add(htmlAttribute.Name.ToPascalCaseDash());
 
-                    if (htmlAttribute.Name.StartsWith("asp-"))
+                    if (htmlAttribute.Name.StartsWith("asp-", StringComparison.Ordinal))
                     {
-                        allNames.Add(htmlAttribute.Name.Substring(4).Replace('-', '_'));
+                        allNames.Add(htmlAttribute.Name.Substring(4).ToPascalCaseDash());
                     }
                 }
 
@@ -91,7 +92,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             foreach (var name in arguments.Names)
             {
-                var propertyName = Filters.LiquidViewFilters.LowerKebabToPascalCase(name);
+                var propertyName = name.ToPascalCaseUnderscore();
 
                 var found = false;
 
@@ -108,7 +109,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
                 }
 
-                var attr = new TagHelperAttribute(name.Replace("_", "-"), arguments[name].ToObjectValue());
+                var attr = new TagHelperAttribute(name.Replace('_', '-'), arguments[name].ToObjectValue());
 
                 contextAttributes.Add(attr);
 
@@ -121,7 +122,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             return tagHelper;
         }
 
-        private class ReusableTagHelperFactory<T> where T : ITagHelper
+        private class ReusableTagHelperFactory<T> where T : class, ITagHelper
         {
             public static ITagHelper CreateTagHelper(ITagHelperFactory tagHelperFactory, ViewContext viewContext)
             {

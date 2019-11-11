@@ -52,8 +52,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
         public dynamic New { get; set; }
 
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
+        public IStringLocalizer T { get; }
+        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index(PagerParameters pagerParameters)
         {
@@ -222,7 +222,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Unauthorized();
             }
 
-            var document = await _backgroundTaskManager.GetDocumentAsync();
+            var document = await _backgroundTaskManager.LoadDocumentAsync();
 
             if (!document.Settings.ContainsKey(name))
             {
@@ -242,7 +242,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Unauthorized();
             }
 
-            var document = await _backgroundTaskManager.GetDocumentAsync();
+            var document = await _backgroundTaskManager.LoadDocumentAsync();
 
             if (!document.Settings.TryGetValue(name, out var settings))
             {
@@ -266,7 +266,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Unauthorized();
             }
 
-            var document = await _backgroundTaskManager.GetDocumentAsync();
+            var document = await _backgroundTaskManager.LoadDocumentAsync();
 
             if (!document.Settings.TryGetValue(name, out var settings))
             {

@@ -2,19 +2,18 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.AdminMenu.Services;
 using OrchardCore.AdminMenu.AdminNodes;
+using OrchardCore.AdminMenu.Deployment;
+using OrchardCore.AdminMenu.Recipes;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
 using OrchardCore.Modules;
-using OrchardCore.Security.Permissions;
-using YesSql.Indexes;
-using OrchardCore.Deployment;
-using OrchardCore.AdminMenu.Deployment;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.AdminMenu.Recipes;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu
 {
@@ -26,7 +25,7 @@ namespace OrchardCore.AdminMenu
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddTransient<IDataMigration, Migrations>();
 
-            services.AddSingleton<IAdminMenuService, AdminMenuService>();
+            services.AddScoped<IAdminMenuService, AdminMenuService>();
             services.AddScoped<AdminMenuNavigationProvidersCoordinator, AdminMenuNavigationProvidersCoordinator>();
 
             services.AddScoped<IDisplayManager<MenuItem>, DisplayManager<MenuItem>>();
@@ -50,7 +49,7 @@ namespace OrchardCore.AdminMenu
 
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
         }
     }

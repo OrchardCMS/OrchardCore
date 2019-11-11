@@ -1,9 +1,7 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.ContentFields.Settings;
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
 }
 
 <style name="fontpickerStyle" at="Head" asp-src="~/OrchardCore.ContentFields/Styles/fontawesome-iconpicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/fontawesome-iconpicker.css"></style>

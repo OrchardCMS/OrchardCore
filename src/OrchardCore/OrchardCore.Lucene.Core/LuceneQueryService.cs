@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ namespace OrchardCore.Lucene
             _queryProviders = queryProviders;
         }
 
-        public Task<TopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj)
+        public Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj)
         {
             var queryProp = queryObj["query"] as JObject;
 
@@ -38,24 +38,51 @@ namespace OrchardCore.Lucene
 
             string sortField = null;
             string sortOrder = null;
+            string sortType = null;
+            var sortFields = new List<SortField>();
 
             if (sortProperty != null)
             {
                 if (sortProperty.Type == JTokenType.String)
                 {
                     sortField = sortProperty.ToString();
+                    sortFields.Add(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"));
                 }
                 else if (sortProperty.Type == JTokenType.Object)
                 {
                     sortField = ((JProperty)sortProperty.First).Name;
                     sortOrder = ((JProperty)sortProperty.First).Value["order"].ToString();
+                    sortType = ((JProperty)sortProperty.First).Value["type"]?.ToString();
+                    var sortFieldType = SortFieldType.STRING;
+                    if (sortType != null)
+                    {
+                        sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
+                    }
+
+                    sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
+                }
+                else if (sortProperty.Type == JTokenType.Array)
+                {
+                    foreach (var item in sortProperty.Children())
+                    {
+                        sortField = ((JProperty)item.First).Name;
+                        sortOrder = ((JProperty)item.First).Value["order"].ToString();
+                        sortType = ((JProperty)item.First).Value["type"]?.ToString();
+                        var sortFieldType = SortFieldType.STRING;
+                        if (sortType != null)
+                        {
+                            sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
+                        }
+
+                        sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
+                    }
                 }
             }
 
             TopDocs docs = context.IndexSearcher.Search(
                 query,
                 size + from,
-                sortField == null ? Sort.RELEVANCE : new Sort(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"))
+                sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
             );
 
             if (from > 0)
@@ -63,7 +90,12 @@ namespace OrchardCore.Lucene
                 docs = new TopDocs(docs.TotalHits - from, docs.ScoreDocs.Skip(from).ToArray(), docs.MaxScore);
             }
 
-            return Task.FromResult(docs);
+            var collector = new TotalHitCountCollector();
+            context.IndexSearcher.Search(query, collector);
+
+            var result = new LuceneTopDocs { TopDocs = docs, Count = collector.TotalHits };
+
+            return Task.FromResult(result);
         }
 
         public Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj)

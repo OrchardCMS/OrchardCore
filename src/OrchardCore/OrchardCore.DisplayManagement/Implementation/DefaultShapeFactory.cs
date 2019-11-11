@@ -34,7 +34,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             var binderName = binder.Name;
 
-            if (binderName.EndsWith("Async"))
+            if (binderName.EndsWith("Async", StringComparison.Ordinal))
             {
                 binderName = binder.Name.Substring(binder.Name.Length - "Async".Length);
             }
@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             return _scopedShapeTable;
         }
 
-        public async Task<IShape> CreateAsync(string shapeType, Func<Task<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
+        public async ValueTask<IShape> CreateAsync(string shapeType, Func<ValueTask<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
         {
             ShapeDescriptor shapeDescriptor;
             (await GetShapeTableAsync()).Descriptors.TryGetValue(shapeType, out shapeDescriptor);

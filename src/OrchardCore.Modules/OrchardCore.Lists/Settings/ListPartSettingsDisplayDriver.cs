@@ -2,8 +2,8 @@ using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -24,23 +24,23 @@ namespace OrchardCore.Lists.Settings
             TS = localizer;
         }
 
-        public IStringLocalizer TS { get; set; }
+        public IStringLocalizer TS { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
 
             return Initialize<ListPartSettingsViewModel>("ListPartSettings_Edit", model =>
             {
-                model.ListPartSettings = contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
+                model.ListPartSettings = contentTypePartDefinition.GetSettings<ListPartSettings>();
                 model.PageSize = model.ListPartSettings.PageSize;
                 model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
                 model.ContentTypes = new NameValueCollection();
 
-                foreach(var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
+                foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
                 }
@@ -49,7 +49,7 @@ namespace OrchardCore.Lists.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -64,8 +64,11 @@ namespace OrchardCore.Lists.Settings
             }
             else
             {
-                context.Builder.WithSetting("PageSize", model.PageSize.ToString());
-                context.Builder.ContainedContentTypes(model.ContainedContentTypes);
+                context.Builder.WithSettings(new ListPartSettings
+                {
+                    PageSize = model.PageSize,
+                    ContainedContentTypes = model.ContainedContentTypes
+                });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

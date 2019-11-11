@@ -40,7 +40,7 @@ namespace OrchardCore.Flows.Drivers
             {
                 m.BagPart = bagPart;
                 m.BuildPartDisplayContext = context;
-                m.Settings = context.TypePartDefinition.Settings.ToObject<BagPartSettings>();
+                m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
             })
             .Location("Detail", "Content:5");
         }
@@ -55,7 +55,7 @@ namespace OrchardCore.Flows.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(BagPart part, BuildPartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(BagPart part, UpdatePartEditorContext context)
         {
             var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
             var model = new BagPartEditViewModel { BagPart = part };
@@ -77,7 +77,7 @@ namespace OrchardCore.Flows.Drivers
 
         private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentTypePartDefinition typePartDefinition)
         {
-            var settings = typePartDefinition.Settings.ToObject<BagPartSettings>();
+            var settings = typePartDefinition.GetSettings<BagPartSettings>();
             return settings.ContainedContentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
         }
     }

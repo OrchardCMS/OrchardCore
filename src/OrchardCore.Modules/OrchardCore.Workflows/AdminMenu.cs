@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -21,7 +21,7 @@ namespace OrchardCore.Workflows
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Workflows"], "5", workflow => workflow
+            builder.Add(T["Workflows"], "8", workflow => workflow
                 .AddClass("workflows").Id("workflows").Action("Index", "WorkflowType", new { area = "OrchardCore.Workflows" })
                     .Permission(Permissions.ManageWorkflows)
                     .LocalNav());

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +19,7 @@ namespace OrchardCore.Environment.Commands
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public async Task ExecuteAsync(CommandParameters parameters)
         {

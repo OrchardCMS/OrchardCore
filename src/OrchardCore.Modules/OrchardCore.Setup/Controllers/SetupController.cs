@@ -44,7 +44,7 @@ namespace OrchardCore.Setup.Controllers
             T = t;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public async Task<ActionResult> Index(string token)
         {

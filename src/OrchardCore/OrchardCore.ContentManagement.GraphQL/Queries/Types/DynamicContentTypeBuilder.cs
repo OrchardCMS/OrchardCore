@@ -24,7 +24,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {

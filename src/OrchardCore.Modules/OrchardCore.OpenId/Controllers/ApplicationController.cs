@@ -31,7 +31,6 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IStringLocalizer<ApplicationController> T;
         private readonly IHtmlLocalizer<ApplicationController> H;
         private readonly ISiteService _siteService;
-        private readonly IShapeFactory _shapeFactory;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
@@ -46,7 +45,7 @@ namespace OrchardCore.OpenId.Controllers
             INotifier notifier,
             ShellDescriptor shellDescriptor)
         {
-            _shapeFactory = shapeFactory;
+            New = shapeFactory;
             _siteService = siteService;
             T = stringLocalizer;
             H = htmlLocalizer;
@@ -55,6 +54,8 @@ namespace OrchardCore.OpenId.Controllers
             _notifier = notifier;
             _shellDescriptor = shellDescriptor;
         }
+
+        public dynamic New { get; }
 
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {
@@ -65,13 +66,11 @@ namespace OrchardCore.OpenId.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var count = await _applicationManager.CountAsync();
 
             var model = new OpenIdApplicationsIndexViewModel
             {
-                Pager = await _shapeFactory.CreateAsync("Pager", new
-                {
-                    TotalItemCount = await _applicationManager.CountAsync()
-                })
+                Pager = (await New.Pager(pager)).TotalItemCount(count)
             };
 
             foreach (var application in await _applicationManager.ListAsync(pager.PageSize, pager.GetStartIndex()))

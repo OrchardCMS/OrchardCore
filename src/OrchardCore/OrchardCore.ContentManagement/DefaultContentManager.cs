@@ -22,23 +22,27 @@ namespace OrchardCore.ContentManagement
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly ILogger _logger;
-        private readonly DefaultContentManagerSession _contentManagerSession;
+        private readonly IContentManagerSession _contentManagerSession;
         private readonly IContentItemIdGenerator _idGenerator;
+        private readonly IClock _clock;
 
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
+            IContentManagerSession contentManagerSession,
             IEnumerable<IContentHandler> handlers,
             ISession session,
             IContentItemIdGenerator idGenerator,
-            ILogger<DefaultContentManager> logger)
+            ILogger<DefaultContentManager> logger,
+            IClock clock)
         {
             _contentDefinitionManager = contentDefinitionManager;
             Handlers = handlers;
             ReversedHandlers = handlers.Reverse().ToArray();
             _session = session;
             _idGenerator = idGenerator;
-            _contentManagerSession = new DefaultContentManagerSession();
+            _contentManagerSession = contentManagerSession;
             _logger = logger;
+            _clock = clock;
         }
 
         public IEnumerable<IContentHandler> Handlers { get; private set; }
@@ -175,18 +179,19 @@ namespace OrchardCore.ContentManagement
                 // When draft is required and latest is published a new version is added
                 if (contentItem.Published)
                 {
-                    // Save the previous version
-                    _session.Save(contentItem);
-
+                    // We save the previous version further because this call might do a session query.
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                     // Check if not versionable, meaning we use only one version
-                    if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
+                    if (!(contentTypeDefinition?.GetSettings<ContentTypeSettings>().Versionable ?? true))
                     {
                         contentItem.Published = false;
                     }
                     else
                     {
+                        // Save the previous version
+                        _session.Save(contentItem);
+
                         contentItem = await BuildNewVersionAsync(contentItem);
                     }
                 }
@@ -307,6 +312,7 @@ namespace OrchardCore.ContentManagement
             await Handlers.InvokeAsync(handler => handler.UnpublishingAsync(context), _logger);
 
             publishedItem.Published = false;
+            publishedItem.ModifiedUtc = _clock.UtcNow;
 
             _session.Save(publishedItem);
 

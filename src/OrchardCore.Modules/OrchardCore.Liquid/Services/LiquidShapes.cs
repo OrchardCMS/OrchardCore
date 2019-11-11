@@ -1,4 +1,3 @@
-using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -23,15 +22,7 @@ namespace OrchardCore.Liquid.Services
             templateContext.MemberAccessStrategy.Register<LiquidPartViewModel>();
             await templateContext.ContextualizeAsync(shapeDisplayContext.DisplayContext);
 
-            using (var writer = new StringWriter())
-            {
-                await liquidTemplateManager.RenderAsync(liquidPart.Liquid, writer, HtmlEncoder.Default, templateContext);
-                model.Html = writer.ToString();
-            }
-
-            model.Liquid = liquidPart.Liquid;
-            model.LiquidPart = liquidPart;
-            model.ContentItem = liquidPart.ContentItem;
+            model.Html = await liquidTemplateManager.RenderAsync(liquidPart.Liquid, HtmlEncoder.Default, templateContext);
         }
 
         public void Discover(ShapeTableBuilder builder)

@@ -1,7 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
@@ -32,7 +29,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public string Condition { get; set; }
         public string Culture { get; set; }
         public bool? Debug { get; set; }
-        public string Dependencies { get; set; }
+        public string DependsOn { get; set; }
         public string Version { get; set; }
 
         public ResourceLocation At { get; set; }
@@ -49,7 +46,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
                 // Include custom script
-                var setting = _resourceManager.Include("stylesheet", Src, DebugSrc);
+                var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -67,7 +64,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (AppendVersion.HasValue == true)
                 {
-                    setting.SetAppendVersion(AppendVersion);
+                    setting.ShouldAppendVersion(AppendVersion);
                 }
 
                 if (Debug != null)
@@ -117,7 +114,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (AppendVersion.HasValue == true)
                 {
-                    setting.SetAppendVersion(AppendVersion);
+                    setting.ShouldAppendVersion(AppendVersion);
                 }
 
                 if (!String.IsNullOrEmpty(Version))
@@ -144,12 +141,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (!String.IsNullOrEmpty(Culture))
                 {
-                    definition.SetCultures(Culture.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetCultures(Culture.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                if (!String.IsNullOrEmpty(Dependencies))
+                if (!String.IsNullOrEmpty(DependsOn))
                 {
-                    definition.SetDependencies(Dependencies.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 // Also include the style

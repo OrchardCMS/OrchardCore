@@ -1,10 +1,11 @@
 @model EditPartViewModel
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
 
 @{
     var orderedFields = Model.PartDefinition.Fields
-        .Select(field => new { Field = field, Order = int.Parse(field.Settings["Position"]?.ToString() ?? "0") })
+        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
         .OrderBy(x => x.Order)
         .Select(x => x.Field);
 }

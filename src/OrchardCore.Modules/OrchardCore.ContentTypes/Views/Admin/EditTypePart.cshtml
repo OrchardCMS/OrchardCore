@@ -9,7 +9,7 @@
     var typePart = Model.TypePartDefinition;
     var theme = await ThemeManager.GetThemeAsync();
     var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
-    var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.EndsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
+    var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
 }
 
 <h1>@RenderTitleSegments(T["Edit Part - {0}", Model.DisplayName])</h1>

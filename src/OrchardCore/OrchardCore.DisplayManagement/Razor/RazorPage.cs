@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.Settings;
@@ -114,14 +113,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 if (_themeLayout == null)
                 {
-                    var layoutAccessor = Context.RequestServices.GetService<ILayoutAccessor>();
-
-                    if (layoutAccessor == null)
-                    {
-                        throw new InvalidOperationException("Could not find a valid layout accessor");
-                    }
-
-                    _themeLayout = layoutAccessor.GetLayoutAsync().GetAwaiter().GetResult();
+                    _themeLayout = Context.Features.Get<RazorViewFeature>()?.ThemeLayout;
                 }
 
                 return _themeLayout;
@@ -228,7 +220,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
             }
-            
+
             return Title.GenerateTitle(separator);
         }
 
@@ -255,7 +247,6 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             return Shape.GetTagBuilder(shape, tag);
         }
-
 
         // <summary>
         /// In a Razor layout page, renders the portion of a content page that is not within a named zone.
@@ -350,7 +341,7 @@ namespace OrchardCore.DisplayManagement.Razor
         }
 
         /// <summary>
-        /// Returns the full path of the current request.
+        /// Returns the full escaped path of the current request.
         /// </summary>
         public string FullRequestPath => Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString;
 
@@ -363,18 +354,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 if (_site == null)
                 {
-                    _site = (ISite)Context.Items[typeof(ISite)];
-
-                    if (_site == null)
-                    {
-                        var siteService = Context.RequestServices.GetService<ISiteService>();
-
-                        if (siteService != null)
-                        {
-                            _site = siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-                            Context.Items.Add(typeof(ISite), _site);
-                        }
-                    }
+                    _site = Context.Features.Get<RazorViewFeature>()?.Site;
                 }
 
                 return _site;

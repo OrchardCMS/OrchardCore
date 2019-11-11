@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
@@ -22,18 +21,21 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     public class ContentTypeQuery : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IOptions<GraphQLContentOptions> _optionsAccessor;
+        private readonly IOptions<GraphQLContentOptions> _contentOptionsAccessor;
+        private readonly IOptions<GraphQLSettings> _settingsAccessor;
 
         public ContentTypeQuery(IHttpContextAccessor httpContextAccessor,
-            IOptions<GraphQLContentOptions> optionsAccessor,
+            IOptions<GraphQLContentOptions> contentOptionsAccessor,
+            IOptions<GraphQLSettings> settingsAccessor,
             IStringLocalizer<ContentTypeQuery> localizer)
         {
             _httpContextAccessor = httpContextAccessor;
-            _optionsAccessor = optionsAccessor;
+            _contentOptionsAccessor = contentOptionsAccessor;
+            _settingsAccessor = settingsAccessor;
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task<IChangeToken> BuildAsync(ISchema schema)
         {
@@ -42,15 +44,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             var contentDefinitionManager = serviceProvider.GetService<IContentDefinitionManager>();
             var contentTypeBuilders = serviceProvider.GetServices<IContentTypeBuilder>().ToList();
 
+            var changeToken = contentDefinitionManager.ChangeToken;
+
             foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
             {
-                var typeType = new ContentItemType(_optionsAccessor)
+                var typeType = new ContentItemType(_contentOptionsAccessor)
                 {
                     Name = typeDefinition.Name,
                     Description = T["Represents a {0}.", typeDefinition.DisplayName]
                 };
 
-                var query = new ContentItemsFieldType(typeDefinition.Name, schema)
+                var query = new ContentItemsFieldType(typeDefinition.Name, schema, _contentOptionsAccessor, _settingsAccessor)
                 {
                     Name = typeDefinition.Name,
                     Description = T["Represents a {0}.", typeDefinition.DisplayName],
@@ -62,7 +66,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     builder.Build(query, typeDefinition, typeType);
                 }
 
-                var settings = typeDefinition.Settings?.ToObject<ContentTypeSettings>();
+                var settings = typeDefinition.GetSettings<ContentTypeSettings>();
 
                 // Only add queries over standard content types
                 if (settings == null || String.IsNullOrWhiteSpace(settings.Stereotype))
@@ -76,7 +80,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 }
             }
 
-            return Task.FromResult(contentDefinitionManager.ChangeToken);
+            return Task.FromResult(changeToken);
         }
     }
 }

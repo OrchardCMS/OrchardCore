@@ -1,4 +1,4 @@
-﻿using OrchardCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -7,6 +7,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Widgets.Drivers;
 using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.Settings;
+using OrchardCore.DisplayManagement.Descriptors;
 
 namespace OrchardCore.Widgets
 {
@@ -14,12 +15,14 @@ namespace OrchardCore.Widgets
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            //Add Widget Card Shapes
+            services.AddScoped<IShapeTableProvider,ContentCardShapes>();
             // Widgets List Part
             services.AddScoped<IContentPartDisplayDriver, WidgetsListPartDisplay>();
-            services.AddSingleton<ContentPart, WidgetsListPart>();
+            services.AddContentPart<WidgetsListPart>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
-            services.AddSingleton<ContentPart, WidgetMetadata>();
+            services.AddContentPart<WidgetMetadata>();
             services.AddScoped<IDataMigration, Migrations>();
         }
     }

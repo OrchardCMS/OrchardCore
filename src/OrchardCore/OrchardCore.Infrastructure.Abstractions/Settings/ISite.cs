@@ -5,7 +5,9 @@ namespace OrchardCore.Settings
 {
     public interface ISite : IEntity
     {
+        bool IsReadonly { get; set; }
         string SiteName { get; set; }
+        string PageTitleFormat { get; set; }
         string SiteSalt { get; set; }
         string SuperUser { get; set; }
         string Calendar { get; set; }
@@ -18,5 +20,6 @@ namespace OrchardCore.Settings
         int MaxPagedCount { get; set; }
         string BaseUrl { get; set; }
         RouteValueDictionary HomeRoute { get; set; }
+        bool AppendVersion { get; set; }
     }
 }

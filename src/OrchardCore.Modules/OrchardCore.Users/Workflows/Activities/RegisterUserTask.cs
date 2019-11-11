@@ -40,6 +40,7 @@ namespace OrchardCore.Users.Workflows.Activities
 
         // The technical name of the activity. Activities on a workflow definition reference this name.
         public override string Name => nameof(RegisterUserTask);
+        public override LocalizedString DisplayText => T["Register User Task"];
 
         // The category to which this activity belongs. The activity picker groups activities by this category.
         public override LocalizedString Category => T["Content"];
@@ -114,7 +115,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     if (request.Host.Port.HasValue)
                         uriBuilder.Port = request.Host.Port.Value;
 
-                    uriBuilder.Path = string.Concat(request.PathBase, "/OrchardCore.Users/Registration/ConfirmEmail");
+                    uriBuilder.Path = request.PathBase.Add("/OrchardCore.Users/Registration/ConfirmEmail").Value;
                     uriBuilder.Query = string.Format("userId={0}&code={1}", user.Id, UrlEncoder.Default.Encode(code));
                     workflowContext.Properties["EmailConfirmationUrl"] = uriBuilder.Uri.ToString();
 

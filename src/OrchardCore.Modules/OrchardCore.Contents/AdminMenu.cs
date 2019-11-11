@@ -25,7 +25,7 @@ namespace OrchardCore.Contents
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -44,7 +44,7 @@ namespace OrchardCore.Contents
                     .LocalNav())
                 );
 
-            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
+            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
             if (contentTypes.Any())
             {
                 await builder.AddAsync(T["New"], "-1", async newMenu =>

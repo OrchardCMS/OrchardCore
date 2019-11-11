@@ -18,11 +18,11 @@ using OpenIddict.Mvc.Internal;
 using OpenIddict.Server;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Filters;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.ViewModels;
+using OrchardCore.Routing;
 using OrchardCore.Security.Services;
 using OrchardCore.Users.Services;
 
@@ -390,7 +390,7 @@ namespace OrchardCore.OpenId.Controllers
             if (request.IsRefreshTokenGrantType())
             {
                 var type = info.Principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value;
-                if (!string.Equals(type, OpenIdConstants.EntityTypes.User, StringComparison.Ordinal))
+                if (!string.Equals(type, OpenIdConstants.EntityTypes.User))
                 {
                     return BadRequest(new OpenIdConnectResponse
                     {

@@ -24,6 +24,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override string Name => nameof(CreateContentTask);
         public override LocalizedString Category => T["Content"];
+        public override LocalizedString DisplayText => T["Create Content Task"];
 
         public string ContentType
         {
