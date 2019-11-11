@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,18 +6,17 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sitemaps.Builders;
+using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Drivers;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Routing;
 using OrchardCore.Sitemaps.Services;
-using OrchardCore.Sitemaps.Sitemaps;
 
 namespace OrchardCore.Sitemaps
 {
@@ -53,12 +51,18 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ISitemapManager, SitemapManager>();
-            services.AddScoped<IDisplayManager<Sitemap>, DisplayManager<Sitemap>>();
+            services.AddScoped<ISitemapHelperService, SitemapHelperService>();
+            services.AddScoped<IDisplayManager<SitemapSource>, DisplayManager<SitemapSource>>();
+            services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();
+            services.AddScoped<ISitemapTypeBuilder, SitemapTypeBuilder>();
+            services.AddScoped<ISitemapCacheProvider, DefaultSitemapCacheProvider>();
+            services.AddScoped<ISitemapCacheManager, DefaultSitemapCacheManager>();
+            services.AddScoped<ISitemapTypeCacheManager, SitemapTypeCacheManager>();
+            services.AddScoped<ISitemapTypeBuilder, SitemapIndexTypeBuilder>();
+            services.AddScoped<ISitemapTypeCacheManager, SitemapIndexTypeCacheManager>();
+            services.AddScoped<ISitemapModifiedDateProvider, DefaultSitemapModifiedDateProvider>();
+            services.AddScoped<IRouteableContentTypeCoordinator, DefaultRouteableContentTypeCoordinator>();
 
-            // Sitemap Index node
-            services.AddScoped<ISitemapProviderFactory, SitemapProviderFactory<SitemapIndex>>();
-            services.AddSingleton<ISitemapBuilder, SitemapIndexBuilder>();
-            services.AddScoped<IDisplayDriver<Sitemap>, SitemapIndexDriver>();
 
             // Sitemap Part.
             services.AddScoped<IContentPartDisplayDriver, SitemapPartDisplay>();
@@ -68,7 +72,6 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<ISitemapPartContentItemValidationProvider, SitemapPartContentItemValidationProvider>();
             services.AddScoped<ISitemapContentItemValidationProvider>(serviceProvider =>
                 serviceProvider.GetRequiredService<ISitemapPartContentItemValidationProvider>());
-            services.AddScoped<IRouteableContentTypeCoordinator, DefaultRouteableContentTypeCoordinator>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

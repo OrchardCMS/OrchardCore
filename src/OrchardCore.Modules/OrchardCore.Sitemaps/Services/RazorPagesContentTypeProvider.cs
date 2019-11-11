@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Builders;
 
 namespace OrchardCore.Sitemaps.Services
 {

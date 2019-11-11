@@ -1,10 +1,9 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
-using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.ContentLocalization.Sitemaps
@@ -28,23 +27,20 @@ namespace OrchardCore.ContentLocalization.Sitemaps
 
         public XAttribute GetExtendedAttribute => ExtendedAttribute;
 
-        public async Task ApplyExtendedMetadataAsync(SitemapBuilderContext context,
-            IEnumerable<ContentItem> contentItems,
+        public async Task<bool> ApplyExtendedMetadataAsync(
+            SitemapBuilderContext context,
+            ContentItemsQueryContext queryContext,
             ContentItem contentItem,
             XElement url)
         {
             var part = contentItem.As<LocalizationPart>();
             if (part == null)
             {
-                return;
+                return true;
             }
 
-            //TODO Optimize. Consider an ItemContext perhaps.
-            var allLocalizedContentParts = contentItems
-                .Where(ci => ci.As<LocalizationPart>() != null)
-                .Select(ci => ci.As<LocalizationPart>());
-
-            var localizedContentParts = allLocalizedContentParts
+            var localizedContentParts = queryContext.ReferenceContentItems
+                .Select(ci => ci.As<LocalizationPart>())
                 .Where(cp => cp.LocalizationSet == part.LocalizationSet);
 
             foreach (var localizedPart in localizedContentParts)
@@ -63,6 +59,8 @@ namespace OrchardCore.ContentLocalization.Sitemaps
 
                 url.Add(linkNode);
             }
+
+            return true;
         }
     }
 }

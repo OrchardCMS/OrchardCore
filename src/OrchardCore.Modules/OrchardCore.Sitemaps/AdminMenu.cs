@@ -1,11 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.Sitemaps.Drivers;
 
 namespace OrchardCore.Sitemaps
 {
@@ -28,9 +24,16 @@ namespace OrchardCore.Sitemaps
             builder.Add(S["Configuration"], cfg => cfg
                     .Add(S["Sitemaps"], "1.6", admt => admt
                         .Permission(Permissions.ManageSitemaps)
-                        .Action("List", "Admin", new { area = "OrchardCore.Sitemaps" })
-                        .LocalNav()
+                        .Add(S["Sitemaps"], "5", sitemaps => sitemaps
+                            .Action("List", "Admin", new { area = "OrchardCore.Sitemaps" })
+                            .LocalNav()
+                        )
+                        .Add(S["Sitemap Index"], "10", sitemaps => sitemaps
+                            .Action("Edit", "SitemapIndex", new { area = "OrchardCore.Sitemaps" })
+                            .LocalNav()
+                        )
                     ));
+
             return Task.CompletedTask;
         }
     }

@@ -6,48 +6,64 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
+using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Controllers
 {
+    [Admin]
     public class AdminController : Controller, IUpdateModel
     {
+        private readonly ISitemapHelperService _sitemapService;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IDisplayManager<Sitemap> _displayManager;
-        private readonly IEnumerable<ISitemapProviderFactory> _factories;
+        private readonly IDisplayManager<SitemapSource> _displayManager;
+        private readonly IEnumerable<ISitemapSourceFactory> _sourceFactories;
         private readonly ISitemapManager _sitemapManager;
+        private readonly ISitemapIdGenerator _sitemapIdGenerator;
         private readonly ISiteService _siteService;
+        private readonly ISitemapCacheProvider _sitemapCacheProvider;
         private readonly INotifier _notifier;
 
-        public AdminController(
-            IAuthorizationService authorizationService,
-            IDisplayManager<Sitemap> displayManager,
-            IEnumerable<ISitemapProviderFactory> factories,
-            ISitemapManager sitemapService,
-            ISiteService siteService,
-            IShapeFactory shapeFactory,
-            IHtmlLocalizer<AdminController> htmlLocalizer,
-            INotifier notifier)
-        {
-            _authorizationService = authorizationService;
-            _displayManager = displayManager;
-            _factories = factories;
-            _sitemapManager = sitemapService;
-            _siteService = siteService;
-            New = shapeFactory;
-            _notifier = notifier;
-            H = htmlLocalizer;
-        }
+        private readonly IStringLocalizer T;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
-        public IHtmlLocalizer H { get; }
-        public dynamic New { get; set; }
+        public AdminController(
+            ISitemapHelperService sitemapService,
+            IAuthorizationService authorizationService,
+            IDisplayManager<SitemapSource> displayManager,
+            IEnumerable<ISitemapSourceFactory> sourceFactories,
+            ISitemapManager sitemapManager,
+            ISitemapIdGenerator sitemapIdGenerator,
+            ISiteService siteService,
+            ISitemapCacheProvider sitemapCacheProvider,
+            INotifier notifier,
+            IShapeFactory shapeFactory,
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer)
+        {
+            _sitemapService = sitemapService;
+            _displayManager = displayManager;
+            _sourceFactories = sourceFactories;
+            _authorizationService = authorizationService;
+            _sitemapManager = sitemapManager;
+            _sitemapIdGenerator = sitemapIdGenerator;
+            _siteService = siteService;
+            _sitemapCacheProvider = sitemapCacheProvider;
+            _notifier = notifier;
+            T = stringLocalizer;
+            H = htmlLocalizer;
+            New = shapeFactory;
+        }
 
         public async Task<IActionResult> List(SitemapListOptions options, PagerParameters pagerParameters)
         {
@@ -65,12 +81,16 @@ namespace OrchardCore.Sitemaps.Controllers
                 options = new SitemapListOptions();
             }
 
-            var sitemaps = await _sitemapManager.ListSitemapsAsync();
+            var sitemaps = (await _sitemapManager.ListSitemapsAsync())
+                .Where(s => s.GetType() == typeof(Sitemap))
+                .Cast<Sitemap>();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                sitemaps = sitemaps.Where(q => q.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) >= 0);
+                sitemaps = sitemaps.Where(smp => smp.Name.Contains(options.Search));
             }
+
+            var count = sitemaps.Count();
 
             var results = sitemaps
                 .Skip(pager.GetStartIndex())
@@ -81,194 +101,201 @@ namespace OrchardCore.Sitemaps.Controllers
             var routeData = new RouteData();
             routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(sitemaps.Count()).RouteData(routeData);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
 
-            // Build create thumbnails.
-            var thumbnails = new Dictionary<string, dynamic>();
-            foreach (var factory in _factories)
+            var model = new ListSitemapViewModel
             {
-                var sitemap = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(sitemap, this, "Thumbnail");
-                thumbnail.Sitemap = sitemap;
-                thumbnails.Add(factory.Type, thumbnail);
-            }
-
-            var model = new SitemapListViewModel
-            {
-                Thumbnails = thumbnails,
-                Sitemaps = new List<dynamic>(),
+                Sitemaps = results.Select(sm => new SitemapListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToList(),
+                Options = options,
                 Pager = pagerShape
             };
 
-            // Build SummaryAdmin for existing sitemaps.
-            foreach (var sitemap in results)
-            {
-                var shape = (dynamic)await _displayManager.BuildDisplayAsync(sitemap, this, "SummaryAdmin");
-                shape.Sitemap = sitemap;
-                model.Sitemaps.Add(shape);
-            }
-
             return View(model);
         }
 
-        public async Task<IActionResult> Create(string type)
+        public async Task<IActionResult> Display(string sitemapId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
                 return Unauthorized();
             }
 
-            var sitemap = _factories.FirstOrDefault(x => x.Type == type)?.Create();
+            var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
 
             if (sitemap == null)
             {
                 return NotFound();
             }
 
-            var model = new SitemapCreateViewModel
+            var items = new List<dynamic>();
+            foreach (var source in sitemap.SitemapSources)
             {
-                Editor = await _displayManager.BuildEditorAsync(sitemap, updater: this, isNew: true),
-                SitemapType = type
+                dynamic item = await _displayManager.BuildDisplayAsync(source, this, "SummaryAdmin");
+                item.SitemapId = sitemap.SitemapId;
+                item.SitemapSource = source;
+                items.Add(item);
+            }
+
+            var thumbnails = new Dictionary<string, dynamic>();
+            foreach (var factory in _sourceFactories)
+            {
+                var source = factory.Create();
+                dynamic thumbnail = await _displayManager.BuildDisplayAsync(source, this, "Thumbnail");
+                thumbnail.SitemapSource = source;
+                thumbnail.SitemapSourceType = factory.Name;
+                thumbnail.Sitemap = sitemap;
+                thumbnails.Add(factory.Name, thumbnail);
+            }
+
+            var model = new DisplaySitemapViewModel
+            {
+                Sitemap = sitemap,
+                Items = items,
+                Thumbnails = thumbnails,
             };
 
             return View(model);
         }
 
-        [HttpPost, ActionName(nameof(Create))]
-        public async Task<IActionResult> CreatePost(SitemapCreateViewModel model)
+        public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
                 return Unauthorized();
             }
 
-            var sitemap = _factories.FirstOrDefault(x => x.Type == model.SitemapType)?.Create();
+            var model = new CreateSitemapViewModel();
 
-            if (sitemap == null)
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateSitemapViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return NotFound();
+                return Unauthorized();
             }
-
-            var editor = await _displayManager.UpdateEditorAsync(sitemap, updater: this, isNew: true);
 
             if (ModelState.IsValid)
             {
-                await _sitemapManager.SaveSitemapAsync(sitemap.Id, sitemap);
+                if (String.IsNullOrEmpty(model.Path))
+                {
+                    model.Path = _sitemapService.GetSitemapSlug(model.Name);
+                }
 
-                _notifier.Success(H["Sitemap created successfully"]);
-                return RedirectToAction("List");
+                await _sitemapService.ValidatePathAsync(model.Path, this);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var sitemap = new Sitemap
+                {
+                    SitemapId = _sitemapIdGenerator.GenerateUniqueId(),
+                    Name = model.Name,
+                    Path = model.Path,
+                    Enabled = model.Enabled
+                };
+
+                await _sitemapManager.SaveSitemapAsync(sitemap.SitemapId, sitemap);
+
+                return RedirectToAction(nameof(List));
             }
 
             // If we got this far, something failed, redisplay form
-            model.Editor = editor;
-
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(string sitemapId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
                 return Unauthorized();
             }
 
-            var sitemap = await _sitemapManager.GetSitemapAsync(id);
+            var sitemap = (await _sitemapManager.GetSitemapAsync(sitemapId)) as Sitemap;
 
             if (sitemap == null)
             {
                 return NotFound();
             }
 
-            var model = new SitemapEditViewModel
+            var model = new EditSitemapViewModel
             {
-                Id = sitemap.Id,
-                Editor = await _displayManager.BuildEditorAsync(sitemap, updater: this, isNew: false)
+                SitemapId = sitemap.SitemapId,
+                Name = sitemap.Name,
+                Enabled = sitemap.Enabled,
+                Path = sitemap.Path
             };
 
             return View(model);
         }
 
-        [HttpPost, ActionName("Edit")]
-        public async Task<IActionResult> EditPost(SitemapEditViewModel model)
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditSitemapViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
                 return Unauthorized();
             }
 
-            var sitemap = (await _sitemapManager.GetSitemapAsync(model.Id)).Clone();
+            var sitemap = (await _sitemapManager.LoadSitemapAsync(model.SitemapId)) as Sitemap;
 
             if (sitemap == null)
             {
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(sitemap, updater: this, isNew: false);
+            if (ModelState.IsValid)
+            {
+                if (String.IsNullOrEmpty(model.Path))
+                {
+                    model.Path = _sitemapService.GetSitemapSlug(model.Name);
+                }
+
+                await _sitemapService.ValidatePathAsync(model.Path, this, model.SitemapId);
+            }
 
             if (ModelState.IsValid)
             {
-                await _sitemapManager.SaveSitemapAsync(model.Id, sitemap);
+                sitemap.Name = model.Name;
+                sitemap.Enabled = model.Enabled;
+                sitemap.Path = model.Path;
+
+                await _sitemapManager.SaveSitemapAsync(sitemap.SitemapId, sitemap);
 
                 _notifier.Success(H["Sitemap updated successfully"]);
-                return RedirectToAction("List");
-            }
 
-            model.Editor = editor;
+                return RedirectToAction(nameof(List));
+            }
 
             // If we got this far, something failed, redisplay form
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(string sitemapId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
                 return Unauthorized();
             }
 
-            var sitemap = await _sitemapManager.GetSitemapAsync(id);
+            var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
 
             if (sitemap == null)
             {
                 return NotFound();
             }
 
-            await _sitemapManager.DeleteSitemapAsync(id);
+            // Clear sitemap cache when deleted.
+            await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
+
+            await _sitemapManager.DeleteSitemapAsync(sitemapId);
 
             _notifier.Success(H["Sitemap deleted successfully"]);
 
-            return RedirectToAction("List");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Toggle(string id)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
-            {
-                return Unauthorized();
-            }
-
-            var sitemap = await _sitemapManager.GetSitemapAsync(id);
-
-            if (sitemap == null)
-            {
-                return NotFound();
-            }
-
-            sitemap.Enabled = !sitemap.Enabled;
-
-            await _sitemapManager.SaveSitemapAsync(id, sitemap);
-
-            if (sitemap.Enabled)
-            {
-                _notifier.Success(H["Sitemap enabled successfully"]);
-            } else
-            {
-                _notifier.Success(H["Sitemap disabled successfully"]);
-            }
             return RedirectToAction(nameof(List));
         }
     }
 }
-

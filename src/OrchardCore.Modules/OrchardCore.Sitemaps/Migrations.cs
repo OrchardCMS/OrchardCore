@@ -6,7 +6,7 @@ namespace OrchardCore.Sitemaps
 {
     public class Migrations : DataMigration
     {
-        IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
@@ -17,7 +17,7 @@ namespace OrchardCore.Sitemaps
         {
             _contentDefinitionManager.AlterPartDefinition("SitemapPart", builder => builder
                 .Attachable()
-                .WithDescription("Provides a part that allows sitemap settings on a content item."));
+                .WithDescription("Provides an optional part that allows content items to be excluded, or configured, on a content item."));
 
             return 1;
         }

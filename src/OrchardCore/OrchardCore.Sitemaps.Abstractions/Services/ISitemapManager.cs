@@ -1,38 +1,36 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Microsoft.Extensions.Primitives;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Services
 {
     public interface ISitemapManager
     {
-        /// <summary>
-        /// Returns a list of all store <see cref="Sitemap"/>.
-        /// </summary>
-        Task<IEnumerable<Sitemap>> ListSitemapsAsync();
+        Task<SitemapType> LoadSitemapAsync(string sitemapId);
 
         /// <summary>
-        /// Saves the specific <see cref="Sitemap"/>.
+        /// Returns a list of all store <see cref="SitemapType"/>.
         /// </summary>
-        /// <param name="id">The id of the sitemap to update.</param>
-        /// <param name="sitemap">The <see cref="Sitemap"/> instance to save.</param>
-        Task SaveSitemapAsync(string id, Sitemap sitemap);
+        Task<IEnumerable<SitemapType>> ListSitemapsAsync();
 
         /// <summary>
-        /// Deletes the specified <see cref="Sitemap"/>.
+        /// Saves the specific <see cref="SitemapType"/>.
         /// </summary>
-        /// <param name="id">The id of the sitemap to delete.</param>
-        Task DeleteSitemapAsync(string id);
+        /// <param name="sitemap">The <see cref="SitemapType"/> instance to save.</param>
+        Task SaveSitemapAsync(string sitemapId, SitemapType sitemap);
 
         /// <summary>
-        /// Gets the <see cref="Sitemap"/> instance with the specified id.
+        /// Deletes the specified <see cref="SitemapType"/>.
         /// </summary>
-        /// <param name="id"></param>
-        Task<Sitemap> GetSitemapAsync(string id);
+        /// <param name="sitemapId">The id of the sitemap to delete.</param>
+        Task DeleteSitemapAsync(string sitemapId);
+
+        /// <summary>
+        /// Gets the <see cref="SitemapType"/> instance with the specified id.
+        /// </summary>
+        /// <param name="sitemapId"></param>
+        Task<SitemapType> GetSitemapAsync(string sitemapId);
 
         /// <summary>
         /// Build all the sitemap route entries.
@@ -44,11 +42,5 @@ namespace OrchardCore.Sitemaps.Services
         /// </summary>
         IChangeToken ChangeToken { get; }
 
-        Task<XDocument> BuildSitemapAsync(Sitemap sitemap, SitemapBuilderContext context);
-        Task<DateTime?> GetSitemapLastModifiedDateAsync(Sitemap sitemap, SitemapBuilderContext context);
-
-        Task ValidatePathAsync(Sitemap sitemap, IUpdateModel updater);
-
-        string GetSitemapSlug(string path);
     }
 }

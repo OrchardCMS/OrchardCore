@@ -25,8 +25,10 @@ namespace OrchardCore.Sitemaps.Routing
             var path = values["sitemap"] as string;
             if (!String.IsNullOrEmpty(path) && _entries.TryGetSitemapId(path, out var sitemapId))
             {
-                var routeValues = new RouteValueDictionary(_options.GlobalRouteValues);
-                routeValues[_options.SitemapIdKey] = sitemapId;
+                var routeValues = new RouteValueDictionary(_options.GlobalRouteValues)
+                {
+                    [_options.SitemapIdKey] = sitemapId
+                };
 
                 return new ValueTask<RouteValueDictionary>(routeValues);
             }

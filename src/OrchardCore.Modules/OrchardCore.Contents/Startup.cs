@@ -38,6 +38,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sitemaps.Builders;
+using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 
@@ -149,7 +150,7 @@ namespace OrchardCore.Contents
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
                 pattern: "Admin/Contents/ContentItems/{contentTypeId?}",
-                defaults: new {controller = "Admin", action = "List" }
+                defaults: new { controller = "Admin", action = "List" }
             );
         }
     }
@@ -207,9 +208,13 @@ namespace OrchardCore.Contents
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ISitemapProviderFactory, SitemapProviderFactory<ContentTypesSitemap>>();
-            services.AddScoped<ISitemapBuilder, ContentTypesSitemapBuilder>();
-            services.AddScoped<IDisplayDriver<Sitemap>, ContentTypesSitemapDriver>();
+            services.AddScoped<ISitemapSourceBuilder, ContentTypesSitemapSourceBuilder>();
+            services.AddScoped<ISitemapSourceCacheManager, ContentTypesSitemapSourceCacheManager>();
+            services.AddScoped<ISitemapSourceModifiedDateProvider, ContentTypesSitemapSourceModifiedDateProvider>();
+            services.AddScoped<IDisplayDriver<SitemapSource>, ContentTypesSitemapSourceDriver>();
+            services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<ContentTypesSitemapSource>>();
+            services.AddScoped<IContentItemsQueryProvider, DefaultContentItemsQueryProvider>();
+            services.AddScoped<IContentHandler, ContentTypesSitemapCacheHandler>();
         }
     }
 }

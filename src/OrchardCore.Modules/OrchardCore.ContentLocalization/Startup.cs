@@ -26,7 +26,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Sitemaps.Services;
+using OrchardCore.Sitemaps.Builders;
 using YesSql;
 
 namespace OrchardCore.ContentLocalization
@@ -96,6 +96,7 @@ namespace OrchardCore.ContentLocalization
         {
             services.AddScoped<ISitemapContentItemValidationProvider, SitemapLocalizedContentItemValidationProvider>();
             services.AddScoped<ISitemapContentItemExtendedMetadataProvider, SitemapUrlHrefLangExtendedMetadataProvider>();
+            services.Replace(ServiceDescriptor.Scoped<IContentItemsQueryProvider, LocalizedContentItemsQueryProvider>());
         }
     }
 

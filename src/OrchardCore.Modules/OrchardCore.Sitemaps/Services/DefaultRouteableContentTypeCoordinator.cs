@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Builders;
 
 namespace OrchardCore.Sitemaps.Services
 {

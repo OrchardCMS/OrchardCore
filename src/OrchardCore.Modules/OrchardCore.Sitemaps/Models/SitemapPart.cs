@@ -2,6 +2,9 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Sitemaps.Models
 {
+    /// <summary>
+    /// SitemapPart is an optional part, which allows individual content items to be excluded from sitemaps.
+    /// </summary>
     public class SitemapPart : ContentPart
     {
         public bool OverrideSitemapConfig { get; set; }
