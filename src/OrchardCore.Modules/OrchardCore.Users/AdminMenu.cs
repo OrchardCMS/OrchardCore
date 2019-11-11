@@ -23,7 +23,7 @@ namespace OrchardCore.Users
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Security"], "7", security => security
+            builder.Add(T["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
                     .AddClass("security").Id("security")
                         .Add(T["Users"], "5", installed => installed
                             .Action("Index", "Admin", "OrchardCore.Users")

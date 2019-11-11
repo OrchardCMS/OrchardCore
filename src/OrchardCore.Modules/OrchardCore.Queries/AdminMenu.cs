@@ -21,7 +21,7 @@ namespace OrchardCore.Queries
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Search"], "6", search => search
+            builder.Add(T["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                     .AddClass("search").Id("search")
                     .Add(T["Queries"], T["Queries"], contentItems => contentItems
                     .Add(T["All queries"], "1", queries => queries

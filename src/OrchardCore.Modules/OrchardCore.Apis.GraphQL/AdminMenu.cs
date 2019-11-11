@@ -22,7 +22,7 @@ namespace OrchardCore.Apis.GraphQL
             }
 
             builder
-                .Add(S["Configuration"], "10", design => design
+                .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, design => design
                     .AddClass("menu-configuration").Id("configuration")
                     .Add(S["GraphiQL"], S["GraphiQL"], deployment => deployment
                         .Action("Index", "Admin", new { area = "OrchardCore.Apis.GraphQL" })
