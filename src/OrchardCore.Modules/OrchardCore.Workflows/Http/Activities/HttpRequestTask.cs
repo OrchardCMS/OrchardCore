@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -195,8 +194,6 @@ namespace OrchardCore.Workflows.Http.Activities
             }
         }
 
-        private static readonly Regex HeaderPattern = new Regex(@"([\w-]+):[\s]*(.*)", RegexOptions.Compiled);
-
         private IEnumerable<KeyValuePair<string, string>> ParseHeaders(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
@@ -204,7 +201,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
             return
                 from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
-                let pair = HeaderPattern.Split(header).Where(s => s != String.Empty).ToArray<string>()
+                let pair = header.Split(':', 2)
                 where pair.Length == 2
                 select new KeyValuePair<string, string>(pair[0], pair[1]);
         }
