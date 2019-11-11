@@ -222,7 +222,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Unauthorized();
             }
 
-            var document = await _backgroundTaskManager.GetDocumentAsync();
+            var document = await _backgroundTaskManager.LoadDocumentAsync();
 
             if (!document.Settings.ContainsKey(name))
             {
@@ -242,7 +242,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Unauthorized();
             }
 
-            var document = await _backgroundTaskManager.GetDocumentAsync();
+            var document = await _backgroundTaskManager.LoadDocumentAsync();
 
             if (!document.Settings.TryGetValue(name, out var settings))
             {
@@ -266,7 +266,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Unauthorized();
             }
 
-            var document = await _backgroundTaskManager.GetDocumentAsync();
+            var document = await _backgroundTaskManager.LoadDocumentAsync();
 
             if (!document.Settings.TryGetValue(name, out var settings))
             {

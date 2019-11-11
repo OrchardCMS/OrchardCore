@@ -129,8 +129,7 @@ namespace OrchardCore.Tenants.Controllers
                 }
                 else
                 {
-                    _shellSettingsManager.SaveSettings(shellSettings);
-                    var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
+                    await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                     var token = CreateSetupToken(shellSettings);
 

@@ -198,7 +198,7 @@ namespace OrchardCore.Queries.Controllers
                 return Unauthorized();
             }
 
-            var query = await _queryManager.GetQueryAsync(model.Name);
+            var query = (await _queryManager.LoadQueryAsync(model.Name));
 
             if (query == null)
             {
@@ -229,7 +229,7 @@ namespace OrchardCore.Queries.Controllers
                 return Unauthorized();
             }
 
-            var query = await _queryManager.GetQueryAsync(id);
+            var query = await _queryManager.LoadQueryAsync(id);
 
             if (query == null)
             {
