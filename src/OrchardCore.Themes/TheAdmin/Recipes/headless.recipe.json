@@ -36,6 +36,7 @@
         "OrchardCore.Autoroute",
         "OrchardCore.Html",
         "OrchardCore.ContentFields",
+        "OrchardCore.ContentPreview",
         "OrchardCore.Contents",
         "OrchardCore.Contents.FileContentDefinition",
         "OrchardCore.ContentTypes",
@@ -56,6 +57,8 @@
         "OrchardCore.OpenId.Management",
         "OrchardCore.OpenId.Server",
         "OrchardCore.OpenId.Validation",
+        "OrchardCore.Queries",
+        "OrchardCore.Templates",
         "OrchardCore.Title",
         "OrchardCore.Widgets",
 
