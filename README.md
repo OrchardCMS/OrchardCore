@@ -46,7 +46,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 ### Visual Studio
 
-- Download Visual Studio 2017 or 2019 (any edition) from https://www.visualstudio.com/downloads/
+- Download Visual Studio 2019 (any edition) from https://www.visualstudio.com/downloads/
 - Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages
 - Ensure `OrchardCore.Cms.Web` is the startup project and run it
 
