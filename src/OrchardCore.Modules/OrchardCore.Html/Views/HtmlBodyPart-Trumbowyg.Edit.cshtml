@@ -1,0 +1,40 @@
+@model HtmlBodyPartViewModel
+@using Newtonsoft.Json.Linq;
+@using OrchardCore.Html.ViewModels;
+@using OrchardCore.Html.Settings;
+@using OrchardCore.ContentLocalization
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization
+
+@{
+    var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
+    var trumbowygSettings = Model.TypePartDefinition.GetSettings<HtmlBodyPartTrumbowygEditorSettings>();
+    var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
+}
+
+<script asp-name="trumbowyg-plugins" depends-on="admin" version="2" at="Foot"></script>
+<style asp-name="trumbowyg-plugins" version="2"></style>
+
+<div class="form-group">
+    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
+    @if (culture.IsRightToLeft())
+    {
+        <div style="text-align:right">
+            <textarea asp-for="Html" rows="5" class="form-control"></textarea>
+        </div>
+    }
+    else
+    {
+        <textarea asp-for="Html" rows="5" class="form-control"></textarea>
+    }
+    <span class="hint">@T["The body of the content item."]</span>
+</div>
+
+<script at="Foot">
+    $(function () {
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(@Html.Raw(trumbowygSettings.Options)).on('tbwchange', function () {
+            $(document).trigger('contentpreview:render');
+        });
+    });
+    $.trumbowyg.svgPath = '/OrchardCore.Resources/Styles/ui/icons.svg';
+</script>

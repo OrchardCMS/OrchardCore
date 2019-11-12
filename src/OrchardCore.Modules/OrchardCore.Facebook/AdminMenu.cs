@@ -27,13 +27,14 @@ namespace OrchardCore.Facebook
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder.Add(T["Configuration"], configuration => configuration
-                    .Add(T["Facebook"], "15", settings => settings
-                    .AddClass("facebook").Id("facebook")
-                            .Add(T["Application"], "1", client => client
+                        .Add(T["Settings"], settings => settings
+                            .Add(T["Facebook App"], T["Facebook App"], settings => settings
+                            .AddClass("facebookApp").Id("facebookApp")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
                             .Permission(Permissions.ManageFacebookApp)
                             .LocalNav())
-                ));
+                        )
+                    );
             }
             return Task.CompletedTask;
         }

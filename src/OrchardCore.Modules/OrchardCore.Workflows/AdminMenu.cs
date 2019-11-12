@@ -21,7 +21,7 @@ namespace OrchardCore.Workflows
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Workflows"], "8", workflow => workflow
+            builder.Add(T["Workflows"], NavigationConstants.AdminMenuWorkflowsPosition, workflow => workflow
                 .AddClass("workflows").Id("workflows").Action("Index", "WorkflowType", new { area = "OrchardCore.Workflows" })
                     .Permission(Permissions.ManageWorkflows)
                     .LocalNav());
