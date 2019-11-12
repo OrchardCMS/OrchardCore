@@ -47,7 +47,7 @@ namespace OrchardCore.Media.Services
 
                         if (!result)
                         {
-                            _logger.LogWarning("Temporary entry {0} could not be deleted.", c.Path);
+                            _logger.LogWarning("Temporary entry {Path} could not be deleted.", c.Path);
                         }
                     }
                 }
