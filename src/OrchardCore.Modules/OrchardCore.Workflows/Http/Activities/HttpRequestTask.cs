@@ -162,7 +162,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
                 foreach (var header in headers)
                 {
-                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                    httpClient.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
                 }
 
                 var httpMethod = HttpMethod;
