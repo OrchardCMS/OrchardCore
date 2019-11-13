@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -101,7 +102,12 @@ namespace OrchardCore.Contents.Controllers
                     break;
             }
 
-            if (contentTypeId != "")
+            if (model.Options.ContentsStatus == ContentsStatus.Owner)
+            {
+                query = query.With<ContentItemIndex>(x => x.Owner == HttpContext.User.Identity.Name);
+            }
+
+            if (!string.IsNullOrEmpty(contentTypeId))
             {
                 model.Options.SelectedContentType = contentTypeId;
             }
@@ -144,17 +150,17 @@ namespace OrchardCore.Contents.Controllers
                     break;
             }
 
-            //if (!String.IsNullOrWhiteSpace(model.Options.SelectedCulture))
-            //{
-            //    query = _cultureFilter.FilterCulture(query, model.Options.SelectedCulture);
-            //}
-
-            //if (model.Options.ContentsStatus == ContentsStatus.Owner)
-            //{
-            //    query = query.Where<CommonPartRecord>(cr => cr.OwnerId == Services.WorkContext.CurrentUser.Id);
-            //}
-
-            //model.Options.Cultures = _cultureManager.ListCultures();
+            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
+            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
+            var creatableList = new List<SelectListItem>();
+            if (contentTypes.Any())
+            {
+                foreach (var contentTypeDefinition in contentTypes)
+                {
+                    creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
+                }
+            }
+            model.Options.CreatableTypes = creatableList;
 
             // Invoke any service that could alter the query
             await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
@@ -179,24 +185,24 @@ namespace OrchardCore.Contents.Controllers
 
             //We populate the SelectLists
             model.Options.ContentStatuses = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString() },
-                new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
-                new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString() },
-                new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
-                new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
+                new SelectListItem() { Text = T["Latest"].Value, Value = nameof(ContentsStatus.Latest) },
+                new SelectListItem() { Text = T["Owned by me"].Value, Value = nameof(ContentsStatus.Owner) },
+                new SelectListItem() { Text = T["Published"].Value, Value = nameof(ContentsStatus.Published) },
+                new SelectListItem() { Text = T["Unpublished"].Value, Value = nameof(ContentsStatus.Draft) },
+                new SelectListItem() { Text = T["All versions"].Value, Value = nameof(ContentsStatus.AllVersions) }
             };
 
             model.Options.ContentSorts = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
-                new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
-                new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
-                new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
+                new SelectListItem() { Text = T["Recently created"].Value, Value = nameof(ContentsOrder.Created) },
+                new SelectListItem() { Text = T["Recently modified"].Value, Value = nameof(ContentsOrder.Modified) },
+                new SelectListItem() { Text = T["Recently published"].Value, Value = nameof(ContentsOrder.Published) },
+                new SelectListItem() { Text = T["Title"].Value, Value = nameof(ContentsOrder.Title) }
             };
 
             model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["Publish Now"].Value, Value = ContentsBulkAction.PublishNow.ToString() },
-                new SelectListItem() { Text = T["Unpublish"].Value, Value = ContentsBulkAction.Unpublish.ToString() },
-                new SelectListItem() { Text = T["Delete"].Value, Value = ContentsBulkAction.Remove.ToString() }
+                new SelectListItem() { Text = T["Publish Now"].Value, Value = nameof(ContentsBulkAction.PublishNow) },
+                new SelectListItem() { Text = T["Unpublish"].Value, Value = nameof(ContentsBulkAction.Unpublish) },
+                new SelectListItem() { Text = T["Delete"].Value, Value = nameof(ContentsBulkAction.Remove) }
             };
 
             var ContentTypeOptions = (await GetListableTypesAsync())
@@ -225,7 +231,6 @@ namespace OrchardCore.Contents.Controllers
         public ActionResult ListFilterPOST(ListContentsViewModel model)
         {
             return RedirectToAction("List", new RouteValueDictionary {
-                { "Options.SelectedCulture", model.Options.SelectedCulture },
                 { "Options.OrderBy", model.Options.OrderBy },
                 { "Options.ContentsStatus", model.Options.ContentsStatus },
                 { "Options.SelectedContentType", model.Options.SelectedContentType },

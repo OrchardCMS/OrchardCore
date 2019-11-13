@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
@@ -49,6 +49,7 @@
 
         <div class="ta-content">
             @await RenderSectionAsync("Messages", required: false)
+            @await RenderSectionAsync("Breadcrumbs", required: false)
 
             @await RenderBodyAsync()
         </div>
@@ -56,7 +57,7 @@
 
     @await RenderSectionAsync("Footer", required: false)
 
-    <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok="@T["Ok"]" data-cancel="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
+    <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
 
     <resources type="Footer" />
 </body>

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fluid;
@@ -69,7 +70,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var helper = tag.Term.Name;
 
-            if (helper.EndsWith("block") && helper.Length > "block".Length)
+            if (helper.EndsWith("block", StringComparison.Ordinal) && helper.Length > "block".Length)
             {
                 helper = helper.Substring(0, helper.Length - "block".Length);
             }

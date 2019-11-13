@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
     {
         private static readonly HashSet<string> InternalProperties = new HashSet<string>
         {
-            "id", "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-fixed-duration", "cache-sliding-duration"
+            "id", "alternate", "wrapper", "cache-id", "cache-context", "cache-tag", "cache-fixed-duration", "cache-sliding-duration"
         };
 
         protected const string PropertyPrefix = "prop-";
@@ -24,11 +24,16 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         protected IDisplayHelper _displayHelper;
 
         public string Type { get; set; }
-        public string Cache { get; set; }
-        public TimeSpan? FixedDuration { get; set; }
-        public TimeSpan? SlidingDuration { get; set; }
-        public string Context { get; set; }
-        public string Tag { get; set; }
+
+        // The following properties are declared as internal to prevent any attribute with a
+        // matching name from being automatically bound and removed from the output attributes,
+        // and then not added to the properties of the shape we are building.
+
+        internal string Cache { get; set; }
+        internal TimeSpan? FixedDuration { get; set; }
+        internal TimeSpan? SlidingDuration { get; set; }
+        internal string Context { get; set; }
+        internal string Tag { get; set; }
 
         [HtmlAttributeNotBound]
         [ViewContext]
@@ -51,7 +56,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             var properties = new Dictionary<string, object>();
 
             // These prefixed properties are bound with their original type and not converted as IHtmlContent
-            foreach(var property in Properties)
+            foreach (var property in Properties)
             {
                 var normalizedName = property.Key.ToPascalCaseDash();
                 properties.Add(normalizedName, property.Value);

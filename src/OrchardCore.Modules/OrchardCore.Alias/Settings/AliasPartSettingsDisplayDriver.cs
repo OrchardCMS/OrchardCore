@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Alias.Models;
 using OrchardCore.Liquid;
-using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Alias.Settings
 {
@@ -20,11 +20,11 @@ namespace OrchardCore.Alias.Settings
             T = localizer;
         }
 
-        public IStringLocalizer T { get; private set; }
+        public IStringLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(AliasPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(AliasPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -40,7 +40,7 @@ namespace OrchardCore.Alias.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(AliasPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(AliasPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }

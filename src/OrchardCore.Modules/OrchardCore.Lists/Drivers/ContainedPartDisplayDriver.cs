@@ -65,7 +65,7 @@ namespace OrchardCore.Lists.Drivers
                 model.Alter<ContainedPart>(x => x.ListContentItemId = viewModel.ContainerId);
             }
 
-            return await base.UpdateAsync(model, updater);
+            return await EditAsync(model, updater);
         }
     }
 }

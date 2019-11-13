@@ -2,8 +2,8 @@ using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -24,11 +24,11 @@ namespace OrchardCore.Lists.Settings
             TS = localizer;
         }
 
-        public IStringLocalizer TS { get; set; }
+        public IStringLocalizer TS { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -49,7 +49,7 @@ namespace OrchardCore.Lists.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }

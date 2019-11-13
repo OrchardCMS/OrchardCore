@@ -64,6 +64,7 @@ namespace OrchardCore.ContentFields
             services.AddContentField<HtmlField>();
             services.AddScoped<IContentFieldDisplayDriver, HtmlFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldTrumbowygEditorSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, HtmlFieldIndexHandler>();
 
             // Link Field
@@ -152,7 +153,7 @@ namespace OrchardCore.ContentFields
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IDataMigration, Indexing.SQL.Migrations>();
             services.AddScoped<IScopedIndexProvider, TextFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, BooleanFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, NumericFieldIndexProvider>();

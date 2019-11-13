@@ -69,8 +69,8 @@ namespace OrchardCore.Tenants.Controllers
             H = htmlLocalizer;
         }
 
-        public IStringLocalizer S { get; set; }
-        public IHtmlLocalizer H { get; set; }
+        public IStringLocalizer S { get; }
+        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
         {
@@ -106,9 +106,9 @@ namespace OrchardCore.Tenants.Controllers
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 entries = entries.Where(t => t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
-                    (t.ShellSettings != null && t.ShellSettings != null &&
-                    ((t.ShellSettings.RequestUrlHost != null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
-                    (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
+                    (t.ShellSettings != null &&
+                     ((t.ShellSettings.RequestUrlHost != null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
+                     (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
             }
 
             switch (options.Filter)
@@ -285,8 +285,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
 
-                _shellSettingsManager.SaveSettings(shellSettings);
-                var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
+                await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                 return RedirectToAction(nameof(Index));
             }

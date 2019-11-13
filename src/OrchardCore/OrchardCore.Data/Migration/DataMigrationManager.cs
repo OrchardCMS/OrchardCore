@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration.Records;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Modules;
 using YesSql;
 using YesSql.Sql;
 
@@ -46,7 +46,7 @@ namespace OrchardCore.Data.Migration
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public async Task<DataMigrationRecord> GetDataMigrationRecordAsync()
         {
@@ -109,7 +109,7 @@ namespace OrchardCore.Data.Migration
                 var uninstallAsyncMethod = GetUninstallAsyncMethod(migration);
                 if (uninstallAsyncMethod != null)
                 {
-                    await (Task) uninstallAsyncMethod.Invoke(migration, new object[0]);
+                    await (Task)uninstallAsyncMethod.Invoke(migration, new object[0]);
                 }
 
                 if (dataMigrationRecord == null)
@@ -214,11 +214,11 @@ namespace OrchardCore.Data.Migration
                         var isAwaitable = methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
                         if (isAwaitable)
                         {
-                            current = await (Task<int>) methodInfo.Invoke(migration, new object[0]);
+                            current = await (Task<int>)methodInfo.Invoke(migration, new object[0]);
                         }
                         else
                         {
-                            current = (int) methodInfo.Invoke(migration, new object[0]);
+                            current = (int)methodInfo.Invoke(migration, new object[0]);
                         }
                     }
 
@@ -282,9 +282,9 @@ namespace OrchardCore.Data.Migration
             const string updateFromPrefix = "UpdateFrom";
             const string asyncSuffix = "Async";
 
-            if (methodInfo.Name.StartsWith(updateFromPrefix) && (methodInfo.ReturnType == typeof (int) || methodInfo.ReturnType == typeof (Task<int>)))
+            if (methodInfo.Name.StartsWith(updateFromPrefix, StringComparison.Ordinal) && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
             {
-                var version = methodInfo.Name.EndsWith(asyncSuffix)
+                var version = methodInfo.Name.EndsWith(asyncSuffix, StringComparison.Ordinal)
                     ? methodInfo.Name.Substring(updateFromPrefix.Length, methodInfo.Name.Length - updateFromPrefix.Length - asyncSuffix.Length)
                     : methodInfo.Name.Substring(updateFromPrefix.Length);
 

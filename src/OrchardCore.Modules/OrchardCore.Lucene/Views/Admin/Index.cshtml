@@ -1,6 +1,6 @@
 @model AdminIndexViewModel
 
-<h1>@RenderTitleSegments(T["Indexes"])</h1>
+<h1>@RenderTitleSegments(T["Indices"])</h1>
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto"></ul>
@@ -12,7 +12,7 @@
 </nav>
 
 <form asp-action="Index">
-    @* the form is nessecary to generate and antiforgery token for the delete action *@
+    @* the form is necessary to generate and antiforgery token for the delete action *@
     @if (Model.Indexes.Any())
     {
         <ul class="list-group">
@@ -22,8 +22,8 @@
                     <div class="properties">
                         <div class="related">
                             <a asp-action="Query" asp-route-IndexName="@entry.Name" class="btn btn-success btn-sm">@T["Query"]</a>
-                            <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok="@T["Yes"]" data-cancel="@T["No"]" data-ok-class="btn-primary" itemprop="UnsafeUrl">@T["Reset"]</a>
-                            <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok="@T["Yes"]" data-cancel="@T["No"]" itemprop="UnsafeUrl">@T["Rebuild"]</a>
+                            <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" itemprop="UnsafeUrl">@T["Reset"]</a>
+                            <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" itemprop="UnsafeUrl">@T["Rebuild"]</a>
                             <a asp-action="Delete" asp-route-IndexName="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <h5>@entry.Name</h5>
@@ -35,7 +35,7 @@
     else
     {
         <div class="alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> There are no indexes for the moment."]
+            @T["<strong>Nothing here!</strong> There are no indices for the moment."]
         </div>
     }
 </form>

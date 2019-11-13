@@ -341,7 +341,7 @@ namespace OrchardCore.DisplayManagement.Razor
         }
 
         /// <summary>
-        /// Returns the full path of the current request.
+        /// Returns the full escaped path of the current request.
         /// </summary>
         public string FullRequestPath => Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString;
 

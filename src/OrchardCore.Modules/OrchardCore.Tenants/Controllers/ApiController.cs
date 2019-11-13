@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
@@ -68,8 +68,8 @@ namespace OrchardCore.Tenants.Controllers
             H = htmlLocalizer;
         }
 
-        public IStringLocalizer S { get; set; }
-        public IHtmlLocalizer H { get; set; }
+        public IStringLocalizer S { get; }
+        public IHtmlLocalizer H { get; }
 
         [HttpPost]
         [Route("create")]
@@ -125,16 +125,15 @@ namespace OrchardCore.Tenants.Controllers
 
                     var token = CreateSetupToken(settings);
 
-                    return StatusCode(201, GetTenantUrl(settings, token));
+                    return StatusCode(201, GetEncodedUrl(settings, token));
                 }
                 else
                 {
-                    _shellSettingsManager.SaveSettings(shellSettings);
-                    var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
+                    await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                     var token = CreateSetupToken(shellSettings);
 
-                    return Ok(GetTenantUrl(shellSettings, token));
+                    return Ok(GetEncodedUrl(shellSettings, token));
                 }
             }
 
@@ -288,41 +287,35 @@ namespace OrchardCore.Tenants.Controllers
             return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
 
-        private string GetTenantUrl(ShellSettings shellSettings, string token)
+        private string GetEncodedUrl(ShellSettings shellSettings, string token)
         {
-            var requestHostInfo = Request.Host;
+            var requestHost = Request.Host;
+            var host = shellSettings.RequestUrlHost?.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
 
-            var tenantUrlHost = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHostInfo.Host;
-            if (requestHostInfo.Port.HasValue)
+            var port = requestHost.Port;
+
+            if (port.HasValue)
             {
-                tenantUrlHost += ":" + requestHostInfo.Port;
+                host += ":" + port;
             }
 
-            var pathBase = Request.PathBase.Value ?? string.Empty;
+            var hostString = new HostString(host);
 
-            if (!string.IsNullOrEmpty(_currentShellSettings.RequestUrlPrefix))
-            {
-                var prefix = "/" + _currentShellSettings.RequestUrlPrefix;
-
-                if (pathBase.EndsWith(prefix))
-                {
-                    pathBase = pathBase.Substring(0, pathBase.Length - prefix.Length);
-                }
-            }
-
-            var result = $"{Request.Scheme}://{tenantUrlHost}{pathBase}";
+            var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
 
             if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
-                result += "/" + shellSettings.RequestUrlPrefix;
+                pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
             }
+
+            QueryString queryString;
 
             if (!string.IsNullOrEmpty(token))
             {
-                result += "?token=" + WebUtility.UrlEncode(token);
+                queryString = QueryString.Create("token", token);
             }
 
-            return result;
+            return $"{Request.Scheme}://{hostString + pathString + queryString}";
         }
 
         private string CreateSetupToken(ShellSettings shellSettings)

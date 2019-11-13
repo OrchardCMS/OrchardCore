@@ -14,7 +14,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
 
         private string FormatSql(string sql)
         {
-            return sql.Replace("\r\n", " ").Replace("\n", " ");
+            return sql.Replace("\r\n", " ").Replace('\n', ' ');
         }
 
         [Theory]

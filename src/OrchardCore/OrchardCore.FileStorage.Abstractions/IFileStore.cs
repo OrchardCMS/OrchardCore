@@ -136,7 +136,7 @@ namespace OrchardCore.FileStorage
             var combined = String.Join("/", normalizedParts);
 
             // Preserve the initial '/' if it's present.
-            if (paths[0]?.StartsWith("/") == true)
+            if (paths[0]?.StartsWith('/') == true)
                 combined = "/" + combined;
 
             return combined;

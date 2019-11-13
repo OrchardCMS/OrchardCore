@@ -1,7 +1,7 @@
 [
   {
     "generateSourceMaps": false,
-    "generateRTL":  true,
+    "generateRTL": true,
     "inputs": [
       "Assets/scss/TheAdmin.scss",
       "Assets/scss/perfect-scrollbar.css"
@@ -11,8 +11,8 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "../../../node_modules/popper.js/dist/umd/popper.js",
-      "../../../node_modules/bootstrap/dist/js/bootstrap.js",
+      "node_modules/popper.js/dist/umd/popper.js",
+      "node_modules/bootstrap/dist/js/bootstrap.js",
       "Assets/js/*.js"
     ],
     "output": "wwwroot/Scripts/TheAdmin.js"

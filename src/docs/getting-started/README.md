@@ -12,7 +12,7 @@ In Visual Studio, create a new empty .NET Core web application. Ex: `Cms.Web`.
 If you want to use the `dev` packages, add this OrchardCore-preview MyGet url to your NuGet sources:  
 <https://www.myget.org/F/orchardcore-preview/api/v3/index.json>
 
-Right-click on the project and click on `Manage NuGet packages...`.
+Right-click on the project and click on `Manage NuGet packages...`.  
 In the `Browse` tab, search for `OrchardCore.Application.Cms.Targets` and `Install` the package.
 
 Open `Startup.cs` and modify the `ConfigureServices` method by adding this line:
