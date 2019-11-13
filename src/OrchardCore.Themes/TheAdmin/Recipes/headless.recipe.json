@@ -20,6 +20,7 @@
       "disable": [],
       "enable": [
         // SaaS
+        "OrchardCore.HomeRoute",
         "OrchardCore.Admin",
         "OrchardCore.Diagnostics",
         "OrchardCore.Features",
@@ -81,6 +82,14 @@
           "Permissions": []
         }
       ]
+    },
+    {
+      "name": "settings",
+      "HomeRoute": {
+        "Action": "Index",
+        "Controller": "Admin",
+        "Area": "OrchardCore.Admin"
+      }
     },
     {
       "name": "themes",
