@@ -22,7 +22,7 @@ namespace OrchardCore.Recipes
                 return Task.CompletedTask;
             }
 
-            builder
+            builder.Add(S["Configuration"], configuration => configuration
                 .AddClass("recipes").Id("recipes")
                 .Add(S["Recipes"], S["Recipes"], recipes => recipes
                     .Permission(StandardPermissions.SiteOwner)

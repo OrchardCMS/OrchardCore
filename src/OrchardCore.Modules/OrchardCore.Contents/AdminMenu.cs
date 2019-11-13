@@ -35,7 +35,7 @@ namespace OrchardCore.Contents
 
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
 
-            builder.Add(T["Content"], NavigationConstants.AdminMenuContentPosition, content => content
+            builder.Add(S["Content"], NavigationConstants.AdminMenuContentPosition, content => content
                 .AddClass("content").Id("content")
                 .Add(S["Content Items"], "1", contentItems => contentItems
                     .Permission(Permissions.EditOwnContent)

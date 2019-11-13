@@ -22,7 +22,7 @@ namespace OrchardCore.Lucene
             }
 
             builder
-                .Add(T["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+                .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                     .AddClass("search").Id("search")
                     .Add(S["Indexing"], S["Indexing"], import => import
                         .Add(S["Lucene Indices"], "7", indexes => indexes
