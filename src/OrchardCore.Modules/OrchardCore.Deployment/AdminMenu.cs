@@ -29,6 +29,7 @@ namespace OrchardCore.Deployment
                             .Permission(Permissions.Export)
                             .LocalNav()
                         )
+                        .Add(S["Package Import"], "5", deployment => deployment
                             .Action("Index", "Import", new { area = "OrchardCore.Deployment" })
                             .Permission(Permissions.Import)
                             .LocalNav()
