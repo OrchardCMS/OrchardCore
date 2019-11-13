@@ -206,6 +206,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("trumbowyg")
+                .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg.js", "~/OrchardCore.Resources/Scripts/trumbowyg.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.19.1/trumbowyg.min.js", "https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.19.1/trumbowyg.js")
                 .SetCdnIntegrity("sha384-6T5zd/UY6O+/GBXh9vN5ePib6hyqnP59uZzmwjpVDxoNc08ia4etj/IDPyrJS7R1", "sha384-2Mr/QWbCuYpU62KR2U8ObtDO47hBIlbpqZlH2V6+i2e/KTfV3yCc2/7UdOvkxAf4")
