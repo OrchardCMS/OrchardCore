@@ -175,7 +175,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return ImmutableArray.CreateRange(
-                await _session.Query<TApplication, OpenIdAppPostLogoutRedirectIndex>(
+                await _session.Query<TApplication, OpenIdAppByLogoutUriIndex>(
                     index => index.LogoutRedirectUri == address).ListAsync());
         }
 
@@ -198,7 +198,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return ImmutableArray.CreateRange(
-                await _session.Query<TApplication, OpenIdApplicationByRedirectUriIndex>(
+                await _session.Query<TApplication, OpenIdAppByRedirectUriIndex>(
                     index => index.RedirectUri == address).ListAsync());
         }
 
@@ -718,7 +718,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
             }
 
-            return ImmutableArray.CreateRange(await _session.Query<TApplication, OpenIdApplicationByRoleNameIndex>(index => index.RoleName == role).ListAsync());
+            return ImmutableArray.CreateRange(await _session.Query<TApplication, OpenIdAppByRoleNameIndex>(index => index.RoleName == role).ListAsync());
         }
 
         public virtual Task SetRolesAsync(TApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)
