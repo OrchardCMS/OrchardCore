@@ -64,6 +64,25 @@
       ]
     },
     {
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "AUTHENTICATED",
+          "Description": null,
+          "Permissions": [
+            "ViewContent",
+            "ExecuteGraphQL",
+            "ExecuteApiAll"
+          ]
+        },
+        {
+          "Name": "ANONYMOUS",
+          "Description": null,
+          "Permissions": []
+        }
+      ]
+    },
+    {
       "name": "themes",
       "admin": "TheAdmin",
       "site": ""
