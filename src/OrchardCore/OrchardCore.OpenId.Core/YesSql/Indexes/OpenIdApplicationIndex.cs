@@ -10,9 +10,9 @@ namespace OrchardCore.OpenId.YesSql.Indexes
         public string ClientId { get; set; }
     }
 
-    public class OpenIdApplicationByPostLogoutRedirectUriIndex : ReduceIndex
+    public class OpenIdAppPostLogoutRedirectIndex : ReduceIndex
     {
-        public string PostLogoutRedirectUri { get; set; }
+        public string LogoutRedirectUri { get; set; }
         public int Count { get; set; }
     }
 
@@ -39,16 +39,16 @@ namespace OrchardCore.OpenId.YesSql.Indexes
                     ClientId = application.ClientId
                 });
 
-            context.For<OpenIdApplicationByPostLogoutRedirectUriIndex, string>()
-                .Map(application => application.PostLogoutRedirectUris.Select(uri => new OpenIdApplicationByPostLogoutRedirectUriIndex
+            context.For<OpenIdAppPostLogoutRedirectIndex, string>()
+                .Map(application => application.PostLogoutRedirectUris.Select(uri => new OpenIdAppPostLogoutRedirectIndex
                 {
-                    PostLogoutRedirectUri = uri,
+                    LogoutRedirectUri = uri,
                     Count = 1
                 }))
-                .Group(index => index.PostLogoutRedirectUri)
-                .Reduce(group => new OpenIdApplicationByPostLogoutRedirectUriIndex
+                .Group(index => index.LogoutRedirectUri)
+                .Reduce(group => new OpenIdAppPostLogoutRedirectIndex
                 {
-                    PostLogoutRedirectUri = group.Key,
+                    LogoutRedirectUri = group.Key,
                     Count = group.Sum(x => x.Count)
                 })
                 .Delete((index, map) =>

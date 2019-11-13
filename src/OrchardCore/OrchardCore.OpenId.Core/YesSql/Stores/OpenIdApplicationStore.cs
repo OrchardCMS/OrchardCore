@@ -175,8 +175,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return ImmutableArray.CreateRange(
-                await _session.Query<TApplication, OpenIdApplicationByPostLogoutRedirectUriIndex>(
-                    index => index.PostLogoutRedirectUri == address).ListAsync());
+                await _session.Query<TApplication, OpenIdAppPostLogoutRedirectIndex>(
+                    index => index.LogoutRedirectUri == address).ListAsync());
         }
 
         /// <summary>
