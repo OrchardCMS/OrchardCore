@@ -270,19 +270,21 @@ namespace OrchardCore.DisplayManagement.Liquid
             return null;
         }
 
-        public static async Task ContextualizeAsync(this TemplateContext context, IServiceProvider services)
+        public static Task ContextualizeAsync(this TemplateContext context, IServiceProvider services)
         {
             if (!context.AmbientValues.ContainsKey("Services"))
             {
                 var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
-                await context.ContextualizeAsync(new DisplayContext
+                return context.ContextualizeAsync(new DisplayContext
                 {
                     ServiceProvider = services,
                     DisplayAsync = displayHelper,
                     Value = null
                 });
             }
+
+            return Task.CompletedTask;
         }
 
         public static Task ContextualizeAsync(this TemplateContext context, RazorPage page, object model)
