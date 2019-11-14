@@ -25,6 +25,7 @@ namespace OrchardCore.ContentFields.Settings
                 var settings = partFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
 
                 model.Options = settings.Options;
+                model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
             })
             .Location("Editor");
         }
@@ -42,6 +43,7 @@ namespace OrchardCore.ContentFields.Settings
                 {
                     settings.Options = model.Options;
                     JObject.Parse(settings.Options);
+                    settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
                 }
                 catch
                 {

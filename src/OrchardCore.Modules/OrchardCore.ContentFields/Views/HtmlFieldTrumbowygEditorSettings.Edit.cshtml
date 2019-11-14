@@ -5,6 +5,13 @@
     }
 </style>
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-trumbowyg">
+    <div class="form-group col-md-6">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="InsertMediaWithUrl" checked="@Model.InsertMediaWithUrl" />
+            <label class="custom-control-label" asp-for="InsertMediaWithUrl">@T["Insert Media with url"]</label>
+            <span class="hint">— @T["Whether the url is used when selected from Insert Media (By default, the Liquid Tag is inserted)."]</span>
+        </div>
+    </div>
     <div class="form-group row">
         <div class="col-lg">
             <label asp-for="Options">@T["Enter the editor options"]</label>
@@ -24,7 +31,7 @@
             matchBrackets: true,
             mode: { name: "javascript" }
     });
-@{ 
+@{
     if (string.IsNullOrEmpty(Model.Options))
     {
         string fullOptions = @"{
@@ -43,7 +50,7 @@
         [""horizontalRule""],
         [""removeformat""],
         [""fullscreen""]
-    ], 
+    ],
     btnsDef: {
         align: {
             dropdown: [""justifyLeft"", ""justifyCenter"", ""justifyRight"", ""justifyFull""],
