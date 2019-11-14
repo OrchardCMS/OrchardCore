@@ -12,16 +12,16 @@ namespace OrchardCore.DisplayManagement.Razor
     /// Inject commonly used data through an HttpContext feature <see cref="RazorViewFeature"/> such that
     /// e.g a <see cref="RazorPage"/> can reuse them when it's executed.
     /// </summary>
-    public class RazorViewResultFilter : IAsyncViewResultFilter
+    public class RazorViewActionFilter : IAsyncViewActionFilter
     {
-        public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
+        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            await OnResultExecutionAsync(context);
+            await OnActionExecutionAsync(context);
             await next();
         }
 
         // Used as a service when we create a fake 'ActionContext'.
-        public async Task OnResultExecutionAsync(ActionContext context)
+        public async Task OnActionExecutionAsync(ActionContext context)
         {
             var razorViewFeature = context.HttpContext.Features.Get<RazorViewFeature>();
 

@@ -152,11 +152,11 @@ namespace OrchardCore.DisplayManagement.Razor
             var httpContext = _httpContextAccessor.HttpContext;
 
             var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-            var filters = httpContext.RequestServices.GetServices<IAsyncViewResultFilter>();
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
 
             foreach (var filter in filters)
             {
-                await filter.OnResultExecutionAsync(actionContext);
+                await filter.OnActionExecutionAsync(actionContext);
             }
 
             return actionContext;
