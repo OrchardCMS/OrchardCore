@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data;
@@ -157,7 +158,37 @@ namespace OrchardCore.Tenants.Controllers
                 Pager = pagerShape
             };
 
+            // We populate the SelectLists
+            model.Options.TenantsStates = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["All states"].Value, Value = nameof(TenantsFilter.All) },
+                new SelectListItem() { Text = H["Running"].Value, Value = nameof(TenantsFilter.Running) },
+                new SelectListItem() { Text = H["Disabled"].Value, Value = nameof(TenantsFilter.Disabled) },
+                new SelectListItem() { Text = H["Uninitialized"].Value, Value = nameof(TenantsFilter.Uninitialized) }
+            };
+
+            model.Options.TenantsSorts = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["Name"].Value, Value = nameof(TenantsOrder.Name) },
+                new SelectListItem() { Text = H["State"].Value, Value = nameof(TenantsOrder.State) }
+            };
+
+            model.Options.TenantsBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["Disable"].Value, Value = nameof(TenantsBulkAction.Disable) },
+                new SelectListItem() { Text = H["Enable"].Value, Value = nameof(TenantsBulkAction.Enable) }
+            };
+
             return View(model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(AdminIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Filter", model.Options.Filter },
+                { "Options.OrderBy", model.Options.OrderBy },
+                { "Options.Search", model.Options.Search },
+                { "Options.TenantsStates", model.Options.TenantsStates }
+            });
         }
 
         [HttpPost]
