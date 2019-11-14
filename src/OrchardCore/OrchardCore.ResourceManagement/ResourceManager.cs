@@ -369,6 +369,12 @@ namespace OrchardCore.ResourceManagement
                 {
                     throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
                 }
+
+                if (settings.Dependencies != null)
+                {
+                    resource.SetDependencies(settings.Dependencies);
+                }
+
                 ExpandDependencies(resource, settings, allResources);
             }
 
