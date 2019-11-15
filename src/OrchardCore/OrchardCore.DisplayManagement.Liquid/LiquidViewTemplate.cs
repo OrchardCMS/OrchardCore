@@ -158,14 +158,13 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return result;
                 }
 
-                foreach (var item in shape.Items)
+                if (n == "Items")
                 {
-                    // Resolve Model.Content.MyNamedPart
-                    if (item is IShape itemShape && itemShape.Metadata.Name == n)
-                    {
-                        return item;
-                    }
+                    return shape.Items;
                 }
+                // Resolve Model.Content.MyNamedPart
+                // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
+                return shape.Named(n.Replace("__", "-"));
             }
 
             return null;
@@ -248,7 +247,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 templateContext.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
                 {
-                    var filter = (ILiquidFilter) services.GetRequiredService(registration.Value);
+                    var filter = (ILiquidFilter)services.GetRequiredService(registration.Value);
                     return filter.ProcessAsync(input, arguments, ctx);
                 });
             }
@@ -271,19 +270,21 @@ namespace OrchardCore.DisplayManagement.Liquid
             return null;
         }
 
-        public static async Task ContextualizeAsync(this TemplateContext context, IServiceProvider services)
+        public static Task ContextualizeAsync(this TemplateContext context, IServiceProvider services)
         {
             if (!context.AmbientValues.ContainsKey("Services"))
             {
                 var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
-                await context.ContextualizeAsync(new DisplayContext
+                return context.ContextualizeAsync(new DisplayContext
                 {
                     ServiceProvider = services,
                     DisplayAsync = displayHelper,
                     Value = null
                 });
             }
+
+            return Task.CompletedTask;
         }
 
         public static Task ContextualizeAsync(this TemplateContext context, RazorPage page, object model)
@@ -358,7 +359,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             if (model != null)
             {
                 context.MemberAccessStrategy.Register(model.GetType());
-                context.LocalScope.SetValue("Model", model);
+                context.SetValue("Model", model);
             }
 
             context.CultureInfo = CultureInfo.CurrentUICulture;
@@ -379,11 +380,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             var httpContext = services.GetRequiredService<IHttpContextAccessor>().HttpContext;
 
             actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-            var filters = httpContext.RequestServices.GetServices<IAsyncViewResultFilter>();
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
 
             foreach (var filter in filters)
             {
-                await filter.OnResultExecutionAsync(actionContext);
+                await filter.OnActionExecutionAsync(actionContext);
             }
 
             return actionContext;

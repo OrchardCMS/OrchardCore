@@ -25,7 +25,7 @@ namespace OrchardCore.AdminMenu
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddTransient<IDataMigration, Migrations>();
 
-            services.AddSingleton<IAdminMenuService, AdminMenuService>();
+            services.AddScoped<IAdminMenuService, AdminMenuService>();
             services.AddScoped<AdminMenuNavigationProvidersCoordinator, AdminMenuNavigationProvidersCoordinator>();
 
             services.AddScoped<IDisplayManager<MenuItem>, DisplayManager<MenuItem>>();

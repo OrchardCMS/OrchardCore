@@ -25,7 +25,7 @@ namespace OrchardCore.Contents
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -36,7 +36,7 @@ namespace OrchardCore.Contents
 
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
 
-            builder.Add(T["Content"], "1.4", content => content
+            builder.Add(T["Content"], NavigationConstants.AdminMenuContentPosition, content => content
                 .AddClass("content").Id("content")
                 .Add(T["Content Items"], "1", contentItems => contentItems
                     .Permission(Permissions.EditOwnContent)

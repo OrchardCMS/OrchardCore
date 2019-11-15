@@ -12,7 +12,7 @@ namespace OrchardCore.BackgroundTasks
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -23,7 +23,7 @@ namespace OrchardCore.BackgroundTasks
 
             builder
                 .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Tasks"], "10", tasks => tasks
+                    .Add(T["Tasks"], T["Tasks"], tasks => tasks
                         .Add(T["Background Tasks"], "10", backgroundTasks => backgroundTasks
                             .Action("Index", "BackgroundTask", new { area = "OrchardCore.BackgroundTasks" })
                             .Permission(Permissions.ManageBackgroundTasks)

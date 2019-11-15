@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell.Configuration
@@ -9,6 +12,13 @@ namespace OrchardCore.Environment.Shell.Configuration
     public class ShellsSettingsSources : IShellsSettingsSources
     {
         private readonly string _tenants;
+
+        // This could be optimized by locking per tenant, but worst case is that 
+        // two tenants are blocking each other when the settings are updated. Theorically,
+        // as this storing settings in files, this is supposed to be used with few tenants.
+        // So we are not optimizing with a distinct semarphore per tenant. 
+
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         public ShellsSettingsSources(IOptions<ShellOptions> shellOptions)
         {
@@ -20,12 +30,27 @@ namespace OrchardCore.Environment.Shell.Configuration
             builder.AddJsonFile(_tenants, optional: true);
         }
 
-        public void Save(string tenant, IDictionary<string, string> data)
+        public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            lock (this)
+            await _semaphore.WaitAsync();
+
+            try
             {
-                var tenantsSettings = !File.Exists(_tenants) ? new JObject()
-                : JObject.Parse(File.ReadAllText(_tenants));
+                JObject tenantsSettings;
+                if (File.Exists(_tenants))
+                {
+                    using (var file = File.OpenText(_tenants))
+                    {
+                        using (var reader = new JsonTextReader(file))
+                        {
+                            tenantsSettings = await JObject.LoadAsync(reader);
+                        }
+                    }
+                }
+                else
+                {
+                    tenantsSettings = new JObject();
+                }
 
                 var settings = tenantsSettings.GetValue(tenant) as JObject ?? new JObject();
 
@@ -42,7 +67,18 @@ namespace OrchardCore.Environment.Shell.Configuration
                 }
 
                 tenantsSettings[tenant] = settings;
-                File.WriteAllText(_tenants, tenantsSettings.ToString());
+
+                using (var file = File.CreateText(_tenants))
+                {
+                    using (var writer = new JsonTextWriter(file) { Formatting = Formatting.Indented })
+                    {
+                        await tenantsSettings.WriteToAsync(writer);
+                    }
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
     }

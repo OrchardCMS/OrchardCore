@@ -51,10 +51,10 @@ namespace OrchardCore.Deployment.Controllers
             H = htmlLocalizer;
         }
 
-        public dynamic New { get; set; }
+        public dynamic New { get; }
 
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
+        public IStringLocalizer T { get; }
+        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index(DeploymentPlanIndexOptions options, PagerParameters pagerParameters)
         {

@@ -25,12 +25,19 @@ namespace OrchardCore.Html.GraphQL
 
         private static async Task<object> RenderHtml(ResolveFieldContext<HtmlBodyPart> ctx)
         {
-            var context = (GraphQLContext) ctx.UserContext;
+            var context = (GraphQLContext)ctx.UserContext;
             var liquidTemplateManager = context.ServiceProvider.GetService<ILiquidTemplateManager>();
+
+            var model = new HtmlBodyPartViewModel()
+            {
+                HtmlBodyPart = ctx.Source,
+                ContentItem = ctx.Source.ContentItem
+            };
 
             var templateContext = new TemplateContext();
             templateContext.SetValue("ContentItem", ctx.Source.ContentItem);
             templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
+            templateContext.SetValue("Model", model);
 
             return await liquidTemplateManager.RenderAsync(ctx.Source.Html, templateContext);
         }

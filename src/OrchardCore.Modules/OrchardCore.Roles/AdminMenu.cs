@@ -12,7 +12,7 @@ namespace OrchardCore.Roles
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -21,14 +21,12 @@ namespace OrchardCore.Roles
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Security"], "5", security => security
+            builder.Add(T["Security"], security => security
                         .Add(T["Roles"], "10", installed => installed
                             .Action("Index", "Admin", "OrchardCore.Roles")
                             .Permission(Permissions.ManageRoles)
                             .LocalNav()
-                        )));
+                        ));
 
             return Task.CompletedTask;
         }

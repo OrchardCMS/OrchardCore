@@ -74,14 +74,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                     .From(_typeFeatureProvider.GetFeatureForDependency(occurrence.ServiceType))
                     .BoundAs(
                         occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name,
-                        descriptor => CreateDelegate(occurrence, descriptor));
+                        CreateDelegate(occurrence));
             }
         }
 
         [DebuggerStepThrough]
         private Func<DisplayContext, Task<IHtmlContent>> CreateDelegate(
-            ShapeAttributeOccurrence attributeOccurrence,
-            ShapeDescriptor descriptor)
+            ShapeAttributeOccurrence attributeOccurrence)
         {
             return context =>
             {

@@ -1,7 +1,7 @@
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
 {
@@ -12,9 +12,9 @@ namespace OrchardCore.ContentManagement.Metadata.Models
             Name = name;
             DisplayName = displayName;
             Parts = parts.ToList();
-            Settings = settings;
+            Settings = new JObject(settings);
 
-            foreach(var part in Parts)
+            foreach (var part in Parts)
             {
                 part.ContentTypeDefinition = this;
             }

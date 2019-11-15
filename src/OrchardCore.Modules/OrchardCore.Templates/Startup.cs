@@ -33,6 +33,26 @@ namespace OrchardCore.Templates
             services.AddTransient<IDeploymentSource, AllTemplatesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllTemplatesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllTemplatesDeploymentStepDriver>();
+
+            services.AddScoped<AdminTemplatesManager>();
+            services.AddScoped<IPermissionProvider, AdminTemplatesPermissions>();
+        }
+    }
+
+
+    [Feature("OrchardCore.AdminTemplates")]
+    public class AdminTemplatesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IShapeBindingResolver, AdminTemplatesShapeBindingResolver>();
+            services.AddScoped<AdminPreviewTemplatesProvider>();
+            services.AddScoped<INavigationProvider, AdminTemplatesAdminMenu>();
+            services.AddRecipeExecutionStep<AdminTemplateStep>();
+
+            services.AddTransient<IDeploymentSource, AllAdminTemplatesDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllAdminTemplatesDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllAdminTemplatesDeploymentStepDriver>();
         }
     }
 }

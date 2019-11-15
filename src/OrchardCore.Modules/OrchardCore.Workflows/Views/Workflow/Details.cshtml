@@ -4,7 +4,7 @@
 @inject OrchardCore.Modules.ILocalClock LocalClock
 
 <h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1>
-
+<zone name="Breadcrumbs">
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflow Types"]</a></li>
@@ -13,7 +13,7 @@
         <li class="breadcrumb-item active" aria-current="page">@Model.Workflow.WorkflowId</li>
     </ol>
 </nav>
-
+</zone>
 <nav class="form-group">
     <ul class="nav nav-pills" role="tablist">
         <li class="nav-item">
