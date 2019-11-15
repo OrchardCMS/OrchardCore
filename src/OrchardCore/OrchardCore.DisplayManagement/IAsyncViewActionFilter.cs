@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace OrchardCore.DisplayManagement
 {
-    public interface IAsyncViewResultFilter : IAsyncResultFilter
+    public interface IAsyncViewActionFilter : IAsyncActionFilter
     {
-        Task OnResultExecutionAsync(ActionContext context);
+        Task OnActionExecutionAsync(ActionContext context);
     }
 }
