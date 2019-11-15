@@ -91,7 +91,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             // Creates a default shell settings based on the configuration.
-            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+            var shellSettings = await _shellSettingsManager.CreateDefaultSettingsAsync();
 
             shellSettings.Name = model.Name;
             shellSettings.RequestUrlHost = model.RequestUrlHost;

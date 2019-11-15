@@ -5,13 +5,13 @@ namespace OrchardCore.Environment.Shell
 {
     public class SingleShellSettingsManager : IShellSettingsManager
     {
-        public ShellSettings CreateDefaultSettings()
+        public Task<ShellSettings> CreateDefaultSettingsAsync()
         {
-            return new ShellSettings()
+            return Task.FromResult(new ShellSettings()
             {
                 Name = "Default",
                 State = Models.TenantState.Running
-            };
+            });
         }
 
         public IEnumerable<ShellSettings> LoadSettings()
@@ -23,7 +23,7 @@ namespace OrchardCore.Environment.Shell
             };
         }
 
-        public Task<ShellSettings> LoadSettingsAsync(string tenant) => Task.FromResult(CreateDefaultSettings());
+        public Task<ShellSettings> LoadSettingsAsync(string tenant) => CreateDefaultSettingsAsync();
 
         public Task SaveSettingsAsync(ShellSettings shellSettings) => Task.CompletedTask;
     }

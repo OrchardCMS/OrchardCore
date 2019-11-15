@@ -72,13 +72,21 @@ namespace OrchardCore.Environment.Shell
             };
         }
 
-        public ShellSettings CreateDefaultSettings()
+        public async Task<ShellSettings> CreateDefaultSettingsAsync()
         {
-            return new ShellSettings
-            (
-                new ShellConfiguration(_configuration),
-                new ShellConfiguration(_configuration)
-            );
+            await _semaphore.WaitAsync();
+            try
+            {
+                return new ShellSettings
+                (
+                    new ShellConfiguration(_configuration),
+                    new ShellConfiguration(_configuration)
+                );
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public IEnumerable<ShellSettings> LoadSettings()
