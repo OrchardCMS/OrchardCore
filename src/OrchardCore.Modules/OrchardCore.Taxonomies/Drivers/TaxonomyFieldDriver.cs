@@ -44,7 +44,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override IDisplayResult Edit(TaxonomyField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditTaxonomyFieldViewModel>("TaxonomyField_Edit", async model =>
+            return Initialize<EditTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
             {
                 var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
                 model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
