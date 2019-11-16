@@ -23,34 +23,34 @@
 
     @if (typePart.PartDefinition.IsReusable())
     {
-        <fieldset class="form-group">
+        <div class="form-group">
             <div class="row col-sm-6">
                 <label asp-for="DisplayName">@T["Display Name"]</label>
                 <input asp-for="DisplayName" class="form-control" />
                 <span class="hint">@T["Name of the part as it will be displayed in screens."]</span>
             </div>
-        </fieldset>
+        </div>
 
-        <fieldset class="form-group">
+        <div class="form-group">
             <div class="row col-sm-6">
                 <label asp-for="Description">@T["Description"]</label>
                 <input asp-for="Description" class="form-control" />
                 <span class="hint">@T["The description of the part as it will be displayed in screens."]</span>
             </div>
-        </fieldset>
+        </div>
     }
 
 
     @if (Model.Shape.Content != null)
     {
-        <fieldset class="form-group">
+        <div class="form-group">
             @await DisplayAsync(Model.Shape.Content)
-        </fieldset>
+        </div>
 
         @if (editorShapes.Any())
         {
             <div class="row">
-                <fieldset class="form-group col-sm-6">
+                <div class="form-group col-sm-6">
                     <label asp-for="Editor">@T["What type of editor should be used?"]</label>
                     <select asp-for="Editor" class="form-control" id="type-part-editor-select">
                         @foreach (var editorShape in editorShapes)
@@ -60,19 +60,19 @@
                             @await DisplayAsync(shape)
                         }
                     </select>
-                </fieldset>
+                </div>
             </div>
         }
 
-        <fieldset id="type-part-editor-container" class="form-group" style="display: none">
+        <div id="type-part-editor-container" class="form-group" style="display: none">
             @await DisplayAsync(Model.Shape.Editor)
-        </fieldset>
+        </div>
     }
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
         <a asp-route-action="Edit" asp-route-id="@Model.TypePartDefinition.ContentTypeDefinition.Name" class="btn btn-secondary">@T["Cancel"]</a>
-    </fieldset>
+    </div>
 </form>
 
 <script at="Foot" type="text/javascript">

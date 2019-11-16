@@ -4,15 +4,15 @@
 
 <h1>@RenderTitleSegments(T["{0} Workflows", Model.WorkflowType.Name])</h1>
 <zone name="Breadcrumbs">
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflow Types"]</a></li>
-        <li class="breadcrumb-item"><a asp-action="Edit" asp-controller="WorkflowType" asp-route-id="@Model.WorkflowType.Id">@Model.WorkflowType.Name</a></li>
-        <li class="breadcrumb-item active" aria-current="page">@T["Workflows"]</li>
-    </ol>
-</nav>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflow Types"]</a></li>
+            <li class="breadcrumb-item"><a asp-action="Edit" asp-controller="WorkflowType" asp-route-id="@Model.WorkflowType.Id">@Model.WorkflowType.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@T["Workflows"]</li>
+        </ol>
+    </nav>
 </zone>
-<nav class="admin-toolbar">
+@*<nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
             <div class="btn-group" role="group">
@@ -27,14 +27,13 @@
             </div>
         </li>
     </ul>
-</nav>
+</nav>*@
 
 <div class="form-group">
-    @if (Model.Workflows.Any())
-    {
-        using (Html.BeginForm(FormMethod.Post, new { id = "workflows-form" }))
-        {
-            <ul class="list-group">
+    <form asp-action="Index" id="workflows-form" method="post">
+        <ul class="list-group">
+            @if (Model.Workflows.Any())
+            {
                 @for (var i = 0; i < Model.Workflows.Count; i++)
                 {
                     var entry = Model.Workflows[i];
@@ -78,7 +77,8 @@
                             <div>
                                 <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.Workflow.CreatedUtc)))]</span>
                                 <div class="info">
-                                    <span class="badge badge-@statusCss">@switch (entry.Workflow.Status)
+                                    <span class="badge badge-@statusCss">
+                                        @switch (entry.Workflow.Status)
                                         {
                                             case WorkflowStatus.Idle:
                                                 @T["Idle"]
@@ -107,22 +107,25 @@
                                             default:
                                                 @entry.Workflow.Status
                                                 break;
-                                        }</span>
-                                 </div>
+                                        }
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </li>
                 }
-            </ul>
-        }
-        @await DisplayAsync(Model.Pager)
-    }
-    else
-    {
-        <div class="alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> There are no halted workflows at the moment."]
-        </div>
-    }
+            }
+            else
+            {
+                <li>
+                    <div class="alert alert-info" role="alert">
+                        @T["<strong>Nothing here!</strong> Your search returned no results."]
+                    </div>
+                </li>
+            }
+        </ul>
+    </form>
+    @await DisplayAsync(Model.Pager)
 </div>
 
 <div class="form-group">
