@@ -24,9 +24,9 @@ namespace OrchardCore.Lucene
             )
         {
             _indexSettingsFilename = PathExtensions.Combine(
-                shellOptions.Value.ShellsApplicationDataPath, 
-                shellOptions.Value.ShellsContainerName, 
-                shellSettings.Name, 
+                shellOptions.Value.ShellsApplicationDataPath,
+                shellOptions.Value.ShellsContainerName,
+                shellSettings.Name,
                 "lucene.settings.json");
 
             if (!File.Exists(_indexSettingsFilename))
@@ -38,13 +38,11 @@ namespace OrchardCore.Lucene
             _indexSettings = JsonConvert.DeserializeObject<List<LuceneIndexSettings>>(File.ReadAllText(_indexSettingsFilename)) ?? new List<LuceneIndexSettings>();
         }
 
-        public IEnumerable<LuceneIndexSettings> List() {
-            return _indexSettings;
-        }
+        public IEnumerable<LuceneIndexSettings> List() => _indexSettings.ToArray();
 
         public string GetIndexAnalyzer(string indexName)
         {
-            var setting = _indexSettings.Where(x => x.IndexName.ToLower() == indexName.ToLower()).FirstOrDefault();
+            var setting = _indexSettings.FirstOrDefault(x => String.Equals(x.IndexName, indexName, StringComparison.OrdinalIgnoreCase));
             if (setting != null)
             {
                 return setting.AnalyzerName;

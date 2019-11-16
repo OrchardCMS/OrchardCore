@@ -64,9 +64,9 @@ namespace OrchardCore.Lucene
             {
                 //TODO use immutable dictionary
                 //indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexInBackgroundTask).ToImmutableDictionary(x => x.IndexName, x => x);
-                indexSettingsList = _luceneIndexSettingsService.List().ToList();
+                indexSettingsList = _luceneIndexSettingsService.List();
 
-                if (indexSettingsList == null)
+                if (!indexSettingsList.Any())
                 {
                     return;
                 }
@@ -83,9 +83,9 @@ namespace OrchardCore.Lucene
             {
                 //TODO use immutable dictionary
                 //indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName).ToImmutableDictionary(x => x.IndexName, x => x);
-                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName).ToList();
+                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName);
 
-                if (indexSettingsList == null)
+                if (!indexSettingsList.Any())
                 {
                     return;
                 }
@@ -171,7 +171,7 @@ namespace OrchardCore.Lucene
                                 foreach (var index in allIndices)
                                 {
                                     // Ignore if the content item content type is not indexed in this index
-                                    if (!indexSettingsList.Where(x => x.IndexName == index.Key).FirstOrDefault().IndexedContentTypes.Contains(contentItem.ContentType))
+                                    if (!indexSettingsList.FirstOrDefault(x => x.IndexName == index.Key).IndexedContentTypes.Contains(contentItem.ContentType))
                                     {
                                         continue;
                                     }
