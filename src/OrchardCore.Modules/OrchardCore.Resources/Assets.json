@@ -116,16 +116,28 @@
     "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
-      "node_modules/trumbowyg/dist/ui/sass/trumbowyg.scss",
-      "node_modules/trumbowyg/plugins/*/ui/sass/*.scss"
+      "node_modules/trumbowyg/dist/ui/sass/trumbowyg.scss"
     ],
     "output": "wwwroot/Styles/trumbowyg.css"
   },
   {
+    "generateSourceMaps": false,
+    "generateRTL": true,
     "inputs": [
-      "Assets/trumbowyg/js/trumbowyg.js",
-      "Assets/trumbowyg/plugins/*/*.js"
+      "Assets/trumbowyg/plugins/*/ui/sass/*.scss"
+    ],
+    "output": "wwwroot/Styles/trumbowyg-plugins.css"
+  },
+  {
+    "inputs": [
+      "node_modules/trumbowyg/dist/trumbowyg.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg.js"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg/plugins/*/*.js"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg-plugins.js"
   }
 ]

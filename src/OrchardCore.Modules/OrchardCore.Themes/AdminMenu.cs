@@ -22,7 +22,7 @@ namespace OrchardCore.Themes
             }
 
             builder
-                .Add(T["Design"], "2", design => design
+                .Add(T["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
                     .AddClass("themes").Id("themes")
                     .Permission(Permissions.ApplyTheme)
                     .Add(T["Themes"], "Themes", installed => installed

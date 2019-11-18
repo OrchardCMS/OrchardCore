@@ -88,7 +88,7 @@ namespace OrchardCore.Alias.Handlers
         public override async Task CloningAsync(CloneContentContext context, AliasPart part)
         {
             var clonedPart = context.CloneContentItem.As<AliasPart>();
-            clonedPart.Alias = await GenerateUniqueAliasAsync(clonedPart.Alias, clonedPart);
+            clonedPart.Alias = await GenerateUniqueAliasAsync(part.Alias, clonedPart);
 
             clonedPart.Apply();
         }

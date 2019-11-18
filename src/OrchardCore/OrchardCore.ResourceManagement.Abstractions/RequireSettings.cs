@@ -20,6 +20,7 @@ namespace OrchardCore.ResourceManagement
         public string Condition { get; set; }
         public string Version { get; set; }
         public bool? AppendVersion { get; set; }
+        public List<string> Dependencies { get; set; }
         public Action<ResourceDefinition> InlineDefinition { get; set; }
 
         public Dictionary<string, string> Attributes
@@ -149,6 +150,19 @@ namespace OrchardCore.ResourceManagement
         public RequireSettings ShouldAppendVersion(bool? appendVersion)
         {
             AppendVersion = appendVersion;
+            return this;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public RequireSettings SetDependencies(params string[] dependencies)
+        {
+            if (Dependencies == null)
+            {
+                Dependencies = new List<string>();
+            }
+
+            Dependencies.AddRange(dependencies);
+
             return this;
         }
 

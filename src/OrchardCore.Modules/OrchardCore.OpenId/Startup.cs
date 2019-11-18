@@ -108,7 +108,7 @@ namespace OrchardCore.OpenId
             services.TryAddScoped(provider => (IOpenIdScopeManager) provider.GetRequiredService<IOpenIddictScopeManager>());
             services.TryAddScoped(provider => (IOpenIdTokenManager) provider.GetRequiredService<IOpenIddictTokenManager>());
 
-            services.AddSingleton<IIndexProvider, OpenIdApplicationIndexProvider>();
+            services.AddSingleton<IIndexProvider, OpenIdAppIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdScopeIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();

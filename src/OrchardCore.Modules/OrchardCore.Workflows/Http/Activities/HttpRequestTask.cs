@@ -162,7 +162,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
                 foreach (var header in headers)
                 {
-                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                    httpClient.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
                 }
 
                 var httpMethod = HttpMethod;
@@ -201,7 +201,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
             return
                 from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
-                let pair = header.Split(':')
+                let pair = header.Split(':', 2)
                 where pair.Length == 2
                 select new KeyValuePair<string, string>(pair[0], pair[1]);
         }
