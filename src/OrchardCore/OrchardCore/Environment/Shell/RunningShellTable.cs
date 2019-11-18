@@ -42,7 +42,10 @@ namespace OrchardCore.Environment.Shell
         {
             var allHostsAndPrefix = GetAllHostsAndPrefix(settings);
 
-            _shellsByHostAndPrefix = _shellsByHostAndPrefix.RemoveRange(allHostsAndPrefix);
+            lock (this)
+            {
+                _shellsByHostAndPrefix = _shellsByHostAndPrefix.RemoveRange(allHostsAndPrefix);
+            }
 
             if (_default == settings)
             {
