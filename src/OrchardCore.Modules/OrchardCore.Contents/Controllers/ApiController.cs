@@ -85,7 +85,6 @@ namespace OrchardCore.Content.Controllers
                 }
             }
 
-
             if (contentItem != newContentItem)
             {
                 contentItem.DisplayText = newContentItem.DisplayText;

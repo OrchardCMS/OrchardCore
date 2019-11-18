@@ -13,7 +13,6 @@ namespace OrchardCore.Tests.Apis.Context
 
         public HttpClient Client { get; private set; }
         public OrchardGraphQLClient GraphQLClient { get; private set; }
-        private static Object _syncLock = new object();
 
         static SiteContext()
         {
