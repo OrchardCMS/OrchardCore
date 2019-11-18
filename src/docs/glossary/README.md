@@ -2,13 +2,21 @@
 
 List of terms and concepts that you can find in Orchard Core and a small explanation.
 
-They are grouped by roles: Power user, Theme designer, Administrator.
+They are grouped by roles: User, Theme designer, Administrator.
 
-## Power user
+## User
+
+### Content Item
+
+A content item is a single piece of content, often associated with a single URL (address) on the site. Examples of content items are pages, blog posts or products.
+
+### Content Type
+
+Content items are instances of content types. Said differently, content types are classes of content items.
 
 ### Content Part
 
-Extends a content type with a complex piece.  
+Content parts are atoms of content that are enough to build a specific coherent behavior and that can be reused across content types.  
 There can be only one part of the same kind by content type.  
 See [Content Parts](../reference/modules/ContentParts)
 
@@ -19,7 +27,8 @@ A content can be displayed differently depending on which Display type is render
 
 ### Content Field
 
-Extend a content type with a simple piece. There can be multiple fields of the same kind attached to a content type.  
+A content field extends a content type with a simple piece.  
+There can be multiple fields of the same kind attached to a content type.  
 See [Content Fields](../reference/modules/ContentFields)
 
 ### Field Editor
