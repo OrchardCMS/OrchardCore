@@ -9,17 +9,20 @@ using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
+using System.Text.Encodings.Web;
 
 namespace OrchardCore.Markdown.Drivers
 {
     public class MarkdownBodyPartDisplay : ContentPartDisplayDriver<MarkdownBodyPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
+        private readonly HtmlEncoder _htmlEncoder;
 
-        public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<MarkdownBodyPartDisplay> localizer)
+        public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<MarkdownBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
         {
             _liquidTemplatemanager = liquidTemplatemanager;
             T = localizer;
+            _htmlEncoder = htmlEncoder;
         }
 
         public IStringLocalizer T { get; }
@@ -73,7 +76,7 @@ namespace OrchardCore.Markdown.Drivers
             model.ContentItem = MarkdownBodyPart.ContentItem;
             templateContext.SetValue("Model", model);
 
-            var markdown = await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
+            var markdown = await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, NullEncoder.Default, templateContext);
 
             model.Html = Markdig.Markdown.ToHtml(markdown ?? "");
         }

@@ -6,6 +6,7 @@ using System.Text.Encodings.Web;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
@@ -57,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
         {
-            _value.WriteTo(writer, HtmlEncoder.Default);
+            _value.WriteTo(writer, NullHtmlEncoder.Default);
         }
 
         public override object ToObjectValue()

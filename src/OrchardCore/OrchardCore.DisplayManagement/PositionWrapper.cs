@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement
 {
-	public class PositionWrapper : IHtmlContent, IPositioned, IShape
+    public class PositionWrapper : IHtmlContent, IPositioned, IShape
     {
         private IHtmlContent _value;
         public string Position { get; set; }
@@ -30,7 +30,7 @@ namespace OrchardCore.DisplayManagement
 
         public PositionWrapper(string value, string position)
         {
-            _value = new HtmlString(HtmlEncoder.Default.Encode(value));
+            _value = new HtmlString(value);
             Position = position;
         }
 

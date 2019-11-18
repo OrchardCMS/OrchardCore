@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Email;
@@ -11,13 +12,16 @@ namespace OrchardCore.Users.Controllers
     {
         private readonly ISmtpService _smtpService;
         private readonly IDisplayHelper _displayHelper;
+        private readonly HtmlEncoder _htmlEncoder;
 
         public BaseEmailController(
             ISmtpService smtpService,
-            IDisplayHelper displayHelper)
+            IDisplayHelper displayHelper,
+            HtmlEncoder htmlEncoder)
         {
             _smtpService = smtpService;
             _displayHelper = displayHelper;
+            _htmlEncoder = htmlEncoder;
         }
 
         protected async Task<bool> SendEmailAsync(string email, string subject, IShape model)
@@ -29,7 +33,7 @@ namespace OrchardCore.Users.Controllers
                 using (var sw = new StringWriter(sb.Builder))
                 {
                     var htmlContent = await _displayHelper.ShapeExecuteAsync(model);
-                    htmlContent.WriteTo(sw, HtmlEncoder.Default);
+                    htmlContent.WriteTo(sw, _htmlEncoder);
                     body = sw.ToString();
                 }
             }

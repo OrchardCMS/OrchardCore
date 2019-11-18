@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using GraphQL.Types;
@@ -33,7 +34,7 @@ namespace OrchardCore.Markdown.GraphQL
 
             var markdown = ctx.Source.Markdown;
             var templateContext = new TemplateContext();
-            markdown = await liquidTemplateManager.RenderAsync(markdown, templateContext);
+            markdown = await liquidTemplateManager.RenderAsync(markdown, NullEncoder.Default, templateContext);
 
             return Markdig.Markdown.ToHtml(markdown);
         }

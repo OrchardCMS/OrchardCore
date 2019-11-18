@@ -1,9 +1,13 @@
 using System;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.WebEncoders;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.Environment.Shell.Scope;
@@ -34,7 +38,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         public async Task<IHtmlContent> PageTitle(IHtmlHelper Html)
         {
             var siteSettings = await ShellScope.Services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
-
+            
             // We must return a page title so if the format setting is blank just use the current title unformatted
             if (String.IsNullOrWhiteSpace(siteSettings.PageTitleFormat))
             {
@@ -43,7 +47,9 @@ namespace OrchardCore.DisplayManagement.Shapes
             else
             {
                 var liquidTemplateManager = ShellScope.Services.GetRequiredService<ILiquidTemplateManager>();
-                var result = await liquidTemplateManager.RenderAsync(siteSettings.PageTitleFormat, System.Text.Encodings.Web.HtmlEncoder.Default, new TemplateContext());
+                var htmlEncoder = ShellScope.Services.GetRequiredService<HtmlEncoder>();
+
+                var result = await liquidTemplateManager.RenderAsync(siteSettings.PageTitleFormat, htmlEncoder, new TemplateContext());
                 return new HtmlString(result);
             }
         }

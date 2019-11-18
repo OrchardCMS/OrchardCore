@@ -147,9 +147,12 @@ namespace OrchardCore.Navigation
 
     public class PagerShapes : IShapeAttributeProvider
     {
-        public PagerShapes(IStringLocalizer<PagerShapes> localizer)
+        private readonly HtmlEncoder _htmlEncoder;
+
+        public PagerShapes(IStringLocalizer<PagerShapes> localizer, HtmlEncoder htmlEncoder)
         {
             T = localizer;
+            _htmlEncoder = htmlEncoder;
         }
 
         public IStringLocalizer T { get; }
@@ -445,18 +448,19 @@ namespace OrchardCore.Navigation
             return DisplayAsync(Shape);
         }
 
-        static IHtmlContent CoerceHtmlString(object value)
+        private IHtmlContent CoerceHtmlString(object value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
-            var result = value as IHtmlContent;
-            if (result != null)
+            if (value is IHtmlContent result && result != null)
+            {
                 return result;
+            }
 
-            return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
+            return new HtmlString(_htmlEncoder.Encode(value.ToString()));
         }
-
-
     }
 }

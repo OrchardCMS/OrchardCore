@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
@@ -12,12 +13,12 @@ namespace OrchardCore.DynamicCache
     public class CachedShapeWrapperShapes : IShapeAttributeProvider
     {
         [Shape]
-        public IHtmlContent CachedShapeWrapper(dynamic Shape)
+        public IHtmlContent CachedShapeWrapper(IShape Shape, IServiceProvider ServiceProvider)
         {
             // No need to optimize this code as it will be used for debugging purpose
 
             var sb = new StringBuilder();
-            var metadata = (ShapeMetadata) Shape.Metadata;
+            var metadata = Shape.Metadata;
             var cache = metadata.Cache();
             
             sb.AppendLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
@@ -30,7 +31,9 @@ namespace OrchardCore.DynamicCache
             
             using (var sw = new StringWriter())
             {
-                metadata.ChildContent.WriteTo(sw, HtmlEncoder.Default);
+                var htmlEncoder = ServiceProvider.GetRequiredService<HtmlEncoder>();
+
+                metadata.ChildContent.WriteTo(sw, htmlEncoder);
                 sb.AppendLine(sw.ToString());
             }
             
