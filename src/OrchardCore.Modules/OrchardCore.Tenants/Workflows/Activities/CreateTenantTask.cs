@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -70,39 +71,70 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var tenantNameTask = ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext);
-            var requestUrlPrefixTask = ExpressionEvaluator.EvaluateAsync(RequestUrlPrefix, workflowContext);
-            var requestUrlHostTask = ExpressionEvaluator.EvaluateAsync(RequestUrlHost, workflowContext);
-            var databaseProviderTask = ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext);
-            var connectionStringTask = ExpressionEvaluator.EvaluateAsync(ConnectionString, workflowContext);
-            var tablePrefixTask = ExpressionEvaluator.EvaluateAsync(TablePrefix, workflowContext);
-            var recipeNameTask = ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext);
-
-            await Task.WhenAll(tenantNameTask, requestUrlPrefixTask, requestUrlHostTask, databaseProviderTask, connectionStringTask, tablePrefixTask, recipeNameTask);
-
-            var shellSettings = new ShellSettings();
-
-            if (!string.IsNullOrWhiteSpace(tenantNameTask.Result))
-            {
-                shellSettings = new ShellSettings
-                {
-                    Name = tenantNameTask.Result?.Trim(),
-                    RequestUrlPrefix = requestUrlPrefixTask.Result?.Trim(),
-                    RequestUrlHost = requestUrlHostTask.Result?.Trim(),
-                    State = TenantState.Uninitialized
-                };
-                shellSettings["ConnectionString"] = connectionStringTask.Result?.Trim();
-                shellSettings["TablePrefix"] = tablePrefixTask.Result?.Trim();
-                shellSettings["DatabaseProvider"] = databaseProviderTask.Result?.Trim();
-                shellSettings["Secret"] = Guid.NewGuid().ToString();
-                shellSettings["RecipeName"] = recipeNameTask.Result.Trim();
-
-                await ShellHost.UpdateShellSettingsAsync(shellSettings);
-            }
-            else
+            if (ShellScope.Context.Settings.Name != ShellHelper.DefaultShellName)
             {
                 return Outcomes("Failed");
             }
+
+            var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext))?.Trim();
+
+            if (string.IsNullOrEmpty(tenantName))
+            {
+                return Outcomes("Failed");
+            }
+
+            if (ShellHost.TryGetSettings(tenantName, out var shellSettings))
+            {
+                return Outcomes("Failed");
+            }
+
+            var requestUrlPrefix = (await ExpressionEvaluator.EvaluateAsync(RequestUrlPrefix, workflowContext))?.Trim();
+            var requestUrlHost = (await ExpressionEvaluator.EvaluateAsync(RequestUrlHost, workflowContext))?.Trim();
+            var databaseProvider = (await ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext))?.Trim();
+            var connectionString = (await ExpressionEvaluator.EvaluateAsync(ConnectionString, workflowContext))?.Trim();
+            var tablePrefix = (await ExpressionEvaluator.EvaluateAsync(TablePrefix, workflowContext))?.Trim();
+            var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext))?.Trim();
+
+            // Creates a default shell settings based on the configuration.
+            shellSettings = ShellSettingsManager.CreateDefaultSettings();
+
+            shellSettings.Name = tenantName;
+
+            if (!string.IsNullOrEmpty(requestUrlHost))
+            {
+                shellSettings.RequestUrlHost = requestUrlHost;
+            }
+
+            if (!string.IsNullOrEmpty(requestUrlPrefix))
+            {
+                shellSettings.RequestUrlPrefix = requestUrlPrefix;
+            }
+
+            shellSettings.State = TenantState.Uninitialized;
+
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                shellSettings["ConnectionString"] = connectionString;
+            }
+
+            if (!string.IsNullOrEmpty(tablePrefix))
+            {
+                shellSettings["TablePrefix"] = tablePrefix;
+            }
+
+            if (!string.IsNullOrEmpty(databaseProvider))
+            {
+                shellSettings["DatabaseProvider"] = databaseProvider;
+            }
+
+            if (!string.IsNullOrEmpty(recipeName))
+            {
+                shellSettings["RecipeName"] = recipeName;
+            }
+
+            shellSettings["Secret"] = Guid.NewGuid().ToString();
+
+            await ShellHost.UpdateShellSettingsAsync(shellSettings);
 
             workflowContext.LastResult = shellSettings;
             workflowContext.CorrelationId = shellSettings.Name;

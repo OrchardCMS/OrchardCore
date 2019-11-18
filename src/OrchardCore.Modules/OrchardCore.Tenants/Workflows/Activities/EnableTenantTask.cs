@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -13,7 +14,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
     public class EnableTenantTask : TenantTask
     {
 
-        public EnableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<EnableTenantTask> localizer) 
+        public EnableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<EnableTenantTask> localizer)
             : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
         {
         }
@@ -28,17 +29,25 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var tenantNameTask = ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext);
-
-            if (ShellHost.TryGetSettings(tenantNameTask.Result?.Trim(), out var shellSettings))
-            {
-                shellSettings.State = TenantState.Running;
-                await ShellHost.UpdateShellSettingsAsync(shellSettings);
-            }
-            else
+            if (ShellScope.Context.Settings.Name != ShellHelper.DefaultShellName)
             {
                 return Outcomes("Failed");
             }
+
+            var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext))?.Trim();
+
+            if (!ShellHost.TryGetSettings(tenantName, out var shellSettings))
+            {
+                return Outcomes("Failed");
+            }
+
+            if (shellSettings.State != TenantState.Disabled)
+            {
+                return Outcomes("Failed");
+            }
+
+            shellSettings.State = TenantState.Running;
+            await ShellHost.UpdateShellSettingsAsync(shellSettings);
 
             return Outcomes("Enabled");
         }
