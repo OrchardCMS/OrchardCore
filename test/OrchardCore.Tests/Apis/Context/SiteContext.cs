@@ -13,6 +13,7 @@ namespace OrchardCore.Tests.Apis.Context
 
         public HttpClient Client { get; private set; }
         public OrchardGraphQLClient GraphQLClient { get; private set; }
+        private static Object _syncLock = new object();
 
         static SiteContext()
         {
@@ -54,7 +55,11 @@ namespace OrchardCore.Tests.Apis.Context
             var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
             setupResult.EnsureSuccessStatusCode();
 
-            Client = Site.CreateDefaultClient(url);
+            lock (Site)
+            {
+                Client = Site.CreateDefaultClient(url);
+            }
+
             GraphQLClient = new OrchardGraphQLClient(Client);
         }
 

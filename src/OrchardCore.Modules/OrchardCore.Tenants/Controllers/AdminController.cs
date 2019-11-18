@@ -233,7 +233,7 @@ namespace OrchardCore.Tenants.Controllers
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).ToArray();
 
             // Creates a default shell settings based on the configuration.
-            var shellSettings = await _shellSettingsManager.CreateDefaultSettingsAsync();
+            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
             var model = new EditTenantViewModel
             {
@@ -272,7 +272,7 @@ namespace OrchardCore.Tenants.Controllers
             if (ModelState.IsValid)
             {
                 // Creates a default shell settings based on the configuration.
-                var shellSettings = await _shellSettingsManager.CreateDefaultSettingsAsync();
+                var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
                 shellSettings.Name = model.Name;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;

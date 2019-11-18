@@ -8,7 +8,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Creates a default shell settings based on the configuration.
         /// </summary>
-        Task<ShellSettings> CreateDefaultSettingsAsync();
+        ShellSettings CreateDefaultSettings();
 
         /// <summary>
         /// Retrieves all shell settings stored.

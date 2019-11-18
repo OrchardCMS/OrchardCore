@@ -91,7 +91,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             // Creates a default shell settings based on the configuration.
-            var shellSettings = await _shellSettingsManager.CreateDefaultSettingsAsync();
+            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
             shellSettings.Name = model.Name;
             shellSettings.RequestUrlHost = model.RequestUrlHost;
@@ -121,7 +121,7 @@ namespace OrchardCore.Tenants.Controllers
             {
                 if (_shellHost.TryGetSettings(model.Name, out var settings))
                 {
-                    // Site already exists, return 200 for indempotency purpose
+                    // Site already exists, return 201 for indempotency purpose
 
                     var token = CreateSetupToken(settings);
 

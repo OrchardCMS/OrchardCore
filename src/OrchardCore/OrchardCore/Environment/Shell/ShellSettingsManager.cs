@@ -20,11 +20,6 @@ namespace OrchardCore.Environment.Shell
         private readonly IShellConfigurationSources _tenantConfigSources;
         private readonly IShellsSettingsSources _settingsSources;
 
-        // This could be optimized by locking per tenant, but worst case is that 
-        // two tenants are blocking each other when the settings are updated. Theorically,
-        // as this storing settings in files, this is supposed to be used with few tenants.
-        // So we are not optimizing with a distinct semarphore per tenant. 
-
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         public ShellSettingsManager(
@@ -72,21 +67,13 @@ namespace OrchardCore.Environment.Shell
             };
         }
 
-        public async Task<ShellSettings> CreateDefaultSettingsAsync()
+        public ShellSettings CreateDefaultSettings()
         {
-            await _semaphore.WaitAsync();
-            try
-            {
-                return new ShellSettings
-                (
-                    new ShellConfiguration(_configuration),
-                    new ShellConfiguration(_configuration)
-                );
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            return new ShellSettings
+            (
+                new ShellConfiguration(_configuration),
+                new ShellConfiguration(_configuration)
+            );
         }
 
         public IEnumerable<ShellSettings> LoadSettings()
