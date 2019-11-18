@@ -194,6 +194,18 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
+        public ResourceDefinition SetDependencies(List<string> dependencies)
+        {
+            if (Dependencies == null)
+            {
+                Dependencies = new List<string>();
+            }
+
+            Dependencies.AddRange(dependencies);
+
+            return this;
+        }
+
         public TagBuilder GetTagBuilder(RequireSettings settings,
             string applicationPath,
             IFileVersionProvider fileVersionProvider)

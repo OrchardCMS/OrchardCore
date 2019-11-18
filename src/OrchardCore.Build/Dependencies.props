@@ -41,12 +41,12 @@
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <PackageManagement Include="xunit" Version="2.4.1" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1449" />
-    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1449" />
-    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1449" />
-    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1449" />
-    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1449" />
-    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1449" />
+    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1457" />
+    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1457" />
+    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1457" />
+    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1457" />
+    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1457" />
+    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1457" />
   </ItemGroup>
 
 </Project>
