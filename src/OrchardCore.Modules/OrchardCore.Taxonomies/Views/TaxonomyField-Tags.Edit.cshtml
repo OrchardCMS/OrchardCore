@@ -1,17 +1,12 @@
 @model OrchardCore.Taxonomies.ViewModels.EditTaxonomyFieldViewModel
 @using OrchardCore.Taxonomies.Settings;
 @using OrchardCore.ContentManagement.Metadata.Models
-@using Newtonsoft.Json;
-@using Newtonsoft.Json.Serialization;
+@using Newtonsoft.Json.Linq;
 
 @{
     var settings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
-
-    var jss = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
-
-    //TODO bind once and filter in js
-    var selectedTerms = JsonConvert.SerializeObject(Model.TermEntries.Where(te => te.Selected), jss);
-    var allTerms = JsonConvert.SerializeObject(Model.TermEntries, jss);
+    // Create a flat object for vue multi select with required properties.
+    var allTerms = JArray.FromObject(Model.TermEntries.Select(te => new { contentItemId = te.ContentItemId, selected = te.Selected, displayText = te.Term.DisplayText }));
 
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
@@ -42,35 +37,35 @@
 }
 
 <div class="form-group">
-    <div id="@vueElementId" class="tags" data-part="@partName" data-field="@fieldName" data-editor-type="Tags" data-selected-terms="@selectedTerms" data-all-terms="@allTerms" data-tenant-path="@tenantPath">
+    <div id="@vueElementId" class="tags" data-part-name="@partName" data-field-name="@fieldName" data-editor-type="Tags" data-all-terms="@allTerms" data-tenant-path="@tenantPath" data-term-entries-key="@nameof(EditTaxonomyFieldViewModel.TermEntries)" data-content-item-id-key="@nameof(TermEntry.ContentItemId)" data-selected-key="@nameof(TermEntry.Selected)">
 
         <div class="form-group">
             <div class="w-xl-50">
                 <input v-for="option in options" v-bind:name="termEntriesContentItemName(option)" v-bind:value="option.contentItemId" type="hidden" />
                 <input v-for="option in options" v-bind:name="termEntriesSelectedName(option)" v-bind:value="option.selected" type="hidden" />
 
+                @*TODO Settings.Open is unused currently. But swapping it in to taggable, enables or disables adding tags.*@
                 <vue-multiselect v-model="arrayOfItems"
-                                 tag-placeholder="Add this as new tag"
                                  placeholder="@T["Type to search"]"
                                  select-label="@T["Select"]"
                                  deselect-label="@T["Remove"]"
                                  :options="options"
-                                 :multiple="true"
-                                 :custom-label="customLabel"
+                                 :multiple="@((!settings.Unique).ToString().ToLower())"
                                  :show-labels="false"
-                                 :close-on-select="false"
+                                 :close-on-select="@settings.Unique.ToString().ToLower()"
                                  track-by="contentItemId"
+                                 label="displayText"
                                  @@select="onSelect"
                                  @@remove="onRemove"
                                  :taggable="true"
+                                 tag-position="bottom"
+                                 tag-placeholder="@T["Press enter to create a tag"]"
                                  @@tag="addTag">
-                    <template slot="option" slot-scope="props">
-                        <div v-cloak>
-                            <span>{{ props.option.term.DisplayText }}</span>
-                        </div>
-                    </template>
                     <template slot="noResult">
-                        @T["No result found"]
+                        @T["No tags found"]
+                    </template>
+                    <template slot="noOptions">
+                        @T["No tags found"]
                     </template>
                 </vue-multiselect>
             </div>
