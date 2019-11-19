@@ -25,6 +25,11 @@ namespace OrchardCore.ContentManagement.GraphQL
 
         private static async Task<IDictionary<string, ContentItem>> LoadPublishedContentItems(IEnumerable<string> contentItemIds, ISession session)
         {
+            if (contentItemIds is null || !contentItemIds.Any())
+            {
+                return new Dictionary<string, ContentItem>();
+            }
+
             var contentItemsLoaded = await session.Query<ContentItem, ContentItemIndex>(y => y.ContentItemId.IsIn(contentItemIds) && y.Published).ListAsync();
             return contentItemsLoaded.ToDictionary(k => k.ContentItemId, v => v);
         }
