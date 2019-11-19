@@ -44,12 +44,6 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.
 
-### Visual Studio 2017
-
-- Download Visual Studio 2017 (any edition) from https://www.visualstudio.com/downloads/
-- Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages
-- Ensure `OrchardCore.Cms.Web` is the startup project and run it
-
 ### Docker
 
 - Run `docker run --name orchardcms orchardproject/orchardcore-cms-linux:latest`
