@@ -46,10 +46,10 @@ namespace OrchardCore.Markdown.Handlers
                     templateContext.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
                     templateContext.SetValue("Model", model);
 
-                    var markdown = await _liquidTemplateManager.RenderAsync(part.Markdown, NullEncoder.Default, templateContext);
+                    var markdown = await _liquidTemplateManager.RenderAsync(part.Markdown, _htmlEncoder, templateContext);
                     var result = Markdig.Markdown.ToHtml(markdown ?? "");
 
-                    bodyAspect.Body = _bodyAspect = new HtmlString(_htmlEncoder.Encode(result));
+                    bodyAspect.Body = _bodyAspect = new HtmlString(result);
                 }
                 catch
                 {

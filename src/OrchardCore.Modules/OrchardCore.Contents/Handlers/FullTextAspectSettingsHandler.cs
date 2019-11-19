@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -21,16 +22,19 @@ namespace OrchardCore.Contents.Handlers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IServiceProvider _serviceProvider;
+        private readonly HtmlEncoder _htmlEncoder;
 
         public FullTextAspectSettingsHandler(
             IContentDefinitionManager contentDefinitionManager,
             ILiquidTemplateManager liquidTemplateManager,
-            IServiceProvider serviceProvider
+            IServiceProvider serviceProvider,
+            HtmlEncoder htmlEncoder
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _liquidTemplateManager = liquidTemplateManager;
             _serviceProvider = serviceProvider;
+            _htmlEncoder = htmlEncoder;
         }
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
@@ -75,7 +79,7 @@ namespace OrchardCore.Contents.Handlers
                     templateContext.SetValue("ContentItem", context.ContentItem);
                     templateContext.SetValue("Model", context.ContentItem);
 
-                    var result = await _liquidTemplateManager.RenderAsync(settings.FullTextTemplate, NullEncoder.Default, templateContext);
+                    var result = await _liquidTemplateManager.RenderAsync(settings.FullTextTemplate, _htmlEncoder, templateContext);
                     fullTextAspect.Segments.Add(result);
                 }
             });
