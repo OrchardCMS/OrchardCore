@@ -71,7 +71,7 @@ namespace OrchardCore.Queries.Sql
 
                     using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
                     {
-                        documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
+                        documentIds = await connection.QueryAsync<int>(rawQuery, parameters, transaction);
                     }
                 }
 
@@ -88,7 +88,7 @@ namespace OrchardCore.Queries.Sql
 
                     using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
                     {
-                        queryResults = await connection.QueryAsync(rawQuery, parameters);
+                        queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
                     }
                 }
 
