@@ -1,5 +1,7 @@
 using System;
 using GraphQL;
+using GraphQL.DataLoader;
+using GraphQL.Execution;
 using GraphQL.Http;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
@@ -31,6 +33,8 @@ namespace OrchardCore.Apis.GraphQL
             services.AddSingleton<IDependencyResolver, RequestServicesDependencyResolver>();
             services.AddSingleton<IDocumentExecuter, SerialDocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
+            services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
+            services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
             services.AddSingleton<ISchemaFactory, SchemaService>();
             services.AddScoped<IValidationRule, MaxNumberOfResultsValidationRule>();
 
