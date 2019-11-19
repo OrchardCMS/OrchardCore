@@ -22,19 +22,16 @@ namespace OrchardCore.Contents.Handlers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IServiceProvider _serviceProvider;
-        private readonly HtmlEncoder _htmlEncoder;
 
         public FullTextAspectSettingsHandler(
             IContentDefinitionManager contentDefinitionManager,
             ILiquidTemplateManager liquidTemplateManager,
-            IServiceProvider serviceProvider,
-            HtmlEncoder htmlEncoder
+            IServiceProvider serviceProvider
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _liquidTemplateManager = liquidTemplateManager;
             _serviceProvider = serviceProvider;
-            _htmlEncoder = htmlEncoder;
         }
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
@@ -79,7 +76,7 @@ namespace OrchardCore.Contents.Handlers
                     templateContext.SetValue("ContentItem", context.ContentItem);
                     templateContext.SetValue("Model", context.ContentItem);
 
-                    var result = await _liquidTemplateManager.RenderAsync(settings.FullTextTemplate, _htmlEncoder, templateContext);
+                    var result = await _liquidTemplateManager.RenderAsync(settings.FullTextTemplate, NullHtmlEncoder.Default, templateContext);
                     fullTextAspect.Segments.Add(result);
                 }
             });
