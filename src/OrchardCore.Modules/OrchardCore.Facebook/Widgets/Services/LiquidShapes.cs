@@ -18,6 +18,7 @@ namespace OrchardCore.Facebook.Widgets.Services
         {
             _htmlEncoder = htmlEncoder;
         }
+
         private async Task BuildViewModelAsync(ShapeDisplayContext shapeDisplayContext)
         {
             var model = shapeDisplayContext.Shape as FacebookPluginPartViewModel;

@@ -20,7 +20,7 @@ namespace OrchardCore.DynamicCache
             var sb = new StringBuilder();
             var metadata = Shape.Metadata;
             var cache = metadata.Cache();
-            
+
             sb.AppendLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
             sb.AppendLine($"          VARY BY: {String.Join(", ", cache.Contexts)}");
             sb.AppendLine($"     DEPENDENCIES: {String.Join(", ", cache.Tags)}");
@@ -28,7 +28,7 @@ namespace OrchardCore.DynamicCache
             sb.AppendLine($"    EXPIRES AFTER: {cache.ExpiresAfter}");
             sb.AppendLine($"  EXPIRES SLIDING: {cache.ExpiresSliding}");
             sb.AppendLine("-->");
-            
+
             using (var sw = new StringWriter())
             {
                 var htmlEncoder = ServiceProvider.GetRequiredService<HtmlEncoder>();
@@ -36,7 +36,7 @@ namespace OrchardCore.DynamicCache
                 metadata.ChildContent.WriteTo(sw, htmlEncoder);
                 sb.AppendLine(sw.ToString());
             }
-            
+
             sb.AppendLine($"<!-- END CACHED SHAPE: {cache.CacheId} -->");
 
             return new HtmlString(sb.ToString());
