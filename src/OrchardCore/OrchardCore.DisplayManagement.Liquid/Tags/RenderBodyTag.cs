@@ -25,7 +25,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             IHtmlContent htmlContent = await displayHelper.ShapeExecuteAsync(layout.Content);
 
-            htmlContent.WriteTo(writer, (HtmlEncoder) encoder);
+            htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
             return Completion.Normal;
         }
     }

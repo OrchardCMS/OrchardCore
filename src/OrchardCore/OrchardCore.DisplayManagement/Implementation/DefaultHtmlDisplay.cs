@@ -259,7 +259,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
                 //using (var html = new StringWriter())
                 //{
-                //    result.WriteTo(html, HtmlEncoder.Default);
+                //    result.WriteTo(html, htmlEncoder);
                 //    return new HtmlString(html.ToString());
                 //}
             }

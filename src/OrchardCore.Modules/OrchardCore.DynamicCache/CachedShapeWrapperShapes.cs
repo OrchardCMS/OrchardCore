@@ -7,13 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.DynamicCache
 {
     public class CachedShapeWrapperShapes : IShapeAttributeProvider
     {
         [Shape]
-        public IHtmlContent CachedShapeWrapper(IShape Shape, IServiceProvider ServiceProvider)
+        public IHtmlContent CachedShapeWrapper(IShape Shape)
         {
             // No need to optimize this code as it will be used for debugging purpose
 
@@ -31,7 +32,7 @@ namespace OrchardCore.DynamicCache
 
             using (var sw = new StringWriter())
             {
-                var htmlEncoder = ServiceProvider.GetRequiredService<HtmlEncoder>();
+                var htmlEncoder = ShellScope.Services.GetRequiredService<HtmlEncoder>();
 
                 metadata.ChildContent.WriteTo(sw, htmlEncoder);
                 sb.AppendLine(sw.ToString());

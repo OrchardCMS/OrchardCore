@@ -1,7 +1,6 @@
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Email;

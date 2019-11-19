@@ -29,7 +29,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var separator = arguments.HasNamed("separator") ? new HtmlString(arguments["separator"].ToStringValue()) : null;
 
             titleBuilder.AddSegment(segment, position);
-            titleBuilder.GenerateTitle(separator).WriteTo(writer, (HtmlEncoder) encoder);
+            titleBuilder.GenerateTitle(separator).WriteTo(writer, (HtmlEncoder)encoder);
             return Completion.Normal;
         }
     }
