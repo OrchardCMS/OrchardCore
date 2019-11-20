@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Shapes;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace OrchardCore.DisplayManagement
 {
@@ -11,13 +12,13 @@ namespace OrchardCore.DisplayManagement
         private IHtmlContent _value;
         public string Position { get; set; }
 
-		public ShapeMetadata Metadata { get; set; } = new ShapeMetadata();
+        public ShapeMetadata Metadata { get; set; } = new ShapeMetadata();
 
-		public string Id { get; set; }
+        public string Id { get; set; }
 
-		public IList<string> Classes { get; }
+        public IList<string> Classes { get; }
 
-		public IDictionary<string, string> Attributes { get; }
+        public IDictionary<string, string> Attributes { get; }
 
         private Dictionary<string, object> _properties;
         public IDictionary<string, object> Properties => _properties = _properties ?? new Dictionary<string, object>();
@@ -30,7 +31,7 @@ namespace OrchardCore.DisplayManagement
 
         public PositionWrapper(string value, string position)
         {
-            _value = new HtmlString(value);
+            _value = new StringHtmlContent(value);
             Position = position;
         }
 
