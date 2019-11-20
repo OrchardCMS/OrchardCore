@@ -41,9 +41,8 @@ namespace OrchardCore.Markdown.Drivers
                 model.PartFieldDefinition = context.PartFieldDefinition;
                 templateContext.SetValue("Model", model);
 
-                var markdown = await _liquidTemplatemanager.RenderAsync(field.Markdown, _htmlEncoder, templateContext);
-
-                model.Html = Markdig.Markdown.ToHtml(markdown ?? "");
+                model.Markdown = await _liquidTemplatemanager.RenderAsync(field.Markdown, _htmlEncoder, templateContext);
+                model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
             })
             .Location("Content")
             .Location("SummaryAdmin", "");
