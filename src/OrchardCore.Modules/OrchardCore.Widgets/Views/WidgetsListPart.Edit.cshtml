@@ -28,7 +28,7 @@
             </div>
             <div class="widget-editor-body card-body" data-zone="@zone">
                 <div class="col-md-12">
-                    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-widget-list @( ($"widgetlist-{partName}-{zone}").HtmlClassify() ) row" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Widgets" })">
+                    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-widget-list @( ($"widgetlist-{partName}-{zone}").HtmlClassify() ) row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Widgets" })">
                         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
 
                         @if (Model.WidgetsListPart.Widgets.ContainsKey(zone))
