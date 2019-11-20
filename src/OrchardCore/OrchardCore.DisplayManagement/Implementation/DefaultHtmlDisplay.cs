@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Theming;
@@ -14,7 +14,6 @@ namespace OrchardCore.DisplayManagement.Implementation
     public class DefaultHtmlDisplay : IHtmlDisplay
     {
         private readonly IShapeTableManager _shapeTableManager;
-        private readonly HtmlEncoder _htmlEncoder;
         private readonly IEnumerable<IShapeDisplayEvents> _shapeDisplayEvents;
         private readonly IEnumerable<IShapeBindingResolver> _shapeBindingResolvers;
         private readonly IThemeManager _themeManager;
@@ -25,13 +24,11 @@ namespace OrchardCore.DisplayManagement.Implementation
             IEnumerable<IShapeDisplayEvents> shapeDisplayEvents,
             IEnumerable<IShapeBindingResolver> shapeBindingResolvers,
             IShapeTableManager shapeTableManager,
-            HtmlEncoder htmlEncoder,
             IServiceProvider serviceProvider,
             ILogger<DefaultHtmlDisplay> logger,
             IThemeManager themeManager)
         {
             _shapeTableManager = shapeTableManager;
-            _htmlEncoder = htmlEncoder;
             _shapeDisplayEvents = shapeDisplayEvents;
             _shapeBindingResolvers = shapeBindingResolvers;
             _themeManager = themeManager;
@@ -46,7 +43,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             // non-shape arguments are returned as a no-op
             if (shape == null)
             {
-                return CoerceHtmlString(context.Value, _htmlEncoder);
+                return CoerceHtmlString(context.Value);
             }
 
             var shapeMetadata = shape.Metadata;
@@ -54,7 +51,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             // can't really cope with a shape that has no type information
             if (shapeMetadata == null || string.IsNullOrEmpty(shapeMetadata.Type))
             {
-                return CoerceHtmlString(context.Value, _htmlEncoder);
+                return CoerceHtmlString(context.Value);
             }
 
             // Copy the current context such that the rendering can customize it if necessary
@@ -242,7 +239,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             return null;
         }
 
-        static IHtmlContent CoerceHtmlString(object value, HtmlEncoder htmlEncoder)
+        static IHtmlContent CoerceHtmlString(object value)
         {
             if (value == null)
             {
@@ -265,7 +262,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             // Convert to a string and HTML-encode it
-            return new HtmlString(htmlEncoder.Encode(value.ToString()));
+            return new StringHtmlContent(value.ToString());
         }
 
         private static bool TryGetParentShapeTypeName(ref string shapeTypeScan)
@@ -283,7 +280,7 @@ namespace OrchardCore.DisplayManagement.Implementation
         {
             async ValueTask<IHtmlContent> Awaited(Task<IHtmlContent> task)
             {
-                return CoerceHtmlString(await task, _htmlEncoder);
+                return CoerceHtmlString(await task);
             }
 
             if (shapeBinding?.BindingAsync == null)
@@ -293,11 +290,13 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             var task = shapeBinding.BindingAsync(context);
+
             if (!task.IsCompletedSuccessfully)
             {
                 return Awaited(task);
             }
-            return new ValueTask<IHtmlContent>(CoerceHtmlString(task.Result, _htmlEncoder));
+
+            return new ValueTask<IHtmlContent>(CoerceHtmlString(task.Result));
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,29 +29,34 @@ public static class OrchardRazorHelperExtensions
     /// <returns>The encoded script rendering the object to the console.</returns>
     public static IHtmlContent ConsoleLog(this IOrchardHelper orchardHelper, object content)
     {
-        const string FormatConsole = "<script>console.log({0})</script>";
+        var builder = new HtmlContentBuilder(3);
+
+        builder.AppendHtml("<script>console.log(");
 
         if (content == null)
         {
-            return new HtmlString(string.Format(FormatConsole, "null"));
+            builder.AppendHtml("null");
         }
-
-        if (content is string)
+        else if (content is string stringContent)
         {
-            return new HtmlString(string.Format(FormatConsole, WebUtility.HtmlEncode((string)content)));
+            builder.Append(stringContent);
         }
-
-        if (content is JToken)
+        else if (content is JToken jTokenContent)
         {
-            return new HtmlString(string.Format(FormatConsole, content.ToString()));
+            builder.Append(jTokenContent.ToString());
         }
-
-        if (content is ContentItem contentItem)
+        else if (content is ContentItem contentItem)
         {
-            return new HtmlString(string.Format(FormatConsole, ConvertContentItem(contentItem).ToString()));
+            builder.Append(ConvertContentItem(contentItem).ToString());
+        }
+        else
+        {
+            builder.Append(JsonConvert.SerializeObject(content));
         }
 
-        return new HtmlString(string.Format(FormatConsole, JsonConvert.SerializeObject(content)));
+        builder.AppendHtml(")</script>");
+
+        return builder;
     }
 
     private static JObject ConvertContentItem(ContentItem contentItem)

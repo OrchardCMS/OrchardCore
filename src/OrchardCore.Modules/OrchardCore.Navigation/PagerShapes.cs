@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -147,12 +148,9 @@ namespace OrchardCore.Navigation
 
     public class PagerShapes : IShapeAttributeProvider
     {
-        private readonly HtmlEncoder _htmlEncoder;
-
-        public PagerShapes(IStringLocalizer<PagerShapes> localizer, HtmlEncoder htmlEncoder)
+        public PagerShapes(IStringLocalizer<PagerShapes> localizer)
         {
             T = localizer;
-            _htmlEncoder = htmlEncoder;
         }
 
         public IStringLocalizer T { get; }
@@ -455,12 +453,12 @@ namespace OrchardCore.Navigation
                 return null;
             }
 
-            if (value is IHtmlContent result && result != null)
+            if (value is IHtmlContent result)
             {
                 return result;
             }
 
-            return new HtmlString(_htmlEncoder.Encode(value.ToString()));
+            return new StringHtmlContent(value.ToString());
         }
     }
 }

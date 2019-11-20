@@ -1,7 +1,7 @@
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
@@ -16,11 +16,11 @@ public static class ContentRazorHelperExtensions
     public static async Task<IHtmlContent> MarkdownToHtmlAsync(this IOrchardHelper orchardHelper, string markdown)
     {
         var liquidTemplateManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ILiquidTemplateManager>();
-        var htmlEncoder = orchardHelper.HttpContext.RequestServices.GetService<HtmlEncoder>();
 
         var context = new TemplateContext();
 
         markdown = await liquidTemplateManager.RenderAsync(markdown, NullHtmlEncoder.Default, context);
-        return new HtmlString(htmlEncoder.Encode(Markdig.Markdown.ToHtml(markdown)));
+
+        return new StringHtmlContent(Markdig.Markdown.ToHtml(markdown));
     }
 }

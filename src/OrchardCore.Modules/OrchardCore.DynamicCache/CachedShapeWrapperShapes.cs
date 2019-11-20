@@ -18,29 +18,23 @@ namespace OrchardCore.DynamicCache
         {
             // No need to optimize this code as it will be used for debugging purpose
 
-            var sb = new StringBuilder();
+            var contentBuilder = new HtmlContentBuilder();
             var metadata = Shape.Metadata;
             var cache = metadata.Cache();
 
-            sb.AppendLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
-            sb.AppendLine($"          VARY BY: {String.Join(", ", cache.Contexts)}");
-            sb.AppendLine($"     DEPENDENCIES: {String.Join(", ", cache.Tags)}");
-            sb.AppendLine($"       EXPIRES ON: {cache.ExpiresOn}");
-            sb.AppendLine($"    EXPIRES AFTER: {cache.ExpiresAfter}");
-            sb.AppendLine($"  EXPIRES SLIDING: {cache.ExpiresSliding}");
-            sb.AppendLine("-->");
+            contentBuilder.AppendHtml($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
+            contentBuilder.AppendHtml($"          VARY BY: {String.Join(", ", cache.Contexts)}");
+            contentBuilder.AppendHtml($"     DEPENDENCIES: {String.Join(", ", cache.Tags)}");
+            contentBuilder.AppendHtml($"       EXPIRES ON: {cache.ExpiresOn}");
+            contentBuilder.AppendHtml($"    EXPIRES AFTER: {cache.ExpiresAfter}");
+            contentBuilder.AppendHtml($"  EXPIRES SLIDING: {cache.ExpiresSliding}");
+            contentBuilder.AppendHtml("-->");
 
-            using (var sw = new StringWriter())
-            {
-                var htmlEncoder = ShellScope.Services.GetRequiredService<HtmlEncoder>();
+            contentBuilder.AppendHtml(metadata.ChildContent);
 
-                metadata.ChildContent.WriteTo(sw, htmlEncoder);
-                sb.AppendLine(sw.ToString());
-            }
+            contentBuilder.AppendHtml($"<!-- END CACHED SHAPE: {cache.CacheId} -->");
 
-            sb.AppendLine($"<!-- END CACHED SHAPE: {cache.CacheId} -->");
-
-            return new HtmlString(sb.ToString());
+            return contentBuilder;
         }
     }
 }
