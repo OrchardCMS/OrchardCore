@@ -53,10 +53,10 @@ namespace OrchardCore.ContentTypes.Editors
                 }
             }
 
-            return Edit(contentTypeDefinition, context.Updater);
+            return Edit(contentTypeDefinition);
         }
 
-        
+
         private static bool IsAlphaNumericOrEmpty(string value)
         {
             if (String.IsNullOrEmpty(value))

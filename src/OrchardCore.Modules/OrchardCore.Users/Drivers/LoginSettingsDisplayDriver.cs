@@ -27,7 +27,7 @@ namespace OrchardCore.Users.Drivers
             {
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
             }
-            return await EditAsync(section, context);
+            return Edit(section);
         }
     }
 }

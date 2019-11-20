@@ -47,10 +47,10 @@ namespace OrchardCore.AdminMenu.Controllers
             Logger = logger;
         }
 
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
-        public ILogger Logger { get; set; }
-        public dynamic New { get; set; }
+        public IStringLocalizer T { get; }
+        public IHtmlLocalizer H { get; }
+        public ILogger Logger { get; }
+        public dynamic New { get; }
 
         public async Task<IActionResult> List(AdminMenuListOptions options, PagerParameters pagerParameters)
         {
@@ -136,13 +136,12 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (ModelState.IsValid)
             {
-                var tree = new Models.AdminMenu {Name = model.Name};
+                var tree = new Models.AdminMenu { Name = model.Name };
 
                 await _adminMenuService.SaveAsync(tree);
-                
+
                 return RedirectToAction(nameof(List));
             }
-
 
             return View(model);
         }
@@ -191,7 +190,7 @@ namespace OrchardCore.AdminMenu.Controllers
             {
                 adminMenu.Name = model.Name;
 
-                await _adminMenuService.SaveAsync(adminMenu);                
+                await _adminMenuService.SaveAsync(adminMenu);
 
                 _notifier.Success(H["Admin menu updated successfully"]);
 

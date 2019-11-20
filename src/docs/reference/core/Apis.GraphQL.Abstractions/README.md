@@ -56,7 +56,7 @@ public class AutorouteQueryObjectType : ObjectGraphType<AutoroutePart>
 There are two things going on here;
 
 1. Inherit off `ObjectGraphType`. GraphQL understands this type.
-2. Field(x => x.Path);. This tells the class from #1 what fields you want exposed publically.
+2. Field(x => x.Path);. This tells the class from #1 what fields you want exposed publicly.
 
 The last part is to tell the Orchard Subsystem about your new type, once this is done, the GraphQL subsystem will pick up your new object from its dependency tree. To do this, simple register it in a Startup class;
 
@@ -66,7 +66,7 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        // I have ommited the registering of the AutoroutePart, as we expect that to already be registered
+        // I have omitted the registering of the AutoroutePart, as we expect that to already be registered
         services.AddGraphQLQueryType<AutoroutePart, AutorouteQueryObjectType>();
     }
 }
@@ -111,7 +111,7 @@ When an input part is registered, it adds in that part as the parent query, in t
 }
 ```
 
-Next we want in implement a filter. The filter takes the input from the class we just built and the above example, and performs the actual filter against the object passed to it.
+Next we want to implement a filter. The filter takes the input from the class we just built and the above example, and performs the actual filter against the object passed to it.
 
 ```c#
 public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>

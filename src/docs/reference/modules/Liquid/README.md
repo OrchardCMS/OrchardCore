@@ -235,9 +235,7 @@ The following properties are available on the `User` object.
 | `Identity.Name` | `admin` | The name of the authenticated user. |
 | `Identity.Claims` |  | The claims of the authenticated user. |
 
-#### User Filters
-
-##### has_permission filter
+#### User has_permission filter
 
 Checks if the User has permission clearance, optionally on a resource
 
@@ -245,15 +243,15 @@ Checks if the User has permission clearance, optionally on a resource
 {{ User | has_permission:"EditContent",Model.ContentItem }}
 ```
 
-##### is_in_role filter
+#### User is_in_role filter
 
-Cchecks if the user is in role
+Checks if the user is in role
 
 ```liquid
 {{ User | is_in_role:"Administrator" }}
 ```
 
-##### has_claim filter
+#### User has_claim filter
 
 Checks if the user has a claim of the specified type
 
@@ -633,7 +631,7 @@ Input
 {% shape_cache my_shape cache_id: "my-shape", cache_expires_after: "00:05:00" %}
 ```
 
-For more information about the available caching paramters please refer to [this section](../OrchardCore.DynamicCache/#shape-tag-helper-attributes)
+For more information about the available caching parameters please refer to [this section](../OrchardCore.DynamicCache/#shape-tag-helper-attributes)
 
 ### `zone`
 
@@ -706,7 +704,6 @@ Block Tag example
 {% endblock %}
 ```
 
-
 ## Razor Helpers
 
 ### `LiquidToHtmlAsync`
@@ -715,7 +712,7 @@ To render a liquid string template as `IHtmlContent` within Razor use the `Liqui
 
 Input
 
-```
+```csharp
 @await Orchard.LiquidToHtmlAsync((string)Model.ContentItem.Content.Paragraph.Content.Html)
 ```
 

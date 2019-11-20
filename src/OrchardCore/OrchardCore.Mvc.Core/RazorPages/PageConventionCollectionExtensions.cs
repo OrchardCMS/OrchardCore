@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace Microsoft.AspNetCore.Mvc.ApplicationModels
@@ -16,7 +17,7 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
             {
                 foreach (var selector in model.Selectors.ToArray())
                 {
-                    if (selector.AttributeRouteModel.Template.StartsWith(areaName))
+                    if (selector.AttributeRouteModel.Template.StartsWith(areaName, StringComparison.Ordinal))
                     {
                         selector.AttributeRouteModel.SuppressLinkGeneration = true;
 

@@ -21,19 +21,20 @@ namespace OrchardCore.GitHub
             _shellDescriptor = shellDescriptor;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["GitHub"], "15", settings => settings
+                builder.Add(T["Security"], security => security
+                        .Add(T["Authentication"], authentication => authentication
+                        .Add(T["GitHub"], "14", settings => settings
                         .AddClass("github").Id("github")
-                        .Add(T["GitHub Authentication"], "10", client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GitHubAuthentication })
                             .Permission(Permissions.ManageGitHubAuthentication)
                             .LocalNav())
-                    );
+                    ));
             }
             return Task.CompletedTask;
         }

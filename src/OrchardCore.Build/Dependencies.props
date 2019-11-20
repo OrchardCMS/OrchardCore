@@ -17,36 +17,36 @@
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00006" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00006" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00006" />
-    <PackageManagement Include="MailKit" Version="2.3.1.6" />
-    <PackageManagement Include="Markdig" Version="0.17.1" />
+    <PackageManagement Include="MailKit" Version="2.3.2" />
+    <PackageManagement Include="Markdig" Version="0.18.0" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.1.0-preview.32" />
-    <PackageManagement Include="Moq" Version="4.13.0" />
+    <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.1.0" />
+    <PackageManagement Include="Moq" Version="4.13.1" />
     <PackageManagement Include="Nancy" Version="2.0.0" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
     <PackageManagement Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageManagement Include="NLog.Web.AspNetCore" Version="4.8.5" />
+    <PackageManagement Include="NLog.Web.AspNetCore" Version="4.9.0" />
     <PackageManagement Include="NodaTime" Version="2.4.7" />
     <PackageManagement Include="OpenIddict" Version="2.0.1" />
     <PackageManagement Include="OpenIddict.Core" Version="2.0.1" />
     <PackageManagement Include="OpenIddict.EntityFrameworkCore" Version="2.0.1" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc1-100729" />
-    <PackageManagement Include="Serilog" Version="2.8.0" />
-    <PackageManagement Include="Serilog.AspNetCore" Version="3.0.0" />
+    <PackageManagement Include="Serilog" Version="2.9.0" />
+    <PackageManagement Include="Serilog.AspNetCore" Version="3.1.0" />
     <PackageManagement Include="Serilog.Settings.Configuration" Version="3.1.0" />
     <PackageManagement Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageManagement Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0009" />
-    <PackageManagement Include="WindowsAzure.Storage" Version="9.3.3" />
+    <PackageManagement Include="Microsoft.Azure.Storage.Blob" Version="11.1.0" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <PackageManagement Include="xunit" Version="2.4.1" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1446" />
-    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1446" />
-    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1446" />
-    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1446" />
-    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1446" />
-    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1446" />
+    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1449" />
+    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1449" />
+    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1449" />
+    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1449" />
+    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1449" />
+    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1449" />
   </ItemGroup>
 
 </Project>

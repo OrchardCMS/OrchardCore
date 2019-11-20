@@ -69,8 +69,8 @@ namespace OrchardCore.Tenants.Controllers
             H = htmlLocalizer;
         }
 
-        public IStringLocalizer S { get; set; }
-        public IHtmlLocalizer H { get; set; }
+        public IStringLocalizer S { get; }
+        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
         {
@@ -285,8 +285,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
 
-                _shellSettingsManager.SaveSettings(shellSettings);
-                var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
+                await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                 return RedirectToAction(nameof(Index));
             }

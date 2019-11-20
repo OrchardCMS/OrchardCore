@@ -83,7 +83,7 @@ Add the following widgets to the Form widget:
 
 ### Configuring NoCaptcha
 
-When adding the NoCaptcha widget, a message was displayed that the NoCaptcha settings need to be configured before it will be displayed on the form. Let's do that right away.
+When adding the NoCaptcha widget, a message was displayed that the NoCaptcha settings need to be configured before it will be displayed on the form. Let's do that right away.  
 Click on the **NoCaptcha Settings** link that is displayed within the message. Alternatively, go to *Configuration* -> *Settings* -> *Forms*.
 
 The Forms settings shows two fields: **SiteKey** and **Site Secret**. You can get these values for free from [https://developers.google.com/recaptcha/](https://developers.google.com/recaptcha/). The widget uses **reCaptcha V2**, so make sure to create Site Key and Site Secret for that version.  

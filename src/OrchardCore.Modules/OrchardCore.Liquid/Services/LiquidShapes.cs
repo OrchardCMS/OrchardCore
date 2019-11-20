@@ -1,4 +1,3 @@
-using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -24,10 +23,6 @@ namespace OrchardCore.Liquid.Services
             await templateContext.ContextualizeAsync(shapeDisplayContext.DisplayContext);
 
             model.Html = await liquidTemplateManager.RenderAsync(liquidPart.Liquid, HtmlEncoder.Default, templateContext);
-
-            model.Liquid = liquidPart.Liquid;
-            model.LiquidPart = liquidPart;
-            model.ContentItem = liquidPart.ContentItem;
         }
 
         public void Discover(ShapeTableBuilder builder)
