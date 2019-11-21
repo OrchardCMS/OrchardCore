@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Theming;
@@ -256,13 +256,13 @@ namespace OrchardCore.DisplayManagement.Implementation
 
                 //using (var html = new StringWriter())
                 //{
-                //    result.WriteTo(html, HtmlEncoder.Default);
+                //    result.WriteTo(html, htmlEncoder);
                 //    return new HtmlString(html.ToString());
                 //}
             }
 
             // Convert to a string and HTML-encode it
-            return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
+            return new StringHtmlContent(value.ToString());
         }
 
         private static bool TryGetParentShapeTypeName(ref string shapeTypeScan)
@@ -276,9 +276,9 @@ namespace OrchardCore.DisplayManagement.Implementation
             return false;
         }
 
-        private static ValueTask<IHtmlContent> ProcessAsync(ShapeBinding shapeBinding, IShape shape, DisplayContext context)
+        private ValueTask<IHtmlContent> ProcessAsync(ShapeBinding shapeBinding, IShape shape, DisplayContext context)
         {
-            static async ValueTask<IHtmlContent> Awaited(Task<IHtmlContent> task)
+            async ValueTask<IHtmlContent> Awaited(Task<IHtmlContent> task)
             {
                 return CoerceHtmlString(await task);
             }
@@ -290,10 +290,12 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             var task = shapeBinding.BindingAsync(context);
+
             if (!task.IsCompletedSuccessfully)
             {
                 return Awaited(task);
             }
+
             return new ValueTask<IHtmlContent>(CoerceHtmlString(task.Result));
         }
     }

@@ -218,7 +218,7 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             if (!String.IsNullOrEmpty(segment))
             {
-                Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
+                Title.AddSegment(new StringHtmlContent(segment), position);
             }
 
             return Title.GenerateTitle(separator);

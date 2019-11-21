@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -445,18 +446,19 @@ namespace OrchardCore.Navigation
             return DisplayAsync(Shape);
         }
 
-        static IHtmlContent CoerceHtmlString(object value)
+        private IHtmlContent CoerceHtmlString(object value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
-            var result = value as IHtmlContent;
-            if (result != null)
+            if (value is IHtmlContent result)
+            {
                 return result;
+            }
 
-            return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
+            return new StringHtmlContent(value.ToString());
         }
-
-
     }
 }
