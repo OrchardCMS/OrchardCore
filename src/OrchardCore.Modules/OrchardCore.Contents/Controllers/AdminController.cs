@@ -484,7 +484,7 @@ namespace OrchardCore.Contents.Controllers
 
         private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, bool stayOnSamePage, Func<ContentItem, Task> conditionallyPublish)
         {
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
 
             if (contentItem == null)
             {
@@ -513,9 +513,6 @@ namespace OrchardCore.Contents.Controllers
                 _session.Cancel();
                 return View("Edit", model);
             }
-
-            contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
-            model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
 
             // The content item needs to be marked as saved in case the drivers or the handlers have
             // executed some query which would flush the saved entities inside the above UpdateEditorAsync.            

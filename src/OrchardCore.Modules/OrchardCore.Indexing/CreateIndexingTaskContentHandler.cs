@@ -29,7 +29,12 @@ namespace OrchardCore.Indexing
 
         public override Task RemovedAsync(RemoveContentContext context)
         {
-            return _indexingTaskManager.CreateTaskAsync(context.ContentItem, IndexingTaskTypes.Delete);
+            if (context.NoActiveVersionLeft)
+            {
+                return _indexingTaskManager.CreateTaskAsync(context.ContentItem, IndexingTaskTypes.Delete);
+            }
+
+            return Task.CompletedTask;
         }
     }
 }
