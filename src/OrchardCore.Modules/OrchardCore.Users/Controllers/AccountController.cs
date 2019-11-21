@@ -20,6 +20,7 @@ using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
@@ -40,6 +41,8 @@ namespace OrchardCore.Users.Controllers
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
+        private readonly IEnumerable<IExternallUserEventHandler> _externalUserHandlers;
+
 
 
         public AccountController(
@@ -53,7 +56,8 @@ namespace OrchardCore.Users.Controllers
             IScriptingManager scriptingManager,
             IClock clock,
             IDistributedCache distributedCache,
-            IDataProtectionProvider dataProtectionProvider)
+            IDataProtectionProvider dataProtectionProvider,
+            IEnumerable<IExternallUserEventHandler> externalUserHandlers)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -65,6 +69,7 @@ namespace OrchardCore.Users.Controllers
             _clock = clock;
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
+            _externalUserHandlers = externalUserHandlers;
             T = stringLocalizer;
         }
 
