@@ -18,6 +18,8 @@ namespace OrchardCore.Users.Drivers
                 model.UseSiteTheme = section.UseSiteTheme;
                 model.UseExternalProviderIfOnlyOneDefined = section.UseExternalProviderIfOnlyOneDefined;
                 model.DisableLocalLogin = section.DisableLocalLogin;
+                model.UseScriptToSyncRoles = section.UseScriptToSyncRoles;
+                model.SyncRolesScript = section.SyncRolesScript;
             }).Location("Content:5").OnGroup(GroupId);
         }
 

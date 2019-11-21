@@ -7,5 +7,9 @@ namespace OrchardCore.Users.Models
         public bool UseExternalProviderIfOnlyOneDefined { get; set; }
 
         public bool DisableLocalLogin { get; set; }
+
+        public bool UseScriptToSyncRoles { get; set; }
+
+        public string SyncRolesScript { get; set; }
     }
 }

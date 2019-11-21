@@ -41,7 +41,8 @@ namespace OrchardCore.Users.Controllers
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
-        private readonly IEnumerable<IExternallUserEventHandler> _externalUserHandlers;
+        private readonly Lazy<IEnumerable<IProvideExternalUserNameEventHandler>> _externalUserNameHandlers;
+        private readonly Lazy<IEnumerable<IProvideExternalUserRolesEventHandler>> _externalUserRolesHandlers;
 
 
 
@@ -57,7 +58,8 @@ namespace OrchardCore.Users.Controllers
             IClock clock,
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
-            IEnumerable<IExternallUserEventHandler> externalUserHandlers)
+            Lazy<IEnumerable<IProvideExternalUserNameEventHandler>> externalUserNameHandlers,
+            Lazy<IEnumerable<IProvideExternalUserRolesEventHandler>> externalUserRolesHandlers)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -69,7 +71,8 @@ namespace OrchardCore.Users.Controllers
             _clock = clock;
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
-            _externalUserHandlers = externalUserHandlers;
+            _externalUserNameHandlers = externalUserNameHandlers;
+            _externalUserRolesHandlers = externalUserRolesHandlers;
             T = stringLocalizer;
         }
 
@@ -380,6 +383,43 @@ namespace OrchardCore.Users.Controllers
                                 if (identityResult.Succeeded)
                                 {
                                     _logger.LogInformation(3, "User account linked to {loginProvider} provider.", info.LoginProvider);
+
+                                    var claims = info.Principal.Claims.Select(c => new ExternalUserClaim
+                                    {
+                                        Subject = c.Subject.Name,
+                                        Issuer = c.Issuer,
+                                        OriginalIssuer = c.OriginalIssuer,
+                                        Properties = c.Properties.ToArray(),
+                                        Type = c.Type,
+                                        Value = c.Value,
+                                        ValueType = c.ValueType
+                                    });
+                                    var userRoles = await _userManager.GetRolesAsync(user);
+                                    var context = new UpdateRolesContext(user, claims, userRoles);
+
+                                    foreach (var item in _externalUserRolesHandlers.Value)
+                                    {
+                                        await item.UpdateRoles(context);
+                                    }
+
+                                    var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
+                                    if (loginSettings.UseScriptToSyncRoles)
+                                    {
+                                        try
+                                        {
+                                            var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nreturn syncRoles('{JsonConvert.SerializeObject(context)}');";
+                                            var evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
+                                            context = evaluationResult as UpdateRolesContext;
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            _logger.LogError(ex, "Error Syncing Roles From External Provider {0}", info.LoginProvider);
+                                            return RedirectToAction(nameof(Login));
+                                        }
+                                    }
+
+                                    await _userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
+                                    await _userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
 
                                     // We have created/linked to the local user, so we must verify the login.
                                     // If it does not succeed, the user is not allowed to login

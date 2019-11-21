@@ -9,7 +9,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Handlers
 {
-    public class ExternallUserHandler : IExternallUserEventHandler
+    public class ExternallUserHandler : IProvideExternalUserRolesEventHandler
     {
         private readonly IWorkflowManager _workflowManager;
 
@@ -18,28 +18,12 @@ namespace OrchardCore.Users.Workflows.Handlers
             _workflowManager = workflowManager;
         }
 
-        public Task LoggedIn(ExternalUserContext context)
+        public Task UpdateRoles(UpdateRolesContext context)
         {
-            return TriggerWorkflowEventAsync(nameof(ExternalUserLoggedInEvent), (User)context.User);
-        }
-
-        private Task TriggerWorkflowEventAsync(string name, User user)
-        {
-            return _workflowManager.TriggerEventAsync(name,
-                input: new { User = user },
-                correlationId: user.Id.ToString()
+            return _workflowManager.TriggerEventAsync(nameof(ExternalUserLoggedInEvent),
+                input: new { context.User, context.Claims, context.CurrentRoles },
+                correlationId: ((User)context.User).Id.ToString()
             );
         }
-
-        public Task ConfigureRoles(ExternalUserContext context)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task RequestUsername(ExternalUserContext context)
-        {
-            return Task.CompletedTask;
-        }
-
     }
 }
