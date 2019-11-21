@@ -12,7 +12,12 @@
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
     "blogContentItemId": "[js:uuid()]",
-    "menuContentItemId": "[js:uuid()]"
+    "menuContentItemId": "[js:uuid()]",
+    "tagsContentItemId": "[js:uuid()]",
+    "tagContentItemId": "[js:uuid()]",
+    "earthTagContentItemId": "[js:uuid()]",
+    "explorationTagContentItemId": "[js:uuid()]",
+    "spaceTagContentItemId": "[js:uuid()]"
     // "now": "[js: new Date().toISOString()]"
   },
 
@@ -59,6 +64,7 @@
         "OrchardCore.Media",
         "OrchardCore.Menu",
         "OrchardCore.Queries",
+        "OrchardCore.Taxonomies",
         "OrchardCore.Title",
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
@@ -561,7 +567,35 @@
               }
             }
           ]
-        }
+        },
+        {
+          "Name": "Tag",
+          "DisplayName": "Tag",
+          "Settings": {
+            "ContentTypeSettings": {},
+            "FullTextAspectSettings": {}
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Tag",
+              "Name": "Tag",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        }		
       ],
       "ContentParts": [
         {
@@ -576,7 +610,23 @@
                   "DisplayName": "Subtitle"
                 }
               }
-            }
+            },
+            {
+              "FieldName": "TaxonomyField",
+              "Name": "Tags",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Tags",
+                  "Editor": "Tags",
+                  "Position": "1"
+                },
+                "ContentIndexSettings": {},
+                "TaxonomyFieldSettings": {
+                  "Required": true,
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
+                }
+              }
+            }			
           ]
         },
         {
@@ -721,6 +771,51 @@
           "AliasPart": { "Alias": "main-menu" }
         },
         {
+          "ContentItemId": "[js: variables('tagsContentItemId')]",
+          "ContentType": "Taxonomy",
+          "DisplayText": "Tags",
+          "Latest": true,
+          "Published": true,
+          "TitlePart": {
+            "Title": "Tags"
+          },
+          "AliasPart": {
+            "Alias": "tags"
+          },
+          "TaxonomyPart": {
+            "Terms": [
+              {
+                "ContentItemId": "[js: variables('earthTagContentItemId')]",
+                "ContentType": "Tag",
+                "DisplayText": "Earth",
+                "Tag": {},
+                "TitlePart": {
+                  "Title": "Earth"
+                }
+              },
+              {
+                "ContentItemId": "[js: variables('explorationTagContentItemId')]",
+                "ContentType": "Tag",
+                "DisplayText": "Exploration",
+                "Tag": {},
+                "TitlePart": {
+                  "Title": "Exploration"
+                }
+              },
+              {
+                "ContentItemId": "[js: variables('spaceTagContentItemId')]",
+                "ContentType": "Tag",
+                "DisplayText": "Space",
+                "Tag": {},
+                "TitlePart": {
+                  "Title": "Space"
+                }
+              }
+            ],
+            "TermContentType": "Tag"
+          }
+        },		
+        {
           "ContentType": "Blog",
           "ContentItemId": "[js: variables('blogContentItemId')]",
           "DisplayText":  "Blog",
@@ -763,7 +858,15 @@
           "BlogPost": {
             "Subtitle": {
               "Text": "Problems look mighty small from 150 miles up"
-            }
+            },
+            "Tags": {
+              "TermContentItemIds": [
+                "[js: variables('earthTagContentItemId')]",
+                "[js: variables('explorationTagContentItemId')]",
+                "[js: variables('spaceTagContentItemId')]"
+              ],
+              "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
+            }			
           }
         },
         {
