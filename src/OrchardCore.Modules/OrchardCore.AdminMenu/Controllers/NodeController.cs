@@ -46,8 +46,8 @@ namespace OrchardCore.AdminMenu.Controllers
         }
 
         public dynamic New { get; set; }
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
+        public IStringLocalizer T { get; }
+        public IHtmlLocalizer H { get; }
 
 
         public async Task<IActionResult> List(string id)

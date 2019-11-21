@@ -3,7 +3,12 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -303,6 +308,10 @@ namespace OrchardCore.Tests.Localization
             Assert.Equal(expected.Count(), translations.Count());
         }
 
+        [Fact]
+        public async Task PortableObjectStringLocalizerShouldRegisterIStringLocalizerOfT()
+            => await StartupRunner.Run(typeof(PortableObjectLocalizationStartup),"en", "Hello");
+
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
         {
             SetupDictionary(cultureName, records, _csPluralRule);
@@ -319,6 +328,33 @@ namespace OrchardCore.Tests.Localization
         private bool TryGetRuleFromDefaultPluralRuleProvider(CultureInfo culture, out PluralizationRuleDelegate rule)
         {
             return ((IPluralRuleProvider)new DefaultPluralRuleProvider()).TryGetRule(culture, out rule);
+        }
+
+        public class PortableObjectLocalizationStartup
+        {
+            public void ConfigureServices(IServiceCollection services)
+            {
+                services.AddMvc();
+                services.AddPortableObjectLocalization();
+            }
+
+            public void Configure(
+                IApplicationBuilder app,
+                IStringLocalizer<PortableObjectLocalizationStartup> localizer)
+            {
+                var supportedCultures = new[] { "ar", "en" };
+                app.UseRequestLocalization(options =>
+                    options
+                        .AddSupportedCultures(supportedCultures)
+                        .AddSupportedUICultures(supportedCultures)
+                        .SetDefaultCulture("en")
+                );
+
+                app.Run(async (context) =>
+                {
+                    await context.Response.WriteAsync(localizer["Hello"]);
+                });
+            }
         }
     }
 }

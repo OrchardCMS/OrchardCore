@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
-using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Flows.Controllers
 {
@@ -69,7 +69,7 @@ namespace OrchardCore.Flows.Controllers
                 Updater: this,
                 //Shape Specific
                 CollectionShapeType: cardCollectionType,
-                ContentItem:  contentItem,
+                ContentItem: contentItem,
                 BuildEditor: true,
                 ParentContentType: parentContentType,
                 CollectionPartName: partName,
@@ -77,15 +77,15 @@ namespace OrchardCore.Flows.Controllers
                 TargetId: targetId,
                 Inline: true,
                 CanMove: true,
-                CanDelete: true,                
+                CanDelete: true,
                 //Input hidden
                 //Prefixes
                 HtmlFieldPrefix: prefix,
-                PrefixesId: prefixesName.Replace(".","_"),
-                PrefixesName : prefixesName,
+                PrefixesId: prefixesName.Replace('.', '_'),
+                PrefixesName: prefixesName,
                 //ContentTypes
-                ContentTypesId: contentTypesName.Replace(".","_"),
-                ContentTypesName : contentTypesName
+                ContentTypesId: contentTypesName.Replace('.', '_'),
+                ContentTypesName: contentTypesName
             );
             //Only Add ColumnSize Property if Part has FlowMetadata
             if (flowmetadata)
@@ -96,7 +96,7 @@ namespace OrchardCore.Flows.Controllers
             var model = new BuildEditorViewModel
             {
                 EditorShape = contentCard
-            };            
+            };
             return View("Display", model);
         }
     }

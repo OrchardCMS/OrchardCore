@@ -5,8 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.Azure.Storage.Blob;
+using Microsoft.Azure.Storage;
 using OrchardCore.Modules;
 
 namespace OrchardCore.FileStorage.AzureBlob

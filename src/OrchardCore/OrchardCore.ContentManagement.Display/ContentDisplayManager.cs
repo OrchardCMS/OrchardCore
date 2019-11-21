@@ -146,7 +146,7 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
             var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
             var actualShapeType = (stereotype ?? "Content") + "_Edit";
 

@@ -64,7 +64,7 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(OpenIdValidationSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
@@ -134,7 +134,7 @@ namespace OrchardCore.OpenId.Services
             // If a tenant was specified, ensure it is valid, that the OpenID server feature
             // was enabled and that at least a scope linked with the current tenant exists.
             if (!string.IsNullOrEmpty(settings.Tenant) &&
-                !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
+                !string.Equals(settings.Tenant, _shellSettings.Name))
             {
                 if (!_shellHost.TryGetSettings(settings.Tenant, out var shellSettings))
                 {

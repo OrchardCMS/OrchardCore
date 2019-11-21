@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Routing;
+using Newtonsoft.Json;
 using OrchardCore.Entities;
 
 namespace OrchardCore.Settings
@@ -6,7 +7,12 @@ namespace OrchardCore.Settings
     // When updating class also update SiteSettingsDeploymentSource and SettingsStep.
     public class SiteSettings : Entity, ISite
     {
-        public int Id { get; set; }
+        /// <summary>
+        /// True if the object can't be used to update the database.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsReadonly { get; set; }
+
         public string BaseUrl { get; set; }
         public string Calendar { get; set; }
         public int MaxPagedCount { get; set; }

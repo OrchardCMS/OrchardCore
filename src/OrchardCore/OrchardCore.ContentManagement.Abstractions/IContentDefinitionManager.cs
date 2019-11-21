@@ -16,10 +16,14 @@ namespace OrchardCore.ContentManagement.Metadata
     /// </summary>
     public interface IContentDefinitionManager
     {
+        IEnumerable<ContentTypeDefinition> LoadTypeDefinitions();
         IEnumerable<ContentTypeDefinition> ListTypeDefinitions();
+        IEnumerable<ContentPartDefinition> LoadPartDefinitions();
         IEnumerable<ContentPartDefinition> ListPartDefinitions();
 
+        ContentTypeDefinition LoadTypeDefinition(string name);
         ContentTypeDefinition GetTypeDefinition(string name);
+        ContentPartDefinition LoadPartDefinition(string name);
         ContentPartDefinition GetPartDefinition(string name);
         void DeleteTypeDefinition(string name);
         void DeletePartDefinition(string name);
@@ -43,14 +47,14 @@ namespace OrchardCore.ContentManagement.Metadata
     {
         public static void AlterTypeDefinition(this IContentDefinitionManager manager, string name, Action<ContentTypeDefinitionBuilder> alteration)
         {
-            var typeDefinition = manager.GetTypeDefinition(name) ?? new ContentTypeDefinition(name, name.CamelFriendly());
+            var typeDefinition = manager.LoadTypeDefinition(name) ?? new ContentTypeDefinition(name, name.CamelFriendly());
             var builder = new ContentTypeDefinitionBuilder(typeDefinition);
             alteration(builder);
             manager.StoreTypeDefinition(builder.Build());
         }
         public static void AlterPartDefinition(this IContentDefinitionManager manager, string name, Action<ContentPartDefinitionBuilder> alteration)
         {
-            var partDefinition = manager.GetPartDefinition(name) ?? new ContentPartDefinition(name);
+            var partDefinition = manager.LoadPartDefinition(name) ?? new ContentPartDefinition(name);
             var builder = new ContentPartDefinitionBuilder(partDefinition);
             alteration(builder);
             manager.StorePartDefinition(builder.Build());
@@ -66,7 +70,7 @@ namespace OrchardCore.ContentManagement.Metadata
         public static void MigratePartSettings<TPart, TSettings>(this IContentDefinitionManager manager)
             where TPart : ContentPart where TSettings : class
         {
-            var contentTypes = manager.ListTypeDefinitions();
+            var contentTypes = manager.LoadTypeDefinitions();
 
             foreach (var contentType in contentTypes)
             {
@@ -104,7 +108,7 @@ namespace OrchardCore.ContentManagement.Metadata
         public static void MigrateFieldSettings<TField, TSettings>(this IContentDefinitionManager manager)
             where TField : ContentField where TSettings : class
         {
-            var partDefinitions = manager.ListPartDefinitions();
+            var partDefinitions = manager.LoadPartDefinitions();
             foreach (var partDefinition in partDefinitions)
             {
                 manager.AlterPartDefinition(partDefinition.Name, partBuilder =>

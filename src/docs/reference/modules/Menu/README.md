@@ -20,7 +20,7 @@ The `Menu` shape is used to render a Menu.
 
 #### Menu Example
 
-```liquid
+``` liquid tab="Liquid"
 <nav>
     <ul class="nav navbar-nav {{ Model.Classes | join: " " }}">
         {% for item in Model.Items %}
@@ -30,7 +30,7 @@ The `Menu` shape is used to render a Menu.
 </nav>
 ```
 
-```razor
+``` html tab="Razor"
 @{
     TagBuilder tag = Tag(Model, "ul");
     tag.AddCssClass("nav navbar-nav");
@@ -85,7 +85,7 @@ The `MenuItem` shape is used to render a menu item.
 </li>
 ```
 
-```razor
+``` html tab="Razor"
 @{
     TagBuilder tag = Tag(Model, "li");
 
@@ -146,7 +146,7 @@ available on the `MenuItem` shape are still available.
 
 #### `MenuItemLink` Example
 
-```liquid
+``` liquid tab="Liquid"
 {% assign link = Model.ContentItem.Content.LinkMenuItemPart %}
 
 {% if Model.HasItems %}
@@ -156,7 +156,7 @@ available on the `MenuItem` shape are still available.
 {% endif %}
 ```
 
-```razor
+``` html tab="Razor"
 @using OrchardCore.ContentManagement
 
 @{

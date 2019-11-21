@@ -139,7 +139,7 @@ or with resizing options as well, noting that the version hash is based on the s
 
 ### Razor image resizing tag helpers
 
-To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`. 
+To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`.
 
 `asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height and resize mode can be set using `img-width`, `img-height` and `img-resize-mode` respectively. e.g.:
 
@@ -251,7 +251,6 @@ The following configuration values are used by default and can be customized:
 
 ### ImageSharp
 
-<https://sixlabors.com/projects/imagesharp/>
-
-Copyright 2012 James South
+<https://sixlabors.com/projects/imagesharp/>  
+Copyright 2012 James South  
 Licensed under the Apache License, Version 2.0

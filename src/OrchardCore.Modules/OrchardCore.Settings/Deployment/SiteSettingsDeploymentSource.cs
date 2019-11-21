@@ -23,11 +23,6 @@ namespace OrchardCore.Settings.Deployment
 
             var site = await _siteService.GetSiteSettingsAsync();
 
-            if (settingsState == null)
-            {
-                return;
-            }
-
             var data = new JObject(new JProperty("name", "Settings"));
 
             foreach (var settingName in settingsState.Settings)
