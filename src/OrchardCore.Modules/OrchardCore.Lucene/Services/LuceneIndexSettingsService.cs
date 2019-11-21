@@ -42,7 +42,7 @@ namespace OrchardCore.Lucene
 
         public string GetIndexAnalyzer(string indexName)
         {
-            var setting = _indexSettings.Where(x => x.IndexName.ToLower() == indexName.ToLower()).FirstOrDefault();
+            var setting = _indexSettings.FirstOrDefault(x => String.Equals(x.IndexName, indexName, StringComparison.OrdinalIgnoreCase));
             if (setting != null)
             {
                 return setting.AnalyzerName;
