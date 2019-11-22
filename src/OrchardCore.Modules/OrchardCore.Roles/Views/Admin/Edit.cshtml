@@ -67,8 +67,8 @@
 
 <script at="Foot" type="text/javascript">
     $(function () {
-        var searchBox = $('#search-box');
-
+        var searchBox = $('#search-box');        
+        $('[data-toggle="tooltip"]').tooltip();
         // On each keypress filter the list of roles
         searchBox.keyup(function (e) {
             var search = $(this).val().toLowerCase();

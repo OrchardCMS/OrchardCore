@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.ContentFields.Services;
-using OrchardCore.ContentFields.ViewModels;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Settings;
+using OrchardCore.ContentFields.ViewModels;
+using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -12,7 +12,6 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
-using OrchardCore.ContentLocalization;
 
 namespace OrchardCore.ContentFields.Fields
 {
@@ -33,7 +32,7 @@ namespace OrchardCore.ContentFields.Fields
 
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(LocalizationSetContentPickerField field, BuildFieldDisplayContext context)
         {
@@ -90,7 +89,7 @@ namespace OrchardCore.ContentFields.Fields
             }
 
             field.LocalizationSets = viewModel.LocalizationSets == null
-                ? new string[0] : viewModel.LocalizationSets.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                ? new string[0] : viewModel.LocalizationSets.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<LocalizationSetContentPickerFieldSettings>();
 

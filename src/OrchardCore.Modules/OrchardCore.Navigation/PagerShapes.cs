@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
@@ -25,7 +25,7 @@ namespace OrchardCore.Navigation
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public void Discover(ShapeTableBuilder builder)
         {
@@ -141,7 +141,7 @@ namespace OrchardCore.Navigation
 
         private string EncodeAlternateElement(string alternateElement)
         {
-            return alternateElement.Replace("-", "__").Replace(".", "_");
+            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
 
     }
@@ -153,7 +153,7 @@ namespace OrchardCore.Navigation
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         [Shape]
         public async Task<IHtmlContent> Pager_Links(Shape Shape, dynamic DisplayAsync, dynamic New,
@@ -446,18 +446,19 @@ namespace OrchardCore.Navigation
             return DisplayAsync(Shape);
         }
 
-        static IHtmlContent CoerceHtmlString(object value)
+        private IHtmlContent CoerceHtmlString(object value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
-            var result = value as IHtmlContent;
-            if (result != null)
+            if (value is IHtmlContent result)
+            {
                 return result;
+            }
 
-            return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
+            return new StringHtmlContent(value.ToString());
         }
-
-
     }
 }

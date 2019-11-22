@@ -12,7 +12,7 @@ namespace OrchardCore.Templates
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -22,8 +22,8 @@ namespace OrchardCore.Templates
             }
 
             builder
-                .Add(T["Configuration"], content => content
-                    .Add(T["Admin Templates"], "10", import => import
+                .Add(T["Design"], design => design
+                    .Add(T["Admin Templates"], "Admin Templates", import => import
                         .Action("Admin", "Template", new { area = "OrchardCore.Templates" })
                         .Permission(AdminTemplatesPermissions.ManageAdminTemplates)
                         .LocalNav()

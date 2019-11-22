@@ -17,14 +17,7 @@ public static class ResourceCdnHelperExtensions
 
         if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
         {
-            if (!String.IsNullOrEmpty(orchardHelper.HttpContext.Request.PathBase))
-            {
-                resourcePath = orchardHelper.HttpContext.Request.PathBase + resourcePath.Substring(1);
-            }
-            else
-            {
-                resourcePath = resourcePath.Substring(1);
-            }
+            resourcePath = orchardHelper.HttpContext.Request.PathBase.Add(resourcePath.Substring(1)).Value;
         }
 
         // If append version is set, allow it to override the site setting.

@@ -1,4 +1,6 @@
 @using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.Mvc.Utilities;
+@using OrchardCore.Widgets.Models;
 @using OrchardCore.Widgets.ViewModels;
 
 @model WidgetsListPartEditViewModel
@@ -9,6 +11,8 @@
 
 @{
     var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var parentContentType = Model.WidgetsListPart.ContentItem.ContentType;
+    string partName = ((dynamic)Model).Metadata.Name;
 }
 
 <script asp-name="jquery-ui" at="Foot"></script>
@@ -24,34 +28,43 @@
             </div>
             <div class="widget-editor-body card-body" data-zone="@zone">
                 <div class="col-md-12">
-                    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-widget-list row"  data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Widgets" })">
+                    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-widget-list @( ($"widgetlist-{partName}-{zone}").HtmlClassify() ) row" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Widgets" })">
                         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
 
                         @if (Model.WidgetsListPart.Widgets.ContainsKey(zone))
                         {
                             foreach (var widget in Model.WidgetsListPart.Widgets[zone])
                             {
-                                var prefix = Guid.NewGuid().ToString("n");
-                                <div class="widget-template col-md-12">
-                                    @{
-                                        dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
-
-                                        widgetEditor.ZonesName = Html.NameFor(x => x.Zones);
-                                        widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
-                                        widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
-                                        widgetEditor.TargetId = widgetTemplatePlaceholderId;
-                                        widgetEditor.Zone = zone;
-
-                                        widgetEditor.Metadata.Alternates.Add("Widget_Edit__List");
-                                    }
-
-                                    @await DisplayAsync(widgetEditor)
-
-                                    @{ this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix; }
-                                    <input type="hidden" asp-for="Zones" value="@zone" class="source-zone" />
-                                    <input type="hidden" asp-for="Prefixes" value="@prefix" />
-                                    <input type="hidden" asp-for="ContentTypes" value="@widget.ContentType" />
-                                </div>
+                                //Create a Card Shape
+                                dynamic contentCard = await New.ContentCard(
+                                    //For Updater
+                                    CollectionShape: Model,
+                                    //Shape Specific
+                                    CollectionShapeType: nameof(WidgetsListPart),
+                                    ContentItem: widget,
+                                    BuildEditor: true,
+                                    ParentContentType: parentContentType,
+                                    CollectionPartName: partName,
+                                    //WidgetListPart Specific 
+                                    ZoneValue: zone,
+                                    //Card Specific Properties
+                                    TargetId: widgetTemplatePlaceholderId,
+                                    Inline: false,
+                                    CanMove: true,
+                                    CanDelete: true,
+                                    //Input hidden 
+                                    //Prefixes
+                                    HtmlFieldPrefix: htmlFieldPrefix,
+                                    PrefixesId: Html.IdFor(x => x.Prefixes),
+                                    PrefixesName: Html.NameFor(x => x.Prefixes),
+                                    //Content Types
+                                    ContentTypesId: Html.IdFor(x => x.ContentTypes),
+                                    ContentTypesName: Html.NameFor(x => x.ContentTypes),
+                                    //Zone
+                                    ZonesId: Html.IdFor(x => x.Zones),
+                                    ZonesName: Html.NameFor(x => x.Zones)
+                                );
+                                @await DisplayAsync(contentCard)
                             }
                         }
 

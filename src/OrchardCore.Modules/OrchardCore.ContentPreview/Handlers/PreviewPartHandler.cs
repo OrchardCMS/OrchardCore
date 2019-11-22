@@ -5,6 +5,7 @@ using Fluid;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentPreview.Models;
+using OrchardCore.ContentPreview.ViewModels;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentPreview.Handlers
@@ -27,7 +28,7 @@ namespace OrchardCore.ContentPreview.Handlers
         private string GetPattern(PreviewPart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "PreviewPart", StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "PreviewPart"));
             var pattern = contentTypePartDefinition.GetSettings<PreviewPartSettings>().Pattern;
 
             return pattern;
@@ -41,8 +42,16 @@ namespace OrchardCore.ContentPreview.Handlers
             {
                 await context.ForAsync<PreviewAspect>(async previewAspect =>
                 {
+                    var model = new PreviewPartViewModel()
+                    {
+                        PreviewPart = part,
+                        ContentItem = part.ContentItem
+                    };
+
                     var templateContext = new TemplateContext();
                     templateContext.SetValue("ContentItem", part.ContentItem);
+                    templateContext.MemberAccessStrategy.Register<PreviewPartViewModel>();
+                    templateContext.SetValue("Model", model);
 
                     previewAspect.PreviewUrl = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
                     previewAspect.PreviewUrl = previewAspect.PreviewUrl.Replace("\r", String.Empty).Replace("\n", String.Empty);

@@ -15,7 +15,8 @@ namespace OrchardCore.Users.Drivers
 
         public override IDisplayResult Edit(RegistrationSettings section)
         {
-            return Initialize<RegistrationSettings>("RegistrationSettings_Edit", model => {
+            return Initialize<RegistrationSettings>("RegistrationSettings_Edit", model =>
+            {
                 model.UsersCanRegister = section.UsersCanRegister;
                 model.UsersMustValidateEmail = section.UsersMustValidateEmail;
                 model.UseSiteTheme = section.UseSiteTheme;
@@ -28,7 +29,7 @@ namespace OrchardCore.Users.Drivers
             {
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
             }
-            return await EditAsync(section, context);
+            return Edit(section);
         }
     }
 }

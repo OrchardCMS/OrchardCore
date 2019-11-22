@@ -26,6 +26,15 @@
 </fieldset>
 
 <div class="row">
+    <fieldset class="col-xl-6 form-group" asp-validation-class-for="PageSize">
+        <label asp-for="PageSize">@T["Page size"]</label>
+        <input asp-for="PageSize" type="number" class="form-control" />
+        <span asp-validation-for="PageSize"></span>
+        <span class="hint">@T["The default page size."]</span>
+    </fieldset>
+</div>
+
+<div class="row">
     <fieldset class="form-group col-xl-6" asp-validation-class-for="TimeZone">
         <label asp-for="TimeZone">@T["Default Time Zone"]</label>
         <select asp-for="TimeZone" class="form-control">
@@ -70,7 +79,7 @@
     <fieldset class="col-xl-6" asp-validation-class-for="ResourceDebugMode">
         <label asp-for="ResourceDebugMode">@T["Resource Debug Mode"]</label>
         <select asp-for="ResourceDebugMode" class="form-control">
-            <option value="@ResourceDebugMode.FromConfiguration.ToString()">@T["From environment — enabled in <em>Production</em>, disabled otherwise"]</option>
+            <option value="@ResourceDebugMode.FromConfiguration.ToString()">@T["From environment — disabled in <em>Production</em>, enabled otherwise"]</option>
             <option value="@ResourceDebugMode.Enabled.ToString()">@T["Enabled — use debuggable version of resources"]</option>
             <option value="@ResourceDebugMode.Disabled.ToString()">@T["Disabled — use minified version of resources"]</option>
         </select>

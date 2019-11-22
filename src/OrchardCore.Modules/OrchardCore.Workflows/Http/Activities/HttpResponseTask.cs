@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -102,7 +99,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
             return
                 from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
-                let pair = header.Split(new[] { ':' })
+                let pair = header.Split(':')
                 where pair.Length == 2
                 select new KeyValuePair<string, StringValues>(pair[0], pair[1]);
         }

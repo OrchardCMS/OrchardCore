@@ -9,7 +9,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Security.Services;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
@@ -17,27 +16,18 @@ namespace OrchardCore.Users.Drivers
     public class UserDisplayDriver : DisplayDriver<User>
     {
         private readonly UserManager<IUser> _userManager;
-        private readonly IUserService _userService;
         private readonly IRoleService _roleService;
-        private readonly IUserStore<IUser> _userStore;
-        private readonly IUserEmailStore<IUser> _userEmailStore;
         private readonly IUserRoleStore<IUser> _userRoleStore;
         private readonly IStringLocalizer T;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
-            IUserService userService,
             IRoleService roleService,
-            IUserStore<IUser> userStore,
-            IUserEmailStore<IUser> userEmailStore,
             IUserRoleStore<IUser> userRoleStore,
             IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
-            _userService = userService;
             _roleService = roleService;
-            _userStore = userStore;
-            _userEmailStore = userEmailStore;
             _userRoleStore = userRoleStore;
             T = stringLocalizer;
         }
@@ -77,7 +67,6 @@ namespace OrchardCore.Users.Drivers
 
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
-            user.EmailConfirmed = model.EmailConfirmed;
 
             if (string.IsNullOrWhiteSpace(model.UserName))
             {
@@ -89,23 +78,20 @@ namespace OrchardCore.Users.Drivers
                 context.Updater.ModelState.AddModelError("Email", T["An email is required."]);
             }
 
-            await _userStore.SetUserNameAsync(user, model.UserName, default(CancellationToken));
-            await _userEmailStore.SetEmailAsync(user, model.Email, default(CancellationToken));
-
-            var userWithSameName = await _userStore.FindByNameAsync(_userManager.NormalizeName(model.UserName), default(CancellationToken));
+            var userWithSameName = await _userManager.FindByNameAsync(model.UserName);
             if (userWithSameName != null)
             {
-                var userWithSameNameId = await _userStore.GetUserIdAsync(userWithSameName, default(CancellationToken));
+                var userWithSameNameId = await _userManager.GetUserIdAsync(userWithSameName);
                 if (userWithSameNameId != model.Id)
                 {
                     context.Updater.ModelState.AddModelError(string.Empty, T["The user name is already used."]);
                 }
             }
 
-            var userWithSameEmail = await _userEmailStore.FindByEmailAsync(_userManager.NormalizeEmail(model.Email), default(CancellationToken));
+            var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
             if (userWithSameEmail != null)
             {
-                var userWithSameEmailId = await _userStore.GetUserIdAsync(userWithSameEmail, default(CancellationToken));
+                var userWithSameEmailId = await _userManager.GetUserIdAsync(userWithSameEmail);
                 if (userWithSameEmailId != model.Id)
                 {
                     context.Updater.ModelState.AddModelError(string.Empty, T["The email is already used."]);
@@ -114,6 +100,15 @@ namespace OrchardCore.Users.Drivers
 
             if (context.Updater.ModelState.IsValid)
             {
+                await _userManager.SetUserNameAsync(user, model.UserName);
+                await _userManager.SetEmailAsync(user, model.Email);
+
+                if (model.EmailConfirmed)
+                {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    await _userManager.ConfirmEmailAsync(user, token);
+                }
+
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
 
                 if (context.IsNew)

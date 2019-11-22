@@ -149,7 +149,10 @@ namespace OrchardCore.Localization.PortableObject
 
             if (pluralForm >= pluralForms.Length)
             {
-                _logger.LogWarning($"Plural form '{pluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {String.Join(", ", pluralForms)}");
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("Plural form '{PluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {PluralForms}", pluralForm, String.Join(", ", pluralForms));
+                }
 
                 // Use the latest available form
                 return pluralForms[pluralForms.Length - 1];

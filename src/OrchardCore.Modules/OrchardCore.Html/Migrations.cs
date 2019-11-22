@@ -48,7 +48,7 @@ namespace OrchardCore.Html
             // This code can be removed in RC
 
             // Update content type definitions
-            foreach (var contentType in _contentDefinitionManager.ListTypeDefinitions())
+            foreach (var contentType in _contentDefinitionManager.LoadTypeDefinitions())
             {
                 if (contentType.Parts.Any(x => x.PartDefinition.Name == "BodyPart"))
                 {
@@ -78,7 +78,7 @@ namespace OrchardCore.Html
                     if (UpdateBody(contentItemVersion.Content))
                     {
                         _session.Save(contentItemVersion);
-                        _logger.LogInformation($"A content item version's BodyPart was upgraded: '{contentItemVersion.ContentItemVersionId}'");
+                        _logger.LogInformation("A content item version's BodyPart was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
                     }
 
                     lastDocumentId = contentItemVersion.Id;

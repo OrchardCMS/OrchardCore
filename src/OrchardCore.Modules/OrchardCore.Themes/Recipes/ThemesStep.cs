@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using OrchardCore.Admin;
 using OrchardCore.Recipes.Models;
@@ -8,7 +8,7 @@ using OrchardCore.Themes.Services;
 namespace OrchardCore.Themes.Recipes
 {
     /// <summary>
-    /// This recipe step defines the site and admin default themes.
+    /// This recipe step defines the site and admin current themes.
     /// </summary>
     public class ThemesStep : IRecipeStepHandler
     {
