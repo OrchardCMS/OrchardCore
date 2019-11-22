@@ -1,12 +1,12 @@
 # ReCaptcha
 
-The OrchardCore.ReCaptcha module can be used to prevent robots access to your OrchardCore website.
+The OrchardCore.ReCaptcha module can be used to prevent robots from abusing your OrchardCore website.
 
-There are four features in the module;
+There are four features in the module:
 
 ## Configuration
 In order to activate the ReCaptcha feature, you have to create an account with Google and enter the secret and site key in the Admin section.
-You can sign up here; https://developers.google.com/recaptcha/
+You can sign up here: https://developers.google.com/recaptcha/
 
 ### Users protection
 You can enable this feature in the admin section and your login pages will be protected against robots.
@@ -14,7 +14,7 @@ The feature will use the IP address of the request to count the number of login 
 When the threshold for login attempts are broken, a captcha is shown on the login page preventing robots from making any further requests.
 
 ### Forms
-You can add protection from robots to forms with by including the recaptcha field when you design a form.
+You can add protection from robots to forms by including the recaptcha field when you design a form.
 
 ### Workflow
 You can add a validate ReCaptcha task in your workflow.
@@ -25,7 +25,7 @@ You can decorate your controllers with [ValidateReCaptcha] attribute.
 This attribute works in tandem with the <recaptcha /> HTML element, both need to be configured.
 The standard mode is PreventAbuse, this will show the captcha when a robot is suspected.
 The mode AlwaysShow, always shows the captcha on the page.
-If you have a requirement to display the captcha in a specific langauge, you can use the langauge property to set it to desired langauge using either the culture string or the two letter ISO code of the language.
+If you have a requirement to display the captcha in a specific language, you can use the language property to set it to desired language using either the culture string or the two letter ISO code of the language.
 
 ## Extending the module
 If you have requirements that you have to protect against robots using another method than IP address,
