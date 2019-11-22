@@ -41,8 +41,8 @@ namespace OrchardCore.Users.Controllers
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
-        private readonly Lazy<IEnumerable<IProvideExternalUserNameEventHandler>> _externalUserNameHandlers;
-        private readonly Lazy<IEnumerable<IProvideExternalUserRolesEventHandler>> _externalUserRolesHandlers;
+        private readonly IEnumerable<IProvideExternalUserNameEventHandler> _externalUserNameHandlers;
+        private readonly IEnumerable<IProvideExternalUserRolesEventHandler> _externalUserRolesHandlers;
 
 
 
@@ -58,8 +58,8 @@ namespace OrchardCore.Users.Controllers
             IClock clock,
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
-            Lazy<IEnumerable<IProvideExternalUserNameEventHandler>> externalUserNameHandlers,
-            Lazy<IEnumerable<IProvideExternalUserRolesEventHandler>> externalUserRolesHandlers)
+            IEnumerable<IProvideExternalUserNameEventHandler> externalUserNameHandlers,
+            IEnumerable<IProvideExternalUserRolesEventHandler> externalUserRolesHandlers)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -284,6 +284,48 @@ namespace OrchardCore.Users.Controllers
             return Challenge(properties, provider);
         }
 
+        private async Task<bool> ProvideExternalLoginRoles(IUser user,ExternalLoginInfo info)
+        {
+            var claims = info.Principal.Claims.Select(c => new ExternalUserClaim
+            {
+                Subject = c.Subject.Name,
+                Issuer = c.Issuer,
+                OriginalIssuer = c.OriginalIssuer,
+                Properties = c.Properties.ToArray(),
+                Type = c.Type,
+                Value = c.Value,
+                ValueType = c.ValueType
+            });
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var context = new UpdateRolesContext(user, claims, userRoles);
+
+            foreach (var item in _externalUserRolesHandlers)
+            {
+                await item.UpdateRoles(context);
+            }
+
+            var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
+            if (loginSettings.UseScriptToSyncRoles)
+            {
+                try
+                {
+                    var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nreturn syncRoles('{JsonConvert.SerializeObject(context)}');";
+                    var evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
+                    context = evaluationResult as UpdateRolesContext ?? context;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error Syncing Roles From External Provider {0}", info.LoginProvider);
+                    return false;
+                }
+            }
+
+            await _userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
+            await _userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
+
+            return true;
+        }
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
@@ -309,6 +351,12 @@ namespace OrchardCore.Users.Controllers
                 if (!await AddConfirmEmailError(user))
                 {
                     await _accountEvents.InvokeAsync(i => i.LoggingInAsync(user.UserName, (key, message) => ModelState.AddModelError(key, message)), _logger);
+
+                    if (!await ProvideExternalLoginRoles(user, info))
+                    {
+                        return RedirectToAction(nameof(Login));
+                    }
+
                     var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
                     if (signInResult.Succeeded)
                     {
@@ -384,42 +432,15 @@ namespace OrchardCore.Users.Controllers
                                 {
                                     _logger.LogInformation(3, "User account linked to {loginProvider} provider.", info.LoginProvider);
 
-                                    var claims = info.Principal.Claims.Select(c => new ExternalUserClaim
+                                    if (!await ProvideExternalLoginRoles(user, info))
                                     {
-                                        Subject = c.Subject.Name,
-                                        Issuer = c.Issuer,
-                                        OriginalIssuer = c.OriginalIssuer,
-                                        Properties = c.Properties.ToArray(),
-                                        Type = c.Type,
-                                        Value = c.Value,
-                                        ValueType = c.ValueType
-                                    });
-                                    var userRoles = await _userManager.GetRolesAsync(user);
-                                    var context = new UpdateRolesContext(user, claims, userRoles);
-
-                                    foreach (var item in _externalUserRolesHandlers.Value)
-                                    {
-                                        await item.UpdateRoles(context);
+                                        return RedirectToAction(nameof(Login));
                                     }
 
-                                    var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
-                                    if (loginSettings.UseScriptToSyncRoles)
+                                    if (!await ProvideExternalLoginRoles(user, info))
                                     {
-                                        try
-                                        {
-                                            var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nreturn syncRoles('{JsonConvert.SerializeObject(context)}');";
-                                            var evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
-                                            context = evaluationResult as UpdateRolesContext;
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            _logger.LogError(ex, "Error Syncing Roles From External Provider {0}", info.LoginProvider);
-                                            return RedirectToAction(nameof(Login));
-                                        }
+                                        return RedirectToAction(nameof(Login));
                                     }
-
-                                    await _userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
-                                    await _userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
 
                                     // We have created/linked to the local user, so we must verify the login.
                                     // If it does not succeed, the user is not allowed to login
@@ -506,15 +527,12 @@ namespace OrchardCore.Users.Controllers
                     if (identityResult.Succeeded)
                     {
                         _logger.LogInformation(3, "User account linked to {provider} provider.", info.LoginProvider);
+
                         // we have created/linked to the local user, so we must verify the login. If it does not succeed,
                         // the user is not allowed to login
                         if ((await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false)).Succeeded)
                         {
                             return RedirectToLocal(returnUrl);
-                        }
-                        else
-                        {
-
                         }
                     }
                     AddIdentityErrors(identityResult);
