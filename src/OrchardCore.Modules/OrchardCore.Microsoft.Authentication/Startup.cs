@@ -13,6 +13,8 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using OrchardCore.Recipes;
+using OrchardCore.Microsoft.Authentication.Recipes;
 
 namespace OrchardCore.Microsoft.Authentication
 {
@@ -32,6 +34,7 @@ namespace OrchardCore.Microsoft.Authentication
             services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
             services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
+            services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>(); 
             // Register the options initializers required by the Microsoft Account Handler.
             services.TryAddEnumerable(new[]
             {
