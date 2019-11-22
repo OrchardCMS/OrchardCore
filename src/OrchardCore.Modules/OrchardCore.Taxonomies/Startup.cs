@@ -47,6 +47,9 @@ namespace OrchardCore.Taxonomies
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
 
+            // Taxonomy Tags
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldTagsEditorSettingsDriver>();
+
             services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
         }
     }

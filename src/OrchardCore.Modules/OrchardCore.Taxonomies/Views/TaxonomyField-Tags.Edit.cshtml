@@ -2,15 +2,25 @@
 @using OrchardCore.Taxonomies.Settings;
 @using OrchardCore.ContentManagement.Metadata.Models
 @using Newtonsoft.Json.Linq;
+@using Microsoft.AspNetCore.Authorization;
+@inject IAuthorizationService AuthorizationService;
 
 @{
-    var settings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+    var taxonomySettings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+    var tagsSettings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldTagsEditorSettings>();
     // Create a flat object for vue multi select with required properties.
-    var allTerms = JArray.FromObject(Model.TermEntries.Select(te => new { contentItemId = te.ContentItemId, selected = te.Selected, displayText = te.Term.DisplayText }));
+    var allTagTerms = JArray.FromObject(Model.TermEntries.Select(te => new { contentItemId = te.ContentItemId, selected = te.Selected, displayText = te.Term.DisplayText, isLeaf = te.IsLeaf }));
 
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
-    var tenantPath = Context.Request.PathBase.Value;
+
+    var createTagUrl = Url.Action("Create", "Tag", new { area = "OrchardCore.Taxonomies" });
+
+    bool open = tagsSettings.Open;
+    if (!await AuthorizationService.AuthorizeAsync(User, OrchardCore.Taxonomies.Permissions.ManageTaxonomies))
+    {
+        open = false;
+    }
 
     var vueElementId = $"TaxonomyField-Tags_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
 }
@@ -24,9 +34,12 @@
 
 <label>@Model.PartFieldDefinition.DisplayName()</label>
 
-@if (!String.IsNullOrEmpty(settings.Hint))
+@* Antiforgery token required for the ajax post to create a new tag *@
+@Html.AntiForgeryToken()
+
+@if (!String.IsNullOrEmpty(taxonomySettings.Hint))
 {
-    <span class="hint">— @settings.Hint</span>
+    <span class="hint">— @taxonomySettings.Hint</span>
 }
 
 @if (Model.Taxonomy == null)
@@ -37,30 +50,29 @@
 }
 
 <div class="form-group">
-    <div id="@vueElementId" class="tags" data-part-name="@partName" data-field-name="@fieldName" data-editor-type="Tags" data-all-terms="@allTerms" data-tenant-path="@tenantPath" data-term-entries-key="@nameof(EditTaxonomyFieldViewModel.TermEntries)" data-content-item-id-key="@nameof(TermEntry.ContentItemId)" data-selected-key="@nameof(TermEntry.Selected)">
+    <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-leaves-only="@taxonomySettings.LeavesOnly" date-create-tag-error-message="@T["Error creating tag"]" data-part-name="@partName" data-field-name="@fieldName" data-all-tag-terms="@allTagTerms" data-create-tag-url="@createTagUrl" data-term-entries-key="@nameof(EditTaxonomyFieldViewModel.TermEntries)" data-content-item-id-key="@nameof(TermEntry.ContentItemId)" data-selected-key="@nameof(TermEntry.Selected)">
 
         <div class="form-group">
             <div class="w-xl-50">
-                <input v-for="option in options" v-bind:name="termEntriesContentItemName(option)" v-bind:value="option.contentItemId" type="hidden" />
-                <input v-for="option in options" v-bind:name="termEntriesSelectedName(option)" v-bind:value="option.selected" type="hidden" />
+                <input v-for="tagTerm in allTagTerms" v-bind:name="termEntriesContentItemName(tagTerm)" v-bind:value="tagTerm.contentItemId" type="hidden" />
+                <input v-for="tagTerm in allTagTerms" v-bind:name="termEntriesSelectedName(tagTerm)" v-bind:value="tagTerm.selected" type="hidden" />
 
-                @*TODO Settings.Open is unused currently. But swapping it in to taggable, enables or disables adding tags.*@
-                <vue-multiselect v-model="arrayOfItems"
+                <vue-multiselect v-model="selectedTagTerms"
                                  placeholder="@T["Type to search"]"
                                  select-label="@T["Select"]"
                                  deselect-label="@T["Remove"]"
-                                 :options="options"
-                                 :multiple="@((!settings.Unique).ToString().ToLower())"
+                                 :options="selectableTagTerms"
+                                 :multiple="@((!taxonomySettings.Unique).ToString().ToLower())"
                                  :show-labels="false"
-                                 :close-on-select="@settings.Unique.ToString().ToLower()"
+                                 :close-on-select="@taxonomySettings.Unique.ToString().ToLower()"
                                  track-by="contentItemId"
                                  label="displayText"
                                  @@select="onSelect"
                                  @@remove="onRemove"
-                                 :taggable="true"
+                                 :taggable="@open.ToString().ToLower()"
                                  tag-position="bottom"
                                  tag-placeholder="@T["Press enter to create a tag"]"
-                                 @@tag="addTag">
+                                 @@tag="createTagTerm">
                     <template slot="noResult">
                         @T["No tags found"]
                     </template>
