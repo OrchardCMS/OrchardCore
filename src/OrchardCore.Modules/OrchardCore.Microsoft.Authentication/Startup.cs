@@ -13,6 +13,8 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using OrchardCore.Recipes;
+using OrchardCore.Microsoft.Authentication.Recipes;
 
 namespace OrchardCore.Microsoft.Authentication
 {
@@ -49,6 +51,7 @@ namespace OrchardCore.Microsoft.Authentication
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddRecipeExecutionStep<AzureADSettingsStep>();
             services.AddSingleton<IAzureADService, AzureADService>();
             services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuAAD>();
@@ -60,7 +63,7 @@ namespace OrchardCore.Microsoft.Authentication
                 ServiceDescriptor.Transient<IConfigureOptions<AzureADOptions>, AzureADOptionsConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<PolicySchemeOptions>, AzureADOptionsConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsConfiguration>(),
-                // Built-in initializers:               
+                // Built-in initializers:
                 ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
             });
         }
