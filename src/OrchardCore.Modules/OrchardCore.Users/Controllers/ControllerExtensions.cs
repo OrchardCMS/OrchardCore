@@ -25,13 +25,13 @@ namespace OrchardCore.Users.Controllers
         {
             var smtpService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISmtpService>();
             var displayHelper = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
-
+            var htmlEncoder = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
             var body = string.Empty;
 
             using (var sw = new StringWriter())
             {
                 var htmlContent = await displayHelper.ShapeExecuteAsync(model);
-                htmlContent.WriteTo(sw, HtmlEncoder.Default);
+                htmlContent.WriteTo(sw, htmlEncoder);
                 body = sw.ToString();
             }
 
