@@ -9,13 +9,18 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Handlers
 {
-    public class ExternallUserHandler : IProvideExternalUserRolesEventHandler
+    public class ExternallUserHandler : IExternalLoginEventHandler
     {
         private readonly IWorkflowManager _workflowManager;
 
         public ExternallUserHandler(IWorkflowManager workflowManager)
         {
             _workflowManager = workflowManager;
+        }
+
+        public Task<string> GenerateUserName(string provider, IEnumerable<ExternalUserClaim> claims)
+        {
+            throw new NotImplementedException();
         }
 
         public Task UpdateRoles(UpdateRolesContext context)

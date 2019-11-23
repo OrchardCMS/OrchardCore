@@ -7,8 +7,10 @@ namespace OrchardCore.Users.Handlers
     /// <summary>
     /// Called when a tenant is set up.
     /// </summary>
-    public interface IProvideExternalUserNameEventHandler
+    public interface IExternalLoginEventHandler
     {
-        Task<string> RequestUserName(string provider, IEnumerable<ExternalUserClaim> claims);
+        Task<string> GenerateUserName(string provider, IEnumerable<ExternalUserClaim> claims);
+
+        Task UpdateRoles(UpdateRolesContext context);
     }
 }
