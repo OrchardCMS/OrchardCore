@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -75,7 +76,7 @@ namespace OrchardCore.Contents.Handlers
                     templateContext.SetValue("ContentItem", context.ContentItem);
                     templateContext.SetValue("Model", context.ContentItem);
 
-                    var result = await _liquidTemplateManager.RenderAsync(settings.FullTextTemplate, NullEncoder.Default, templateContext);
+                    var result = await _liquidTemplateManager.RenderAsync(settings.FullTextTemplate, NullHtmlEncoder.Default, templateContext);
                     fullTextAspect.Segments.Add(result);
                 }
             });

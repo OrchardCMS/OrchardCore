@@ -142,11 +142,6 @@
             console.log(value);
             var newAction = "@formActionWithoutTypeName" + "/" + value;
             $("#items-form").attr("action", newAction);
-            $("[name='submit.Filter']").click();
-        });
-
-        $(".filter-options input").on("change", function () {
-            $("[name='submit.Filter']").click();
         });
 
         $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {

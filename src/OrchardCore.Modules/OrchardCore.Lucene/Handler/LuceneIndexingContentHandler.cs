@@ -44,9 +44,12 @@ namespace OrchardCore.Lucene.Handlers
         {
             // TODO: ignore if this index is not configured for the content type
 
-            foreach (var index in _luceneIndexManager.List())
+            if (context.NoActiveVersionLeft)
             {
-                _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
+                foreach (var index in _luceneIndexManager.List())
+                {
+                    _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
+                }
             }
 
             return Task.CompletedTask;

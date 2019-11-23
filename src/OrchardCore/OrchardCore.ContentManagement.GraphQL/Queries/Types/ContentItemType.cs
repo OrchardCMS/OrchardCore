@@ -46,13 +46,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     var model = await displayManager.BuildDisplayAsync(context.Source, updateModelAccessor.ModelUpdater);
 
                     var displayHelper = serviceProvider.GetRequiredService<IDisplayHelper>();
+                    var htmlEncoder = serviceProvider.GetRequiredService<HtmlEncoder>();
 
                     using (var sb = StringBuilderPool.GetInstance())
                     {
                         using (var sw = new StringWriter(sb.Builder))
                         {
                             var htmlContent = await displayHelper.ShapeExecuteAsync(model);
-                            htmlContent.WriteTo(sw, HtmlEncoder.Default);
+                            htmlContent.WriteTo(sw, htmlEncoder);
 
                             await sw.FlushAsync();
                             return sw.ToString();

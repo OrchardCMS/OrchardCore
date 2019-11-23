@@ -32,6 +32,7 @@ namespace OrchardCore.Html.Settings
                 var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartTrumbowygEditorSettings>();
 
                 model.Options = settings.Options;
+                model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
             })
             .Location("Editor");
         }
@@ -52,6 +53,7 @@ namespace OrchardCore.Html.Settings
             {
                 settings.Options = model.Options;
                 JObject.Parse(settings.Options);
+                settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
             }
             catch
             {

@@ -11,6 +11,14 @@
 
 <script asp-name="trumbowyg-plugins" depends-on="admin" version="2" at="Foot"></script>
 <style asp-name="trumbowyg-plugins" version="2"></style>
+@if(trumbowygSettings.InsertMediaWithUrl)
+{
+<script asp-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.url.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.url.js" depends-on="trumbowyg" at="Foot"></script>
+}
+else 
+{ 
+<script asp-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
+}
 
 <div class="form-group">
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
