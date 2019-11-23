@@ -70,8 +70,8 @@ namespace OrchardCore.Lucene.Controllers
         {
             var viewModel = new AdminIndexViewModel
             {
-                Indexes = _luceneIndexSettingsService.List().Select(s => new IndexViewModel { Name = s.IndexName }).ToArray()
-            };
+                Indexes = _luceneIndexSettingsService.GetIndices().Select(i => new IndexViewModel { Name = i })
+        };
 
             return View(viewModel);
         }
@@ -103,7 +103,12 @@ namespace OrchardCore.Lucene.Controllers
                 return Unauthorized();
             }
 
-            var settings = _luceneIndexSettingsService.List().Where(s => s.IndexName == indexName).FirstOrDefault();
+            var settings = _luceneIndexSettingsService.GetSettings(indexName);
+
+            if (settings == null)
+            {
+                return NotFound();
+            }
 
             var model = new LuceneIndexSettingsViewModel
             {
@@ -281,7 +286,7 @@ namespace OrchardCore.Lucene.Controllers
                 return Unauthorized();
             }
 
-            model.Indices = _luceneIndexSettingsService.List().Select(x => x.IndexName).ToArray();
+            model.Indices = _luceneIndexSettingsService.GetIndices().ToArray();
 
             // Can't query if there are no indices
             if (model.Indices.Length == 0)
@@ -314,7 +319,7 @@ namespace OrchardCore.Lucene.Controllers
 
             await _luceneIndexManager.SearchAsync(model.IndexName, async searcher =>
             {
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(_luceneIndexSettingsService.GetIndexAnalyzer(model.IndexName) ?? LuceneSettings.StandardAnalyzer);
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(_luceneIndexSettingsService.GetIndexAnalyzer(model.IndexName));
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
                 var templateContext = new TemplateContext();

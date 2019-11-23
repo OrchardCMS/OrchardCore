@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
@@ -9,12 +8,10 @@ namespace OrchardCore.Lucene.Deployment
     public class LuceneIndexDeploymentSource : IDeploymentSource
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
-        private readonly ISiteService _siteService;
 
         public LuceneIndexDeploymentSource(LuceneIndexSettingsService luceneIndexSettingsService, ISiteService siteService)
         {
             _luceneIndexSettingsService = luceneIndexSettingsService;
-            _siteService = siteService;
         }
 
         public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -26,7 +23,7 @@ namespace OrchardCore.Lucene.Deployment
                 return Task.CompletedTask;
             }
 
-            var indices = luceneIndexStep.IncludeAll ? _luceneIndexSettingsService.List().Select(x => x.IndexName).ToArray() : luceneIndexStep.IndexNames;
+            var indices = luceneIndexStep.IncludeAll ? _luceneIndexSettingsService.GetIndices() : luceneIndexStep.IndexNames;
 
             // Adding Lucene settings
             result.Steps.Add(new JObject(

@@ -62,7 +62,7 @@ namespace OrchardCore.Lucene
 
             if (String.IsNullOrEmpty(indexName))
             {
-                indexSettingsList = _luceneIndexSettingsService.List();
+                indexSettingsList = _luceneIndexSettingsService.GetSettings();
 
                 if (!indexSettingsList.Any())
                 {
@@ -79,12 +79,14 @@ namespace OrchardCore.Lucene
             }
             else
             {
-                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName);
+                var settings = _luceneIndexSettingsService.GetSettings(indexName);
 
-                if (!indexSettingsList.Any())
+                if (settings == null)
                 {
                     return;
                 }
+
+                indexSettingsList = new LuceneIndexSettings[1] { settings }.AsEnumerable();
 
                 var taskId = _indexingState.GetLastTaskId(indexName);
                 lastTaskId = Math.Min(lastTaskId, taskId);

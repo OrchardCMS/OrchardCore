@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -20,7 +21,7 @@ namespace OrchardCore.Lucene.Settings
             return Initialize<ContentPickerFieldLuceneEditorSettings>("ContentPickerFieldLuceneEditorSettings_Edit", model =>
             {
                 partFieldDefinition.PopulateSettings<ContentPickerFieldLuceneEditorSettings>(model);
-                model.Indices = _luceneIndexSettingsService.List().Select(x => x.IndexName).ToArray();
+                model.Indices = _luceneIndexSettingsService.GetIndices().ToArray();
             }).Location("Editor");
         }
 
@@ -40,7 +41,7 @@ namespace OrchardCore.Lucene.Settings
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)
         {
-            return string.Equals("ContentPickerField", model.FieldDefinition.Name);
+            return String.Equals("ContentPickerField", model.FieldDefinition.Name);
         }
     }
 }

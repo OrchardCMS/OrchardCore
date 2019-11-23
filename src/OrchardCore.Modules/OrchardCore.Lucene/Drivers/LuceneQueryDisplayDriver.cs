@@ -38,7 +38,7 @@ namespace OrchardCore.Lucene.Drivers
                 model.Query = query.Template;
                 model.Index = query.Index;
                 model.ReturnContentItems = query.ReturnContentItems;
-                model.Indices = _luceneIndexSettingsService.List().Select(x => x.IndexName).ToArray();
+                model.Indices = _luceneIndexSettingsService.GetIndices().ToArray();
 
                 // Extract query from the query string if we come from the main query editor
                 if (String.IsNullOrEmpty(query.Template))

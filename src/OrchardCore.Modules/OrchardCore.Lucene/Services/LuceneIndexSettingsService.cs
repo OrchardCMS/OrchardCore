@@ -43,16 +43,20 @@ namespace OrchardCore.Lucene
                 .AddRange(settings.ToDictionary(s => s.IndexName, s => s));
         }
 
-        public IEnumerable<LuceneIndexSettings> List() => _indexSettings.Values;
+        public IEnumerable<string> GetIndices() => _indexSettings.Keys;
+
+        public IEnumerable<LuceneIndexSettings> GetSettings() => _indexSettings.Values;
+
+        public LuceneIndexSettings GetSettings(string indexName)
+        {
+            _indexSettings.TryGetValue(indexName, out var settings);
+            return settings;
+        }
 
         public string GetIndexAnalyzer(string indexName)
         {
-            if (_indexSettings.TryGetValue(indexName, out var settings))
-            {
-                return settings.AnalyzerName;
-            }
-
-            return null;
+            _indexSettings.TryGetValue(indexName, out var settings);
+            return settings?.AnalyzerName ?? LuceneSettings.StandardAnalyzer;
         }
 
         public void UpdateIndex(LuceneIndexSettings settings)
@@ -77,7 +81,7 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                File.WriteAllText(_indexSettingsFilename, JsonConvert.SerializeObject(List(), Formatting.Indented));
+                File.WriteAllText(_indexSettingsFilename, JsonConvert.SerializeObject(GetSettings(), Formatting.Indented));
             }
         }
     }

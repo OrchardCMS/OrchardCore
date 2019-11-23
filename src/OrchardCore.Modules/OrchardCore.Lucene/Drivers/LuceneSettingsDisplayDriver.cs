@@ -25,7 +25,7 @@ namespace OrchardCore.Lucene.Drivers
                 {
                     model.SearchIndex = section.SearchIndex;
                     model.SearchFields = String.Join(", ", section.DefaultSearchFields ?? new string[0]);
-                    model.SearchIndexes = _luceneIndexSettingsService.List().Select(x => x.IndexName).ToArray();
+                    model.SearchIndexes = _luceneIndexSettingsService.GetIndices();
                 }).Location("Content:2").OnGroup("search");
         }
 

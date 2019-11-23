@@ -62,7 +62,7 @@ namespace OrchardCore.Lucene.Handlers
                 ContentItem published = null, latest = null;
                 bool publishedLoaded = false, latestLoaded = false;
 
-                foreach (var indexSettings in luceneIndexSettingsService.List())
+                foreach (var indexSettings in luceneIndexSettingsService.GetSettings())
                 {
                     if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                     {

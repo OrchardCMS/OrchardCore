@@ -33,7 +33,7 @@ namespace OrchardCore.Lucene.Deployment
             {
                 model.IncludeAll = step.IncludeAll;
                 model.IndexNames = step.IndexNames;
-                model.AllIndexNames = _luceneIndexSettingsService.List().Select(x => x.IndexName).ToArray();
+                model.AllIndexNames = _luceneIndexSettingsService.GetIndices().ToArray();
             }).Location("Content");
         }
 
