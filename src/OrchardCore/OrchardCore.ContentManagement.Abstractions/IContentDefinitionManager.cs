@@ -30,6 +30,7 @@ namespace OrchardCore.ContentManagement.Metadata
 
         void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition);
         void StorePartDefinition(ContentPartDefinition contentPartDefinition);
+        void Cancel();
 
         /// <summary>
         /// Returns a serial number representing the list of types and settings for the current tenant.

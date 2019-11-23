@@ -132,6 +132,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
+                _contentDefinitionManager.Cancel();
                 return View(viewModel);
             }
 
@@ -188,7 +189,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
-
+                _contentDefinitionManager.Cancel();
                 return View(viewModel);
             }
             else
@@ -318,6 +319,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
+                _contentDefinitionManager.Cancel();
                 return await AddPartsTo(id);
             }
 
@@ -381,6 +383,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
+                _contentDefinitionManager.Cancel();
                 return await AddReusablePartTo(id);
             }
 
@@ -533,6 +536,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
+                _contentDefinitionManager.Cancel();
                 return View(viewModel);
             }
             else
@@ -647,6 +651,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 viewModel.Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList();
 
                 _session.Cancel();
+                _contentDefinitionManager.Cancel();
 
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
@@ -750,7 +755,9 @@ namespace OrchardCore.ContentTypes.Controllers
                 {
                     // Calls update to build editor shape with the display name validation failures, and other validation errors.
                     viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
+
                     _session.Cancel();
+                    _contentDefinitionManager.Cancel();
 
                     ViewData["ReturnUrl"] = returnUrl;
                     return View(viewModel);
@@ -769,6 +776,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
+                _contentDefinitionManager.Cancel();
 
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
@@ -917,7 +925,9 @@ namespace OrchardCore.ContentTypes.Controllers
                     if (!ModelState.IsValid)
                     {
                         viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, this);
+
                         _session.Cancel();
+                        _contentDefinitionManager.Cancel();
                         return View(viewModel);
                     }
 
@@ -931,6 +941,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
+                _contentDefinitionManager.Cancel();
                 return View(viewModel);
             }
             else

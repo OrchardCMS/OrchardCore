@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.ContentManagement
 {
@@ -26,6 +27,8 @@ namespace OrchardCore.ContentManagement
 
         private readonly Dictionary<string, ContentTypeDefinition> _scopedTypeDefinitions = new Dictionary<string, ContentTypeDefinition>();
         private readonly Dictionary<string, ContentPartDefinition> _scopedPartDefinitions = new Dictionary<string, ContentPartDefinition>();
+
+        private List<bool> _saved;
 
         public ContentDefinitionManager(
             ISignal signal,
@@ -340,12 +343,26 @@ namespace OrchardCore.ContentManagement
             return record;
         }
 
+        public void Cancel() => _saved?.Clear();
+
         private void UpdateContentDefinitionRecord()
         {
-            var contentDefinitionRecord = LoadContentDefinitionRecord();
+            if (_saved == null)
+            {
+                _saved = new List<bool>() { true };
 
-            contentDefinitionRecord.Serial++;
-            _contentDefinitionStore.SaveContentDefinitionAsync(contentDefinitionRecord).GetAwaiter().GetResult();
+                ShellScope.RegisterBeforeDispose(scope =>
+                {
+                    if (!_saved.Any())
+                    {
+                        return Task.CompletedTask;
+                    }
+
+                    var contentDefinitionRecord = LoadContentDefinitionRecord();
+                    contentDefinitionRecord.Serial++;
+                    return _contentDefinitionStore.SaveContentDefinitionAsync(contentDefinitionRecord);
+                });
+            }
 
             // Cache invalidation at the end of the scope.
             _signal.DeferredSignalToken(CacheKey);

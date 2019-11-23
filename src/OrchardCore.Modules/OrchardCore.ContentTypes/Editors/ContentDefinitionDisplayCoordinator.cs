@@ -36,7 +36,9 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
                 if (result != null)
+                {
                     await result.ApplyAsync(context);
+                }
             }, Logger);
         }
 
@@ -46,7 +48,9 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
                 if (result != null)
+                {
                     await result.ApplyAsync(context);
+                }
             }, Logger);
         }
 
@@ -56,7 +60,9 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
                 if (result != null)
+                {
                     await result.ApplyAsync(context);
+                }
             }, Logger);
         }
 
@@ -66,7 +72,9 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
                 if (result != null)
+                {
                     await result.ApplyAsync(context);
+                }
             }, Logger);
         }
 
@@ -76,7 +84,9 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
                 if (result != null)
+                {
                     await result.ApplyAsync(context);
+                }
             }, Logger);
         }
 
@@ -86,7 +96,9 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
                 if (result != null)
+                {
                     await result.ApplyAsync(context);
+                }
             }, Logger);
         }
 
@@ -96,7 +108,9 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
                 if (result != null)
+                {
                     await result.ApplyAsync(context);
+                }
             }, Logger);
         }
 
@@ -106,7 +120,9 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
                 if (result != null)
+                {
                     await result.ApplyAsync(context);
+                }
             }, Logger);
         }
     }
