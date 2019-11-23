@@ -162,9 +162,17 @@ namespace OrchardCore.DisplayManagement.Liquid
                 {
                     return shape.Items;
                 }
+
                 // Resolve Model.Content.MyNamedPart
                 // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
-                return shape.Named(n.Replace("__", "-"));
+                var namedShaped = shape.Named(n.Replace("__", "-"));
+                if (namedShaped != null)
+                {
+                    return namedShaped;
+                }
+
+                // Resolve Model.Content.MyType-MyField-FieldName_Display__DisplayOption
+                return shape.Named(n);
             }
 
             return null;

@@ -12,9 +12,9 @@
         {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
         {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
   
-        {% assign tags = Model.ContentItem.Content.BlogPost.Tags | taxonomy_terms %}
-        {% for tag in tags %}
-            <span class="badge badge-secondary">{{ tag }}</span>
+        {% assign tagDisplayTexts = Model.ContentItem.Content.BlogPost.Tags.TagTermDisplayTexts %}
+        {% for tagDisplayText in tagDisplayTexts %}
+            <span class="badge badge-secondary"><i class="fas fa-tag fa-xs fa-rotate-90"></i> {{ tagDisplayText }} </span>
         {% endfor %}
 
     </p>

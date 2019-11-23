@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Taxonomies.Fields;
@@ -32,14 +33,19 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayTaxonomyFieldViewModel>("TaxonomyField", model =>
+            if (String.IsNullOrEmpty(context.PartFieldDefinition.DisplayMode()))
             {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+                return Initialize<DisplayTaxonomyFieldViewModel>(GetDisplayShapeType(context), model =>
+                {
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
+                    })
+                .Location("Content")
+                .Location("SummaryAdmin", "");
+            }
+
+            return null;
         }
 
         public override IDisplayResult Edit(TaxonomyField field, BuildFieldEditorContext context)

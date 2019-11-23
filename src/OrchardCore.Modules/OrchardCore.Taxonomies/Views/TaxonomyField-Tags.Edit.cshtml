@@ -50,7 +50,7 @@
 }
 
 <div class="form-group">
-    <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-leaves-only="@taxonomySettings.LeavesOnly" date-create-tag-error-message="@T["Error creating tag"]" data-part-name="@partName" data-field-name="@fieldName" data-all-tag-terms="@allTagTerms" data-create-tag-url="@createTagUrl" data-term-entries-key="@nameof(EditTaxonomyFieldViewModel.TermEntries)" data-content-item-id-key="@nameof(TermEntry.ContentItemId)" data-selected-key="@nameof(TermEntry.Selected)">
+    <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-create-tag-error-message="@T["Error creating tag"]" data-part-name="@partName" data-field-name="@fieldName" data-all-tag-terms="@allTagTerms" data-create-tag-url="@createTagUrl" data-term-entries-key="@nameof(EditTaxonomyFieldViewModel.TermEntries)" data-content-item-id-key="@nameof(TermEntry.ContentItemId)" data-selected-key="@nameof(TermEntry.Selected)">
 
         <div class="form-group">
             <div class="w-xl-50">

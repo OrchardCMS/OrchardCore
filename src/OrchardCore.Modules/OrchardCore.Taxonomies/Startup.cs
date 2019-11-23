@@ -30,6 +30,7 @@ namespace OrchardCore.Taxonomies
 
             TemplateContext.GlobalMemberAccessStrategy.Register<TaxonomyField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTaxonomyFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTaxonomyFieldTagsViewModel>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -49,6 +50,7 @@ namespace OrchardCore.Taxonomies
 
             // Taxonomy Tags
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldTagsEditorSettingsDriver>();
+            services.AddScoped<IContentFieldDisplayDriver, TaxonomyFieldTagsDisplayDriver>();
 
             services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
         }

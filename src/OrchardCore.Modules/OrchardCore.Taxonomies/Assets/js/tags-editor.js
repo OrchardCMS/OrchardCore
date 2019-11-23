@@ -15,13 +15,19 @@ function initializeTagsEditor(element) {
                 var selectableTagTerms = allTagTerms;
 
                 // Leaves only filters selectableTerms.
-                if (element.dataset.leavesOnly)
+                if (element.dataset.leavesOnly == 'true')
                 {
-                    selectableTagTerms = selectableTagTerms.filter(function (term) { return term.isLeaf });
+                    selectableTagTerms = selectableTagTerms.filter(function (tagTerm) { return tagTerm.isLeaf });
+                    // Self heal when leaves only value is updated.
+                    allTagTerms.forEach(function (tagTerm) {
+                        if (!selectableTagTerms.includes(tagTerm)) {
+                            tagTerm.selected = false;
+                        }
+                    });
                 }
 
                 // Selected terms are show in selected tags field.
-                selectedTagTerms = selectableTagTerms.filter(function (term) { return term.selected });
+                selectedTagTerms = allTagTerms.filter(function (tagTerm) { return tagTerm.selected });
 
                 return {
                     taxonomyContentItemId: element.dataset.taxonomyContentItemId,
@@ -32,7 +38,6 @@ function initializeTagsEditor(element) {
                     selectedKey: element.dataset.selectedKey,
                     partName: element.dataset.partName,
                     fieldName: element.dataset.fieldName,
-                    settings: element.dataset.settings,
                     selectedTagTerms: selectedTagTerms,
                     selectableTagTerms: selectableTagTerms,
                     allTagTerms: allTagTerms
@@ -74,12 +79,12 @@ function initializeTagsEditor(element) {
                     });
                 },
                 onSelect(selectedTagTerm) {
-                    var tagTerm = this.allTagTerms.find(function (element) { return element.contentItemId === selectedTagTerm.contentItemId });
+                    var tagTerm = this.allTagTerms.find(function (tagTerm) { return tagTerm.contentItemId === selectedTagTerm.contentItemId });
                     tagTerm.selected = true;
                     $(document).trigger('contentpreview:render');
                 },
                 onRemove(removedTagTerm) {
-                    var tagTerm = this.allTagTerms.find(function (element) { return element.contentItemId === removedTagTerm.contentItemId });
+                    var tagTerm = this.allTagTerms.find(function (tagTerm) { return tagTerm.contentItemId === removedTagTerm.contentItemId });
                     tagTerm.selected = false;
                     $(document).trigger('contentpreview:render');
                 },
