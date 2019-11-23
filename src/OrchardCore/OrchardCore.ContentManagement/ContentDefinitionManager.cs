@@ -351,16 +351,16 @@ namespace OrchardCore.ContentManagement
             {
                 _saved = true;
 
-                ShellScope.RegisterBeforeDispose(scope =>
+                ShellScope.RegisterBeforeDispose(async scope =>
                 {
                     if (_cancel)
                     {
-                        return Task.CompletedTask;
+                        return;
                     }
 
-                    var contentDefinitionRecord = LoadContentDefinitionRecord();
+                    var contentDefinitionRecord = await _contentDefinitionStore.LoadContentDefinitionAsync();
                     contentDefinitionRecord.Serial++;
-                    return _contentDefinitionStore.SaveContentDefinitionAsync(contentDefinitionRecord);
+                    await _contentDefinitionStore.SaveContentDefinitionAsync(contentDefinitionRecord);
                 });
             }
 
