@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.ViewModels
@@ -7,8 +9,16 @@ namespace OrchardCore.Workflows.ViewModels
     {
         public WorkflowType WorkflowType { get; set; }
         public IList<WorkflowEntry> Workflows { get; set; }
+        public WorkflowIndexOptions Options { get; set; }
         public dynamic Pager { get; set; }
         public string ReturnUrl { get; set; }
+    }
+    public class WorkflowIndexOptions
+    {
+        public WorkflowBulkAction BulkAction { get; set; }
+        public WorkflowFilter Filter { get; set; }
+        [BindNever]
+        public List<SelectListItem> WorkflowsBulkAction { get; set; }
     }
 
     public class WorkflowEntry
@@ -16,6 +26,13 @@ namespace OrchardCore.Workflows.ViewModels
         public Workflow Workflow { get; set; }
         public int Id { get; set; }
         public bool IsChecked { get; set; }
+    }
+
+    public enum WorkflowFilter
+    {
+        All,
+        Finished,
+        Faulted
     }
 
     public enum WorkflowBulkAction
