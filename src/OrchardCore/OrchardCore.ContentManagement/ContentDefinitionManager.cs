@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement
         private readonly Dictionary<string, ContentTypeDefinition> _scopedTypeDefinitions = new Dictionary<string, ContentTypeDefinition>();
         private readonly Dictionary<string, ContentPartDefinition> _scopedPartDefinitions = new Dictionary<string, ContentPartDefinition>();
 
-        private List<bool> _saved;
+        private bool _saved, _cancel;
 
         public ContentDefinitionManager(
             ISignal signal,
@@ -343,17 +343,17 @@ namespace OrchardCore.ContentManagement
             return record;
         }
 
-        public void Cancel() => _saved?.Clear();
+        public void Cancel() => _cancel = true;
 
         private void UpdateContentDefinitionRecord()
         {
-            if (_saved == null)
+            if (!_saved)
             {
-                _saved = new List<bool>() { true };
+                _saved = true;
 
                 ShellScope.RegisterBeforeDispose(scope =>
                 {
-                    if (!_saved.Any())
+                    if (_cancel)
                     {
                         return Task.CompletedTask;
                     }
