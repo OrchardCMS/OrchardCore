@@ -12,21 +12,21 @@ using YesSql;
 
 namespace OrchardCore.Lists.Helpers
 {
-    internal static class ListQueryHelpers
+    public static class ListQueryHelpers
     {
-        internal static async Task<int> QueryListItemsCountAsync(ISession session, string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate)
+        public static async Task<int> QueryListItemsCountAsync(ISession session, string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)
         {
             return await session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId)
-                    .With<ContentItemIndex>(itemPredicate)
+                    .With<ContentItemIndex>(itemPredicate ?? (x => x.Published))
                     .CountAsync();
         }
 
-        internal static async Task<IEnumerable<ContentItem>> QueryListItemsAsync(ISession session, string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate)
+        public static async Task<IEnumerable<ContentItem>> QueryListItemsAsync(ISession session, string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)
         {
             return await session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId)
-                    .With<ContentItemIndex>(itemPredicate)
+                    .With<ContentItemIndex>(itemPredicate ?? (x => x.Published))
                     .ListAsync();
         }
 
@@ -118,7 +118,7 @@ namespace OrchardCore.Lists.Helpers
             }
         }
 
-        internal static Expression<Func<ContentItemIndex, bool>> CreateContentIndexFilter(DateTime? before, DateTime? after, bool publishedOnly)
+        private static Expression<Func<ContentItemIndex, bool>> CreateContentIndexFilter(DateTime? before, DateTime? after, bool publishedOnly)
         {
             if (before != null)
             {
