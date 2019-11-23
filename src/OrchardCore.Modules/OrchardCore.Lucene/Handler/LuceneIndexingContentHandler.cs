@@ -26,11 +26,6 @@ namespace OrchardCore.Lucene.Handlers
 
         private Task AddContextAsync(ContentContextBase context)
         {
-            if (context is RemoveContentContext removeContext && !removeContext.NoActiveVersionLeft)
-            {
-                return Task.CompletedTask;
-            }
-
             if (_contexts.Count == 0)
             {
                 var contexts = _contexts;

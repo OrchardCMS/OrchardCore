@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Options;
@@ -16,7 +17,8 @@ namespace OrchardCore.Lucene
     public class LuceneIndexSettingsService
     {
         private readonly string _indexSettingsFilename;
-        private readonly List<LuceneIndexSettings> _indexSettings;
+        private ImmutableDictionary<string, LuceneIndexSettings> _indexSettings =
+            ImmutableDictionary.Create<string, LuceneIndexSettings>(StringComparer.OrdinalIgnoreCase);
 
         public LuceneIndexSettingsService(
             IOptions<ShellOptions> shellOptions,
@@ -35,51 +37,38 @@ namespace OrchardCore.Lucene
                 File.WriteAllText(_indexSettingsFilename, "");
             }
 
-            _indexSettings = JsonConvert.DeserializeObject<List<LuceneIndexSettings>>(File.ReadAllText(_indexSettingsFilename)) ?? new List<LuceneIndexSettings>();
+            var settings = JsonConvert.DeserializeObject<List<LuceneIndexSettings>>(File.ReadAllText(_indexSettingsFilename)) ?? new List<LuceneIndexSettings>();
+
+            _indexSettings = ImmutableDictionary.Create<string, LuceneIndexSettings>(StringComparer.OrdinalIgnoreCase)
+                .AddRange(settings.ToDictionary(s => s.IndexName, s => s));
         }
 
-        public IEnumerable<LuceneIndexSettings> List() => _indexSettings.ToArray();
+        public IEnumerable<LuceneIndexSettings> List() => _indexSettings.Values;
 
         public string GetIndexAnalyzer(string indexName)
         {
-            var setting = _indexSettings.FirstOrDefault(x => String.Equals(x.IndexName, indexName, StringComparison.OrdinalIgnoreCase));
-            if (setting != null)
+            if (_indexSettings.TryGetValue(indexName, out var settings))
             {
-                return setting.AnalyzerName;
+                return settings.AnalyzerName;
             }
 
             return null;
         }
 
-        public void EditIndex(LuceneIndexSettings settings)
+        public void UpdateIndex(LuceneIndexSettings settings)
         {
             lock (this)
             {
-                var existing = _indexSettings.FirstOrDefault(x => String.Equals(x.IndexName, settings.IndexName, StringComparison.OrdinalIgnoreCase));
-                if (existing != null)
-                {
-                    _indexSettings.Remove(existing);
-                }
-                _indexSettings.Add(settings);
+                _indexSettings = _indexSettings.SetItem(settings.IndexName, settings);
                 Update();
             }
         }
 
-        public void CreateIndex(LuceneIndexSettings settings)
+        public void DeleteIndex(string indexName)
         {
             lock (this)
             {
-
-                _indexSettings.Add(settings);
-                Update();
-            }
-        }
-
-        public void DeleteIndex(LuceneIndexSettings settings)
-        {
-            lock (this)
-            {
-                _indexSettings.Remove(settings);
+                _indexSettings = _indexSettings.Remove(indexName);
                 Update();
             }
         }
@@ -88,7 +77,7 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                File.WriteAllText(_indexSettingsFilename, JsonConvert.SerializeObject(_indexSettings, Formatting.Indented));
+                File.WriteAllText(_indexSettingsFilename, JsonConvert.SerializeObject(List(), Formatting.Indented));
             }
         }
     }

@@ -232,27 +232,27 @@ namespace OrchardCore.Lucene
         /// <returns></returns>
         public void CreateIndex(LuceneIndexSettings indexSettings)
         {
-            _luceneIndexSettingsService.CreateIndex(indexSettings);
+            _luceneIndexSettingsService.UpdateIndex(indexSettings);
             RebuildIndex(indexSettings.IndexName);
         }
 
         /// <summary>
-        /// Edit an existing index
+        /// Update an existing index
         /// </summary>
         /// <returns></returns>
-        public void EditIndex(LuceneIndexSettings indexSettings)
+        public void UpdateIndex(LuceneIndexSettings indexSettings)
         {
-            _luceneIndexSettingsService.EditIndex(indexSettings);
+            _luceneIndexSettingsService.UpdateIndex(indexSettings);
         }
 
         /// <summary>
         /// Deletes permanently an index
         /// </summary>
         /// <returns></returns>
-        public void DeleteIndex(LuceneIndexSettings indexSettings)
+        public void DeleteIndex(string indexName)
         {
-            _indexManager.DeleteIndex(indexSettings.IndexName);
-            _luceneIndexSettingsService.DeleteIndex(indexSettings);
+            _indexManager.DeleteIndex(indexName);
+            _luceneIndexSettingsService.DeleteIndex(indexName);
         }
 
         /// <summary>

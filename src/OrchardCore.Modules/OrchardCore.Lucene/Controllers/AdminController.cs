@@ -143,9 +143,7 @@ namespace OrchardCore.Lucene.Controllers
             {
                 var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes };
 
-                // We call Rebuild in order to reset the index state cursor too in case the same index
-                // name was also used previously.
-                _luceneIndexingService.EditIndex(settings);
+                _luceneIndexingService.UpdateIndex(settings);
             }
             catch (Exception e)
             {
@@ -182,6 +180,7 @@ namespace OrchardCore.Lucene.Controllers
             try
             {
                 var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes };
+
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.
                 _luceneIndexingService.CreateIndex(settings);
@@ -255,8 +254,7 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                var settings = _luceneIndexSettingsService.List().Where(x => x.IndexName == model.IndexName).FirstOrDefault();
-                _luceneIndexingService.DeleteIndex(settings);
+                _luceneIndexingService.DeleteIndex(model.IndexName);
 
                 _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
             }
@@ -311,14 +309,12 @@ namespace OrchardCore.Lucene.Controllers
                 model.Parameters = "{ }";
             }
 
-            var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
-
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
             await _luceneIndexManager.SearchAsync(model.IndexName, async searcher =>
             {
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(_luceneIndexSettingsService.GetIndexAnalyzer(model.IndexName));
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(_luceneIndexSettingsService.GetIndexAnalyzer(model.IndexName) ?? LuceneSettings.StandardAnalyzer);
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
                 var templateContext = new TemplateContext();
