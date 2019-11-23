@@ -11,13 +11,18 @@ namespace OrchardCore.ContentManagement
     {
         private readonly IOptions<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
+        private readonly LocalLock _localLock;
 
         private ContentDefinitionRecord _contentDefinitionRecord;
 
-        public FileContentDefinitionStore(IOptions<ShellOptions> shellOptions, ShellSettings shellSettings)
+        public FileContentDefinitionStore(
+            IOptions<ShellOptions> shellOptions,
+            ShellSettings shellSettings,
+            LocalLock localLock)
         {
             _shellOptions = shellOptions;
             _shellSettings = shellSettings;
+            _localLock = localLock;
         }
 
         /// <summary>
@@ -36,7 +41,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Gets a single document (or create a new one) for caching and that should not be updated.
         /// </summary>
-        public Task<ContentDefinitionRecord> GetContentDefinitionAsync()
+        public async Task<ContentDefinitionRecord> GetContentDefinitionAsync()
         {
             ContentDefinitionRecord result;
 
@@ -46,7 +51,7 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                lock (this)
+                using (await _localLock.AcquireLockAsync("FileContentDefinitionStore"))
                 {
                     using (var file = File.OpenText(Filename))
                     {
@@ -56,12 +61,12 @@ namespace OrchardCore.ContentManagement
                 }
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
+        public async Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
         {
-            lock (this)
+            using (await _localLock.AcquireLockAsync("FileContentDefinitionStore"))
             {
                 using (var file = File.CreateText(Filename))
                 {
@@ -70,8 +75,6 @@ namespace OrchardCore.ContentManagement
                     serializer.Serialize(file, contentDefinitionRecord);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
         private string Filename => PathExtensions.Combine(
