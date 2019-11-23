@@ -18,15 +18,15 @@ namespace OrchardCore.Users.Workflows.Handlers
             _workflowManager = workflowManager;
         }
 
-        public Task<string> GenerateUserName(string provider, IEnumerable<ExternalUserClaim> claims)
+        public Task<string> GenerateUserName(string provider, IEnumerable<SerializableClaim> claims)
         {
             throw new NotImplementedException();
         }
 
         public Task UpdateRoles(UpdateRolesContext context)
         {
-            return _workflowManager.TriggerEventAsync(nameof(ExternalUserLoggedInEvent),
-                input: new { context.User, context.Claims, context.CurrentRoles },
+            return _workflowManager.TriggerEventAsync(nameof(UserLoggedInEvent),
+                input: new { context.User, context.ExternalClaims, context.UserRoles },
                 correlationId: ((User)context.User).Id.ToString()
             );
         }

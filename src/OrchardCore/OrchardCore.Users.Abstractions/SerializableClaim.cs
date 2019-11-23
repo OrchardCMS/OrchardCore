@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrchardCore.Users.Handlers
+namespace OrchardCore.Users
 {
-    public class ExternalUserClaim
+    public class SerializableClaim
     {
         public string Subject { get; set; }
 

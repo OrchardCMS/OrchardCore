@@ -42,25 +42,32 @@
         <span class="hint">— @T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
     </div>
     <pre>
-*****************************************************************************************
-* Parameters:                                                                           *
-* ===================================================================================== *
-* context       : {user,provider,claims[],currentRoles[],rolesToRemove[],rolesToAdd[]}  *
-* ===================================================================================== *
-* user          : {userName}                                                            *
-* provider      : String                                                                *
-* claims        : [{subject,issuer,originalIssuer,properties[],type,value,valueType}]   *
-* properties    : [{key,value}]                                                         *
-* rolesToAdd    : [String]                                                              *
-* rolesToRemove : [String]                                                              *
-* ===================================================================================== *
-* Description                                                                           *
-* ------------------------------------------------------------------------------------- *
-* Use the provider and claims properties of the context variable to inspect who         *
-* authenticated the user and with what claims. Check currentRoles property and apply    *
-* your business logic to fill the rolesToAdd and rolesToRemove arrays in order to       *
-* update the roles of the user                                                          *
-*****************************************************************************************
+*************************************************************************************************
+* context           : {user,loginProvider,claims[],currentRoles[],rolesToRemove[],rolesToAdd[]} *
+* ============================================================================================= *
+* -user             : {userName}                                                                *
+*  -userName        : String                                                                    *
+* -loginProvider    : String                                                                    *
+* -externalClaims   : [{subject,issuer,originalIssuer,properties[],type,value,valueType}]       *
+*  -subject         : String                                                                    *
+*  -issuer          : String                                                                    *
+*  -originalIssuer  : String                                                                    *
+*  -properties      : [{key,value}]                                                             *
+*   -key            : String                                                                    *
+*   -value          : String                                                                    *
+*  -type            : String                                                                    *
+*  -value           : String                                                                    *
+*  -valueType       : String                                                                    *
+* -rolesToAdd       : [String]                                                                  *
+* -rolesToRemove    : [String]                                                                  *
+* ============================================================================================= *
+*    Description                                                                                *
+* --------------------------------------------------------------------------------------------- *
+*    Use the loginProvider and externalClaims properties of the context variable to inspect     *
+*    who authenticated the user and with what claims. Check currentRoles property and apply     *
+*    your business logic to fill the rolesToAdd and rolesToRemove arrays in order to update     *
+*    the roles of the user                                                                      *
+*************************************************************************************************
 </pre>
 </div>
 
@@ -76,10 +83,9 @@
         if (!keepText) {
             editor.doc.setValue(
                 '/* Uncomment to map AzureAD\n' +
-                'var roles = [];\n' +
-                'switch (context.provider) {\n' +
+                'switch (context.loginProvider) {\n' +
                 '    case "AzureAD":\n' +
-                '        context.claims.forEach(claim => {\n' +
+                '        context.externalClaims.forEach(claim => {\n' +
                 '            if (claim.Type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {\n' +
                 '                switch (claim.Value) {\n' +
                 '                    case "Writer":\n' +
@@ -90,11 +96,13 @@
                 '                        break;\n' +
                 '                    default:\n' +
                 '                        log("Warning", "Role " + claim.Value + " was not handled");\n' +
+                '                        break;\n' +
                 '                }\n' +
                 '            }\n' +
                 '        });\n' +
                 '    default:\n' +
-    	        '        log("Warning", "Provider " + provider + " was not handled");\n' +
+                '        log("Warning", "Provider " + loginProvider + " was not handled");\n' +
+    	        '        break;\n' +
                 '}\n' +
                 '*/\n' 
             );

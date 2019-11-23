@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authentication;
@@ -11,7 +10,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -25,6 +24,7 @@ using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using IWorkflowManager = OrchardCore.Workflows.Services.IWorkflowManager;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace OrchardCore.Users.Controllers
@@ -43,8 +43,6 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
-
-
 
         public AccountController(
             IUserService userService,
@@ -88,7 +86,6 @@ namespace OrchardCore.Users.Controllers
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-
             var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
             if (loginSettings.UseExternalProviderIfOnlyOneDefined)
             {
@@ -111,7 +108,6 @@ namespace OrchardCore.Users.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
-
 
         [HttpGet]
         [AllowAnonymous]
@@ -146,7 +142,6 @@ namespace OrchardCore.Users.Controllers
             }
             return RedirectToAction(nameof(Login));
         }
-
 
         async Task<bool> AddConfirmEmailError(IUser user)
         {
@@ -199,7 +194,7 @@ namespace OrchardCore.Users.Controllers
                                 {
                                     _logger.LogInformation(1, "User logged in.");
                                     await _accountEvents.InvokeAsync(a => a.LoggedInAsync(model.UserName), _logger);
-                                    return RedirectToLocal(returnUrl);
+                                    return await LoggedInActionResult(user, returnUrl);
                                 }
 
                                 ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
@@ -271,6 +266,23 @@ namespace OrchardCore.Users.Controllers
             }
         }
 
+        private async Task<IActionResult> LoggedInActionResult(IUser user, string returnUrl = null, ExternalLoginInfo info = null)
+        {
+            var workflowManager = HttpContext.RequestServices.GetService<IWorkflowManager>();
+            if (workflowManager != null)
+            {
+                var input = new Dictionary<string, object>();
+                input["UserName"] = user.UserName;
+                input["Claims"] = info == null ? Enumerable.Empty<SerializableClaim>() : info.Principal.GetSerializableClaims();
+                input["Roles"] = ((User)user).RoleNames;
+                input["Provider"] = info?.LoginProvider;
+                await workflowManager.TriggerEventAsync(nameof(Workflows.Activities.UserLoggedInEvent),
+                    input: input, correlationId: ((User)user).Id.ToString());
+            }
+            return RedirectToLocal(returnUrl);
+        }
+
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -282,23 +294,14 @@ namespace OrchardCore.Users.Controllers
             return Challenge(properties, provider);
         }
 
-        private async Task<SignInResult> PerformExternalLoginSignInAsync(IUser user, ExternalLoginInfo info)
+        private async Task<SignInResult> ExternalLoginSignInAsync(IUser user, ExternalLoginInfo info)
         {
-            var claims = info.Principal.Claims.Select(c => new ExternalUserClaim
-            {
-                Subject = c.Subject.Name,
-                Issuer = c.Issuer,
-                OriginalIssuer = c.OriginalIssuer,
-                Properties = c.Properties.ToArray(),
-                Type = c.Type,
-                Value = c.Value,
-                ValueType = c.ValueType
-            });
+            var claims = info.Principal.GetSerializableClaims();
             var userRoles = await _userManager.GetRolesAsync(user);
-            var context = new UpdateRolesContext(user, claims, userRoles);
+            var context = new UpdateRolesContext(user, info.LoginProvider, claims, userRoles);
 
-            string[] rolesToAdd;
-            string[] rolesToRemove;
+            string[] rolesToAdd = new string[0];
+            string[] rolesToRemove = new string[0];
 
             var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
             if (loginSettings.UseScriptToSyncRoles)
@@ -317,7 +320,6 @@ namespace OrchardCore.Users.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error Syncing Roles From External Provider {0}", info.LoginProvider);
-                    return SignInResult.Failed;
                 }
             }
             else
@@ -326,10 +328,7 @@ namespace OrchardCore.Users.Controllers
                 {
                     try
                     {
-                        if (!item.GetType().IsAssignableFrom(typeof(Workflows.Handlers.ExternallUserHandler)))
-                        {
-                            await item.UpdateRoles(context);
-                        }
+                        await item.UpdateRoles(context);
                     }
                     catch (Exception ex)
                     {
@@ -372,10 +371,10 @@ namespace OrchardCore.Users.Controllers
                 {
                     await _accountEvents.InvokeAsync(i => i.LoggingInAsync(user.UserName, (key, message) => ModelState.AddModelError(key, message)), _logger);
 
-                    var signInResult = await PerformExternalLoginSignInAsync(user, info);
+                    var signInResult = await ExternalLoginSignInAsync(user, info);
                     if (signInResult.Succeeded)
                     {
-                        return RedirectToLocal(returnUrl);
+                        return await LoggedInActionResult(user, returnUrl, info);
                     }
                     else
                     {
@@ -449,10 +448,10 @@ namespace OrchardCore.Users.Controllers
 
                                     // We have created/linked to the local user, so we must verify the login.
                                     // If it does not succeed, the user is not allowed to login
-                                    var signInResult = await PerformExternalLoginSignInAsync(user, info);
+                                    var signInResult = await ExternalLoginSignInAsync(user, info);
                                     if (signInResult.Succeeded)
                                     {
-                                        return RedirectToLocal(returnUrl);
+                                        return await LoggedInActionResult(user, returnUrl, info);
                                     }
                                     else
                                     {
@@ -535,10 +534,10 @@ namespace OrchardCore.Users.Controllers
 
                         // we have created/linked to the local user, so we must verify the login. If it does not succeed,
                         // the user is not allowed to login
-                        var signInResult = await PerformExternalLoginSignInAsync(user, info);
+                        var signInResult = await ExternalLoginSignInAsync(user, info);
                         if (signInResult.Succeeded)
                         {
-                            return RedirectToLocal(returnUrl);
+                            return await LoggedInActionResult(user, returnUrl, info);
                         }
                     }
                     AddIdentityErrors(identityResult);
@@ -592,7 +591,7 @@ namespace OrchardCore.Users.Controllers
                     // the user is not allowed to login
                     if ((await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false)).Succeeded)
                     {
-                        return RedirectToLocal(returnUrl);
+                        return await LoggedInActionResult(user, returnUrl, info);
                     }
                 }
                 AddIdentityErrors(identityResult);
@@ -693,20 +692,11 @@ namespace OrchardCore.Users.Controllers
 
             var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
 
-            var claims = info.Principal.Claims.Select(c => new ExternalUserClaim
-            {
-                Subject = c.Subject.Name,
-                Issuer = c.Issuer,
-                OriginalIssuer = c.OriginalIssuer,
-                Properties = c.Properties.ToArray(),
-                Type = c.Type,
-                Value = c.Value,
-                ValueType = c.ValueType
-            });
+            var externalClaims = info == null ? null : info.Principal.GetSerializableClaims();
 
             if (registrationSettings.UseScriptToGenerateUsername)
             {
-                var context = new { userName = string.Empty, provider = info.LoginProvider, claims };
+                var context = new { userName = string.Empty, loginProvider = info?.LoginProvider, externalClaims };
                 var jsonSerializerSettings = new JsonSerializerSettings()
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -721,12 +711,7 @@ namespace OrchardCore.Users.Controllers
                 }
                 catch (Exception ex)
                 {
-
-                    _logger.LogWarning("Suspicious login detected from external provider. {provider} with key [{providerKey}] for {identity}",
-                        info.LoginProvider, info.ProviderKey, info.Principal?.Identity?.Name);
-
-                    _logger.LogError(ex, "Error evaluating GenerateUsernameScript( '{provider}',{claims} ) for {identity}",
-                        info?.LoginProvider, claims, info.Principal?.Identity?.Name);
+                    _logger.LogError(ex, "Error evaluating GenerateUsernameScript({context})", context);
                 }
             }
             else
@@ -736,7 +721,7 @@ namespace OrchardCore.Users.Controllers
                 {
                     try
                     {
-                        var userName = await item.GenerateUserName(info.LoginProvider, claims.ToArray());
+                        var userName = await item.GenerateUserName(info.LoginProvider, externalClaims.ToArray());
                         if (!string.IsNullOrWhiteSpace(userName))
                         {
                             if (userNames.Count == 0)
@@ -759,6 +744,5 @@ namespace OrchardCore.Users.Controllers
 
             return ret;
         }
-
     }
 }

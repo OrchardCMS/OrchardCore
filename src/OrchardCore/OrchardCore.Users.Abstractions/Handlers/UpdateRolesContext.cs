@@ -5,15 +5,17 @@ namespace OrchardCore.Users.Handlers
 {
     public class UpdateRolesContext : UserContextBase
     {
-        public UpdateRolesContext(IUser user, IEnumerable<ExternalUserClaim> claims, IEnumerable<string> currentRoles) : base(user)
+        public UpdateRolesContext(IUser user, string loginProvider, IEnumerable<SerializableClaim> externalClaims, IEnumerable<string> userRoles) : base(user)
         {
-            Claims = claims.AsEnumerable();
-            CurrentRoles = currentRoles;
+            ExternalClaims = externalClaims.AsEnumerable();
+            UserRoles = userRoles;
         }
 
-        public IEnumerable<ExternalUserClaim> Claims { get; }
+        public string LoginProvider { get; }
 
-        public IEnumerable<string> CurrentRoles { get; }
+        public IEnumerable<SerializableClaim> ExternalClaims { get; }
+
+        public IEnumerable<string> UserRoles { get; }
 
         public string[] RolesToAdd { get; } = new string[0];
 

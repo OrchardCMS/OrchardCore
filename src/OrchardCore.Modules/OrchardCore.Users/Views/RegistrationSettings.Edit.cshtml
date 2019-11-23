@@ -46,6 +46,8 @@
     </div>
 </div>
 
+<h5 class="form-group">@T["External Authentication"]<span class="hint"> — @T["Settings when registering with external authentication providers"]</span></h5>
+
 <div class="form-group" asp-validation-class-for="UseScriptToGenerateUsername">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseScriptToGenerateUsername" />
@@ -54,22 +56,28 @@
         <span class="hint">— @T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
     </div>
     <pre>
-*****************************************************************************************
-* Parameters:                                                                           *
-* ===================================================================================== *
-* context       : {userName,provider,claims[]}                                          *
-* ===================================================================================== *
-* userName      : String                                                                *
-* provider      : String                                                                *
-* claims        : [{subject,issuer,originalIssuer,properties[],type,value,valueType}]   *
-* properties    : [{key,value}]                                                         *
-* ===================================================================================== *
-* Description                                                                           *
-* ------------------------------------------------------------------------------------- *
-* Use the provider and claims properties of the context variable to inspect who         *
-* authenticated the user and with what claims. Set the userName property to the desired *
-* value                                                                                 *
-*****************************************************************************************
+********************************************************************************************
+* context          : {userName,loginProvider,externalClaims[]}                             *
+* ======================================================================================== *
+* -userName        : String                                                                *
+* -loginProvider   : String                                                                *
+* -externalClaims  : [{subject,issuer,originalIssuer,properties[],type,value,valueType}]   *
+*  -subject        : String                                                                *
+*  -issuer         : String                                                                *
+*  -originalIssuer : String                                                                *
+*  -properties     : [{key,value}]                                                         *
+*   -key           : String                                                                *
+*   -value         : String                                                                *
+*  -type           : String                                                                *
+*  -value          : String                                                                *
+*  -valueType      : String                                                                *
+* ======================================================================================== *
+*    Description                                                                           *
+* ---------------------------------------------------------------------------------------- *
+*    Use the loginProvider and externalClaims properties of the context variable to        *
+*    inspect who authenticated the user and with what claims. Set the userName property    *
+*    to the desired value                                                                  *
+********************************************************************************************
 </pre>
 </div>
 <div class="form-group" asp-validation-class-for="GenerateUsernameScript">
@@ -77,21 +85,19 @@
     <textarea asp-for="GenerateUsernameScript" rows="1" class="form-control content-preview-text"></textarea>
 </div>
 
-<h5 class="form-group">@T["External Authentication"]<span class="hint"> — @T["Settings when registering with external authentication providers"]</span></h5>
-
 <div class="form-group" asp-validation-class-for="NoUsernameForExternalUsers">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="NoUsernameForExternalUsers" data-external-registration />
         <span asp-validation-for="NoUsernameForExternalUsers"></span>
-        <label class="custom-control-label" asp-for="NoUsernameForExternalUsers">@T["Generate username for external users"]</label>
-        <span class="hint">— @T["When a new user logs in with an external provider, he is not required to provide a local username. If there are any IExternalLoginEventHandlers defined, or a GenerateUsername script is set, you can customize how it is created."]</span>
+        <label class="custom-control-label" asp-for="NoUsernameForExternalUsers">@T["Do not ask username"]</label>
+        <span class="hint">— @T["When a new user logs in with an external provider, he is not required to provide a local username.You can customize how it looks by providing an IExternalLoginEventHandler or write a script."]</span>
     </div>
 </div>
 <div class="form-group" asp-validation-class-for="NoEmailForExternalUsers">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="NoEmailForExternalUsers" data-external-registration />
         <span asp-validation-for="NoEmailForExternalUsers"></span>
-        <label class="custom-control-label" asp-for="NoEmailForExternalUsers">@T["Use email address from external provider"]</label>
+        <label class="custom-control-label" asp-for="NoEmailForExternalUsers">@T["Do not ask email address"]</label>
         <span class="hint">— @T["When a new user logs in with an external provider and the email claim is defined, he is not required to provide a local email address."]</span>
     </div>
 </div>
@@ -122,14 +128,15 @@
         if (!keepText) {
             editor.doc.setValue(
                 '/* Uncomment to map AzureAD\n' +
-                'switch (provider) {\n' +
+                'switch (context.loginProvider) {\n' +
                 '    case "AzureAD":\n' +
-                '        return "azad" + Date.now().toString();\n' +
+                '        context.userName = "azad" + Date.now().toString();\n' +
+                '        break;\n' +
                 '    default:\n' +
-    	        '        log("Warning", "Provider " + provider + " was not handled");\n' +
+                '        log("Warning", "Provider " + loginProvider + " was not handled");\n' +
+                '        break;\n' +
                 '}\n' +
-                '*/\n' +
-                'return "u" + Data.now().toString();\n'
+                '*/\n'
             );
         }
     }

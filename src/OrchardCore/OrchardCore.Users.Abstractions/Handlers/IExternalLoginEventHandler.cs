@@ -9,7 +9,7 @@ namespace OrchardCore.Users.Handlers
     /// </summary>
     public interface IExternalLoginEventHandler
     {
-        Task<string> GenerateUserName(string provider, IEnumerable<ExternalUserClaim> claims);
+        Task<string> GenerateUserName(string provider, IEnumerable<SerializableClaim> claims);
 
         Task UpdateRoles(UpdateRolesContext context);
     }
