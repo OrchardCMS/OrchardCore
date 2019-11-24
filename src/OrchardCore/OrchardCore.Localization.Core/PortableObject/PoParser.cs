@@ -6,6 +6,9 @@ using System.Text;
 
 namespace OrchardCore.Localization.PortableObject
 {
+    /// <summary>
+    /// Represents a parser for portable objects.
+    /// </summary>
     public class PoParser
     {
         private static readonly Dictionary<char, char> _escapeTranslations = new Dictionary<char, char> {
@@ -14,6 +17,11 @@ namespace OrchardCore.Localization.PortableObject
             { 't', '\t' }
         };
 
+        /// <summary>
+        /// Parses a .po file.
+        /// </summary>
+        /// <param name="reader">The <see cref="TextReader"/>.</param>
+        /// <returns>A list of culture records.</returns>
         public IEnumerable<CultureDictionaryRecord> Parse(TextReader reader)
         {
             var entryBuilder = new DictionaryRecordBuilder();
