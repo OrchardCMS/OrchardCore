@@ -649,6 +649,7 @@
                 "ContentPartFieldSettings": {
                   "DisplayName": "Tags",
                   "Editor": "Tags",
+                  "DisplayMode": "Tags",
                   "Position": "1"
                 },
                 "ContentIndexSettings": {},
@@ -979,7 +980,12 @@
                 "[js: variables('explorationTagContentItemId')]",
                 "[js: variables('spaceTagContentItemId')]"
               ],
-              "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
+              "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]",
+              "Tags": [
+                "Earth",
+                "Exploration",
+                "Space"
+              ]
             },
             "Category": {
               "TermContentItemIds": [
