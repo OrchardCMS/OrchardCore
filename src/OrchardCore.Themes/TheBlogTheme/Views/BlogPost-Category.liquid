@@ -1,0 +1,4 @@
+{% assign categoryTerm = Model.Field | taxonomy_terms | first %}
+<div class="d-inline">
+    <span class="badge badge-secondary"><i class="{{ categoryTerm.Content.Category.Icon.Text }} fa-xs fa-rotate-90"></i> {{ categoryTerm.DisplayText }}</span>
+</div>

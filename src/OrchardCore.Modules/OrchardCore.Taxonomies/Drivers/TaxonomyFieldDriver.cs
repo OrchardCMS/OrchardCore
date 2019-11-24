@@ -37,10 +37,10 @@ namespace OrchardCore.Taxonomies.Drivers
             {
                 return Initialize<DisplayTaxonomyFieldViewModel>(GetDisplayShapeType(context), model =>
                 {
-                        model.Field = field;
-                        model.Part = context.ContentPart;
-                        model.PartFieldDefinition = context.PartFieldDefinition;
-                    })
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                })
                 .Location("Content")
                 .Location("SummaryAdmin", "");
             }
@@ -50,83 +50,59 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override IDisplayResult Edit(TaxonomyField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
+            if (String.IsNullOrEmpty(context.PartFieldDefinition.Editor()))
             {
-                var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
-                model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
-
-                if (model.Taxonomy != null )
+                return Initialize<EditTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
                 {
-                    var termEntries = new List<TermEntry>();
-                    PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
+                    var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+                    model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
 
-                    model.TermEntries = termEntries;
-                    model.UniqueValue = termEntries.FirstOrDefault(x => x.Selected)?.ContentItemId;
-                }
+                    if (model.Taxonomy != null)
+                    {
+                        var termEntries = new List<TermEntry>();
+                        TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
 
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
+                        model.TermEntries = termEntries;
+                        model.UniqueValue = termEntries.FirstOrDefault(x => x.Selected)?.ContentItemId;
+                    }
+
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                });
+            }
+
+            return null;
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TaxonomyField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            var model = new EditTaxonomyFieldViewModel();
-
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            if (String.IsNullOrEmpty(context.PartFieldDefinition.Editor()))
             {
-                var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+                var model = new EditTaxonomyFieldViewModel();
 
-                field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
-                field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
-
-                if (settings.Unique && !String.IsNullOrEmpty(model.UniqueValue))
+                if (await updater.TryUpdateModelAsync(model, Prefix))
                 {
-                    field.TermContentItemIds = new[] { model.UniqueValue };
-                }
+                    var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
 
-                if (settings.Required && field.TermContentItemIds.Length == 0)
-                {
-                    updater.ModelState.AddModelError(
-                        nameof(EditTaxonomyFieldViewModel.TermEntries),
-                        S["A value is required for '{0}'", context.PartFieldDefinition.Name]);
+                    field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
+                    field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
+
+                    if (settings.Unique && !String.IsNullOrEmpty(model.UniqueValue))
+                    {
+                        field.TermContentItemIds = new[] { model.UniqueValue };
+                    }
+
+                    if (settings.Required && field.TermContentItemIds.Length == 0)
+                    {
+                        updater.ModelState.AddModelError(
+                            nameof(EditTaxonomyFieldViewModel.TermEntries),
+                            S["A value is required for '{0}'", context.PartFieldDefinition.Name]);
+                    }
                 }
             }
 
             return Edit(field, context);
-        }
-
-        /// <summary>
-        /// Populates a list of <see cref="TermEntry"/> with the hierarchy of terms.
-        /// The list is ordered so that roots appear right before their child terms.
-        private void PopulateTermEntries(List<TermEntry> termEntries, TaxonomyField field, IEnumerable<ContentItem> contentItems, int level)
-        {
-            foreach(var contentItem in contentItems)
-            {
-                var children = Array.Empty<ContentItem>();
-
-                if (contentItem.Content.Terms is JArray termsArray)
-                {
-                    children = termsArray.ToObject<ContentItem[]>();
-                }
-
-                var termEntry = new TermEntry
-                {
-                    Term = contentItem,
-                    ContentItemId = contentItem.ContentItemId,
-                    Selected = field.TermContentItemIds.Contains(contentItem.ContentItemId),
-                    Level = level,
-                    IsLeaf = children.Length == 0
-                };
-
-                termEntries.Add(termEntry);
-
-                if (children.Length > 0)
-                {
-                    PopulateTermEntries(termEntries, field, children, level + 1);
-                }
-            }
         }
     }
 }

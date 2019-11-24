@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Taxonomies.Fields;
+using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Taxonomies.ViewModels;
 
@@ -43,11 +44,25 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override IDisplayResult Edit(TaxonomyField field, BuildFieldEditorContext context)
         {
-            var editor = context.PartFieldDefinition.Editor();
-            if (String.Equals(editor, "Tags", StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(context.PartFieldDefinition.Editor(), "Tags", StringComparison.OrdinalIgnoreCase))
             {
-                // Return a shape result, with no shape, so it applies update.
-                return Dynamic(String.Empty);
+                return Initialize<EditTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
+                {
+                    var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+                    model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
+
+                    if (model.Taxonomy != null)
+                    {
+                        var termEntries = new List<TermEntry>();
+                        TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
+
+                        model.TermEntries = termEntries;
+                    }
+
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                });
             }
 
             return null;
@@ -55,9 +70,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(TaxonomyField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            var editor = context.PartFieldDefinition.Editor();
-
-            if (String.Equals(editor, "Tags", StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(context.PartFieldDefinition.Editor(), "Tags", StringComparison.OrdinalIgnoreCase))
             {
                 var model = new EditTaxonomyFieldViewModel();
 
@@ -65,14 +78,10 @@ namespace OrchardCore.Taxonomies.Drivers
                 {
                     var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
 
-                    var termContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
+                    field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
+                    field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
 
-                    // TODO unused removed.
-                    //if (settings.Unique && !String.IsNullOrEmpty(model.UniqueValue))
-                    //{
-                    //    termContentItemIds = new[] { model.UniqueValue };
-                    //}
-
+                    // Update display text for tags.
                     var taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
 
                     if (taxonomy == null)
@@ -82,7 +91,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                     var terms = new List<ContentItem>();
 
-                    foreach (var termContentItemId in termContentItemIds)
+                    foreach (var termContentItemId in field.TermContentItemIds)
                     {
                         var term = TaxonomyOrchardHelperExtensions.FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId);
                         terms.Add(term);
@@ -96,5 +105,3 @@ namespace OrchardCore.Taxonomies.Drivers
         }
     }
 }
-
-

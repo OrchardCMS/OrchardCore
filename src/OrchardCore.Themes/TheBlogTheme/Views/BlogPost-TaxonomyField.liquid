@@ -1,7 +1,0 @@
-{% assign tags = Model.Field | taxonomy_terms %}
-<!-- no longer works because we are using display mode -->
-<div class="tags">
-    {% for tag in tags %}
-        <span class="badge badge-secondary">{{ tag }} t</span>
-    {% endfor %}
-</div>
