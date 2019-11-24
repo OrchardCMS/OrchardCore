@@ -29,15 +29,13 @@ namespace OrchardCore.Lucene
                 shellSettings.Name,
                 "lucene.settings.json");
 
-            List<LuceneIndexSettings> settings;
-
             if (!File.Exists(_indexSettingsFilename))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
                 File.WriteAllText(_indexSettingsFilename, "[]");
             }
 
-            settings = JsonConvert.DeserializeObject<List<LuceneIndexSettings>>(File.ReadAllText(_indexSettingsFilename)) ?? new List<LuceneIndexSettings>();
+            var settings = JsonConvert.DeserializeObject<List<LuceneIndexSettings>>(File.ReadAllText(_indexSettingsFilename)) ?? new List<LuceneIndexSettings>();
 
             _indexSettings = settings.ToImmutableDictionary(s => s.IndexName, s => s, StringComparer.OrdinalIgnoreCase);
         }
