@@ -52,6 +52,16 @@ For instance it can be set in a file named `Blog-ListPart.liquid` to override th
 {{ Model.Pager | shape_render }}
 ```
 
+## Orchard Helpers
+
+### QueryListItemsCountAsync
+
+Returns the number of list items satisfying given predicate.
+
+### QueryListItemsAsync
+
+Returns the enumerable of list items satisfying given predicate.
+
 ## Liquid Tags
 
 ### list_count
