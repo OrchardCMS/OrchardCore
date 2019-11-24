@@ -46,7 +46,7 @@ namespace OrchardCore.Google
         private readonly ShellDescriptor _shellDescriptor;
 
         public GoogleAnalyticsAdminMenu(
-            IStringLocalizer<GoogleAuthenticationAdminMenu> localizer,
+            IStringLocalizer<GoogleAnalyticsAdminMenu> localizer,
             ShellDescriptor shellDescriptor)
         {
             T = localizer;

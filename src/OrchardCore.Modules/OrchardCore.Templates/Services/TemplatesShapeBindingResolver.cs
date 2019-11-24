@@ -19,17 +19,20 @@ namespace OrchardCore.Templates.Services
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly PreviewTemplatesProvider _previewTemplatesProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly HtmlEncoder _htmlEncoder;
 
         public TemplatesShapeBindingResolver(
             TemplatesManager templatesManager,
             ILiquidTemplateManager liquidTemplateManager,
             PreviewTemplatesProvider previewTemplatesProvider,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            HtmlEncoder htmlEncoder)
         {
             _templatesManager = templatesManager;
             _liquidTemplateManager = liquidTemplateManager;
             _previewTemplatesProvider = previewTemplatesProvider;
             _httpContextAccessor = httpContextAccessor;
+            _htmlEncoder = htmlEncoder;
         }
 
         public async Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
@@ -74,7 +77,7 @@ namespace OrchardCore.Templates.Services
                 {
                     var context = new TemplateContext();
                     await context.ContextualizeAsync(displayContext);
-                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, HtmlEncoder.Default, context);
+                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, context);
                     return new HtmlString(htmlContent);
                 }
             };

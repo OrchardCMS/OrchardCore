@@ -1,25 +1,28 @@
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.ViewModels;
-using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Markdown.Drivers
 {
     public class MarkdownBodyPartDisplay : ContentPartDisplayDriver<MarkdownBodyPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
+        private readonly HtmlEncoder _htmlEncoder;
 
-        public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<MarkdownBodyPartDisplay> localizer)
+        public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<MarkdownBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
         {
             _liquidTemplatemanager = liquidTemplatemanager;
             T = localizer;
+            _htmlEncoder = htmlEncoder;
         }
 
         public IStringLocalizer T { get; }
@@ -73,9 +76,8 @@ namespace OrchardCore.Markdown.Drivers
             model.ContentItem = MarkdownBodyPart.ContentItem;
             templateContext.SetValue("Model", model);
 
-            var markdown = await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
-
-            model.Html = Markdig.Markdown.ToHtml(markdown ?? "");
+            model.Markdown = await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, _htmlEncoder, templateContext);
+            model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
         }
     }
 }

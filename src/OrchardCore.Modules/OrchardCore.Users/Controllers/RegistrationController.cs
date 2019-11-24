@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -43,7 +44,8 @@ namespace OrchardCore.Users.Controllers
             ILogger<RegistrationController> logger,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
             IStringLocalizer<RegistrationController> stringLocalizer,
-            IEnumerable<IRegistrationFormEvents> registrationEvents) : base(smtpService, displayHelper)
+            IEnumerable<IRegistrationFormEvents> registrationEvents,
+            HtmlEncoder htmlEncoder) : base(smtpService, displayHelper, htmlEncoder)
         {
             _userService = userService;
             _userManager = userManager;

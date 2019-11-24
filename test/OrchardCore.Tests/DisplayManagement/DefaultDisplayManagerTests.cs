@@ -43,6 +43,7 @@ namespace OrchardCore.Tests.DisplayManagement
 
             serviceCollection.AddSingleton(_defaultShapeTable);
             serviceCollection.AddSingleton(_additionalBindings);
+            serviceCollection.AddWebEncoders();
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
