@@ -87,6 +87,24 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                             // [ContentType]__[FieldType]__[ShapeType], e.g. Blog-TextField-TextFieldSummary, LandingPage-TextField-TextFieldSummary
                             ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{fieldType}__{shapeType}");
+
+                            // When using a display mode ShapeType will include FieldType_Display_DisplayMode
+                            // Strip this to create an alternate that matches the shape binding
+                            var indexOfSingle = shapeType.IndexOf("_");
+                            var indexOfDouble = shapeType.IndexOf("__");
+                            if (indexOfSingle != -1 && indexOfDouble != -1)
+                            {
+                                var displayMode = shapeType.Substring(indexOfSingle + 1, indexOfDouble - indexOfSingle - 1);
+                                var displayOption = shapeType.Substring(indexOfDouble + 2);
+
+                                // Binding BlogPost-Tags-TaxonomyField-Tags.Display, becomes blogpost_display__blogpost__tags__taxonomyfield__tags or
+                                // [PartType][DisplayType]_[DisplayMode]__[FieldName]__[FieldType]__[DisplayOption]
+                                ctx.ShapeMetadata.Alternates.Add($"{partType}{displayType}_{displayMode}__{fieldName}__{fieldType}__{displayOption}");
+
+                                // Binding BlogPost-BlogPost-Tags-TaxonomyField-Tags.Display, becomes blogpost_display__blogpost__tags__taxonomyfield__tags or
+                                // [ContentType][DisplayType]_[DisplayMode]__[PartType]__[FieldName]__[FieldType]__[DisplayOption]
+                                ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}_{displayMode}__{partType}__{fieldName}__{fieldType}__{displayOption}");
+                            }
                         }
                     }
                 });
