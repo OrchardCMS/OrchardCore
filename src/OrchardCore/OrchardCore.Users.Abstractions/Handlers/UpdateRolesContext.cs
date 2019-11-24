@@ -9,6 +9,7 @@ namespace OrchardCore.Users.Handlers
         {
             ExternalClaims = externalClaims.AsEnumerable();
             UserRoles = userRoles;
+            LoginProvider = loginProvider;
         }
 
         public string LoginProvider { get; }
