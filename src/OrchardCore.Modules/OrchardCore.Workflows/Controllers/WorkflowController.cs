@@ -71,7 +71,7 @@ namespace OrchardCore.Workflows.Controllers
         private dynamic New { get; }
         private IHtmlLocalizer<WorkflowController> T { get; }
 
-        public async Task<IActionResult> Index(int workflowTypeId, WorkflowIndexOptions options, PagerParameters pagerParameters, string returnUrl = null)
+        public async Task<IActionResult> Index(int workflowTypeId, WorkflowIndexViewModel model, PagerParameters pagerParameters, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -87,9 +87,9 @@ namespace OrchardCore.Workflows.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
             var query = _session.Query<Workflow, WorkflowIndex>();
-            query = query.Where(x => x.WorkflowTypeId == workflowTypeId.ToString());
+            query = query.Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
 
-            switch (options.Filter)
+            switch (model.Options.Filter)
             {
                 case WorkflowFilter.Finished:
                     query = query.Where(x => x.WorkflowStatus == WorkflowStatus.Finished);
@@ -102,23 +102,31 @@ namespace OrchardCore.Workflows.Controllers
                     break;
             }
 
-            var count = await _workflowStore.CountAsync(workflowType.WorkflowTypeId);
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var records = await _workflowStore.ListAsync(workflowType.WorkflowTypeId, pager.GetStartIndex(), pager.PageSize);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+            var routeData = new RouteData();
+            routeData.Values.Add("Filter", model.Options.Filter);
+
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(await query.CountAsync()).RouteData(routeData);
+            var pageOfItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
             var viewModel = new WorkflowIndexViewModel
             {
                 WorkflowType = workflowType,
-                Workflows = records.Select(x => new WorkflowEntry
+                Workflows = pageOfItems.Select(x => new WorkflowEntry
                 {
                     Workflow = x,
                     Id = x.Id
                 }).ToList(),
-                Options = options,
+                Options = model.Options,
                 Pager = pagerShape,
                 ReturnUrl = returnUrl
+            };
+
+            model.Options.WorkflowsStatuses = new List<SelectListItem>() {
+                new SelectListItem() { Text = T["All"].Value, Value = nameof(WorkflowFilter.All) },
+                new SelectListItem() { Text = T["Faulted"].Value, Value = nameof(WorkflowFilter.Faulted) },
+                new SelectListItem() { Text = T["Finished"].Value, Value = nameof(WorkflowFilter.Finished) }
             };
 
             viewModel.Options.WorkflowsBulkAction = new List<SelectListItem>() {

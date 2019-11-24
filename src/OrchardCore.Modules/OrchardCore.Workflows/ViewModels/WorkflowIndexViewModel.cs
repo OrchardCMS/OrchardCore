@@ -7,6 +7,11 @@ namespace OrchardCore.Workflows.ViewModels
 {
     public class WorkflowIndexViewModel
     {
+        public WorkflowIndexViewModel()
+        {
+            Options = new WorkflowIndexOptions();
+        }
+
         public WorkflowType WorkflowType { get; set; }
         public IList<WorkflowEntry> Workflows { get; set; }
         public WorkflowIndexOptions Options { get; set; }
@@ -15,8 +20,15 @@ namespace OrchardCore.Workflows.ViewModels
     }
     public class WorkflowIndexOptions
     {
+        public WorkflowIndexOptions()
+        {
+            Filter = WorkflowFilter.All;
+        }
+
         public WorkflowBulkAction BulkAction { get; set; }
         public WorkflowFilter Filter { get; set; }
+        [BindNever]
+        public List<SelectListItem> WorkflowsStatuses { get; set; }
         [BindNever]
         public List<SelectListItem> WorkflowsBulkAction { get; set; }
     }
