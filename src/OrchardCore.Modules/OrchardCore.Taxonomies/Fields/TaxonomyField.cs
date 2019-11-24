@@ -9,9 +9,9 @@ namespace OrchardCore.Taxonomies.Fields
         public string[] TermContentItemIds { get; set; } = Array.Empty<string>();
 
         /// <summary>
-        /// Only populated when using the tag editor.
+        /// Only populated when using the tag editor, and contains the tag display text.
         /// Requires resaving the content item if updating the taxonomy tag term display text.
         /// </summary>
-        public string[] TagTermDisplayTexts { get; set; } = Array.Empty<string>();
+        public string[] Tags { get; set; } = Array.Empty<string>();
     }
 }

@@ -6,8 +6,8 @@
 }
 
 <div class="field field-type-taxonomyfield field-display-mode-tags field-name-@name">
-    @foreach (var displayText in Model.TagTermDisplayTexts)
+    @foreach (var tag in Model.Tags)
     {
-        <span class="taxonomy-tag-term">@displayText</span>
+        <span class="taxonomy-tag-term">@tag</span>
     }
 </div>

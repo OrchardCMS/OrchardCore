@@ -26,7 +26,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)
         {
-            if (String.Equals(context.PartFieldDefinition.DisplayMode(), "TagsDisplayText", StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(context.PartFieldDefinition.DisplayMode(), "Tags", StringComparison.OrdinalIgnoreCase))
             {
                 return Initialize<DisplayTaxonomyFieldTagsViewModel>(GetDisplayShapeType(context), model =>
                 {
@@ -47,7 +47,7 @@ namespace OrchardCore.Taxonomies.Drivers
             if (String.Equals(editor, "Tags", StringComparison.OrdinalIgnoreCase))
             {
                 // Return a shape result, with no shape, so it applies update.
-                Dynamic(String.Empty);
+                return Dynamic(String.Empty);
             }
 
             return null;
@@ -88,7 +88,7 @@ namespace OrchardCore.Taxonomies.Drivers
                         terms.Add(term);
                     }
 
-                    field.TagTermDisplayTexts = terms.Select(t => t.DisplayText).ToArray();
+                    field.Tags = terms.Select(t => t.DisplayText).ToArray();
                 }
             }
 
