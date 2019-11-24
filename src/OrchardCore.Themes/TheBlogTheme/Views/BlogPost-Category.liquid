@@ -1,4 +1,7 @@
+{% assign name = Model.PartFieldDefinition.PartDefinition.Name | append: '-' | append: Model.PartFieldDefinition.Name | html_class %}
+
 {% assign categoryTerm = Model.Field | taxonomy_terms | first %}
-<div class="d-inline">
+
+<div class="d-inline field field-type-taxonomyfield field-name-{{ name }}">
     <span class="badge badge-secondary"><i class="{{ categoryTerm.Content.Category.Icon.Text }} fa-xs fa-rotate-90"></i> {{ categoryTerm.DisplayText }}</span>
 </div>
