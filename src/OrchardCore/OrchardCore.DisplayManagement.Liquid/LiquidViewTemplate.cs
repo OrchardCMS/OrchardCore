@@ -163,16 +163,16 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return shape.Items;
                 }
 
-                // Resolve Model.Content.MyNamedPart
-                // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
-                var namedShaped = shape.Named(n.Replace("__", "-"));
+                // Resolve Model.Content.MyType-MyField-FieldName_Display__DisplayOption
+                var namedShaped = shape.Named(n);
                 if (namedShaped != null)
                 {
                     return namedShaped;
                 }
 
-                // Resolve Model.Content.MyType-MyField-FieldName_Display__DisplayOption
-                return shape.Named(n);
+                // Resolve Model.Content.MyNamedPart
+                // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
+                return shape.Named(n.Replace("__", "-"));
             }
 
             return null;
