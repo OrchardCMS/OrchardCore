@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OrchardCore.Environment.Shell;
@@ -17,8 +16,7 @@ namespace OrchardCore.Lucene
     public class LuceneIndexSettingsService
     {
         private readonly string _indexSettingsFilename;
-        private ImmutableDictionary<string, LuceneIndexSettings> _indexSettings =
-            ImmutableDictionary.Create<string, LuceneIndexSettings>(StringComparer.OrdinalIgnoreCase);
+        private ImmutableDictionary<string, LuceneIndexSettings> _indexSettings;
 
         public LuceneIndexSettingsService(
             IOptions<ShellOptions> shellOptions,
@@ -31,16 +29,17 @@ namespace OrchardCore.Lucene
                 shellSettings.Name,
                 "lucene.settings.json");
 
+            List<LuceneIndexSettings> settings;
+
             if (!File.Exists(_indexSettingsFilename))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
-                File.WriteAllText(_indexSettingsFilename, "");
+                File.WriteAllText(_indexSettingsFilename, "[]");
             }
 
-            var settings = JsonConvert.DeserializeObject<List<LuceneIndexSettings>>(File.ReadAllText(_indexSettingsFilename)) ?? new List<LuceneIndexSettings>();
+            settings = JsonConvert.DeserializeObject<List<LuceneIndexSettings>>(File.ReadAllText(_indexSettingsFilename)) ?? new List<LuceneIndexSettings>();
 
-            _indexSettings = ImmutableDictionary.Create<string, LuceneIndexSettings>(StringComparer.OrdinalIgnoreCase)
-                .AddRange(settings.ToDictionary(s => s.IndexName, s => s));
+            _indexSettings = settings.ToImmutableDictionary(s => s.IndexName, s => s, StringComparer.OrdinalIgnoreCase);
         }
 
         public IEnumerable<string> GetIndices() => _indexSettings.Keys;
