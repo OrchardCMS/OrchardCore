@@ -17,7 +17,6 @@ namespace OrchardCore.Lucene
     public class LuceneQuerySource : IQuerySource
     {
         private readonly LuceneIndexManager _luceneIndexProvider;
-        private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ILuceneQueryService _queryService;
@@ -26,7 +25,6 @@ namespace OrchardCore.Lucene
 
         public LuceneQuerySource(
             LuceneIndexManager luceneIndexProvider,
-            LuceneIndexingService luceneIndexingService,
             LuceneIndexSettingsService luceneIndexSettingsService,
             LuceneAnalyzerManager luceneAnalyzerManager,
             ILuceneQueryService queryService,
@@ -34,7 +32,6 @@ namespace OrchardCore.Lucene
             ISession session)
         {
             _luceneIndexProvider = luceneIndexProvider;
-            _luceneIndexingService = luceneIndexingService;
             _luceneIndexSettingsService = luceneIndexSettingsService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _queryService = queryService;
