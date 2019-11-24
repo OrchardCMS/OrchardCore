@@ -53,11 +53,6 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             {
                 _shellDescriptor = await _session.Query<ShellDescriptor>().FirstOrDefaultAsync();
 
-                if (_shellDescriptor == null)
-                {
-                    _shellDescriptor = await _session.Query<ShellDescriptor>().FirstOrDefaultAsync();
-                }
-
                 if (_shellDescriptor != null)
                 {
                     var configuredFeatures = new ConfiguredFeatures();
