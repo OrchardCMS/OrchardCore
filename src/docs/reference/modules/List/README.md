@@ -51,3 +51,13 @@ For instance it can be set in a file named `Blog-ListPart.liquid` to override th
 
 {{ Model.Pager | shape_render }}
 ```
+
+## Liquid Tags
+
+### list_count
+
+The `list_count` filter counts published list content items for given `ContentItem` object or explicit `ContentItem` id given as string.
+
+### list_items
+
+The `list_items` filter loads published list content items for given `ContentItem` object or explicit `ContentItem` id given as string.
