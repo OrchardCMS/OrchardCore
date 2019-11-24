@@ -86,20 +86,22 @@ namespace OrchardCore.Workflows.Controllers
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            //var query = _session.Query<Workflow, WorkflowIndex>();
-            //query = query.Where(x => x.WorkflowTypeId == workflowTypeId.ToString());
+            var query = _session.Query<Workflow, WorkflowIndex>();
+            query = query.Where(x => x.WorkflowTypeId == workflowTypeId.ToString());
 
             switch (options.Filter)
             {
                 case WorkflowFilter.Finished:
+                    query = query.Where(x => x.WorkflowStatus == WorkflowStatus.Finished);
                     break;
                 case WorkflowFilter.Faulted:
+                    query = query.Where(x => x.WorkflowStatus == WorkflowStatus.Faulted);
                     break;
                 case WorkflowFilter.All:
                 default:
                     break;
             }
-            
+
             var count = await _workflowStore.CountAsync(workflowType.WorkflowTypeId);
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
             var records = await _workflowStore.ListAsync(workflowType.WorkflowTypeId, pager.GetStartIndex(), pager.PageSize);
