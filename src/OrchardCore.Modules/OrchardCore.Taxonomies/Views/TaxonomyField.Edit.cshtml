@@ -21,7 +21,7 @@
     </div>
 }
 
-<fieldset class="form-group">
+<div class="form-group">
 @for (var i = 0; i < Model.TermEntries.Count; i++)
 {
     var entry = Model.TermEntries[i];
@@ -87,4 +87,4 @@
 
     previousLevel = entry.Level;
 }
-</fieldset>
+</div>

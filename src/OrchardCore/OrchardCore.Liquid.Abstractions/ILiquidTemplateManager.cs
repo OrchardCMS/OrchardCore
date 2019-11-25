@@ -26,15 +26,4 @@ namespace OrchardCore.Liquid
         /// </summary>
         bool Validate(string template, out IEnumerable<string> errors);
     }
-
-    public static class LiquidTemplateManagerExtensions
-    {
-        /// <summary>
-        /// Renders a Liquid template containing HTML.
-        /// </summary>
-        public static Task<string> RenderAsync(this ILiquidTemplateManager manager, string template, TemplateContext context)
-        {
-            return manager.RenderAsync(template, HtmlEncoder.Default, context);
-        }
-    }
 }

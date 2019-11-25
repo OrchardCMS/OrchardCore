@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell.Configuration
@@ -20,29 +22,46 @@ namespace OrchardCore.Environment.Shell.Configuration
             builder.AddJsonFile(_tenants, optional: true);
         }
 
-        public void Save(string tenant, IDictionary<string, string> data)
+        public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            lock (this)
+            JObject tenantsSettings;
+            if (File.Exists(_tenants))
             {
-                var tenantsSettings = !File.Exists(_tenants) ? new JObject()
-                : JObject.Parse(File.ReadAllText(_tenants));
-
-                var settings = tenantsSettings.GetValue(tenant) as JObject ?? new JObject();
-
-                foreach (var key in data.Keys)
+                using (var file = File.OpenText(_tenants))
                 {
-                    if (data[key] != null)
+                    using (var reader = new JsonTextReader(file))
                     {
-                        settings[key] = data[key];
-                    }
-                    else
-                    {
-                        settings.Remove(key);
+                        tenantsSettings = await JObject.LoadAsync(reader);
                     }
                 }
+            }
+            else
+            {
+                tenantsSettings = new JObject();
+            }
 
-                tenantsSettings[tenant] = settings;
-                File.WriteAllText(_tenants, tenantsSettings.ToString());
+            var settings = tenantsSettings.GetValue(tenant) as JObject ?? new JObject();
+
+            foreach (var key in data.Keys)
+            {
+                if (data[key] != null)
+                {
+                    settings[key] = data[key];
+                }
+                else
+                {
+                    settings.Remove(key);
+                }
+            }
+
+            tenantsSettings[tenant] = settings;
+
+            using (var file = File.CreateText(_tenants))
+            {
+                using (var writer = new JsonTextWriter(file) { Formatting = Formatting.Indented })
+                {
+                    await tenantsSettings.WriteToAsync(writer);
+                }
             }
         }
     }

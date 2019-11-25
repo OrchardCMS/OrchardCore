@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -15,7 +14,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
-using OrchardCore.Apis.GraphQL.ValidationRules;
+using OrchardCore.Routing;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -71,7 +70,7 @@ namespace OrchardCore.Apis.GraphQL
 
         private bool IsGraphQLRequest(HttpContext context)
         {
-            return context.Request.Path.StartsWithSegments(_settings.Path);
+            return context.Request.Path.StartsWithNormalizedSegments(_settings.Path, StringComparison.OrdinalIgnoreCase);
         }
 
         private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService)

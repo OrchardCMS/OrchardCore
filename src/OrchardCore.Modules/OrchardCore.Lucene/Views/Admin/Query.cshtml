@@ -18,7 +18,7 @@
 
 <form asp-action="Query" method="post">
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <label asp-for="IndexName">@T["Index"]</label>
         <select asp-for="IndexName" class="form-control">
             @foreach (var index in Model.Indices)
@@ -27,7 +27,7 @@
             }
         </select>
         <span class="hint">@T["The lucene index to search on"]</span>
-    </fieldset>
+    </div>
 
 
     <div class="form-group">

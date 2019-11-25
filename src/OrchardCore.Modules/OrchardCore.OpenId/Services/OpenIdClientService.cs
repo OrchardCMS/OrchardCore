@@ -6,7 +6,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
 
@@ -16,14 +15,11 @@ namespace OrchardCore.OpenId.Services
     {
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<OpenIdClientService> T;
-        private readonly ShellSettings _shellSettings;
 
         public OpenIdClientService(
             ISiteService siteService,
-            ShellSettings shellSettings,
             IStringLocalizer<OpenIdClientService> stringLocalizer)
         {
-            _shellSettings = shellSettings;
             _siteService = siteService;
             T = stringLocalizer;
         }
@@ -41,7 +37,7 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(OpenIdClientSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }

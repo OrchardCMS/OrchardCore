@@ -20,7 +20,7 @@ namespace OrchardCore.Users.Models
         public IList<UserLoginInfo> LoginInfos { get; set; } = new List<UserLoginInfo>();
 
         public override string ToString()
-        {            
+        {
             return UserName;
         }
     }

@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public bool IsLayoutZone()
         {
-            return Location.StartsWith("/");
+            return Location.StartsWith('/');
         }
 
         /// <summary>

@@ -96,9 +96,9 @@ namespace OrchardCore.ContentTypes.Editors
                     updater
                 );
 
-                BindPlacementAsync(typeContext).Wait();
+                BindPlacementAsync(typeContext).GetAwaiter().GetResult();
 
-                _handlers.InvokeAsync(handler => handler.UpdateTypeEditorAsync(contentTypeDefinition, typeContext), Logger).Wait();
+                _handlers.InvokeAsync(handler => handler.UpdateTypeEditorAsync(contentTypeDefinition, typeContext), Logger).GetAwaiter().GetResult();
 
             });
 
@@ -154,11 +154,11 @@ namespace OrchardCore.ContentTypes.Editors
                     layout,
                     updater
                 );
+
+                BindPlacementAsync(partContext).GetAwaiter().GetResult();
+
+                _handlers.InvokeAsync(handler => handler.UpdatePartEditorAsync(contentPartDefinition, partContext), Logger).GetAwaiter().GetResult();
             });
-
-            await BindPlacementAsync(partContext);
-
-            await _handlers.InvokeAsync(handler => handler.UpdatePartEditorAsync(contentPartDefinition, partContext), Logger);
 
             return contentPartDefinitionShape;
         }

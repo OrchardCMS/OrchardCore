@@ -22,19 +22,14 @@ namespace OrchardCore.Widgets.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IShapeFactory shapeFactory,
-            ILogger<AdminController> logger,
-            IHtmlLocalizer<AdminController> localizer
+            ILogger<AdminController> logger
             )
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
             _shapeFactory = shapeFactory;
-            T = localizer;
             Logger = logger;
         }
-
-        public IHtmlLocalizer T { get; }
-        public dynamic New { get; set; }
 
         public ILogger Logger { get; set; }
 
@@ -71,13 +66,13 @@ namespace OrchardCore.Widgets.Controllers
                 //Input hidden
                 //Prefixes
                 HtmlFieldPrefix: prefix,
-                PrefixesId: prefixesName.Replace(".", "_"),
+                PrefixesId: prefixesName.Replace('.', '_'),
                 PrefixesName: prefixesName,
                 //ContentTypes
-                ContentTypesId: contentTypesName.Replace(".", "_"),
+                ContentTypesId: contentTypesName.Replace('.', '_'),
                 ContentTypesName: contentTypesName,
                 //Zones
-                ZonesId: zonesName.Replace(".", "_"),
+                ZonesId: zonesName.Replace('.', '_'),
                 ZonesName: zonesName
             );
 

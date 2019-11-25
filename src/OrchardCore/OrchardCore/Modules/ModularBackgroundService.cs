@@ -319,7 +319,7 @@ namespace OrchardCore.Modules
         {
             var context = new DefaultHttpContext().UseShellScopeServices();
 
-            var urlHost = settings.RequestUrlHost?.Split(new[] { "," },
+            var urlHost = settings.RequestUrlHost?.Split('/',
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
             context.Request.Host = new HostString(urlHost ?? "localhost");

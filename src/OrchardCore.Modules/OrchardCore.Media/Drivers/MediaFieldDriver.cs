@@ -27,7 +27,7 @@ namespace OrchardCore.Media.Drivers
             S = localizer;
         }
 
-        public IStringLocalizer S { get; set; }
+        public IStringLocalizer S { get; }
 
         public override IDisplayResult Display(MediaField field, BuildFieldDisplayContext context)
         {
