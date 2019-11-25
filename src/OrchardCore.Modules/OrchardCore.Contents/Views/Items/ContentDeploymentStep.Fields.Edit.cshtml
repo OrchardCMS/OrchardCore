@@ -8,7 +8,7 @@
 <h5>@T["Content Types"]</h5>
 <span class="hint">@T["The content types to add as part of the plan."]</span>
 
-<fieldset class="form-group w-md-50">
+<div class="form-group w-md-50">
     <ul class="list-group">
         @foreach (var contentTypeDefinition in ContentDefinitionManager.ListTypeDefinitions().OrderBy(i => i.Name))
         {
@@ -23,4 +23,4 @@
             </li>
         }
     </ul>
-</fieldset>
+</div>
