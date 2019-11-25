@@ -1,18 +1,25 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Filters;
-using OrchardCore.Modules;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using Microsoft.AspNetCore.Mvc;
 
 namespace OrchardCore.Admin
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddNavigation();
@@ -36,7 +43,7 @@ namespace OrchardCore.Admin
             routes.MapAreaControllerRoute(
                 name: "Admin",
                 areaName: "OrchardCore.Admin",
-                pattern: "admin",
+                pattern: _adminOptions.AdminUrlPrefix,
                 defaults: new { controller = "Admin", action = "Index" }
             );
         }
