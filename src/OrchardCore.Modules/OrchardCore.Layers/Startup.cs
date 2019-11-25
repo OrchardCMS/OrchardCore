@@ -23,11 +23,21 @@ using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using YesSql.Indexes;
+using OrchardCore.Admin;
+using Microsoft.Extensions.Options;
+using OrchardCore.Layers.Controllers;
 
 namespace OrchardCore.Layers
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<MvcOptions>((options) =>
@@ -50,6 +60,30 @@ namespace OrchardCore.Layers
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllLayersDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllLayersDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "Layers.Index",
+                areaName: "OrchardCore.Layers",
+                pattern: _adminOptions.AdminUrlPrefix + "/Layers",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Layers.Create",
+                areaName: "OrchardCore.Layers",
+                pattern: _adminOptions.AdminUrlPrefix + "/Layers/Create",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Create) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Layers.Create",
+                areaName: "OrchardCore.Layers",
+                pattern: _adminOptions.AdminUrlPrefix + "/Layers/Edit",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Edit) }
+            );
         }
     }
 }

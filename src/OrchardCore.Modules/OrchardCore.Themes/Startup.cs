@@ -12,6 +12,9 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Themes.Deployment;
 using OrchardCore.Themes.Recipes;
 using OrchardCore.Themes.Services;
+using OrchardCore.Admin;
+using Microsoft.Extensions.Options;
+using OrchardCore.Themes.Controllers;
 
 namespace OrchardCore.Themes
 {
@@ -20,6 +23,13 @@ namespace OrchardCore.Themes
     /// </summary>
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddRecipeExecutionStep<ThemesStep>();
@@ -36,6 +46,12 @@ namespace OrchardCore.Themes
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.MapAreaControllerRoute(
+                name: "Themes.Index",
+                areaName: "OrchardCore.Themes",
+                pattern: _adminOptions.AdminUrlPrefix + "/Themes",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+            );
         }
     }
 }
