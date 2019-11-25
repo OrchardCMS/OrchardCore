@@ -8,7 +8,7 @@ namespace OrchardCore.Localization
     public interface ICalendarSelector
     {
         /// <summary>
-        /// Gets a calednar.
+        /// Gets a calendar.
         /// </summary>
         /// <returns>The selected calendar.</returns>
         Task<CalendarSelectorResult> GetCalendarAsync();
