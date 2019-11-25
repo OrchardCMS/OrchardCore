@@ -51,8 +51,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 result.Displaying(ctx =>
                 {
-                    var displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
-
                     // [ShapeType]_[DisplayType], e.g. TextField.Summary
                     ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
 
@@ -60,6 +58,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     // For instance TextField returns a unique TextField shape type.
                     if (shapeType == fieldType)
                     {
+                        var displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
+
                         foreach (var displayType in displayTypes)
                         {
                             // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
@@ -74,6 +74,10 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     }
                     else
                     {
+                        shapeType = (_shapeType + _mode) ?? shapeType;
+
+                        var displayTypes = new[] { _display, "_" + ctx.ShapeMetadata.DisplayType + _display };
+
                         foreach (var displayType in displayTypes)
                         {
                             // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
@@ -87,24 +91,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                             // [ContentType]__[FieldType]__[ShapeType], e.g. Blog-TextField-TextFieldSummary, LandingPage-TextField-TextFieldSummary
                             ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{fieldType}__{shapeType}");
-
-                            // When using a display mode ShapeType will include FieldType_Display_DisplayMode
-                            // Strip this to create an alternate that matches the shape binding
-                            var indexOfSingle = shapeType.IndexOf("_");
-                            var indexOfDouble = shapeType.IndexOf("__");
-                            if (indexOfSingle != -1 && indexOfDouble != -1)
-                            {
-                                var displayMode = shapeType.Substring(indexOfSingle + 1, indexOfDouble - indexOfSingle - 1);
-                                var displayOption = shapeType.Substring(indexOfDouble + 2);
-
-                                // Binding BlogPost-Tags-TaxonomyField-Tags.Display, becomes blogpost_display__blogpost__tags__taxonomyfield__tags or
-                                // [PartType][DisplayType]_[DisplayMode]__[FieldName]__[FieldType]__[DisplayOption]
-                                ctx.ShapeMetadata.Alternates.Add($"{partType}{displayType}_{displayMode}__{fieldName}__{fieldType}__{displayOption}");
-
-                                // Binding BlogPost-BlogPost-Tags-TaxonomyField-Tags.Display, becomes blogpost_display__blogpost__tags__taxonomyfield__tags or
-                                // [ContentType][DisplayType]_[DisplayMode]__[PartType]__[FieldName]__[FieldType]__[DisplayOption]
-                                ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}_{displayMode}__{partType}__{fieldName}__{fieldType}__{displayOption}");
-                            }
                         }
                     }
                 });
@@ -251,12 +237,22 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return GetEditorShapeType(context.PartFieldDefinition);
         }
 
+        private string _shapeType, _display, _mode;
+
         protected string GetDisplayShapeType(string shapeType, BuildFieldDisplayContext context)
         {
             var displayMode = context.PartFieldDefinition.DisplayMode();
-            return !String.IsNullOrEmpty(displayMode)
-                ? shapeType + "_Display__" + displayMode
-                : shapeType;
+
+            if (!String.IsNullOrEmpty(displayMode))
+            {
+                _shapeType = shapeType;
+                _display = "_Display";
+                _mode = "__" + displayMode;
+
+                return _shapeType + _display + _mode;
+            }
+
+            return shapeType;
         }
 
         protected string GetDisplayShapeType(BuildFieldDisplayContext context)
