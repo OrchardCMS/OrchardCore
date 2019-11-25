@@ -219,7 +219,7 @@ namespace OrchardCore.Users.Controllers
                         {
                             item.IsDisabled = false;
                             await _userManager.UpdateAsync(item);
-                            _notifier.Success(TH["User {0} successfully disabled.", item.UserName]);
+                            _notifier.Success(TH["User {0} successfully enabled.", item.UserName]);
                         }
                         break;
                     default:
