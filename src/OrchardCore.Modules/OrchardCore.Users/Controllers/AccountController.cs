@@ -69,13 +69,22 @@ namespace OrchardCore.Users.Controllers
         {
             ViewData["ReturnUrl"] = returnUrl;
 
-            if ((await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
+            if (!string.IsNullOrWhiteSpace(model.UserName))
             {
-                // Require that the users have a confirmed email before they can log on.
                 var user = await _userManager.FindByNameAsync(model.UserName) as User;
-                if (user != null && !await _userManager.IsEmailConfirmedAsync(user))
+
+                if ((await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
                 {
-                    ModelState.AddModelError(string.Empty, T["You must have a confirmed email to log on."]);
+                    // Require that the users have a confirmed email before they can log on.
+                    if (user != null && !await _userManager.IsEmailConfirmedAsync(user))
+                    {
+                        ModelState.AddModelError(String.Empty, T["You must have a confirmed email to log on."]);
+                    }
+                }
+
+                if (user.IsDisabled)
+                {
+                    ModelState.AddModelError(String.Empty, T["Your account is disabled. Please contact us to re-enable it."]);
                 }
             }
 

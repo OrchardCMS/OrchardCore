@@ -21,6 +21,8 @@ namespace OrchardCore.Users.ViewModels
 
         public bool EmailConfirmed { get; set; }
 
+        public bool IsDisabled { get; set; }
+
         public RoleViewModel[] Roles { get; set; }
     }
 }
