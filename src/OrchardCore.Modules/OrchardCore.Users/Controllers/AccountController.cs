@@ -69,7 +69,7 @@ namespace OrchardCore.Users.Controllers
         {
             ViewData["ReturnUrl"] = returnUrl;
 
-            if (!string.IsNullOrWhiteSpace(model.UserName))
+            if (!String.IsNullOrWhiteSpace(model.UserName))
             {
                 var user = await _userManager.FindByNameAsync(model.UserName) as User;
 
