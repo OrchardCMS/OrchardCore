@@ -1,5 +1,9 @@
 @model ReverseProxySettingsViewModel
 
+<p class="alert alert-warning">
+    @T["The current tenant will be reloaded when the settings are saved."]
+</p>
+
 <div class="form-group" asp-validation-class-for="EnableXForwardedFor">
     <div class="form-check">
         <label class="form-check-label">
@@ -33,6 +37,6 @@
     <span class="hint">@T["Current request value;"] @Context.Request.Host</span>
 </div>
 
-<span class="hint">
-    Documentation available at; https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
-</span>
+<p class="hint">
+    @T["Documentation available at: {0}", "https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-3.0"]
+</p>
