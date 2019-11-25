@@ -12,24 +12,23 @@ namespace OrchardCore.GitHub
     public class AdminMenuGitHubLogin : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
+        private readonly IStringLocalizer S;
 
         public AdminMenuGitHubLogin(
             IStringLocalizer<AdminMenuGitHubLogin> localizer,
             ShellDescriptor shellDescriptor)
         {
-            T = localizer;
+            S = localizer;
             _shellDescriptor = shellDescriptor;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Security"], security => security
-                        .Add(T["Authentication"], authentication => authentication
-                        .Add(T["GitHub"], "14", settings => settings
+                builder.Add(S["Security"], security => security
+                        .Add(S["Authentication"], authentication => authentication
+                        .Add(S["GitHub"], "14", settings => settings
                         .AddClass("github").Id("github")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GitHubAuthentication })
                             .Permission(Permissions.ManageGitHubAuthentication)
