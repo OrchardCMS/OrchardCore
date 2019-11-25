@@ -33,7 +33,6 @@ namespace OrchardCore.Lucene.Controllers
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISiteService _siteService;
-
         private readonly dynamic New;
 
         public AdminController(
@@ -76,9 +75,7 @@ namespace OrchardCore.Lucene.Controllers
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             viewModel.Indexes = _luceneIndexManager.List().Select(s => new IndexViewModel { Name = s }).ToArray();
-
             var count = viewModel.Indexes.Count();
-
             var results = viewModel.Indexes
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize).ToList();
@@ -86,7 +83,6 @@ namespace OrchardCore.Lucene.Controllers
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
-
             var model = new AdminIndexViewModel
             {
                 Indexes = results,
