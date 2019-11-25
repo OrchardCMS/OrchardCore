@@ -5,7 +5,7 @@ using Microsoft.Extensions.Localization;
 namespace OrchardCore.Localization.PortableObject
 {
     /// <summary>
-    /// 
+    /// Represents an <see cref="IHtmlLocalizerFactory"/> for portable objects.
     /// </summary>
     public class PortableObjectHtmlLocalizerFactory : IHtmlLocalizerFactory
     {

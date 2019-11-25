@@ -8,7 +8,7 @@ using OrchardCore.Localization.PortableObject;
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
-    /// Provides an extension methods for <see cref="IServiceCollection"/>.
+    /// Provides extension methods for <see cref="IServiceCollection"/>.
     /// </summary>
     public static class LocalizationServiceCollectionExtensions
     {

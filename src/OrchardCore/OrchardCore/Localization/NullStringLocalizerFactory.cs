@@ -6,7 +6,7 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization
 {
-    /// Represensts a null <see cref="IStringLocalizerFactory"/> which is used by default when the localization module is disabled.
+    /// Represents a null <see cref="IStringLocalizerFactory"/> which is used by default when the localization module is disabled.
     /// <remarks>
     /// A LocalizedString is not encoded, so it can contain the formatted string
     /// including the argument values.

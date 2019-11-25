@@ -10,7 +10,7 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets the current calendar.
         /// </summary>
-        /// <returns>The current caldenar name.</returns>
+        /// <returns>The current calendar name.</returns>
         Task<CalendarName> GetCurrentCalendar();
     }
 }

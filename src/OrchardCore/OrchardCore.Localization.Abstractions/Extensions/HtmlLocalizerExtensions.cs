@@ -4,7 +4,7 @@ using OrchardCore.Localization;
 namespace Microsoft.AspNetCore.Mvc.Localization
 {
     /// <summary>
-    /// Provides an extension methods for <see cref="IHtmlLocalizer"/>.
+    /// Provides extension methods for <see cref="IHtmlLocalizer"/>.
     /// </summary>
     public static class HtmlLocalizerExtensions
     {
@@ -15,7 +15,7 @@ namespace Microsoft.AspNetCore.Mvc.Localization
         /// <param name="count">the number to be used for selecting the pluralization form.</param>
         /// <param name="singular">The singular form key.</param>
         /// <param name="plural">The plural form key.</param>
-        /// <param name="arguments">The parameters used in the ke.</param>
+        /// <param name="arguments">The parameters used in the key.</param>
         public static LocalizedHtmlString Plural(this IHtmlLocalizer localizer, int count, string singular, string plural, params object[] arguments)
         {
             if (plural == null)
@@ -32,7 +32,7 @@ namespace Microsoft.AspNetCore.Mvc.Localization
         /// <param name="localizer">The <see cref="IHtmlLocalizer"/>.</param>
         /// <param name="count">the number to be used for selecting the pluralization form.</param>
         /// <param name="pluralForms">A list of pluralization forms.</param>
-        /// <param name="arguments">The parameters used in the ke.</param>
+        /// <param name="arguments">The parameters used in the key.</param>
         public static LocalizedHtmlString Plural(this IHtmlLocalizer localizer, int count, string[] pluralForms, params object[] arguments)
         {
             if (pluralForms == null)
