@@ -39,6 +39,14 @@
     </div>
 }
 
+<div class="form-group">
+    <span class="switch">
+        <input asp-for="IsDisabled" type="checkbox" class="switch switch-sm content-preview-select" checked="@Model.IsDisabled" />
+        <label asp-for="IsDisabled">@T["Is disabled?"]</label>
+    </span>
+    <span class="hint">— @T["Check if you want to disable this user account"]</span>
+</div>
+
 <h6>@T["Roles"]</h6>
 <div class="form-group">
     @for (var i = 0; i < Model.Roles.Length; i++)
