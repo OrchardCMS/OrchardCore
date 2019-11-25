@@ -80,13 +80,14 @@
                             var featureState = feature.IsEnabled ? "enabled" : "disabled";
 
                             var dependencies = (from d in feature.FeatureDependencies
-                                                select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
+                                                select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);                            
+                            var dependenciesNames = String.Join(" ", dependencies.Select(d => d.Descriptor.Name));
                             var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
                             var showDisable = !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
                             var showEnable = Model.IsAllowed(feature.Descriptor) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
 
-                            <li class="list-group-item" data-filter-value="@categoryName @featureName">
+                            <li class="list-group-item" data-filter-value="@categoryName @dependenciesNames @featureName">
                                 <div class="row">
                                     <div class="col-md-10">
                                         @* Display the checkbox ?*@
@@ -134,7 +135,7 @@
                                                 var dependentFeatures = new HtmlString($"<ul>{String.Join("", feature.DependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
                                                 confirmationMessage = T["Disabling this feature will also disable the following dependent features:{0}Continue?", dependentFeatures];
                                             }
-                                            <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok="@T["Yes"]" data-cancel="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+                                            <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
                                         }
                                     </div>
                                 </div>

@@ -194,6 +194,18 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
+        public ResourceDefinition SetDependencies(List<string> dependencies)
+        {
+            if (Dependencies == null)
+            {
+                Dependencies = new List<string>();
+            }
+
+            Dependencies.AddRange(dependencies);
+
+            return this;
+        }
+
         public TagBuilder GetTagBuilder(RequireSettings settings,
             string applicationPath,
             IFileVersionProvider fileVersionProvider)
@@ -328,9 +340,9 @@ namespace OrchardCore.ResourceManagement
             }
 
             var that = (ResourceDefinition)obj;
-            return string.Equals(that.Name, Name, StringComparison.Ordinal) &&
-                string.Equals(that.Type, Type, StringComparison.Ordinal) &&
-                string.Equals(that.Version, Version, StringComparison.Ordinal);
+            return string.Equals(that.Name, Name) &&
+                string.Equals(that.Type, Type) &&
+                string.Equals(that.Version, Version);
         }
 
         public override int GetHashCode()

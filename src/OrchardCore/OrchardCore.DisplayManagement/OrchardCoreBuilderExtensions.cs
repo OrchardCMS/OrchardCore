@@ -41,11 +41,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         options.Filters.Add(typeof(ModelBinderAccessorFilter));
                         options.Filters.Add(typeof(NotifyFilter));
-                        options.Filters.Add(typeof(RazorViewResultFilter));
+                        options.Filters.Add(typeof(RazorViewActionFilter));
                     });
 
                     // Used as a service when we create a fake 'ActionContext'.
-                    services.AddScoped<IAsyncViewResultFilter, RazorViewResultFilter>();
+                    services.AddScoped<IAsyncViewActionFilter, RazorViewActionFilter>();
 
                     services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
                     services.AddScoped<ViewContextAccessor>();

@@ -19,20 +19,23 @@ namespace OrchardCore.Templates.Services
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly PreviewTemplatesProvider _previewTemplatesProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly HtmlEncoder _htmlEncoder;
 
         public TemplatesShapeBindingResolver(
             TemplatesManager templatesManager,
             ILiquidTemplateManager liquidTemplateManager,
             PreviewTemplatesProvider previewTemplatesProvider,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            HtmlEncoder htmlEncoder)
         {
             _templatesManager = templatesManager;
             _liquidTemplateManager = liquidTemplateManager;
             _previewTemplatesProvider = previewTemplatesProvider;
             _httpContextAccessor = httpContextAccessor;
+            _htmlEncoder = htmlEncoder;
         }
 
-        public async Task<ShapeBinding> GetDescriptorBindingAsync(string shapeType)
+        public async Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
         {
             if (AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
             {
@@ -68,14 +71,13 @@ namespace OrchardCore.Templates.Services
         {
             return new ShapeBinding()
             {
-                ShapeDescriptor = new ShapeDescriptor() { ShapeType = shapeType },
                 BindingName = shapeType,
                 BindingSource = shapeType,
                 BindingAsync = async displayContext =>
                 {
                     var context = new TemplateContext();
                     await context.ContextualizeAsync(displayContext);
-                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, HtmlEncoder.Default, context);
+                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, context);
                     return new HtmlString(htmlContent);
                 }
             };

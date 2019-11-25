@@ -242,7 +242,7 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -282,7 +282,7 @@ namespace OrchardCore.ContentManagement.Display
                 dynamic typePartShape = await context.ShapeFactory.CreateAsync("ContentPart_Edit", Arguments.Empty);
                 typePartShape.ContentPart = part;
                 typePartShape.ContentTypePartDefinition = typePartDefinition;
-                var partPosition = typePartDefinition.GetSettings<ContentPartFieldSettings>().Position ?? "before";
+                var partPosition = typePartDefinition.GetSettings<ContentTypePartSettings>().Position ?? "before";
 
                 partsShape.Add(typePartShape, partPosition);
                 partsShape[typePartDefinition.Name] = typePartShape;

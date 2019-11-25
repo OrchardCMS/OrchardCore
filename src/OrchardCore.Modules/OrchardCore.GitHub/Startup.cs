@@ -10,6 +10,8 @@ using OrchardCore.GitHub.Services;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Recipes;
+using OrchardCore.GitHub.Recipes;
 
 namespace OrchardCore.GitHub
 {
@@ -29,6 +31,7 @@ namespace OrchardCore.GitHub
             services.AddSingleton<IGitHubAuthenticationService, GitHubAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GitHubAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuGitHubLogin>();
+            services.AddRecipeExecutionStep<GitHubAuthenticationSettingsStep>();
             // Register the options initializers required by the GitHub Handler.
             services.TryAddEnumerable(new[]
             {

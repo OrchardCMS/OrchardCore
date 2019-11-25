@@ -19,9 +19,11 @@ namespace OrchardCore.Admin
 
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(AdminZoneFilter));
                 options.Filters.Add(typeof(AdminFilter));
                 options.Filters.Add(typeof(AdminMenuFilter));
+
+                // Ordered to be called before any global filter.
+                options.Filters.Add(typeof(AdminZoneFilter), -1000);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();

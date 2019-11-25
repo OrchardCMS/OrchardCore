@@ -2,7 +2,6 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
 
@@ -87,7 +86,7 @@ namespace OrchardCore.Contents
         /// <returns></returns>
         private string EncodeAlternateElement(string alternateElement)
         {
-            return alternateElement.Replace("-", "__").Replace(".", "_");
+            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
 
     }

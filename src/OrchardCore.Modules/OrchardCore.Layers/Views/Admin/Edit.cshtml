@@ -3,23 +3,23 @@
 <h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1>
 
 <form asp-action="Edit" method="post">
-    <fieldset class="form-group" asp-validation-class-for="Name">
+    <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
         <input readonly="readonly" asp-for="Name" class="form-control" type="text" />
         <span asp-validation-for="Name"></span>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group" asp-validation-class-for="Rule">
+    <div class="form-group" asp-validation-class-for="Rule">
         <label asp-for="Rule">@T["Rule"]</label>
         <input asp-for="Rule" class="form-control" type="text" />
         <span asp-validation-for="Rule"></span>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group" asp-validation-class-for="Description">
+    <div class="form-group" asp-validation-class-for="Description">
         <label asp-for="Description">@T["Description"]</label>
         <textarea asp-for="Description" class="form-control" rows="3" type="text"></textarea>
         <span asp-validation-for="Description"></span>
-    </fieldset>
+    </div>
 
     <input class="button" type="submit" value="@T["Save"]" />
 </form>

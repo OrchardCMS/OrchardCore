@@ -35,7 +35,7 @@ namespace OrchardCore.Users.Commands
         [OrchardSwitches("UserName,Password,Email,Roles")]
         public async Task CreateUserAsync()
         {
-            var roleNames = (Roles ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            var roleNames = (Roles ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).ToArray();
 
             var valid = true;
 
@@ -47,7 +47,7 @@ namespace OrchardCore.Users.Commands
 
             if (valid)
             {
-                Context.Output.WriteLine(T["User created successfully"]);
+                Context.Output.WriteLine(S["User created successfully"]);
             }
         }
     }

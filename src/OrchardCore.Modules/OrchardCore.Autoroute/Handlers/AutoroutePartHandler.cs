@@ -5,6 +5,7 @@ using Fluid;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Models;
+using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -54,7 +55,7 @@ namespace OrchardCore.Autoroute.Handlers
 
             if (part.SetHomepage)
             {
-                var site = await _siteService.GetSiteSettingsAsync();
+                var site = await _siteService.LoadSiteSettingsAsync();
 
                 if (site.HomeRoute == null)
                 {
@@ -117,8 +118,17 @@ namespace OrchardCore.Autoroute.Handlers
 
             if (!String.IsNullOrEmpty(pattern))
             {
+                var model = new AutoroutePartViewModel()
+                {
+                    Path = part.Path,
+                    AutoroutePart = part,
+                    ContentItem = part.ContentItem
+                };
+
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", part.ContentItem);
+                templateContext.MemberAccessStrategy.Register<AutoroutePartViewModel>();
+                templateContext.SetValue("Model", model);
 
                 part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
                 part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
@@ -151,7 +161,7 @@ namespace OrchardCore.Autoroute.Handlers
         private string GetPattern(AutoroutePart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AutoroutePart", StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AutoroutePart"));
             var pattern = contentTypePartDefinition.GetSettings<AutoroutePartSettings>().Pattern;
 
             return pattern;

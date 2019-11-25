@@ -24,6 +24,7 @@ namespace OrchardCore.ContentPreview.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IClock _clock;
+        private readonly dynamic New;
 
         public PreviewController(
             IContentManager contentManager,
@@ -31,7 +32,6 @@ namespace OrchardCore.ContentPreview.Controllers
             IContentManagerSession contentManagerSession,
             IShapeFactory shapeFactory,
             ILogger<PreviewController> logger,
-            IHtmlLocalizer<PreviewController> localizer,
             IAuthorizationService authorizationService,
             IClock clock
             )
@@ -41,13 +41,9 @@ namespace OrchardCore.ContentPreview.Controllers
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
             _contentManagerSession = contentManagerSession;
-            T = localizer;
             New = shapeFactory;
             Logger = logger;
         }
-
-        public IHtmlLocalizer T { get; }
-        public dynamic New { get; set; }
 
         public ILogger Logger { get; set; }
 

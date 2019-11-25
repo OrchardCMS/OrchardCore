@@ -43,8 +43,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
             _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
         }
 
-        public IStringLocalizer S { get; set; }
-        public IHtmlLocalizer H { get; set; }
+        public IStringLocalizer S { get; }
+        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index()
         {

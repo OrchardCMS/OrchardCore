@@ -5,11 +5,11 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
@@ -22,60 +22,72 @@ namespace OrchardCore.Roles.Services
     {
         private const string Key = "RolesManager.Roles";
 
-        private readonly ISession _session;
         private readonly ISignal _signal;
+        private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
         private readonly IMemoryCache _memoryCache;
         private readonly IServiceProvider _serviceProvider;
 
-        public RoleStore(ISession session,
-            IMemoryCache memoryCache,
+        public RoleStore(
             ISignal signal,
-            IStringLocalizer<RoleStore> stringLocalizer,
+            ISession session,
+            ISessionHelper sessionHelper,
+            IMemoryCache memoryCache,
             IServiceProvider serviceProvider,
+            IStringLocalizer<RoleStore> stringLocalizer,
             ILogger<RoleStore> logger)
         {
-            _memoryCache = memoryCache;
             _signal = signal;
-            T = stringLocalizer;
             _session = session;
+            _sessionHelper = sessionHelper;
+            _memoryCache = memoryCache;
             _serviceProvider = serviceProvider;
+            T = stringLocalizer;
             Logger = logger;
         }
 
         public ILogger Logger { get; }
 
-        public IStringLocalizer<RoleStore> T;
+        public IStringLocalizer T { get; }
 
         public void Dispose()
         {
         }
 
-        public IQueryable<IRole> Roles =>
-            GetRolesAsync().Result.Roles.AsQueryable();
+        public IQueryable<IRole> Roles => GetRolesAsync().GetAwaiter().GetResult().Roles.AsQueryable();
 
-        private Task<RolesDocument> GetRolesAsync()
+        /// <summary>
+        /// Returns the document from the database to be updated.
+        /// </summary>
+        public Task<RolesDocument> LoadRolesAsync() => _sessionHelper.LoadForUpdateAsync<RolesDocument>();
+
+        /// <summary>
+        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// </summary>
+        private async Task<RolesDocument> GetRolesAsync()
         {
-            return _memoryCache.GetOrCreateAsync(Key, async (entry) =>
+            if (!_memoryCache.TryGetValue<RolesDocument>(Key, out var document))
             {
-                var roles = await _session.Query<RolesDocument>().FirstOrDefaultAsync();
+                var changeToken = _signal.GetToken(Key);
 
-                if (roles == null)
+                document = await _sessionHelper.GetForCachingAsync<RolesDocument>();
+
+                foreach (var role in document.Roles)
                 {
-                    roles = new RolesDocument();
-                    _session.Save(roles);
+                    role.IsReadonly = true;
                 }
 
-                entry.ExpirationTokens.Add(_signal.GetToken(Key));
+                _memoryCache.Set(Key, document, changeToken);
+            }
 
-                return roles;
-            });
+            return document;
         }
 
         private void UpdateRoles(RolesDocument roles)
         {
             roles.Serial++;
             _session.Save(roles);
-            _memoryCache.Set(Key, roles);
+            _signal.DeferredSignalToken(Key);
         }
 
         #region IRoleStore<IRole>
@@ -86,7 +98,7 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
-            var roles = await GetRolesAsync();
+            var roles = await LoadRolesAsync();
             roles.Roles.Add((Role)role);
             UpdateRoles(roles);
 
@@ -99,19 +111,27 @@ namespace OrchardCore.Roles.Services
             {
                 throw new ArgumentNullException(nameof(role));
             }
-            var orchardRole = (Role)role;
 
-            if (String.Equals(orchardRole.NormalizedRoleName, "ANONYMOUS") ||
-                String.Equals(orchardRole.NormalizedRoleName, "AUTHENTICATED"))
+            var roleToRemove = (Role)role;
+
+            if (roleToRemove.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
+
+            if (String.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") ||
+                String.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))
             {
                 return IdentityResult.Failed(new IdentityError { Description = T["Can't delete system roles."] });
             }
 
             var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
-            await roleRemovedEventHandlers.InvokeAsync(x => x.RoleRemovedAsync(orchardRole.RoleName), Logger);
+            await roleRemovedEventHandlers.InvokeAsync(x => x.RoleRemovedAsync(roleToRemove.RoleName), Logger);
 
-            var roles = await GetRolesAsync();
-            roles.Roles.Remove(orchardRole);
+            var roles = await LoadRolesAsync();
+            roleToRemove = roles.Roles.FirstOrDefault(r => r.RoleName == roleToRemove.RoleName);
+            roles.Roles.Remove(roleToRemove);
+
             UpdateRoles(roles);
 
             return IdentityResult.Success;
@@ -119,14 +139,14 @@ namespace OrchardCore.Roles.Services
 
         public async Task<IRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
-            var roles = await GetRolesAsync();
+            var roles = await LoadRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.RoleName == roleId);
             return role;
         }
 
         public async Task<IRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            var roles = await GetRolesAsync();
+            var roles = await LoadRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.NormalizedRoleName == normalizedRoleName);
             return role;
         }
@@ -168,6 +188,11 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
+            if (((Role)role).IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
+
             ((Role)role).NormalizedRoleName = normalizedName;
 
             return Task.CompletedTask;
@@ -178,6 +203,11 @@ namespace OrchardCore.Roles.Services
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
+            }
+
+            if (((Role)role).IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
             }
 
             ((Role)role).RoleName = roleName;
@@ -192,7 +222,12 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
-            var roles = await GetRolesAsync();
+            if (((Role)role).IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
+
+            var roles = await LoadRolesAsync();
             var existingRole = roles.Roles.FirstOrDefault(x => x.RoleName == role.RoleName);
             roles.Roles.Remove(existingRole);
             roles.Roles.Add((Role)role);
@@ -215,6 +250,11 @@ namespace OrchardCore.Roles.Services
             if (claim == null)
             {
                 throw new ArgumentNullException(nameof(claim));
+            }
+
+            if (((Role)role).IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
             }
 
             ((Role)role).RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
@@ -242,6 +282,11 @@ namespace OrchardCore.Roles.Services
             if (claim == null)
             {
                 throw new ArgumentNullException(nameof(claim));
+            }
+
+            if (((Role)role).IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
             }
 
             ((Role)role).RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
