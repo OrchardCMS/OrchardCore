@@ -74,7 +74,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     }
                     else
                     {
-                        shapeType = (_shapeType + _mode) ?? shapeType;
+                        shapeType = (_shapeType + _displayMode) ?? shapeType;
 
                         var displayTypes = new[] { _display, "_" + ctx.ShapeMetadata.DisplayType + _display };
 
@@ -237,7 +237,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return GetEditorShapeType(context.PartFieldDefinition);
         }
 
-        private string _shapeType, _display, _mode;
+        private const string _display = "_Display";
+        private string _shapeType, _displayMode;
 
         protected string GetDisplayShapeType(string shapeType, BuildFieldDisplayContext context)
         {
@@ -246,10 +247,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             if (!String.IsNullOrEmpty(displayMode))
             {
                 _shapeType = shapeType;
-                _display = "_Display";
-                _mode = "__" + displayMode;
-
-                return _shapeType + _display + _mode;
+                _displayMode = "__" + displayMode;
+                return _shapeType + _display + _displayMode;
             }
 
             return shapeType;
