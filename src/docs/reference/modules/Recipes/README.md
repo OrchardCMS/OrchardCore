@@ -71,6 +71,7 @@ And here are the migration recipes referenced in the code above:
                 "TargetPath": "about/2.jpg",
                 "SourcePath": "../wwwroot/img/about/2.jpg"
             }
+          ]
         }
     ]
 }
@@ -96,6 +97,7 @@ And here are the migration recipes referenced in the code above:
                 "TargetPath": "about/3.jpg",
                 "SourcePath": "../wwwroot/img/about/3.jpg"
             }
+          ]
         }
     ]
 }

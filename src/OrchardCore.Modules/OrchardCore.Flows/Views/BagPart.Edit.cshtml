@@ -17,7 +17,7 @@
 
 <script asp-name="jQuery-ui" at="Foot"></script>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.BagPart.ContentItems)
@@ -143,4 +143,4 @@
         });
     }
     </script>
-</fieldset>
+</div>

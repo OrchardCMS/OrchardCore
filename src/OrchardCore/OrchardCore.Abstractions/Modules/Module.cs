@@ -119,7 +119,7 @@ namespace OrchardCore.Modules
         {
             if (!_fileInfos.TryGetValue(subpath, out var fileInfo))
             {
-                if (!AssetPaths.Contains(Root + subpath, StringComparer.Ordinal))
+                if (!AssetPaths.Contains(Root + subpath))
                 {
                     return new NotFoundFileInfo(subpath);
                 }

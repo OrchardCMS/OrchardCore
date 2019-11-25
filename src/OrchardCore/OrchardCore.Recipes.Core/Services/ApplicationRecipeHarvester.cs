@@ -22,8 +22,6 @@ namespace OrchardCore.Recipes.Services
         {
         }
 
-        public IStringLocalizer T { get; set; }
-
         public override Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
         {
             return HarvestRecipesAsync("Recipes");

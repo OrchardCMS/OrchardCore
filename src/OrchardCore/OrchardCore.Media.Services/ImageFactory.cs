@@ -22,7 +22,7 @@ namespace OrchardCore.Media
 
         public MediaFactorySelectorResult GetMediaFactory(Stream stream, string fileName, string mimeType, string contentType)
         {
-            if (!mimeType.StartsWith("image/"))
+            if (!mimeType.StartsWith("image/", StringComparison.Ordinal))
             {
                 return null;
             }

@@ -39,8 +39,6 @@ Add the following configurations to your `[Web Project].csproj` file to include 
   </ItemGroup>
 ```
 
-
-
 ## Recipe Step
 Cultures can be added during recipes using the settings step. Here is a sample step:
 
@@ -99,16 +97,16 @@ namespace MyNamespace
 {
     public class MyService : IMyService
     {
-        public IStringLocalizer T { get; set; }
+        private readonly IStringLocalizer S;
 
         public MyService(IStringLocalizer<MyService> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
         public void DoSomething()
         {
-            Console.WriteLine(T["Hello"]);
+            Console.WriteLine(S["Hello"]);
         }
     }
 }

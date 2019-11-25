@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -36,7 +37,8 @@ namespace OrchardCore.Users.Controllers
             IDisplayHelper displayHelper,
             IStringLocalizer<ResetPasswordController> stringLocalizer,
             ILogger<ResetPasswordController> logger,
-            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents) : base(smtpService, displayHelper)
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
+            HtmlEncoder htmlEncoder) : base(smtpService, displayHelper, htmlEncoder)
         {
             _userService = userService;
             _userManager = userManager;

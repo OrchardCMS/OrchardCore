@@ -1,8 +1,8 @@
 # Widgets (`OrchardCore.Widgets`)
 
-Widgets are content items of a specific category (stereotype) that can be rendered in custom locations of a page.
-The Widgets modules provides a `Widget` stereotype and some templates to render it. Widgets are used by different modules that need to
-render specialized pieces of content like Layers or Forms.
+Widgets are content items of a specific category (stereotype) that can be rendered in custom locations of a page.  
+The Widgets modules provides a `Widget` stereotype and some templates to render it.  
+Widgets are used by different modules that need to render specialized pieces of content like Layers or Forms.
 
 ## Creating custom Widgets
 
@@ -26,8 +26,7 @@ This main shape's template has access to these properties:
 | `Model.ContentItem` | The Widget content item. |
 | `Model.Content` | A list of inner shapes to display. It's populated by all the fields and parts the widget is composed of. |
 
-It also contains these specific zones, which are not used most of the time and can be ignored when creating custom templates for 
-the website front-end.
+It also contains these specific zones, which are not used most of the time and can be ignored when creating custom templates for the website front-end.
 
 | Property | Description |
 | --------- | ------------ |

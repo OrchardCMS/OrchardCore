@@ -117,12 +117,12 @@ namespace MyModule
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -135,10 +135,10 @@ namespace MyModule
             // Adding our menu items to the builder.
             // The builder represents the full admin menu tree.
             builder
-                .Add(T["My Root View"], "after",  rootView => rootView               
-                    .Add(T["Child One"],"1", childOne => childOne
+                .Add(S["My Root View"], "after",  rootView => rootView               
+                    .Add(S["Child One"],"1", childOne => childOne
                         .Action("ChildOne", "DemoNav", new { area = "MyModule"}))
-                    .Add(T["Child Two"], "2", childTwo => childTwo
+                    .Add(S["Child Two"], "2", childTwo => childTwo
                         .Action("ChildTwo", "DemoNav", new { area = "MyModule"})));
 
             return Task.CompletedTask;
@@ -186,7 +186,7 @@ Once your site is ready, you should see a __The page could not be found.__ messa
 
 Enter the Admin section by opening <https://localhost:5001/admin> and logging in.
 
-Using the left menu go to __Configuration: Modules__, search for your module, __MyModule__, and enable it.
+Using the left menu go to __Configuration: Features__, search for your module, __MyModule__, and enable it.
 
 Now your module is enabled and you should see a new entry on the admin.
 Click on the new menu items to render the Views we created earlier.

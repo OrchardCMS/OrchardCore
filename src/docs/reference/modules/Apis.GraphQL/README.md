@@ -2,12 +2,12 @@
 
 ## GraphQL
 
-The GraphQL module allows client applications to query the content handled by an Orchard websites. 
+The GraphQL module allows client applications to query the content handled by an Orchard websites.  
 It enables the GraphiQL Explorer view to test GraphQL queries, and provides HTTP endpoints to send client queries.
 
 ## HTTP Methods, Headers, and Body
 
-### GET request 
+### GET request
 
 When receiving an HTTP GET request, the GraphQL query should be specified in the "query" query string. For example, if we wanted to execute the following GraphQL query:
 
@@ -51,7 +51,7 @@ In addition to the above, If the "query" query string parameter is present (as i
 
 ### Response
 
-Regardless of the method by which the query and variables were sent, the response is returned in the body of the request in JSON format. 
+Regardless of the method by which the query and variables were sent, the response is returned in the body of the request in JSON format.  
 A query might result in some data and some errors, and those are returned in a JSON object of the form:
 
 ```json
@@ -103,7 +103,7 @@ The default number of results returned by all paged fields/types.
 *MaxNumberOfResults (int, Default: 1000)*
 The maximum number of results returned by all paged fields/types.
 
-*MaxNumberOfResultsValidationMode (enum, Values: Default|Enabled|Disabled, Default: Default)()
+*MaxNumberOfResultsValidationMode (enum, Values: Default|Enabled|Disabled, Default: Default)()*
 Specify the validation behaviour if the max number of results is exceeded in a pager parameter
 
 * Default - In production info will be logged and only the max number of results will be returned. In development a graphql validation error will be raised.

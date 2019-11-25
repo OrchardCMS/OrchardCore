@@ -184,7 +184,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
 
             contentItemsQuery = contentItemsQuery.Take(first);
-            
+
             if (context.HasPopulatedArgument("skip"))
             {
                 var skip = context.GetArgument<int>("skip");
@@ -256,7 +256,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             {
                 IPredicate expression = null;
 
-                var values = entry.Name.Split(new[] { '_' }, 2);
+                var values = entry.Name.Split('_', 2);
 
                 // Gets the full path name without the comparison e.g. aliasPart.alias, not aliasPart.alias_contains.
                 var property = values[0];

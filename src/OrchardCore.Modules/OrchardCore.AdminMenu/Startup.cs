@@ -46,7 +46,6 @@ namespace OrchardCore.AdminMenu
             services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<LinkAdminNode>());
             services.AddScoped<IAdminNodeNavigationBuilder, LinkAdminNodeNavigationBuilder>();
             services.AddScoped<IDisplayDriver<MenuItem>, LinkAdminNodeDriver>();
-
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

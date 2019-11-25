@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.Liquid;
@@ -17,8 +19,8 @@ public static class ContentRazorHelperExtensions
 
         var context = new TemplateContext();
 
-        markdown = await liquidTemplateManager.RenderAsync(markdown, context);
-        return new HtmlString(Markdig.Markdown.ToHtml(markdown));
+        markdown = await liquidTemplateManager.RenderAsync(markdown, NullHtmlEncoder.Default, context);
+
+        return new StringHtmlContent(Markdig.Markdown.ToHtml(markdown));
     }
 }
-

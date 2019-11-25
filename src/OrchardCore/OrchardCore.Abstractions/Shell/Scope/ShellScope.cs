@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
@@ -23,6 +24,7 @@ namespace OrchardCore.Environment.Shell.Scope
         private readonly IServiceScope _serviceScope;
 
         private readonly List<Func<ShellScope, Task>> _beforeDispose = new List<Func<ShellScope, Task>>();
+        private readonly HashSet<string> _deferredSignals = new HashSet<string>();
         private readonly List<Func<ShellScope, Task>> _deferredTasks = new List<Func<ShellScope, Task>>();
 
         private bool _disposeShellContext = false;
@@ -228,14 +230,24 @@ namespace OrchardCore.Environment.Shell.Scope
         private void BeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Add(callback);
 
         /// <summary>
-        /// Adds a Task to be executed in a new scope at the end of 'BeforeDisposeAsync()'.
+        /// Adds a Signal (if not already present) to be sent just after 'BeforeDisposeAsync()'.
+        /// </summary>
+        private void DeferredSignal(string key) => _deferredSignals.Add(key);
+
+        /// <summary>
+        /// Adds a Task to be executed in a new scope after 'BeforeDisposeAsync()'.
         /// </summary>
         private void DeferredTask(Func<ShellScope, Task> task) => _deferredTasks.Add(task);
 
         /// <summary>
-        /// Registers a delegate to be invoked just before the current shell scope will be disposed.
+        /// Registers a delegate to be invoked before the current shell scope will be disposed.
         /// </summary>
         public static void RegisterBeforeDispose(Func<ShellScope, Task> callback) => Current?.BeforeDispose(callback);
+
+        /// <summary>
+        /// Adds a Signal (if not already present) to be sent just before the current shell scope will be disposed.
+        /// </summary>
+        public static void AddDeferredSignal(string key) => Current?.DeferredSignal(key);
 
         /// <summary>
         /// Adds a Task to be executed in a new scope once the current shell scope has been disposed.
@@ -247,6 +259,16 @@ namespace OrchardCore.Environment.Shell.Scope
             foreach (var callback in _beforeDispose)
             {
                 await callback(this);
+            }
+
+            if (_deferredSignals.Any())
+            {
+                var signal = ShellContext.ServiceProvider.GetRequiredService<ISignal>();
+
+                foreach (var key in _deferredSignals)
+                {
+                    signal.SignalToken(key);
+                }
             }
 
             _disposeShellContext = await TerminateShellAsync();

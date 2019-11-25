@@ -25,6 +25,9 @@ namespace OrchardCore.Templates.Controllers
         private readonly AdminTemplatesManager _adminTemplatesManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
         
         public TemplateController(
             IAuthorizationService authorizationService,
@@ -42,14 +45,9 @@ namespace OrchardCore.Templates.Controllers
             New = shapeFactory;
             _siteService = siteService;
             _notifier = notifier;
-            T = stringLocalizer;
+            S = stringLocalizer;
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; set; }
-
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
 
         public Task<IActionResult> Admin(PagerParameters pagerParameters)
         {
@@ -129,7 +127,19 @@ namespace OrchardCore.Templates.Controllers
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
+                }
+                else
+                {
+                    var templatesDocument = model.AdminTemplates
+                        ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
+                        : await _templatesManager.GetTemplatesDocumentAsync()
+                        ;
+
+                    if (templatesDocument.Templates.ContainsKey(model.Name))
+                    {
+                        ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
+                    }
                 }
             }
 
@@ -142,7 +152,11 @@ namespace OrchardCore.Templates.Controllers
                     : _templatesManager.UpdateTemplateAsync(model.Name, template)
                     );
 
-                if (submit != "SaveAndContinue")
+                if (submit == "SaveAndContinue")
+                {
+                    RedirectToAction(nameof(Edit), new { name = model.Name, adminTemplates = model.AdminTemplates, returnUrl });
+                }
+                else
                 {
                     return RedirectToReturnUrlOrIndex(returnUrl);
                 }
@@ -202,15 +216,19 @@ namespace OrchardCore.Templates.Controllers
             }
 
             var templatesDocument = model.AdminTemplates
-                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                : await _templatesManager.GetTemplatesDocumentAsync()
+                ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
+                : await _templatesManager.LoadTemplatesDocumentAsync()
                 ;
 
             if (ModelState.IsValid)
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
+                }
+                else if(!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && templatesDocument.Templates.ContainsKey(model.Name))
+                {
+                    ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
                 }
             }
 
@@ -258,8 +276,8 @@ namespace OrchardCore.Templates.Controllers
             }
 
             var templatesDocument = adminTemplates
-                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                : await _templatesManager.GetTemplatesDocumentAsync()
+                ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
+                : await _templatesManager.LoadTemplatesDocumentAsync()
                 ;
 
             if (!templatesDocument.Templates.ContainsKey(name))

@@ -54,10 +54,11 @@ namespace OrchardCore.Tests.Apis.Context
             var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
             setupResult.EnsureSuccessStatusCode();
 
-            // Track if Lucene needs more time to update its indexes.
-            await Task.Delay(100);
+            lock (Site)
+            {
+                Client = Site.CreateDefaultClient(url);
+            }
 
-            Client = Site.CreateDefaultClient(url);
             GraphQLClient = new OrchardGraphQLClient(Client);
         }
 

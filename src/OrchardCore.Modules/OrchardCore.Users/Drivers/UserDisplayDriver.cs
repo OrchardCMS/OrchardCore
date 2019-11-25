@@ -67,7 +67,6 @@ namespace OrchardCore.Users.Drivers
 
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
-            user.EmailConfirmed = model.EmailConfirmed;
 
             if (string.IsNullOrWhiteSpace(model.UserName))
             {
@@ -103,6 +102,12 @@ namespace OrchardCore.Users.Drivers
             {
                 await _userManager.SetUserNameAsync(user, model.UserName);
                 await _userManager.SetEmailAsync(user, model.Email);
+
+                if (model.EmailConfirmed)
+                {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    await _userManager.ConfirmEmailAsync(user, token);
+                }
 
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
 

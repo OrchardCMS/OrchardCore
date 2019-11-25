@@ -151,7 +151,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
                         .From(feature)
                         .BoundAs(
-                            hit.shapeContext.harvestShapeInfo.RelativePath, shapeDescriptor => displayContext =>
+                            hit.shapeContext.harvestShapeInfo.RelativePath, displayContext =>
                             {
                                 var viewEngine = displayContext.ServiceProvider
                                     .GetServices<IShapeTemplateViewEngine>()

@@ -24,7 +24,7 @@ namespace OrchardCore.Scripting
             string basePath,
             IEnumerable<IGlobalMethodProvider> scopedMethodProviders)
         {
-            var directiveIndex = directive.IndexOf(":");
+            var directiveIndex = directive.IndexOf(':');
 
             if (directiveIndex == -1 || directiveIndex >= directive.Length - 2)
             {
