@@ -1,12 +1,19 @@
 using System;
 using System.Collections.Generic;
-using OrchardCore.Navigation;
+using Newtonsoft.Json;
 
 namespace OrchardCore.AdminMenu.Models
 {
     public class AdminMenu
     {
         public string Id { get; set; } = Guid.NewGuid().ToString("n");
+
+        /// <summary>
+        /// True if the object can't be used to update the database.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsReadonly { get; set; }
+
         public string Name { get; set; }
         public bool Enabled { get; set; } = true;
         public List<AdminNode> MenuItems { get; } = new List<AdminNode>();
@@ -42,7 +49,7 @@ namespace OrchardCore.AdminMenu.Models
                     {
                         return true; // success
                     }
-                }                
+                }
             }
 
             return false; // failure
@@ -69,7 +76,7 @@ namespace OrchardCore.AdminMenu.Models
                     {
                         return true; // success
                     }
-                }                
+                }
             }
             return false; // failure
         }

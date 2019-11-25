@@ -16,7 +16,7 @@ namespace OrchardCore.Queries.Liquid
 
         public Task RenderingAsync(TemplateContext context)
         {
-            context.LocalScope.SetValue("Queries", new LiquidPropertyAccessor(async name => FluidValue.Create(await _queryManager.GetQueryAsync(name))));
+            context.SetValue("Queries", new LiquidPropertyAccessor(async name => FluidValue.Create(await _queryManager.GetQueryAsync(name))));
 
             return Task.CompletedTask;
         }

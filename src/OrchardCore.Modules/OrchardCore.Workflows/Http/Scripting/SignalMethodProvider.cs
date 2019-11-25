@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting;
+using OrchardCore.Workflows.Http.Controllers;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -43,18 +44,18 @@ namespace OrchardCore.Workflows.Http.Scripting
             _createWorkflowToken = new GlobalMethod
             {
                 Name = "createWorkflowToken",
-                Method = serviceProvider => (Func<string, string, string, string>)((workflowTypeId, activityId, lifetime) =>
+                Method = serviceProvider => (Func<string, string, int, string>)((workflowTypeId, activityId, days) =>
                 {
                     var securityTokenService = serviceProvider.GetRequiredService<ISecurityTokenService>();
 
                     var payload = new WorkflowPayload(workflowTypeId, activityId);
-                    if (!TimeSpan.TryParse(lifetime, out var timespan))
+
+                    if (days == 0)
                     {
-                        timespan = TimeSpan.FromDays(7);
+                        days = HttpWorkflowController.NoExpiryTokenLifespan;
                     }
 
-                    var token = securityTokenService.CreateToken(payload, timespan);
-                    return token;
+                    return securityTokenService.CreateToken(payload, TimeSpan.FromDays(days));
                 })
             };
         }

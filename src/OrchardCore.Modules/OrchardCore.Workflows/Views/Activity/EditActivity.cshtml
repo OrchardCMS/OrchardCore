@@ -8,11 +8,9 @@
         <input type="hidden" asp-for="ActivityId" />
         @await DisplayAsync(Model.ActivityEditor)
 
-        <fieldset>
-            <div class="form-group">
-                <button class="btn btn-primary" type="submit">@T["Save"]</button>
-                <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Cancel"]</a>
-            </div>
-        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Cancel"]</a>
+        </div>
     </form>
 </div>

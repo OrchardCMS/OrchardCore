@@ -5,7 +5,7 @@
 }
 <h5>@T["Site Settings"]</h5>
 
-<fieldset class="form-group">
+<div class="form-group">
     <span class="hint">@T["The site settings to add as part of the plan."]</span>
     <ul class="list-group w-md-50">
         @foreach (var setting in typeof(ISite).GetProperties(BindingFlags.Public | BindingFlags.Instance))
@@ -21,4 +21,4 @@
             </li>
         }
     </ul>
-</fieldset>
+</div>

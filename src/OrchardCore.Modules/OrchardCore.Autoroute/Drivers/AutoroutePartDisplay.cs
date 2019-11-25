@@ -74,7 +74,7 @@ namespace OrchardCore.Autoroute.Drivers
         private AutoroutePartSettings GetSettings(AutoroutePart autoroutePart)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(autoroutePart.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AutoroutePart), StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AutoroutePart)));
             return contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
         }
 
