@@ -25,6 +25,8 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly IAdminMenuService _adminMenuService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public MenuController(
             IAuthorizationService authorizationService,
@@ -32,7 +34,6 @@ namespace OrchardCore.AdminMenu.Controllers
             ISiteService siteService,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            IStringLocalizer<MenuController> stringLocalizer,
             IHtmlLocalizer<MenuController> htmlLocalizer,
             ILogger<MenuController> logger)
         {
@@ -41,16 +42,11 @@ namespace OrchardCore.AdminMenu.Controllers
             _siteService = siteService;
             New = shapeFactory;
             _notifier = notifier;
-
-            T = stringLocalizer;
             H = htmlLocalizer;
             Logger = logger;
         }
 
-        public IStringLocalizer T { get; }
-        public IHtmlLocalizer H { get; }
         public ILogger Logger { get; }
-        public dynamic New { get; }
 
         public async Task<IActionResult> List(AdminMenuListOptions options, PagerParameters pagerParameters)
         {

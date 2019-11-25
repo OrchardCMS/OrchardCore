@@ -29,11 +29,11 @@ It can optionally render _First_ and _Last_ links.
 | `PageSize` | `int` | Number of items per page. |
 | `TotalItemCount` | `double` | Total number of items (used to calculate the number of the last page). |
 | `Quantity` | `int?` | Number of pages to show, 7 if not specified. |
-| `FirstText` | `object` | Text of the "First" link, default: `T["<<"]` .|
-| `PreviousText` | `object` | Text of the "Previous" link, default: `T["<"]`. |
-| `NextText` | `object` | Text of the "Next" link, default: `T[">"]` .|
-| `LastText` | `object` | Text of the "Last" link, default: `T[">>"]`. |
-| `GapText` | `object` | Text of the "Gap" element, default: `T["..."]`. |
+| `FirstText` | `object` | Text of the "First" link, default: `S["<<"]` .|
+| `PreviousText` | `object` | Text of the "Previous" link, default: `S["<"]`. |
+| `NextText` | `object` | Text of the "Next" link, default: `S[">"]` .|
+| `LastText` | `object` | Text of the "Last" link, default: `S[">>"]`. |
+| `GapText` | `object` | Text of the "Gap" element, default: `S["..."]`. |
 | `PagerId` | `string` | An identifier for the pager. Used to create alternate like `Pager__[PagerId]`. |
 | `ShowNext` | `bool` | If true, the "Next" link is always displayed. |
 
@@ -74,8 +74,8 @@ This shape renders a pager that is comprised of two links: _Previous_ and _Next_
 | --------- | ---- |------------ |
 | `PreviousClass` | `string` | The HTML class used for the _Previous_ link, default: _none_. |
 | `NextClass` | `string` | The HTML class used for the _Next_ link, default: _none_. |
-| `PreviousText` | `object` | Text of the "Previous" link, default: `T["<"]`. |
-| `NextText` | `object` | Text of the "Next" link, default: `T[">"]`. |
+| `PreviousText` | `object` | Text of the "Previous" link, default: `S["<"]`. |
+| `NextText` | `object` | Text of the "Next" link, default: `S[">"]`. |
 
 Properties inherited from the `List` shape:
 
@@ -116,12 +116,12 @@ Below is a sample implementation of an `INavigationProvider` used to extend the 
 ```csharp
 public class MainMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public MainMenu(IStringLocalizer<MainMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public async Task BuildNavigation(string name, NavigationBuilder builder)
         {
@@ -132,7 +132,7 @@ public class MainMenu : INavigationProvider
             }
 
             builder
-                .Add(T["Notifications"], T["Notifications"], layers => layers
+                .Add(S["Notifications"], S["Notifications"], layers => layers
                     .Action("Index", "Template", new { area = "CRT.Client.OrchardModules.CommunicationTemplates", groupId = 1 })
                     .LocalNav()
                 );

@@ -16,11 +16,13 @@ namespace OrchardCore.Html.Drivers
     public class HtmlBodyPartDisplay : ContentPartDisplayDriver<HtmlBodyPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
+        private readonly HtmlEncoder _htmlEncoder;
 
-        public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<HtmlBodyPartDisplay> localizer)
+        public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<HtmlBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
         {
             _liquidTemplatemanager = liquidTemplatemanager;
             T = localizer;
+            _htmlEncoder = htmlEncoder;
         }
 
         public IStringLocalizer T { get; }
@@ -74,7 +76,7 @@ namespace OrchardCore.Html.Drivers
             model.ContentItem = htmlBodyPart.ContentItem;
             templateContext.SetValue("Model", model);
 
-            model.Html = await _liquidTemplatemanager.RenderAsync(htmlBodyPart.Html, HtmlEncoder.Default, templateContext);
+            model.Html = await _liquidTemplatemanager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, templateContext);
         }
     }
 }
