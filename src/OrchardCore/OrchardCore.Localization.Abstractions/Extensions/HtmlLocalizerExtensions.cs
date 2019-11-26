@@ -12,7 +12,7 @@ namespace Microsoft.AspNetCore.Mvc.Localization
         /// Gets the pluralization form.
         /// </summary>
         /// <param name="localizer">The <see cref="IHtmlLocalizer"/>.</param>
-        /// <param name="count">the number to be used for selecting the pluralization form.</param>
+        /// <param name="count">The number to be used for selecting the pluralization form.</param>
         /// <param name="singular">The singular form key.</param>
         /// <param name="plural">The plural form key.</param>
         /// <param name="arguments">The parameters used in the key.</param>
@@ -30,7 +30,7 @@ namespace Microsoft.AspNetCore.Mvc.Localization
         /// Gets the pluralization form.
         /// </summary>
         /// <param name="localizer">The <see cref="IHtmlLocalizer"/>.</param>
-        /// <param name="count">the number to be used for selecting the pluralization form.</param>
+        /// <param name="count">The number to be used for selecting the pluralization form.</param>
         /// <param name="pluralForms">A list of pluralization forms.</param>
         /// <param name="arguments">The parameters used in the key.</param>
         public static LocalizedHtmlString Plural(this IHtmlLocalizer localizer, int count, string[] pluralForms, params object[] arguments)
