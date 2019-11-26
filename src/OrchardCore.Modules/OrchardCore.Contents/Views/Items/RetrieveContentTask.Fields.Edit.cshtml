@@ -1,0 +1,9 @@
+@using OrchardCore.Contents.Workflows.ViewModels
+@model RetrieveContentTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="ContentItemId">
+    <label asp-for="ContentItemId">@T["ContentItemId"]</label>
+    <input type="text" asp-for="ContentItemId" class="form-control code" autofocus />
+    <span asp-validation-for="ContentItemId"></span>
+    <span class="hint">@T["Enter a the Id of the Content Item you would like to fetch."]</span>
+</fieldset>
