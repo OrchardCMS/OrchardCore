@@ -24,19 +24,19 @@ namespace OrchardCore.Contents
                         // BasicShapeTemplateHarvester.Adjust will then adjust the template name
 
                         // Content__[DisplayType] e.g. Content-Summary
-                        displaying.ShapeMetadata.Alternates.Add("Content_" + EncodeAlternateElement(displaying.ShapeMetadata.DisplayType));
+                        displaying.Shape.Metadata.Alternates.Add("Content_" + EncodeAlternateElement(displaying.Shape.Metadata.DisplayType));
 
                         // Content__[ContentType] e.g. Content-BlogPost,
-                        displaying.ShapeMetadata.Alternates.Add("Content__" + EncodeAlternateElement(contentItem.ContentType));
+                        displaying.Shape.Metadata.Alternates.Add("Content__" + EncodeAlternateElement(contentItem.ContentType));
 
                         // Content__[Id] e.g. Content-42,
-                        displaying.ShapeMetadata.Alternates.Add("Content__" + contentItem.Id);
+                        displaying.Shape.Metadata.Alternates.Add("Content__" + contentItem.Id);
 
                         // Content_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
-                        displaying.ShapeMetadata.Alternates.Add("Content_" + displaying.ShapeMetadata.DisplayType + "__" + EncodeAlternateElement(contentItem.ContentType));
+                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + EncodeAlternateElement(contentItem.ContentType));
 
                         // Content_[DisplayType]__[Id] e.g. Content-42.Summary
-                        displaying.ShapeMetadata.Alternates.Add("Content_" + displaying.ShapeMetadata.DisplayType + "__" + contentItem.Id);
+                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + contentItem.Id);
                     }
                 });
 
