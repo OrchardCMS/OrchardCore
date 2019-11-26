@@ -174,7 +174,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                 // Resolve Model.Content.MyNamedPart
                 // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
-                return shape.Named(n.Replace("__", "-"));
+                return shape.NormalizedNamed(n.Replace("__", "-"));
             }
 
             return null;

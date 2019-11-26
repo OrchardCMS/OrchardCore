@@ -11,7 +11,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, IContentFieldDisplayDriver where TField : ContentField, new()
     {
-        private const string _Display = "_Display";
+        private const string DisplayToken = "_Display";
 
         private ContentTypePartDefinition _typePartDefinition;
         private ContentPartFieldDefinition _partFieldDefinition;
@@ -79,17 +79,17 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     {
                         if (_displayMode != null)
                         {
-                            displayTypes[0] = _Display;
+                            displayTypes[0] = DisplayToken;
 
                             // [ShapeType]_[DisplayType]__[DisplayMode]_Display, e.g. TextField-Header.Display.Summary
-                            ctx.ShapeMetadata.Alternates.Add($"{_shapeType}_{displayTypes[1]}{_displayMode}{_Display}");
+                            ctx.ShapeMetadata.Alternates.Add($"{_shapeType}_{displayTypes[1]}{_displayMode}{DisplayToken}");
                         }
 
                         foreach (var displayType in displayTypes)
                         {
                             if (_displayMode != null)
                             {
-                                shapeType = _shapeType + _displayMode + (displayType != _Display ? _Display : "");
+                                shapeType = _shapeType + _displayMode + (displayType != DisplayToken ? DisplayToken : "");
                             }
 
                             // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
@@ -257,7 +257,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             {
                 _shapeType = shapeType;
                 _displayMode = "__" + displayMode;
-                return _shapeType + _Display + _displayMode;
+                return _shapeType + DisplayToken + _displayMode;
             }
 
             return shapeType;

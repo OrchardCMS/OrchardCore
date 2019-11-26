@@ -104,6 +104,19 @@ namespace OrchardCore.DisplayManagement.Shapes
             return null;
         }
 
+        public IShape NormalizedNamed(string shapeName)
+        {
+            for (var i = 0; i < _items.Count; i++)
+            {
+                if (_items[i] is IShape shape && shape.Metadata.Name?.Replace("__", "-") == shapeName)
+                {
+                    return shape;
+                }
+            }
+
+            return null;
+        }
+
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
         {
             if (!_sorted)
@@ -185,7 +198,12 @@ namespace OrchardCore.DisplayManagement.Shapes
             if (!base.TryGetMember(binder, out result) || (null == result))
             {
                 // Try to get a Named shape
-                result = Named(name.Replace("__", "-"));
+                result = Named(name);
+
+                if (result == null)
+                {
+                    result = NormalizedNamed(name.Replace("__", "-"));
+                }
             }
 
             return true;
