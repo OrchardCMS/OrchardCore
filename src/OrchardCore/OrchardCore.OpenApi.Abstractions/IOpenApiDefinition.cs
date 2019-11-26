@@ -2,9 +2,9 @@ using System;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
 
-namespace OrchardCore.Swagger
+namespace OrchardCore.OpenApi
 {
-    public interface ISwaggerApiDefinition
+    public interface IOpenApiDefinition
     {
         string Name { get; }
 

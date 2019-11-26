@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Swagger;
+using OrchardCore.OpenApi;
 
 namespace OrchardCore.Swagger
 {
-    public class OrchardApiDefinition : ISwaggerApiDefinition
+    public class OrchardApiDefinition : IOpenApiDefinition
     {
         public string Name => "OrchardCoreAPI";
 
         public OpenApiDocument Document => new OpenApiDocument()
-        {   
+        {
             Info = new OpenApiInfo()
             {
                 Version = "v2",
@@ -27,6 +27,9 @@ namespace OrchardCore.Swagger
             }
         };
 
-        public Func<string, ApiDescription, bool> ApiDescriptionFilterPredicate => (name, description) => name == "OrchardCoreAPI";
+        public Func<string, ApiDescription, bool> ApiDescriptionFilterPredicate => (name, description) =>
+                                                                                        description.RelativePath.StartsWith("api/tenants") ||
+                                                                                        description.RelativePath.StartsWith("api/content") ||
+                                                                                        description.RelativePath.StartsWith("api/queries");
     }
 }

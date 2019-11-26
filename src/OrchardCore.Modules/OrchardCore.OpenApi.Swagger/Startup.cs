@@ -9,7 +9,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 
-namespace OrchardCore.Swagger
+namespace OrchardCore.OpenApi.Swagger
 {
     public class Startup : StartupBase
     {
@@ -24,7 +24,7 @@ namespace OrchardCore.Swagger
 
                 var swaggerPath = httpContextAccessor.HttpContext.Request.PathBase + new PathString("/swagger");
 
-                foreach (var definition in serviceProvider.GetServices<ISwaggerApiDefinition>())
+                foreach (var definition in serviceProvider.GetServices<IOpenApiDefinition>())
                 {
                     c.SwaggerEndpoint($"{swaggerPath}/{definition.Name}/swagger.json", definition.Name);
                 }
@@ -36,7 +36,7 @@ namespace OrchardCore.Swagger
             services.AddSwaggerGen(c =>
             {
                 var serviceProvider = services.BuildServiceProvider();
-                var apiDefinitions = serviceProvider.GetServices<ISwaggerApiDefinition>();
+                var apiDefinitions = serviceProvider.GetServices<IOpenApiDefinition>();
 
                 c.DocInclusionPredicate((name, description) => FilterDocInclusion(name, description, apiDefinitions));
                 c.EnableAnnotations();
@@ -44,7 +44,7 @@ namespace OrchardCore.Swagger
             });
         }
 
-        private bool FilterDocInclusion(string name, ApiDescription description, IEnumerable<ISwaggerApiDefinition> apiDefinitions)
+        private bool FilterDocInclusion(string name, ApiDescription description, IEnumerable<IOpenApiDefinition> apiDefinitions)
         {
             foreach (var documentProvider in apiDefinitions)
             {
@@ -58,21 +58,12 @@ namespace OrchardCore.Swagger
             return false;
         }
 
-        private void PopulateSwagger(SwaggerGenOptions c, IEnumerable<ISwaggerApiDefinition> apiDefinitions)
+        private void PopulateSwagger(SwaggerGenOptions c, IEnumerable<IOpenApiDefinition> apiDefinitions)
         {
             foreach (var definition in apiDefinitions)
             {
                 c.SwaggerDoc(definition.Name, definition.Document.Info);
             }
-        }
-    }
-
-    [Feature("OrchardCore.Swagger.API")]
-    public class SwaggerDocumentationStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<ISwaggerApiDefinition, OrchardApiDefinition>();
         }
     }
 }
