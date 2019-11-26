@@ -211,7 +211,7 @@ namespace OrchardCore.Users.Controllers
                         {
                             item.IsDisabled = true;
                             await _userManager.UpdateAsync(item);
-                            _notifier.Success(TH["User {0} successfully disabled.", item.UserName]);
+                            _notifier.Warning(TH["User {0} successfully disabled.", item.UserName]);
                         }
                         break;
                     case UsersBulkAction.Enable:
