@@ -11,8 +11,11 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, IContentFieldDisplayDriver where TField : ContentField, new()
     {
+        private const string _Display = "_Display";
+
         private ContentTypePartDefinition _typePartDefinition;
         private ContentPartFieldDefinition _partFieldDefinition;
+        private string _shapeType, _displayMode;
 
         public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
@@ -54,32 +57,41 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     // [ShapeType]_[DisplayType], e.g. TextField.Summary
                     ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
 
+                    var displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
+
                     // When the shape type is the same as the field, we can ignore one of them in the alternate name
                     // For instance TextField returns a unique TextField shape type.
                     if (shapeType == fieldType)
                     {
-                        var displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
-
                         foreach (var displayType in displayTypes)
                         {
                             // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
                             ctx.ShapeMetadata.Alternates.Add($"{partType}{displayType}__{fieldName}");
 
-                            // [ContentType]__[PartName]__[FieldName], , e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
+                            // [ContentType]__[PartName]__[FieldName], e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
                             ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
 
-                            // [ContentType]__[FieldType], , e.g. Blog-TextField, LandingPage-TextField
+                            // [ContentType]__[FieldType], e.g. Blog-TextField, LandingPage-TextField
                             ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{fieldType}");
                         }
                     }
                     else
                     {
-                        shapeType = (_shapeType + _displayMode) ?? shapeType;
+                        if (_displayMode != null)
+                        {
+                            displayTypes[0] = _Display;
 
-                        var displayTypes = new[] { _display, "_" + ctx.ShapeMetadata.DisplayType + _display };
+                            // [ShapeType]_[DisplayType]__[DisplayMode]_Display, e.g. TextField-Header.Display.Summary
+                            ctx.ShapeMetadata.Alternates.Add($"{_shapeType}_{displayTypes[1]}{_displayMode}{_Display}");
+                        }
 
                         foreach (var displayType in displayTypes)
                         {
+                            if (_displayMode != null)
+                            {
+                                shapeType = _shapeType + _displayMode + (displayType != _Display ? _Display : "");
+                            }
+
                             // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
                             ctx.ShapeMetadata.Alternates.Add($"{fieldType}{displayType}__{shapeType}");
 
@@ -237,9 +249,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return GetEditorShapeType(context.PartFieldDefinition);
         }
 
-        private const string _display = "_Display";
-        private string _shapeType, _displayMode;
-
         protected string GetDisplayShapeType(string shapeType, BuildFieldDisplayContext context)
         {
             var displayMode = context.PartFieldDefinition.DisplayMode();
@@ -248,7 +257,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             {
                 _shapeType = shapeType;
                 _displayMode = "__" + displayMode;
-                return _shapeType + _display + _displayMode;
+                return _shapeType + _Display + _displayMode;
             }
 
             return shapeType;
