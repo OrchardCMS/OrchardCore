@@ -1,0 +1,79 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: sl\n"
+"X-Crowdin-File: /dev/Localization/TheBlogTheme.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Slovenian\n"
+"Language: sl_SI\n"
+"PO-Revision-Date: 2019-09-04 19:26\n"
+
+#: TheBlogTheme\Views\Blog-ListPart.liquid:0
+msgctxt "TheBlogTheme.Views.Blog-ListPart"
+msgid "← Newer Posts"
+msgstr ""
+
+#: TheBlogTheme\Views\Blog-ListPart.liquid:0
+msgctxt "TheBlogTheme.Views.Blog-ListPart"
+msgid "Older Posts →"
+msgstr ""
+
+#: TheBlogTheme\Views\Blog-ListPart.liquid:0
+msgctxt "TheBlogTheme.Views.Blog-ListPart"
+msgid "previous"
+msgstr ""
+
+#: TheBlogTheme\Views\Blog-ListPart.liquid:0
+msgctxt "TheBlogTheme.Views.Blog-ListPart"
+msgid "next"
+msgstr ""
+
+#: TheBlogTheme\Views\Content-BlogPost.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost"
+msgid "MMMM dd, yyyy"
+msgstr ""
+
+#: TheBlogTheme\Views\Content-BlogPost.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost"
+msgid "Posted by"
+msgstr ""
+
+#: TheBlogTheme\Views\Content-BlogPost.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost"
+msgid "on {0}"
+msgstr ""
+
+#: TheBlogTheme\Views\Content-BlogPost.Summary.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost.Summary"
+msgid "MMMM dd, yyyy"
+msgstr ""
+
+#: TheBlogTheme\Views\Content-BlogPost.Summary.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost.Summary"
+msgid "Posted by"
+msgstr ""
+
+#: TheBlogTheme\Views\Content-BlogPost.Summary.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost.Summary"
+msgid "on {0}"
+msgstr ""
+
+#: TheBlogTheme\Views\Layout.liquid:0
+msgctxt "TheBlogTheme.Views.Layout"
+msgid "Toggle navigation"
+msgstr ""
+
+#: TheBlogTheme\Views\Layout.liquid:0
+msgctxt "TheBlogTheme.Views.Layout"
+msgid "Menu"
+msgstr ""
+
+#: TheBlogTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheBlogTheme.Views.Shared.NotFound"
+msgid "Page Not Found"
+msgstr ""
+

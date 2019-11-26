@@ -1,0 +1,164 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: vi\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Autoroute.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"PO-Revision-Date: 2019-09-06 12:41\n"
+
+#. updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Your permalink can't be set to the homepage, please use the homepage option instead."]);
+#: OrchardCore.Autoroute\Drivers\AutoroutePartDisplay.cs:116
+msgctxt "OrchardCore.Autoroute.Drivers.AutoroutePartDisplay"
+msgid "Your permalink can't be set to the homepage, please use the homepage option instead."
+msgstr ""
+
+#. updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
+#: OrchardCore.Autoroute\Drivers\AutoroutePartDisplay.cs:122
+msgctxt "OrchardCore.Autoroute.Drivers.AutoroutePartDisplay"
+msgid "Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead)."
+msgstr "Vui lòng không sử dụng các ký tự sau trong liên kết cố định của bạn: {0}. Không được sử dụng khoảng trắng (vui lòng sử dụng dấu gạch ngang hoặc dấu gạch dưới để thay thế)."
+
+#. updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Your permalink is too long. The permalink can only be up to {0} characters.", MaxPathLength]);
+#: OrchardCore.Autoroute\Drivers\AutoroutePartDisplay.cs:127
+msgctxt "OrchardCore.Autoroute.Drivers.AutoroutePartDisplay"
+msgid "Your permalink is too long. The permalink can only be up to {0} characters."
+msgstr "Liên kết cố định của bạn quá dài. Số kí tự tối đa của một liên kết cố định là {0} kí tự."
+
+#. updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Your permalink is already in use."]);
+#: OrchardCore.Autoroute\Drivers\AutoroutePartDisplay.cs:132
+msgctxt "OrchardCore.Autoroute.Drivers.AutoroutePartDisplay"
+msgid "Your permalink is already in use."
+msgstr "Liên kết cố định hiện đang được sử dụng."
+
+#. Description = T["the custom URL part of the content item"];
+#: OrchardCore.Autoroute\GraphQL\AutorouteInputObjectType.cs:13
+msgctxt "OrchardCore.Autoroute.GraphQL.AutorouteInputObjectType"
+msgid "the custom URL part of the content item"
+msgstr "phần URL tùy chỉnh của mục nội dung"
+
+#. AddScalarFilterFields<StringGraphType>("path", T["the path of the content item to filter"]);
+#: OrchardCore.Autoroute\GraphQL\AutorouteInputObjectType.cs:15
+msgctxt "OrchardCore.Autoroute.GraphQL.AutorouteInputObjectType"
+msgid "the path of the content item to filter"
+msgstr "đường dẫn của mục nội dung để lọc"
+
+#. Description = T["Custom URLs (permalinks) for your content item."];
+#: OrchardCore.Autoroute\GraphQL\AutorouteQueryObjectType.cs:12
+msgctxt "OrchardCore.Autoroute.GraphQL.AutorouteQueryObjectType"
+msgid "Custom URLs (permalinks) for your content item."
+msgstr "URL tùy chỉnh (permalinks) cho mục nội dung của bạn."
+
+#. Field(x => x.Path).Description(T["The permalinks for your content item."]);
+#: OrchardCore.Autoroute\GraphQL\AutorouteQueryObjectType.cs:14
+msgctxt "OrchardCore.Autoroute.GraphQL.AutorouteQueryObjectType"
+msgid "The permalinks for your content item."
+msgstr "Những liên kết cố định cho mục nội dung của bạn."
+
+#. context.Updater.ModelState.AddModelError(nameof(model.Pattern), T["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+#: OrchardCore.Autoroute\Settings\AutoroutePartSettingsDisplayDriver.cs:62
+msgctxt "OrchardCore.Autoroute.Settings.AutoroutePartSettingsDisplayDriver"
+msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
+msgstr "Mẫu không chứa biểu thức Liquid hợp lệ. Chi tiết: {0}"
+
+#. <label asp-for="Path">@T["Permalink"]</label>
+#: OrchardCore.Autoroute\Views\AutoroutePart.Edit.cshtml:10
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Permalink"
+msgstr "Liên kết cố định"
+
+#. <span class="hint">@T["The url of the content item. Leave empty to auto-generate it."]</span>
+#: OrchardCore.Autoroute\Views\AutoroutePart.Edit.cshtml:23
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "The url of the content item. Leave empty to auto-generate it."
+msgstr "Url của mục nội dung. Để trống sẽ tự động phát sinh."
+
+#. <span class="hint">@T["The url of the content item. It will be automatically generated."]</span>
+#: OrchardCore.Autoroute\Views\AutoroutePart.Edit.cshtml:27
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "The url of the content item. It will be automatically generated."
+msgstr "Url của mục nội dung. Nó sẽ được ttự động phát sinh."
+
+#. <div class="alert alert-info">@T["This content item is the current homepage"]</div>
+#: OrchardCore.Autoroute\Views\AutoroutePart.Edit.cshtml:36
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "This content item is the current homepage"
+msgstr "Mục nội dung này đang là trang nhất"
+
+#. <label class="custom-control-label" asp-for="SetHomepage">@T["Set as homepage"]</label>
+#: OrchardCore.Autoroute\Views\AutoroutePart.Edit.cshtml:45
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Set as homepage"
+msgstr "Đặt làm trang nhất"
+
+#. <span class="hint">— @T["Check to set this content item as the homepage once published."]</span>
+#: OrchardCore.Autoroute\Views\AutoroutePart.Edit.cshtml:46
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Check to set this content item as the homepage once published."
+msgstr "Đánh dấu để đặt mục nội dung này làm trang nhất sau khi xuất bản."
+
+#. <label class="custom-control-label" asp-for="UpdatePath">@T["Refresh the path"]</label>
+#: OrchardCore.Autoroute\Views\AutoroutePart.Edit.cshtml:58
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Refresh the path"
+msgstr "Làm mới đường dẫn"
+
+#. <span class="hint">— @T["Check to refresh the path. Warning: the previous URL won't be accessible anymore."]</span>
+#: OrchardCore.Autoroute\Views\AutoroutePart.Edit.cshtml:59
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Check to refresh the path. Warning: the previous URL won't be accessible anymore."
+msgstr "Đánh dấu để làm mới đường dẫn. Cảnh báo: URL trước sẽ không thể truy cập được nữa."
+
+#. <label asp-for="Pattern">@T["Pattern"]</label>
+#: OrchardCore.Autoroute\Views\AutoroutePartSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Pattern"
+msgstr "Mẫu"
+
+#. <span class="hint">@T["The pattern used to render the custom url of this content type."]</span>
+#: OrchardCore.Autoroute\Views\AutoroutePartSettings.Edit.cshtml:16
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "The pattern used to render the custom url of this content type."
+msgstr "Mẫu được sử dụng để tạo url tùy chỉnh cho loại nội dung này."
+
+#. <label class="custom-control-label" asp-for="AllowCustomPath">@T["Allow custom path"]</label>
+#: OrchardCore.Autoroute\Views\AutoroutePartSettings.Edit.cshtml:23
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Allow custom path"
+msgstr "Cho phép đường dẫn tùy chỉnh"
+
+#. <span class="hint">@T["Check to allow users to set a custom path, otherwise it will be automatically generated."]</span>
+#: OrchardCore.Autoroute\Views\AutoroutePartSettings.Edit.cshtml:24
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Check to allow users to set a custom path, otherwise it will be automatically generated."
+msgstr "Đánh dấu để cho phép người dùng tự thiết lập đường dẫn tùy chỉnh, nếu không hệ thống sẽ tự tạo ra."
+
+#. <label class="custom-control-label" asp-for="AllowUpdatePath">@T["Allow path updates"]</label>
+#: OrchardCore.Autoroute\Views\AutoroutePartSettings.Edit.cshtml:31
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Allow path updates"
+msgstr "Cho phép cập nhật đường dẫn"
+
+#. <span class="hint">@T["Check to allow users to refresh the path once a content item is already published."]</span>
+#: OrchardCore.Autoroute\Views\AutoroutePartSettings.Edit.cshtml:32
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Check to allow users to refresh the path once a content item is already published."
+msgstr "Đánh dấu để cho phép người dùng làm mới đường dẫn sau khi một mục nội dung được xuất bản."
+
+#. <label class="custom-control-label" asp-for="ShowHomepageOption">@T["Show homepage options"]</label>
+#: OrchardCore.Autoroute\Views\AutoroutePartSettings.Edit.cshtml:39
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Show homepage options"
+msgstr "Hiện các tùy chọn trang nhất"
+
+#. <span class="hint">@T["Check to allow the content items of this content type to be set as the homepage. It will only be visible to users with the appropriate permission."]</span>
+#: OrchardCore.Autoroute\Views\AutoroutePartSettings.Edit.cshtml:40
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Check to allow the content items of this content type to be set as the homepage. It will only be visible to users with the appropriate permission."
+msgstr "Đánh dấu để cho phép các mục nội dung của loại nội dung này sẽ được thiết lập như trang nhất. Nó sẽ chỉ được hiển thị cho một số người dùng với quyền truy cập nhất định."
+

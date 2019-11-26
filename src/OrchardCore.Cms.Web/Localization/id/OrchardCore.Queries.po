@@ -1,0 +1,364 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: id\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Queries.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"PO-Revision-Date: 2019-09-21 09:18\n"
+
+#. builder.Add(T["Configuration"], content => content
+#: OrchardCore.Queries\AdminMenu.cs:24
+msgctxt "OrchardCore.Queries.AdminMenu"
+msgid "Configuration"
+msgstr ""
+
+#. .Add(T["Queries"], "1", contentItems => contentItems
+#: OrchardCore.Queries\AdminMenu.cs:25
+msgctxt "OrchardCore.Queries.AdminMenu"
+msgid "Queries"
+msgstr ""
+
+#. _notifier.Success(H["Query created successfully"]);
+#: OrchardCore.Queries\Controllers\AdminController.cs:156
+msgctxt "OrchardCore.Queries.Controllers.AdminController"
+msgid "Query created successfully"
+msgstr ""
+
+#. _notifier.Success(H["Query updated successfully"]);
+#: OrchardCore.Queries\Controllers\AdminController.cs:212
+msgctxt "OrchardCore.Queries.Controllers.AdminController"
+msgid "Query updated successfully"
+msgstr ""
+
+#. _notifier.Success(H["Query deleted successfully"]);
+#: OrchardCore.Queries\Controllers\AdminController.cs:239
+msgctxt "OrchardCore.Queries.Controllers.AdminController"
+msgid "Query deleted successfully"
+msgstr ""
+
+#. updater.ModelState.AddModelError(nameof(model.Name), S["Name is required"]);
+#: OrchardCore.Queries\Drivers\QueryDisplayDriver.cs:69
+msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
+msgid "Name is required"
+msgstr ""
+
+#. updater.ModelState.AddModelError(nameof(model.Name), S["Name contains illegal characters"]);
+#: OrchardCore.Queries\Drivers\QueryDisplayDriver.cs:75
+msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
+msgid "Name contains illegal characters"
+msgstr ""
+
+#. updater.ModelState.AddModelError(nameof(model.Name), S["A query with the same name already exists"]);
+#: OrchardCore.Queries\Drivers\QueryDisplayDriver.cs:83
+msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
+msgid "A query with the same name already exists"
+msgstr ""
+
+#. .Add(T["Configuration"], "10", configuration => configuration
+#: OrchardCore.Queries\Sql\AdminMenu.cs:25
+msgctxt "OrchardCore.Queries.Sql.AdminMenu"
+msgid "Configuration"
+msgstr ""
+
+#. .Add(T["Site"], "10", site => site
+#: OrchardCore.Queries\Sql\AdminMenu.cs:27
+msgctxt "OrchardCore.Queries.Sql.AdminMenu"
+msgid "Site"
+msgstr ""
+
+#. .Add(T["SQL Queries"], "5", queries => queries
+#: OrchardCore.Queries\Sql\AdminMenu.cs:28
+msgctxt "OrchardCore.Queries.Sql.AdminMenu"
+msgid "SQL Queries"
+msgstr ""
+
+#. updater.ModelState.AddModelError(nameof(model.Template), S["The query field is required"]);
+#: OrchardCore.Queries\Sql\Drivers\SqlQueryDisplayDriver.cs:60
+msgctxt "OrchardCore.Queries.Sql.Drivers.SqlQueryDisplayDriver"
+msgid "The query field is required"
+msgstr ""
+
+#. <h4>@T["SQL"]</h4>
+#: OrchardCore.Queries\Views\Query-Sql.Link.cshtml:5
+msgctxt "OrchardCore.Queries.Views.Query-Sql.Link"
+msgid "SQL"
+msgstr ""
+
+#. <p class="hint">@T["Queries the SQL database."]</p>
+#: OrchardCore.Queries\Views\Query-Sql.Link.cshtml:6
+msgctxt "OrchardCore.Queries.Views.Query-Sql.Link"
+msgid "Queries the SQL database."
+msgstr ""
+
+#. <a class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Admin" asp-route-id="@Model.Name" asp-area="OrchardCore.Queries">@T["Add"]</a>
+#: OrchardCore.Queries\Views\Query-Sql.Link.cshtml:9
+msgctxt "OrchardCore.Queries.Views.Query-Sql.Link"
+msgid "Add"
+msgstr ""
+
+#. class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.Queries\Views\Query.Buttons.SummaryAdmin.cshtml:6
+msgctxt "OrchardCore.Queries.Views.Query.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#. itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.Queries\Views\Query.Buttons.SummaryAdmin.cshtml:12
+msgctxt "OrchardCore.Queries.Views.Query.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#. <button type="submit" class="publish-button btn btn-success">@T["Save"]</button>
+#: OrchardCore.Queries\Views\Query.Fields.Buttons.cshtml:4
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Buttons"
+msgid "Save"
+msgstr ""
+
+#. asp-route-area="OrchardCore.Queries">@T["Cancel"]</a>
+#: OrchardCore.Queries\Views\Query.Fields.Buttons.cshtml:9
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Buttons"
+msgid "Cancel"
+msgstr ""
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Queries\Views\Query.Fields.Edit.cshtml:4
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "Name"
+msgstr ""
+
+#. <span class="hint">@T["The technical name of the query."]</span>
+#: OrchardCore.Queries\Views\Query.Fields.Edit.cshtml:7
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "The technical name of the query."
+msgstr ""
+
+#. <label asp-for="Schema">@T["Schema"]</label>
+#: OrchardCore.Queries\Views\Query.Fields.Edit.cshtml:12
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "Schema"
+msgstr ""
+
+#. <span class="hint">@T["The schema the api will use to return results."]</span>
+#: OrchardCore.Queries\Views\Query.Fields.Edit.cshtml:14
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "The schema the api will use to return results."
+msgstr ""
+
+#. <h1>@T["If you see this message you need to create a custom shape template for {0}", "Query-" + Model.Name + ".Link"]</h1>
+#: OrchardCore.Queries\Views\Query.Link.cshtml:1
+msgctxt "OrchardCore.Queries.Views.Query.Link"
+msgid "If you see this message you need to create a custom shape template for {0}"
+msgstr ""
+
+#. class="btn btn-success btn-sm">@T["Run"]</a>
+#: OrchardCore.Queries\Views\SqlQuery.Buttons.SummaryAdmin.cshtml:11
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Buttons.SummaryAdmin"
+msgid "Run"
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="ReturnDocuments">@T["Return Documents"]</label>
+#: OrchardCore.Queries\Views\SqlQuery.Edit.cshtml:10
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "Return Documents"
+msgstr ""
+
+#. <span class="hint">— @T["Check to return the corresponding documents."]</span>
+#: OrchardCore.Queries\Views\SqlQuery.Edit.cshtml:11
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "Check to return the corresponding documents."
+msgstr ""
+
+#. <span class="hint">@T["When checked, the result has to be a list of document ids."]</span>
+#: OrchardCore.Queries\Views\SqlQuery.Edit.cshtml:13
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "When checked, the result has to be a list of document ids."
+msgstr ""
+
+#. <label asp-for="Query">@T["Query"]</label>
+#: OrchardCore.Queries\Views\SqlQuery.Edit.cshtml:17
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "Query"
+msgstr ""
+
+#. <span class="hint">@T["The SQL query to execute."]</span>
+#: OrchardCore.Queries\Views\SqlQuery.Edit.cshtml:19
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "The SQL query to execute."
+msgstr ""
+
+#. <span class="hint">@T["SQL query"]</span>
+#: OrchardCore.Queries\Views\SqlQuery.SummaryAdmin.cshtml:3
+msgctxt "OrchardCore.Queries.Views.SqlQuery.SummaryAdmin"
+msgid "SQL query"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["New {0} query", Model.SourceName])</h1>
+#: OrchardCore.Queries\Views\Admin\Create.cshtml:3
+msgctxt "OrchardCore.Queries.Views.Admin.Create"
+msgid "New {0} query"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Edit '{0}' query", Model.Name])</h1>
+#: OrchardCore.Queries\Views\Admin\Edit.cshtml:3
+msgctxt "OrchardCore.Queries.Views.Admin.Edit"
+msgid "Edit '{0}' query"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Queries"])</h1>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:5
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Queries"
+msgstr ""
+
+#. <button type="button" class="btn btn-primary float-right" role="button" data-toggle="modal" data-target="#modalAddQuery">@T["Add Query"]</button>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:9
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Add Query"
+msgstr ""
+
+#. <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:18
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Filter"
+msgstr ""
+
+#. <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" autofocus="autofocus" />
+#. <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:20
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:22
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Search"
+msgstr ""
+
+#. @T["<strong>Nothing here!</strong> There are no queries for the moment."]
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:45
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> There are no queries for the moment."
+msgstr ""
+
+#. <h5 class="modal-title">@T["Available Query Types"]</h5>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:57
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Available Query Types"
+msgstr ""
+
+#. <p class="p-3 mb-2 bg-warning text-white">@T["You need to enable a feature which provides a query source."] <a asp-action="Features" asp-controller="Admin" asp-area="OrchardCore.Features">@T["Go to Features"]</a></p>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:65
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "You need to enable a feature which provides a query source."
+msgstr ""
+
+#. <p class="p-3 mb-2 bg-warning text-white">@T["You need to enable a feature which provides a query source."] <a asp-action="Features" asp-controller="Admin" asp-area="OrchardCore.Features">@T["Go to Features"]</a></p>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:65
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Go to Features"
+msgstr ""
+
+#. <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:82
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Cancel"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["SQL Query"])</h1>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:13
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "SQL Query"
+msgstr ""
+
+#. <label asp-for="DecodedQuery">@T["Template"]</label>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:22
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Template"
+msgstr ""
+
+#. <span class="hint">@T["You can <a href=\"{0}\">click here</a> to query all content items.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Queries", Query = matchAllQuery }))]</span>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:24
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "You can <a href=\"{0}\">click here</a> to query all content items."
+msgstr ""
+
+#. <span class="hint">@T["The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically."]</span>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:25
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically."
+msgstr ""
+
+#. <label asp-for="Parameters">@T["Parameters"]</label>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:31
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Parameters"
+msgstr ""
+
+#. <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:33
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "An optional Json object containing the parameter values for this query."
+msgstr ""
+
+#. <button type="submit" class="btn btn-primary">@T["Query"]</button>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:42
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Query"
+msgstr ""
+
+#. <label asp-for="RawSql">@T["Final SQL Query"]</label>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:52
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Final SQL Query"
+msgstr ""
+
+#. <span class="hint">@T["The query as it will be executed by the SQL database."]</span>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:54
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "The query as it will be executed by the SQL database."
+msgstr ""
+
+#. <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Sql", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:58
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Create"
+msgstr ""
+
+#. <span class="text-muted">@T["Query executed in {0} ms", Model.Elapsed.TotalMilliseconds]</span>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:66
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Query executed in {0} ms"
+msgstr ""
+
+#. <h5>@T["All Queries"]</h5>
+#: OrchardCore.Queries\Views\Items\AllQueriesDeploymentStep.Edit.cshtml:3
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Edit"
+msgid "All Queries"
+msgstr ""
+
+#. <h5>@T["All Queries"]</h5>
+#: OrchardCore.Queries\Views\Items\AllQueriesDeploymentStep.Summary.cshtml:3
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Summary"
+msgid "All Queries"
+msgstr ""
+
+#. <span class="hint">@T["Adds all queries to the plan."]</span>
+#: OrchardCore.Queries\Views\Items\AllQueriesDeploymentStep.Summary.cshtml:5
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Summary"
+msgid "Adds all queries to the plan."
+msgstr ""
+
+#. <h4 class="card-title">@T["All Queries"]</h4>
+#: OrchardCore.Queries\Views\Items\AllQueriesDeploymentStep.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Thumbnail"
+msgid "All Queries"
+msgstr ""
+
+#. <p>@T["Exports every query."]</p>
+#: OrchardCore.Queries\Views\Items\AllQueriesDeploymentStep.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Thumbnail"
+msgid "Exports every query."
+msgstr ""
+

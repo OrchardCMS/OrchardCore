@@ -1,0 +1,110 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: nl\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Google.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Dutch\n"
+"Language: nl_NL\n"
+"PO-Revision-Date: 2019-09-04 19:00\n"
+
+#. builder.Add(T["Google"], "15", settings => settings
+#: OrchardCore.Google\AdminMenu.cs:30
+msgctxt "OrchardCore.Google.AdminMenuGoogleAuthentication"
+msgid "Google"
+msgstr ""
+
+#. .Add(T["Google Authentication"], "20", client => client
+#: OrchardCore.Google\AdminMenu.cs:32
+msgctxt "OrchardCore.Google.AdminMenuGoogleAuthentication"
+msgid "Google Authentication"
+msgstr ""
+
+#. builder.Add(T["Google"], "15", settings => settings
+#: OrchardCore.Google\AdminMenu.cs:61
+msgctxt "OrchardCore.Google.AdminMenuGoogleAnalytics"
+msgid "Google"
+msgstr ""
+
+#. .Add(T["Google Analytics"], "10", client => client
+#: OrchardCore.Google\AdminMenu.cs:63
+msgctxt "OrchardCore.Google.AdminMenuGoogleAnalytics"
+msgid "Google Analytics"
+msgstr ""
+
+#. <h3>@T["Google Analytics Settings"]</h3>
+#: OrchardCore.Google\Views\GoogleAnalyticsSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Google.Views.GoogleAnalyticsSettings.Edit"
+msgid "Google Analytics Settings"
+msgstr ""
+
+#. <label asp-for="TrackingID">@T["Tracking ID"]</label>
+#: OrchardCore.Google\Views\GoogleAnalyticsSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Google.Views.GoogleAnalyticsSettings.Edit"
+msgid "Tracking ID"
+msgstr ""
+
+#. <span class="hint">@T["The tracking ID defined in your Google Analytics account."]</span>
+#: OrchardCore.Google\Views\GoogleAnalyticsSettings.Edit.cshtml:11
+msgctxt "OrchardCore.Google.Views.GoogleAnalyticsSettings.Edit"
+msgid "The tracking ID defined in your Google Analytics account."
+msgstr ""
+
+#. <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr ""
+
+#. <h3>@T["Google Authentication Settings"]</h3>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "Google Authentication Settings"
+msgstr ""
+
+#. <label asp-for="ClientID">@T["Client ID"]</label>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:11
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "Client ID"
+msgstr ""
+
+#. <span class="hint">@T["The client id defined in Google API console for the application."]</span>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "The client id defined in Google API console for the application."
+msgstr ""
+
+#. <label asp-for="ClientSecret">@T["API secret key"]</label>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:20
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "API secret key"
+msgstr ""
+
+#. <span class="hint">@T["The client secret defined in Google API console for the application."]</span>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:23
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "The client secret defined in Google API console for the application."
+msgstr ""
+
+#. <label asp-for="CallbackPath">@T["CallbackPath"]</label>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:29
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "CallbackPath"
+msgstr ""
+
+#. <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:32
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."
+msgstr ""
+
+#. <span class="icon"><i class="fa fa-google" aria-hidden="true"></i></span><span class="title">@T["Google"]</span>
+#: OrchardCore.Google\Views\NavigationItemText-google.Id.cshtml:1
+msgctxt "OrchardCore.Google.Views.NavigationItemText-google.Id"
+msgid "Google"
+msgstr ""
+

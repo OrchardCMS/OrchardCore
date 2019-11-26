@@ -1,0 +1,410 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: hu\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Deployment.Remote.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Hungarian\n"
+"Language: hu_HU\n"
+"PO-Revision-Date: 2019-09-04 19:06\n"
+
+#. .Add(T["Configuration"], content => content
+#: OrchardCore.Deployment.Remote\AdminMenu.cs:25
+msgctxt "OrchardCore.Deployment.Remote.AdminMenu"
+msgid "Configuration"
+msgstr ""
+
+#. .Add(T["Import/Export"], import => import
+#: OrchardCore.Deployment.Remote\AdminMenu.cs:26
+msgctxt "OrchardCore.Deployment.Remote.AdminMenu"
+msgid "Import/Export"
+msgstr ""
+
+#. .Add(T["Remote Instances"], "5.1", remote => remote
+#: OrchardCore.Deployment.Remote\AdminMenu.cs:27
+msgctxt "OrchardCore.Deployment.Remote.AdminMenu"
+msgid "Remote Instances"
+msgstr ""
+
+#. .Add(T["Remote Clients"], remote => remote
+#: OrchardCore.Deployment.Remote\AdminMenu.cs:32
+msgctxt "OrchardCore.Deployment.Remote.AdminMenu"
+msgid "Remote Clients"
+msgstr ""
+
+#. _notifier.Success(H["Deployment executed successfully."]);
+#: OrchardCore.Deployment.Remote\Controllers\ExportRemoteInstanceController.cs:107
+msgctxt "OrchardCore.Deployment.Remote.Controllers.ExportRemoteInstanceController"
+msgid "Deployment executed successfully."
+msgstr ""
+
+#. _notifier.Error(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
+#: OrchardCore.Deployment.Remote\Controllers\ExportRemoteInstanceController.cs:111
+msgctxt "OrchardCore.Deployment.Remote.Controllers.ExportRemoteInstanceController"
+msgid "An error occurred while sending the deployment to the remote instance: \"{0} ({1})\""
+msgstr ""
+
+#. _notifier.Success(H["Remote client created successfully"]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteClientController.cs:95
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "Remote client created successfully"
+msgstr ""
+
+#. _notifier.Success(H["Remote client updated successfully"]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteClientController.cs:151
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "Remote client updated successfully"
+msgstr ""
+
+#. _notifier.Success(H["Remote client deleted successfully"]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteClientController.cs:177
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "Remote client deleted successfully"
+msgstr ""
+
+#. ModelState.AddModelError(nameof(EditRemoteClientViewModel.ClientName), S["The client name is mandatory."]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteClientController.cs:186
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "The client name is mandatory."
+msgstr ""
+
+#. ModelState.AddModelError(nameof(EditRemoteClientViewModel.ApiKey), S["The api key is mandatory."]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteClientController.cs:191
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "The api key is mandatory."
+msgstr ""
+
+#. _notifier.Success(H["Remote instance created successfully"]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteInstanceController.cs:90
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "Remote instance created successfully"
+msgstr ""
+
+#. _notifier.Success(H["Remote instance updated successfully"]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteInstanceController.cs:148
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "Remote instance updated successfully"
+msgstr ""
+
+#. _notifier.Success(H["Remote instance deleted successfully"]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteInstanceController.cs:174
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "Remote instance deleted successfully"
+msgstr ""
+
+#. ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Name), S["The name is mandatory."]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteInstanceController.cs:183
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "The name is mandatory."
+msgstr ""
+
+#. ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.ClientName), S["The client name is mandatory."]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteInstanceController.cs:188
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "The client name is mandatory."
+msgstr ""
+
+#. ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.ApiKey), S["The api key is mandatory."]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteInstanceController.cs:193
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "The api key is mandatory."
+msgstr ""
+
+#. ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Url), S["The url is mandatory."]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteInstanceController.cs:198
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "The url is mandatory."
+msgstr ""
+
+#. ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Url), S["The url is invalid."]);
+#: OrchardCore.Deployment.Remote\Controllers\RemoteInstanceController.cs:205
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "The url is invalid."
+msgstr ""
+
+#. description: T["Sends the deployment plan to a remote instance."],
+#: OrchardCore.Deployment.Remote\Services\RemoteInstanceDeploymentTargetProvider.cs:31
+msgctxt "OrchardCore.Deployment.RemoteInstanceDeploymentTargetProvider"
+msgid "Sends the deployment plan to a remote instance."
+msgstr ""
+
+#. <label asp-for="ClientName">@T["Client Name"]</label>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Create.cshtml:7
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
+msgid "Client Name"
+msgstr ""
+
+#. <span asp-validation-for="ClientName" class="text-danger">@T["The client name is required."]</span>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Create.cshtml:9
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
+msgid "The client name is required."
+msgstr ""
+
+#. <label asp-for="ApiKey">@T["Api Key"]</label>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Create.cshtml:13
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
+msgid "Api Key"
+msgstr ""
+
+#. <span asp-validation-for="ApiKey" class="text-danger">@T["The api key is required."]</span>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Create.cshtml:15
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
+msgid "The api key is required."
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit">@T["Create"]</button>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Create.cshtml:20
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
+msgid "Create"
+msgstr ""
+
+#. <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Create.cshtml:21
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
+msgid "Cancel"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Edit Remote Client"])</h1>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Edit.cshtml:3
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "Edit Remote Client"
+msgstr ""
+
+#. <label asp-for="ClientName">@T["Client Name"]</label>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Edit.cshtml:10
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "Client Name"
+msgstr ""
+
+#. <span asp-validation-for="ClientName" class="text-danger">@T["The client name is required."]</span>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Edit.cshtml:12
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "The client name is required."
+msgstr ""
+
+#. <label asp-for="ApiKey">@T["Api Key"]</label>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Edit.cshtml:16
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "Api Key"
+msgstr ""
+
+#. <span asp-validation-for="ApiKey" class="text-danger">@T["The api key is required."]</span>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Edit.cshtml:18
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "The api key is required."
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit">@T["Save"]</button>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Edit.cshtml:23
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "Save"
+msgstr ""
+
+#. <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Edit.cshtml:24
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "Cancel"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Remote Clients"])</h1>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Index.cshtml:3
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "Remote Clients"
+msgstr ""
+
+#. @T["Url to use from client instances: <b>{0}</b>", Url.Action("Import", "ImportRemoteInstance", null, Context.Request.Scheme)]
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Index.cshtml:6
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "Url to use from client instances: <b>{0}</b>"
+msgstr ""
+
+#. <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Remote Client"]</a>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Index.cshtml:13
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "Add Remote Client"
+msgstr ""
+
+#. <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Index.cshtml:27
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "Edit"
+msgstr ""
+
+#. <a asp-action="Delete" asp-route-id="@entry.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Index.cshtml:28
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "Delete"
+msgstr ""
+
+#. @T["<strong>Nothing here!</strong> There are no remote clients for the moment."]
+#: OrchardCore.Deployment.Remote\Views\RemoteClient\Index.cshtml:39
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "<strong>Nothing here!</strong> There are no remote clients for the moment."
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Create Remote Instance"])</h1>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Create.cshtml:3
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Create Remote Instance"
+msgstr ""
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Create.cshtml:8
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Name"
+msgstr ""
+
+#. <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Create.cshtml:10
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "The name is required."
+msgstr ""
+
+#. <label asp-for="Url">@T["Url"]</label>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Create.cshtml:14
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Url"
+msgstr ""
+
+#. <span asp-validation-for="Url" class="text-danger">@T["The url is required."]</span>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Create.cshtml:16
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "The url is required."
+msgstr ""
+
+#. <label asp-for="ClientName">@T["Client Name"]</label>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Create.cshtml:20
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Client Name"
+msgstr ""
+
+#. <span asp-validation-for="ClientName" class="text-danger">@T["The client name is required."]</span>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Create.cshtml:22
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "The client name is required."
+msgstr ""
+
+#. <label asp-for="ApiKey">@T["Api Key"]</label>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Create.cshtml:26
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Api Key"
+msgstr ""
+
+#. <span asp-validation-for="ApiKey" class="text-danger">@T["The api key is required."]</span>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Create.cshtml:28
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "The api key is required."
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit">@T["Create"]</button>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Create.cshtml:33
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Create"
+msgstr ""
+
+#. <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Create.cshtml:34
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Cancel"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Edit Remote Instance"])</h1>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Edit.cshtml:3
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Edit Remote Instance"
+msgstr ""
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Edit.cshtml:10
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Name"
+msgstr ""
+
+#. <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Edit.cshtml:12
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "The name is required."
+msgstr ""
+
+#. <label asp-for="Url">@T["Url"]</label>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Edit.cshtml:16
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Url"
+msgstr ""
+
+#. <span asp-validation-for="Url" class="text-danger">@T["The url is required."]</span>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Edit.cshtml:18
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "The url is required."
+msgstr ""
+
+#. <label asp-for="ClientName">@T["Client Name"]</label>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Edit.cshtml:22
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Client Name"
+msgstr ""
+
+#. <span asp-validation-for="ClientName" class="text-danger">@T["The client name is required."]</span>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Edit.cshtml:24
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "The client name is required."
+msgstr ""
+
+#. <label asp-for="ApiKey">@T["Api Key"]</label>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Edit.cshtml:28
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Api Key"
+msgstr ""
+
+#. <span asp-validation-for="ApiKey" class="text-danger">@T["The api key is required."]</span>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Edit.cshtml:30
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "The api key is required."
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit">@T["Save"]</button>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Edit.cshtml:35
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Save"
+msgstr ""
+
+#. <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Edit.cshtml:36
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Cancel"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Remote Instances"])</h1>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Index.cshtml:3
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
+msgid "Remote Instances"
+msgstr ""
+
+#. <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Remote Instance"]</a>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Index.cshtml:8
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
+msgid "Add Remote Instance"
+msgstr ""
+
+#. <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Index.cshtml:22
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
+msgid "Edit"
+msgstr ""
+
+#. <a asp-action="Delete" asp-route-id="@entry.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Index.cshtml:23
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
+msgid "Delete"
+msgstr ""
+
+#. @T["<strong>Nothing here!</strong> There are no remote instances for the moment."]
+#: OrchardCore.Deployment.Remote\Views\RemoteInstance\Index.cshtml:35
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
+msgid "<strong>Nothing here!</strong> There are no remote instances for the moment."
+msgstr ""
+

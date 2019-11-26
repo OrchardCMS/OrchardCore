@@ -1,0 +1,204 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Lists.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2019-09-04 18:52\n"
+
+#. Description = T["the list part of the content item"];
+#: OrchardCore.Lists\GraphQL\ContainedInputObjectType.cs:13
+msgctxt "OrchardCore.Lists.GraphQL.ContainedInputObjectType"
+msgid "the list part of the content item"
+msgstr "内容项的列表部分"
+
+#. AddScalarFilterFields<IdGraphType>("listContentItemId", T["the content item id of the parent list of the content item to filter"]);
+#: OrchardCore.Lists\GraphQL\ContainedInputObjectType.cs:15
+msgctxt "OrchardCore.Lists.GraphQL.ContainedInputObjectType"
+msgid "the content item id of the parent list of the content item to filter"
+msgstr "要筛选的内容项目的父列表的内容项 id"
+
+#. Description = T["Represents a link to the parent content item, and the order that content item is represented."];
+#: OrchardCore.Lists\GraphQL\ContainedQueryObjectType.cs:12
+msgctxt "OrchardCore.Lists.GraphQL.ContainedQueryObjectType"
+msgid "Represents a link to the parent content item, and the order that content item is represented."
+msgstr "表示父内容项目的链接，以及内容项目的代表顺序。"
+
+#. Description = T["Represents a collection of content items."];
+#: OrchardCore.Lists\GraphQL\ListQueryObjectType.cs:20
+msgctxt "OrchardCore.Lists.GraphQL.ListQueryObjectType"
+msgid "Represents a collection of content items."
+msgstr "表示内容项的集合。"
+
+#. throw new Exception(T["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
+#: OrchardCore.Lists\RemotePublishing\MetaWeblogHandler.cs:368
+msgctxt "OrchardCore.Lists.RemotePublishing.MetaWeblogHandler"
+msgid "The specified Blog Post doesn't exist anymore. Please create a new Blog Post."
+msgstr "指定的博客帖子不再存在。请创建一个新的博客帖子。"
+
+#. throw new InvalidOperationException(T["Not authorized to delete this content"].Value);
+#. throw new InvalidOperationException(T["Not authorized to delete this content"].Value);
+#: OrchardCore.Lists\RemotePublishing\MetaWeblogHandler.cs:425
+#: OrchardCore.Lists\RemotePublishing\MetaWeblogHandler.cs:492
+msgctxt "OrchardCore.Lists.RemotePublishing.MetaWeblogHandler"
+msgid "Not authorized to delete this content"
+msgstr "未授权删除此内容"
+
+#. throw new InvalidOperationException(T["The username or e-mail or password provided is incorrect."].Value);
+#: OrchardCore.Lists\RemotePublishing\MetaWeblogHandler.cs:441
+msgctxt "OrchardCore.Lists.RemotePublishing.MetaWeblogHandler"
+msgid "The username or e-mail or password provided is incorrect."
+msgstr "提供的用户名或电子邮件或密码不正确。"
+
+#. context.Updater.ModelState.AddModelError(nameof(model.ContainedContentTypes), TS["At least one content type must be selected."]);
+#: OrchardCore.Lists\Settings\ListPartSettingsDisplayDriver.cs:63
+msgctxt "OrchardCore.Lists.Settings.ListPartSettingsDisplayDriver"
+msgid "At least one content type must be selected."
+msgstr "至少必须选择一个内容类型。"
+
+#. <p class="alert alert-warning">@T["The list is empty"]</p>
+#: OrchardCore.Lists\Views\ListPart.cshtml:20
+msgctxt "OrchardCore.Lists.Views.ListPart"
+msgid "The list is empty"
+msgstr "该清单为空"
+
+#. <a asp-action="EditTypePart" asp-controller="Admin" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.ListPart.ContentItem.ContentType" asp-route-name="ListPart">@T["Please specify at least one contained content type."]</a>
+#: OrchardCore.Lists\Views\ListPart.DetailAdmin.cshtml:10
+msgctxt "OrchardCore.Lists.Views.ListPart.DetailAdmin"
+msgid "Please specify at least one contained content type."
+msgstr "请至少指定一个包含的内容类型。"
+
+#. @T["Create {0}", contentTypeDefinition.DisplayName]
+#: OrchardCore.Lists\Views\ListPart.DetailAdmin.cshtml:20
+msgctxt "OrchardCore.Lists.Views.ListPart.DetailAdmin"
+msgid "Create {0}"
+msgstr "创建 {0}"
+
+#. @T["Create"]
+#: OrchardCore.Lists\Views\ListPart.DetailAdmin.cshtml:29
+msgctxt "OrchardCore.Lists.Views.ListPart.DetailAdmin"
+msgid "Create"
+msgstr "创建"
+
+#. <p class="alert alert-warning">@T["The list is empty."]</p>
+#: OrchardCore.Lists\Views\ListPart.DetailAdmin.cshtml:58
+msgctxt "OrchardCore.Lists.Views.ListPart.DetailAdmin"
+msgid "The list is empty."
+msgstr "该清单为空."
+
+#. <label asp-for="FeedProxyUrl">@T["Feed proxy Url"]</label>
+#: OrchardCore.Lists\Views\ListPartFeed.Edit.cshtml:5
+msgctxt "OrchardCore.Lists.Views.ListPartFeed.Edit"
+msgid "Feed proxy Url"
+msgstr "提要代理 Url"
+
+#. <span class="hint">@T["Provide a custom public url which will be used to proxy the local rss feed."]</span>
+#: OrchardCore.Lists\Views\ListPartFeed.Edit.cshtml:7
+msgctxt "OrchardCore.Lists.Views.ListPartFeed.Edit"
+msgid "Provide a custom public url which will be used to proxy the local rss feed."
+msgstr "提供用于代理本地 rss 源的自定义公共 url。"
+
+#. <span class="hint">@T["The current feed is available at <a href=\"{0}\">{0}</a>.", Url.Action("Index", "Feed", new { area = "OrchardCore.Feeds", ContentItemId = Model.ContentItem.ContentItemId }, Context.Request.Scheme)]</span>
+#: OrchardCore.Lists\Views\ListPartFeed.Edit.cshtml:8
+msgctxt "OrchardCore.Lists.Views.ListPartFeed.Edit"
+msgid "The current feed is available at <a href=\"{0}\">{0}</a>."
+msgstr "当前的源可用于 <a href=\"{0}\">{0}</a>。"
+
+#. <label asp-for="FeedItemsCount">@T["Feed items count"]</label>
+#: OrchardCore.Lists\Views\ListPartFeed.Edit.cshtml:12
+msgctxt "OrchardCore.Lists.Views.ListPartFeed.Edit"
+msgid "Feed items count"
+msgstr "提要项计数"
+
+#. <span class="hint">@T["The number of elements to display in the feed."]</span>
+#: OrchardCore.Lists\Views\ListPartFeed.Edit.cshtml:14
+msgctxt "OrchardCore.Lists.Views.ListPartFeed.Edit"
+msgid "The number of elements to display in the feed."
+msgstr "要在提要中显示的元素数。"
+
+#. <label asp-for="PageSize">@T["Page Size"]</label>
+#: OrchardCore.Lists\Views\ListPartSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "Page Size"
+msgstr "页面大小"
+
+#. <span class="hint">@T["The number of items to display per page."]</span>
+#: OrchardCore.Lists\Views\ListPartSettings.Edit.cshtml:7
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "The number of items to display per page."
+msgstr "每页显示的项数。"
+
+#. <label asp-for="ContainedContentTypes">@T["Contained Content Types"]</label>
+#: OrchardCore.Lists\Views\ListPartSettings.Edit.cshtml:11
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "Contained Content Types"
+msgstr "包含的内容类型"
+
+#. <span class="hint">@T["The content types that this list can contain, e.g. Blog Post for a Blog."]</span>
+#: OrchardCore.Lists\Views\ListPartSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "The content types that this list can contain, e.g. Blog Post for a Blog."
+msgstr "此列表可以包含的内容类型, 例如博客帖子。"
+
+#. <h5>@T["Lists"]</h5>
+#: OrchardCore.Lists\Views\Items\ListsAdminNode.Fields.TreeEdit.cshtml:8
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Lists"
+msgstr "列表"
+
+#. <label asp-for="IconForContentItems">@T["Icon for the content items"]</label>
+#: OrchardCore.Lists\Views\Items\ListsAdminNode.Fields.TreeEdit.cshtml:18
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Icon for the content items"
+msgstr "内容项目图标"
+
+#. @T["Icon"]
+#. @T["Icon"]
+#: OrchardCore.Lists\Views\Items\ListsAdminNode.Fields.TreeEdit.cshtml:32
+#: OrchardCore.Lists\Views\Items\ListsAdminNode.Fields.TreeEdit.cshtml:73
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Icon"
+msgstr "图标"
+
+#. @T["Add parent menu item"]
+#: OrchardCore.Lists\Views\Items\ListsAdminNode.Fields.TreeEdit.cshtml:52
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Add parent menu item"
+msgstr "添加父菜单项"
+
+#. <label asp-for="IconForParentLink">@T["Icon for the parent menu item"]</label>
+#: OrchardCore.Lists\Views\Items\ListsAdminNode.Fields.TreeEdit.cshtml:59
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Icon for the parent menu item"
+msgstr "父菜单项的图标"
+
+#. <h5 class="modal-title">@T["Pick an icon"]</h5>
+#: OrchardCore.Lists\Views\Items\ListsAdminNode.Fields.TreeEdit.cshtml:97
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Pick an icon"
+msgstr "选择一个图标"
+
+#. <span class="text-muted">- @T["Lists"]</span>
+#: OrchardCore.Lists\Views\Items\ListsAdminNode.Fields.TreeSummary.cshtml:11
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeSummary"
+msgid "Lists"
+msgstr "列表"
+
+#. <h4 class="card-title">@T["Lists"]</h4>
+#: OrchardCore.Lists\Views\Items\ListsAdminNode.Fields.TreeThumbnail.cshtml:3
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeThumbnail"
+msgid "Lists"
+msgstr "列表"
+
+#. <p>@T["Adds links for list content items"]</p>
+#: OrchardCore.Lists\Views\Items\ListsAdminNode.Fields.TreeThumbnail.cshtml:4
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeThumbnail"
+msgid "Adds links for list content items"
+msgstr "添加列表内容项目的链接"
+

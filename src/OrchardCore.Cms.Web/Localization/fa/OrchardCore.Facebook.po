@@ -1,0 +1,182 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: fa\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Facebook.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Persian\n"
+"Language: fa_IR\n"
+"PO-Revision-Date: 2019-09-07 05:32\n"
+
+#. builder.Add(T["Facebook"], "15", settings =>
+#: OrchardCore.Facebook\AdminMenu.cs:29
+msgctxt "OrchardCore.Facebook.AdminMenu"
+msgid "Facebook"
+msgstr "فیس‌بوک"
+
+#. .Add(T["Application"], "1", client => client
+#: OrchardCore.Facebook\AdminMenu.cs:31
+msgctxt "OrchardCore.Facebook.AdminMenu"
+msgid "Application"
+msgstr "برنامه‌کاربردی"
+
+#. builder.Add(T["Facebook"], "1", settings =>
+#: OrchardCore.Facebook\AdminMenu.cs:60
+msgctxt "OrchardCore.Facebook.AdminMenuLogin"
+msgid "Facebook"
+msgstr "فیس‌بوک"
+
+#. .Add(T["Login"], "2", client => client
+#: OrchardCore.Facebook\AdminMenu.cs:62
+msgctxt "OrchardCore.Facebook.AdminMenuLogin"
+msgid "Login"
+msgstr "ورود به سامانه"
+
+#. results.Add(new ValidationResult(T["The AppId is required."], new[]
+#: OrchardCore.Facebook\Services\FacebookService.cs:60
+msgctxt "OrchardCore.Facebook.Services.FacebookService"
+msgid "The AppId is required."
+msgstr "AppId ضروری است."
+
+#. results.Add(new ValidationResult(T["The App Secret is required."], new[]
+#: OrchardCore.Facebook\Services\FacebookService.cs:68
+msgctxt "OrchardCore.Facebook.Services.FacebookService"
+msgid "The App Secret is required."
+msgstr "کد مخفی برنامه‌ ضروری است."
+
+#. <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "پس از ذخیره تنظیمات، tenant جاری، مجدد بارگذاری خواهد شد."
+
+#. <h3>@T["Login Settings"]</h3>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "Login Settings"
+msgstr "تنظیمات ورود به سامانه"
+
+#. <label>@T["CallbackPath"]</label>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:9
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "CallbackPath"
+msgstr "CallbackPath"
+
+#. <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."
+msgstr "مسیر درخواست به همراه مسیر پایه (base path) برنامه‌کاربردی، جایی که user agent برگردانده می‌شود. این درخواست هنگام ورود، توسط middleware پردازش خواهد شد."
+
+#. <label asp-for="Liquid">@T["Body"]</label>
+#: OrchardCore.Facebook\Views\FacebookPluginPart.Edit.cshtml:12
+msgctxt "OrchardCore.Facebook.Views.FacebookPluginPart.Edit"
+msgid "Body"
+msgstr "بدنه (Body)"
+
+#. <span class="hint">@T["The template of the plugin, in Liquid format."]</span>
+#: OrchardCore.Facebook\Views\FacebookPluginPart.Edit.cshtml:14
+msgctxt "OrchardCore.Facebook.Views.FacebookPluginPart.Edit"
+msgid "The template of the plugin, in Liquid format."
+msgstr "قالب افزونه، در فرمت Liquid."
+
+#. <label asp-for="Liquid">@T["Body"]</label>
+#: OrchardCore.Facebook\Views\FacebookPluginPartSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Facebook.Views.FacebookPluginPartSettings.Edit"
+msgid "Body"
+msgstr "بدنه (Body)"
+
+#. <span class="hint">@T["The default template of the plugin, in Liquid format."]</span>
+#: OrchardCore.Facebook\Views\FacebookPluginPartSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Facebook.Views.FacebookPluginPartSettings.Edit"
+msgid "The default template of the plugin, in Liquid format."
+msgstr "قالب پیش‌فرض افزونه، در فرمت Liquid."
+
+#. <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "پس از ذخیره تنظیمات، tenant جاری، مجدد بارگذاری خواهد شد."
+
+#. <h3>@T["Facebook Integration"]</h3>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Facebook Integration"
+msgstr "ادغام فیس‌بوک"
+
+#. <label>@T["Application Identifier"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:9
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Application Identifier"
+msgstr "مشخص‌کننده برنامه‌کاربردی"
+
+#. <span class="hint">@T["The Application ID found on the Facebook developer portal parameters."]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "The Application ID found on the Facebook developer portal parameters."
+msgstr "شناسه برنامه‌کاربردی، موجود در پارامترهای پورتال توسعه‌دهندگان فیس‌بوک."
+
+#. <label>@T["Secret Key"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:16
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Secret Key"
+msgstr "کلید مخفی"
+
+#. <span class="hint">@T["The Application secret key found on the Facebook developer portal parameters."]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:19
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "The Application secret key found on the Facebook developer portal parameters."
+msgstr "کلید مخفی برنامه‌کاربردی، موجود در پارامترهای پورتال توسعه‌دهندگان فیس‌بوک."
+
+#. <label>@T["Javascript SDK Version"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:24
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Javascript SDK Version"
+msgstr "نسخه Javascript SDK"
+
+#. <label>@T["Javascript Sdk js"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:27
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Javascript Sdk js"
+msgstr "Javascript Sdk js"
+
+#. <span class="hint">@T["Determines which versions of the Graph API and any API dialogs or plugins are invoked. Default is v3.2"]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:32
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Determines which versions of the Graph API and any API dialogs or plugins are invoked. Default is v3.2"
+msgstr "تعیین می‌کند که کدام یک از نسخه های Graph API یا چه نوع API dialogs یا API plugins فراخوانی می‌شوند. پیش‌فرض v3.2 است"
+
+#. <span class="hint">@T["Determines which sdk js file to load. Default is sdk.js but you can change it as needed. Eg. to render the chat plugin use sdk/xfbml.customerchat.js and <a target=\"_blank\" href=\"https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin#steps\">follow instructions</a>"]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:38
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Determines which sdk js file to load. Default is sdk.js but you can change it as needed. Eg. to render the chat plugin use sdk/xfbml.customerchat.js and <a target=\"_blank\" href=\"https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin#steps\">follow instructions</a>"
+msgstr "تعیین می‌کند که کدام فایل sdk js بارگذاری شود. پیش فرض sdk.js است اما در صورت نیاز می‌توانید آن را تغییر دهید. برای مثال برای رِندِر افزونه چت از sdk/xfbml.customerchat.js استفاده کنید و <a target=\"_blank\" href=\"https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin#steps\">دستورالعمل را دنبال کنید</a>"
+
+#. <label class="form-check-label">@T["Init on every page"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:44
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Init on every page"
+msgstr "در هر صفحه‌ای Init فراخوانی شود"
+
+#. <label>@T["Parameters for the FB.init() call"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:51
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Parameters for the FB.init() call"
+msgstr "پارامترهای مورد نیاز برای فراخوانی ()FB.init"
+
+#. <span class="hint">@T["AppId and Version are filled automatically. Check the <a target=\"_blank\" href=\"https://developers.facebook.com/docs/javascript/reference/FB.init/v3.2\">reference doc for the <code>FB.init</code></a> function for more info"]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:54
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "AppId and Version are filled automatically. Check the <a target=\"_blank\" href=\"https://developers.facebook.com/docs/javascript/reference/FB.init/v3.2\">reference doc for the <code>FB.init</code></a> function for more info"
+msgstr "AppId و Version به طور خودکار پر می‌شوند. برای کسب اطلاعات بیشتر در مورد تابع <code>FB.init</code> <a target=\"_blank\" href=\"https://developers.facebook.com/docs/javascript/reference/FB.init/v3.2\">اینجا</a> بررسی شود"
+
+#. <span class="icon"><i class="fa fa-facebook" aria-hidden="true"></i></span><span class="title">@T["Facebook"]</span>
+#: OrchardCore.Facebook\Views\NavigationItemText-facebook.Id.cshtml:1
+msgctxt "OrchardCore.Facebook.Views.NavigationItemText-facebook.Id"
+msgid "Facebook"
+msgstr "فیس‌بوک"
+

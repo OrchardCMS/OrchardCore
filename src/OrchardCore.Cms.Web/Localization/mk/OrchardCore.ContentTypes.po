@@ -1,0 +1,940 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n%10==1 && n%100 != 11 ? 0 : 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: mk\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.ContentTypes.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Macedonian\n"
+"Language: mk_MK\n"
+"PO-Revision-Date: 2019-09-21 09:35\n"
+
+#. builder.Add(T["Content Definition"], "2", contentDefinition => contentDefinition
+#: OrchardCore.ContentTypes\AdminMenu.cs:23
+msgctxt "OrchardCore.ContentTypes.AdminMenu"
+msgid "Content Definition"
+msgstr ""
+
+#. .Add(T["Content Types"], "1", contentTypes => contentTypes
+#: OrchardCore.ContentTypes\AdminMenu.cs:26
+msgctxt "OrchardCore.ContentTypes.AdminMenu"
+msgid "Content Types"
+msgstr ""
+
+#. .Add(T["Content Parts"], "2", contentParts => contentParts
+#: OrchardCore.ContentTypes\AdminMenu.cs:30
+msgctxt "OrchardCore.ContentTypes.AdminMenu"
+msgid "Content Parts"
+msgstr ""
+
+#. ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
+#. ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:98
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:319
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The Display Name can't be empty."
+msgstr ""
+
+#. ModelState.AddModelError("Name", S["The Content Type Id can't be empty."]);
+#. ModelState.AddModelError("Name", S["The Content Type Id can't be empty."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:103
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:324
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The Content Type Id can't be empty."
+msgstr ""
+
+#. ModelState.AddModelError("Name", S["A type with the same Id already exists."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:108
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "A type with the same Id already exists."
+msgstr ""
+
+#. ModelState.AddModelError("Name", S["The technical name must start with a letter."]);
+#. ModelState.AddModelError("Name", S["The technical name must start with a letter."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:113
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:544
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The technical name must start with a letter."
+msgstr ""
+
+#. ModelState.AddModelError("DisplayName", S["A type with the same Display Name already exists."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:118
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "A type with the same Display Name already exists."
+msgstr ""
+
+#. _notifier.Success(T["The \"{0}\" content type has been created.", typeViewModel.DisplayName]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:132
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The \"{0}\" content type has been created."
+msgstr ""
+
+#. _notifier.Success(T["\"{0}\" settings have been saved.", contentTypeDefinition.Name]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:187
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "\"{0}\" settings have been saved."
+msgstr ""
+
+#. _notifier.Success(T["\"{0}\" has been removed.", typeViewModel.DisplayName]);
+#. _notifier.Information(T["\"{0}\" has been removed.", partViewModel.DisplayName]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:207
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:481
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "\"{0}\" has been removed."
+msgstr ""
+
+#. _notifier.Success(T["The \"{0}\" part has been added.", partToAdd]);
+#. _notifier.Success(T["The \"{0}\" part has been added.", partToAdd]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:288
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:338
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The \"{0}\" part has been added."
+msgstr ""
+
+#. _notifier.Success(T["The \"{0}\" part has been removed.", name]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:358
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The \"{0}\" part has been removed."
+msgstr ""
+
+#. ModelState.AddModelError("Name", S["Name is Required."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:395
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "Name is Required."
+msgstr ""
+
+#. ModelState.AddModelError("Name", S["Cannot add part named '{0}'. It already exists.", viewModel.Name]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:399
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "Cannot add part named '{0}'. It already exists."
+msgstr ""
+
+#. _notifier.Information(T["The content part could not be created."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:409
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The content part could not be created."
+msgstr ""
+
+#. _notifier.Success(T["The \"{0}\" content part has been created.", partViewModel.Name]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:413
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The \"{0}\" content part has been created."
+msgstr ""
+
+#. _notifier.Success(T["The settings of \"{0}\" have been saved.", contentPartDefinition.Name]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:461
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The settings of \"{0}\" have been saved."
+msgstr ""
+
+#. ModelState.AddModelError("DisplayName", S["The Display Name name can't be empty."]);
+#. ModelState.AddModelError("DisplayName", S["The Display Name name can't be empty."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:529
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:652
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The Display Name name can't be empty."
+msgstr ""
+
+#. ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:534
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The Technical Name can't be empty."
+msgstr ""
+
+#. ModelState.AddModelError("Name", S["A field with the same name already exists."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:539
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "A field with the same name already exists."
+msgstr ""
+
+#. ModelState.AddModelError("Name", S["The technical name contains invalid characters."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:549
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The technical name contains invalid characters."
+msgstr ""
+
+#. ModelState.AddModelError("DisplayName", S["A field with the same Display Name already exists."]);
+#. ModelState.AddModelError("DisplayName", S["A field with the same Display Name already exists."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:554
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:657
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "A field with the same Display Name already exists."
+msgstr ""
+
+#. _notifier.Success(T["The field \"{0}\" has been added.", viewModel.DisplayName]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:570
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The field \"{0}\" has been added."
+msgstr ""
+
+#. _notifier.Information(T["Display name changed to {0}.", viewModel.DisplayName]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:668
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "Display name changed to {0}."
+msgstr ""
+
+#. _notifier.Success(T["The \"{0}\" field settings have been saved.", field.DisplayName()]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:687
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The \"{0}\" field settings have been saved."
+msgstr ""
+
+#. _notifier.Success(T["The \"{0}\" field has been removed.", field.DisplayName()]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:730
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The \"{0}\" field has been removed."
+msgstr ""
+
+#. ModelState.AddModelError("DisplayName", S["The display name can't be empty."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:812
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The display name can't be empty."
+msgstr ""
+
+#. ModelState.AddModelError("DisplayName", S["A part with the same display name already exists."]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:817
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "A part with the same display name already exists."
+msgstr ""
+
+#. _notifier.Success(T["The \"{0}\" part settings have been saved.", part.DisplayName()]);
+#: OrchardCore.ContentTypes\Controllers\AdminController.cs:840
+msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
+msgid "The \"{0}\" part settings have been saved."
+msgstr ""
+
+#. context.Updater.ModelState.AddModelError("DisplayName", T["The Content Type name can't be empty."]);
+#: OrchardCore.ContentTypes\Editors\DefaultContentTypeDisplayDriver.cs:43
+msgctxt "OrchardCore.ContentTypes.Editors.DefaultContentTypeDisplayDriver"
+msgid "The Content Type name can't be empty."
+msgstr ""
+
+#. throw new Exception(T["Cannot add part named '{0}'. It already exists.", name]);
+#: OrchardCore.ContentTypes\Services\ContentDefinitionService.cs:214
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionService"
+msgid "Cannot add part named '{0}'. It already exists."
+msgstr ""
+
+#. <label asp-for="DisplayName" >@T["Display Name"]</label>
+#: OrchardCore.ContentTypes\Views\ContentPartSettings.Edit.cshtml:6
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartSettings.Edit"
+msgid "Display Name"
+msgstr ""
+
+#. <span class="hint">@T["Name of the part as it will be displayed in screens. Leave empty to use defaults."]</span>
+#: OrchardCore.ContentTypes\Views\ContentPartSettings.Edit.cshtml:8
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartSettings.Edit"
+msgid "Name of the part as it will be displayed in screens. Leave empty to use defaults."
+msgstr ""
+
+#. <label asp-for="Description">@T["Description"]</label>
+#: OrchardCore.ContentTypes\Views\ContentPartSettings.Edit.cshtml:14
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartSettings.Edit"
+msgid "Description"
+msgstr ""
+
+#. <span class="hint">@T["Optionally provide a description for this part."]</span>
+#: OrchardCore.ContentTypes\Views\ContentPartSettings.Edit.cshtml:17
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartSettings.Edit"
+msgid "Optionally provide a description for this part."
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="Attachable">@T["Attachable"]</label>
+#: OrchardCore.ContentTypes\Views\ContentPartSettings.Edit.cshtml:24
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartSettings.Edit"
+msgid "Attachable"
+msgstr ""
+
+#. <span class="hint">@T["Check to allow this part to be attached to other content types."]</span>
+#: OrchardCore.ContentTypes\Views\ContentPartSettings.Edit.cshtml:25
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartSettings.Edit"
+msgid "Check to allow this part to be attached to other content types."
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="Reusable">@T["Reusable"]</label>
+#: OrchardCore.ContentTypes\Views\ContentPartSettings.Edit.cshtml:32
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartSettings.Edit"
+msgid "Reusable"
+msgstr ""
+
+#. <span class="hint">@T["Check to allow this part to be attached multiple times."]</span>
+#: OrchardCore.ContentTypes\Views\ContentPartSettings.Edit.cshtml:33
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartSettings.Edit"
+msgid "Check to allow this part to be attached multiple times."
+msgstr ""
+
+#. <label asp-for="DisplayName">@T["Display Name"]</label>
+#: OrchardCore.ContentTypes\Views\ContentType.Edit.cshtml:4
+msgctxt "OrchardCore.ContentTypes.Views.ContentType.Edit"
+msgid "Display Name"
+msgstr ""
+
+#. <span class="hint w-100">@T["Name of the type as it will be displayed on screens."]</span>
+#: OrchardCore.ContentTypes\Views\ContentType.Edit.cshtml:6
+msgctxt "OrchardCore.ContentTypes.Views.ContentType.Edit"
+msgid "Name of the type as it will be displayed on screens."
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="Creatable">@T["Creatable"]</label>
+#: OrchardCore.ContentTypes\Views\ContentTypeSettings.Edit.cshtml:6
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+msgid "Creatable"
+msgstr ""
+
+#. <span class="hint">— @T["Determines if an instance of this content type can be created through the UI."]</span>
+#: OrchardCore.ContentTypes\Views\ContentTypeSettings.Edit.cshtml:7
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+msgid "Determines if an instance of this content type can be created through the UI."
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="Listable">@T["Listable"]</label>
+#: OrchardCore.ContentTypes\Views\ContentTypeSettings.Edit.cshtml:14
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+msgid "Listable"
+msgstr ""
+
+#. <span class="hint">— @T["Determines if an instance of this content type can be listed through the UI."]</span>
+#: OrchardCore.ContentTypes\Views\ContentTypeSettings.Edit.cshtml:15
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+msgid "Determines if an instance of this content type can be listed through the UI."
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="Draftable">@T["Draftable"]</label>
+#: OrchardCore.ContentTypes\Views\ContentTypeSettings.Edit.cshtml:22
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+msgid "Draftable"
+msgstr ""
+
+#. <span class="hint">— @T["Determines if this content type supports draft versions."]</span>
+#: OrchardCore.ContentTypes\Views\ContentTypeSettings.Edit.cshtml:23
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+msgid "Determines if this content type supports draft versions."
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="Versionable">@T["Versionable"]</label>
+#: OrchardCore.ContentTypes\Views\ContentTypeSettings.Edit.cshtml:30
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+msgid "Versionable"
+msgstr ""
+
+#. <span class="hint">— @T["Determines if this content type supports versioning."]</span>
+#: OrchardCore.ContentTypes\Views\ContentTypeSettings.Edit.cshtml:31
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+msgid "Determines if this content type supports versioning."
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="Securable">@T["Securable"]</label>
+#: OrchardCore.ContentTypes\Views\ContentTypeSettings.Edit.cshtml:38
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+msgid "Securable"
+msgstr ""
+
+#. <span class="hint">— @T["Determines if this content type can have custom permissions."]</span>
+#: OrchardCore.ContentTypes\Views\ContentTypeSettings.Edit.cshtml:39
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+msgid "Determines if this content type can have custom permissions."
+msgstr ""
+
+#. <label asp-for="Stereotype">@T["Stereotype"]</label>
+#: OrchardCore.ContentTypes\Views\ContentTypeSettings.Edit.cshtml:45
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+msgid "Stereotype"
+msgstr ""
+
+#. <span class="hint">@T["(Optional) The stereotype of the content type. e.g., Widget, MenuItem, ..."]</span>
+#: OrchardCore.ContentTypes\Views\ContentTypeSettings.Edit.cshtml:47
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+msgid "(Optional) The stereotype of the content type. e.g., Widget, MenuItem, ..."
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="Settings.Collapse">@T["Collapse"]</label>
+#: OrchardCore.ContentTypes\Views\GraphQLContentTypePartSettings.Edit.cshtml:17
+msgctxt "OrchardCore.ContentTypes.Views.GraphQLContentTypePartSettings.Edit"
+msgid "Collapse"
+msgstr ""
+
+#. <span class="hint">@T["NB. Setting is collapsed by default, and cannot be overwritten."]</span>
+#. <span class="hint">@T["NB. Setting is collapsed by default, and cannot be overwritten."]</span>
+#: OrchardCore.ContentTypes\Views\GraphQLContentTypePartSettings.Edit.cshtml:20
+#: OrchardCore.ContentTypes\Views\GraphQLContentTypePartSettings.Edit.cshtml:32
+msgctxt "OrchardCore.ContentTypes.Views.GraphQLContentTypePartSettings.Edit"
+msgid "NB. Setting is collapsed by default, and cannot be overwritten."
+msgstr ""
+
+#. <span class="hint">@T["Check to collapse fields in the GraphQL schema."]</span>
+#: OrchardCore.ContentTypes\Views\GraphQLContentTypePartSettings.Edit.cshtml:24
+msgctxt "OrchardCore.ContentTypes.Views.GraphQLContentTypePartSettings.Edit"
+msgid "Check to collapse fields in the GraphQL schema."
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="Settings.Hidden">@T["Hide"]</label>
+#: OrchardCore.ContentTypes\Views\GraphQLContentTypePartSettings.Edit.cshtml:29
+msgctxt "OrchardCore.ContentTypes.Views.GraphQLContentTypePartSettings.Edit"
+msgid "Hide"
+msgstr ""
+
+#. <span class="hint">@T["Check to hide type from the GraphQL schema."]</span>
+#: OrchardCore.ContentTypes\Views\GraphQLContentTypePartSettings.Edit.cshtml:36
+msgctxt "OrchardCore.ContentTypes.Views.GraphQLContentTypePartSettings.Edit"
+msgid "Check to hide type from the GraphQL schema."
+msgstr ""
+
+#. <span class="icon"><i class="fa fa-cube" aria-hidden="true"></i></span><span class="title">@T["Content Definition"]</span>
+#: OrchardCore.ContentTypes\Views\NavigationItemText-contentdefinition.Id.cshtml:1
+msgctxt "OrchardCore.ContentTypes.Views.NavigationItemText-contentdefinition.Id"
+msgid "Content Definition"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Add New Field To \"{0}\"", Model.Part.DisplayName()])</h1>
+#: OrchardCore.ContentTypes\Views\Admin\AddFieldTo.cshtml:11
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
+msgid "Add New Field To \"{0}\""
+msgstr ""
+
+#. <label for="DisplayName">@T["Display Name"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\AddFieldTo.cshtml:17
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
+msgid "Display Name"
+msgstr ""
+
+#. <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
+#: OrchardCore.ContentTypes\Views\Admin\AddFieldTo.cshtml:19
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
+msgid "Name of the field as it will be displayed in screens."
+msgstr ""
+
+#. <label for="Name">@T["Technical Name"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\AddFieldTo.cshtml:25
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
+msgid "Technical Name"
+msgstr ""
+
+#. <span class="hint">@T["Technical name of the field."]</span>
+#: OrchardCore.ContentTypes\Views\Admin\AddFieldTo.cshtml:27
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
+msgid "Technical name of the field."
+msgstr ""
+
+#. <label for="DisplayName">@T["Field Type"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\AddFieldTo.cshtml:32
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
+msgid "Field Type"
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit">@T["Save"]</button>
+#: OrchardCore.ContentTypes\Views\Admin\AddFieldTo.cshtml:47
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
+msgid "Save"
+msgstr ""
+
+#. <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\AddFieldTo.cshtml:50
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
+msgid "Cancel"
+msgstr ""
+
+#. <h1>@T["Add Parts To \"{0}\"", Model.Type.DisplayName]</h1>
+#: OrchardCore.ContentTypes\Views\Admin\AddPartsTo.cshtml:5
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddPartsTo"
+msgid "Add Parts To \"{0}\""
+msgstr ""
+
+#. @T["Choose the Parts to add to this Content Type."]
+#: OrchardCore.ContentTypes\Views\Admin\AddPartsTo.cshtml:7
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddPartsTo"
+msgid "Choose the Parts to add to this Content Type."
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit">@T["Save"]</button>
+#: OrchardCore.ContentTypes\Views\Admin\AddPartsTo.cshtml:29
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddPartsTo"
+msgid "Save"
+msgstr ""
+
+#. <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary">@T["Cancel"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\AddPartsTo.cshtml:30
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddPartsTo"
+msgid "Cancel"
+msgstr ""
+
+#. <h1>@T["Add Named Part To \"{0}\"", Model.Type.DisplayName]</h1>
+#: OrchardCore.ContentTypes\Views\Admin\AddReusablePartTo.cshtml:5
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
+msgid "Add Named Part To \"{0}\""
+msgstr ""
+
+#. <label for="DisplayName">@T["Display Name"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\AddReusablePartTo.cshtml:14
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
+msgid "Display Name"
+msgstr ""
+
+#. <span class="hint">@T["Name of the reusable part as it will be displayed in screens."]</span>
+#: OrchardCore.ContentTypes\Views\Admin\AddReusablePartTo.cshtml:16
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
+msgid "Name of the reusable part as it will be displayed in screens."
+msgstr ""
+
+#. <label for="Name">@T["Technical Name"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\AddReusablePartTo.cshtml:20
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
+msgid "Technical Name"
+msgstr ""
+
+#. <span class="hint">@T["Technical name of the reusable part."]</span>
+#: OrchardCore.ContentTypes\Views\Admin\AddReusablePartTo.cshtml:22
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
+msgid "Technical name of the reusable part."
+msgstr ""
+
+#. <label for="Description">@T["Description"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\AddReusablePartTo.cshtml:26
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
+msgid "Description"
+msgstr ""
+
+#. <span class="hint">@T["Description of the reusable part."]</span>
+#: OrchardCore.ContentTypes\Views\Admin\AddReusablePartTo.cshtml:28
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
+msgid "Description of the reusable part."
+msgstr ""
+
+#. <p class="alert alert-warning">@T["There are no available named parts."]</p>
+#: OrchardCore.ContentTypes\Views\Admin\AddReusablePartTo.cshtml:50
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
+msgid "There are no available named parts."
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit">@T["Save"]</button>
+#: OrchardCore.ContentTypes\Views\Admin\AddReusablePartTo.cshtml:56
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
+msgid "Save"
+msgstr ""
+
+#. <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary">@T["Cancel"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\AddReusablePartTo.cshtml:58
+msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
+msgid "Cancel"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["New Content Type"])</h1>
+#: OrchardCore.ContentTypes\Views\Admin\Create.cshtml:3
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
+msgid "New Content Type"
+msgstr ""
+
+#. <label asp-for="DisplayName">@T["Display Name"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\Create.cshtml:9
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
+msgid "Display Name"
+msgstr ""
+
+#. <span class="hint">@T["Name of the type as it will be displayed on screens."]</span>
+#: OrchardCore.ContentTypes\Views\Admin\Create.cshtml:11
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
+msgid "Name of the type as it will be displayed on screens."
+msgstr ""
+
+#. <label asp-for="Name">@T["Technical Name"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\Create.cshtml:15
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
+msgid "Technical Name"
+msgstr ""
+
+#. <span class="hint">@T["Technical name of the type."]</span>
+#: OrchardCore.ContentTypes\Views\Admin\Create.cshtml:17
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
+msgid "Technical name of the type."
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit">@T["Create"]</button>
+#: OrchardCore.ContentTypes\Views\Admin\Create.cshtml:21
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
+msgid "Create"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["New Content Part"])</h1>
+#: OrchardCore.ContentTypes\Views\Admin\CreatePart.cshtml:3
+msgctxt "OrchardCore.ContentTypes.Views.Admin.CreatePart"
+msgid "New Content Part"
+msgstr ""
+
+#. <label for="Name">@T["Name"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\CreatePart.cshtml:8
+msgctxt "OrchardCore.ContentTypes.Views.Admin.CreatePart"
+msgid "Name"
+msgstr ""
+
+#. <span class="hint">@T["Use no spaces or special characters. For example, \"MyCustomPart\""]</span>
+#: OrchardCore.ContentTypes\Views\Admin\CreatePart.cshtml:10
+msgctxt "OrchardCore.ContentTypes.Views.Admin.CreatePart"
+msgid "Use no spaces or special characters. For example, \"MyCustomPart\""
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit">@T["Create"]</button>
+#: OrchardCore.ContentTypes\Views\Admin\CreatePart.cshtml:13
+msgctxt "OrchardCore.ContentTypes.Views.Admin.CreatePart"
+msgid "Create"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1>
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:25
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Edit Content Type - {0}"
+msgstr ""
+
+#. <h3>@T["Fields"]</h3>
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:35
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Fields"
+msgstr ""
+
+#. <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+#. <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:45
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:77
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Edit"
+msgstr ""
+
+#. <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name"  class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+#. <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:46
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:78
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Remove"
+msgstr ""
+
+#. <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:57
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Add Field"
+msgstr ""
+
+#. <h3>@T["Parts"]</h3>
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:60
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Parts"
+msgstr ""
+
+#. <span class="hint">— @T["Contains the fields for the current type"]</span>
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:83
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Contains the fields for the current type"
+msgstr ""
+
+#. <a asp-route-action="AddPartsTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Parts"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:93
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Add Parts"
+msgstr ""
+
+#. <a asp-route-action="AddReusablePartTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Named Part"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:94
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Add Named Part"
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:98
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Save"
+msgstr ""
+
+#. <button class="btn btn-danger" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T["Delete"]</button>
+#: OrchardCore.ContentTypes\Views\Admin\Edit.cshtml:99
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Delete"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", Model.DisplayName, Model.PartFieldDefinition.PartDefinition.DisplayName()])</h1>
+#: OrchardCore.ContentTypes\Views\Admin\EditField.cshtml:19
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
+msgid "\"{0}\" settings for \"{1}\""
+msgstr ""
+
+#. <label asp-for="DisplayName">@T["Display Name"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\EditField.cshtml:25
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
+msgid "Display Name"
+msgstr ""
+
+#. <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
+#: OrchardCore.ContentTypes\Views\Admin\EditField.cshtml:27
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
+msgid "Name of the field as it will be displayed in screens."
+msgstr ""
+
+#. <label asp-for="Name">@T["Technical Name"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\EditField.cshtml:33
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
+msgid "Technical Name"
+msgstr ""
+
+#. <span class="hint">@T["Technical name of the field."]</span>
+#: OrchardCore.ContentTypes\Views\Admin\EditField.cshtml:35
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
+msgid "Technical name of the field."
+msgstr ""
+
+#. <label asp-for="Editor">@T["What type of editor should be used?"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\EditField.cshtml:48
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
+msgid "What type of editor should be used?"
+msgstr ""
+
+#. <label asp-for="DisplayMode">@T["What type of display mode should be used?"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\EditField.cshtml:67
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
+msgid "What type of display mode should be used?"
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+#: OrchardCore.ContentTypes\Views\Admin\EditField.cshtml:85
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
+msgid "Save"
+msgstr ""
+
+#. <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\EditField.cshtml:88
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
+msgid "Cancel"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Edit Content Part - {0}", Model.DisplayName])</h1>
+#: OrchardCore.ContentTypes\Views\Admin\EditPart.cshtml:12
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
+msgid "Edit Content Part - {0}"
+msgstr ""
+
+#. <label asp-for="Name">@T["Technical Name"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\EditPart.cshtml:19
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
+msgid "Technical Name"
+msgstr ""
+
+#. <span class="hint">@T["Technical name of the part."]</span>
+#: OrchardCore.ContentTypes\Views\Admin\EditPart.cshtml:21
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
+msgid "Technical name of the part."
+msgstr ""
+
+#. <h3>@T["Fields"]</h3>
+#: OrchardCore.ContentTypes\Views\Admin\EditPart.cshtml:28
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
+msgid "Fields"
+msgstr ""
+
+#. <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\EditPart.cshtml:38
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
+msgid "Edit"
+msgstr ""
+
+#. <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\EditPart.cshtml:39
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
+msgid "Remove"
+msgstr ""
+
+#. <a asp-route-action="AddFieldTo" asp-route-id="@Model.PartDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\EditPart.cshtml:50
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
+msgid "Add Field"
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+#: OrchardCore.ContentTypes\Views\Admin\EditPart.cshtml:54
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
+msgid "Save"
+msgstr ""
+
+#. <button class="btn btn-danger" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T["Delete"]</button>
+#: OrchardCore.ContentTypes\Views\Admin\EditPart.cshtml:55
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
+msgid "Delete"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Edit Part - {0}", Model.DisplayName])</h1>
+#: OrchardCore.ContentTypes\Views\Admin\EditTypePart.cshtml:15
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
+msgid "Edit Part - {0}"
+msgstr ""
+
+#. @T["Some part settings common to all types can also be defined at the <a href=\"{0}\">Part Definition</a> level.", Url.Action("EditPart", new { id = typePart.PartDefinition.Name })]
+#: OrchardCore.ContentTypes\Views\Admin\EditTypePart.cshtml:18
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
+msgid "Some part settings common to all types can also be defined at the <a href=\"{0}\">Part Definition</a> level."
+msgstr ""
+
+#. <label asp-for="DisplayName">@T["Display Name"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\EditTypePart.cshtml:28
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
+msgid "Display Name"
+msgstr ""
+
+#. <span class="hint">@T["Name of the part as it will be displayed in screens."]</span>
+#: OrchardCore.ContentTypes\Views\Admin\EditTypePart.cshtml:30
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
+msgid "Name of the part as it will be displayed in screens."
+msgstr ""
+
+#. <label asp-for="Description">@T["Description"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\EditTypePart.cshtml:36
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
+msgid "Description"
+msgstr ""
+
+#. <span class="hint">@T["The description of the part as it will be displayed in screens."]</span>
+#: OrchardCore.ContentTypes\Views\Admin\EditTypePart.cshtml:38
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
+msgid "The description of the part as it will be displayed in screens."
+msgstr ""
+
+#. <label asp-for="Editor">@T["What type of editor should be used?"]</label>
+#: OrchardCore.ContentTypes\Views\Admin\EditTypePart.cshtml:54
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
+msgid "What type of editor should be used?"
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+#: OrchardCore.ContentTypes\Views\Admin\EditTypePart.cshtml:73
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
+msgid "Save"
+msgstr ""
+
+#. <a asp-route-action="Edit" asp-route-id="@Model.TypePartDefinition.ContentTypeDefinition.Name" class="btn btn-secondary">@T["Cancel"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\EditTypePart.cshtml:74
+msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
+msgid "Cancel"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Content Types"])</h1>
+#: OrchardCore.ContentTypes\Views\Admin\List.cshtml:5
+msgctxt "OrchardCore.ContentTypes.Views.Admin.List"
+msgid "Content Types"
+msgstr ""
+
+#. <a asp-route-action="Create" id="btnCreate" class="btn btn-primary float-right" role="button">@T["Create new type"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\List.cshtml:8
+msgctxt "OrchardCore.ContentTypes.Views.Admin.List"
+msgid "Create new type"
+msgstr ""
+
+#. <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+#: OrchardCore.ContentTypes\Views\Admin\List.cshtml:16
+msgctxt "OrchardCore.ContentTypes.Views.Admin.List"
+msgid "Filter"
+msgstr ""
+
+#. <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus" />
+#: OrchardCore.ContentTypes\Views\Admin\List.cshtml:18
+msgctxt "OrchardCore.ContentTypes.Views.Admin.List"
+msgid "Search"
+msgstr ""
+
+#. @T["<strong>Nothing here!</strong> Your search returned no results."]
+#: OrchardCore.ContentTypes\Views\Admin\List.cshtml:32
+msgctxt "OrchardCore.ContentTypes.Views.Admin.List"
+msgid "<strong>Nothing here!</strong> Your search returned no results."
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Content Parts"])</h1>
+#: OrchardCore.ContentTypes\Views\Admin\ListParts.cshtml:5
+msgctxt "OrchardCore.ContentTypes.Views.Admin.ListParts"
+msgid "Content Parts"
+msgstr ""
+
+#. <a asp-route-action="CreatePart" id="btnCreate" class="btn btn-primary float-right" role="button">@T["Create new part"]</a>
+#: OrchardCore.ContentTypes\Views\Admin\ListParts.cshtml:8
+msgctxt "OrchardCore.ContentTypes.Views.Admin.ListParts"
+msgid "Create new part"
+msgstr ""
+
+#. <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+#: OrchardCore.ContentTypes\Views\Admin\ListParts.cshtml:16
+msgctxt "OrchardCore.ContentTypes.Views.Admin.ListParts"
+msgid "Filter"
+msgstr ""
+
+#. <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus" />
+#: OrchardCore.ContentTypes\Views\Admin\ListParts.cshtml:18
+msgctxt "OrchardCore.ContentTypes.Views.Admin.ListParts"
+msgid "Search"
+msgstr ""
+
+#. @T["<strong>Nothing here!</strong> Your search returned no results."]
+#: OrchardCore.ContentTypes\Views\Admin\ListParts.cshtml:32
+msgctxt "OrchardCore.ContentTypes.Views.Admin.ListParts"
+msgid "<strong>Nothing here!</strong> Your search returned no results."
+msgstr ""
+
+#. <h5>@T["Content Definitions"]</h5>
+#: OrchardCore.ContentTypes\Views\Items\ContentDefinitionDeploymentStep.Fields.Edit.cshtml:15
+msgctxt "OrchardCore.ContentTypes.Views.Items.ContentDefinitionDeploymentStep.Fields.Edit"
+msgid "Content Definitions"
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="IncludeAll">@T["Include all content types and parts definitions."]</label>
+#: OrchardCore.ContentTypes\Views\Items\ContentDefinitionDeploymentStep.Fields.Edit.cshtml:22
+msgctxt "OrchardCore.ContentTypes.Views.Items.ContentDefinitionDeploymentStep.Fields.Edit"
+msgid "Include all content types and parts definitions."
+msgstr ""
+
+#. <span class="hint">@T["The content types to add as part of the plan."]</span>
+#: OrchardCore.ContentTypes\Views\Items\ContentDefinitionDeploymentStep.Fields.Edit.cshtml:33
+msgctxt "OrchardCore.ContentTypes.Views.Items.ContentDefinitionDeploymentStep.Fields.Edit"
+msgid "The content types to add as part of the plan."
+msgstr ""
+
+#. <span class="hint">@T["The content parts to add as part of the plan."]</span>
+#: OrchardCore.ContentTypes\Views\Items\ContentDefinitionDeploymentStep.Fields.Edit.cshtml:94
+msgctxt "OrchardCore.ContentTypes.Views.Items.ContentDefinitionDeploymentStep.Fields.Edit"
+msgid "The content parts to add as part of the plan."
+msgstr ""
+
+#. <h5>@T["Content Definitions"]</h5>
+#: OrchardCore.ContentTypes\Views\Items\ContentDefinitionDeploymentStep.Fields.Summary.cshtml:7
+msgctxt "OrchardCore.ContentTypes.Views.Items.ContentDefinitionDeploymentStep.Fields.Summary"
+msgid "Content Definitions"
+msgstr ""
+
+#. <h4 class="card-title">@T["Content Definitions"]</h4>
+#: OrchardCore.ContentTypes\Views\Items\ContentDefinitionDeploymentStep.Fields.Thumbnail.cshtml:1
+msgctxt "OrchardCore.ContentTypes.Views.Items.ContentDefinitionDeploymentStep.Fields.Thumbnail"
+msgid "Content Definitions"
+msgstr ""
+
+#. <p>@T["Exports specified content type and part definitions."]</p>
+#: OrchardCore.ContentTypes\Views\Items\ContentDefinitionDeploymentStep.Fields.Thumbnail.cshtml:2
+msgctxt "OrchardCore.ContentTypes.Views.Items.ContentDefinitionDeploymentStep.Fields.Thumbnail"
+msgid "Exports specified content type and part definitions."
+msgstr ""
+
+#. <a class="btn btn-primary btn-sm" asp-route-action="EditPart" asp-route-id="@Model.Name">@T["Edit"]</a>
+#: OrchardCore.ContentTypes\Views\Shared\DisplayTemplates\EditPartViewModel.cshtml:5
+msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditPartViewModel"
+msgid "Edit"
+msgstr ""
+
+#. <a asp-route-area="OrchardCore.Contents" asp-route-action="Create" asp-route-id="@Model.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-success btn-sm" role="button">@T["Create New {0}", Model.DisplayName]</a>
+#: OrchardCore.ContentTypes\Views\Shared\DisplayTemplates\EditTypeViewModel.cshtml:11
+msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditTypeViewModel"
+msgid "Create New {0}"
+msgstr ""
+
+#. <a asp-route-action="List" asp-route-area="OrchardCore.Contents" asp-route-contentTypeId="@Model.Name" class="btn btn-secondary btn-sm" role="button">@T["List Items"]</a>
+#: OrchardCore.ContentTypes\Views\Shared\DisplayTemplates\EditTypeViewModel.cshtml:13
+msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditTypeViewModel"
+msgid "List Items"
+msgstr ""
+
+#. <a asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+#: OrchardCore.ContentTypes\Views\Shared\DisplayTemplates\EditTypeViewModel.cshtml:14
+msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditTypeViewModel"
+msgid "Edit"
+msgstr ""
+

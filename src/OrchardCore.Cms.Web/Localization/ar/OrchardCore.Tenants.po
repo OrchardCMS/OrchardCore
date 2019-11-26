@@ -1,0 +1,516 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Tenants.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2019-09-21 09:15\n"
+
+#. .Add(T["Configuration"], "10", configuration => configuration
+#: OrchardCore.Tenants\AdminMenu.cs:35
+msgctxt "OrchardCore.Tenants.AdminMenu"
+msgid "Configuration"
+msgstr "الضبط"
+
+#. .Add(T["Tenants"], "5", deployment => deployment
+#: OrchardCore.Tenants\AdminMenu.cs:37
+msgctxt "OrchardCore.Tenants.AdminMenu"
+msgid "Tenants"
+msgstr "المستأجرون"
+
+#. _notifier.Warning(H["You cannot disable the default tenant."]);
+#. _notifier.Error(H["You cannot disable the default tenant."]);
+#: OrchardCore.Tenants\Controllers\AdminController.cs:185
+#: OrchardCore.Tenants\Controllers\AdminController.cs:439
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "You cannot disable the default tenant."
+msgstr "لا يمكنك تعطيل المتجر الإفتراضي."
+
+#. _notifier.Warning(H["The tenant '{0}' is already disabled.", shellSettings.Name]);
+#: OrchardCore.Tenants\Controllers\AdminController.cs:189
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "The tenant '{0}' is already disabled."
+msgstr "المستأجر '{0}' معطل بالفعل."
+
+#. _notifier.Warning(H["The tenant '{0}' is already enabled.", shellSettings.Name]);
+#: OrchardCore.Tenants\Controllers\AdminController.cs:202
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "The tenant '{0}' is already enabled."
+msgstr "المستأجر '{0}' ممكَّن بالفعل."
+
+#. _notifier.Error(H["You can only disable an Enabled tenant."]);
+#: OrchardCore.Tenants\Controllers\AdminController.cs:445
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "You can only disable an Enabled tenant."
+msgstr "يمكنك فقط تعطيل الـ tenant المفعلة."
+
+#. _notifier.Error(H["You can only enable a Disabled tenant."]);
+#: OrchardCore.Tenants\Controllers\AdminController.cs:479
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "You can only enable a Disabled tenant."
+msgstr "يمكنك فقط تمكين الـ tenant المعطلة."
+
+#. ModelState.AddModelError(nameof(EditTenantViewModel.ConnectionString), S["The connection string is mandatory for this provider."]);
+#: OrchardCore.Tenants\Controllers\AdminController.cs:528
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "The connection string is mandatory for this provider."
+msgstr "نص الإتصال مطلوب لهذا المزود."
+
+#. ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["The tenant name is mandatory."]);
+#: OrchardCore.Tenants\Controllers\AdminController.cs:533
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "The tenant name is mandatory."
+msgstr "إسم الـ tenant مطلوب."
+
+#. ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["A tenant with the same name already exists.", model.Name]);
+#: OrchardCore.Tenants\Controllers\AdminController.cs:540
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "A tenant with the same name already exists."
+msgstr "هنالك tenant بنفس الإسم."
+
+#. ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
+#: OrchardCore.Tenants\Controllers\AdminController.cs:545
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "Invalid tenant name. Must contain characters only and no spaces."
+msgstr "إسم الـ tenant غير صحيح. يجب أن يحتوي على حروف بدون أي فراغات."
+
+#. ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
+#: OrchardCore.Tenants\Controllers\AdminController.cs:550
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "Host and url prefix can not be empty at the same time."
+msgstr "إسم المضيف و بادئة الرابط لا يمكن أن تكون فارغة في نفس الوقت."
+
+#. ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]);
+#: OrchardCore.Tenants\Controllers\AdminController.cs:556
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "A tenant with the same host and prefix already exists."
+msgstr "Tenant بإسم المضيف والبادئة موجودة مسبقاً."
+
+#. ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]);
+#: OrchardCore.Tenants\Controllers\AdminController.cs:563
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "The url prefix can not contain more than one segment."
+msgstr "لا يمكن لبادئة الرابط أن تحتوي على أكثر من قطعة."
+
+#. ModelState.AddModelError(nameof(CreateApiViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
+#: OrchardCore.Tenants\Controllers\ApiController.cs:90
+msgctxt "OrchardCore.Tenants.Controllers.ApiController"
+msgid "Invalid tenant name. Must contain characters only and no spaces."
+msgstr "إسم الـ tenant غير صحيح. يجب أن يحتوي على حروف بدون أي فراغات."
+
+#. ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
+#: OrchardCore.Tenants\Controllers\ApiController.cs:109
+msgctxt "OrchardCore.Tenants.Controllers.ApiController"
+msgid "Host and url prefix can not be empty at the same time."
+msgstr "إسم المضيف و بادئة الرابط لا يمكن أن تكون فارغة في نفس الوقت."
+
+#. ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]);
+#: OrchardCore.Tenants\Controllers\ApiController.cs:116
+msgctxt "OrchardCore.Tenants.Controllers.ApiController"
+msgid "The url prefix can not contain more than one segment."
+msgstr "لا يمكن لبادئة الرابط أن تحتوي على أكثر من قطعة."
+
+#. ModelState.AddModelError(nameof(SetupApiViewModel.Name), S["Tenant not found: '{0}'", model.Name]);
+#: OrchardCore.Tenants\Controllers\ApiController.cs:165
+msgctxt "OrchardCore.Tenants.Controllers.ApiController"
+msgid "Tenant not found: '{0}'"
+msgstr "لم يتم العثور على الـ tenant: '{0}'"
+
+#. return BadRequest(S["The tenant can't be setup."]);
+#: OrchardCore.Tenants\Controllers\ApiController.cs:175
+msgctxt "OrchardCore.Tenants.Controllers.ApiController"
+msgid "The tenant can't be setup."
+msgstr "لا يمكن تثبيت الـ tenant."
+
+#. return BadRequest(S["The database provider is not defined."]);
+#: OrchardCore.Tenants\Controllers\ApiController.cs:189
+msgctxt "OrchardCore.Tenants.Controllers.ApiController"
+msgid "The database provider is not defined."
+msgstr "مزود قاعدة البيانات غير معرف."
+
+#. return BadRequest(S["The connection string is required for this database provider."]);
+#: OrchardCore.Tenants\Controllers\ApiController.cs:208
+msgctxt "OrchardCore.Tenants.Controllers.ApiController"
+msgid "The connection string is required for this database provider."
+msgstr "نص الإتصال مطلوب لهذا المزود."
+
+#. return BadRequest(S["Either 'Recipe' or 'RecipeName' is required."]);
+#: OrchardCore.Tenants\Controllers\ApiController.cs:224
+msgctxt "OrchardCore.Tenants.Controllers.ApiController"
+msgid "Either 'Recipe' or 'RecipeName' is required."
+msgstr "الوصفة أو إسمها مطلوب."
+
+#. return BadRequest(S["Recipe '{0}' not found.", recipeName]);
+#: OrchardCore.Tenants\Controllers\ApiController.cs:250
+msgctxt "OrchardCore.Tenants.Controllers.ApiController"
+msgid "Recipe '{0}' not found."
+msgstr "لم يتم العثور على الوصفة '{0}'."
+
+#. <span class="icon"><i class="fa fa-gear" aria-hidden="true"></i></span><span class="title">@T["Design"]</span>
+#: OrchardCore.Tenants\Views\NavigationItemText-design.Id.cshtml:1
+msgctxt "OrchardCore.Tenants.Views.NavigationItemText-design.Id"
+msgid "Design"
+msgstr "تصميم"
+
+#. <h1>@RenderTitleSegments(T["Create Tenant"])</h1>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:4
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Create Tenant"
+msgstr "إنشاء tenant"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:10
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Name"
+msgstr "الإسم"
+
+#. <span class="hint">@T["The name of the tenant."]</span>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:13
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "The name of the tenant."
+msgstr "اسم الـ tenant."
+
+#. <label asp-for="RequestUrlPrefix">@T["Url Prefix"]</label>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:18
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Url Prefix"
+msgstr "بادئة الرابط"
+
+#. <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"https://orchardproject.net/site1\""]</span>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:21
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"https://orchardproject.net/site1\""
+msgstr "(إختياري) على سبيل المثال: إذا كانت البادئة \"site1\"، بادئة الرابط للـ tenant هو \"https://orchardproject.net/site1\""
+
+#. <label asp-for="RequestUrlHost">@T["Hostname"]</label>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:25
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Hostname"
+msgstr "إسم المضيف"
+
+#. <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant site URL is \"https://orchardproject.net/\""]</span>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:28
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Example: If host is \"orchardproject.net\", the tenant site URL is \"https://orchardproject.net/\""
+msgstr "مثال: اذا كان المضيف هو \"orchardproject.net\", رابط الـ tenant هو \"https://orchardproject.net/\""
+
+#. <span class="hint">@T["You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."]</span>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:29
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."
+msgstr "يمكنك تعريف مجموعة نطاقات مفصولة بفواصل. إستخدم البادئة '*.' لتعيين جميع النطاقات الفرعية."
+
+#. @T["Recipe"]
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:33
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Recipe"
+msgstr "الوصفه"
+
+#. <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
+#. <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:34
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:52
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Optionally specify which presets should be used for the Setup experience."
+msgstr "بشكل إختياري قم بتحديد أي إعدادات مسبقة يمكن إستخدامها في التثبيت."
+
+#. @T["Database Presets"]
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:51
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Database Presets"
+msgstr "الإعدادات المسبقة لقاعدة البيانات"
+
+#. <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:56
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "What type of database to use?"
+msgstr "ما هو نوع قاعدة البيانات المستخدمة؟"
+
+#. <option value="" data-connection-string="false">@T["None"]</option>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:58
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "None"
+msgstr "لا شيء"
+
+#. <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()" data-table-prefix="@provider.HasTablePrefix.ToString().ToLower()" data-connection-string-sample="@T["The connection string to your database instance. e.g., {0}", provider.SampleConnectionString]">@provider.Name</option>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:61
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "The connection string to your database instance. e.g., {0}"
+msgstr "نص الربط إلى قاعدة البيانات, مثال, {0}"
+
+#. <label asp-for="TablePrefix">@T["Table Prefix"]</label>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:66
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Table Prefix"
+msgstr "بادئة الجدول"
+
+#. <label asp-for="ConnectionString">@T["Connection string"]</label>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:74
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Connection string"
+msgstr "سلسلة الاتصال"
+
+#. <button class="btn btn-primary" type="submit">@T["Create"]</button>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:83
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Create"
+msgstr "إنشاء"
+
+#. <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.Tenants\Views\Admin\Create.cshtml:84
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. <h1>@RenderTitleSegments(T["Edit Tenant"])</h1>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:4
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Edit Tenant"
+msgstr "تحرير tenant"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:10
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Name"
+msgstr "اسم"
+
+#. <span class="hint">@T["The name of the tenant."]</span>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:13
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "The name of the tenant."
+msgstr "اسم المستأجر."
+
+#. <label asp-for="RequestUrlPrefix">@T["Url Prefix"]</label>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:17
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Url Prefix"
+msgstr "بادئة الرابط"
+
+#. <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL is \"https://orchardproject.net/site1\""]</span>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:20
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "(Optional) Example: If prefix is \"site1\", the tenant URL is \"https://orchardproject.net/site1\""
+msgstr "(إختياري) على سبيل المثال: إذا كانت البادئة \"site1\"، بادئة الرابط للـ tenant هو \"https://orchardproject.net/site1\""
+
+#. <label asp-for="RequestUrlHost">@T["Hostname"]</label>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:24
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Hostname"
+msgstr "إسم المضيف"
+
+#. <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant URL is \"https://orchardproject.net/\""]</span>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:27
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Example: If host is \"orchardproject.net\", the tenant URL is \"https://orchardproject.net/\""
+msgstr "مثال: اذا كان المضيف هو \"orchardproject.net\", رابط الـ tenant هو \"https://orchardproject.net/\""
+
+#. <span class="hint">@T["You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."]</span>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:28
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."
+msgstr "يمكنك تعريف مجموعة نطاقات مفصولة بفواصل. إستخدم البادئة '*.' لتعيين جميع النطاقات الفرعية."
+
+#. @T["Recipe"]
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:34
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Recipe"
+msgstr "وصفة"
+
+#. <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
+#. <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:35
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:54
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Optionally specify which presets should be used for the Setup experience."
+msgstr "بشكل إختياري قم بتحديد أي إعدادات مسبقة يمكن إستخدامها في التثبيت."
+
+#. @T["Database Presets"]
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:53
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Database Presets"
+msgstr "الإعدادات المسبقة لقاعدة البيانات"
+
+#. <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:58
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "What type of database to use?"
+msgstr "ما هو نوع قاعدة البيانات المستخدمة؟"
+
+#. <option value="" data-connection-string="false">@T["None"]</option>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:60
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "None"
+msgstr "لا شيء"
+
+#. <label asp-for="TablePrefix">@T["Table Prefix"]</label>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:68
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Table Prefix"
+msgstr "بادئة الجدول"
+
+#. <label asp-for="ConnectionString">@T["Connection string"]</label>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:76
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Connection string"
+msgstr "نص الإتصال"
+
+#. <span class="text-muted form-text small">@T["The connection string to your database instance. e.g., Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"]</span>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:79
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "The connection string to your database instance. e.g., Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"
+msgstr "نص الإتصال لقاعدة بياناتك. مثال, Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"
+
+#. <button class="btn btn-primary" type="submit">@T["Save"]</button>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:86
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Save"
+msgstr "حفظ"
+
+#. <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.Tenants\Views\Admin\Edit.cshtml:87
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. <h1>@RenderTitleSegments(T["Tenants"])</h1>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:42
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Tenants"
+msgstr "مستأجرون"
+
+#. @T["Bulk Actions"]
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:47
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Bulk Actions"
+msgstr "مجموعة إجراءات"
+
+#. <a class="dropdown-item" href="#" data-action="disable">@T["Disable"]</a>
+#. <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:50
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:122
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Disable"
+msgstr "تعطيل"
+
+#. <a class="dropdown-item" href="#" data-action="enable">@T["Enable"]</a>
+#. <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:51
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:126
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Enable"
+msgstr "تمكين"
+
+#. <a asp-route-action="Create" class="btn btn-sm btn-primary float-rights" role="button">@T["Add Tenant"]</a>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:53
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Add Tenant"
+msgstr "إظافة مستأجر"
+
+#. <span class="input-group-text bg-secondary text-light">@T["Keyword"]</span>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:65
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Keyword"
+msgstr "الكلمة"
+
+#. <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:73
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Filter"
+msgstr "تصفية"
+
+#. <option value="@TenantsFilter.All.ToString()">@T["All states"]</option>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:76
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "All states"
+msgstr "جميع الحالات"
+
+#. <option value="@TenantsFilter.Running.ToString()">@T["Running"]</option>
+#. <span class="badge badge-success">@T["Running"]</span>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:77
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:149
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Running"
+msgstr "جارية التنفيذ"
+
+#. <option value="@TenantsFilter.Disabled.ToString()">@T["Disabled"]</option>
+#. <span class="badge badge-danger">@T["Disabled"]</span>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:78
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:140
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Disabled"
+msgstr "معطل"
+
+#. <option value="@TenantsFilter.Uninitialized.ToString()">@T["Uninitialized"]</option>
+#. <span class="badge badge-secondary">@T["Uninitialized"]</span>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:79
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:152
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Uninitialized"
+msgstr "غير مهيأ"
+
+#. <span class="input-group-text bg-secondary text-light">@T["Sort by"]</span>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:86
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Sort by"
+msgstr "الفرز بـ"
+
+#. <option value="@TenantsOrder.Name.ToString()">@T["Name"]</option>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:89
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Name"
+msgstr "الإسم"
+
+#. <option value="@TenantsOrder.State.ToString()">@T["State"]</option>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:90
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "State"
+msgstr "الحالة"
+
+#. <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:96
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Search"
+msgstr "بحث"
+
+#. <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:119
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Edit"
+msgstr "تحرير"
+
+#. <a class="btn btn-info btn-sm" id="btn-setup-@entry.Name" href="@GetTenantUrl(entry, originalPathBase)">@T["Setup"]</a>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:130
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Setup"
+msgstr "تثبيت"
+
+#. <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:132
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Reload"
+msgstr "إعادة التحميل"
+
+#. <span class="badge badge-info">@T["Initializing"]</span>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:143
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Initializing"
+msgstr "جاري التهئية"
+
+#. <span class="badge badge-warning">@T["Invalid"]</span>
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:146
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Invalid"
+msgstr "غير صالح"
+
+#. @T["<strong>Nothing here!</strong> Your search returned no results."]
+#: OrchardCore.Tenants\Views\Admin\Index.cshtml:164
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> Your search returned no results."
+msgstr ""
+

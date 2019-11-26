@@ -1,0 +1,206 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Twitter.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
+"PO-Revision-Date: 2019-09-12 06:42\n"
+
+#. builder.Add(T["Twitter"], "15", settings => settings
+#: OrchardCore.Twitter\AdminMenu.cs:30
+msgctxt "OrchardCore.Twitter.AdminMenu"
+msgid "Twitter"
+msgstr "Twitter"
+
+#. .Add(T["Twitter Integration"], "10", client => client
+#: OrchardCore.Twitter\AdminMenu.cs:32
+msgctxt "OrchardCore.Twitter.AdminMenu"
+msgid "Twitter Integration"
+msgstr "Integración con Twitter"
+
+#. builder.Add(T["Twitter"], "15", settings => settings
+#: OrchardCore.Twitter\AdminMenu.cs:62
+msgctxt "OrchardCore.Twitter.AdminMenuSignin"
+msgid "Twitter"
+msgstr "Twitter"
+
+#. .Add(T["Sign in with Twitter"], "15", client => client
+#: OrchardCore.Twitter\AdminMenu.cs:64
+msgctxt "OrchardCore.Twitter.AdminMenuSignin"
+msgid "Sign in with Twitter"
+msgstr "Iniciar sesión con Twitter"
+
+#. yield return new ValidationResult(T["ConsumerKey is required"], new string[] { nameof(settings.ConsumerKey) });
+#: OrchardCore.Twitter\Services\TwitterSettingsService.cs:64
+msgctxt "OrchardCore.Twitter.Services.TwitterSettingsService"
+msgid "ConsumerKey is required"
+msgstr "Se requiere ConsumerKey"
+
+#. yield return new ValidationResult(T["ConsumerSecret is required"], new string[] { nameof(settings.ConsumerSecret) });
+#: OrchardCore.Twitter\Services\TwitterSettingsService.cs:69
+msgctxt "OrchardCore.Twitter.Services.TwitterSettingsService"
+msgid "ConsumerSecret is required"
+msgstr "Se requiere ConsumerSecret"
+
+#. yield return new ValidationResult(T["Access Token is required"], new string[] { nameof(settings.AccessToken) });
+#: OrchardCore.Twitter\Services\TwitterSettingsService.cs:74
+msgctxt "OrchardCore.Twitter.Services.TwitterSettingsService"
+msgid "Access Token is required"
+msgstr "Token de acceso es obligatorio"
+
+#. yield return new ValidationResult(T["Access Token Secret is required"], new string[] { nameof(settings.AccessTokenSecret) });
+#: OrchardCore.Twitter\Services\TwitterSettingsService.cs:79
+msgctxt "OrchardCore.Twitter.Services.TwitterSettingsService"
+msgid "Access Token Secret is required"
+msgstr "Token de acceso es obligatorio"
+
+#. public override LocalizedString DisplayText => T["Update Twitter Status Task"];
+#: OrchardCore.Twitter\Workflows\Activities\UpdateTwitterStatusTask.cs:38
+msgctxt "OrchardCore.Twitter.Workflows.Activities.UpdateTwitterStatusTask"
+msgid "Update Twitter Status Task"
+msgstr "Actualizar tarea de estado de Twitter"
+
+#. public override LocalizedString Category => T["Social"];
+#: OrchardCore.Twitter\Workflows\Activities\UpdateTwitterStatusTask.cs:41
+msgctxt "OrchardCore.Twitter.Workflows.Activities.UpdateTwitterStatusTask"
+msgid "Social"
+msgstr "Social"
+
+#. return Outcomes(T["Done"], T["Failed"]);
+#: OrchardCore.Twitter\Workflows\Activities\UpdateTwitterStatusTask.cs:53
+msgctxt "OrchardCore.Twitter.Workflows.Activities.UpdateTwitterStatusTask"
+msgid "Done"
+msgstr "Hecho"
+
+#. return Outcomes(T["Done"], T["Failed"]);
+#: OrchardCore.Twitter\Workflows\Activities\UpdateTwitterStatusTask.cs:53
+msgctxt "OrchardCore.Twitter.Workflows.Activities.UpdateTwitterStatusTask"
+msgid "Failed"
+msgstr "Error"
+
+#. <span class="icon"><i class="fab fa-twitter" aria-hidden="true"></i></span><span class="title">@T["Twitter"]</span>
+#: OrchardCore.Twitter\Views\NavigationItemText-twitter.Id.cshtml:1
+msgctxt "OrchardCore.Twitter.Views.NavigationItemText-twitter.Id"
+msgid "Twitter"
+msgstr "Twitter"
+
+#. <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Twitter\Views\TwitterSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "El inquilino actual se recargará cuando se guarden los ajustes."
+
+#. <h3>@T["Twitter Integration Settings"]</h3>
+#: OrchardCore.Twitter\Views\TwitterSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "Twitter Integration Settings"
+msgstr "Configuración de integración con Twitter"
+
+#. <label asp-for="APIKey">@T["API key"]</label>
+#: OrchardCore.Twitter\Views\TwitterSettings.Edit.cshtml:11
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "API key"
+msgstr "Clave API"
+
+#. <span class="hint">@T["The API key defined in the Keys and tokens tab of twitter app dashboard."]</span>
+#: OrchardCore.Twitter\Views\TwitterSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "The API key defined in the Keys and tokens tab of twitter app dashboard."
+msgstr "La clave de la API definida en la pestaña Claves y tokens del panel de control de la aplicación de twitter."
+
+#. <label asp-for="APISecretKey">@T["API secret key"]</label>
+#: OrchardCore.Twitter\Views\TwitterSettings.Edit.cshtml:20
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "API secret key"
+msgstr "Clave secreta API"
+
+#. <span class="hint">@T["The API secret defined in the Keys and tokens tab of twitter app dashboard."]</span>
+#: OrchardCore.Twitter\Views\TwitterSettings.Edit.cshtml:23
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "The API secret defined in the Keys and tokens tab of twitter app dashboard."
+msgstr "La clave de la API definida en la pestaña Claves y tokens del panel de control de la aplicación de twitter."
+
+#. <label asp-for="AccessToken">@T["Access Token"]</label>
+#: OrchardCore.Twitter\Views\TwitterSettings.Edit.cshtml:29
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "Access Token"
+msgstr "Token de acceso"
+
+#. <span class="hint">@T["The Access Token defined in the Keys and tokens tab of twitter app dashboard."]</span>
+#: OrchardCore.Twitter\Views\TwitterSettings.Edit.cshtml:32
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "The Access Token defined in the Keys and tokens tab of twitter app dashboard."
+msgstr "El token de acceso definido en la pestaña Llaves y tokens del panel de control de la aplicación de twitter."
+
+#. <label asp-for="AccessTokenSecret">@T["Access Token Secret"]</label>
+#: OrchardCore.Twitter\Views\TwitterSettings.Edit.cshtml:38
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "Access Token Secret"
+msgstr "Token de acceso secreto"
+
+#. <span class="hint">@T["The Access Token Secret in the Keys and tokens tab of twitter app dashboard."]</span>
+#: OrchardCore.Twitter\Views\TwitterSettings.Edit.cshtml:41
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "The Access Token Secret in the Keys and tokens tab of twitter app dashboard."
+msgstr "El token de acceso definido en la pestaña Llaves y tokens del panel de control de la aplicación de twitter."
+
+#. <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Twitter\Views\TwitterSigninSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "El tenant actual se recargará cuando se guarden los ajustes."
+
+#. <h3>@T["Sign in with Twitter Settings"]</h3>
+#: OrchardCore.Twitter\Views\TwitterSigninSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
+msgid "Sign in with Twitter Settings"
+msgstr "Iniciar sesión con ajustes de Twitter"
+
+#. <label asp-for="CallbackPath">@T["CallbackPath"]</label>
+#: OrchardCore.Twitter\Views\TwitterSigninSettings.Edit.cshtml:11
+msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
+msgid "CallbackPath"
+msgstr ""
+
+#. <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+#: OrchardCore.Twitter\Views\TwitterSigninSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."
+msgstr "La ruta de solicitud dentro de la ruta base de la aplicación donde se devolverá el agente de usuario. El middleware procesará esta solicitud cuando llegue."
+
+#. <h4><i class="fab fa-twitter"></i>@Model.Activity.GetTitleOrDefault(() => T["Update Twitter Status"])</h4>
+#: OrchardCore.Twitter\Views\Items\UpdateTwitterStatusTask.Fields.Design.cshtml:8
+msgctxt "OrchardCore.Twitter.Views.Items.UpdateTwitterStatusTask.Fields.Design"
+msgid "Update Twitter Status"
+msgstr "Actualizar estado de Twitter"
+
+#. <label asp-for="StatusTemplate">@T["Template for updating twitter status"]</label>
+#: OrchardCore.Twitter\Views\Items\UpdateTwitterStatusTask.Fields.Edit.cshtml:6
+msgctxt "OrchardCore.Twitter.Views.Items.UpdateTwitterStatusTask.Fields.Edit"
+msgid "Template for updating twitter status"
+msgstr "Plantilla para actualizar el estado de twitter"
+
+#. <span class="hint">@T["The status text of the tweet."]</span>
+#: OrchardCore.Twitter\Views\Items\UpdateTwitterStatusTask.Fields.Edit.cshtml:9
+msgctxt "OrchardCore.Twitter.Views.Items.UpdateTwitterStatusTask.Fields.Edit"
+msgid "The status text of the tweet."
+msgstr "El texto de estado del tweet."
+
+#. <h4 class="card-title"><i class="fab fa-twitter"></i>@T["Update Twitter Status"]</h4>
+#: OrchardCore.Twitter\Views\Items\UpdateTwitterStatusTask.Fields.Thumbnail.cshtml:1
+msgctxt "OrchardCore.Twitter.Views.Items.UpdateTwitterStatusTask.Fields.Thumbnail"
+msgid "Update Twitter Status"
+msgstr "Actualizar estado de Twitter"
+
+#. <p>@T["Post a tweet"]</p>
+#: OrchardCore.Twitter\Views\Items\UpdateTwitterStatusTask.Fields.Thumbnail.cshtml:2
+msgctxt "OrchardCore.Twitter.Views.Items.UpdateTwitterStatusTask.Fields.Thumbnail"
+msgid "Post a tweet"
+msgstr "Envía un tweet"
+

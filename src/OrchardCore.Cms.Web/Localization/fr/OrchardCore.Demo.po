@@ -1,0 +1,106 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: fr\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Demo.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: French\n"
+"Language: fr_FR\n"
+"PO-Revision-Date: 2019-09-04 19:38\n"
+
+#. .Add(T["Demo"], "10", demo => demo
+#: OrchardCore.Demo\AdminMenu.cs:25
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "Demo"
+msgstr "Démo"
+
+#. .Add(T["This Menu Item 1"], "0", item => item
+#: OrchardCore.Demo\AdminMenu.cs:27
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This Menu Item 1"
+msgstr "Ceci est Menu Item 1"
+
+#. .Add(T["This is Menu Item 1.1"], subItem => subItem
+#: OrchardCore.Demo\AdminMenu.cs:28
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This is Menu Item 1.1"
+msgstr "Ceci est Menu Item 1.1"
+
+#. .Add(T["This is Menu Item 1.2"], subItem => subItem
+#. .Add(T["This is Menu Item 1.2"], subItem => subItem
+#: OrchardCore.Demo\AdminMenu.cs:30
+#: OrchardCore.Demo\AdminMenu.cs:32
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This is Menu Item 1.2"
+msgstr "Ceci est Menu Item 1.2"
+
+#. .Add(T["This Menu Item 2"], "0", item => item
+#: OrchardCore.Demo\AdminMenu.cs:35
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This Menu Item 2"
+msgstr "Ceci est Menu Item 2"
+
+#. .Add(T["This is Menu Item 2.1"], subItem => subItem
+#: OrchardCore.Demo\AdminMenu.cs:36
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This is Menu Item 2.1"
+msgstr "Ceci est Menu Item 2.1"
+
+#. .Add(T["This is Menu Item 2.2"], subItem => subItem
+#: OrchardCore.Demo\AdminMenu.cs:38
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This is Menu Item 2.2"
+msgstr "Ceci est Menu Item 2.2"
+
+#. .Add(T["This is Menu Item 3.2"], subItem => subItem
+#. .Add(T["This is Menu Item 3.2"], subItem => subItem
+#: OrchardCore.Demo\AdminMenu.cs:40
+#: OrchardCore.Demo\AdminMenu.cs:46
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This is Menu Item 3.2"
+msgstr "Ceci est Menu Item 3.2"
+
+#. .Add(T["This Menu Item 3"], "0", item => item
+#: OrchardCore.Demo\AdminMenu.cs:43
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This Menu Item 3"
+msgstr "Ceci est Menu Item 3"
+
+#. .Add(T["This is Menu Item 3.1"], subItem => subItem
+#: OrchardCore.Demo\AdminMenu.cs:44
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This is Menu Item 3.1"
+msgstr "Ceci est Menu Item 3.1"
+
+#. <span class="icon"><i class="fa fa-hashtag" aria-hidden="true"></i></span><span class="title">@T["Demo"]</span>
+#: OrchardCore.Demo\Views\NavigationItemText-demo.Id.cshtml:1
+msgctxt "OrchardCore.Demo.Views.NavigationItemText-demo.Id"
+msgid "Demo"
+msgstr "Démo"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#. <input asp-for="Name" type="text" class="form-control" placeholder="@T["Name"]" />
+#: OrchardCore.Demo\Views\UserProfile.Edit.cshtml:4
+#: OrchardCore.Demo\Views\UserProfile.Edit.cshtml:5
+msgctxt "OrchardCore.Demo.Views.UserProfile.Edit"
+msgid "Name"
+msgstr "Nom"
+
+#. <label asp-for="Age">@T["Age"]</label>
+#. <input asp-for="Age" type="text" class="form-control" placeholder="@T["Age"]" />
+#: OrchardCore.Demo\Views\UserProfile.Edit.cshtml:9
+#: OrchardCore.Demo\Views\UserProfile.Edit.cshtml:10
+msgctxt "OrchardCore.Demo.Views.UserProfile.Edit"
+msgid "Age"
+msgstr "Age"
+
+#. <h1>@RenderTitleSegments(T["Edit {0}", (string)Model.ContentItem.ContentType])</h1>
+#: OrchardCore.Demo\Views\Content\Edit.cshtml:2
+msgctxt "OrchardCore.Demo.Views.Content.Edit"
+msgid "Edit {0}"
+msgstr "Modifier {0}"
+

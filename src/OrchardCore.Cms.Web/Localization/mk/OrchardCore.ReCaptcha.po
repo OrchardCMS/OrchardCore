@@ -1,0 +1,130 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n%10==1 && n%100 != 11 ? 0 : 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: mk\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.ReCaptcha.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Macedonian\n"
+"Language: mk_MK\n"
+"PO-Revision-Date: 2019-09-06 12:20\n"
+
+#. .Add(T["Configuration"], configuration => configuration
+#: OrchardCore.ReCaptcha\AdminMenu.cs:26
+msgctxt "OrchardCore.ReCaptcha.AdminMenu"
+msgid "Configuration"
+msgstr ""
+
+#. .Add(T["Settings"], settings => settings
+#: OrchardCore.ReCaptcha\AdminMenu.cs:27
+msgctxt "OrchardCore.ReCaptcha.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#. .Add(T["reCaptcha"], T["reCaptcha"], registration => registration
+#. .Add(T["reCaptcha"], T["reCaptcha"], registration => registration
+#: OrchardCore.ReCaptcha\AdminMenu.cs:28
+#: OrchardCore.ReCaptcha\AdminMenu.cs:28
+msgctxt "OrchardCore.ReCaptcha.AdminMenu"
+msgid "reCaptcha"
+msgstr ""
+
+#. public override LocalizedString DisplayText => T["Validate ReCaptcha Task"];
+#: OrchardCore.ReCaptcha\Workflows\ValidateReCaptchaTask.cs:33
+msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
+msgid "Validate ReCaptcha Task"
+msgstr ""
+
+#. public override LocalizedString Category => T["Validation"];
+#: OrchardCore.ReCaptcha\Workflows\ValidateReCaptchaTask.cs:34
+msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
+msgid "Validation"
+msgstr ""
+
+#. return Outcomes(T["Done"], T["Valid"], T["Invalid"]);
+#: OrchardCore.ReCaptcha\Workflows\ValidateReCaptchaTask.cs:41
+msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
+msgid "Done"
+msgstr ""
+
+#. return Outcomes(T["Done"], T["Valid"], T["Invalid"]);
+#: OrchardCore.ReCaptcha\Workflows\ValidateReCaptchaTask.cs:41
+msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
+msgid "Valid"
+msgstr ""
+
+#. return Outcomes(T["Done"], T["Valid"], T["Invalid"]);
+#: OrchardCore.ReCaptcha\Workflows\ValidateReCaptchaTask.cs:41
+msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
+msgid "Invalid"
+msgstr ""
+
+#. updater.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, T["Captcha validation failed. Try again."]);
+#: OrchardCore.ReCaptcha\Workflows\ValidateReCaptchaTask.cs:54
+msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
+msgid "Captcha validation failed. Try again."
+msgstr ""
+
+#. <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.ReCaptcha\Views\ReCaptchaSettings.Edit.cshtml:3
+msgctxt "OrchardCore.ReCaptcha.Views.ReCaptchaSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr ""
+
+#. <label asp-for="SiteKey">@T["Site Key"]</label>
+#: OrchardCore.ReCaptcha\Views\ReCaptchaSettings.Edit.cshtml:6
+msgctxt "OrchardCore.ReCaptcha.Views.ReCaptchaSettings.Edit"
+msgid "Site Key"
+msgstr ""
+
+#. <span class="hint">@T["Your Google's reCaptcha Site Key."]</span>
+#: OrchardCore.ReCaptcha\Views\ReCaptchaSettings.Edit.cshtml:9
+msgctxt "OrchardCore.ReCaptcha.Views.ReCaptchaSettings.Edit"
+msgid "Your Google's reCaptcha Site Key."
+msgstr ""
+
+#. <label asp-for="SecretKey">@T["Secret Key"]</label>
+#: OrchardCore.ReCaptcha\Views\ReCaptchaSettings.Edit.cshtml:13
+msgctxt "OrchardCore.ReCaptcha.Views.ReCaptchaSettings.Edit"
+msgid "Secret Key"
+msgstr ""
+
+#. <span class="hint">@T["Your Google's reCaptcha Secret Key."]</span>
+#: OrchardCore.ReCaptcha\Views\ReCaptchaSettings.Edit.cshtml:16
+msgctxt "OrchardCore.ReCaptcha.Views.ReCaptchaSettings.Edit"
+msgid "Your Google's reCaptcha Secret Key."
+msgstr ""
+
+#. <span class="hint">@T["Get your reCaptcha at"] <a href="https://developers.google.com/recaptcha/" target="_blank">https://developers.google.com/recaptcha/</a></span>
+#: OrchardCore.ReCaptcha\Views\ReCaptchaSettings.Edit.cshtml:20
+msgctxt "OrchardCore.ReCaptcha.Views.ReCaptchaSettings.Edit"
+msgid "Get your reCaptcha at"
+msgstr ""
+
+#. <div class="alert alert-warning">@T["ReCaptcha settings are not configured."]</div>
+#: OrchardCore.ReCaptcha\Views\Items\ReCaptchaPart.cshtml:9
+msgctxt "OrchardCore.ReCaptcha.Views.Items.ReCaptchaPart"
+msgid "ReCaptcha settings are not configured."
+msgstr ""
+
+#. <h4><i class="fa fa-shield-alt"></i>@Model.Activity.GetTitleOrDefault(() => T["Validate ReCaptcha"])</h4>
+#: OrchardCore.ReCaptcha\Views\Items\ValidateReCaptchaTask.Fields.Design.cshtml:4
+msgctxt "OrchardCore.ReCaptcha.Views.Items.ValidateReCaptchaTask.Fields.Design"
+msgid "Validate ReCaptcha"
+msgstr ""
+
+#. <h4 class="card-title"><i class="fa fa-shield-alt"></i>@T["Validate ReCaptcha"]</h4>
+#: OrchardCore.ReCaptcha\Views\Items\ValidateReCaptchaTask.Fields.Thumbnail.cshtml:1
+msgctxt "OrchardCore.ReCaptcha.Views.Items.ValidateReCaptchaTask.Fields.Thumbnail"
+msgid "Validate ReCaptcha"
+msgstr ""
+
+#. <p>@T["Validates the recaptcha token for the current HTTP context in which the workflow executes."]</p>
+#: OrchardCore.ReCaptcha\Views\Items\ValidateReCaptchaTask.Fields.Thumbnail.cshtml:2
+msgctxt "OrchardCore.ReCaptcha.Views.Items.ValidateReCaptchaTask.Fields.Thumbnail"
+msgid "Validates the recaptcha token for the current HTTP context in which the workflow executes."
+msgstr ""
+

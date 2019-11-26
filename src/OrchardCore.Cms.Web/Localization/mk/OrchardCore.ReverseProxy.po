@@ -1,0 +1,74 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n%10==1 && n%100 != 11 ? 0 : 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: mk\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.ReverseProxy.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Macedonian\n"
+"Language: mk_MK\n"
+"PO-Revision-Date: 2019-09-21 09:35\n"
+
+#. .Add(T["Configuration"], configuration => configuration
+#: OrchardCore.ReverseProxy\AdminMenu.cs:22
+msgctxt "OrchardCore.ReverseProxy.AdminMenu"
+msgid "Configuration"
+msgstr ""
+
+#. .Add(T["Settings"], settings => settings
+#: OrchardCore.ReverseProxy\AdminMenu.cs:23
+msgctxt "OrchardCore.ReverseProxy.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#. .Add(T["Reverse Proxy"], T["Reverse Proxy"], entry => entry
+#. .Add(T["Reverse Proxy"], T["Reverse Proxy"], entry => entry
+#: OrchardCore.ReverseProxy\AdminMenu.cs:24
+#: OrchardCore.ReverseProxy\AdminMenu.cs:24
+msgctxt "OrchardCore.ReverseProxy.AdminMenu"
+msgid "Reverse Proxy"
+msgstr ""
+
+#. _notifier.Warning(T["The site needs to be restarted for the settings to take effect"]);
+#: OrchardCore.ReverseProxy\Drivers\ReverseProxySettingsDisplayDriver.cs:39
+msgctxt "OrchardCore.ReverseProxy.Drivers.ReverseProxySettingsDisplayDriver"
+msgid "The site needs to be restarted for the settings to take effect"
+msgstr ""
+
+#. @T["Enables the forwarding of the HTTP header X-Forwarded-For"]
+#. <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-For"]</span>
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:7
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:10
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Enables the forwarding of the HTTP header X-Forwarded-For"
+msgstr ""
+
+#. <span class="hint">@T["Current request value;"] @Context.Connection.RemoteIpAddress</span>
+#. <span class="hint">@T["Current request value;"] @Context.Request.Scheme</span>
+#. <span class="hint">@T["Current request value;"] @Context.Request.Host</span>
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:11
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:22
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:33
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Current request value;"
+msgstr ""
+
+#. @T["Enables the forwarding of the HTTP header X-Forwarded-Proto"]
+#. <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-Proto"]</span>
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:18
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:21
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Enables the forwarding of the HTTP header X-Forwarded-Proto"
+msgstr ""
+
+#. @T["Enables the forwarding of the HTTP header X-Forwarded-Host"]
+#. <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-Host"]</span>
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:29
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:32
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Enables the forwarding of the HTTP header X-Forwarded-Host"
+msgstr ""
+

@@ -1,0 +1,211 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: fr\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Themes.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: French\n"
+"Language: fr_FR\n"
+"PO-Revision-Date: 2019-09-21 09:22\n"
+
+#. .Add(T["Themes"], "10", themes => themes
+#: OrchardCore.Themes\AdminMenu.cs:25
+msgctxt "OrchardCore.Themes.AdminMenu"
+msgid "Themes"
+msgstr "Thèmes"
+
+#. .Add(T["Active Themes"], "0", installed => installed
+#: OrchardCore.Themes\AdminMenu.cs:28
+msgctxt "OrchardCore.Themes.AdminMenu"
+msgid "Active Themes"
+msgstr "Thèmes actifs"
+
+#. _notifier.Success(T["{0} was enabled", feature.Name ?? feature.Id]);
+#. _notifier.Success(T["{0} was enabled", feature.Name ?? feature.Id]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:163
+#: OrchardCore.Themes\Controllers\AdminController.cs:242
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was enabled"
+msgstr "{0} a été activé"
+
+#. _notifier.Success(T["{0} was set as the default {1} theme", feature.Name ?? feature.Id, isAdmin ? "Admin" : "Site"]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:166
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was set as the default {1} theme"
+msgstr "{0} a été défini comme le thème par défaut de {1}"
+
+#. _notifier.Success(T["The Site theme was reset."]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:183
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "The Site theme was reset."
+msgstr "Le thème du site a été réinitialisé."
+
+#. _notifier.Success(T["The Admin theme was reset."]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:198
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "The Admin theme was reset."
+msgstr "Le thème Admin a été réinitialisé."
+
+#. _notifier.Success(T["{0} was disabled", feature.Name ?? feature.Id]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:220
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was disabled"
+msgstr "{0} a été désactivé"
+
+#. throw new InvalidOperationException(T["The theme \"{0}\" is already in the stack of themes that need features disabled.", themeName].ToString());
+#: OrchardCore.Themes\Services\ThemeService.cs:47
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "The theme \"{0}\" is already in the stack of themes that need features disabled."
+msgstr "Le thème \"{0}\" est déjà dans la pile des thèmes qui ont besoin de fonctionnalités désactivées."
+
+#. throw new InvalidOperationException(T["The theme \"{0}\" is already in the stack of themes that need features enabled.", themeName].ToString());
+#: OrchardCore.Themes\Services\ThemeService.cs:78
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "The theme \"{0}\" is already in the stack of themes that need features enabled."
+msgstr "Le thème \"{0}\" est déjà dans la pile des thèmes qui ont besoin de fonctionnalités activées."
+
+#. _notifier.Success(T["{0} was enabled.", enabledFeature.Name]);
+#: OrchardCore.Themes\Services\ThemeService.cs:119
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "{0} was enabled."
+msgstr "{0} a été activé."
+
+#. _notifier.Success(T["{0} was disabled.", feature.Name]);
+#: OrchardCore.Themes\Services\ThemeService.cs:146
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "{0} was disabled."
+msgstr "{0} a été désactivé."
+
+#. <span class="icon"><i class="fa fa-camera-retro" aria-hidden="true"></i></span><span class="title">@T["Themes"]</span>
+#: OrchardCore.Themes\Views\NavigationItemText-themes.Id.cshtml:1
+msgctxt "OrchardCore.Themes.Views.NavigationItemText-themes.Id"
+msgid "Themes"
+msgstr "Thèmes"
+
+#. <h4>@T["Changing default themes"]</h4>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:4
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Changing default themes"
+msgstr "Changer les thèmes par défaut"
+
+#. <p>@T["This page lets you change the site's default themes for both the front-end and the back-end."]</p>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:5
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "This page lets you change the site's default themes for both the front-end and the back-end."
+msgstr "Cette page vous permet de changer les thèmes par défaut du site pour le front-end et le back-end."
+
+#. <p>@T["There are no themes installed."]</p>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:10
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "There are no themes installed."
+msgstr "Il n'y a aucun thème installé."
+
+#. <small>@T["By: {0}", themeEntry.Extension.Manifest.Author]</small><br />
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:25
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "By: {0}"
+msgstr "Par: {0}"
+
+#. <small>@T["Version: {0}", themeEntry.Extension.Manifest.Version]</small>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:31
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Version: {0}"
+msgstr "Version: {0}"
+
+#. <button type="submit" class="btn btn-sm btn-primary">@T["Make Default"]</button>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:39
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Make Default"
+msgstr "Définir par défaut"
+
+#. <button type="submit" class="btn btn-sm btn-secondary">@T["Disable"]</button>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:47
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Disable"
+msgstr "Désactiver"
+
+#. <button type="submit" class="btn btn-sm btn-secondary">@T["Enable"]</button>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:53
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Enable"
+msgstr "Activer"
+
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:0
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "This is the default {0} theme"
+msgstr "C’est le thème par défaut de {0}"
+
+#. <h4>@T["Reset default themes"]</h4>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:71
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Reset default themes"
+msgstr "Réinitialiser les thèmes par défaut"
+
+#. <p>@T["The following actions reset the themes. It is used for sites that can't use theming."]</p>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:72
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "The following actions reset the themes. It is used for sites that can't use theming."
+msgstr "Les actions suivantes réinitialisent les thèmes. C'est utilisé pour les sites qui ne peuvent pas utiliser les thèmes."
+
+#. <a asp-action="ResetSiteTheme" itemprop="UnsafeUrl RemoveUrl" data-title="@T["Reset Site Theme"]" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
+#. <a asp-action="ResetSiteTheme" itemprop="UnsafeUrl RemoveUrl" data-title="@T["Reset Site Theme"]" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:73
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:73
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Reset Site Theme"
+msgstr "Réinitialiser le thème du site"
+
+#. <a asp-action="ResetSiteTheme" itemprop="UnsafeUrl RemoveUrl" data-title="@T["Reset Site Theme"]" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:73
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Are you sure you want to reset the Site theme?"
+msgstr "Êtes-vous sûr de vouloir réinitialiser le thème du site ?"
+
+#. <a asp-action="ResetAdminTheme" itemprop="UnsafeUrl RemoveUrl" data-title="@T["Reset Admin Theme"]" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>
+#. <a asp-action="ResetAdminTheme" itemprop="UnsafeUrl RemoveUrl" data-title="@T["Reset Admin Theme"]" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:74
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:74
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Reset Admin Theme"
+msgstr "Réinitialiser le thème Admin"
+
+#. <a asp-action="ResetAdminTheme" itemprop="UnsafeUrl RemoveUrl" data-title="@T["Reset Admin Theme"]" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:74
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Are you sure you want to reset the Admin theme?"
+msgstr "Êtes-vous sûr de vouloir réinitialiser le thème Admin ?"
+
+#. <h5>@T["Themes"]</h5>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Edit.cshtml:3
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Edit"
+msgid "Themes"
+msgstr "Thèmes"
+
+#. <h5>@T["Themes"]</h5>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Summary.cshtml:3
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Summary"
+msgid "Themes"
+msgstr "Thèmes"
+
+#. <span class="hint">@T["Adds the currently selected site theme and admin theme to the plan."]</span>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Summary.cshtml:5
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Summary"
+msgid "Adds the currently selected site theme and admin theme to the plan."
+msgstr "Ajoute les thèmes sélectionnés site et admin pour au plan."
+
+#. <h4 class="card-title">@T["Themes"]</h4>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Thumbnail"
+msgid "Themes"
+msgstr "Thèmes"
+
+#. <p>@T["Exports the currently selected site theme and admin theme."]</p>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Thumbnail"
+msgid "Exports the currently selected site theme and admin theme."
+msgstr "Exporte les thèmes sélectionnés site et admin."
+

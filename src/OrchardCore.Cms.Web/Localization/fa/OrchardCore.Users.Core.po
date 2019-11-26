@@ -1,0 +1,126 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: fa\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Users.Core.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Persian\n"
+"Language: fa_IR\n"
+"PO-Revision-Date: 2019-09-04 19:19\n"
+
+#. reportError("UserName", T["A user name is required."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:38
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "A user name is required."
+msgstr "نام کاربر ضروری است."
+
+#. reportError("Password", T["A password is required."]);
+#. reportError("Password", T["A password is required."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:44
+#: OrchardCore.Users.Core\Services\UserService.cs:147
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "A password is required."
+msgstr "رمز عبور ضروری است."
+
+#. reportError(string.Empty, T["The specified username/password couple is invalid."]);
+#. reportError(string.Empty, T["The specified username/password couple is invalid."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:51
+#: OrchardCore.Users.Core\Services\UserService.cs:68
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "The specified username/password couple is invalid."
+msgstr "نام کاربری ویا رمز عبور صحیح نیست."
+
+#. reportError(string.Empty, T["The specified user is not allowed to sign in."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:58
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "The specified user is not allowed to sign in."
+msgstr "کاربر مورد نظر اجازه ورود به حساب کاربری را ندارد."
+
+#. reportError(string.Empty, T["The specified user is not allowed to sign in using password authentication."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:63
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "The specified user is not allowed to sign in using password authentication."
+msgstr "کاربر مورد نظر اجازه ورود با رمز عبور را ندارد."
+
+#. reportError("UserName", T["A user name or email is required."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:141
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "A user name or email is required."
+msgstr "نام کاربری یا ایمیل ضروری است."
+
+#. reportError("Token", T["A token is required."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:153
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "A token is required."
+msgstr "توکن ضروری است."
+
+#. reportError("Password", T["Passwords must have at least one digit character ('0'-'9')."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:209
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must have at least one digit character ('0'-'9')."
+msgstr "رمز عبور باید حداقل شامل یک عدد باشد (٠ - ٩)."
+
+#. reportError("Password", T["Passwords must have at least one lowercase character ('a'-'z')."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:212
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must have at least one lowercase character ('a'-'z')."
+msgstr "رمز عبور باید حداقل شامل یک حرف کوچک انگلیسی باشد (a - z)."
+
+#. reportError("Password", T["Passwords must have at least one uppercase character ('A'-'Z')."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:215
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must have at least one uppercase character ('A'-'Z')."
+msgstr "رمز عبور باید حداقل شامل یک حرف بزرگ انگلیسی باشد (A - Z)."
+
+#. reportError("Password", T["Passwords must have at least one non letter or digit character."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:218
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must have at least one non letter or digit character."
+msgstr "رمز عبور باید شامل حداقل یک عدد یا یک نشانه باشد."
+
+#. reportError("Password", T["Passwords must be at least {0} characters.", _identityOptions.Value.Password.RequiredLength]);
+#: OrchardCore.Users.Core\Services\UserService.cs:221
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must be at least {0} characters."
+msgstr "رمز عبور باید حداقل {0} کاراکتر باشد."
+
+#. reportError("Password", T["Passwords must contain at least {0} unique characters.", _identityOptions.Value.Password.RequiredUniqueChars]);
+#: OrchardCore.Users.Core\Services\UserService.cs:224
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must contain at least {0} unique characters."
+msgstr "رمز عبور باید شامل حداقل {0} کاراکتر منحصر‌به‌فرد باشد."
+
+#. reportError("CurrentPassword", T["Incorrect password."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:229
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Incorrect password."
+msgstr "رمز عبور نادرست است."
+
+#. reportError("UserName", T["User name '{0}' is invalid, can only contain letters or digits.", user.UserName]);
+#: OrchardCore.Users.Core\Services\UserService.cs:234
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "User name '{0}' is invalid, can only contain letters or digits."
+msgstr "نام کاربری '{0}' نامعتبر است، نام کاربری باید فقط شامل حروف و اعداد باشد."
+
+#. reportError("UserName", T["User name '{0}' is already used.", user.UserName]);
+#: OrchardCore.Users.Core\Services\UserService.cs:237
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "User name '{0}' is already used."
+msgstr "نام کاربری {0} قبلا ثبت شده است."
+
+#. reportError("Email", T["Email '{0}' is invalid.", user.Email]);
+#: OrchardCore.Users.Core\Services\UserService.cs:242
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Email '{0}' is invalid."
+msgstr "ایمیل {0} نامعتبر است."
+
+#. reportError(string.Empty, T["Unexpected error: '{0}'.", error.Code]);
+#: OrchardCore.Users.Core\Services\UserService.cs:245
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Unexpected error: '{0}'."
+msgstr "خطای غیرمنتظره: '{0}'."
+

@@ -1,0 +1,100 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: uk\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Https.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Ukrainian\n"
+"Language: uk_UA\n"
+"PO-Revision-Date: 2019-09-21 09:29\n"
+
+#. .Add(T["Configuration"], configuration => configuration
+#: OrchardCore.Https\AdminMenu.cs:25
+msgctxt "OrchardCore.Https.AdminMenu"
+msgid "Configuration"
+msgstr "Конфігурація"
+
+#. .Add(T["Settings"], settings => settings
+#: OrchardCore.Https\AdminMenu.cs:26
+msgctxt "OrchardCore.Https.AdminMenu"
+msgid "Settings"
+msgstr "Параметри"
+
+#. .Add(T["HTTPS"], T["HTTPS"], entry => entry
+#. .Add(T["HTTPS"], T["HTTPS"], entry => entry
+#: OrchardCore.Https\AdminMenu.cs:27
+#: OrchardCore.Https\AdminMenu.cs:27
+msgctxt "OrchardCore.Https.AdminMenu"
+msgid "HTTPS"
+msgstr ""
+
+#. _notifier.Warning(T["For safety, Enabling require HTTPS over HTTP has been prevented."]);
+#: OrchardCore.Https\Drivers\HttpsSettingsDisplayDriver.cs:55
+msgctxt "OrchardCore.Https.Drivers.HttpsSettingsDisplayDriver"
+msgid "For safety, Enabling require HTTPS over HTTP has been prevented."
+msgstr ""
+
+#. <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:3
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="RequireHttps">@T["Require HTTPS"]</label>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Require HTTPS"
+msgstr ""
+
+#. <span class="hint">— @T["Require HTTPS for all requests"]</span>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:9
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Require HTTPS for all requests"
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="EnableStrictTransportSecurity">@T["Enable HSTS"]</label>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:16
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Enable HSTS"
+msgstr ""
+
+#. <span class="hint">— @T["Indicates to browsers that connecting without transport security (e.g SSL or TLS) isn't allowed."]</span>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:17
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Indicates to browsers that connecting without transport security (e.g SSL or TLS) isn't allowed."
+msgstr ""
+
+#. <div class="alert alert-danger">@T["This option should be enabled with caution, as it may prevent users from connecting if HTTPS was later disabled or wasn't available."]</div>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:20
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "This option should be enabled with caution, as it may prevent users from connecting if HTTPS was later disabled or wasn't available."
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="RequireHttpsPermanent">@T["Require HTTPS Permanent"]</label>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:26
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Require HTTPS Permanent"
+msgstr ""
+
+#. <span class="hint">— @T["Specifies whether a permanent redirect, 308 Moved Permanently, should be used instead of a temporary redirect, 307 Found, when redirecting to HTTPS"]</span>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:27
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Specifies whether a permanent redirect, 308 Moved Permanently, should be used instead of a temporary redirect, 307 Found, when redirecting to HTTPS"
+msgstr ""
+
+#. <label asp-for="SslPort">@T["SSL Port"]</label>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:32
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "SSL Port"
+msgstr ""
+
+#. <span class="hint">@T["The SSL Port Number, leave empty to let the middlware try to determinate it."]</span>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:35
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "The SSL Port Number, leave empty to let the middlware try to determinate it."
+msgstr ""
+

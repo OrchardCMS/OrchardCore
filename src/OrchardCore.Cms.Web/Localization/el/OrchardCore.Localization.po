@@ -1,0 +1,88 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Localization.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"PO-Revision-Date: 2019-09-04 18:55\n"
+
+#. .Add(T["Configuration"], configuration => configuration
+#: OrchardCore.Localization\AdminMenu.cs:23
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Configuration"
+msgstr ""
+
+#. .Add(T["Settings"], settings => settings
+#: OrchardCore.Localization\AdminMenu.cs:24
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#. .Add(T["Localization"], T["Localization"], entry => entry
+#. .Add(T["Localization"], T["Localization"], entry => entry
+#: OrchardCore.Localization\AdminMenu.cs:25
+#: OrchardCore.Localization\AdminMenu.cs:25
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Localization"
+msgstr ""
+
+#. context.Updater.ModelState.AddModelError("SupportedCultures", S["A culture is required"]);
+#: OrchardCore.Localization\Drivers\LocalizationSettingsDisplayDriver.cs:80
+msgctxt "OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver"
+msgid "A culture is required"
+msgstr ""
+
+#. _notifier.Warning(H["The site has been restarted for the settings to take effect"]);
+#: OrchardCore.Localization\Drivers\LocalizationSettingsDisplayDriver.cs:97
+msgctxt "OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver"
+msgid "The site has been restarted for the settings to take effect"
+msgstr ""
+
+#. Description = T["The active cultures configured for the site."],
+#: OrchardCore.Localization\GraphQL\SiteCulturesQuery.cs:28
+msgctxt "OrchardCore.Localization.GraphQL.SiteCulturesQuery"
+msgid "The active cultures configured for the site."
+msgstr ""
+
+#. <p class="alert alert-warning col-xl-6">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr ""
+
+#. <th>@T["Culture"]</th>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:26
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Culture"
+msgstr ""
+
+#. <th class="text-center">@T["Default culture"]</th>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:27
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Default culture"
+msgstr ""
+
+#. <a v-on:click="remove(index)" title="@T["Remove culture"]" href="javascript:void(0)" class="btn btn-secondary btn-sm" style="cursor:pointer">
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:44
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Remove culture"
+msgstr ""
+
+#. <a v-on:click="add()" href="javascript:void(0)" class="btn btn-success"><i class="fas fa-plus small"></i> @T["Add culture"]</a>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:61
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Add culture"
+msgstr ""
+
+#. <label>@T["Define which cultures are supported by the site."]</label>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:75
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Define which cultures are supported by the site."
+msgstr ""
+

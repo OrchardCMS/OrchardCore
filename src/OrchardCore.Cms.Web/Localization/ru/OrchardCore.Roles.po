@@ -1,0 +1,230 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: ru\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Roles.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Russian\n"
+"Language: ru_RU\n"
+"PO-Revision-Date: 2019-09-21 09:25\n"
+
+#. .Add(T["Configuration"], configuration => configuration
+#: OrchardCore.Roles\AdminMenu.cs:25
+msgctxt "OrchardCore.Roles.AdminMenu"
+msgid "Configuration"
+msgstr "Конфигурация"
+
+#. .Add(T["Security"], "5", security => security
+#: OrchardCore.Roles\AdminMenu.cs:26
+msgctxt "OrchardCore.Roles.AdminMenu"
+msgid "Security"
+msgstr "Безопасность"
+
+#. .Add(T["Roles"], "10", installed => installed
+#: OrchardCore.Roles\AdminMenu.cs:27
+msgctxt "OrchardCore.Roles.AdminMenu"
+msgid "Roles"
+msgstr "Роли"
+
+#. ModelState.AddModelError(string.Empty, T["The role is already used."]);
+#: OrchardCore.Roles\Controllers\AdminController.cs:103
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "The role is already used."
+msgstr "Роль уже используется."
+
+#. _notifier.Success(TH["Role created successfully"]);
+#: OrchardCore.Roles\Controllers\AdminController.cs:113
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Role created successfully"
+msgstr "Роль успешно создана"
+
+#. _notifier.Success(TH["Role deleted successfully"]);
+#: OrchardCore.Roles\Controllers\AdminController.cs:149
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Role deleted successfully"
+msgstr "Роль успешно удалена"
+
+#. _notifier.Error(TH["Could not delete this role"]);
+#: OrchardCore.Roles\Controllers\AdminController.cs:155
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Could not delete this role"
+msgstr "Не удалось удалить эту роль"
+
+#. _notifier.Success(TH["Role updated successfully."]);
+#: OrchardCore.Roles\Controllers\AdminController.cs:224
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Role updated successfully."
+msgstr "Роль успешно обновлена."
+
+#. string title = String.IsNullOrWhiteSpace(category) ? T["{0} Feature", featureName] : category;
+#: OrchardCore.Roles\Controllers\AdminController.cs:252
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "{0} Feature"
+msgstr "Функция {0}"
+
+#. return IdentityResult.Failed(new IdentityError { Description = T["Can't delete system roles."] });
+#: OrchardCore.Roles\Services\RoleStore.cs:106
+msgctxt "OrchardCore.Roles.Services.RoleStore"
+msgid "Can't delete system roles."
+msgstr "Не удается удалить системные роли."
+
+#. <h1>@RenderTitleSegments(T["Create Role"])</h1>
+#: OrchardCore.Roles\Views\Admin\Create.cshtml:4
+msgctxt "OrchardCore.Roles.Views.Admin.Create"
+msgid "Create Role"
+msgstr "Создать роль"
+
+#. <label asp-for="RoleName">@T["Role name"]</label>
+#: OrchardCore.Roles\Views\Admin\Create.cshtml:9
+msgctxt "OrchardCore.Roles.Views.Admin.Create"
+msgid "Role name"
+msgstr "Имя роли"
+
+#. <span asp-validation-for="RoleName" class="text-danger">@T["The role name is required."]</span>
+#: OrchardCore.Roles\Views\Admin\Create.cshtml:11
+msgctxt "OrchardCore.Roles.Views.Admin.Create"
+msgid "The role name is required."
+msgstr "Требуется имя роли."
+
+#. <button class="btn btn-primary" type="submit">@T["Create"]</button>
+#: OrchardCore.Roles\Views\Admin\Create.cshtml:16
+msgctxt "OrchardCore.Roles.Views.Admin.Create"
+msgid "Create"
+msgstr "Создать"
+
+#. <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.Roles\Views\Admin\Create.cshtml:17
+msgctxt "OrchardCore.Roles.Views.Admin.Create"
+msgid "Cancel"
+msgstr "Отменить"
+
+#. <h1>@RenderTitleSegments(T["Edit Role {0}", Model.Name])</h1>
+#: OrchardCore.Roles\Views\Admin\Edit.cshtml:4
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Edit Role {0}"
+msgstr "Изменить роль {0}"
+
+#. <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+#: OrchardCore.Roles\Views\Admin\Edit.cshtml:9
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Search"
+msgstr "Поиск"
+
+#. <th class="col-10">@T["Permission"]</th>
+#: OrchardCore.Roles\Views\Admin\Edit.cshtml:22
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Permission"
+msgstr "Разрешение"
+
+#. <th class="col-1">@T["Allow"]</th>
+#: OrchardCore.Roles\Views\Admin\Edit.cshtml:23
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Allow"
+msgstr "Разрешить"
+
+#. <th class="col-1">@T["Effective"]</th>
+#: OrchardCore.Roles\Views\Admin\Edit.cshtml:24
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Effective"
+msgstr "Эффективный"
+
+#. <span class="badge badge-danger" data-toggle="tooltip" data-html="true" title="@T["This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."]">@T["Security Critical"]</span>
+#: OrchardCore.Roles\Views\Admin\Edit.cshtml:35
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."
+msgstr ""
+
+#. <span class="badge badge-danger" data-toggle="tooltip" data-html="true" title="@T["This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."]">@T["Security Critical"]</span>
+#: OrchardCore.Roles\Views\Admin\Edit.cshtml:35
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Security Critical"
+msgstr ""
+
+#. <button class="btn btn-primary" type="submit">@T["Save"]</button>
+#: OrchardCore.Roles\Views\Admin\Edit.cshtml:62
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Save"
+msgstr "Сохранить"
+
+#. <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.Roles\Views\Admin\Edit.cshtml:63
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Cancel"
+msgstr "Отмена"
+
+#. <h1>@RenderTitleSegments(T["Roles"])</h1>
+#: OrchardCore.Roles\Views\Admin\Index.cshtml:5
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Roles"
+msgstr "Роли"
+
+#. <a asp-route-action="Create" class="btn btn-primary float-right" role="button">@T["Add Role"]</a>
+#: OrchardCore.Roles\Views\Admin\Index.cshtml:9
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Add Role"
+msgstr "Добавить роль"
+
+#. <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+#: OrchardCore.Roles\Views\Admin\Index.cshtml:19
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Filter"
+msgstr ""
+
+#. <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+#: OrchardCore.Roles\Views\Admin\Index.cshtml:21
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Search"
+msgstr "Поиск"
+
+#. <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@Model.RoleEntries[i].Name">@T["Edit"]</a>
+#: OrchardCore.Roles\Views\Admin\Index.cshtml:35
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Edit"
+msgstr "Изменить"
+
+#. <a class="delete btn btn-danger btn-sm" asp-route-id="@Model.RoleEntries[i].Name" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+#: OrchardCore.Roles\Views\Admin\Index.cshtml:36
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Delete"
+msgstr "Удалить"
+
+#. @T["<strong>Nothing here!</strong> Your search returned no results."]
+#: OrchardCore.Roles\Views\Admin\Index.cshtml:45
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> Your search returned no results."
+msgstr ""
+
+#. <h5>@T["All Roles"]</h5>
+#: OrchardCore.Roles\Views\Items\AllRolesDeploymentStep.Edit.cshtml:3
+msgctxt "OrchardCore.Roles.Views.Items.AllRolesDeploymentStep.Edit"
+msgid "All Roles"
+msgstr "Все роли"
+
+#. <h5>@T["All Roles"]</h5>
+#: OrchardCore.Roles\Views\Items\AllRolesDeploymentStep.Summary.cshtml:3
+msgctxt "OrchardCore.Roles.Views.Items.AllRolesDeploymentStep.Summary"
+msgid "All Roles"
+msgstr "Все роли"
+
+#. <span class="hint">@T["Adds all roles to the plan."]</span>
+#: OrchardCore.Roles\Views\Items\AllRolesDeploymentStep.Summary.cshtml:5
+msgctxt "OrchardCore.Roles.Views.Items.AllRolesDeploymentStep.Summary"
+msgid "Adds all roles to the plan."
+msgstr "Добавляет все роли в план."
+
+#. <h4 class="card-title">@T["All Roles"]</h4>
+#: OrchardCore.Roles\Views\Items\AllRolesDeploymentStep.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Roles.Views.Items.AllRolesDeploymentStep.Thumbnail"
+msgid "All Roles"
+msgstr "Все роли"
+
+#. <p>@T["Exports every role."]</p>
+#: OrchardCore.Roles\Views\Items\AllRolesDeploymentStep.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Roles.Views.Items.AllRolesDeploymentStep.Thumbnail"
+msgid "Exports every role."
+msgstr "Экспортирует каждую роль."
+

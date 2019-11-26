@@ -1,0 +1,50 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: ko\n"
+"X-Crowdin-File: /dev/Localization/TheTheme.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Korean\n"
+"Language: ko_KR\n"
+"PO-Revision-Date: 2019-09-06 12:20\n"
+
+#. <h4>@T["Welcome to the Orchard Framework, your site has been successfully set up."]</h4>
+#: TheTheme\Views\Home\Index.cshtml:2
+msgctxt "TheTheme.Views.Home.Index"
+msgid "Welcome to the Orchard Framework, your site has been successfully set up."
+msgstr ""
+
+#. <a class="dropdown-item" asp-route-area="OrchardCore.Admin" asp-controller="Admin" asp-action="Index"><i class="fa fa-desktop fa-fw"></i> @T["Dashboard"]</a>
+#: TheTheme\Views\Shared\LoginMenu.cshtml:14
+msgctxt "TheTheme.Views.Shared.LoginMenu"
+msgid "Dashboard"
+msgstr ""
+
+#. <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ChangePassword"><i class="fa fa-lock fa-fw"></i> @T["Change Password"]</a>
+#: TheTheme\Views\Shared\LoginMenu.cshtml:15
+msgctxt "TheTheme.Views.Shared.LoginMenu"
+msgid "Change Password"
+msgstr ""
+
+#. <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ExternalLogins"><i class="fa fa-user-lock fa-fw"></i> @T["External Logins"]</a>
+#: TheTheme\Views\Shared\LoginMenu.cshtml:18
+msgctxt "TheTheme.Views.Shared.LoginMenu"
+msgid "External Logins"
+msgstr ""
+
+#. <button type="submit" class="btn btn-link navbar-btn dropdown-item"><i class="fa fa-sign-out-alt fa-fw"></i> @T["Log off"]</button>
+#: TheTheme\Views\Shared\LoginMenu.cshtml:21
+msgctxt "TheTheme.Views.Shared.LoginMenu"
+msgid "Log off"
+msgstr ""
+
+#. <li class="nav-item"><a class="nav-link" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="Login"><i class="fa fa-sign-in-alt fa-fw"></i> @T["Log in"]</a></li>
+#: TheTheme\Views\Shared\LoginMenu.cshtml:28
+msgctxt "TheTheme.Views.Shared.LoginMenu"
+msgid "Log in"
+msgstr ""
+

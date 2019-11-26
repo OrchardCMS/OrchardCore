@@ -1,0 +1,543 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: fa\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.AdminMenu.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Persian\n"
+"Language: fa_IR\n"
+"PO-Revision-Date: 2019-09-23 11:17\n"
+
+#. builder.Add(S["Configuration"], cfg => cfg
+#: OrchardCore.AdminMenu\AdminMenu.cs:30
+msgctxt "OrchardCore.AdminMenu.AdminMenu"
+msgid "Configuration"
+msgstr "پیکربندی"
+
+#. .Add(S["Admin Menus"], "1.5", admt => admt
+#: OrchardCore.AdminMenu\AdminMenu.cs:31
+msgctxt "OrchardCore.AdminMenu.AdminMenu"
+msgid "Admin Menus"
+msgstr "منوهای مدیریت"
+
+#. _notifier.Error(H["Error when retrieving the list of admin menus"]);
+#: OrchardCore.AdminMenu\Controllers\MenuController.cs:96
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Error when retrieving the list of admin menus"
+msgstr "خطا در هنگام بازیابی لیست منوهای مدیریت"
+
+#. _notifier.Success(H["Admin menu updated successfully"]);
+#: OrchardCore.AdminMenu\Controllers\MenuController.cs:194
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Admin menu updated successfully"
+msgstr "منوی مدیریت با موفقیت به‌روزرسانی شد"
+
+#. _notifier.Error(H["Can't find the admin menu."]);
+#: OrchardCore.AdminMenu\Controllers\MenuController.cs:214
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Can't find the admin menu."
+msgstr "منوی مدیریت را نمی توان پیدا کرد."
+
+#. _notifier.Success(H["Admin menu deleted successfully"]);
+#: OrchardCore.AdminMenu\Controllers\MenuController.cs:223
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Admin menu deleted successfully"
+msgstr "منوی مدیریت با موفقیت پاک شد"
+
+#. _notifier.Error(H["Can't delete the admin menu."]);
+#: OrchardCore.AdminMenu\Controllers\MenuController.cs:227
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Can't delete the admin menu."
+msgstr "منوی مدیریت را نمی‌توان پاک کرد."
+
+#. _notifier.Success(H["Admin menu toggled successfully"]);
+#: OrchardCore.AdminMenu\Controllers\MenuController.cs:253
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Admin menu toggled successfully"
+msgstr "تغییر وضعیت منوی مدیریت با موفقیت انجام شد"
+
+#. _notifier.Success(H["Admin node added successfully"]);
+#: OrchardCore.AdminMenu\Controllers\NodeController.cs:154
+msgctxt "OrchardCore.AdminMenu.Controllers.NodeController"
+msgid "Admin node added successfully"
+msgstr "شاخه منوی مدیریت با موفقیت افزوده شد"
+
+#. _notifier.Success(H["Admin node updated successfully"]);
+#: OrchardCore.AdminMenu\Controllers\NodeController.cs:232
+msgctxt "OrchardCore.AdminMenu.Controllers.NodeController"
+msgid "Admin node updated successfully"
+msgstr "شاخه منوی مدیریت با موفقیت به‌روزرسانی شد"
+
+#. _notifier.Error(H["The admin node has validation errors"]);
+#: OrchardCore.AdminMenu\Controllers\NodeController.cs:236
+msgctxt "OrchardCore.AdminMenu.Controllers.NodeController"
+msgid "The admin node has validation errors"
+msgstr "شاخه منو مدیریت دارای خطاهای اعتبارسنجی است"
+
+#. _notifier.Success(H["Admin node deleted successfully"]);
+#: OrchardCore.AdminMenu\Controllers\NodeController.cs:272
+msgctxt "OrchardCore.AdminMenu.Controllers.NodeController"
+msgid "Admin node deleted successfully"
+msgstr "شاخه منو مدیریت با موفقیت پاک شد"
+
+#. _notifier.Success(H["Admin node toggled successfully"]);
+#: OrchardCore.AdminMenu\Controllers\NodeController.cs:303
+msgctxt "OrchardCore.AdminMenu.Controllers.NodeController"
+msgid "Admin node toggled successfully"
+msgstr "تغییر وضعیت شاخه منوی مدیریت با موفقیت انجام شد"
+
+#: OrchardCore.AdminMenu\Views\MenuItem.TreeSummary.cshtml:0
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Toggle"
+msgstr "تغییر وضعیت"
+
+#: OrchardCore.AdminMenu\Views\MenuItem.TreeSummary.cshtml:0
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Disable"
+msgstr "غیرفعال‌کردن"
+
+#: OrchardCore.AdminMenu\Views\MenuItem.TreeSummary.cshtml:0
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Enable"
+msgstr "فعال کردن"
+
+#. itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#. class="btn btn-danger" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.AdminMenu\Views\MenuItem.TreeSummary.cshtml:34
+#: OrchardCore.AdminMenu\Views\MenuItem.TreeSummary.cshtml:53
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Delete"
+msgstr "پاک‌کردن"
+
+#. <span class="text-warning">@T["Can't show the item of type: {0}. Maybe a required module has been disabled?", menuType]</span>
+#: OrchardCore.AdminMenu\Views\MenuItem.TreeSummary.cshtml:36
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Can't show the item of type: {0}. Maybe a required module has been disabled?"
+msgstr "امکان نمایش آیتم از نوع {0} میسر نیست. شاید یکی از ماژول‌های ضروری برای نمایش آن آیتم غیرفعال شده است."
+
+#. class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.AdminMenu\Views\MenuItem.TreeSummary.cshtml:46
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Edit"
+msgstr "ویرایش"
+
+#. <span class="sr-only">@T["Toggle Dropdown"]</span>
+#: OrchardCore.AdminMenu\Views\MenuItem.TreeSummary.cshtml:55
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Toggle Dropdown"
+msgstr "تغییر وضعیت منوی‌ کشویی"
+
+#. <a class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Node" asp-route-type="@Model.Type" asp-route-id="@Model.ContentTreePreset.Id">@T["Add"]</a>
+#: OrchardCore.AdminMenu\Views\MenuItem.TreeThumbnail.cshtml:8
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeThumbnail"
+msgid "Add"
+msgstr "افزودن"
+
+#. <h5>@T["Admin Menus"]</h5>
+#: OrchardCore.AdminMenu\Views\Items\AdminMenuDeploymentStep.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.AdminMenu.Views.Items.AdminMenuDeploymentStep.Fields.Edit"
+msgid "Admin Menus"
+msgstr "منوهای مدیریت"
+
+#. <h5>@T["Admin Menus"]</h5>
+#: OrchardCore.AdminMenu\Views\Items\AdminMenuDeploymentStep.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.AdminMenu.Views.Items.AdminMenuDeploymentStep.Fields.Summary"
+msgid "Admin Menus"
+msgstr "منوهای مدیریت"
+
+#. <span class="hint">@T["Adds all admin menus to the plan."]</span>
+#: OrchardCore.AdminMenu\Views\Items\AdminMenuDeploymentStep.Fields.Summary.cshtml:5
+msgctxt "OrchardCore.AdminMenu.Views.Items.AdminMenuDeploymentStep.Fields.Summary"
+msgid "Adds all admin menus to the plan."
+msgstr "تمامی منوهای مدیریت را به برنامه استقرار اضافه می‌کند."
+
+#. <h4 class="card-title">@T["Admin Menus"]</h4>
+#: OrchardCore.AdminMenu\Views\Items\AdminMenuDeploymentStep.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.AdminMenu.Views.Items.AdminMenuDeploymentStep.Fields.Thumbnail"
+msgid "Admin Menus"
+msgstr "منوهای مدیریت"
+
+#. <p>@T["Exports all the admin Menus."]</p>
+#: OrchardCore.AdminMenu\Views\Items\AdminMenuDeploymentStep.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.AdminMenu.Views.Items.AdminMenuDeploymentStep.Fields.Thumbnail"
+msgid "Exports all the admin Menus."
+msgstr "از تمامی منوهای مدیریت خروجی می‌گیرد."
+
+#. <h5>@T["Link"]</h5>
+#: OrchardCore.AdminMenu\Views\Items\LinkAdminNode.Fields.TreeEdit.cshtml:10
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Link"
+msgstr "لینک"
+
+#. <label asp-for="LinkText">@T["Link Text"]</label>
+#: OrchardCore.AdminMenu\Views\Items\LinkAdminNode.Fields.TreeEdit.cshtml:13
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Link Text"
+msgstr "متن لینک"
+
+#. <span class="hint">@T["The Link Text as it will be shown in the tree."]</span>
+#: OrchardCore.AdminMenu\Views\Items\LinkAdminNode.Fields.TreeEdit.cshtml:16
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "The Link Text as it will be shown in the tree."
+msgstr "متن لینک که در درخت نشان داده می‌شود."
+
+#. <label asp-for="LinkUrl">@T["Link Url"]</label>
+#: OrchardCore.AdminMenu\Views\Items\LinkAdminNode.Fields.TreeEdit.cshtml:21
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Link Url"
+msgstr "آدرس لینک"
+
+#. <span class="hint">@T["The url of the link. A link will be shown only if it or one of their children have a url. The url will be relative to the root of the admin site"]</span>
+#: OrchardCore.AdminMenu\Views\Items\LinkAdminNode.Fields.TreeEdit.cshtml:23
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "The url of the link. A link will be shown only if it or one of their children have a url. The url will be relative to the root of the admin site"
+msgstr "آدرس لینک. لینک زمانی نمایش داده می شود که خودش یا یکی از زیر مجموعه هایش دارای آدرس باشد. آدرس نسبی است و از روت سایت ادمین در نظر گرفته خواهد شد"
+
+#. <label asp-for="IconClass">@T["Icon"]</label>
+#: OrchardCore.AdminMenu\Views\Items\LinkAdminNode.Fields.TreeEdit.cshtml:27
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Icon"
+msgstr "آیکون"
+
+#. @T["Pick"]
+#: OrchardCore.AdminMenu\Views\Items\LinkAdminNode.Fields.TreeEdit.cshtml:40
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Pick"
+msgstr "انتخاب"
+
+#. <span class="hint">@T["Select an icon to display when this link is a first level menu item."]</span>
+#: OrchardCore.AdminMenu\Views\Items\LinkAdminNode.Fields.TreeEdit.cshtml:54
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Select an icon to display when this link is a first level menu item."
+msgstr "انتخاب آیکون برای لینک، زمانی که لینک در سطح اول منو قرار دارد."
+
+#. <h5 class="modal-title">@T["Pick an icon"]</h5>
+#: OrchardCore.AdminMenu\Views\Items\LinkAdminNode.Fields.TreeEdit.cshtml:62
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Pick an icon"
+msgstr "یک آیکون را انتخاب کنید"
+
+#. <span>@Model.Value.LinkText  <code>@Model.Value.LinkUrl</code> <span class="text-muted">- @T["Link"]</span></span>
+#: OrchardCore.AdminMenu\Views\Items\LinkAdminNode.Fields.TreeSummary.cshtml:4
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeSummary"
+msgid "Link"
+msgstr "لینک"
+
+#. <h4 class="card-title">@T["Link Admin Node"]</h4>
+#: OrchardCore.AdminMenu\Views\Items\LinkAdminNode.Fields.TreeThumbnail.cshtml:3
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeThumbnail"
+msgid "Link Admin Node"
+msgstr "لینک شاخه منوی مدیریت"
+
+#. <p>@T["Adds a link with a text and a url."]</p>
+#: OrchardCore.AdminMenu\Views\Items\LinkAdminNode.Fields.TreeThumbnail.cshtml:4
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeThumbnail"
+msgid "Adds a link with a text and a url."
+msgstr "یک لینک با متن و آدرس اضافه می‌کند."
+
+#. <h5>@T["Placeholder"]</h5>
+#: OrchardCore.AdminMenu\Views\Items\PlaceholderAdminNode.Fields.TreeEdit.cshtml:10
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Placeholder"
+msgstr "پلازهولدر"
+
+#. <label asp-for="LinkText">@T["Link Text"]</label>
+#: OrchardCore.AdminMenu\Views\Items\PlaceholderAdminNode.Fields.TreeEdit.cshtml:13
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Link Text"
+msgstr "متن لینک"
+
+#. <span class="hint">@T["The text of the menu item as it will be shown in the tree."]</span>
+#: OrchardCore.AdminMenu\Views\Items\PlaceholderAdminNode.Fields.TreeEdit.cshtml:16
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "The text of the menu item as it will be shown in the tree."
+msgstr "متن آیتم منویی که در درخت نمایش داده می‌شود."
+
+#. <label asp-for="IconClass">@T["Icon"]</label>
+#: OrchardCore.AdminMenu\Views\Items\PlaceholderAdminNode.Fields.TreeEdit.cshtml:20
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Icon"
+msgstr "آیکون"
+
+#. @T["Pick"]
+#: OrchardCore.AdminMenu\Views\Items\PlaceholderAdminNode.Fields.TreeEdit.cshtml:33
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Pick"
+msgstr "انتخاب"
+
+#. <span class="hint">@T["Select an icon to display when this menu item is at the first level."]</span>
+#: OrchardCore.AdminMenu\Views\Items\PlaceholderAdminNode.Fields.TreeEdit.cshtml:46
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Select an icon to display when this menu item is at the first level."
+msgstr "انتخاب آیکون برای منو، زمانی که آیتم منو در سطح اول قرار دارد."
+
+#. <h5 class="modal-title">@T["Pick an icon"]</h5>
+#: OrchardCore.AdminMenu\Views\Items\PlaceholderAdminNode.Fields.TreeEdit.cshtml:56
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Pick an icon"
+msgstr "یک آیکون را انتخاب کنید"
+
+#. <span>@Model.Value.LinkText <span class="text-muted">- @T["Placeholder"]</span></span>
+#: OrchardCore.AdminMenu\Views\Items\PlaceholderAdminNode.Fields.TreeSummary.cshtml:4
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeSummary"
+msgid "Placeholder"
+msgstr "پلازهولدر"
+
+#. <h4 class="card-title">@T["Placeholder Admin Node"]</h4>
+#: OrchardCore.AdminMenu\Views\Items\PlaceholderAdminNode.Fields.TreeThumbnail.cshtml:3
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeThumbnail"
+msgid "Placeholder Admin Node"
+msgstr "پلازهولدر شاخه منو مدیریت"
+
+#. <p>@T["Adds a menu item that acts as a container for others."]</p>
+#: OrchardCore.AdminMenu\Views\Items\PlaceholderAdminNode.Fields.TreeThumbnail.cshtml:4
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeThumbnail"
+msgid "Adds a menu item that acts as a container for others."
+msgstr "یک آیتم منو که نگهدارنده دیگر منوها است را، اضافه می‌کند."
+
+#. <h1>@RenderTitleSegments(T["Create Admin Menu {0}", Model.Name])</h1>
+#: OrchardCore.AdminMenu\Views\Menu\Create.cshtml:3
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
+msgid "Create Admin Menu {0}"
+msgstr "ایجاد منوی مدیریت {0}"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.AdminMenu\Views\Menu\Create.cshtml:9
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
+msgid "Name"
+msgstr "نام"
+
+#. <span asp-validation-for="Name" class="text-danger">@T["The name is required"]</span>
+#: OrchardCore.AdminMenu\Views\Menu\Create.cshtml:11
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
+msgid "The name is required"
+msgstr "نام ضروری است"
+
+#. <button class="btn btn-primary" type="submit">@T["Create"]</button>
+#: OrchardCore.AdminMenu\Views\Menu\Create.cshtml:15
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
+msgid "Create"
+msgstr "ایجاد"
+
+#. <a class="btn btn-secondary" asp-route-action="List">@T["Cancel"]</a>
+#: OrchardCore.AdminMenu\Views\Menu\Create.cshtml:16
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
+msgid "Cancel"
+msgstr "انصراف"
+
+#. <h1>@RenderTitleSegments(T["Edit Admin Menu: {0}", Model.Name])</h1>
+#: OrchardCore.AdminMenu\Views\Menu\Edit.cshtml:4
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
+msgid "Edit Admin Menu: {0}"
+msgstr "ویرایش منوی مدیریت: {0}"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.AdminMenu\Views\Menu\Edit.cshtml:10
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
+msgid "Name"
+msgstr "نام"
+
+#. <span asp-validation-for="Name" class="text-danger">@T["The name is required"]</span>
+#: OrchardCore.AdminMenu\Views\Menu\Edit.cshtml:12
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
+msgid "The name is required"
+msgstr "نام ضروری است"
+
+#. <button class="btn btn-primary" type="submit">@T["Save"]</button>
+#: OrchardCore.AdminMenu\Views\Menu\Edit.cshtml:17
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
+msgid "Save"
+msgstr "ذخیره"
+
+#. <a class="btn btn-primary" asp-route-controller="Node" asp-route-action="List" asp-route-id="@Model.Id">@T["Edit Admin Nodes"] </a>
+#: OrchardCore.AdminMenu\Views\Menu\Edit.cshtml:18
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
+msgid "Edit Admin Nodes"
+msgstr "ویرایش نودشاخه‌های مدیریت"
+
+#. <a class="btn btn-secondary" asp-route-action="List">@T["Cancel"]</a>
+#: OrchardCore.AdminMenu\Views\Menu\Edit.cshtml:19
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
+msgid "Cancel"
+msgstr "انصراف"
+
+#. <h1>@RenderTitleSegments(T["Admin Menus"])</h1>
+#: OrchardCore.AdminMenu\Views\Menu\List.cshtml:8
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Admin Menus"
+msgstr "منوهای مدیریت"
+
+#. <a asp-route-action="Create" class="btn btn-primary float-right" role="button">@T["Add Admin Menu"]</a>
+#: OrchardCore.AdminMenu\Views\Menu\List.cshtml:12
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Add Admin Menu"
+msgstr "افزودن منوی مدیریت"
+
+#. <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+#: OrchardCore.AdminMenu\Views\Menu\List.cshtml:22
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Filter"
+msgstr "فیلتر"
+
+#. <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" autofocus="autofocus" />
+#. <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
+#: OrchardCore.AdminMenu\Views\Menu\List.cshtml:24
+#: OrchardCore.AdminMenu\Views\Menu\List.cshtml:26
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Search"
+msgstr "جستجو"
+
+#. <a asp-controller="Node" asp-action="List" asp-route-id="@entry.AdminMenu.Id" class="btn btn-secondary btn-sm">@T["Edit Nodes"]</a>
+#: OrchardCore.AdminMenu\Views\Menu\List.cshtml:43
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Edit Nodes"
+msgstr "ویرایش شاخه‌ها"
+
+#. <a asp-action="Edit" asp-route-id="@entry.AdminMenu.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.AdminMenu\Views\Menu\List.cshtml:44
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Edit"
+msgstr "ویرایش"
+
+#. class="btn btn-danger" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.AdminMenu\Views\Menu\List.cshtml:48
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Delete"
+msgstr "پاک‌کردن"
+
+#. <span class="sr-only">@T["Toggle Dropdown"]</span>
+#: OrchardCore.AdminMenu\Views\Menu\List.cshtml:50
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Toggle Dropdown"
+msgstr "تغییر وضعیت منوی کشویی"
+
+#. class="dropdown-item btn-sm" itemprop="UnsafeUrl">@(entry.AdminMenu.Enabled ? T["Disable"] : T["Enable"])</a>
+#: OrchardCore.AdminMenu\Views\Menu\List.cshtml:55
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Disable"
+msgstr "غیرفعال‌کردن"
+
+#. class="dropdown-item btn-sm" itemprop="UnsafeUrl">@(entry.AdminMenu.Enabled ? T["Disable"] : T["Enable"])</a>
+#: OrchardCore.AdminMenu\Views\Menu\List.cshtml:55
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Enable"
+msgstr "فعال کردن"
+
+#. @T["<strong>Nothing here!</strong> Your search returned no results."]
+#: OrchardCore.AdminMenu\Views\Menu\List.cshtml:67
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "<strong>Nothing here!</strong> Your search returned no results."
+msgstr "<strong>هیچی اینجا نیست!</strong> هیچ نتیجه‌ای برای جستجوی شما یافت نشد."
+
+#. <h1>@RenderTitleSegments(T["Create Node"])</h1>
+#: OrchardCore.AdminMenu\Views\Node\Create.cshtml:3
+msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
+msgid "Create Node"
+msgstr "ایجاد شاخه"
+
+#. <button class="btn btn-primary" type="submit">@T["Create"]</button>
+#: OrchardCore.AdminMenu\Views\Node\Create.cshtml:15
+msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
+msgid "Create"
+msgstr "ایجاد"
+
+#. asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
+#: OrchardCore.AdminMenu\Views\Node\Create.cshtml:19
+msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
+msgid "Cancel"
+msgstr "انصراف"
+
+#. <h1>@RenderTitleSegments(T["Edit Node"])</h1>
+#: OrchardCore.AdminMenu\Views\Node\Edit.cshtml:3
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Edit Node"
+msgstr "ویرایش شاخه"
+
+#. <label asp-for="Priority">@T["Selection Priority"]</label>
+#: OrchardCore.AdminMenu\Views\Node\Edit.cshtml:15
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Selection Priority"
+msgstr "اولویت انتخاب"
+
+#. <span class="hint">@T["The priority of this link to be displayed as active instead of another one when both are pointing to the same url. The link with the highest value has the active status in the navigation."]</span>
+#: OrchardCore.AdminMenu\Views\Node\Edit.cshtml:17
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "The priority of this link to be displayed as active instead of another one when both are pointing to the same url. The link with the highest value has the active status in the navigation."
+msgstr "اولویت لینک. زمانی که دو لینک به یک آدرس متصل می‌شوند، لینکی اکتیو نمایش داده می‌شود که اولویت بالاتری داشته باشد. لینکی که مقدار اولویت آن بالاتر است در نوار منوها به عنوان لینک اکتیو نمایش داده می‌شود."
+
+#. <label asp-for="Position">@T["Position Order"]</label>
+#: OrchardCore.AdminMenu\Views\Node\Edit.cshtml:21
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Position Order"
+msgstr "ترتیب قرارگیری"
+
+#. <span class="hint">@T["The position order of this link in the admin menu."]</span>
+#: OrchardCore.AdminMenu\Views\Node\Edit.cshtml:23
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "The position order of this link in the admin menu."
+msgstr "ترتیب قرارگیری این لینک در منوی مدیریت."
+
+#. <button class="btn btn-primary" type="submit">@T["Save"]</button>
+#: OrchardCore.AdminMenu\Views\Node\Edit.cshtml:27
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Save"
+msgstr "ذخیره"
+
+#. itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.AdminMenu\Views\Node\Edit.cshtml:34
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Delete"
+msgstr "پاک کردن"
+
+#. asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
+#: OrchardCore.AdminMenu\Views\Node\Edit.cshtml:38
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Cancel"
+msgstr "انصراف"
+
+#. <h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", Model.AdminMenu.Name])</h1>
+#: OrchardCore.AdminMenu\Views\Node\List.cshtml:12
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "Edit Nodes for '{0}'"
+msgstr "ویرایش شاخه '{0}'"
+
+#. @T["Add Node"]
+#: OrchardCore.AdminMenu\Views\Node\List.cshtml:19
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "Add Node"
+msgstr "افزودن شاخه"
+
+#. @T["<strong>Nothing here!</strong> There are no nodes on this tree for the moment."]
+#: OrchardCore.AdminMenu\Views\Node\List.cshtml:51
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "<strong>Nothing here!</strong> There are no nodes on this tree for the moment."
+msgstr "<strong>هیچی اینجا نیست!</strong> در این لحظه هیچ شاخه‌ای در این درخت موجود نیست."
+
+#. <a class="btn btn-secondary" asp-route-controller="menu" asp-route-action="List">@T["Back"]</a>
+#: OrchardCore.AdminMenu\Views\Node\List.cshtml:57
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "Back"
+msgstr "بازگشت"
+
+#. <h5 class="modal-title">@T["Available Admin Nodes"]</h5>
+#: OrchardCore.AdminMenu\Views\Node\List.cshtml:67
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "Available Admin Nodes"
+msgstr "شاخه‌های موجود منوی مدیریت"
+
+#. <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+#: OrchardCore.AdminMenu\Views\Node\List.cshtml:83
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "Cancel"
+msgstr "انصراف"
+
+#. <div id="move-error-message" class="d-none" data-message="@T["There was an error when moving the tree node."]"></div>
+#: OrchardCore.AdminMenu\Views\Node\List.cshtml:90
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "There was an error when moving the tree node."
+msgstr "در هنگام جابه‌جایی شاخه درخت خطایی رخ داده است."
+

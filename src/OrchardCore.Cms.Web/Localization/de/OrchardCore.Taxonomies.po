@@ -1,0 +1,134 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: de\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Taxonomies.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"PO-Revision-Date: 2019-09-08 22:22\n"
+
+#. _notifier.Success(H["Taxonomy item deleted successfully"]);
+#: OrchardCore.Taxonomies\Controllers\AdminController.cs:266
+msgctxt "OrchardCore.Taxonomies.Controllers.AdminController"
+msgid "Taxonomy item deleted successfully"
+msgstr "Taxonomie-Element erfolgreich gelöscht"
+
+#. S["A value is required for '{0}'", context.PartFieldDefinition.Name]);
+#: OrchardCore.Taxonomies\Drivers\TaxonomyFieldDriver.cs:87
+msgctxt "OrchardCore.Taxonomies.Drivers.TaxonomyFieldDisplayDriver"
+msgid "A value is required for '{0}'"
+msgstr "Ein Wert ist für '{0} 'erforderlich"
+
+#. @T["Edit"]
+#: OrchardCore.Taxonomies\Views\Content.TermAdmin.cshtml:30
+msgctxt "OrchardCore.Taxonomies.Views.Content.TermAdmin"
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#. @T["Add"]
+#: OrchardCore.Taxonomies\Views\Content.TermAdmin.cshtml:39
+msgctxt "OrchardCore.Taxonomies.Views.Content.TermAdmin"
+msgid "Add"
+msgstr "Hinzufügen"
+
+#. @T["Delete"]
+#: OrchardCore.Taxonomies\Views\Content.TermAdmin.cshtml:48
+msgctxt "OrchardCore.Taxonomies.Views.Content.TermAdmin"
+msgid "Delete"
+msgstr "Löschen"
+
+#. @T["The taxonomy could not be found. Please check the settings for this field."]
+#: OrchardCore.Taxonomies\Views\TaxonomyField.Edit.cshtml:20
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField.Edit"
+msgid "The taxonomy could not be found. Please check the settings for this field."
+msgstr "Die Taxonomie konnte nicht gefunden werden. Bitte überprüfen Sie die Einstellungen für dieses Feld."
+
+#. <label asp-for="Hint">@T["Hint"]</label>
+#: OrchardCore.Taxonomies\Views\TaxonomyFieldSettings.Edit.cshtml:16
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyFieldSettings.Edit"
+msgid "Hint"
+msgstr "Hinweis"
+
+#. <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+#: OrchardCore.Taxonomies\Views\TaxonomyFieldSettings.Edit.cshtml:18
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#. <label asp-for="TaxonomyContentItemId">@T["Taxonomy"]</label>
+#: OrchardCore.Taxonomies\Views\TaxonomyFieldSettings.Edit.cshtml:24
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyFieldSettings.Edit"
+msgid "Taxonomy"
+msgstr "Taxonomie"
+
+#. <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
+#: OrchardCore.Taxonomies\Views\TaxonomyFieldSettings.Edit.cshtml:37
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyFieldSettings.Edit"
+msgid "Required"
+msgstr "Erforderlich"
+
+#. <span class="hint">— @T["Whether at least one element is selected."]</span>
+#: OrchardCore.Taxonomies\Views\TaxonomyFieldSettings.Edit.cshtml:38
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyFieldSettings.Edit"
+msgid "Whether at least one element is selected."
+msgstr "Ob mindestens ein Element ausgewählt ist."
+
+#. <label class="custom-control-label" asp-for="Unique">@T["Unique"]</label>
+#: OrchardCore.Taxonomies\Views\TaxonomyFieldSettings.Edit.cshtml:45
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyFieldSettings.Edit"
+msgid "Unique"
+msgstr "Einzigartig"
+
+#. <span class="hint">— @T["Whether only one element is selected."]</span>
+#: OrchardCore.Taxonomies\Views\TaxonomyFieldSettings.Edit.cshtml:46
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyFieldSettings.Edit"
+msgid "Whether only one element is selected."
+msgstr ""
+
+#. <label class="custom-control-label" asp-for="LeavesOnly">@T["Leaves only"]</label>
+#: OrchardCore.Taxonomies\Views\TaxonomyFieldSettings.Edit.cshtml:53
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyFieldSettings.Edit"
+msgid "Leaves only"
+msgstr "Nur Blätter"
+
+#. <span class="hint">— @T["Whether leaves are the only items that can be selected."]</span>
+#: OrchardCore.Taxonomies\Views\TaxonomyFieldSettings.Edit.cshtml:54
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyFieldSettings.Edit"
+msgid "Whether leaves are the only items that can be selected."
+msgstr ""
+
+#. <label asp-for="TermContentType" >@T["Term Content Type"]</label>
+#: OrchardCore.Taxonomies\Views\TaxonomyPart.Edit.cshtml:24
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyPart.Edit"
+msgid "Term Content Type"
+msgstr ""
+
+#. @T["Add {0}", termContentType.DisplayName]
+#: OrchardCore.Taxonomies\Views\TaxonomyPart.Edit.cshtml:40
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyPart.Edit"
+msgid "Add {0}"
+msgstr "{0} hinzufügen"
+
+#. <div id="msg-leave" style="display:none" data>@T["You have reordered the taxonomy."]</div>
+#: OrchardCore.Taxonomies\Views\TaxonomyPart.Edit.cshtml:57
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyPart.Edit"
+msgid "You have reordered the taxonomy."
+msgstr "Sie haben die Taxonomie neu geordnet."
+
+#. <h1>@RenderTitleSegments(T["New {0}", typeDisplayName])</h1>
+#: OrchardCore.Taxonomies\Views\Admin\Create.cshtml:13
+msgctxt "OrchardCore.Taxonomies.Views.Admin.Create"
+msgid "New {0}"
+msgstr "Neu {0}"
+
+#. <h1>@RenderTitleSegments(T["Edit {0}", typeDisplayName])</h1>
+#: OrchardCore.Taxonomies\Views\Admin\Edit.cshtml:13
+msgctxt "OrchardCore.Taxonomies.Views.Admin.Edit"
+msgid "Edit {0}"
+msgstr "{0} Bearbeiten"
+

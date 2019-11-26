@@ -1,0 +1,171 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: ru\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Features.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Russian\n"
+"Language: ru_RU\n"
+"PO-Revision-Date: 2019-09-21 09:24\n"
+
+#. .Add(T["Configuration"], "10", configuration => configuration
+#: OrchardCore.Features\AdminMenu.cs:25
+msgctxt "OrchardCore.Features.AdminMenu"
+msgid "Configuration"
+msgstr "Настройки"
+
+#. .Add(T["Features"], "6", deployment => deployment
+#: OrchardCore.Features\AdminMenu.cs:27
+msgctxt "OrchardCore.Features.AdminMenu"
+msgid "Features"
+msgstr ""
+
+#. ModelState.AddModelError("featureIds", T["Please select one or more features."].ToString());
+#: OrchardCore.Features\Controllers\AdminController.cs:104
+msgctxt "OrchardCore.Features.Controllers.AdminController"
+msgid "Please select one or more features."
+msgstr "Пожалуйста, выберите одну или несколько функций."
+
+#. _notifier.Success(T["{0} was {1}", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
+#: OrchardCore.Features\Controllers\AdminController.cs:204
+msgctxt "OrchardCore.Features.Controllers.AdminController"
+msgid "{0} was {1}"
+msgstr ""
+
+#. _notifier.Success(T["{0} was enabled", enabledFeature.Name]);
+#: OrchardCore.Features\Services\ModuleService.cs:77
+msgctxt "OrchardCore.Features.Services.ModuleService"
+msgid "{0} was enabled"
+msgstr "{0} включен"
+
+#. _notifier.Success(T["{0} was disabled", feature.Name]);
+#: OrchardCore.Features\Services\ModuleService.cs:104
+msgctxt "OrchardCore.Features.Services.ModuleService"
+msgid "{0} was disabled"
+msgstr "{0} отключен"
+
+#. <span class="icon"><i class="fa fa-gear" aria-hidden="true"></i></span><span class="title">@T["Configuration"]</span>
+#: OrchardCore.Features\Views\NavigationItemText-configuration.Id.cshtml:1
+msgctxt "OrchardCore.Features.Views.NavigationItemText-configuration.Id"
+msgid "Configuration"
+msgstr "Настройки"
+
+#. <h1>@RenderTitleSegments(T["Features"])</h1>
+#: OrchardCore.Features\Views\Admin\Features.cshtml:9
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "Features"
+msgstr "Функции"
+
+#. @T["Bulk Actions"]
+#: OrchardCore.Features\Views\Admin\Features.cshtml:14
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "Bulk Actions"
+msgstr ""
+
+#. <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Disable)">@T["Disable"]</a>
+#. <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok="@T["Yes"]" data-cancel="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+#: OrchardCore.Features\Views\Admin\Features.cshtml:17
+#: OrchardCore.Features\Views\Admin\Features.cshtml:137
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "Disable"
+msgstr "Отключить"
+
+#. <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Enable)">@T["Enable"]</a>
+#. <a asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+#: OrchardCore.Features\Views\Admin\Features.cshtml:18
+#: OrchardCore.Features\Views\Admin\Features.cshtml:127
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "Enable"
+msgstr "Включить"
+
+#. <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Toggle)">@T["Toggle"]</a>
+#: OrchardCore.Features\Views\Admin\Features.cshtml:19
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "Toggle"
+msgstr "Переключить"
+
+#. <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+#: OrchardCore.Features\Views\Admin\Features.cshtml:31
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "Filter"
+msgstr ""
+
+#. <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+#: OrchardCore.Features\Views\Admin\Features.cshtml:33
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "Search"
+msgstr "Поиск"
+
+#: OrchardCore.Features\Views\Admin\Features.cshtml:0
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "Uncategorized"
+msgstr "Без категории"
+
+#: OrchardCore.Features\Views\Admin\Features.cshtml:0
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "Are you sure you want to disable this feature? Continue?"
+msgstr "Вы уверены, что хотите отключить эту функцию? Продолжить?"
+
+#: OrchardCore.Features\Views\Admin\Features.cshtml:0
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "Disabling this feature will also disable the following dependent features:{0}Continue?"
+msgstr ""
+
+#. <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok="@T["Yes"]" data-cancel="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+#: OrchardCore.Features\Views\Admin\Features.cshtml:137
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "Disable Feature"
+msgstr ""
+
+#. <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok="@T["Yes"]" data-cancel="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+#: OrchardCore.Features\Views\Admin\Features.cshtml:137
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "Yes"
+msgstr ""
+
+#. <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok="@T["Yes"]" data-cancel="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+#: OrchardCore.Features\Views\Admin\Features.cshtml:137
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "No"
+msgstr ""
+
+#. @T["<strong>Nothing here!</strong> Your search returned no results."]
+#: OrchardCore.Features\Views\Admin\Features.cshtml:146
+msgctxt "OrchardCore.Features.Views.Admin.Features"
+msgid "<strong>Nothing here!</strong> Your search returned no results."
+msgstr ""
+
+#. <h5>@T["All Features"]</h5>
+#: OrchardCore.Features\Views\Items\AllFeaturesDeploymentStep.Edit.cshtml:3
+msgctxt "OrchardCore.Features.Views.Items.AllFeaturesDeploymentStep.Edit"
+msgid "All Features"
+msgstr "Все функции"
+
+#. <h5>@T["All Features"]</h5>
+#: OrchardCore.Features\Views\Items\AllFeaturesDeploymentStep.Summary.cshtml:3
+msgctxt "OrchardCore.Features.Views.Items.AllFeaturesDeploymentStep.Summary"
+msgid "All Features"
+msgstr "Все функции"
+
+#. <span class="hint">@T["Adds all features and their state to the plan."]</span>
+#: OrchardCore.Features\Views\Items\AllFeaturesDeploymentStep.Summary.cshtml:5
+msgctxt "OrchardCore.Features.Views.Items.AllFeaturesDeploymentStep.Summary"
+msgid "Adds all features and their state to the plan."
+msgstr "Добавляет все функции и их состояние в план."
+
+#. <h4 class="card-title">@T["All Features"]</h4>
+#: OrchardCore.Features\Views\Items\AllFeaturesDeploymentStep.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Features.Views.Items.AllFeaturesDeploymentStep.Thumbnail"
+msgid "All Features"
+msgstr "Все функции"
+
+#. <p>@T["Exports the state of all features."]</p>
+#: OrchardCore.Features\Views\Items\AllFeaturesDeploymentStep.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Features.Views.Items.AllFeaturesDeploymentStep.Thumbnail"
+msgid "Exports the state of all features."
+msgstr "Экспорт состояния всех функций."
+

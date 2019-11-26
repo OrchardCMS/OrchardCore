@@ -1,0 +1,124 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: fa\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Infrastructure.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Persian\n"
+"Language: fa_IR\n"
+"PO-Revision-Date: 2019-09-07 05:32\n"
+
+#. await OutputExceptionAsync(output, T["Error executing command \"{0}\"", string.Join(" ", args)], ex);
+#: OrchardCore.Infrastructure\Commands\CommandHostAgent.cs:73
+msgctxt "OrchardCore.Environment.Commands.CommandHostAgent"
+msgid "Error executing command \"{0}\""
+msgstr "خطا هنگام اجرای فرمان \"{0}\""
+
+#. await output.WriteLineAsync(T["--------------------------------------------------------------------------------"]);
+#: OrchardCore.Infrastructure\Commands\CommandHostAgent.cs:93
+msgctxt "OrchardCore.Environment.Commands.CommandHostAgent"
+msgid "--------------------------------------------------------------------------------"
+msgstr "--------------------------------------------------------------------------------"
+
+#. await output.WriteLineAsync(T["{0}", exception.Message]);
+#. await output.WriteLineAsync(T["{0}", error.StackTrace]);
+#: OrchardCore.Infrastructure\Commands\CommandHostAgent.cs:95
+#: OrchardCore.Infrastructure\Commands\CommandHostAgent.cs:109
+msgctxt "OrchardCore.Environment.Commands.CommandHostAgent"
+msgid "{0}"
+msgstr "{0}"
+
+#. await output.WriteLineAsync(T["Exception Details: {0}: {1}", exception.GetType().FullName, exception.Message]);
+#: OrchardCore.Infrastructure\Commands\CommandHostAgent.cs:100
+msgctxt "OrchardCore.Environment.Commands.CommandHostAgent"
+msgid "Exception Details: {0}: {1}"
+msgstr "جزئیات خطا: {0}: {1}"
+
+#. await output.WriteLineAsync(T["Stack Trace:"]);
+#: OrchardCore.Infrastructure\Commands\CommandHostAgent.cs:102
+msgctxt "OrchardCore.Environment.Commands.CommandHostAgent"
+msgid "Stack Trace:"
+msgstr "ردیابی پشته:"
+
+#. await output.WriteLineAsync(T["[{0}: {1}]", error.GetType().Name, error.Message]);
+#: OrchardCore.Infrastructure\Commands\CommandHostAgent.cs:108
+msgctxt "OrchardCore.Environment.Commands.CommandHostAgent"
+msgid "[{0}: {1}]"
+msgstr "[{0}: {1}]"
+
+#. throw new Exception(T["Tenant {0} does not exist", tenant]);
+#: OrchardCore.Infrastructure\Commands\CommandHostAgent.cs:128
+msgctxt "OrchardCore.Environment.Commands.CommandHostAgent"
+msgid "Tenant {0} does not exist"
+msgstr "تِنِنت (tenant) به عنوان {0} وجود ندارد"
+
+#. throw new InvalidOperationException(T["Switch \"{0}\" was not found", commandSwitch.Key]);
+#: OrchardCore.Infrastructure\Commands\DefaultCommandHandler.cs:44
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Switch \"{0}\" was not found"
+msgstr "سوئیچ \"{0}\" یافت نشد"
+
+#. throw new InvalidOperationException(T["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name]);
+#: OrchardCore.Infrastructure\Commands\DefaultCommandHandler.cs:48
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "A property \"{0}\" exists but is not decorated with \"{1}\""
+msgstr "Property (ویژگی) \"{0}\" وجود دارد اما با \"{1}\" decorate نشده است"
+
+#. string message = T["Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"",
+#: OrchardCore.Infrastructure\Commands\DefaultCommandHandler.cs:65
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Error converting value \"{0}\" to \"{1}\" for switch \"{2}\""
+msgstr "خطا هنگام تبدیل مقدار \"{0}\" به \"{1}\" برای سوییچ \"{2}\""
+
+#. throw new InvalidOperationException(T["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
+#: OrchardCore.Infrastructure\Commands\DefaultCommandHandler.cs:82
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Command arguments \"{0}\" don't match command definition"
+msgstr "آرگومان‌های دستور \"{0}\" با تعریف دستور مطابقت ندارند"
+
+#. throw new InvalidOperationException(T["Method \"{0}\" does not support switch \"{1}\".", methodInfo.Name, commandSwitch]);
+#: OrchardCore.Infrastructure\Commands\DefaultCommandHandler.cs:173
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Method \"{0}\" does not support switch \"{1}\"."
+msgstr "متود \"{0}\" از سوییچ \"{1}\" پشتیبانی نمی‌کند."
+
+#. throw new Exception(T["Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
+#: OrchardCore.Infrastructure\Commands\DefaultCommandManager.cs:39
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandManager"
+msgid "Multiple commands found matching arguments \"{0}\". Commands available: {1}."
+msgstr "چندین دستور که با آرگومان‌های \"{0}\" مطابقت دارند، پیدا شد. دستورهای موجود: {1}."
+
+#. throw new Exception(T["No command found matching arguments \"{0}\". Commands available: {1}.",
+#: OrchardCore.Infrastructure\Commands\DefaultCommandManager.cs:42
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandManager"
+msgid "No command found matching arguments \"{0}\". Commands available: {1}."
+msgstr "هیچ دستوری که با آرگومان‌های \"{0}\" مطابقت داشته باشد، پیدا نشد. فرمان‌های موجود: {1}."
+
+#. await Context.Output.WriteLineAsync(T["List of available commands:"]);
+#: OrchardCore.Infrastructure\Commands\Builtin\HelpCommand.cs:25
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "List of available commands:"
+msgstr "لیست دستورات موجود:"
+
+#. await Context.Output.WriteLineAsync(T["---------------------------"]);
+#: OrchardCore.Infrastructure\Commands\Builtin\HelpCommand.cs:26
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "---------------------------"
+msgstr "---------------------------"
+
+#. await Context.Output.WriteLineAsync(T["Command {0} doesn't exist", command]);
+#: OrchardCore.Infrastructure\Commands\Builtin\HelpCommand.cs:50
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "Command {0} doesn't exist"
+msgstr "دستور {0} وجود ندارد"
+
+#. return T["{0}.{1}: no help text", descriptor.MethodInfo.DeclaringType?.FullName, descriptor.MethodInfo.Name];
+#: OrchardCore.Infrastructure\Commands\Builtin\HelpCommand.cs:71
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "{0}.{1}: no help text"
+msgstr "{0}.{1}: متن راهنما وجود ندارد"
+

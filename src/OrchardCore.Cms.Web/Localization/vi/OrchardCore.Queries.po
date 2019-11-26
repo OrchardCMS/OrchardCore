@@ -1,0 +1,364 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: vi\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Queries.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"PO-Revision-Date: 2019-09-21 09:28\n"
+
+#. builder.Add(T["Configuration"], content => content
+#: OrchardCore.Queries\AdminMenu.cs:24
+msgctxt "OrchardCore.Queries.AdminMenu"
+msgid "Configuration"
+msgstr "Cấu hình"
+
+#. .Add(T["Queries"], "1", contentItems => contentItems
+#: OrchardCore.Queries\AdminMenu.cs:25
+msgctxt "OrchardCore.Queries.AdminMenu"
+msgid "Queries"
+msgstr "Truy vấn"
+
+#. _notifier.Success(H["Query created successfully"]);
+#: OrchardCore.Queries\Controllers\AdminController.cs:156
+msgctxt "OrchardCore.Queries.Controllers.AdminController"
+msgid "Query created successfully"
+msgstr "Đã tạo truy vấn"
+
+#. _notifier.Success(H["Query updated successfully"]);
+#: OrchardCore.Queries\Controllers\AdminController.cs:212
+msgctxt "OrchardCore.Queries.Controllers.AdminController"
+msgid "Query updated successfully"
+msgstr "Đã cập nhật truy vấn"
+
+#. _notifier.Success(H["Query deleted successfully"]);
+#: OrchardCore.Queries\Controllers\AdminController.cs:239
+msgctxt "OrchardCore.Queries.Controllers.AdminController"
+msgid "Query deleted successfully"
+msgstr "Đã xoá truy vấn"
+
+#. updater.ModelState.AddModelError(nameof(model.Name), S["Name is required"]);
+#: OrchardCore.Queries\Drivers\QueryDisplayDriver.cs:69
+msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
+msgid "Name is required"
+msgstr "Tên là bắt buộc"
+
+#. updater.ModelState.AddModelError(nameof(model.Name), S["Name contains illegal characters"]);
+#: OrchardCore.Queries\Drivers\QueryDisplayDriver.cs:75
+msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
+msgid "Name contains illegal characters"
+msgstr "Tên chứa các ký tự không hợp lệ"
+
+#. updater.ModelState.AddModelError(nameof(model.Name), S["A query with the same name already exists"]);
+#: OrchardCore.Queries\Drivers\QueryDisplayDriver.cs:83
+msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
+msgid "A query with the same name already exists"
+msgstr "Một truy vấn có cùng tên đã tồn tại"
+
+#. .Add(T["Configuration"], "10", configuration => configuration
+#: OrchardCore.Queries\Sql\AdminMenu.cs:25
+msgctxt "OrchardCore.Queries.Sql.AdminMenu"
+msgid "Configuration"
+msgstr "Cấu hình"
+
+#. .Add(T["Site"], "10", site => site
+#: OrchardCore.Queries\Sql\AdminMenu.cs:27
+msgctxt "OrchardCore.Queries.Sql.AdminMenu"
+msgid "Site"
+msgstr ""
+
+#. .Add(T["SQL Queries"], "5", queries => queries
+#: OrchardCore.Queries\Sql\AdminMenu.cs:28
+msgctxt "OrchardCore.Queries.Sql.AdminMenu"
+msgid "SQL Queries"
+msgstr "Truy vấn SQL"
+
+#. updater.ModelState.AddModelError(nameof(model.Template), S["The query field is required"]);
+#: OrchardCore.Queries\Sql\Drivers\SqlQueryDisplayDriver.cs:60
+msgctxt "OrchardCore.Queries.Sql.Drivers.SqlQueryDisplayDriver"
+msgid "The query field is required"
+msgstr "Trường truy vấn là bắt buộc"
+
+#. <h4>@T["SQL"]</h4>
+#: OrchardCore.Queries\Views\Query-Sql.Link.cshtml:5
+msgctxt "OrchardCore.Queries.Views.Query-Sql.Link"
+msgid "SQL"
+msgstr ""
+
+#. <p class="hint">@T["Queries the SQL database."]</p>
+#: OrchardCore.Queries\Views\Query-Sql.Link.cshtml:6
+msgctxt "OrchardCore.Queries.Views.Query-Sql.Link"
+msgid "Queries the SQL database."
+msgstr "Truy vấn cơ sở dữ liệu SQL."
+
+#. <a class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Admin" asp-route-id="@Model.Name" asp-area="OrchardCore.Queries">@T["Add"]</a>
+#: OrchardCore.Queries\Views\Query-Sql.Link.cshtml:9
+msgctxt "OrchardCore.Queries.Views.Query-Sql.Link"
+msgid "Add"
+msgstr "Thêm"
+
+#. class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.Queries\Views\Query.Buttons.SummaryAdmin.cshtml:6
+msgctxt "OrchardCore.Queries.Views.Query.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr "Sửa"
+
+#. itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.Queries\Views\Query.Buttons.SummaryAdmin.cshtml:12
+msgctxt "OrchardCore.Queries.Views.Query.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr "Xóa"
+
+#. <button type="submit" class="publish-button btn btn-success">@T["Save"]</button>
+#: OrchardCore.Queries\Views\Query.Fields.Buttons.cshtml:4
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Buttons"
+msgid "Save"
+msgstr "Lưu"
+
+#. asp-route-area="OrchardCore.Queries">@T["Cancel"]</a>
+#: OrchardCore.Queries\Views\Query.Fields.Buttons.cshtml:9
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Buttons"
+msgid "Cancel"
+msgstr "Bỏ qua"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Queries\Views\Query.Fields.Edit.cshtml:4
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "Name"
+msgstr "Tên"
+
+#. <span class="hint">@T["The technical name of the query."]</span>
+#: OrchardCore.Queries\Views\Query.Fields.Edit.cshtml:7
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "The technical name of the query."
+msgstr "Tên kỹ thuật của truy vấn."
+
+#. <label asp-for="Schema">@T["Schema"]</label>
+#: OrchardCore.Queries\Views\Query.Fields.Edit.cshtml:12
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "Schema"
+msgstr "Lược đồ"
+
+#. <span class="hint">@T["The schema the api will use to return results."]</span>
+#: OrchardCore.Queries\Views\Query.Fields.Edit.cshtml:14
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "The schema the api will use to return results."
+msgstr "Lược đồ api sẽ sử dụng để trả về kết quả."
+
+#. <h1>@T["If you see this message you need to create a custom shape template for {0}", "Query-" + Model.Name + ".Link"]</h1>
+#: OrchardCore.Queries\Views\Query.Link.cshtml:1
+msgctxt "OrchardCore.Queries.Views.Query.Link"
+msgid "If you see this message you need to create a custom shape template for {0}"
+msgstr "Nếu bạn thấy thông báo này bạn cần phải tạo một mẫu hình dạng tùy chỉnh cho {0}"
+
+#. class="btn btn-success btn-sm">@T["Run"]</a>
+#: OrchardCore.Queries\Views\SqlQuery.Buttons.SummaryAdmin.cshtml:11
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Buttons.SummaryAdmin"
+msgid "Run"
+msgstr "Chạy"
+
+#. <label class="custom-control-label" asp-for="ReturnDocuments">@T["Return Documents"]</label>
+#: OrchardCore.Queries\Views\SqlQuery.Edit.cshtml:10
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "Return Documents"
+msgstr "Tài liệu Trả về"
+
+#. <span class="hint">— @T["Check to return the corresponding documents."]</span>
+#: OrchardCore.Queries\Views\SqlQuery.Edit.cshtml:11
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "Check to return the corresponding documents."
+msgstr "Đánh dấu để trả lại các tài liệu tương ứng."
+
+#. <span class="hint">@T["When checked, the result has to be a list of document ids."]</span>
+#: OrchardCore.Queries\Views\SqlQuery.Edit.cshtml:13
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "When checked, the result has to be a list of document ids."
+msgstr "Khi được đánh dấu, kết quả trả về là một danh sách các Id của tài liệu."
+
+#. <label asp-for="Query">@T["Query"]</label>
+#: OrchardCore.Queries\Views\SqlQuery.Edit.cshtml:17
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "Query"
+msgstr "Truy vấn"
+
+#. <span class="hint">@T["The SQL query to execute."]</span>
+#: OrchardCore.Queries\Views\SqlQuery.Edit.cshtml:19
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "The SQL query to execute."
+msgstr "Truy vấn SQL để thực thi."
+
+#. <span class="hint">@T["SQL query"]</span>
+#: OrchardCore.Queries\Views\SqlQuery.SummaryAdmin.cshtml:3
+msgctxt "OrchardCore.Queries.Views.SqlQuery.SummaryAdmin"
+msgid "SQL query"
+msgstr "Truy vấn SQL"
+
+#. <h1>@RenderTitleSegments(T["New {0} query", Model.SourceName])</h1>
+#: OrchardCore.Queries\Views\Admin\Create.cshtml:3
+msgctxt "OrchardCore.Queries.Views.Admin.Create"
+msgid "New {0} query"
+msgstr ""
+
+#. <h1>@RenderTitleSegments(T["Edit '{0}' query", Model.Name])</h1>
+#: OrchardCore.Queries\Views\Admin\Edit.cshtml:3
+msgctxt "OrchardCore.Queries.Views.Admin.Edit"
+msgid "Edit '{0}' query"
+msgstr "Chỉnh sửa '{0}' truy vấn"
+
+#. <h1>@RenderTitleSegments(T["Queries"])</h1>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:5
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Queries"
+msgstr "Các truy vấn"
+
+#. <button type="button" class="btn btn-primary float-right" role="button" data-toggle="modal" data-target="#modalAddQuery">@T["Add Query"]</button>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:9
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Add Query"
+msgstr "Thêm truy vấn"
+
+#. <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:18
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Filter"
+msgstr ""
+
+#. <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" autofocus="autofocus" />
+#. <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:20
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:22
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Search"
+msgstr "Tìm kiếm"
+
+#. @T["<strong>Nothing here!</strong> There are no queries for the moment."]
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:45
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> There are no queries for the moment."
+msgstr "<strong>Không có gì ở đây!</strong> Không có câu truy vấn nào ở thời điểm này."
+
+#. <h5 class="modal-title">@T["Available Query Types"]</h5>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:57
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Available Query Types"
+msgstr "Các loại Truy vấn Đã có"
+
+#. <p class="p-3 mb-2 bg-warning text-white">@T["You need to enable a feature which provides a query source."] <a asp-action="Features" asp-controller="Admin" asp-area="OrchardCore.Features">@T["Go to Features"]</a></p>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:65
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "You need to enable a feature which provides a query source."
+msgstr "Bạn cần kích hoạt một tính năng cung cấp nguồn truy vấn."
+
+#. <p class="p-3 mb-2 bg-warning text-white">@T["You need to enable a feature which provides a query source."] <a asp-action="Features" asp-controller="Admin" asp-area="OrchardCore.Features">@T["Go to Features"]</a></p>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:65
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Go to Features"
+msgstr "Xem Các tính năng"
+
+#. <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+#: OrchardCore.Queries\Views\Admin\Index.cshtml:82
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Cancel"
+msgstr "Bỏ qua"
+
+#. <h1>@RenderTitleSegments(T["SQL Query"])</h1>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:13
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "SQL Query"
+msgstr "Truy vấn SQL"
+
+#. <label asp-for="DecodedQuery">@T["Template"]</label>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:22
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Template"
+msgstr "Khuôn mẫu"
+
+#. <span class="hint">@T["You can <a href=\"{0}\">click here</a> to query all content items.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Queries", Query = matchAllQuery }))]</span>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:24
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "You can <a href=\"{0}\">click here</a> to query all content items."
+msgstr "Bạn có thể <a href=\"{0}\">bấm vào đây</a> để truy vấn tất cả các mục nội dung."
+
+#. <span class="hint">@T["The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically."]</span>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:25
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically."
+msgstr "Truy vấn SQL sử dụng cú pháp SQL92 tiêu chuẩn và được chuyển đổi dựa trên cơ sở dữ liệu thực tế. Các bảng sẽ được đặt tiền tố tự động."
+
+#. <label asp-for="Parameters">@T["Parameters"]</label>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:31
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Parameters"
+msgstr "Tham số"
+
+#. <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:33
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "An optional Json object containing the parameter values for this query."
+msgstr "Một đối tượng Json tùy chọn chứa các giá trị tham số cho truy vấn này."
+
+#. <button type="submit" class="btn btn-primary">@T["Query"]</button>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:42
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Query"
+msgstr "Truy vấn"
+
+#. <label asp-for="RawSql">@T["Final SQL Query"]</label>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:52
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Final SQL Query"
+msgstr "Truy vấn SQL cuối cùng"
+
+#. <span class="hint">@T["The query as it will be executed by the SQL database."]</span>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:54
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "The query as it will be executed by the SQL database."
+msgstr "Truy vấn sẽ được thực thi bởi cơ sở dữ liệu SQL."
+
+#. <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Sql", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:58
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Create"
+msgstr "Tạo"
+
+#. <span class="text-muted">@T["Query executed in {0} ms", Model.Elapsed.TotalMilliseconds]</span>
+#: OrchardCore.Queries\Views\Admin\Query.cshtml:66
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Query executed in {0} ms"
+msgstr "Truy vấn được thực hiện trong {0} ms"
+
+#. <h5>@T["All Queries"]</h5>
+#: OrchardCore.Queries\Views\Items\AllQueriesDeploymentStep.Edit.cshtml:3
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Edit"
+msgid "All Queries"
+msgstr "Tất cả Truy vấn"
+
+#. <h5>@T["All Queries"]</h5>
+#: OrchardCore.Queries\Views\Items\AllQueriesDeploymentStep.Summary.cshtml:3
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Summary"
+msgid "All Queries"
+msgstr "Tất cả Truy vấn"
+
+#. <span class="hint">@T["Adds all queries to the plan."]</span>
+#: OrchardCore.Queries\Views\Items\AllQueriesDeploymentStep.Summary.cshtml:5
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Summary"
+msgid "Adds all queries to the plan."
+msgstr "Thêm tất cả các truy vấn vào kế hoạch."
+
+#. <h4 class="card-title">@T["All Queries"]</h4>
+#: OrchardCore.Queries\Views\Items\AllQueriesDeploymentStep.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Thumbnail"
+msgid "All Queries"
+msgstr "Tất cả Truy vấn"
+
+#. <p>@T["Exports every query."]</p>
+#: OrchardCore.Queries\Views\Items\AllQueriesDeploymentStep.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Thumbnail"
+msgid "Exports every query."
+msgstr "Xuất tất cả các truy vấn."
+

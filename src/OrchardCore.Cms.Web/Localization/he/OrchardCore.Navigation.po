@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: he\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Navigation.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Hebrew\n"
+"Language: he_IL\n"
+"PO-Revision-Date: 2019-09-04 19:04\n"
+
+#. var firstText = FirstText ?? T["<<"];
+#: OrchardCore.Navigation\PagerShapes.cs:197
+msgctxt "OrchardCore.Navigation.PagerShapes"
+msgid "<<"
+msgstr ""
+
+#. var previousText = PreviousText ?? T["<"];
+#. var previousText = PreviousText ?? T["<"];
+#: OrchardCore.Navigation\PagerShapes.cs:198
+#: OrchardCore.Navigation\PagerShapes.cs:332
+msgctxt "OrchardCore.Navigation.PagerShapes"
+msgid "<"
+msgstr ""
+
+#. var nextText = NextText ?? T[">"];
+#. var nextText = NextText ?? T[">"];
+#: OrchardCore.Navigation\PagerShapes.cs:199
+#: OrchardCore.Navigation\PagerShapes.cs:333
+msgctxt "OrchardCore.Navigation.PagerShapes"
+msgid ">"
+msgstr ""
+
+#. var lastText = LastText ?? T[">>"];
+#: OrchardCore.Navigation\PagerShapes.cs:200
+msgctxt "OrchardCore.Navigation.PagerShapes"
+msgid ">>"
+msgstr ""
+
+#. var gapText = GapText ?? T["..."];
+#: OrchardCore.Navigation\PagerShapes.cs:201
+msgctxt "OrchardCore.Navigation.PagerShapes"
+msgid "..."
+msgstr ""
+

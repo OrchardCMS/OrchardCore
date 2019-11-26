@@ -1,0 +1,26 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: pl\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Apis.GraphQL.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Polish\n"
+"Language: pl_PL\n"
+"PO-Revision-Date: 2019-09-04 19:19\n"
+
+#. .Add(S["Configuration"], "10", design => design
+#: OrchardCore.Apis.GraphQL\AdminMenu.cs:25
+msgctxt "OrchardCore.Apis.GraphQL.AdminMenu"
+msgid "Configuration"
+msgstr ""
+
+#. .Add(S["GraphiQL"], "5", deployment => deployment
+#: OrchardCore.Apis.GraphQL\AdminMenu.cs:27
+msgctxt "OrchardCore.Apis.GraphQL.AdminMenu"
+msgid "GraphiQL"
+msgstr ""
+

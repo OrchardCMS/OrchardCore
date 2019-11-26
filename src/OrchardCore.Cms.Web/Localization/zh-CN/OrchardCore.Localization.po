@@ -1,0 +1,88 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Localization.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2019-09-04 18:52\n"
+
+#. .Add(T["Configuration"], configuration => configuration
+#: OrchardCore.Localization\AdminMenu.cs:23
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Configuration"
+msgstr "配置"
+
+#. .Add(T["Settings"], settings => settings
+#: OrchardCore.Localization\AdminMenu.cs:24
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Settings"
+msgstr "设置"
+
+#. .Add(T["Localization"], T["Localization"], entry => entry
+#. .Add(T["Localization"], T["Localization"], entry => entry
+#: OrchardCore.Localization\AdminMenu.cs:25
+#: OrchardCore.Localization\AdminMenu.cs:25
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Localization"
+msgstr "本地化"
+
+#. context.Updater.ModelState.AddModelError("SupportedCultures", S["A culture is required"]);
+#: OrchardCore.Localization\Drivers\LocalizationSettingsDisplayDriver.cs:80
+msgctxt "OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver"
+msgid "A culture is required"
+msgstr "区域性是必须的"
+
+#. _notifier.Warning(H["The site has been restarted for the settings to take effect"]);
+#: OrchardCore.Localization\Drivers\LocalizationSettingsDisplayDriver.cs:97
+msgctxt "OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver"
+msgid "The site has been restarted for the settings to take effect"
+msgstr "已重新启动网站, 以使设置生效"
+
+#. Description = T["The active cultures configured for the site."],
+#: OrchardCore.Localization\GraphQL\SiteCulturesQuery.cs:28
+msgctxt "OrchardCore.Localization.GraphQL.SiteCulturesQuery"
+msgid "The active cultures configured for the site."
+msgstr "已为站点配置的活动区域。"
+
+#. <p class="alert alert-warning col-xl-6">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "保存设置后, 将重新加载当前租户。"
+
+#. <th>@T["Culture"]</th>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:26
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Culture"
+msgstr "文化"
+
+#. <th class="text-center">@T["Default culture"]</th>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:27
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Default culture"
+msgstr "默认网站区域性"
+
+#. <a v-on:click="remove(index)" title="@T["Remove culture"]" href="javascript:void(0)" class="btn btn-secondary btn-sm" style="cursor:pointer">
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:44
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Remove culture"
+msgstr "删除区域性"
+
+#. <a v-on:click="add()" href="javascript:void(0)" class="btn btn-success"><i class="fas fa-plus small"></i> @T["Add culture"]</a>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:61
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Add culture"
+msgstr "添加区域"
+
+#. <label>@T["Define which cultures are supported by the site."]</label>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:75
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Define which cultures are supported by the site."
+msgstr "定义网站支持的区域性"
+

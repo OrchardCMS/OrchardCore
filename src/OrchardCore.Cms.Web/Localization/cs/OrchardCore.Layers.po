@@ -1,0 +1,270 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: cs\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Layers.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Czech\n"
+"Language: cs_CZ\n"
+"PO-Revision-Date: 2019-09-04 18:58\n"
+
+#. .Add(T["Configuration"], configuration => configuration
+#: OrchardCore.Layers\AdminMenu.cs:26
+msgctxt "OrchardCore.Layers.AdminMenu"
+msgid "Configuration"
+msgstr "Konfigurace"
+
+#. .Add(T["Settings"], settings => settings
+#: OrchardCore.Layers\AdminMenu.cs:27
+msgctxt "OrchardCore.Layers.AdminMenu"
+msgid "Settings"
+msgstr "Nastavení"
+
+#. .Add(T["Zones"], T["Zones"], zones => zones
+#. .Add(T["Zones"], T["Zones"], zones => zones
+#: OrchardCore.Layers\AdminMenu.cs:28
+#: OrchardCore.Layers\AdminMenu.cs:28
+msgctxt "OrchardCore.Layers.AdminMenu"
+msgid "Zones"
+msgstr "Zóny"
+
+#. .Add(T["Layers"], T["Layers"], layers => layers
+#. .Add(T["Layers"], T["Layers"], layers => layers
+#: OrchardCore.Layers\AdminMenu.cs:33
+#: OrchardCore.Layers\AdminMenu.cs:33
+msgctxt "OrchardCore.Layers.AdminMenu"
+msgid "Layers"
+msgstr "Vrstvy"
+
+#. _notifier.Success(H["Layer deleted successfully."]);
+#: OrchardCore.Layers\Controllers\AdminController.cs:226
+msgctxt "OrchardCore.Layers.Controllers.AdminController"
+msgid "Layer deleted successfully."
+msgstr "Vrstva úspěšně odstraněna."
+
+#. _notifier.Error(H["The layer couldn't be deleted: you must remove any associated widgets first."]);
+#: OrchardCore.Layers\Controllers\AdminController.cs:230
+msgctxt "OrchardCore.Layers.Controllers.AdminController"
+msgid "The layer couldn't be deleted: you must remove any associated widgets first."
+msgstr "Vrstva nemohla být odstraněne: musíte nejprve odstranit všechny související widgety."
+
+#. ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name is required."]);
+#: OrchardCore.Layers\Controllers\AdminController.cs:306
+msgctxt "OrchardCore.Layers.Controllers.AdminController"
+msgid "The layer name is required."
+msgstr "Název vrstvy je povinný."
+
+#. ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name already exists."]);
+#: OrchardCore.Layers\Controllers\AdminController.cs:310
+msgctxt "OrchardCore.Layers.Controllers.AdminController"
+msgid "The layer name already exists."
+msgstr "Název vrstvy již existuje."
+
+#. ModelState.AddModelError(nameof(LayerEditViewModel.Rule), S["The rule is required."]);
+#: OrchardCore.Layers\Controllers\AdminController.cs:315
+msgctxt "OrchardCore.Layers.Controllers.AdminController"
+msgid "The rule is required."
+msgstr "Pravidlo je povinné."
+
+#. context.Updater.ModelState.AddModelError("LayerMetadata.Zone", S["Zone is missing"]);
+#: OrchardCore.Layers\Drivers\LayerMetadataWelder.cs:72
+msgctxt "OrchardCore.Layers.Drivers.LayerMetadataWelder"
+msgid "Zone is missing"
+msgstr "Zóna nenalezena"
+
+#. Description = T["Site layers define the rules and zone placement for widgets."],
+#: OrchardCore.Layers\GraphQL\SiteLayersQuery.cs:28
+msgctxt "OrchardCore.Layers.GraphQL.SiteLayersQuery"
+msgid "Site layers define the rules and zone placement for widgets."
+msgstr ""
+
+#. <label asp-for="Title">@T["Title"]</label>
+#: OrchardCore.Layers\Views\LayerMetadata.Edit.cshtml:4
+msgctxt "OrchardCore.Layers.Views.LayerMetadata.Edit"
+msgid "Title"
+msgstr "Titulek"
+
+#. <label class="custom-control-label" asp-for="LayerMetadata.RenderTitle">@T["Render title"]</label>
+#: OrchardCore.Layers\Views\LayerMetadata.Edit.cshtml:12
+msgctxt "OrchardCore.Layers.Views.LayerMetadata.Edit"
+msgid "Render title"
+msgstr "Vykreslit titulek"
+
+#. <span class="hint">— @T["If checked, the title will be rendered with the widget."]</span>
+#: OrchardCore.Layers\Views\LayerMetadata.Edit.cshtml:13
+msgctxt "OrchardCore.Layers.Views.LayerMetadata.Edit"
+msgid "If checked, the title will be rendered with the widget."
+msgstr ""
+
+#. <label asp-for="LayerMetadata.Layer">@T["The layer the widget should be associated with."]</label>
+#: OrchardCore.Layers\Views\LayerMetadata.Edit.cshtml:18
+msgctxt "OrchardCore.Layers.Views.LayerMetadata.Edit"
+msgid "The layer the widget should be associated with."
+msgstr "Vrstva, se kterou má bát widget svázán."
+
+#. <label asp-for="Zones">@T["Available zones for Layers"]</label>
+#: OrchardCore.Layers\Views\LayerSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Layers.Views.LayerSettings.Edit"
+msgid "Available zones for Layers"
+msgstr "Dostupné zóny pro vrstvy"
+
+#. <span class="hint">@T["A comma separated list of values, representing the available zones for widgets."]</span>
+#: OrchardCore.Layers\Views\LayerSettings.Edit.cshtml:7
+msgctxt "OrchardCore.Layers.Views.LayerSettings.Edit"
+msgid "A comma separated list of values, representing the available zones for widgets."
+msgstr "Čárkami oddělený seznam hodnot reprezentující dostupné zóny pro widgety."
+
+#. <h1>@RenderTitleSegments(T["Create Layer"])</h1>
+#: OrchardCore.Layers\Views\Admin\Create.cshtml:3
+msgctxt "OrchardCore.Layers.Views.Admin.Create"
+msgid "Create Layer"
+msgstr "Vytvořit vrstvu"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Layers\Views\Admin\Create.cshtml:7
+msgctxt "OrchardCore.Layers.Views.Admin.Create"
+msgid "Name"
+msgstr "Název"
+
+#. <label asp-for="Rule">@T["Rule"]</label>
+#: OrchardCore.Layers\Views\Admin\Create.cshtml:13
+msgctxt "OrchardCore.Layers.Views.Admin.Create"
+msgid "Rule"
+msgstr "Pravidlo"
+
+#. <label asp-for="Description">@T["Description"]</label>
+#: OrchardCore.Layers\Views\Admin\Create.cshtml:19
+msgctxt "OrchardCore.Layers.Views.Admin.Create"
+msgid "Description"
+msgstr "Popis"
+
+#. <input class="button" type="submit" value="@T["Create"]" />
+#: OrchardCore.Layers\Views\Admin\Create.cshtml:24
+msgctxt "OrchardCore.Layers.Views.Admin.Create"
+msgid "Create"
+msgstr "Vytvořit"
+
+#. <h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1>
+#: OrchardCore.Layers\Views\Admin\Edit.cshtml:3
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Edit Layer - {0}"
+msgstr "Upravit vrstvu - {0}"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Layers\Views\Admin\Edit.cshtml:7
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Name"
+msgstr "Název"
+
+#. <label asp-for="Rule">@T["Rule"]</label>
+#: OrchardCore.Layers\Views\Admin\Edit.cshtml:13
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Rule"
+msgstr "Pravidlo"
+
+#. <label asp-for="Description">@T["Description"]</label>
+#: OrchardCore.Layers\Views\Admin\Edit.cshtml:19
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Description"
+msgstr "Popis"
+
+#. <input class="button" type="submit" value="@T["Save"]" />
+#: OrchardCore.Layers\Views\Admin\Edit.cshtml:24
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Save"
+msgstr "Uložit"
+
+#. <h1>@RenderTitleSegments(T["Edit Widget Layers"])</h1>
+#: OrchardCore.Layers\Views\Admin\Index.cshtml:14
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Edit Widget Layers"
+msgstr "Upravit vrstvy widgetu"
+
+#. @T["Widget successfully moved. <a href=\"javascript:console.log('submit');$('#undo-form').submit();\"><strong>Undo</strong></a>."]
+#: OrchardCore.Layers\Views\Admin\Index.cshtml:21
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Widget successfully moved. <a href=\"javascript:console.log('submit');$('#undo-form').submit();\"><strong>Undo</strong></a>."
+msgstr "Widget úspěšně přesunut. <a href=\"javascript:console.log('submit');$('#undo-form').submit();\"><strong>Zpět</strong></a>."
+
+#. <h3>@T["Zones"]</h3>
+#: OrchardCore.Layers\Views\Admin\Index.cshtml:30
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Zones"
+msgstr "Zóny"
+
+#. @T["Add Widget"]
+#: OrchardCore.Layers\Views\Admin\Index.cshtml:65
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Add Widget"
+msgstr "Přidat widget"
+
+#. <h3>@T["Layers"]</h3>
+#: OrchardCore.Layers\Views\Admin\Index.cshtml:88
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Layers"
+msgstr "Vrstvy"
+
+#. <span class="hint">@T["Select a layer to reveal its associated widgets."]</span>
+#: OrchardCore.Layers\Views\Admin\Index.cshtml:90
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Select a layer to reveal its associated widgets."
+msgstr "Pro zobrazení svázaných widgetů vyberte vrstvu."
+
+#. <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })">@T["Edit"]</a>
+#: OrchardCore.Layers\Views\Admin\Index.cshtml:104
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Edit"
+msgstr "Upravit"
+
+#. <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.Layers\Views\Admin\Index.cshtml:105
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Delete"
+msgstr "Smazat"
+
+#. <p class="alert alert-warning">@T["Please <a href=\"{0}\">create a layer</a> before adding Widgets", Url.Action("Create", "Admin", new { area = "OrchardCore.Layers" })]</p>
+#: OrchardCore.Layers\Views\Admin\Index.cshtml:118
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Please <a href=\"{0}\">create a layer</a> before adding Widgets"
+msgstr "Před vkládáním widgetů <a href=\"{0}\">vytvořte vrstvu</a>"
+
+#. <a class="button btn-sm" href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Layers" })">@T["Add"]</a>
+#: OrchardCore.Layers\Views\Admin\Index.cshtml:121
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Add"
+msgstr "Přidat"
+
+#. <h5>@T["All Layers"]</h5>
+#: OrchardCore.Layers\Views\Items\AllLayersDeploymentStep.Edit.cshtml:3
+msgctxt "OrchardCore.Layers.Views.Items.AllLayersDeploymentStep.Edit"
+msgid "All Layers"
+msgstr "Všechny vrstvy"
+
+#. <h5>@T["All Layers"]</h5>
+#: OrchardCore.Layers\Views\Items\AllLayersDeploymentStep.Summary.cshtml:3
+msgctxt "OrchardCore.Layers.Views.Items.AllLayersDeploymentStep.Summary"
+msgid "All Layers"
+msgstr "Všechny vrstvy"
+
+#. <span class="hint">@T["Adds all layers to the plan."]</span>
+#: OrchardCore.Layers\Views\Items\AllLayersDeploymentStep.Summary.cshtml:5
+msgctxt "OrchardCore.Layers.Views.Items.AllLayersDeploymentStep.Summary"
+msgid "Adds all layers to the plan."
+msgstr "Přidá všechny vrstvy do plánu."
+
+#. <h4 class="card-title">@T["All Layers"]</h4>
+#: OrchardCore.Layers\Views\Items\AllLayersDeploymentStep.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Layers.Views.Items.AllLayersDeploymentStep.Thumbnail"
+msgid "All Layers"
+msgstr "Všechny vrstvy"
+
+#. <p>@T["Exports all layers."]</p>
+#: OrchardCore.Layers\Views\Items\AllLayersDeploymentStep.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Layers.Views.Items.AllLayersDeploymentStep.Thumbnail"
+msgid "Exports all layers."
+msgstr "Exportuje všechny vrstvy."
+

@@ -1,0 +1,79 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: ru\n"
+"X-Crowdin-File: /dev/Localization/TheBlogTheme.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Russian\n"
+"Language: ru_RU\n"
+"PO-Revision-Date: 2019-09-04 19:14\n"
+
+#: TheBlogTheme\Views\Blog-ListPart.liquid:0
+msgctxt "TheBlogTheme.Views.Blog-ListPart"
+msgid "← Newer Posts"
+msgstr "%s Новые записи"
+
+#: TheBlogTheme\Views\Blog-ListPart.liquid:0
+msgctxt "TheBlogTheme.Views.Blog-ListPart"
+msgid "Older Posts →"
+msgstr "Старые записи %s"
+
+#: TheBlogTheme\Views\Blog-ListPart.liquid:0
+msgctxt "TheBlogTheme.Views.Blog-ListPart"
+msgid "previous"
+msgstr "предыдущий"
+
+#: TheBlogTheme\Views\Blog-ListPart.liquid:0
+msgctxt "TheBlogTheme.Views.Blog-ListPart"
+msgid "next"
+msgstr "следующий"
+
+#: TheBlogTheme\Views\Content-BlogPost.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost"
+msgid "MMMM dd, yyyy"
+msgstr ""
+
+#: TheBlogTheme\Views\Content-BlogPost.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost"
+msgid "Posted by"
+msgstr "Автор"
+
+#: TheBlogTheme\Views\Content-BlogPost.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost"
+msgid "on {0}"
+msgstr "{0}"
+
+#: TheBlogTheme\Views\Content-BlogPost.Summary.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost.Summary"
+msgid "MMMM dd, yyyy"
+msgstr ""
+
+#: TheBlogTheme\Views\Content-BlogPost.Summary.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost.Summary"
+msgid "Posted by"
+msgstr "Автор"
+
+#: TheBlogTheme\Views\Content-BlogPost.Summary.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost.Summary"
+msgid "on {0}"
+msgstr "{0}"
+
+#: TheBlogTheme\Views\Layout.liquid:0
+msgctxt "TheBlogTheme.Views.Layout"
+msgid "Toggle navigation"
+msgstr "Навигационная панель"
+
+#: TheBlogTheme\Views\Layout.liquid:0
+msgctxt "TheBlogTheme.Views.Layout"
+msgid "Menu"
+msgstr "Меню"
+
+#: TheBlogTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheBlogTheme.Views.Shared.NotFound"
+msgid "Page Not Found"
+msgstr "Страница не найдена"
+

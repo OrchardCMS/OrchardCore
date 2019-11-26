@@ -1,0 +1,74 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: cs\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.CustomSettings.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Czech\n"
+"Language: cs_CZ\n"
+"PO-Revision-Date: 2019-09-04 18:49\n"
+
+#. .Add(T["Configuration"], configuration => configuration
+#: OrchardCore.CustomSettings\AdminMenu.cs:33
+msgctxt "OrchardCore.CustomSettings.AdminMenu"
+msgid "Configuration"
+msgstr "Nastavení"
+
+#. .Add(T["Settings"], settings => settings
+#: OrchardCore.CustomSettings\AdminMenu.cs:34
+msgctxt "OrchardCore.CustomSettings.AdminMenu"
+msgid "Settings"
+msgstr "Nastavení"
+
+#. <h5>@T["Custom Settings"]</h5>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Edit.cshtml:8
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Edit"
+msgid "Custom Settings"
+msgstr "Vlastní nastavení"
+
+#. @T["Include all custom settings."]
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Edit.cshtml:17
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Edit"
+msgid "Include all custom settings."
+msgstr "Zahrnout všechna vlastní nastavení."
+
+#. <span class="hint">@T["The custom settings to add as part of the plan."]</span>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Edit.cshtml:27
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Edit"
+msgid "The custom settings to add as part of the plan."
+msgstr "Volby vlastního nastavení, které se přidají jako součást plánu."
+
+#. <h5>@T["Custom Settings"]</h5>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Summary.cshtml:8
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Summary"
+msgid "Custom Settings"
+msgstr "Vlastní nastavení"
+
+#. <span class="badge badge-success">@T["All"]</span>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Summary.cshtml:12
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Summary"
+msgid "All"
+msgstr "Vše"
+
+#. <span class="badge badge-warning">@T["No custom settings selected."]</span>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Summary.cshtml:23
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Summary"
+msgid "No custom settings selected."
+msgstr "Nejsou vybrána žádná vlastní nastavení."
+
+#. <h4 class="card-title">@T["Custom Settings"]</h4>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Custom Settings"
+msgstr "Vlastní nastavení"
+
+#. <p>@T["Exports all or specified custom settings."]</p>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Exports all or specified custom settings."
+msgstr "Exportuje všechny nebo jen vybrané volby vlastního nastavení."
+

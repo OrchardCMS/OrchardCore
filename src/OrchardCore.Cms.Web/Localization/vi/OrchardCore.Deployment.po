@@ -1,0 +1,422 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: vi\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Deployment.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"PO-Revision-Date: 2019-09-04 19:30\n"
+
+#. .Add(T["Configuration"], content => content
+#: OrchardCore.Deployment\AdminMenu.cs:25
+msgctxt "OrchardCore.Deployment.AdminMenu"
+msgid "Configuration"
+msgstr "Cấu hình"
+
+#. .Add(T["Import/Export"], "10", import => import
+#: OrchardCore.Deployment\AdminMenu.cs:26
+msgctxt "OrchardCore.Deployment.AdminMenu"
+msgid "Import/Export"
+msgstr "Nhập/Xuất dữ liệu"
+
+#. .Add(T["Deployment Plans"], "5", deployment => deployment
+#: OrchardCore.Deployment\AdminMenu.cs:27
+msgctxt "OrchardCore.Deployment.AdminMenu"
+msgid "Deployment Plans"
+msgstr "Kế hoạch Triển khai"
+
+#. .Add(T["Package Import"], "5", deployment => deployment
+#: OrchardCore.Deployment\AdminMenu.cs:32
+msgctxt "OrchardCore.Deployment.AdminMenu"
+msgid "Package Import"
+msgstr "Nhập Gói dữ liệu"
+
+#. ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), T["The name is mandatory."]);
+#. ModelState.AddModelError(nameof(EditDeploymentPlanViewModel.Name), T["The name is mandatory."]);
+#: OrchardCore.Deployment\Controllers\DeploymentPlanController.cs:175
+#: OrchardCore.Deployment\Controllers\DeploymentPlanController.cs:234
+msgctxt "OrchardCore.Deployment.Controllers.DeploymentPlanController"
+msgid "The name is mandatory."
+msgstr "Tên bắt buộc phải có."
+
+#. _notifier.Success(H["Deployment plan updated successfully"]);
+#: OrchardCore.Deployment\Controllers\DeploymentPlanController.cs:244
+msgctxt "OrchardCore.Deployment.Controllers.DeploymentPlanController"
+msgid "Deployment plan updated successfully"
+msgstr "Kế hoạch triển khai được cập nhật thành công"
+
+#. _notifier.Success(H["Deployment plan deleted successfully"]);
+#: OrchardCore.Deployment\Controllers\DeploymentPlanController.cs:270
+msgctxt "OrchardCore.Deployment.Controllers.DeploymentPlanController"
+msgid "Deployment plan deleted successfully"
+msgstr "Kế hoạch triển khai đã được xoá"
+
+#. _notifier.Success(H["Deployment package imported"]);
+#: OrchardCore.Deployment\Controllers\ImportController.cs:69
+msgctxt "OrchardCore.Deployment.Controllers.ImportController"
+msgid "Deployment package imported"
+msgstr "Đã nhập gói triển khai"
+
+#. _notifier.Success(H["Deployment plan step added successfully"]);
+#: OrchardCore.Deployment\Controllers\StepController.cs:123
+msgctxt "OrchardCore.Deployment.Controllers.StepController"
+msgid "Deployment plan step added successfully"
+msgstr "Bước kế hoạch triển khai được thêm vào thành công"
+
+#. _notifier.Success(H["Deployment plan step updated successfully"]);
+#: OrchardCore.Deployment\Controllers\StepController.cs:196
+msgctxt "OrchardCore.Deployment.Controllers.StepController"
+msgid "Deployment plan step updated successfully"
+msgstr "Bước kế hoạch triển khai được cập nhật thành công"
+
+#. _notifier.Error(H["The deployment plan step has validation errors"]);
+#: OrchardCore.Deployment\Controllers\StepController.cs:200
+msgctxt "OrchardCore.Deployment.Controllers.StepController"
+msgid "The deployment plan step has validation errors"
+msgstr "Bước kế hoạch triển khai có lỗi về tính hợp lệ"
+
+#. _notifier.Success(H["Deployment step deleted successfully"]);
+#: OrchardCore.Deployment\Controllers\StepController.cs:232
+msgctxt "OrchardCore.Deployment.Controllers.StepController"
+msgid "Deployment step deleted successfully"
+msgstr "Đã xoá bước triển khai"
+
+#. name: T["File Download"],
+#: OrchardCore.Deployment\Services\FileDownloadDeploymentTargetProvider.cs:22
+msgctxt "OrchardCore.Deployment.FileDownloadDeploymentTargetProvider"
+msgid "File Download"
+msgstr "Tải tệp xuống"
+
+#. description: T["Download a deployment plan locally."],
+#: OrchardCore.Deployment\Services\FileDownloadDeploymentTargetProvider.cs:23
+msgctxt "OrchardCore.Deployment.FileDownloadDeploymentTargetProvider"
+msgid "Download a deployment plan locally."
+msgstr "Tải xuống một kế hoạch triển khai từ máy local."
+
+#. class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.Deployment\Views\DeploymentStep.Summary.cshtml:9
+msgctxt "OrchardCore.Deployment.Views.DeploymentStep.Summary"
+msgid "Edit"
+msgstr "Sửa"
+
+#. itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.Deployment\Views\DeploymentStep.Summary.cshtml:16
+msgctxt "OrchardCore.Deployment.Views.DeploymentStep.Summary"
+msgid "Delete"
+msgstr "Xóa"
+
+#. <a class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Step" asp-route-id="@Model.DeploymentPlan.Id" asp-route-type="@Model.Type">@T["Add"]</a>
+#: OrchardCore.Deployment\Views\DeploymentStep.Thumbnail.cshtml:8
+msgctxt "OrchardCore.Deployment.Views.DeploymentStep.Thumbnail"
+msgid "Add"
+msgstr "Thêm"
+
+#. <h1>@RenderTitleSegments(T["Create Deployment Plan"])</h1>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Create.cshtml:3
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
+msgid "Create Deployment Plan"
+msgstr "Tạo Kế hoạch Triển khai"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Create.cshtml:8
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
+msgid "Name"
+msgstr "Tên"
+
+#. <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Create.cshtml:10
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
+msgid "The name is required."
+msgstr "Yêu cầu nhập Tên."
+
+#. <button class="btn btn-primary" type="submit">@T["Create"]</button>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Create.cshtml:15
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
+msgid "Create"
+msgstr "Tạo"
+
+#. <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Create.cshtml:16
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
+msgid "Cancel"
+msgstr "Bỏ qua"
+
+#. <h1>@RenderTitleSegments(T["Deployment Plan"])</h1>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Display.cshtml:6
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Deployment Plan"
+msgstr "Kế hoạch Triển khai"
+
+#. @T["Execute"]
+#: OrchardCore.Deployment\Views\DeploymentPlan\Display.cshtml:13
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Execute"
+msgstr "Thực thi"
+
+#. @T["Add Step"]
+#: OrchardCore.Deployment\Views\DeploymentPlan\Display.cshtml:22
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Add Step"
+msgstr "Thêm Bước"
+
+#. @T["<strong>Nothing here!</strong> There are no steps on this plan for the moment."]
+#: OrchardCore.Deployment\Views\DeploymentPlan\Display.cshtml:45
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "<strong>Nothing here!</strong> There are no steps on this plan for the moment."
+msgstr "<strong>Không có gì ở đây!</strong> Không có bước nào cho kế hoạch ở thời điểm này."
+
+#. <h5 class="modal-title">@T["Available Steps"]</h5>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Display.cshtml:55
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Available Steps"
+msgstr "Các bước Đã có"
+
+#. <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+#. <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Display.cshtml:71
+#: OrchardCore.Deployment\Views\DeploymentPlan\Display.cshtml:106
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Cancel"
+msgstr "Bỏ qua"
+
+#. <h5 class="modal-title">@T["Available Targets"]</h5>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Display.cshtml:81
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Available Targets"
+msgstr "Mục tiêu Khả dụng"
+
+#. <a class="btn btn-primary btn-sm" href="@Url.RouteUrl(routeWithId)" itemprop="UnsafeUrl">@T["Select"]</a>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Display.cshtml:99
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Select"
+msgstr "Chọn"
+
+#. <h1>@RenderTitleSegments(T["Edit Deployment Plan"])</h1>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Edit.cshtml:3
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
+msgid "Edit Deployment Plan"
+msgstr "Sửa Kế hoạch Triển khai"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Edit.cshtml:9
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
+msgid "Name"
+msgstr "Tên"
+
+#. <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Edit.cshtml:11
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
+msgid "The name is required."
+msgstr "Yêu cầu nhập Tên."
+
+#. <button class="btn btn-primary" type="submit">@T["Save"]</button>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Edit.cshtml:16
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
+msgid "Save"
+msgstr "Lưu"
+
+#. <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Edit.cshtml:17
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
+msgid "Cancel"
+msgstr "Bỏ qua"
+
+#. <h1>@RenderTitleSegments(T["Deployment Plans"])</h1>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Index.cshtml:3
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "Deployment Plans"
+msgstr "Kế hoạch Triển khai"
+
+#. <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Deployment Plan"]</a>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Index.cshtml:8
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "Add Deployment Plan"
+msgstr "Thêm Kế hoạch Triển khai"
+
+#. <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+#. <button type="submit" class="btn btn-secondary">@T["Search"]</button>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Index.cshtml:12
+#: OrchardCore.Deployment\Views\DeploymentPlan\Index.cshtml:13
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "Search"
+msgstr "Tìm kiếm"
+
+#. <a asp-action="Edit" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Index.cshtml:28
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "Edit"
+msgstr "Sửa"
+
+#. <a asp-action="Delete" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.Deployment\Views\DeploymentPlan\Index.cshtml:29
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "Delete"
+msgstr "Xóa"
+
+#. @T["<strong>Nothing here!</strong> There are no deployment plans for the moment."]
+#: OrchardCore.Deployment\Views\DeploymentPlan\Index.cshtml:40
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "<strong>Nothing here!</strong> There are no deployment plans for the moment."
+msgstr "<strong>Không có gì ở đây!</strong> Không có bước nào cho kế hoạch ở thời điểm này."
+
+#. <h1>@RenderTitleSegments(T["Import Deployment Package"])</h1>
+#: OrchardCore.Deployment\Views\Import\Index.cshtml:1
+msgctxt "OrchardCore.Deployment.Views.Import.Index"
+msgid "Import Deployment Package"
+msgstr "Nhập Gói Triển khai"
+
+#. <button class="btn btn-primary" type="submit">@T["Import"]</button>
+#: OrchardCore.Deployment\Views\Import\Index.cshtml:8
+msgctxt "OrchardCore.Deployment.Views.Import.Index"
+msgid "Import"
+msgstr "Nhập"
+
+#. <h5>@T["Custom File"]</h5>
+#: OrchardCore.Deployment\Views\Items\CustomFileDeploymentStep.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Edit"
+msgid "Custom File"
+msgstr "Tệp Tùy chỉnh"
+
+#. <span class="hint">@T["The custom file to add as part of the plan."]</span>
+#: OrchardCore.Deployment\Views\Items\CustomFileDeploymentStep.Fields.Edit.cshtml:8
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Edit"
+msgid "The custom file to add as part of the plan."
+msgstr "Tệp tùy chỉnh để thêm vào làm một phần của kế hoạch."
+
+#. <label asp-for="FileName">@T["File Name"]</label>
+#: OrchardCore.Deployment\Views\Items\CustomFileDeploymentStep.Fields.Edit.cshtml:14
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Edit"
+msgid "File Name"
+msgstr "Tên Tệp"
+
+#. <span class="hint">@T["The filename as it will be added in the archive."]</span>
+#: OrchardCore.Deployment\Views\Items\CustomFileDeploymentStep.Fields.Edit.cshtml:17
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Edit"
+msgid "The filename as it will be added in the archive."
+msgstr "Tên tệp sẽ được thêm vào lưu trữ."
+
+#. <label asp-for="FileContent">@T["File Content"]</label>
+#: OrchardCore.Deployment\Views\Items\CustomFileDeploymentStep.Fields.Edit.cshtml:21
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Edit"
+msgid "File Content"
+msgstr "Nội dung Tệp"
+
+#. <span class="hint">@T["The content of the file."]</span>
+#: OrchardCore.Deployment\Views\Items\CustomFileDeploymentStep.Fields.Edit.cshtml:23
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Edit"
+msgid "The content of the file."
+msgstr "Nội dung của tệp."
+
+#. <h5>@T["Custom File"]</h5>
+#: OrchardCore.Deployment\Views\Items\CustomFileDeploymentStep.Fields.Summary.cshtml:8
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Summary"
+msgid "Custom File"
+msgstr "Tệp Tùy chỉnh"
+
+#. <h4 class="card-title">@T["Custom File"]</h4>
+#: OrchardCore.Deployment\Views\Items\CustomFileDeploymentStep.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Thumbnail"
+msgid "Custom File"
+msgstr "Tệp Tùy chỉnh"
+
+#. <p>@T["Exports a custom file and its content."]</p>
+#: OrchardCore.Deployment\Views\Items\CustomFileDeploymentStep.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Thumbnail"
+msgid "Exports a custom file and its content."
+msgstr "Xuất một tệp tùy chỉnh và nội dung của nó."
+
+#. <h5>@T["Deployment Plans"]</h5>
+#: OrchardCore.Deployment\Views\Items\DeploymentPlanDeploymentStep.Fields.Edit.cshtml:8
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Edit"
+msgid "Deployment Plans"
+msgstr "Kế hoạch Triển khai"
+
+#. @T["Include all deployment plans."]
+#: OrchardCore.Deployment\Views\Items\DeploymentPlanDeploymentStep.Fields.Edit.cshtml:17
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Edit"
+msgid "Include all deployment plans."
+msgstr "Bao gồm tất cả các kế hoạch triển khai."
+
+#. <span class="hint">@T["The deployment plans to add as part of the plan."]</span>
+#: OrchardCore.Deployment\Views\Items\DeploymentPlanDeploymentStep.Fields.Edit.cshtml:27
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Edit"
+msgid "The deployment plans to add as part of the plan."
+msgstr "Các kế hoạch triển khai để thêm như là một phần của kế hoạch."
+
+#. <h5>@T["Deployment Plans"]</h5>
+#: OrchardCore.Deployment\Views\Items\DeploymentPlanDeploymentStep.Fields.Summary.cshtml:11
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Summary"
+msgid "Deployment Plans"
+msgstr "Kế hoạch Triển khai"
+
+#. <span class="badge badge-success">@T["All"]</span>
+#: OrchardCore.Deployment\Views\Items\DeploymentPlanDeploymentStep.Fields.Summary.cshtml:15
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Summary"
+msgid "All"
+msgstr "Tất cả"
+
+#. <span class="badge badge-warning">@T["No deployment plan selected."]</span>
+#: OrchardCore.Deployment\Views\Items\DeploymentPlanDeploymentStep.Fields.Summary.cshtml:26
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Summary"
+msgid "No deployment plan selected."
+msgstr "Không có kế hoạch triển khai nào được chọn."
+
+#. <h4 class="card-title">@T["Deployment Plans"]</h4>
+#: OrchardCore.Deployment\Views\Items\DeploymentPlanDeploymentStep.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Thumbnail"
+msgid "Deployment Plans"
+msgstr "Kế hoạch Triển khai"
+
+#. <p>@T["Exports all or specified deployment plans."]</p>
+#: OrchardCore.Deployment\Views\Items\DeploymentPlanDeploymentStep.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Thumbnail"
+msgid "Exports all or specified deployment plans."
+msgstr "Xuất tất cả hoặc kế hoạch triển khai đã chọn."
+
+#. <h1>@RenderTitleSegments(T["Create Step"])</h1>
+#: OrchardCore.Deployment\Views\Step\Create.cshtml:3
+msgctxt "OrchardCore.Deployment.Views.Step.Create"
+msgid "Create Step"
+msgstr "Tạo Các bước"
+
+#. <button class="btn btn-primary" type="submit">@T["Create"]</button>
+#: OrchardCore.Deployment\Views\Step\Create.cshtml:15
+msgctxt "OrchardCore.Deployment.Views.Step.Create"
+msgid "Create"
+msgstr "Tạo"
+
+#. <a class="btn btn-secondary" asp-route-action="Display" asp-route-controller="DeploymentPlan" asp-route-id="@Model.DeploymentPlanId">@T["Cancel"]</a>
+#: OrchardCore.Deployment\Views\Step\Create.cshtml:16
+msgctxt "OrchardCore.Deployment.Views.Step.Create"
+msgid "Cancel"
+msgstr "Bỏ qua"
+
+#. <h1>@RenderTitleSegments(T["Edit Step"])</h1>
+#: OrchardCore.Deployment\Views\Step\Edit.cshtml:3
+msgctxt "OrchardCore.Deployment.Views.Step.Edit"
+msgid "Edit Step"
+msgstr "Sửa Bước"
+
+#. <button class="btn btn-primary" type="submit">@T["Save"]</button>
+#: OrchardCore.Deployment\Views\Step\Edit.cshtml:15
+msgctxt "OrchardCore.Deployment.Views.Step.Edit"
+msgid "Save"
+msgstr "Lưu"
+
+#. itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.Deployment\Views\Step\Edit.cshtml:22
+msgctxt "OrchardCore.Deployment.Views.Step.Edit"
+msgid "Delete"
+msgstr "Xóa"
+
+#. asp-route-id="@Model.DeploymentPlanId">@T["Cancel"]</a>
+#: OrchardCore.Deployment\Views\Step\Edit.cshtml:27
+msgctxt "OrchardCore.Deployment.Views.Step.Edit"
+msgid "Cancel"
+msgstr "Bỏ qua"
+

@@ -1,0 +1,182 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Language: fr\n"
+"X-Crowdin-File: /dev/Localization/OrchardCore.Facebook.pot\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Last-Translator: Antoine Griffard (agriffard)\n"
+"Language-Team: French\n"
+"Language: fr_FR\n"
+"PO-Revision-Date: 2019-09-04 19:38\n"
+
+#. builder.Add(T["Facebook"], "15", settings =>
+#: OrchardCore.Facebook\AdminMenu.cs:29
+msgctxt "OrchardCore.Facebook.AdminMenu"
+msgid "Facebook"
+msgstr "Facebook"
+
+#. .Add(T["Application"], "1", client => client
+#: OrchardCore.Facebook\AdminMenu.cs:31
+msgctxt "OrchardCore.Facebook.AdminMenu"
+msgid "Application"
+msgstr "Application"
+
+#. builder.Add(T["Facebook"], "1", settings =>
+#: OrchardCore.Facebook\AdminMenu.cs:60
+msgctxt "OrchardCore.Facebook.AdminMenuLogin"
+msgid "Facebook"
+msgstr "Facebook"
+
+#. .Add(T["Login"], "2", client => client
+#: OrchardCore.Facebook\AdminMenu.cs:62
+msgctxt "OrchardCore.Facebook.AdminMenuLogin"
+msgid "Login"
+msgstr "Connexion"
+
+#. results.Add(new ValidationResult(T["The AppId is required."], new[]
+#: OrchardCore.Facebook\Services\FacebookService.cs:60
+msgctxt "OrchardCore.Facebook.Services.FacebookService"
+msgid "The AppId is required."
+msgstr "L’AppId est requis."
+
+#. results.Add(new ValidationResult(T["The App Secret is required."], new[]
+#: OrchardCore.Facebook\Services\FacebookService.cs:68
+msgctxt "OrchardCore.Facebook.Services.FacebookService"
+msgid "The App Secret is required."
+msgstr "L'App Secret est requis."
+
+#. <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "Le locataire actuel sera rechargé lorsque les paramètres seront sauvegardés."
+
+#. <h3>@T["Login Settings"]</h3>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "Login Settings"
+msgstr "Paramètres de connexion"
+
+#. <label>@T["CallbackPath"]</label>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:9
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "CallbackPath"
+msgstr "Chemin de Callback"
+
+#. <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."
+msgstr "Le chemin de la requête dans le chemin de base de l'application où l'utilisateur-agent sera retourné. Le middleware va traiter cette requête lorsqu'elle arrive."
+
+#. <label asp-for="Liquid">@T["Body"]</label>
+#: OrchardCore.Facebook\Views\FacebookPluginPart.Edit.cshtml:12
+msgctxt "OrchardCore.Facebook.Views.FacebookPluginPart.Edit"
+msgid "Body"
+msgstr "Body"
+
+#. <span class="hint">@T["The template of the plugin, in Liquid format."]</span>
+#: OrchardCore.Facebook\Views\FacebookPluginPart.Edit.cshtml:14
+msgctxt "OrchardCore.Facebook.Views.FacebookPluginPart.Edit"
+msgid "The template of the plugin, in Liquid format."
+msgstr "Le modèle du plugin, au format Liquid."
+
+#. <label asp-for="Liquid">@T["Body"]</label>
+#: OrchardCore.Facebook\Views\FacebookPluginPartSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Facebook.Views.FacebookPluginPartSettings.Edit"
+msgid "Body"
+msgstr "Body"
+
+#. <span class="hint">@T["The default template of the plugin, in Liquid format."]</span>
+#: OrchardCore.Facebook\Views\FacebookPluginPartSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Facebook.Views.FacebookPluginPartSettings.Edit"
+msgid "The default template of the plugin, in Liquid format."
+msgstr "Le modèle par défaut du plugin, au format Liquid."
+
+#. <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "Le locataire actuel sera rechargé lorsque les paramètres seront sauvegardés."
+
+#. <h3>@T["Facebook Integration"]</h3>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Facebook Integration"
+msgstr "Intégration Facebook"
+
+#. <label>@T["Application Identifier"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:9
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Application Identifier"
+msgstr "Identifiant de l'application"
+
+#. <span class="hint">@T["The Application ID found on the Facebook developer portal parameters."]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "The Application ID found on the Facebook developer portal parameters."
+msgstr "L'ID d'application trouvé dans les paramètres du portail de développement Facebook."
+
+#. <label>@T["Secret Key"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:16
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Secret Key"
+msgstr "Clé secrète"
+
+#. <span class="hint">@T["The Application secret key found on the Facebook developer portal parameters."]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:19
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "The Application secret key found on the Facebook developer portal parameters."
+msgstr "La clé secrète de l'application trouvée dans les paramètres du portail de développement Facebook."
+
+#. <label>@T["Javascript SDK Version"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:24
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Javascript SDK Version"
+msgstr "Version SDK Javascript"
+
+#. <label>@T["Javascript Sdk js"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:27
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Javascript Sdk js"
+msgstr "JavaScript Sdk js"
+
+#. <span class="hint">@T["Determines which versions of the Graph API and any API dialogs or plugins are invoked. Default is v3.2"]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:32
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Determines which versions of the Graph API and any API dialogs or plugins are invoked. Default is v3.2"
+msgstr "Détermine quelles versions de l'API Graph et de l'API dialogs ou plugins sont invoquées. Par défaut, v3.2"
+
+#. <span class="hint">@T["Determines which sdk js file to load. Default is sdk.js but you can change it as needed. Eg. to render the chat plugin use sdk/xfbml.customerchat.js and <a target=\"_blank\" href=\"https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin#steps\">follow instructions</a>"]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:38
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Determines which sdk js file to load. Default is sdk.js but you can change it as needed. Eg. to render the chat plugin use sdk/xfbml.customerchat.js and <a target=\"_blank\" href=\"https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin#steps\">follow instructions</a>"
+msgstr "Détermine quel fichier sdk js charger. Par défaut, c'est sdk.js mais vous pouvez le modifier si nécessaire. Ex: pour afficher le plugin de chat utiliser sdk/xfbml.customerchat.js et <a target=\"_blank\" href=\"https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin#steps\">suivre les instructions</a>"
+
+#. <label class="form-check-label">@T["Init on every page"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:44
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Init on every page"
+msgstr "Init sur chaque page"
+
+#. <label>@T["Parameters for the FB.init() call"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:51
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Parameters for the FB.init() call"
+msgstr "Paramètres de l'appel FB.init()"
+
+#. <span class="hint">@T["AppId and Version are filled automatically. Check the <a target=\"_blank\" href=\"https://developers.facebook.com/docs/javascript/reference/FB.init/v3.2\">reference doc for the <code>FB.init</code></a> function for more info"]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:54
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "AppId and Version are filled automatically. Check the <a target=\"_blank\" href=\"https://developers.facebook.com/docs/javascript/reference/FB.init/v3.2\">reference doc for the <code>FB.init</code></a> function for more info"
+msgstr "AppId et Version sont remplis automatiquement. Vérifiez le document de référence <a target=\"_blank\" href=\"https://developers.facebook.com/docs/javascript/reference/FB.init/v3.2\">pour la fonction <code>FB.init</code></a> pour plus d'informations"
+
+#. <span class="icon"><i class="fa fa-facebook" aria-hidden="true"></i></span><span class="title">@T["Facebook"]</span>
+#: OrchardCore.Facebook\Views\NavigationItemText-facebook.Id.cshtml:1
+msgctxt "OrchardCore.Facebook.Views.NavigationItemText-facebook.Id"
+msgid "Facebook"
+msgstr "Facebook"
+
