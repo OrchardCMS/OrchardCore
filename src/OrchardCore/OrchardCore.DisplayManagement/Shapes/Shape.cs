@@ -184,7 +184,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             if (!base.TryGetMember(binder, out result) || (null == result))
             {
-                //Try to get Named shape
+                // Try to get a Named shape
                 result = Named(name.Replace("__", "-"));
             }
 
