@@ -115,7 +115,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             // Update cached reference
             _shellDescriptor = shellDescriptorRecord;
 
-            await _shellDescriptorManagerEventHandlers.InvokeAsync(e => e.Changed(shellDescriptorRecord, _shellSettings.Name), _logger);
+            await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptorRecord, _shellSettings) => handler.Changed(shellDescriptorRecord, _shellSettings.Name), shellDescriptorRecord, _shellSettings, _logger);
         }
 
         private class ConfiguredFeatures

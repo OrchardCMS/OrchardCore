@@ -45,7 +45,7 @@ namespace OrchardCore.ContentLocalization.Handlers
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.LocalizingAsync(context, part), _logger);
+                    await _partHandlers.InvokeAsync((handler, ctx, p) => handler.LocalizingAsync(ctx, p), context, part, _logger);
                 }
             }
         }
@@ -64,7 +64,7 @@ namespace OrchardCore.ContentLocalization.Handlers
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.LocalizedAsync(context, part), _logger);
+                    await _partHandlers.InvokeAsync((handler, ctx, p) => handler.LocalizedAsync(ctx, p), context, part, _logger);
                 }
             }
         }

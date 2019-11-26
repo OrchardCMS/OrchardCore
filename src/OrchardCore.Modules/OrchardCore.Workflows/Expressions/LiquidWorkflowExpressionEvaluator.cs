@@ -39,7 +39,7 @@ namespace OrchardCore.Workflows.Expressions
             var templateContext = CreateTemplateContext(workflowContext);
             var expressionContext = new WorkflowExecutionExpressionContext(templateContext, workflowContext);
 
-            await _workflowContextHandlers.InvokeAsync(x => x.EvaluatingExpressionAsync(expressionContext), _logger);
+            await _workflowContextHandlers.InvokeAsync((x, expressionContext) => x.EvaluatingExpressionAsync(expressionContext), expressionContext, _logger);
 
             var result = await _liquidTemplateManager.RenderAsync(expression.Expression, System.Text.Encodings.Web.JavaScriptEncoder.Default, templateContext);
             return string.IsNullOrWhiteSpace(result) ? default(T) : (T)Convert.ChangeType(result, typeof(T));

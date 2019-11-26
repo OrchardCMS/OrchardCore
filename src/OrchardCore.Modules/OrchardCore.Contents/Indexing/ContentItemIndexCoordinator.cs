@@ -58,7 +58,7 @@ namespace OrchardCore.Contents.Indexing
                     continue;
                 }
 
-                await _partIndexHandlers.InvokeAsync(partIndexHandler => partIndexHandler.BuildIndexAsync(part, contentTypePartDefinition, context, typePartIndexSettings), Logger);
+                await _partIndexHandlers.InvokeAsync((handler, arg1, arg2, arg3, arg4) => handler.BuildIndexAsync(arg1, arg2, arg3, arg4), part, contentTypePartDefinition, context, typePartIndexSettings, Logger);
 
                 foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                 {
@@ -69,7 +69,7 @@ namespace OrchardCore.Contents.Indexing
                         continue;
                     }
 
-                    await _fieldIndexHandlers.InvokeAsync(_fieldIndexHandler => _fieldIndexHandler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings), Logger);
+                    await _fieldIndexHandlers.InvokeAsync((handler, arg1, arg2, arg3, arg4, arg5) => handler.BuildIndexAsync(arg1, arg2, arg3, arg4, arg5), part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings, Logger);
                 }
             }
 

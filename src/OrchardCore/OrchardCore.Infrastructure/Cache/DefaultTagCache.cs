@@ -68,7 +68,7 @@ namespace OrchardCore.Environment.Cache
 
             if (_dictionary.TryRemove(tag, out set))
             {
-                return _tagRemovedEventHandlers.InvokeAsync(x => x.TagRemovedAsync(tag, set), _logger);
+                return _tagRemovedEventHandlers.InvokeAsync((handler, tag, set) => handler.TagRemovedAsync(tag, set), tag, set, _logger);
             }
 
             return Task.CompletedTask;

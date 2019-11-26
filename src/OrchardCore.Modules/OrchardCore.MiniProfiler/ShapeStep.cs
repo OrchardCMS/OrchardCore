@@ -23,7 +23,7 @@ namespace OrchardCore.MiniProfiler
 
         public Task DisplayingAsync(ShapeDisplayContext context)
         {
-            var timing = StackExchange.Profiling.MiniProfiler.Current.Step($"Shape: {context.ShapeMetadata.Type}");
+            var timing = StackExchange.Profiling.MiniProfiler.Current.Step($"Shape: {context.Shape.Metadata.Type}");
             _timings.Add(context, timing);
             return Task.CompletedTask;
         }

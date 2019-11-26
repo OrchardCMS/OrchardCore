@@ -91,7 +91,7 @@ namespace OrchardCore.Users.Controllers
 
             ViewData["ReturnUrl"] = returnUrl;
 
-            await _registrationEvents.InvokeAsync(i => i.RegistrationValidationAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+            await _registrationEvents.InvokeAsync((i, modelState) => i.RegistrationValidationAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
             if (ModelState.IsValid)
             {
@@ -110,7 +110,7 @@ namespace OrchardCore.Users.Controllers
                         await _signInManager.SignInAsync(user, isPersistent: false);
                     }
                     _logger.LogInformation(3, "User created a new account with password.");
-                    _registrationEvents.Invoke(i => i.RegisteredAsync(user), _logger);
+                    _registrationEvents.Invoke((e, usr) => e.RegisteredAsync(usr), user, _logger);
 
                     return RedirectToLocal(returnUrl);
                 }

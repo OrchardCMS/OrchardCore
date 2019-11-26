@@ -14,7 +14,9 @@ namespace OrchardCore.Contents
             builder.Describe("Content")
                 .OnDisplaying(displaying =>
                 {
-                    ContentItem contentItem = displaying.Shape.ContentItem;
+                    dynamic shape = displaying.Shape;
+                    ContentItem contentItem = shape.ContentItem;
+
                     if (contentItem != null)
                     {
                         // Alternates in order of specificity. 
@@ -42,7 +44,7 @@ namespace OrchardCore.Contents
             builder.Describe("ContentItem")
                 .OnProcessing(async context =>
                 {
-                    var content = context.Shape;
+                    dynamic content = context.Shape;
                     string alias = content.Alias;
                     string displayType = content.DisplayType;
                     string alternate = content.Alternate;
