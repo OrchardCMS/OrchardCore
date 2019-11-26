@@ -9,14 +9,13 @@ namespace OrchardCore.Tenants
     public class AdminMenu : INavigationProvider
     {
         private readonly ShellSettings _shellSettings;
+        private readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer, ShellSettings shellSettings)
         {
             _shellSettings = shellSettings;
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -32,9 +31,9 @@ namespace OrchardCore.Tenants
             }
 
             builder
-                .Add(T["Configuration"], "10", configuration => configuration
+                .Add(S["Configuration"], configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
-                    .Add(T["Tenants"], "5", deployment => deployment
+                    .Add(S["Tenants"], S["Tenants"], deployment => deployment
                         .Action("Index", "Admin", new { area = "OrchardCore.Tenants" })
                         .Permission(Permissions.ManageTenants)
                         .LocalNav()

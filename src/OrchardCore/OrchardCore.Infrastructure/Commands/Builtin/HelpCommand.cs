@@ -22,8 +22,8 @@ namespace OrchardCore.Environment.Commands.Builtin
         [CommandHelp("help commands", "\tDisplay help text for all available commands")]
         public async Task AllCommandsAsync()
         {
-            await Context.Output.WriteLineAsync(T["List of available commands:"]);
-            await Context.Output.WriteLineAsync(T["---------------------------"]);
+            await Context.Output.WriteLineAsync(S["List of available commands:"]);
+            await Context.Output.WriteLineAsync(S["---------------------------"]);
             await Context.Output.WriteLineAsync();
 
             var descriptors = GetCommandDescriptors().OrderBy(d => d.Names.First());
@@ -47,7 +47,7 @@ namespace OrchardCore.Environment.Commands.Builtin
 
             if (!descriptors.Any())
             {
-                await Context.Output.WriteLineAsync(T["Command {0} doesn't exist", command]);
+                await Context.Output.WriteLineAsync(S["Command {0} doesn't exist", command]);
             }
             else
             {
@@ -68,10 +68,10 @@ namespace OrchardCore.Environment.Commands.Builtin
         {
             if (string.IsNullOrEmpty(descriptor.HelpText))
             {
-                return T["{0}.{1}: no help text", descriptor.MethodInfo.DeclaringType?.FullName, descriptor.MethodInfo.Name];
+                return S["{0}.{1}: no help text", descriptor.MethodInfo.DeclaringType?.FullName, descriptor.MethodInfo.Name];
             }
 
-            return T[descriptor.HelpText];
+            return S[descriptor.HelpText];
         }
     }
 }

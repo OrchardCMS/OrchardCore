@@ -104,34 +104,39 @@ namespace OrchardCore.Apis.GraphQL.Client
             return this;
         }
 
-        internal string Build()
+        public string Build()
         {
             var sb = new StringBuilder(_contentType);
 
             if (_queries.Count > 0)
             {
-                sb.Append("(");
+                sb.Append('(');
 
                 for (var i = 0; i < _queries.Count; i++)
                 {
                     var query = _queries.ElementAt(i);
 
+                    if (i > 0)
+                    {
+                        sb.Append(' ');
+                    }
+
                     // Top-level argument
                     if (query.Value is string)
                     {
-                        sb.Append($"{query.Key}: {query.Value}");
+                        sb.Append(query.Key).Append(": ").Append(query.Value);
                     }
                     // Field-level argument
                     else
                     {
-                        sb.Append($"{query.Key}:{{");
+                        sb.Append(query.Key).Append(":{");
 
                         var fieldValuePair = (IDictionary<string, string>)query.Value;
                         for (var c = 0; c < fieldValuePair.Count; c++)
                         {
                             var item = fieldValuePair.ElementAt(c);
 
-                            sb.Append($"{item.Key}: {item.Value}");
+                            sb.Append(item.Key).Append(": ").Append(item.Value);
 
                             if (c < (fieldValuePair.Count - 1))
                             {
@@ -139,7 +144,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                             }
                             else
                             {
-                                sb.Append("}");
+                                sb.Append('}');
                             }
                         }
 
@@ -150,21 +155,38 @@ namespace OrchardCore.Apis.GraphQL.Client
                     }
                 }
 
-                sb.Append(")");
+                sb.Append(')');
             }
 
-            sb.Append(" { ");
+            var hasFields = _keys.Count > 0 || _nested.Count > 0;
 
-            sb.Append(" " + string.Join(" ", _keys) + " ");
+            sb.Append(hasFields ? " { " : " {");
 
-            foreach (var item in _nested)
+            sb.AppendJoin(' ', _keys);
+
+            if (_nested.Count > 0)
             {
-                sb.Append(item.Build());
+                if (_keys.Count > 0)
+                {
+                    sb.Append(' ');
+                }
+
+                var first = true;
+
+                foreach (var item in _nested)
+                {
+                    if (!first)
+                    {
+                        sb.Append(' ');
+                    }
+
+                    sb.Append(item.Build());
+                    first = false;
+                }
             }
 
-            sb.Append(" }");
-
-            return sb.ToString().Trim();
+            sb.Append(hasFields ? " }" : "}");
+            return sb.ToString().TrimStart();
         }
     }
 }

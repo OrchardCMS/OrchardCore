@@ -7,7 +7,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
-using OrchardCore.ReCaptcha.ActionFilters.Abuse;
+using OrchardCore.ReCaptcha.ActionFilters.Detection;
 using OrchardCore.ReCaptcha.Configuration;
 
 namespace OrchardCore.ReCaptcha.Services

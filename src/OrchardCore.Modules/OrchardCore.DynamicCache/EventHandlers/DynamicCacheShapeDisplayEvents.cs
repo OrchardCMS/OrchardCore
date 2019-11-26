@@ -20,11 +20,16 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
+        private readonly HtmlEncoder _htmlEncoder;
 
-        public DynamicCacheShapeDisplayEvents(IDynamicCacheService dynamicCacheService, ICacheScopeManager cacheScopeManager)
+        public DynamicCacheShapeDisplayEvents(
+            IDynamicCacheService dynamicCacheService,
+            ICacheScopeManager cacheScopeManager,
+            HtmlEncoder htmlEncoder)
         {
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
+            _htmlEncoder = htmlEncoder;
         }
 
         public async Task DisplayingAsync(ShapeDisplayContext context)
@@ -85,7 +90,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
                 {
                     using (var sw = new StringWriter(sb.Builder))
                     {
-                        context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
+                        context.ChildContent.WriteTo(sw, _htmlEncoder);
                         await _dynamicCacheService.SetCachedValueAsync(cacheContext, sw.ToString());
                         await sw.FlushAsync();
                     }

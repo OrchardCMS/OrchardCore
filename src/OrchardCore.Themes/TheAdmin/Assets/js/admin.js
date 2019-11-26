@@ -1,27 +1,6 @@
-function confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, handler) {
-    if (title === undefined) {
-        title = $('#confirmRemoveModalMetadata').data('title');
-    }
-
-    if (message === undefined) {
-        message = $('#confirmRemoveModalMetadata').data('message');
-    }
-
-    if (okText === undefined) {
-        okText = $('#confirmRemoveModalMetadata').data('ok');
-    }
-
-    if (cancelText === undefined) {
-        cancelText = $('#confirmRemoveModalMetadata').data('cancel');
-    }
-
-    if (okCssClass === undefined) {
-        okCssClass = $('#confirmRemoveModalMetadata').data('okClass');
-    }
-
-    if (cancelCssClass === undefined) {
-        cancelCssClass = $('#confirmRemoveModalMetadata').data('cancelClass');
-    }
+function confirmDialog({callback, ...options}) {
+    const defaultOptions = $('#confirmRemoveModalMetadata').data();
+    const { title, message, okText, cancelText, okClass, cancelClass } = $.extend({}, defaultOptions, options);
 
     $('<div id="confirmRemoveModal" class="modal" tabindex="-1" role="dialog">\
         <div class="modal-dialog modal-dialog-centered" role="document">\
@@ -36,8 +15,8 @@ function confirmDialog(title, message, okText, cancelText, okCssClass, cancelCss
                     <p>' + message +'</p>\
                 </div>\
                 <div class="modal-footer">\
-                    <button id="modalOkButton" type="button" class="btn ' + okCssClass + '">' + okText + '</button>\
-                    <button id="modalCancelButton" type="button" class="btn' + cancelCssClass + '" data-dismiss="modal">' + cancelText + '</button>\
+                    <button id="modalOkButton" type="button" class="btn ' + okClass + '">' + okText + '</button>\
+                    <button id="modalCancelButton" type="button" class="btn ' + cancelClass + '" data-dismiss="modal">' + cancelText + '</button>\
                 </div>\
             </div>\
         </div>\
@@ -52,12 +31,12 @@ function confirmDialog(title, message, okText, cancelText, okCssClass, cancelCss
     });
 
     $("#modalOkButton").click(function () {
-        handler(true);
+        callback(true);
         $("#confirmRemoveModal").modal("hide");
     });
 
     $("#modalCancelButton").click(function () {
-        handler(false);
+        callback(false);
         $("#confirmRemoveModal").modal("hide");
     });
 }
@@ -73,27 +52,21 @@ $(function () {
         if (_this.filter("[itemprop~='UnsafeUrl']").length == 1) {
             return false;
         }
-        // use a custom message if its set in data-message
-        var title = _this.data('title');
-        var message = _this.data('message');
-        var okText = _this.data('ok');
-        var cancelText = _this.data('cancel');
-        var okCssClass = _this.data('okClass');
-        var cancelCssClass = _this.data('cancelClass');
-        confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, function(resp) {
-            if (resp) {
-                var url = _this.attr('href');
-                if (url == undefined) {
-                    var form = _this.parents('form');
-                    // This line is reuired in case we used the FormValueRequiredAttribute
-                    form.append($("<input type=\"hidden\" name=\"" + _this.attr('name') + "\" value=\"" + _this.attr('value') + "\" />"));
-                    form.submit();
+        confirmDialog({..._this.data(),  
+             callback: function(resp) {
+                if (resp) {
+                    var url = _this.attr('href');
+                    if (url == undefined) {
+                        var form = _this.parents('form');
+                        // This line is reuired in case we used the FormValueRequiredAttribute
+                        form.append($("<input type=\"hidden\" name=\"" + _this.attr('name') + "\" value=\"" + _this.attr('value') + "\" />"));
+                        form.submit();
+                    }
+                    else {
+                        window.location = url;
+                    }
                 }
-                else {
-                    window.location = url;
-                }
-            }
-        });
+            }});
 
         return false;
     });
@@ -119,17 +92,13 @@ $(function () {
             $("body").append(form);
 
             var unsafeUrlPrompt = _this.data("unsafe-url");
-            var title = _this.data("title");
-            var message = unsafeUrlPrompt;
-            var okText = _this.data('ok');
-            var cancelText = _this.data('cancel');
-            var okCssClass = _this.data('okClass');
-            var cancelCssClass = _this.data('cancelClass');
 
             if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
-                confirmDialog(title, unsafeUrlPrompt, okText, cancelText, okCssClass, cancelCssClass, function(resp) {
-                    if (resp) {
-                        form.submit();
+                confirmDialog({..._this.data(),
+                    callback: function(resp) {
+                        if (resp) {
+                            form.submit();
+                        }
                     }
                 });
 
@@ -137,10 +106,11 @@ $(function () {
             }
 
             if (_this.filter("[itemprop~='RemoveUrl']").length == 1) {
-                message = _this.data('message');
-                confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, function(resp) {
-                    if (resp) {
-                        form.submit();
+                confirmDialog({..._this.data(), 
+                    callback: function(resp) {
+                        if (resp) {
+                            form.submit();
+                        }
                     }
                 });
 

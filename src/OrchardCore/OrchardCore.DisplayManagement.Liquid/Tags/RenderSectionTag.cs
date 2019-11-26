@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
+using Microsoft.AspNetCore.Html;
 using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
@@ -34,8 +35,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 throw new InvalidOperationException("Zone not found while invoking 'render_section': " + name);
             }
 
-            var htmlContent = await displayHelper.ShapeExecuteAsync(zone);
-            htmlContent.WriteTo(writer, HtmlEncoder.Default);
+            IHtmlContent htmlContent = await displayHelper.ShapeExecuteAsync(zone);
+            htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
             return Completion.Normal;
         }
     }

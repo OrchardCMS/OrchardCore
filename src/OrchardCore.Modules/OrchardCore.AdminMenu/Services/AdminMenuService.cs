@@ -1,52 +1,75 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.AdminMenu.Models;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.AdminMenu
 {
     public class AdminMenuService : IAdminMenuService
     {
-        private readonly IMemoryCache _memoryCache;
+        private const string AdminMenuCacheKey = nameof(AdminMenuService);
+
         private readonly ISignal _signal;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IClock _clock;
-        private const string AdminMenuCacheKey = "AdminMenuervice";
+        private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
+        private readonly IMemoryCache _memoryCache;
 
         public AdminMenuService(
             ISignal signal,
-            IServiceProvider serviceProvider,
-            IMemoryCache memoryCache,
-            IClock clock)
+            ISession session,
+            ISessionHelper sessionHelper,
+            IMemoryCache memoryCache)
         {
             _signal = signal;
-            _serviceProvider = serviceProvider;
-            _clock = clock;
+            _session = session;
+            _sessionHelper = sessionHelper;
             _memoryCache = memoryCache;
         }
 
         public IChangeToken ChangeToken => _signal.GetToken(AdminMenuCacheKey);
 
-        public async Task<List<Models.AdminMenu>> GetAsync()
+        /// <summary>
+        /// Returns the document from the database to be updated.
+        /// </summary>
+        public Task<AdminMenuList> LoadAdminMenuListAsync() => _sessionHelper.LoadForUpdateAsync<AdminMenuList>();
+
+        /// <summary>
+        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// </summary>
+        public async Task<AdminMenuList> GetAdminMenuListAsync()
         {
-            return (await GetAdminMenuList()).AdminMenu;
+            if (!_memoryCache.TryGetValue<AdminMenuList>(AdminMenuCacheKey, out var adminMenuList))
+            {
+                var changeToken = ChangeToken;
+
+                adminMenuList = await _sessionHelper.GetForCachingAsync<AdminMenuList>();
+
+                foreach (var adminMenu in adminMenuList.AdminMenu)
+                {
+                    adminMenu.IsReadonly = true;
+                }
+
+                _memoryCache.Set(AdminMenuCacheKey, adminMenuList, changeToken);
+            }
+
+            return adminMenuList;
         }
 
         public async Task SaveAsync(Models.AdminMenu tree)
         {
-            var adminMenuList = await GetAdminMenuList();
-            var session = GetSession();
+            if (tree.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
 
+            var adminMenuList = await LoadAdminMenuListAsync();
 
-            var preexisting = adminMenuList.AdminMenu.Where(x => x.Id == tree.Id).FirstOrDefault();
+            var preexisting = adminMenuList.AdminMenu.FirstOrDefault(x => String.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
 
             // it's new? add it
             if (preexisting == null)
@@ -59,72 +82,31 @@ namespace OrchardCore.AdminMenu
                 adminMenuList.AdminMenu[index] = tree;
             }
 
-            session.Save(adminMenuList);
-
-            _memoryCache.Set(AdminMenuCacheKey, adminMenuList);
-            _signal.SignalToken(AdminMenuCacheKey);
+            _session.Save(adminMenuList);
+            _signal.DeferredSignalToken(AdminMenuCacheKey);
         }
 
-        public async Task<Models.AdminMenu> GetByIdAsync(string id)
+        public Models.AdminMenu GetAdminMenuById(AdminMenuList adminMenuList, string id)
         {
-            return (await GetAdminMenuList())
-                .AdminMenu
-                .Where(x => String.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
+            return adminMenuList.AdminMenu
+                .FirstOrDefault(x => String.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
         }
-
 
         public async Task<int> DeleteAsync(Models.AdminMenu tree)
         {
-            var adminMenuList = await GetAdminMenuList();
-            var session = GetSession();
-
-            var count = adminMenuList.AdminMenu.RemoveAll(x => String.Equals(x.Id, tree.Id));
-
-            session.Save(adminMenuList);
-
-            _memoryCache.Set(AdminMenuCacheKey, adminMenuList);
-            _signal.SignalToken(AdminMenuCacheKey);
-
-            return count;
-        }
-
-        private async Task<AdminMenuList> GetAdminMenuList()
-        {
-            AdminMenuList treeList;
-
-            if (!_memoryCache.TryGetValue(AdminMenuCacheKey, out treeList))
+            if (tree.IsReadonly)
             {
-                var session = GetSession();
-
-                treeList = await session.Query<AdminMenuList>().FirstOrDefaultAsync();
-
-                if (treeList == null)
-                {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(AdminMenuCacheKey, out treeList))
-                        {
-                            treeList = new AdminMenuList();
-                            session.Save(treeList);
-                            _memoryCache.Set(AdminMenuCacheKey, treeList);
-                            _signal.SignalToken(AdminMenuCacheKey);
-                        }
-                    }
-                }
-                else
-                {
-                    _memoryCache.Set(AdminMenuCacheKey, treeList);
-                    _signal.SignalToken(AdminMenuCacheKey);
-                }
+                throw new ArgumentException("The object is read-only");
             }
 
-            return treeList;
-        }
+            var adminMenuList = await LoadAdminMenuListAsync();
 
-        private ISession GetSession()
-        {
-            return ShellScope.Services.GetService<ISession>();
+            var count = adminMenuList.AdminMenu.RemoveAll(x => String.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
+
+            _session.Save(adminMenuList);
+            _signal.DeferredSignalToken(AdminMenuCacheKey);
+
+            return count;
         }
     }
 }

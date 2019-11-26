@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -83,14 +84,14 @@ namespace OrchardCore.DisplayManagement.Razor
                     typeof(IViewEngine).FullName));
             }
 
-            var viewEngine = viewEngines[0] as IRazorViewEngine;
+            var viewEngine = viewEngines[0];
 
             var result = await RenderViewToStringAsync(viewName, displayContext.Value, viewEngine);
 
             return new HtmlString(result);
         }
 
-        public async Task<string> RenderViewToStringAsync(string viewName, object model, IRazorViewEngine viewEngine)
+        public async Task<string> RenderViewToStringAsync(string viewName, object model, IViewEngine viewEngine)
         {
             var actionContext = await GetActionContextAsync();
             var view = FindView(actionContext, viewName, viewEngine);
@@ -122,7 +123,7 @@ namespace OrchardCore.DisplayManagement.Razor
             }
         }
 
-        private IView FindView(ActionContext actionContext, string viewName, IRazorViewEngine viewEngine)
+        private IView FindView(ActionContext actionContext, string viewName, IViewEngine viewEngine)
         {
             var getViewResult = viewEngine.GetView(executingFilePath: null, viewPath: viewName, isMainPage: true);
             if (getViewResult.Success)
@@ -146,17 +147,23 @@ namespace OrchardCore.DisplayManagement.Razor
 
         private async Task<ActionContext> GetActionContextAsync()
         {
+            var httpContext = _httpContextAccessor.HttpContext;
+            var actionContext = httpContext.RequestServices.GetService<IActionContextAccessor>()?.ActionContext;
+
+            if (actionContext != null)
+            {
+                return actionContext;
+            }
+
             var routeData = new RouteData();
             routeData.Routers.Add(new RouteCollection());
 
-            var httpContext = _httpContextAccessor.HttpContext;
-
-            var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-            var filters = httpContext.RequestServices.GetServices<IAsyncViewResultFilter>();
+            actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
 
             foreach (var filter in filters)
             {
-                await filter.OnResultExecutionAsync(actionContext);
+                await filter.OnActionExecutionAsync(actionContext);
             }
 
             return actionContext;

@@ -1,6 +1,4 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.ContentFields.Settings;
 
 @{
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
@@ -11,7 +9,7 @@
 <script name="fontpickerScript" asp-src="~/OrchardCore.ContentFields/Scripts/fontawesome-iconpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/fontawesome-iconpicker.js" at="Foot" depends-on="jquery"></script>
 <script name="iconpickerCustomScript" asp-src="~/OrchardCore.ContentFields/Scripts/iconpicker-custom.js" at="Foot"></script>
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
     <input type="hidden" asp-for="Text" id="@Html.IdFor(m=>m.Text)" />
     <div class="btn-group input-group">
@@ -30,7 +28,7 @@
         <span class="hint">@settings.Hint</span>
     }
 
-</fieldset>
+</div>
 
 
 <script at="Foot">

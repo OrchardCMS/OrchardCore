@@ -7,15 +7,19 @@ using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Navigation;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Lucene.Controllers
 {
@@ -28,6 +32,8 @@ namespace OrchardCore.Lucene.Controllers
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly ISiteService _siteService;
+        private readonly dynamic New;
 
         public AdminController(
             LuceneIndexManager luceneIndexManager,
@@ -37,6 +43,8 @@ namespace OrchardCore.Lucene.Controllers
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
             INotifier notifier,
+            ISiteService siteService,
+            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> s,
             IHtmlLocalizer<AdminController> h,
             ILogger<AdminController> logger)
@@ -48,6 +56,9 @@ namespace OrchardCore.Lucene.Controllers
             _queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
             _notifier = notifier;
+            _siteService = siteService;
+
+            New = shapeFactory;
             S = s;
             H = h;
             Logger = logger;
@@ -57,13 +68,28 @@ namespace OrchardCore.Lucene.Controllers
         public IStringLocalizer S { get; }
         public IHtmlLocalizer H { get; }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {
             var viewModel = new AdminIndexViewModel();
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             viewModel.Indexes = _luceneIndexManager.List().Select(s => new IndexViewModel { Name = s }).ToArray();
+            var count = viewModel.Indexes.Count();
+            var results = viewModel.Indexes
+                .Skip(pager.GetStartIndex())
+                .Take(pager.PageSize).ToList();
 
-            return View(viewModel);
+            // Maintain previous route data when generating page links
+            var routeData = new RouteData();
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            var model = new AdminIndexViewModel
+            {
+                Indexes = results,
+                Pager = pagerShape
+            };
+
+            return View(model);
         }
 
         public async Task<ActionResult> Create()
@@ -115,7 +141,7 @@ namespace OrchardCore.Lucene.Controllers
                 return View(model);
             }
 
-            _notifier.Success(H["Index <em>{0}</em> created successfully", model.IndexName]);
+            _notifier.Success(H["Index <em>{0}</em> created successfully.", model.IndexName]);
 
             return RedirectToAction("Index");
         }
@@ -136,7 +162,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneIndexingService.ResetIndex(id);
             await _luceneIndexingService.ProcessContentItemsAsync();
 
-            _notifier.Success(H["Index <em>{0}</em> resetted successfully", id]);
+            _notifier.Success(H["Index <em>{0}</em> reset successfully.", id]);
 
             return RedirectToAction("Index");
         }
@@ -157,7 +183,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneIndexingService.RebuildIndex(id);
             await _luceneIndexingService.ProcessContentItemsAsync();
 
-            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully", id]);
+            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", id]);
 
             return RedirectToAction("Index");
         }
@@ -179,11 +205,11 @@ namespace OrchardCore.Lucene.Controllers
             {
                 _luceneIndexManager.DeleteIndex(model.IndexName);
 
-                _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
+                _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
             }
             catch(Exception e)
             {
-                _notifier.Error(H["An error occurred while deleting the index"]);
+                _notifier.Error(H["An error occurred while deleting the index."]);
                 Logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
             }
 
@@ -256,7 +282,8 @@ namespace OrchardCore.Lucene.Controllers
                 {
                     var parameterizedQuery = JObject.Parse(tokenizedContent);
                     var docs = await _queryService.SearchAsync(context, parameterizedQuery);
-                    model.Documents = docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                    model.Documents = docs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                    model.Count = docs.Count;
                 }
                 catch(Exception e)
                 {

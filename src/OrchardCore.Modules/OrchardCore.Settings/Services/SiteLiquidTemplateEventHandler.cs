@@ -17,7 +17,7 @@ namespace OrchardCore.Settings.Services
         {
             var site = await _siteService.GetSiteSettingsAsync();
             context.MemberAccessStrategy.Register(site.GetType());
-            context.LocalScope.SetValue("Site", site);
+            context.SetValue("Site", site);
         }
     }
 }

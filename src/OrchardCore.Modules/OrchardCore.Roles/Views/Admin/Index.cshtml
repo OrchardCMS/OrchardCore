@@ -37,6 +37,7 @@
                     </div>
                     @*<input asp-for="RoleEntries[i].Selected" type="checkbox">*@
                     @Model.RoleEntries[i].Name
+                    <p class="text-muted">@Model.RoleEntries[i].Description</p>
                 </div>
             </li>
         }

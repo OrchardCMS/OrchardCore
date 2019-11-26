@@ -56,7 +56,7 @@ namespace OrchardCore.GitHub.Drivers
                 }
                 if (settings.CallbackPath.HasValue)
                 {
-                    model.CallbackUrl = settings.CallbackPath;
+                    model.CallbackUrl = settings.CallbackPath.Value;
                 }
             }).Location("Content:5").OnGroup(GitHubConstants.Features.GitHubAuthentication);
         }

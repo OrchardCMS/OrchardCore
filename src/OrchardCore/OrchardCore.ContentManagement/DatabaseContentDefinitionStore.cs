@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Records;
+using OrchardCore.Data;
 using YesSql;
 
 namespace OrchardCore.ContentManagement
@@ -7,26 +8,25 @@ namespace OrchardCore.ContentManagement
     public class DatabaseContentDefinitionStore : IContentDefinitionStore
     {
         private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
 
-        public DatabaseContentDefinitionStore(ISession session)
+        public DatabaseContentDefinitionStore(ISession session, ISessionHelper sessionHelper)
         {
             _session = session;
+            _sessionHelper = sessionHelper;
         }
 
-        public async Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
-        {
-            var contentDefinitionRecord = await _session
-                .Query<ContentDefinitionRecord>()
-                .FirstOrDefaultAsync();
+        /// <summary>
+        /// Loads a single document (or create a new one) for updating and that should not be cached.
+        /// </summary>
+        public Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
+            => _sessionHelper.LoadForUpdateAsync<ContentDefinitionRecord>();
 
-            if (contentDefinitionRecord == null)
-            {
-                contentDefinitionRecord = new ContentDefinitionRecord();
-                await SaveContentDefinitionAsync(contentDefinitionRecord);
-            }
-
-            return contentDefinitionRecord;
-        }
+        /// <summary>
+        /// Gets a single document (or create a new one) for caching and that should not be updated.
+        /// </summary>
+        public Task<ContentDefinitionRecord> GetContentDefinitionAsync()
+            => _sessionHelper.GetForCachingAsync<ContentDefinitionRecord>();
 
         public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
         {

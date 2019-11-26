@@ -74,6 +74,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             Factory.RegisterTag<HelperTag>("helper");
             Factory.RegisterTag<NamedHelperTag>("shape");
+            Factory.RegisterTag<NamedHelperTag>("contentitem");
             Factory.RegisterTag<NamedHelperTag>("link");
             Factory.RegisterTag<NamedHelperTag>("meta");
             Factory.RegisterTag<NamedHelperTag>("resources");
@@ -111,7 +112,9 @@ namespace OrchardCore.DisplayManagement.Liquid
             await context.ContextualizeAsync(page, (object)page.Model);
 
             var options = services.GetRequiredService<IOptions<LiquidOptions>>().Value;
-            await template.RenderAsync(options, services, page.Output, HtmlEncoder.Default, context);
+            var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
+
+            await template.RenderAsync(options, services, page.Output, htmlEncoder, context);
         }
 
         public static Task<LiquidViewTemplate> ParseAsync(string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
@@ -157,14 +160,13 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return result;
                 }
 
-                foreach (var item in shape.Items)
+                if (n == "Items")
                 {
-                    // Resolve Model.Content.MyNamedPart
-                    if (item is IShape itemShape && itemShape.Metadata.Name == n)
-                    {
-                        return item;
-                    }
+                    return shape.Items;
                 }
+                // Resolve Model.Content.MyNamedPart
+                // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
+                return shape.Named(n.Replace("__", "-"));
             }
 
             return null;
@@ -173,9 +175,19 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class LiquidViewTemplateExtensions
     {
-        public static Task RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
-            IServiceProvider services, TextWriter writer, TextEncoder encoder, TemplateContext templateContext)
+        public static ValueTask RenderAsync(
+            this LiquidViewTemplate template,
+            LiquidOptions options,
+            IServiceProvider services,
+            TextWriter writer,
+            TextEncoder encoder,
+            TemplateContext templateContext)
         {
+            async ValueTask Awaited(Task task)
+            {
+                await task;
+            }
+
             templateContext.AddAsyncFilters(options, services);
 
             // Check if a 'ViewContext' has been cached for rendering.
@@ -186,7 +198,12 @@ namespace OrchardCore.DisplayManagement.Liquid
                 viewContext.Writer = writer;
 
                 // Use the view engine to render the liquid page.
-                return viewContext.View.RenderAsync(viewContext);
+                var task = viewContext.View.RenderAsync(viewContext);
+                if (task.IsCompletedSuccessfully)
+                {
+                    return new ValueTask();
+                }
+                return Awaited(task);
             }
 
             // Otherwise, we don't need the view engine for rendering.
@@ -227,12 +244,12 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         internal static void AddAsyncFilters(this TemplateContext templateContext, LiquidOptions options, IServiceProvider services)
         {
+            templateContext.Filters.EnsureCapacity(options.FilterRegistrations.Count);
             foreach (var registration in options.FilterRegistrations)
             {
                 templateContext.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
                 {
-                    var type = registration.Value;
-                    var filter = services.GetRequiredService(registration.Value) as ILiquidFilter;
+                    var filter = (ILiquidFilter)services.GetRequiredService(registration.Value);
                     return filter.ProcessAsync(input, arguments, ctx);
                 });
             }
@@ -246,11 +263,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 viewContext.View is RazorView razorView &&
                 razorView.RazorPage is LiquidPage liquidPage)
             {
-                liquidPage.RenderAsync = output =>
-                {
-                    // Render the template through the default liquid page.
-                    return template.RenderAsync(output, encoder, templateContext);
-                };
+                liquidPage.RenderAsync = output => template.RenderAsync(output, encoder, templateContext);
 
                 return viewContext;
             }
@@ -259,19 +272,21 @@ namespace OrchardCore.DisplayManagement.Liquid
             return null;
         }
 
-        public static async Task ContextualizeAsync(this TemplateContext context, IServiceProvider services)
+        public static Task ContextualizeAsync(this TemplateContext context, IServiceProvider services)
         {
             if (!context.AmbientValues.ContainsKey("Services"))
             {
                 var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
-                await context.ContextualizeAsync(new DisplayContext()
+                return context.ContextualizeAsync(new DisplayContext
                 {
                     ServiceProvider = services,
                     DisplayAsync = displayHelper,
                     Value = null
                 });
             }
+
+            return Task.CompletedTask;
         }
 
         public static Task ContextualizeAsync(this TemplateContext context, RazorPage page, object model)
@@ -279,7 +294,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             var services = page.Context.RequestServices;
             var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
-            return context.ContextualizeAsync(new DisplayContext()
+            return context.ContextualizeAsync(new DisplayContext
             {
                 ServiceProvider = page.Context.RequestServices,
                 DisplayAsync = displayHelper,
@@ -290,8 +305,9 @@ namespace OrchardCore.DisplayManagement.Liquid
         public static async Task ContextualizeAsync(this TemplateContext context, DisplayContext displayContext)
         {
             var services = displayContext.ServiceProvider;
-            context.AmbientValues.Add("Services", services);
+            context.AmbientValues.EnsureCapacity(9);
 
+            context.AmbientValues.Add("Services", services);
             context.AmbientValues.Add("DisplayHelper", displayContext.DisplayAsync);
 
             var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
@@ -345,7 +361,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             if (model != null)
             {
                 context.MemberAccessStrategy.Register(model.GetType());
-                context.LocalScope.SetValue("Model", model);
+                context.SetValue("Model", model);
             }
 
             context.CultureInfo = CultureInfo.CurrentUICulture;
@@ -366,11 +382,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             var httpContext = services.GetRequiredService<IHttpContextAccessor>().HttpContext;
 
             actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-            var filters = httpContext.RequestServices.GetServices<IAsyncViewResultFilter>();
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
 
             foreach (var filter in filters)
             {
-                await filter.OnResultExecutionAsync(actionContext);
+                await filter.OnActionExecutionAsync(actionContext);
             }
 
             return actionContext;
