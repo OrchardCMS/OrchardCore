@@ -22,19 +22,14 @@ namespace OrchardCore.Widgets.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IShapeFactory shapeFactory,
-            ILogger<AdminController> logger,
-            IHtmlLocalizer<AdminController> localizer
+            ILogger<AdminController> logger
             )
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
             _shapeFactory = shapeFactory;
-            T = localizer;
             Logger = logger;
         }
-
-        public IHtmlLocalizer T { get; }
-        public dynamic New { get; set; }
 
         public ILogger Logger { get; set; }
 

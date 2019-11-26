@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.Localization;
@@ -15,11 +16,13 @@ namespace OrchardCore.Markdown.Drivers
     public class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<MarkdownField>
     {
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
+        private readonly HtmlEncoder _htmlEncoder;
 
-        public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<MarkdownFieldDisplayDriver> localizer)
+        public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<MarkdownFieldDisplayDriver> localizer, HtmlEncoder htmlEncoder)
         {
             _liquidTemplatemanager = liquidTemplatemanager;
             T = localizer;
+            _htmlEncoder = htmlEncoder;
         }
 
         public IStringLocalizer T { get; }
@@ -38,7 +41,7 @@ namespace OrchardCore.Markdown.Drivers
                 model.PartFieldDefinition = context.PartFieldDefinition;
                 templateContext.SetValue("Model", model);
 
-                model.Markdown = await _liquidTemplatemanager.RenderAsync(field.Markdown, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
+                model.Markdown = await _liquidTemplatemanager.RenderAsync(field.Markdown, _htmlEncoder, templateContext);
                 model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
             })
             .Location("Content")

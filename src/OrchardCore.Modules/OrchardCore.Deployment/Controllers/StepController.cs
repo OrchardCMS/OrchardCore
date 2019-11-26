@@ -25,6 +25,8 @@ namespace OrchardCore.Deployment.Controllers
         private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public StepController(
             IAuthorizationService authorizationService,
@@ -33,7 +35,6 @@ namespace OrchardCore.Deployment.Controllers
             ISession session,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            IStringLocalizer<StepController> stringLocalizer,
             IHtmlLocalizer<StepController> htmlLocalizer,
             INotifier notifier)
         {
@@ -44,13 +45,8 @@ namespace OrchardCore.Deployment.Controllers
             _siteService = siteService;
             New = shapeFactory;
             _notifier = notifier;
-            T = stringLocalizer;
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; }
-        public IStringLocalizer T { get; }
-        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Create(int id, string type)
         {

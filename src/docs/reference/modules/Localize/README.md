@@ -97,16 +97,16 @@ namespace MyNamespace
 {
     public class MyService : IMyService
     {
-        public IStringLocalizer T { get; set; }
+        private readonly IStringLocalizer S;
 
         public MyService(IStringLocalizer<MyService> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
         public void DoSomething()
         {
-            Console.WriteLine(T["Hello"]);
+            Console.WriteLine(S["Hello"]);
         }
     }
 }

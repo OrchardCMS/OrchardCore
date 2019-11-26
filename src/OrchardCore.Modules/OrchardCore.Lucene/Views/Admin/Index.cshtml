@@ -1,21 +1,31 @@
 @model AdminIndexViewModel
+@{
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.Indexes.Count() - 1;
+}
 
-<h1>@RenderTitleSegments(T["Indices"])</h1>
-
-<nav class="admin-toolbar">
-    <ul class="navbar-nav mr-auto"></ul>
-    <ul class="navbar-nav">
-        <li class="nav-item">
-            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Index"]</a>
-        </li>
-    </ul>
-</nav>
 
 <form asp-action="Index">
     @* the form is necessary to generate and antiforgery token for the delete action *@
-    @if (Model.Indexes.Any())
-    {
-        <ul class="list-group">
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6"><h1>@RenderTitleSegments(T["Indices"])</h1></div>
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Index"]</a>
+            </div>
+        </div>
+    </div>
+    <ul class="list-group">
+        @if (Model.Indexes.Any())
+        {
+            <li class="list-group-item bg-light">
+                <div class="row">
+                    <div class="form-group col-xl-4 mb-xl-n1">
+                        <label id="items" for="select-all">@T.Plural(Model.Indexes.Count(), "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                        <label id="selected-items" class="text-muted" for="select-all"></label>
+                    </div>
+                </div>
+            </li>
             @foreach (var entry in Model.Indexes)
             {
                 <li class="list-group-item">
@@ -30,13 +40,16 @@
                     </div>
                 </li>
             }
-        </ul>
-    }
-    else
-    {
-        <div class="alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> There are no indices for the moment."]
-        </div>
-    }
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info" role="alert">
+                    @T["<strong>Nothing here!</strong> There are no indices for the moment."]
+                </div>
+            </li>
+        }
+    </ul>
 </form>
 
+@await DisplayAsync(Model.Pager)

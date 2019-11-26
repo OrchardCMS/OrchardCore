@@ -71,9 +71,9 @@
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
 
     <div class="row">
-        <fieldset class="col-xl-6">
+        <div class="col-xl-6">
             <label>@T["Define which cultures are supported by the site."]</label>
             <options-table :data="supportedCultures" :default-value="defaultCulture" :selectedCulture="selectedCulture" :list="allCultures" ></options-table>
-        </fieldset>
+        </div>
     </div>
 </div>

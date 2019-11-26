@@ -13,19 +13,19 @@ namespace OrchardCore.Localization.GraphQL
 {
     public class SiteCulturesQuery : ISchemaBuilder
     {
+        private readonly IStringLocalizer S;
+
         public SiteCulturesQuery(IStringLocalizer<SiteCulturesQuery> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var field = new FieldType
             {
                 Name = "SiteCultures",
-                Description = T["The active cultures configured for the site."],
+                Description = S["The active cultures configured for the site."],
                 Type = typeof(ListGraphType<CultureQueryObjectType>),
                 Resolver = new AsyncFieldResolver<IEnumerable<SiteCulture>>(ResolveAsync)
             };

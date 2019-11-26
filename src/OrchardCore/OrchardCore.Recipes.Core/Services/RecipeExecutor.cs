@@ -30,18 +30,15 @@ namespace OrchardCore.Recipes.Services
         public RecipeExecutor(IEnumerable<IRecipeEventHandler> recipeEventHandlers,
                               ShellSettings shellSettings,
                               IShellHost shellHost,
-                              ILogger<RecipeExecutor> logger,
-                              IStringLocalizer<RecipeExecutor> localizer)
+                              ILogger<RecipeExecutor> logger)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _recipeEventHandlers = recipeEventHandlers;
             Logger = logger;
-            T = localizer;
         }
 
-        public ILogger Logger { get; }
-        public IStringLocalizer T { get; }
+        public ILogger Logger { get; set; }
 
         public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment, CancellationToken cancellationToken)
         {

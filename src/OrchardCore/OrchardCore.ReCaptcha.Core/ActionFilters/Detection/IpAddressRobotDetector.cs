@@ -8,7 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.ReCaptcha.Configuration;
 
-namespace OrchardCore.ReCaptcha.ActionFilters.Abuse
+namespace OrchardCore.ReCaptcha.ActionFilters.Detection
 {
     public class IpAddressRobotDetector : IDetectRobots
     {

@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.AdminMenu.Models;
 using OrchardCore.AdminMenu.Services;
-using OrchardCore.AdminMenu.AdminNodes;
 using OrchardCore.Navigation;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AdminMenu.AdminNodes
 {
@@ -23,7 +20,6 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
         public string Name => typeof(LinkAdminNode).Name;
 
-
         public Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
             var node = menuItem as LinkAdminNode;
@@ -33,7 +29,8 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 return Task.CompletedTask;
             }
 
-            return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder => {
+            return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder =>
+            {
 
                 // Add the actual link
                 itemBuilder.Url(node.LinkUrl);
@@ -69,8 +66,8 @@ namespace OrchardCore.AdminMenu.AdminNodes
             {
                 return;
             }
-            
-            foreach (var c in iconClass.Split(' ' ))
+
+            foreach (var c in iconClass.Split(' '))
             {
                 itemBuilder.AddClass("icon-class-" + c);
             }
