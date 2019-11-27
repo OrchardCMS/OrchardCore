@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,14 @@ namespace OrchardCore.Facebook.Widgets.Services
 {
     public class LiquidShapes : IShapeTableProvider
     {
-        private static async Task BuildViewModelAsync(ShapeDisplayContext shapeDisplayContext)
+        private readonly HtmlEncoder _htmlEncoder;
+
+        public LiquidShapes(HtmlEncoder htmlEncoder)
+        {
+            _htmlEncoder = htmlEncoder;
+        }
+
+        private async Task BuildViewModelAsync(ShapeDisplayContext shapeDisplayContext)
         {
             var model = shapeDisplayContext.Shape as FacebookPluginPartViewModel;
             var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
@@ -22,7 +30,7 @@ namespace OrchardCore.Facebook.Widgets.Services
             templateContext.MemberAccessStrategy.Register<FacebookPluginPartViewModel>();
             await templateContext.ContextualizeAsync(shapeDisplayContext.DisplayContext);
 
-            model.Html = await liquidTemplateManager.RenderAsync(part.Liquid, templateContext);
+            model.Html = await liquidTemplateManager.RenderAsync(part.Liquid, _htmlEncoder, templateContext);
 
             model.Liquid = part.Liquid;
             model.FacebookPluginPart = part;

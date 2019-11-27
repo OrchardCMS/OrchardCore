@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Settings;
 
@@ -16,14 +15,11 @@ namespace OrchardCore.Facebook.Login.Services
     {
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<FacebookLoginService> T;
-        private readonly ShellSettings _shellSettings;
 
         public FacebookLoginService(
             ISiteService siteService,
-            ShellSettings shellSettings,
             IStringLocalizer<FacebookLoginService> stringLocalizer)
         {
-            _shellSettings = shellSettings;
             _siteService = siteService;
             T = stringLocalizer;
         }
@@ -40,7 +36,7 @@ namespace OrchardCore.Facebook.Login.Services
             {
                 throw new ArgumentNullException(nameof(settings));
             }
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(FacebookLoginSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }

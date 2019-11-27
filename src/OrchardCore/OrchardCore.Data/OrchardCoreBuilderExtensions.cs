@@ -117,6 +117,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     return session;
                 });
 
+                services.AddScoped<ISessionHelper, SessionHelper>();
+
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });
 

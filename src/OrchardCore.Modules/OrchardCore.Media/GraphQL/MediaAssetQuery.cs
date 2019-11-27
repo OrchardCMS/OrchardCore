@@ -13,30 +13,30 @@ namespace OrchardCore.Media.GraphQL
 {
     public class MediaAssetQuery : ISchemaBuilder
     {
+        private readonly IStringLocalizer S;
+
         public MediaAssetQuery(IStringLocalizer<MediaAssetQuery> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var field = new FieldType
             {
                 Name = "MediaAssets",
-                Description = T["Media assets are items that are part of your media library."],
+                Description = S["Media assets are items that are part of your media library."],
                 Type = typeof(ListGraphType<MediaAssetObjectType>),
                 Arguments = new QueryArguments(
                     new QueryArgument<StringGraphType>
                     {
                         Name = "path",
-                        Description = T["Media asset path."]
+                        Description = S["Media asset path."]
                     },
                     new QueryArgument<BooleanGraphType>
                     {
                         Name = "includeSubDirectories",
-                        Description = T["Whether to get the assets from just the top directory or from all sub-directories as well."]
+                        Description = S["Whether to get the assets from just the top directory or from all sub-directories as well."]
                     }
                 ),
                 Resolver = new AsyncFieldResolver<IEnumerable<IFileStoreEntry>>(ResolveAsync)
@@ -56,7 +56,15 @@ namespace OrchardCore.Media.GraphQL
             var includeSubDirectories = resolveContext.GetArgument("includeSubDirectories", false);
 
             var allFiles = await mediaFileStore.GetDirectoryContentAsync(path, includeSubDirectories);
-            return allFiles.Where(x => !x.IsDirectory);
+
+            if (includeSubDirectories)
+            {
+                return allFiles;
+            }
+            else
+            {
+                return allFiles.Where(x => !x.IsDirectory);
+            }
         }
     }
 }

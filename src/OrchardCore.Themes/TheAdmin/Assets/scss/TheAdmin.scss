@@ -3,7 +3,7 @@
 // Because !default means that a variable is not assigned if it already contains a value,
 // we alter the variable before importing boostrap as _variables.scss will use !default
 
-@import "../../../../../node_modules/bootstrap/scss/bootstrap";
+@import "../../node_modules/bootstrap/scss/bootstrap";
 @import "modules/_sizes.scss";
 @import "modules/_cursors.scss";
 @import "modules/_word-wrap.scss";
@@ -1111,6 +1111,9 @@ ul.pager li a {
     min-height: $font-size-base;
 }
 
+.with-checkbox .list-group-item {
+    padding: 0.75rem 0.5rem;
+}
 .properties {
     @extend .w-100;
 }

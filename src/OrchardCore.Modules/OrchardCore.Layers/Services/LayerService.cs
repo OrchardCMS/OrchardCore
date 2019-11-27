@@ -4,8 +4,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Models;
@@ -14,56 +16,55 @@ using YesSql;
 namespace OrchardCore.Layers.Services
 {
     public class LayerService : ILayerService
-	{
-		private readonly IMemoryCache _memoryCache;
-		private readonly ISession _session;
-		private readonly ISignal _signal;
+    {
+        private const string LayersCacheKey = "LayersDocument";
 
-		private const string LayersCacheKey = "LayersDocument";
+        private readonly ISignal _signal;
+        private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
+        private readonly IMemoryCache _memoryCache;
 
-		public LayerService(
-			ISignal signal,
-			ISession session,
-			IMemoryCache memoryCache)
-		{
-			_signal = signal;
-			_session = session;
-			_memoryCache = memoryCache;
-		}
+        public LayerService(
+            ISignal signal,
+            ISession session,
+            ISessionHelper sessionHelper,
+            IMemoryCache memoryCache)
+        {
+            _signal = signal;
+            _session = session;
+            _sessionHelper = sessionHelper;
+            _memoryCache = memoryCache;
+        }
 
-		public async Task<LayersDocument> GetLayersAsync()
-		{
-			LayersDocument layers;
+        public IChangeToken ChangeToken => _signal.GetToken(LayersCacheKey);
 
-			if (!_memoryCache.TryGetValue(LayersCacheKey, out layers))
-			{
-				layers = await _session.Query<LayersDocument>().FirstOrDefaultAsync();
+        /// <summary>
+        /// Returns the document from the database to be updated.
+        /// </summary>
+        public Task<LayersDocument> LoadLayersAsync() => _sessionHelper.LoadForUpdateAsync<LayersDocument>();
 
-				if (layers == null)
-				{
-					lock (_memoryCache)
-					{
-						if (!_memoryCache.TryGetValue(LayersCacheKey, out layers))
-						{
-							layers = new LayersDocument();
+        /// <summary>
+        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// </summary>
+        public async Task<LayersDocument> GetLayersAsync()
+        {
+            if (!_memoryCache.TryGetValue<LayersDocument>(LayersCacheKey, out var layers))
+            {
+                var changeToken = ChangeToken;
 
-							_session.Save(layers);
-							_memoryCache.Set(LayersCacheKey, layers);
-						}
-					}
-				}
-				else
-				{
-					_memoryCache.Set(LayersCacheKey, layers);
-				}
-			}
+                layers = await _sessionHelper.GetForCachingAsync<LayersDocument>();
 
-			return layers;
-		}
+                layers.IsReadonly = true;
 
-		public async Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(
+                _memoryCache.Set(LayersCacheKey, layers, changeToken);
+            }
+
+            return layers;
+        }
+
+        public async Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(
             Expression<Func<ContentItemIndex, bool>> predicate)
-		{
+        {
             return await _session
                 .Query<ContentItem, LayerMetadataIndex>()
                 .With(predicate)
@@ -80,16 +81,20 @@ namespace OrchardCore.Layers.Services
                 .Where(x => x != null)
                 .OrderBy(x => x.Position)
                 .ToList();
-
         }
 
-		public async Task UpdateAsync(LayersDocument layers)
-		{
-			var existing = await _session.Query<LayersDocument>().FirstOrDefaultAsync();
+        public async Task UpdateAsync(LayersDocument layers)
+        {
+            if (layers.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
 
-			existing.Layers = layers.Layers;
-			_session.Save(existing);
-			_memoryCache.Set(LayersCacheKey, existing);
-		}
-	}
+            var existing = await LoadLayersAsync();
+            existing.Layers = layers.Layers;
+
+            _session.Save(existing);
+            _signal.DeferredSignalToken(LayersCacheKey);
+        }
+    }
 }

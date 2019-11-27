@@ -13,7 +13,8 @@ namespace OrchardCore.Users.Drivers
 
         public override IDisplayResult Edit(LoginSettings section)
         {
-            return Initialize<LoginSettings>("LoginSettings_Edit", model => {
+            return Initialize<LoginSettings>("LoginSettings_Edit", model =>
+            {
                 model.UseSiteTheme = section.UseSiteTheme;
             }).Location("Content:5").OnGroup(GroupId);
         }
@@ -24,7 +25,7 @@ namespace OrchardCore.Users.Drivers
             {
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
             }
-            return await EditAsync(section, context);
+            return Edit(section);
         }
     }
 }

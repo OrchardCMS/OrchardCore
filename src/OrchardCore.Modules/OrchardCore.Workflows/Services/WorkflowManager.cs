@@ -300,7 +300,7 @@ namespace OrchardCore.Workflows.Services
                     break;
                 }
 
-                IList<string> outcomes = new List<string>(0);
+                var outcomes = Enumerable.Empty<string>();
 
                 try
                 {
