@@ -434,14 +434,14 @@ namespace OrchardCore.Workflows.Services
         private async Task<object> SerializeAsync(object value)
         {
             var context = new SerializeWorkflowValueContext(value);
-            await _workflowValueSerializers.Resolve().InvokeAsync(x => x.SerializeValueAsync(context), _logger);
+            await _workflowValueSerializers.Resolve().InvokeAsync((s, context) => s.SerializeValueAsync(context), context, _logger);
             return context.Output;
         }
 
         private async Task<object> DeserializeAsync(object value)
         {
             var context = new SerializeWorkflowValueContext(value);
-            await _workflowValueSerializers.Resolve().InvokeAsync(x => x.DeserializeValueAsync(context), _logger);
+            await _workflowValueSerializers.Resolve().InvokeAsync((s, context) => s.DeserializeValueAsync(context), context, _logger);
             return context.Output;
         }
     }

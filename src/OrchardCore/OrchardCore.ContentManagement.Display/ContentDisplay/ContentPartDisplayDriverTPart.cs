@@ -66,14 +66,14 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                     if (editorPartType == shapeType)
                     {
-                        displayTypes = new[] { "_" + ctx.ShapeMetadata.DisplayType };
+                        displayTypes = new[] { "_" + ctx.Shape.Metadata.DisplayType };
                     }
                     else
                     {
-                        displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
+                        displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
 
                         // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
-                        ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
+                        ctx.Shape.Metadata.Alternates.Add($"{shapeType}_{ctx.Shape.Metadata.DisplayType}");
                     }
 
                     if (shapeType == partType || shapeType == editorPartType)
@@ -81,12 +81,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                         foreach (var displayType in displayTypes)
                         {
                             // [ContentType]_[DisplayType]__[PartType], e.g. Blog-HtmlBodyPart, LandingPage-BagPart
-                            ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}");
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}");
 
                             if (!String.IsNullOrEmpty(stereotype))
                             {
                                 // [Stereotype]__[DisplayType]__[PartType], e.g. Widget-ContentsMetadata
-                                ctx.ShapeMetadata.Alternates.Add($"{stereotype}{displayType}__{partType}");
+                                ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partType}");
                             }
                         }
 
@@ -95,12 +95,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             foreach (var displayType in displayTypes)
                             {
                                 // [ContentType]_[DisplayType]__[PartName], e.g. LandingPage-Services
-                                ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partName}");
+                                ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}");
 
                                 if (!String.IsNullOrEmpty(stereotype))
                                 {
                                     // [Stereotype]_[DisplayType]__[PartName], e.g. LandingPage-Services
-                                    ctx.ShapeMetadata.Alternates.Add($"{stereotype}{displayType}__{partName}");
+                                    ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partName}");
                                 }
                             }
                         }
@@ -110,12 +110,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                         foreach (var displayType in displayTypes)
                         {
                             // [ContentType]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
-                            ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}__{shapeType}");
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{shapeType}");
 
                             if (!String.IsNullOrEmpty(stereotype))
                             {
                                 // [Stereotype]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
-                                ctx.ShapeMetadata.Alternates.Add($"{stereotype}{displayType}__{partType}__{shapeType}");
+                                ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partType}__{shapeType}");
                             }
                         }
 
@@ -124,12 +124,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             foreach (var displayType in displayTypes)
                             {
                                 // [ContentType]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
-                                ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partName}__{shapeType}");
+                                ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}__{shapeType}");
 
                                 if (!String.IsNullOrEmpty(stereotype))
                                 {
                                     // [Stereotype]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
-                                    ctx.ShapeMetadata.Alternates.Add($"{stereotype}{displayType}__{partName}__{shapeType}");
+                                    ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partName}__{shapeType}");
                                 }
                             }
                         }

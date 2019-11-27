@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
@@ -41,7 +40,7 @@ namespace OrchardCore.Navigation
                 })
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape;
+                    dynamic pager = displaying.Shape;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -64,7 +63,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Gap")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -75,7 +75,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_First")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -86,7 +87,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Previous")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -97,7 +99,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Next")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -108,7 +111,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Last")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -119,7 +123,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_CurrentPage")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -130,7 +135,7 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Links")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape;
+                    dynamic pager = displaying.Shape;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
