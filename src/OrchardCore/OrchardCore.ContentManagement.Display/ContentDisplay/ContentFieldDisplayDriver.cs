@@ -80,16 +80,17 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                         if (!String.IsNullOrEmpty(displayMode))
                         {
                             displayTypes[0] = DisplayToken;
+                            displayMode = "__" + displayMode;
 
                             // [ShapeType]_[DisplayType]__[DisplayMode]_Display, e.g. TextField-Header.Display.Summary
-                            ctx.ShapeMetadata.Alternates.Add($"{typeof(TField).Name}_{displayTypes[1]}__{displayMode}{DisplayToken}");
+                            ctx.ShapeMetadata.Alternates.Add($"{typeof(TField).Name}_{displayTypes[1]}{displayMode}{DisplayToken}");
                         }
 
                         foreach (var displayType in displayTypes)
                         {
                             if (!String.IsNullOrEmpty(displayMode))
                             {
-                                shapeType = typeof(TField).Name + "__" + displayMode + (displayType != DisplayToken ? DisplayToken : "");
+                                shapeType = typeof(TField).Name + displayMode + (displayType != DisplayToken ? DisplayToken : "");
                             }
 
                             // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
@@ -251,20 +252,9 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         protected string GetDisplayShapeType(string shapeType, BuildFieldDisplayContext context)
         {
-            //var displayMode = context.PartFieldDefinition.DisplayMode();
-
-            //if (!String.IsNullOrEmpty(displayMode))
-            //{
-            //    _displayShapeType = shapeType;
-            //    //_displayMode = "__" + displayMode;
-            //    return _displayShapeType + DisplayToken + "__" + displayMode;
-            //}
-
-            //return shapeType;
-
             var displayMode = context.PartFieldDefinition.DisplayMode();
             return !String.IsNullOrEmpty(displayMode)
-                ? shapeType + "_Display__" + displayMode
+                ? shapeType + DisplayToken + "__" + displayMode
                 : shapeType;
         }
 
