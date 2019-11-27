@@ -15,7 +15,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         private ContentTypePartDefinition _typePartDefinition;
         private ContentPartFieldDefinition _partFieldDefinition;
-        private string _shapeType, _displayMode;
 
         public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
@@ -31,6 +30,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 var fieldType = _partFieldDefinition.FieldDefinition.Name;
                 var fieldName = _partFieldDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
+                var displayMode = _partFieldDefinition.DisplayMode();
 
                 if (GetEditorShapeType(_partFieldDefinition) == shapeType)
                 {
@@ -77,19 +77,19 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     }
                     else
                     {
-                        if (_displayMode != null)
+                        if (!String.IsNullOrEmpty(displayMode))
                         {
                             displayTypes[0] = DisplayToken;
 
                             // [ShapeType]_[DisplayType]__[DisplayMode]_Display, e.g. TextField-Header.Display.Summary
-                            ctx.ShapeMetadata.Alternates.Add($"{_shapeType}_{displayTypes[1]}{_displayMode}{DisplayToken}");
+                            ctx.ShapeMetadata.Alternates.Add($"{typeof(TField).Name}_{displayTypes[1]}__{displayMode}{DisplayToken}");
                         }
 
                         foreach (var displayType in displayTypes)
                         {
-                            if (_displayMode != null)
+                            if (!String.IsNullOrEmpty(displayMode))
                             {
-                                shapeType = _shapeType + _displayMode + (displayType != DisplayToken ? DisplayToken : "");
+                                shapeType = typeof(TField).Name + "__" + displayMode + (displayType != DisplayToken ? DisplayToken : "");
                             }
 
                             // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
@@ -251,16 +251,21 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         protected string GetDisplayShapeType(string shapeType, BuildFieldDisplayContext context)
         {
+            //var displayMode = context.PartFieldDefinition.DisplayMode();
+
+            //if (!String.IsNullOrEmpty(displayMode))
+            //{
+            //    _displayShapeType = shapeType;
+            //    //_displayMode = "__" + displayMode;
+            //    return _displayShapeType + DisplayToken + "__" + displayMode;
+            //}
+
+            //return shapeType;
+
             var displayMode = context.PartFieldDefinition.DisplayMode();
-
-            if (!String.IsNullOrEmpty(displayMode))
-            {
-                _shapeType = shapeType;
-                _displayMode = "__" + displayMode;
-                return _shapeType + DisplayToken + _displayMode;
-            }
-
-            return shapeType;
+            return !String.IsNullOrEmpty(displayMode)
+                ? shapeType + "_Display__" + displayMode
+                : shapeType;
         }
 
         protected string GetDisplayShapeType(BuildFieldDisplayContext context)
