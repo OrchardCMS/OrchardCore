@@ -17,7 +17,7 @@ namespace OrchardCore.Contents
                     ContentItem contentItem = displaying.Shape.ContentItem;
                     if (contentItem != null)
                     {
-                        // Alternates in order of specificity. 
+                        // Alternates in order of specificity.
                         // Display type > content type > specific content > display type for a content type > display type for specific content
                         // BasicShapeTemplateHarvester.Adjust will then adjust the template name
 
@@ -59,6 +59,11 @@ namespace OrchardCore.Contents
 
                     var contentItemId = await aliasManager.GetContentItemIdAsync(alias);
 
+                    if(string.IsNullOrEmpty(contentItemId))
+                    {
+                        return;
+                    }
+
                     var contentItem = await contentManager.GetAsync(contentItemId);
 
                     if (contentItem == null)
@@ -80,7 +85,7 @@ namespace OrchardCore.Contents
         }
 
         /// <summary>
-        /// Encodes dashed and dots so that they don't conflict in filenames 
+        /// Encodes dashed and dots so that they don't conflict in filenames
         /// </summary>
         /// <param name="alternateElement"></param>
         /// <returns></returns>
