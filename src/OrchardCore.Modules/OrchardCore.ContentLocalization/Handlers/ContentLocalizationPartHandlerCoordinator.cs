@@ -11,7 +11,6 @@ namespace OrchardCore.ContentLocalization.Handlers
     {
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
         private readonly IEnumerable<IContentLocalizationPartHandler> _partHandlers;
-        private readonly ITypeActivatorFactory<ContentField> _contentFieldFactory;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILogger<ContentLocalizationPartHandlerCoordinator> _logger;
 
@@ -19,14 +18,12 @@ namespace OrchardCore.ContentLocalization.Handlers
 
             ITypeActivatorFactory<ContentPart> contentPartFactory,
             IEnumerable<IContentLocalizationPartHandler> partHandlers,
-            ITypeActivatorFactory<ContentField> contentFieldFactory,
             IContentDefinitionManager contentDefinitionManager,
             ILogger<ContentLocalizationPartHandlerCoordinator> logger
         )
         {
             _contentPartFactory = contentPartFactory;
             _partHandlers = partHandlers;
-            _contentFieldFactory = contentFieldFactory;
             _contentDefinitionManager = contentDefinitionManager;
             _logger = logger;
         }

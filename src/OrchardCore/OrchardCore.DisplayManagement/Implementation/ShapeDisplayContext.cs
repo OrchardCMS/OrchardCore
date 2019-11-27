@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.Html;
-using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Implementation
 {

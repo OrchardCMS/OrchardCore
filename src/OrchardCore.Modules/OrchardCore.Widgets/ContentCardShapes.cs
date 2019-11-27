@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 
 namespace OrchardCore.Widgets

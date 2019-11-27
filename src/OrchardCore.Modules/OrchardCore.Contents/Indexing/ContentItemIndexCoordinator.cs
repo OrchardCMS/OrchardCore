@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Indexing;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Indexing
 {
@@ -58,7 +58,9 @@ namespace OrchardCore.Contents.Indexing
                     continue;
                 }
 
-                await _partIndexHandlers.InvokeAsync((handler, arg1, arg2, arg3, arg4) => handler.BuildIndexAsync(arg1, arg2, arg3, arg4), part, contentTypePartDefinition, context, typePartIndexSettings, Logger);
+                await _partIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, context, typePartIndexSettings) =>
+                    handler.BuildIndexAsync(part, contentTypePartDefinition, context, typePartIndexSettings),
+                        part, contentTypePartDefinition, context, typePartIndexSettings, Logger);
 
                 foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                 {
@@ -69,7 +71,9 @@ namespace OrchardCore.Contents.Indexing
                         continue;
                     }
 
-                    await _fieldIndexHandlers.InvokeAsync((handler, arg1, arg2, arg3, arg4, arg5) => handler.BuildIndexAsync(arg1, arg2, arg3, arg4, arg5), part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings, Logger);
+                    await _fieldIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings) =>
+                        handler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings),
+                            part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings, Logger);
                 }
             }
 

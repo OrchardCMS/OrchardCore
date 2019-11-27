@@ -212,9 +212,9 @@ namespace OrchardCore.ContentManagement.Display
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}";
                 context.DefaultPosition = partPosition;
 
-                await _partDisplayDrivers.InvokeAsync(async (contentDisplay, part, typePartDefinition, context) =>
+                await _partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
                 {
-                    var result = await contentDisplay.BuildEditorAsync(part, typePartDefinition, context);
+                    var result = await driver.BuildEditorAsync(part, typePartDefinition, context);
                     if (result != null)
                     {
                         await result.ApplyAsync(context);
@@ -228,9 +228,9 @@ namespace OrchardCore.ContentManagement.Display
 
                     context.DefaultZone = $"Parts.{typePartDefinition.Name}:{fieldPosition}";
 
-                    await _fieldDisplayDrivers.InvokeAsync(async (contentDisplay, part, partFieldDefinition, typePartDefinition, context) =>
+                    await _fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                     {
-                        var result = await contentDisplay.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
+                        var result = await driver.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
                         if (result != null)
                         {
                             await result.ApplyAsync(context);
@@ -289,9 +289,9 @@ namespace OrchardCore.ContentManagement.Display
 
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}:{partPosition}";
 
-                await _partDisplayDrivers.InvokeAsync(async (contentDisplay, part, typePartDefinition, context) =>
+                await _partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
                 {
-                    var result = await contentDisplay.UpdateEditorAsync(part, typePartDefinition, context);
+                    var result = await driver.UpdateEditorAsync(part, typePartDefinition, context);
                     if (result != null)
                     {
                         await result.ApplyAsync(context);
@@ -305,9 +305,9 @@ namespace OrchardCore.ContentManagement.Display
 
                     context.DefaultZone = $"Parts.{typePartDefinition.Name}:{fieldPosition}";
 
-                    await _fieldDisplayDrivers.InvokeAsync(async (contentDisplay, part, partFieldDefinition, typePartDefinition, context) =>
+                    await _fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                     {
-                        var result = await contentDisplay.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
+                        var result = await driver.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
                         if (result != null)
                         {
                             await result.ApplyAsync(context);

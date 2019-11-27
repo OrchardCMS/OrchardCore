@@ -72,7 +72,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            await _passwordRecoveryFormEvents.InvokeAsync((i, modelState) => i.RecoveringPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
+            await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.RecoveringPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
             if (ModelState.IsValid)
             {
@@ -132,7 +132,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            await _passwordRecoveryFormEvents.InvokeAsync((i, modelState) => i.ResettingPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
+            await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.ResettingPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
             if (ModelState.IsValid)
             {

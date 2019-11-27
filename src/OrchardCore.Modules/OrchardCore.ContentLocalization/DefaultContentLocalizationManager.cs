@@ -137,8 +137,8 @@ namespace OrchardCore.ContentLocalization
             // This loop keeps the original ordering of localizationSets for the LocalizationSetContentPicker
             foreach (var set in localizationSets)
             {
-                var idxValue = cleanedIndexValues.FirstOrDefault(x=>x.LocalizationSet == set);
-                if(idxValue == null)
+                var idxValue = cleanedIndexValues.FirstOrDefault(x => x.LocalizationSet == set);
+                if (idxValue == null)
                 {
                     continue;
                 }

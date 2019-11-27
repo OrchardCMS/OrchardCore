@@ -72,7 +72,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
 
                 // Evaluate global Shape Display Events
-                await _shapeDisplayEvents.InvokeAsync((sde, displayContext) => sde.DisplayingAsync(displayContext), displayContext, _logger);
+                await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingAsync(displayContext), displayContext, _logger);
 
                 // Find base shape association using only the fundamental shape type.
                 // Alternates that may already be registered do not affect the "displaying" event calls.
@@ -110,7 +110,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                     var actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable);
                     if (actualBinding != null)
                     {
-                        await shapeMetadata.ProcessingAsync.InvokeAsync((processing, displayContext) => processing(displayContext.Shape), displayContext, _logger);
+                        await shapeMetadata.ProcessingAsync.InvokeAsync((action, displayContext) => action(displayContext.Shape), displayContext, _logger);
 
                         shape.Metadata.ChildContent = await ProcessAsync(actualBinding, shape, localContext);
                     }
@@ -136,10 +136,10 @@ namespace OrchardCore.DisplayManagement.Implementation
                     shape.Metadata.Wrappers.Clear();
                 }
 
-                await _shapeDisplayEvents.InvokeAsync(async (sde, displayContext) =>
+                await _shapeDisplayEvents.InvokeAsync(async (e, displayContext) =>
                 {
                     var prior = displayContext.ChildContent = displayContext.Shape.Metadata.ChildContent;
-                    await sde.DisplayedAsync(displayContext);
+                    await e.DisplayedAsync(displayContext);
                     // update the child content if the context variable has been reassigned
                     if (prior != displayContext.ChildContent)
                         displayContext.Shape.Metadata.ChildContent = displayContext.ChildContent;
@@ -166,7 +166,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
             finally
             {
-                await _shapeDisplayEvents.InvokeAsync((sde, displayContext) => sde.DisplayingFinalizedAsync(displayContext), displayContext, _logger);
+                await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingFinalizedAsync(displayContext), displayContext, _logger);
             }
 
             return shape.Metadata.ChildContent;
