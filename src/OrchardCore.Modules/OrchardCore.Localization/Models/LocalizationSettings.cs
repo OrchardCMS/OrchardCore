@@ -1,11 +1,15 @@
-using System.Globalization;
-
 namespace OrchardCore.Localization.Models
 {
+    /// <summary>
+    /// Represents an object to store the localization settings.
+    /// </summary>
     public class LocalizationSettings
     {
         private static string[] DefaultSupportedCultures = new[] { CultureInfo.InstalledUICulture.Name };
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LocalizationSettings"/>.
+        /// </summary>
         public LocalizationSettings()
         {
             DefaultCulture = CultureInfo.InstalledUICulture.Name;
