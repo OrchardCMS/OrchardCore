@@ -59,7 +59,7 @@ namespace OrchardCore.Contents
 
                     var contentItemId = await aliasManager.GetContentItemIdAsync(alias);
 
-                    if(string.IsNullOrEmpty(contentItemId))
+                    if (string.IsNullOrEmpty(contentItemId))
                     {
                         return;
                     }
