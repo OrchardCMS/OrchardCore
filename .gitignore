@@ -169,6 +169,7 @@ site/
 *.sln.cache
 src/OrchardCore.Modules/**/launchSettings.json
 src/OrchardCore.Themes/**/launchSettings.json
+src/OrchardCore.Cms.Web/Localization/**/*.po
 log.xml
 profiling/
 *.orig
