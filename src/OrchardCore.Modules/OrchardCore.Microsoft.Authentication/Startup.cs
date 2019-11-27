@@ -1,18 +1,20 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
 using OrchardCore.Microsoft.Authentication.Configuration;
 using OrchardCore.Microsoft.Authentication.Drivers;
+using OrchardCore.Microsoft.Authentication.Recipes;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace OrchardCore.Microsoft.Authentication
 {
@@ -32,6 +34,7 @@ namespace OrchardCore.Microsoft.Authentication
             services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
             services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
+            services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>(); 
             // Register the options initializers required by the Microsoft Account Handler.
             services.TryAddEnumerable(new[]
             {

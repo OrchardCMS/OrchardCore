@@ -39,6 +39,8 @@ namespace OrchardCore.Contents.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public AdminController(
             IContentManager contentManager,
@@ -63,13 +65,10 @@ namespace OrchardCore.Contents.Controllers
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
 
-            T = localizer;
+            H = localizer;
             New = shapeFactory;
             Logger = logger;
         }
-
-        public IHtmlLocalizer T { get; }
-        public dynamic New { get; set; }
 
         public ILogger Logger { get; set; }
 
@@ -163,7 +162,7 @@ namespace OrchardCore.Contents.Controllers
             model.Options.CreatableTypes = creatableList;
 
             // Invoke any service that could alter the query
-            await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
+            await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, this, Logger);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
@@ -185,24 +184,24 @@ namespace OrchardCore.Contents.Controllers
 
             //We populate the SelectLists
             model.Options.ContentStatuses = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["Latest"].Value, Value = nameof(ContentsStatus.Latest) },
-                new SelectListItem() { Text = T["Owned by me"].Value, Value = nameof(ContentsStatus.Owner) },
-                new SelectListItem() { Text = T["Published"].Value, Value = nameof(ContentsStatus.Published) },
-                new SelectListItem() { Text = T["Unpublished"].Value, Value = nameof(ContentsStatus.Draft) },
-                new SelectListItem() { Text = T["All versions"].Value, Value = nameof(ContentsStatus.AllVersions) }
+                new SelectListItem() { Text = H["Latest"].Value, Value = nameof(ContentsStatus.Latest) },
+                new SelectListItem() { Text = H["Owned by me"].Value, Value = nameof(ContentsStatus.Owner) },
+                new SelectListItem() { Text = H["Published"].Value, Value = nameof(ContentsStatus.Published) },
+                new SelectListItem() { Text = H["Unpublished"].Value, Value = nameof(ContentsStatus.Draft) },
+                new SelectListItem() { Text = H["All versions"].Value, Value = nameof(ContentsStatus.AllVersions) }
             };
 
             model.Options.ContentSorts = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["Recently created"].Value, Value = nameof(ContentsOrder.Created) },
-                new SelectListItem() { Text = T["Recently modified"].Value, Value = nameof(ContentsOrder.Modified) },
-                new SelectListItem() { Text = T["Recently published"].Value, Value = nameof(ContentsOrder.Published) },
-                new SelectListItem() { Text = T["Title"].Value, Value = nameof(ContentsOrder.Title) }
+                new SelectListItem() { Text = H["Recently created"].Value, Value = nameof(ContentsOrder.Created) },
+                new SelectListItem() { Text = H["Recently modified"].Value, Value = nameof(ContentsOrder.Modified) },
+                new SelectListItem() { Text = H["Recently published"].Value, Value = nameof(ContentsOrder.Published) },
+                new SelectListItem() { Text = H["Title"].Value, Value = nameof(ContentsOrder.Title) }
             };
 
             model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["Publish Now"].Value, Value = nameof(ContentsBulkAction.PublishNow) },
-                new SelectListItem() { Text = T["Unpublish"].Value, Value = nameof(ContentsBulkAction.Unpublish) },
-                new SelectListItem() { Text = T["Delete"].Value, Value = nameof(ContentsBulkAction.Remove) }
+                new SelectListItem() { Text = H["Publish Now"].Value, Value = nameof(ContentsBulkAction.PublishNow) },
+                new SelectListItem() { Text = H["Unpublish"].Value, Value = nameof(ContentsBulkAction.Unpublish) },
+                new SelectListItem() { Text = H["Delete"].Value, Value = nameof(ContentsBulkAction.Remove) }
             };
 
             var ContentTypeOptions = (await GetListableTypesAsync())
@@ -210,7 +209,7 @@ namespace OrchardCore.Contents.Controllers
                 .ToList().OrderBy(kvp => kvp.Value);
 
             model.Options.ContentTypeOptions = new List<SelectListItem>();
-            model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = T["All content types"].Value, Value = "" });
+            model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = H["All content types"].Value, Value = "" });
             foreach (var option in ContentTypeOptions)
             {
                 model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
@@ -254,42 +253,42 @@ namespace OrchardCore.Contents.Controllers
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, item))
                             {
-                                _notifier.Warning(T["Couldn't publish selected content."]);
+                                _notifier.Warning(H["Couldn't publish selected content."]);
                                 _session.Cancel();
                                 return Unauthorized();
                             }
 
                             await _contentManager.PublishAsync(item);
                         }
-                        _notifier.Success(T["Content successfully published."]);
+                        _notifier.Success(H["Content successfully published."]);
                         break;
                     case ContentsBulkAction.Unpublish:
                         foreach (var item in checkedContentItems)
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, item))
                             {
-                                _notifier.Warning(T["Couldn't unpublish selected content."]);
+                                _notifier.Warning(H["Couldn't unpublish selected content."]);
                                 _session.Cancel();
                                 return Unauthorized();
                             }
 
                             await _contentManager.UnpublishAsync(item);
                         }
-                        _notifier.Success(T["Content successfully unpublished."]);
+                        _notifier.Success(H["Content successfully unpublished."]);
                         break;
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, item))
                             {
-                                _notifier.Warning(T["Couldn't remove selected content."]);
+                                _notifier.Warning(H["Couldn't remove selected content."]);
                                 _session.Cancel();
                                 return Unauthorized();
                             }
 
                             await _contentManager.RemoveAsync(item);
                         }
-                        _notifier.Success(T["Content successfully removed."]);
+                        _notifier.Success(H["Content successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -331,8 +330,8 @@ namespace OrchardCore.Contents.Controllers
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                    ? T["Your content draft has been saved."]
-                    : T["Your {0} draft has been saved.", typeDefinition.DisplayName]);
+                    ? H["Your content draft has been saved."]
+                    : H["Your {0} draft has been saved.", typeDefinition.DisplayName]);
 
                 return Task.CompletedTask;
             });
@@ -361,8 +360,8 @@ namespace OrchardCore.Contents.Controllers
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                    ? T["Your content has been published."]
-                    : T["Your {0} has been published.", typeDefinition.DisplayName]);
+                    ? H["Your content has been published."]
+                    : H["Your {0} has been published.", typeDefinition.DisplayName]);
             });
         }
 
@@ -451,8 +450,8 @@ namespace OrchardCore.Contents.Controllers
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                    ? T["Your content draft has been saved."]
-                    : T["Your {0} draft has been saved.", typeDefinition.DisplayName]);
+                    ? H["Your content draft has been saved."]
+                    : H["Your {0} draft has been saved.", typeDefinition.DisplayName]);
 
                 return Task.CompletedTask;
             });
@@ -482,8 +481,8 @@ namespace OrchardCore.Contents.Controllers
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                    ? T["Your content has been published."]
-                    : T["Your {0} has been published.", typeDefinition.DisplayName]);
+                    ? H["Your content has been published."]
+                    : H["Your {0} has been published.", typeDefinition.DisplayName]);
             });
         }
 
@@ -558,11 +557,11 @@ namespace OrchardCore.Contents.Controllers
             }
             catch (InvalidOperationException)
             {
-                _notifier.Warning(T["Could not clone the content item."]);
+                _notifier.Warning(H["Could not clone the content item."]);
                 return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
             }
 
-            _notifier.Information(T["Successfully cloned. The clone was saved as a draft."]);
+            _notifier.Information(H["Successfully cloned. The clone was saved as a draft."]);
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
         }
@@ -589,8 +588,8 @@ namespace OrchardCore.Contents.Controllers
                 await _contentManager.DiscardDraftAsync(contentItem);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                    ? T["The draft has been removed."]
-                    : T["The {0} draft has been removed.", typeDefinition.DisplayName]);
+                    ? H["The draft has been removed."]
+                    : H["The {0} draft has been removed.", typeDefinition.DisplayName]);
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
@@ -613,8 +612,8 @@ namespace OrchardCore.Contents.Controllers
                 await _contentManager.RemoveAsync(contentItem);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                    ? T["That content has been removed."]
-                    : T["That {0} has been removed.", typeDefinition.DisplayName]);
+                    ? H["That content has been removed."]
+                    : H["That {0} has been removed.", typeDefinition.DisplayName]);
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
@@ -640,11 +639,11 @@ namespace OrchardCore.Contents.Controllers
 
             if (string.IsNullOrEmpty(typeDefinition.DisplayName))
             {
-                _notifier.Success(T["That content has been published."]);
+                _notifier.Success(H["That content has been published."]);
             }
             else
             {
-                _notifier.Success(T["That {0} has been published.", typeDefinition.DisplayName]);
+                _notifier.Success(H["That {0} has been published.", typeDefinition.DisplayName]);
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
@@ -670,11 +669,11 @@ namespace OrchardCore.Contents.Controllers
 
             if (string.IsNullOrEmpty(typeDefinition.DisplayName))
             {
-                _notifier.Success(T["The content has been unpublished."]);
+                _notifier.Success(H["The content has been unpublished."]);
             }
             else
             {
-                _notifier.Success(T["The {0} has been unpublished.", typeDefinition.DisplayName]);
+                _notifier.Success(H["The {0} has been unpublished.", typeDefinition.DisplayName]);
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");

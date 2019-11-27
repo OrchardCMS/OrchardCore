@@ -12,12 +12,12 @@ namespace OrchardCore.ContentFields.Settings
 
     public class TextFieldPredefinedListEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
     {
+        private readonly IStringLocalizer S;
+
         public TextFieldPredefinedListEditorSettingsDriver(IStringLocalizer<TextFieldPredefinedListEditorSettingsDriver> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
@@ -51,7 +51,7 @@ namespace OrchardCore.ContentFields.Settings
                 }
                 catch
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, T["The options are written in an incorrect format."]);
+                    context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
                     return Edit(partFieldDefinition);
                 }
 

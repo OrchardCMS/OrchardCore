@@ -98,7 +98,7 @@ namespace OrchardCore.ContentManagement.Display
 
             await BindPlacementAsync(context);
 
-            await _handlers.InvokeAsync(handler => handler.BuildDisplayAsync(contentItem, context), Logger);
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildDisplayAsync(contentItem, context), contentItem, context, Logger);
 
             return context.Shape;
         }
@@ -134,7 +134,7 @@ namespace OrchardCore.ContentManagement.Display
 
             await BindPlacementAsync(context);
 
-            await _handlers.InvokeAsync(handler => handler.BuildEditorAsync(contentItem, context), Logger);
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildEditorAsync(contentItem, context), contentItem, context, Logger);
 
             return context.Shape;
         }
@@ -170,9 +170,9 @@ namespace OrchardCore.ContentManagement.Display
 
             var updateContentContext = new UpdateContentContext(contentItem);
 
-            await _contentHandlers.InvokeAsync(handler => handler.UpdatingAsync(updateContentContext), Logger);
-            await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(contentItem, context), Logger);
-            await _contentHandlers.Reverse().InvokeAsync(handler => handler.UpdatedAsync(updateContentContext), Logger);
+            await _contentHandlers.InvokeAsync((handler, updateContentContext) => handler.UpdatingAsync(updateContentContext), updateContentContext, Logger);
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.UpdateEditorAsync(contentItem, context), contentItem, context, Logger);
+            await _contentHandlers.Reverse().InvokeAsync((handler, updateContentContext) => handler.UpdatedAsync(updateContentContext), updateContentContext, Logger);
 
             return context.Shape;
         }
