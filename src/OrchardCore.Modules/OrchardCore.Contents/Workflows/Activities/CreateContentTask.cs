@@ -63,7 +63,9 @@ namespace OrchardCore.Contents.Workflows.Activities
                 var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext);
                 var propertyObject = JObject.Parse(contentProperties);
 
-                ((JObject)contentItem.Content).Merge(propertyObject);
+                var contentItemEvaluated = propertyObject.ToObject<ContentItem>();
+                contentItem.DisplayText = contentItemEvaluated.DisplayText;
+                contentItem.Apply(contentItemEvaluated);
             }
 
             var versionOptions = Publish ? VersionOptions.Published : VersionOptions.Draft;
