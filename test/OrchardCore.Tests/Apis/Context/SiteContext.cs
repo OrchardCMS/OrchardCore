@@ -59,15 +59,15 @@ namespace OrchardCore.Tests.Apis.Context
             lock (Site)
             {
                 Client = Site.CreateDefaultClient(url);
-
-                if (permissionsContext != null)
-                {
-                    var permissionContextKey = Guid.NewGuid().ToString();
-                    SiteStartup.PermissionsContexts.TryAdd(permissionContextKey, permissionsContext);
-                    Client.DefaultRequestHeaders.Add("PermissionsContext", permissionContextKey);
-                }
             }
 
+            if (permissionsContext != null)
+            {
+                var permissionContextKey = Guid.NewGuid().ToString();
+                SiteStartup.PermissionsContexts.TryAdd(permissionContextKey, permissionsContext);
+                Client.DefaultRequestHeaders.Add("PermissionsContext", permissionContextKey);
+            }
+            
             GraphQLClient = new OrchardGraphQLClient(Client);
         }
 
