@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace OrchardCore.Localization.Models
 {
     /// <summary>
