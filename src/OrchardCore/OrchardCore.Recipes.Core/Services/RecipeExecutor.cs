@@ -5,7 +5,6 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -42,7 +41,7 @@ namespace OrchardCore.Recipes.Services
 
         public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment, CancellationToken cancellationToken)
         {
-            await _recipeEventHandlers.InvokeAsync(x => x.RecipeExecutingAsync(executionId, recipeDescriptor), Logger);
+            await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutingAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, Logger);
 
             try
             {
@@ -134,13 +133,13 @@ namespace OrchardCore.Recipes.Services
                     }
                 }
 
-                await _recipeEventHandlers.InvokeAsync(x => x.RecipeExecutedAsync(executionId, recipeDescriptor), Logger);
+                await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, Logger);
 
                 return executionId;
             }
             catch (Exception)
             {
-                await _recipeEventHandlers.InvokeAsync(x => x.ExecutionFailedAsync(executionId, recipeDescriptor), Logger);
+                await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.ExecutionFailedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, Logger);
 
                 throw;
             }
@@ -168,11 +167,11 @@ namespace OrchardCore.Recipes.Services
                         Logger.LogInformation("Executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
 
-                    await _recipeEventHandlers.InvokeAsync(e => e.RecipeStepExecutingAsync(recipeStep), Logger);
+                    await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutingAsync(recipeStep), recipeStep, Logger);
 
                     await recipeStepHandler.ExecuteAsync(recipeStep);
 
-                    await _recipeEventHandlers.InvokeAsync(e => e.RecipeStepExecutedAsync(recipeStep), Logger);
+                    await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutedAsync(recipeStep), recipeStep, Logger);
 
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
