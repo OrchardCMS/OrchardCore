@@ -60,7 +60,6 @@ namespace OrchardCore.Tests.Apis.Context
             {
                 Client = Site.CreateDefaultClient(url);
 
-
                 if (permissionsContext != null)
                 {
                     var permissionContextKey = Guid.NewGuid().ToString();
