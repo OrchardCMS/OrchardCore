@@ -32,8 +32,8 @@ function initVueMultiselect(element) {
     var multiple = JSON.parse(element.dataset.multiple);
     var debouncedSearch = debounce(function (vm, query) {
       vm.isLoading = true;
-
       var searchFullUrl = searchUrl;
+
       if (query) {
         searchFullUrl += '&query=' + query;
       }
