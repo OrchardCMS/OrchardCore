@@ -27,10 +27,7 @@ namespace OrchardCore.Localization.GraphQL
             S = localizer;
         }
 
-        /// <summary>
-        /// Builds the query for the site cultures.
-        /// </summary>
-        /// <param name="schema">The <see cref="ISchema"/>.</param>
+        /// <inheritdocs/>
         public Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var field = new FieldType
