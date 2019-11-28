@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.Localization.Models;
 
 namespace OrchardCore.Localization.ViewModels
 {
