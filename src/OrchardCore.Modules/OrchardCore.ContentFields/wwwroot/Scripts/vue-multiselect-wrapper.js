@@ -28,12 +28,10 @@ function initVueMultiselect(element) {
   if (element) {
     var elementId = element.id;
     var selectedItems = JSON.parse(element.dataset.selectedItems || "[]");
-    var tenantPath = element.dataset.tenantPath;
-    var searchApiUrl = element.dataset.searchUrl;
+    var searchUrl = element.dataset.searchUrl;
     var multiple = JSON.parse(element.dataset.multiple);
     var debouncedSearch = debounce(function (vm, query) {
       vm.isLoading = true;
-      var searchUrl = tenantPath + '/' + searchApiUrl;
 
       if (query) {
         searchUrl += '&query=' + query;
