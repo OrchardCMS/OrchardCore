@@ -5,7 +5,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Localization.GraphQL
 {
     /// <summary>
-    /// Represents an the localization module entry point for Graph QL.
+    /// Represents the localization module entry point for Graph QL.
     /// </summary>
     [RequireFeatures("OrchardCore.Apis.GraphQL")]
     public class Startup : StartupBase

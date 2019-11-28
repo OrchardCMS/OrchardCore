@@ -6,7 +6,7 @@ using OrchardCore.Security.Permissions;
 namespace OrchardCore.Localization
 {
     /// <summary>
-    /// Represents a localization module permissions.
+    /// Represents the localization module permissions.
     /// </summary>
     public class Permissions : IPermissionProvider
     {
