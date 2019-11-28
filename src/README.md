@@ -82,7 +82,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.
 
-You can also read the [Code Generation Templates documentation](./docs/templates/) to create new applications from predefined templates.
+You can also read the [Code Generation Templates documentation](./docs/getting-started/templates/) to create new applications from predefined templates.
 
 ### Visual Studio
 

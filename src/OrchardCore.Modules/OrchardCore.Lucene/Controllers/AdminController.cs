@@ -8,17 +8,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Navigation;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Lucene.Controllers
 {
@@ -33,6 +37,8 @@ namespace OrchardCore.Lucene.Controllers
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly ISiteService _siteService;
+        private readonly dynamic New;
 
         public AdminController(
             IContentDefinitionManager contentDefinitionManager,
@@ -44,6 +50,8 @@ namespace OrchardCore.Lucene.Controllers
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
             INotifier notifier,
+            ISiteService siteService,
+            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> s,
             IHtmlLocalizer<AdminController> h,
             ILogger<AdminController> logger)
@@ -57,6 +65,9 @@ namespace OrchardCore.Lucene.Controllers
             _liquidTemplateManager = liquidTemplateManager;
             _contentDefinitionManager = contentDefinitionManager;
             _notifier = notifier;
+            _siteService = siteService;
+
+            New = shapeFactory;
             S = s;
             H = h;
             Logger = logger;
@@ -66,14 +77,30 @@ namespace OrchardCore.Lucene.Controllers
         public IStringLocalizer S { get; }
         public IHtmlLocalizer H { get; }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {
             var viewModel = new AdminIndexViewModel
             {
                 Indexes = _luceneIndexSettingsService.GetIndices().Select(i => new IndexViewModel { Name = i })
-        };
+            };
 
-            return View(viewModel);
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var count = viewModel.Indexes.Count();
+            var results = viewModel.Indexes
+                .Skip(pager.GetStartIndex())
+                .Take(pager.PageSize).ToList();
+
+            // Maintain previous route data when generating page links
+            var routeData = new RouteData();
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            var model = new AdminIndexViewModel
+            {
+                Indexes = results,
+                Pager = pagerShape
+            };
+
+            return View(model);
         }
 
         public async Task<ActionResult> Create()

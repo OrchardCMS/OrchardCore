@@ -12,18 +12,15 @@ namespace OrchardCore.ReCaptcha.Workflows
 {
     public class ValidateReCaptchaTask : TaskActivity
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ReCaptchaService _reCaptchaService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public ValidateReCaptchaTask(
-            IHttpContextAccessor httpContextAccessor,
             ReCaptchaService reCaptchaService,
             IUpdateModelAccessor updateModelAccessor,
             IStringLocalizer<ValidateReCaptchaTask> localizer
         )
         {
-            _httpContextAccessor = httpContextAccessor;
             _reCaptchaService = reCaptchaService;
             _updateModelAccessor = updateModelAccessor;
             T = localizer;

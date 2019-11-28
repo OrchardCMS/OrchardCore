@@ -126,7 +126,7 @@ namespace OrchardCore.Roles.Services
             }
 
             var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
-            await roleRemovedEventHandlers.InvokeAsync(x => x.RoleRemovedAsync(roleToRemove.RoleName), Logger);
+            await roleRemovedEventHandlers.InvokeAsync((handler, roleToRemove) => handler.RoleRemovedAsync(roleToRemove.RoleName), roleToRemove, Logger);
 
             var roles = await LoadRolesAsync();
             roleToRemove = roles.Roles.FirstOrDefault(r => r.RoleName == roleToRemove.RoleName);

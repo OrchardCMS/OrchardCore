@@ -15,7 +15,6 @@ namespace OrchardCore.Environment.Shell
         private readonly IExtensionManager _extensionManager;
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly IShellDescriptorManager _shellDescriptorManager;
-
         private readonly ILogger<ShellFeaturesManager> _logger;
 
         public FeatureDependencyNotificationHandler FeatureDependencyNotification { get; set; }
@@ -24,17 +23,13 @@ namespace OrchardCore.Environment.Shell
             IExtensionManager extensionManager,
             IEnumerable<ShellFeature> shellFeatures,
             IShellDescriptorManager shellDescriptorManager,
-            ILogger<ShellFeaturesManager> logger,
-            IStringLocalizer<ShellFeaturesManager> localizer)
+            ILogger<ShellFeaturesManager> logger)
         {
             _extensionManager = extensionManager;
             _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
             _shellDescriptorManager = shellDescriptorManager;
-
             _logger = logger;
-            T = localizer;
         }
-        public IStringLocalizer T { get; }
 
         public async Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(ShellDescriptor shellDescriptor,
             IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)

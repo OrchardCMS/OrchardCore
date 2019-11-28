@@ -8,11 +8,11 @@
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Markdown">@Model.PartFieldDefinition.DisplayName()</label>
     <input asp-for="Markdown" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()" />
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
         <span class="hint">@settings.Hint</span>
     }
-</fieldset>
+</div>
