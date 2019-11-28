@@ -39,19 +39,19 @@ public static class OrchardRazorHelperExtensions
         }
         else if (content is string stringContent)
         {
-            builder.Append(stringContent);
+            builder.AppendHtml("\"").Append(stringContent).AppendHtml("\"");
         }
         else if (content is JToken jTokenContent)
         {
-            builder.Append(jTokenContent.ToString());
+            builder.AppendHtml(jTokenContent.ToString());
         }
         else if (content is ContentItem contentItem)
         {
-            builder.Append(ConvertContentItem(contentItem).ToString());
+            builder.AppendHtml(ConvertContentItem(contentItem).ToString());
         }
         else
         {
-            builder.Append(JsonConvert.SerializeObject(content));
+            builder.AppendHtml(JsonConvert.SerializeObject(content));
         }
 
         builder.AppendHtml(")</script>");

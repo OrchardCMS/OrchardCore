@@ -19,11 +19,18 @@ namespace OrchardCore.DisplayManagement.Theming
             // The View's body is rendered 
             var body = RenderLayoutBody();
 
-            // Then is added to the Content zone of the Layout shape
-            ThemeLayout.Content.Add(body);
+            if (ThemeLayout != null)
+            {
+                // Then is added to the Content zone of the Layout shape
+                ThemeLayout.Content.Add(body);
 
-            // Finally we render the Shape's HTML to the page's output
-            Write(await DisplayAsync(ThemeLayout));
+                // Finally we render the Shape's HTML to the page's output
+                Write(await DisplayAsync(ThemeLayout));
+            }
+            else
+            {
+                Write(body);
+            }
         }
     }
 }

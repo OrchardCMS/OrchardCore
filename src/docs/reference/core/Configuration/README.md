@@ -82,7 +82,7 @@ Environment variables are also translated into `IShellConfiguration`, for exampl
 ```
 OrchardCore__OrchardCore.Media__MaxFileSize
 
-OrchardCore__Default__State__Placeholder
+OrchardCore__Default__State
 OrchardCore__Default__OrchardCore.Media__MaxFileSize
 ```
 
