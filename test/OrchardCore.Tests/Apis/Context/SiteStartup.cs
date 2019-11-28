@@ -25,8 +25,10 @@ namespace OrchardCore.Tests.Apis.Context
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOrchardCms(builder =>
-                builder.AddGlobalFeatures(
-                    "OrchardCore.Tenants",
+                builder.AddSetupFeatures(
+                    "OrchardCore.Tenants"
+                )
+                .AddTenantFeatures(
                     "OrchardCore.Apis.GraphQL"
                 )
                 .ConfigureServices(collection =>

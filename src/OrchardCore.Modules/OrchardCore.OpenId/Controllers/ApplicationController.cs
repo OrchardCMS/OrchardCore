@@ -34,6 +34,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
+        private readonly dynamic New;
 
         public ApplicationController(
             IShapeFactory shapeFactory,
@@ -54,8 +55,6 @@ namespace OrchardCore.OpenId.Controllers
             _notifier = notifier;
             _shellDescriptor = shellDescriptor;
         }
-
-        public dynamic New { get; }
 
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {

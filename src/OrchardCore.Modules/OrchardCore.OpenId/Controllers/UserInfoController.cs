@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -45,7 +44,7 @@ namespace OrchardCore.OpenId.Controllers
 
             // Ensure the access token represents a user and not an application.
             var type = principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value;
-            if (!string.Equals(type, OpenIdConstants.EntityTypes.User, StringComparison.Ordinal))
+            if (!string.Equals(type, OpenIdConstants.EntityTypes.User))
             {
                 return BadRequest(new OpenIdConnectResponse
                 {

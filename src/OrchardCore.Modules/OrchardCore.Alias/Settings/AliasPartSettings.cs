@@ -1,7 +1,10 @@
-﻿namespace OrchardCore.Alias.Settings
+using System.ComponentModel;
+
+namespace OrchardCore.Alias.Settings
 {
     public class AliasPartSettings
     {
-        public string Pattern { get; set; }
+        [DefaultValue("{{ ContentItem.DisplayText | slugify }}")]
+        public string Pattern { get; set; } = "{{ ContentItem.DisplayText | slugify }}";
     }
 }

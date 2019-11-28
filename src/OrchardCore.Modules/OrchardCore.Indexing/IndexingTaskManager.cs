@@ -68,15 +68,15 @@ namespace OrchardCore.Indexing.Services
                 Type = type
             };
 
-            lock (_tasksQueue)
+            if (_tasksQueue.Count == 0)
             {
-                if (_tasksQueue.Count == 0)
-                {
-                    ShellScope.AddDeferredTask(scope => FlushAsync(scope, _tasksQueue));
-                }
+                var tasksQueue = _tasksQueue;
 
-                _tasksQueue.Add(indexingTask);
+                // Using a local var prevents the lambda from holding a ref on this scoped service.
+                ShellScope.AddDeferredTask(scope => FlushAsync(scope, tasksQueue));
             }
+
+            _tasksQueue.Add(indexingTask);
 
             return Task.CompletedTask;
         }
@@ -130,7 +130,7 @@ namespace OrchardCore.Indexing.Services
                     {
                         if (logger.IsEnabled(LogLevel.Debug))
                         {
-                            logger.LogDebug($"Updating indexing tasks: {String.Join(", ", tasks.Select(x => x.ContentItemId))}");
+                            logger.LogDebug("Updating indexing tasks: {ContentItemIds}", String.Join(", ", tasks.Select(x => x.ContentItemId)));
                         }
 
                         // Page delete statements to prevent the limits from IN sql statements

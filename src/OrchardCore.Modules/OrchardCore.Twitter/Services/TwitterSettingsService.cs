@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Twitter.Settings;
 using OrchardCore.Settings;
+using OrchardCore.Twitter.Settings;
 
 namespace OrchardCore.Twitter.Services
 {
@@ -17,14 +13,11 @@ namespace OrchardCore.Twitter.Services
     {
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<TwitterSettingsService> T;
-        private readonly ShellSettings _shellSettings;
 
         public TwitterSettingsService(
             ISiteService siteService,
-            ShellSettings shellSettings,
             IStringLocalizer<TwitterSettingsService> stringLocalizer)
         {
-            _shellSettings = shellSettings;
             _siteService = siteService;
             T = stringLocalizer;
         }
@@ -41,7 +34,7 @@ namespace OrchardCore.Twitter.Services
             {
                 throw new ArgumentNullException(nameof(settings));
             }
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<TwitterSettings>(nameof(TwitterSettings), aspect =>
             {
                 aspect.ConsumerKey = settings.ConsumerKey;

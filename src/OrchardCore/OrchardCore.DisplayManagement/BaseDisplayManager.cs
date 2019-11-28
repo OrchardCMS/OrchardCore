@@ -40,9 +40,14 @@ namespace OrchardCore.DisplayManagement
 
         private static PlacementInfo FindPlacementImpl(ShapeTable shapeTable, string shapeType, string differentiator, string displayType, IBuildShapeContext context)
         {
-            ShapeDescriptor descriptor;
+            var delimiterIndex = shapeType.IndexOf("__");
 
-            if (shapeTable.Descriptors.TryGetValue(shapeType, out descriptor))
+            if (delimiterIndex > 0)
+            {
+                shapeType = shapeType.Substring(0, delimiterIndex);
+            }
+
+            if (shapeTable.Descriptors.TryGetValue(shapeType, out var descriptor))
             {
                 var placementContext = new ShapePlacementContext(
                     shapeType,
