@@ -22,12 +22,12 @@
     {
         var widgetTemplatePlaceholderId = Guid.NewGuid().ToString("n");
 
-        <div class="widget-list-zone card">
+        <div class="widget-list-zone card my-2">
             <div class="card-header text-muted">
                 @zone
             </div>
-            <div class="widget-editor-body card-body" data-zone="@zone">
-                <div class="col-md-12">
+            <div class="widget-editor-body card-body px-2 py-1" data-zone="@zone">
+                <div class="w-100 mb-3">
                     <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-widget-list @( ($"widgetlist-{partName}-{zone}").HtmlClassify() ) row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Widgets" })">
                         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
 
@@ -124,25 +124,29 @@
                         </script>
 
                     </div>
-
-                    <div class="btn-group ">
-                        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Add Widget"]
-                        </button>
-                        <div class="dropdown-menu">
-                            @foreach (var type in widgetContentTypes)
-                            {
-                                <a class="dropdown-item add-list-widget  btn-sm"
-                                   data-target-id="@widgetTemplatePlaceholderId"
-                                   data-zones-name="@Html.NameFor(x => x.Zones)"
-                                   data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
-                                   data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
-                                   data-widget-type="@type.Name"
-                                   data-zone="@zone"
-                                   href="javascript:;">@type.DisplayName</a>
-                            }
+                    <div class="btn-widget-add-below-wrapper w-100">
+                        <div class="btn-widget-add-below w-100 border border-info">
+                            <div class="btn-group ">
+                                <button type="button" title="@T["Add Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    @foreach (var type in widgetContentTypes)
+                                    {
+                                        <a class="dropdown-item add-list-widget  btn-sm"
+                                        data-target-id="@widgetTemplatePlaceholderId"
+                                        data-zones-name="@Html.NameFor(x => x.Zones)"
+                                        data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
+                                        data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
+                                        data-widget-type="@type.Name"
+                                        data-zone="@zone"
+                                        href="javascript:;">@type.DisplayName</a>
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         </div>

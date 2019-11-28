@@ -19,32 +19,40 @@
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-right" aria-hidden="true"></i></button>
         <span data-content-type-display-text="@contentTypeDisplayText" class="widget-editor-header-text">@T["{0} {1}", contentItemDisplayText, contentTypeDisplayText]</span>
-        <div class="btn-group btn-group-sm float-right" role="group">
-        @if (Model.CanInsert != false)
-        {
+        <div class="btn-widget-metadata border border-info w-100">
             <div class="btn-group">
-                <button type="button" title="@T["Insert Widget"]" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-plus" aria-hidden="true"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right">
-                    @foreach (var type in widgetContentTypes)
-                    {
-                        <a class="dropdown-item insert-widget btn-sm"
-                            data-target-id="@Model.TargetId"
-                            data-prefixes-name="@Model.PrefixesName"
-                            data-flowmetadata="true"
-                            data-parent-content-type="@Model.ParentContentType"
-                            data-part-name="@Model.CollectionPartName"
-                            data-contenttypes-name="@Model.ContentTypesName"
-                            data-widget-type="@type.Name"
-                            href="javascript:;">@type.DisplayName</a>
-                    }
-                </div>
+                 @if(Model.Footer != null)
+                {
+                    @await DisplayAsync(Model.Footer)                
+                }
+                @if (Model.CanInsert != false)
+                {
+                    <div class="btn-group">
+                        <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            @foreach (var type in widgetContentTypes)
+                            {
+                                <a class="dropdown-item insert-widget btn-sm"
+                                    data-target-id="@Model.TargetId"
+                                    data-prefixes-name="@Model.PrefixesName"
+                                    data-flowmetadata="true"
+                                    data-parent-content-type="@Model.ParentContentType"
+                                    data-part-name="@Model.CollectionPartName"
+                                    data-contenttypes-name="@Model.ContentTypesName"
+                                    data-widget-type="@type.Name"
+                                    href="javascript:;">@type.DisplayName</a>
+                            }
+                        </div>
+                    </div>
+                }
             </div>
-        }
+        </div>
+        <div class="btn-group btn-group-sm float-right" role="group">        
         @if (Model.CanDelete != false)
         {
-            <button type="button" class="btn btn-secondary widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
         }
         </div>
     </div>
@@ -55,11 +63,5 @@
                 @await DisplayAsync(Model.ContentEditor)
             }
         </div>
-    </div>
-    @if (Model.Footer != null)
-    {
-        <div class="widget-editor-footer card-footer  text-muted px-1 py-1">
-            @await DisplayAsync(Model.Footer)
-        </div>
-    }
+    </div>    
 </div>
