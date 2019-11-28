@@ -49,7 +49,7 @@ namespace OrchardCore.AdminMenu.Models
                     {
                         return true; // success
                     }
-                }                
+                }
             }
 
             return false; // failure
@@ -76,7 +76,7 @@ namespace OrchardCore.AdminMenu.Models
                     {
                         return true; // success
                     }
-                }                
+                }
             }
             return false; // failure
         }

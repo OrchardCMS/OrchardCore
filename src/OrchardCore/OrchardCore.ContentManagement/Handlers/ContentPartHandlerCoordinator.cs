@@ -57,12 +57,12 @@ namespace OrchardCore.ContentManagement.Handlers
                 // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                 if (partHandlers != null && partHandlers.Any())
                 {
-                    await partHandlers.InvokeAsync(handler => handler.ActivatingAsync(context, part), Logger);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.ActivatingAsync(context, part), context, part, Logger);
                 }
                 // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                 else
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.ActivatingAsync(context, part), Logger);
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.ActivatingAsync(context, part), context, part, Logger);
                 }
                 context.Builder.Weld(typePartDefinition.Name, part);
             }
@@ -87,12 +87,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.ActivatedAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.ActivatedAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.ActivatedAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.ActivatedAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -118,12 +118,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.CreatingAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.CreatingAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.CreatingAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.CreatingAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -149,12 +149,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.CreatedAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.CreatedAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.CreatedAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.CreatedAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -179,12 +179,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.InitializingAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.InitializingAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.InitializingAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.InitializingAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -210,12 +210,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.InitializedAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.InitializedAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.InitializedAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.InitializedAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -253,12 +253,12 @@ namespace OrchardCore.ContentManagement.Handlers
                 // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                 if (partHandlers != null && partHandlers.Any())
                 {
-                    await partHandlers.InvokeAsync(handler => handler.LoadingAsync(context, part), Logger);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.LoadingAsync(context, part), context, part, Logger);
                 }
                 // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                 else
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.LoadingAsync(context, part), Logger);
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.LoadingAsync(context, part), context, part, Logger);
                 }
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
@@ -293,12 +293,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.LoadedAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.LoadedAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.LoadedAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.LoadedAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -323,15 +323,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.PublishingAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.PublishingAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(async handler => {
-                            Logger.LogWarning("The handler '{Handler}' should not be registerd as IContentPartHandler. Use WithHandler<T> instead.", handler.GetType());
-                            await handler.PublishingAsync(context, part);
-                        }, Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.PublishingAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -356,12 +353,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.PublishedAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.PublishedAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.PublishedAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.PublishedAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -386,12 +383,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.RemovingAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.RemovingAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.RemovingAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.RemovingAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -416,12 +413,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.RemovedAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.RemovedAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.RemovedAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.RemovedAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -446,12 +443,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.UnpublishingAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.UnpublishingAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.UnpublishingAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.UnpublishingAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -476,12 +473,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.UnpublishedAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.UnpublishedAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.UnpublishedAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.UnpublishedAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -506,12 +503,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.UpdatingAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.UpdatingAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.UpdatingAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.UpdatingAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -536,12 +533,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.UpdatedAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.UpdatedAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.UpdatedAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.UpdatedAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -568,12 +565,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.VersioningAsync(context, existingPart, buildingPart), Logger);
+                        await partHandlers.InvokeAsync((handler, context, existingPart, buildingPart) => handler.VersioningAsync(context, existingPart, buildingPart), context, existingPart, buildingPart, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.VersioningAsync(context, existingPart, buildingPart), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, existingPart, buildingPart) => handler.VersioningAsync(context, existingPart, buildingPart), context, existingPart, buildingPart, Logger);
                     }
                 }
             }
@@ -600,12 +597,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.VersionedAsync(context, existingPart, buildingPart), Logger);
+                        await partHandlers.InvokeAsync((handler, context, existingPart, buildingPart) => handler.VersionedAsync(context, existingPart, buildingPart), context, existingPart, buildingPart, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.VersionedAsync(context, existingPart, buildingPart), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, existingPart, buildingPart) => handler.VersionedAsync(context, existingPart, buildingPart), context, existingPart, buildingPart, Logger);
                     }
                 }
             }
@@ -630,12 +627,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.GetContentItemAspectAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.GetContentItemAspectAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.GetContentItemAspectAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.GetContentItemAspectAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -659,12 +656,12 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.ClonedAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.ClonedAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.ClonedAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.ClonedAsync(context, part), context, part, Logger);
                     }
                 }
             }
@@ -688,16 +685,15 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: Any() can be removed in a future release as the recommended way is to use ContentOptions.
                     if (partHandlers != null && partHandlers.Any())
                     {
-                        await partHandlers.InvokeAsync(handler => handler.CloningAsync(context, part), Logger);
+                        await partHandlers.InvokeAsync((handler, context, part) => handler.CloningAsync(context, part), context, part, Logger);
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     else
                     {
-                        await _partHandlers.InvokeAsync(handler => handler.CloningAsync(context, part), Logger);
+                        await _partHandlers.InvokeAsync((handler, context, part) => handler.CloningAsync(context, part), context, part, Logger);
                     }
                 }
             }
         }
-
     }
 }

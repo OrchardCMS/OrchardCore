@@ -42,7 +42,7 @@ namespace OrchardCore.Taxonomies.Controllers
             H = h;
         }
 
-        public IHtmlLocalizer H { get; set; }
+        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Create(string id, string taxonomyContentItemId, string taxonomyItemId)
         {

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -10,16 +11,15 @@ namespace OrchardCore.Liquid.Drivers
 {
     public class LiquidPartDisplay : ContentPartDisplayDriver<LiquidPart>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
 
-        public LiquidPartDisplay(
-            IContentDefinitionManager contentDefinitionManager,
-            ILiquidTemplateManager liquidTemplatemanager)
+        public LiquidPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<LiquidPartDisplay> localizer)
         {
-            _contentDefinitionManager = contentDefinitionManager;
             _liquidTemplatemanager = liquidTemplatemanager;
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(LiquidPart liquidPart)
         {
@@ -38,7 +38,19 @@ namespace OrchardCore.Liquid.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(LiquidPart model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Liquid);
+            var viewModel = new LiquidPartViewModel();
+
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
+            {
+                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
+                {
+                    updater.ModelState.AddModelError(nameof(model.Liquid), T["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                }
+                else
+                {
+                    model.Liquid = viewModel.Liquid;
+                }
+            }
 
             return Edit(model);
         }

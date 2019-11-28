@@ -30,6 +30,7 @@ namespace OrchardCore.Html
                 .WithHandler<HtmlBodyPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartSettingsDisplayDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartTrumbowygEditorSettingsDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, HtmlBodyPartIndexHandler>();
         }

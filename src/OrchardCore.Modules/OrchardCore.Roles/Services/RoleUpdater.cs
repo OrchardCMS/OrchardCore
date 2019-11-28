@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.Roles.Services
 {
@@ -39,7 +39,7 @@ namespace OrchardCore.Roles.Services
 
         void IFeatureEventHandler.Installed(IFeatureInfo feature)
         {
-            AddDefaultRolesForFeatureAsync(feature).Wait();
+            AddDefaultRolesForFeatureAsync(feature).GetAwaiter().GetResult();
         }
 
         void IFeatureEventHandler.Enabling(IFeatureInfo feature)

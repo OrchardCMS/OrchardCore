@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -36,7 +37,8 @@ namespace OrchardCore.Users.Controllers
             IDisplayHelper displayHelper,
             IStringLocalizer<ResetPasswordController> stringLocalizer,
             ILogger<ResetPasswordController> logger,
-            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents) : base(smtpService, displayHelper)
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
+            HtmlEncoder htmlEncoder) : base(smtpService, displayHelper, htmlEncoder)
         {
             _userService = userService;
             _userManager = userManager;
@@ -70,7 +72,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            await _passwordRecoveryFormEvents.InvokeAsync(i => i.RecoveringPasswordAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+            await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.RecoveringPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
             if (ModelState.IsValid)
             {
@@ -130,7 +132,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            await _passwordRecoveryFormEvents.InvokeAsync(i => i.ResettingPasswordAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+            await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.ResettingPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
             if (ModelState.IsValid)
             {

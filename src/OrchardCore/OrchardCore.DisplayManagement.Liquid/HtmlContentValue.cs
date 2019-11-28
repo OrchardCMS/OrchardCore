@@ -57,7 +57,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
         {
-            _value.WriteTo(writer, HtmlEncoder.Default);
+            _value.WriteTo(writer, (HtmlEncoder)encoder);
         }
 
         public override object ToObjectValue()

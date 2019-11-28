@@ -51,8 +51,17 @@ namespace OrchardCore.Contents.Workflows.Activities
             if (!string.IsNullOrWhiteSpace(Content.Expression))
             {
                 var expression = new WorkflowExpression<object> { Expression = Content.Expression };
-                var contentItemJson = JsonConvert.SerializeObject(await ScriptEvaluator.EvaluateAsync(expression, workflowContext));
+                var contentItemResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
+
+                if (contentItemResult is ContentItem contentItem)
+                {
+                    return contentItem;
+                }
+
+                // Try to map the result to a content item
+                var contentItemJson = JsonConvert.SerializeObject(contentItemResult);
                 var res = JsonConvert.DeserializeObject<ContentItem>(contentItemJson);
+
                 return res;
             }
 
