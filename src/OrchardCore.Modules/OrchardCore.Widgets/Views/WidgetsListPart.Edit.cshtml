@@ -17,7 +17,7 @@
 
 <script asp-name="jquery-ui" at="Foot"></script>
 
-<fieldset class="form-group">
+<div class="form-group">
     @foreach (var zone in Model.AvailableZones)
     {
         var widgetTemplatePlaceholderId = Guid.NewGuid().ToString("n");
@@ -161,4 +161,4 @@
         <script asp-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
         <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
     }
-</fieldset>
+</div>

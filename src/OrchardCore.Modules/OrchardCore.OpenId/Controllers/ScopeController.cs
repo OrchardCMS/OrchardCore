@@ -32,6 +32,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
+        private readonly dynamic New;
 
         public ScopeController(
             IOpenIdScopeManager scopeManager,
@@ -56,8 +57,6 @@ namespace OrchardCore.OpenId.Controllers
             _shellSettings = shellSettings;
             _shellHost = shellHost;
         }
-
-        public dynamic New { get; }
 
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {

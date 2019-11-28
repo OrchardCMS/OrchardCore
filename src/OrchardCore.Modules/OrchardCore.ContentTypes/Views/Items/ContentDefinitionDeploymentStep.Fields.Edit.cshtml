@@ -14,7 +14,7 @@
 
 <h5>@T["Content Definitions"]</h5>
 
-<fieldset class="form-group mt-4 mb-5">
+<div class="form-group mt-4 mb-5">
     <div class="row">
         <div class="col">
             <div class="custom-control custom-checkbox">
@@ -23,10 +23,10 @@
             </div>
         </div>
     </div>
-</fieldset>
+</div>
 
 
-<fieldset class="cdsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
+<div class="cdsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
     <div class="row mb-3">
         <div class="col">
             <h6>Content Types</h6>
@@ -85,9 +85,9 @@
             </ul>
         </div>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="cdsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
+<div class="cdsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
     <div class="row mb-3">
         <div class="col">
             <h6>Content Parts</h6>
@@ -112,7 +112,7 @@
             </ul>
         </div>
     </div>
-</fieldset>
+</div>
 
 <script at="Foot">
     $(function () {

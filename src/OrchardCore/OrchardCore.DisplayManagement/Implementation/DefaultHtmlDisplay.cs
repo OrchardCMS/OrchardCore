@@ -62,7 +62,6 @@ namespace OrchardCore.DisplayManagement.Implementation
             var displayContext = new ShapeDisplayContext
             {
                 Shape = shape,
-                ShapeMetadata = shapeMetadata,
                 DisplayContext = localContext,
                 ServiceProvider = _serviceProvider
             };
@@ -73,14 +72,14 @@ namespace OrchardCore.DisplayManagement.Implementation
                 var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
 
                 // Evaluate global Shape Display Events
-                await _shapeDisplayEvents.InvokeAsync(sde => sde.DisplayingAsync(displayContext), _logger);
+                await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingAsync(displayContext), displayContext, _logger);
 
                 // Find base shape association using only the fundamental shape type.
                 // Alternates that may already be registered do not affect the "displaying" event calls.
                 var shapeDescriptor = GetShapeDescriptor(shapeMetadata.Type, shapeTable); ;
                 if (shapeDescriptor != null)
                 {
-                    await shapeDescriptor.DisplayingAsync.InvokeAsync(action => action(displayContext), _logger);
+                    await shapeDescriptor.DisplayingAsync.InvokeAsync((action, displayContext) => action(displayContext), displayContext, _logger);
 
                     // copy all binding sources (all templates for this shape) in order to use them as Localization scopes
                     shapeMetadata.BindingSources = shapeDescriptor.BindingSources.Where(x => x != null).ToList();
@@ -104,15 +103,14 @@ namespace OrchardCore.DisplayManagement.Implementation
                     // There might be no shape binding for the main shape, and only for its alternates.
                     if (shapeDescriptor != null)
                     {
-                        await shapeDescriptor.ProcessingAsync.InvokeAsync(action => action(displayContext), _logger);
+                        await shapeDescriptor.ProcessingAsync.InvokeAsync((action, displayContext) => action(displayContext), displayContext, _logger);
                     }
 
                     // now find the actual binding to render, taking alternates into account
                     var actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable);
                     if (actualBinding != null)
                     {
-                        // invoking ShapeMetadata processing events, this includes the Drivers results
-                        await shapeMetadata.ProcessingAsync.InvokeAsync(processing => processing(displayContext.Shape), _logger);
+                        await shapeMetadata.ProcessingAsync.InvokeAsync((action, displayContext) => action(displayContext.Shape), displayContext, _logger);
 
                         shape.Metadata.ChildContent = await ProcessAsync(actualBinding, shape, localContext);
                     }
@@ -138,37 +136,37 @@ namespace OrchardCore.DisplayManagement.Implementation
                     shape.Metadata.Wrappers.Clear();
                 }
 
-                await _shapeDisplayEvents.InvokeAsync(async sde =>
+                await _shapeDisplayEvents.InvokeAsync(async (e, displayContext) =>
                 {
-                    var prior = displayContext.ChildContent = displayContext.ShapeMetadata.ChildContent;
-                    await sde.DisplayedAsync(displayContext);
+                    var prior = displayContext.ChildContent = displayContext.Shape.Metadata.ChildContent;
+                    await e.DisplayedAsync(displayContext);
                     // update the child content if the context variable has been reassigned
                     if (prior != displayContext.ChildContent)
-                        displayContext.ShapeMetadata.ChildContent = displayContext.ChildContent;
-                }, _logger);
+                        displayContext.Shape.Metadata.ChildContent = displayContext.ChildContent;
+                }, displayContext, _logger);
 
                 if (shapeDescriptor != null)
                 {
-                    await shapeDescriptor.DisplayedAsync.InvokeAsync(async action =>
+                    await shapeDescriptor.DisplayedAsync.InvokeAsync(async (action, displayContext) =>
                     {
-                        var prior = displayContext.ChildContent = displayContext.ShapeMetadata.ChildContent;
+                        var prior = displayContext.ChildContent = displayContext.Shape.Metadata.ChildContent;
 
                         await action(displayContext);
 
                         // update the child content if the context variable has been reassigned
                         if (prior != displayContext.ChildContent)
                         {
-                            displayContext.ShapeMetadata.ChildContent = displayContext.ChildContent;
+                            displayContext.Shape.Metadata.ChildContent = displayContext.ChildContent;
                         }
-                    }, _logger);
+                    }, displayContext, _logger);
                 }
 
                 // invoking ShapeMetadata displayed events
-                shapeMetadata.Displayed.Invoke(action => action(displayContext), _logger);
+                shapeMetadata.Displayed.Invoke((action, displayContext) => action(displayContext), displayContext, _logger);
             }
             finally
             {
-                await _shapeDisplayEvents.InvokeAsync(sde => sde.DisplayingFinalizedAsync(displayContext), _logger);
+                await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingFinalizedAsync(displayContext), displayContext, _logger);
             }
 
             return shape.Metadata.ChildContent;

@@ -14,10 +14,12 @@ using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
+using OrchardCore.Liquid;
 using OrchardCore.Lists.AdminNodes;
 using OrchardCore.Lists.Drivers;
 using OrchardCore.Lists.Feeds;
 using OrchardCore.Lists.Indexes;
+using OrchardCore.Lists.Liquid;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 using OrchardCore.Lists.Settings;
@@ -87,6 +89,16 @@ namespace OrchardCore.Lists
             services.AddScoped<IContentLocalizationPartHandler, ContainedPartLocalizationHandler>();
             services.AddScoped<IContentLocalizationPartHandler, ListPartLocalizationHandler>();
             services.AddScoped<IContentPartHandler, ContainedPartHandler>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Liquid")]
+    public class LiquidStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddLiquidFilter<ListCountFilter>("list_count");
+            services.AddLiquidFilter<ListItemsFilter>("list_items");
         }
     }
 

@@ -2,16 +2,16 @@
 @using OrchardCore.Workflows.ViewModels
 @model LogTaskViewModel
 
-<fieldset class="form-group" asp-validation-class-for="LogLevel">
+<div class="form-group" asp-validation-class-for="LogLevel">
     <label asp-for="LogLevel">@T["Log Level"]</label>
     <select asp-for="LogLevel" class="form-control" asp-items="Html.GetEnumSelectList<LogLevel>()"></select>
     <span asp-validation-for="LogLevel"></span>
     <span class="hint">@T["The log level."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="Text">
+<div class="form-group" asp-validation-class-for="Text">
     <label asp-for="Text">@T["Text"]</label>
     <input type="text" asp-for="Text" class="form-control code" />
     <span asp-validation-for="Text"></span>
     <span class="hint">@T["The text to log. With Liquid support."]</span>
-</fieldset>
+</div>
