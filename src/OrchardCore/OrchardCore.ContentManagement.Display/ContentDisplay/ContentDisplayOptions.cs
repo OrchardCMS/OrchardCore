@@ -7,7 +7,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     public class ContentDisplayOptions
     {
         private readonly List<ContentPartDisplayOption> _contentParts = new List<ContentPartDisplayOption>();
-
         private readonly List<ContentFieldDisplayOption> _contentFields = new List<ContentFieldDisplayOption>();
 
         public ContentPartDisplayOption TryAddContentPart(Type contentPartType)
@@ -22,6 +21,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 option = new ContentPartDisplayOption(contentPartType);
                 _contentParts.Add(option);
             }
+
             return option;
         }
 
@@ -55,7 +55,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         private Dictionary<string, ContentPartDisplayOption> _contentPartOptions;
         public IReadOnlyDictionary<string, ContentPartDisplayOption> ContentPartOptions => _contentPartOptions ??= _contentParts.ToDictionary(k => k.Type.Name);
-
 
         private Dictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
         public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions => _contentFieldOptions ??= _contentFields.ToDictionary(k => k.Type.Name);

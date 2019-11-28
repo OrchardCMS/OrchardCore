@@ -273,31 +273,14 @@ namespace OrchardCore.ContentManagement.Display
                 // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                 if (partDisplayDrivers != null && partDisplayDrivers.Any())
                 {
-                    foreach (var partDisplayDriver in partDisplayDrivers)
+                    await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
                     {
-                        await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
+                        var result = await driver.BuildEditorAsync(part, typePartDefinition, context);
+                        if (result != null)
                         {
-                            var result = await driver.BuildEditorAsync(part, typePartDefinition, context);
-                            if (result != null)
-                            {
-                                await result.ApplyAsync(context);
-                            }
-                        }, part, typePartDefinition, context, Logger);
-
-
-                        //try
-                        //{
-                        //    var result = await partDisplayDriver.BuildEditorAsync(part, typePartDefinition, context);
-                        //    if (result != null)
-                        //    {
-                        //        await result.ApplyAsync(context);
-                        //    }
-                        //}
-                        //catch (Exception ex)
-                        //{
-                        //    InvokeExtensions.HandleException(ex, Logger, partDisplayDriver.GetType().Name, nameof(BuildEditorAsync));
-                        //}
-                    }
+                            await result.ApplyAsync(context);
+                        }
+                    }, part, typePartDefinition, context, Logger);
                 }
                 // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                 else
