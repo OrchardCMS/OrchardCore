@@ -33,11 +33,12 @@ function initVueMultiselect(element) {
     var debouncedSearch = debounce(function (vm, query) {
       vm.isLoading = true;
 
+      var searchFullUrl = searchUrl;
       if (query) {
-        searchUrl += '&query=' + query;
+        searchFullUrl += '&query=' + query;
       }
 
-      fetch(searchUrl).then(function (res) {
+      fetch(searchFullUrl).then(function (res) {
         res.json().then(function (json) {
           vm.options = json;
           vm.isLoading = false;
