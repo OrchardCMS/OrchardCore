@@ -2,13 +2,13 @@
   "name": "orchardcore.resources",
   "version": "1.0.0",
   "dependencies": {
-    "bootstrap": "4.3.1",
+    "bootstrap": "4.4.0",
     "bootstrap-select": "1.13.12",
-    "bootstrap-scss": "4.3.1",
+    "bootstrap-scss": "4.4.0",
     "bootstrap-slider": "10.6.2",
     "codemirror": "5.48.4",
     "jquery": "3.4.1",
-    "popper.js": "1.14.7",
+    "popper.js": "1.16.0",
     "trumbowyg": "2.19.1"
   }
 }

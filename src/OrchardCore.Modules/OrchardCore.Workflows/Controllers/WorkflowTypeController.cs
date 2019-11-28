@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -150,49 +151,58 @@ namespace OrchardCore.Workflows.Controllers
                 Pager = pagerShape
             };
 
+            model.Options.WorkflowTypesBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = S["Delete"].Value, Value = nameof(WorkflowTypeBulkAction.Delete) }
+            };
+
             return View(model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(WorkflowTypeIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
         }
 
         [HttpPost]
         [ActionName(nameof(Index))]
-        [FormValueRequired("BulkAction")]
-        public async Task<IActionResult> BulkEdit(WorkflowTypeBulkAction bulkAction, PagerParameters pagerParameters)
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<IActionResult> BulkEdit(WorkflowTypeIndexOptions options, IEnumerable<int> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
                 return Unauthorized();
             }
-
-            var viewModel = new WorkflowTypeIndexViewModel { WorkflowTypes = new List<WorkflowTypeEntry>(), Options = new WorkflowTypeIndexOptions() };
-
-            if (!(await TryUpdateModelAsync(viewModel)))
+            
+            if (itemIds?.Count() > 0)
             {
-                return View(viewModel);
-            }
-
-            var checkedEntries = viewModel.WorkflowTypes.Where(t => t.IsChecked);
-            switch (bulkAction)
-            {
-                case WorkflowTypeBulkAction.None:
-                    break;
-                case WorkflowTypeBulkAction.Delete:
-                    foreach (var entry in checkedEntries)
-                    {
-                        var workflowType = await _workflowTypeStore.GetAsync(entry.Id);
-
-                        if (workflowType != null)
+                var checkedEntries = await _session.Query<WorkflowType, WorkflowTypeIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
+                switch (options.BulkAction)
+                {
+                    case WorkflowTypeBulkAction.None:
+                        break;
+                    case WorkflowTypeBulkAction.Delete:
+                        foreach (var entry in checkedEntries)
                         {
-                            await _workflowTypeStore.DeleteAsync(workflowType);
-                            _notifier.Success(H["Workflow {0} has been deleted.", workflowType.Name]);
-                        }
-                    }
-                    break;
+                            var workflowType = await _workflowTypeStore.GetAsync(entry.Id);
 
-                default:
-                    throw new ArgumentOutOfRangeException();
+                            if (workflowType != null)
+                            {
+                                await _workflowTypeStore.DeleteAsync(workflowType);
+                                _notifier.Success(H["Workflow {0} has been deleted.", workflowType.Name]);
+                            }
+                        }
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
 
-            return RedirectToAction("Index", new { page = pagerParameters.Page, pageSize = pagerParameters.PageSize });
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> EditProperties(int? id, string returnUrl = null)
