@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Routing;
+using OrchardCore.Apis.GraphQL.ValidationRules;
 
 namespace OrchardCore.Apis.GraphQL
 {
