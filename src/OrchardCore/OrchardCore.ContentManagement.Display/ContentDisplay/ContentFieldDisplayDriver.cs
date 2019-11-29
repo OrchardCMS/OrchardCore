@@ -80,7 +80,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                         if (!String.IsNullOrEmpty(displayMode))
                         {
                             // [ShapeType]_[DisplayType]__[DisplayMode]_Display, e.g. TextField-Header.Display.Summary
-                            ctx.Shape.Metadata.Alternates.Add($"{typeof(TField).Name}_{ctx.Shape.Metadata.DisplayType}__{displayMode}{DisplayToken}");
+                            ctx.Shape.Metadata.Alternates.Add($"{fieldType}_{ctx.Shape.Metadata.DisplayType}__{displayMode}{DisplayToken}");
                         }
 
                         for (int i = 0; i < displayTypes.Length; i++)
@@ -89,7 +89,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                             if (!String.IsNullOrEmpty(displayMode))
                             {
-                                shapeType = typeof(TField).Name + "__" + displayMode;
+                                shapeType = $"{fieldType}__{displayMode}";
 
                                 if (displayType == "")
                                 {
