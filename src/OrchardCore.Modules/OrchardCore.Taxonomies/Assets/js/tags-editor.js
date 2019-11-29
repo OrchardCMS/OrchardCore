@@ -30,6 +30,7 @@ function initializeTagsEditor(element) {
                 selectedTagTerms = allTagTerms.filter(function (tagTerm) { return tagTerm.selected });
 
                 return {
+                    open: element.dataset.open,
                     taxonomyContentItemId: element.dataset.taxonomyContentItemId,
                     createTagUrl: element.dataset.createTagUrl,
                     createTagErrorMessage: element.dataset.createTagErrorMessage,
@@ -44,9 +45,11 @@ function initializeTagsEditor(element) {
                 }
             },
             computed: {
-                //TODO
                 isDisabled: function () {
-                    return this.selectedTerms.length > 0 && !multiple;
+                    if (this.open == 'false' && this.selectableTagTerms.length === 0) {
+                        return true;
+                    }
+                    return false;
                 }
             },
             methods: {
@@ -66,12 +69,12 @@ function initializeTagsEditor(element) {
                                 displayText: data.displayText,
                                 selected: true
                             }
-                            // Add to selectableTagTerms array so model binding will save tag as selected.
-                            self.selectableTagTerms.push(tagTerm);
+                            // Add to allTagTerms array so model binding will save tag as selected.
                             self.allTagTerms.push(tagTerm);
 
                             // Add to selectedTerms to display in vue-multi-select.
                             self.selectedTagTerms.push(tagTerm);
+                            
                         },
                         error: function () {
                             alert(self.createTagErrorMessage);
