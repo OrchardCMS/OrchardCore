@@ -7,12 +7,12 @@ namespace OrchardCore.Queries.Sql
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -22,9 +22,9 @@ namespace OrchardCore.Queries.Sql
             }
 
             builder
-                .Add(T["Search"], search => search
-                    .Add(T["Queries"], "10", queries => queries
-                        .Add(T["Run SQL Query"], "5", sql => sql
+                .Add(S["Search"], search => search
+                    .Add(S["Queries"], "10", queries => queries
+                        .Add(S["Run SQL Query"], "5", sql => sql
                             .Action("Query", "Admin", new { area = "OrchardCore.Queries" })
                             .Permission(Permissions.ManageSqlQueries)
                             .LocalNav())));

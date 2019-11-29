@@ -4,14 +4,14 @@ using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.ContentTypes {
-    public class AdminMenu : INavigationProvider {
+    public class AdminMenu : INavigationProvider
+    {
+        private readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -20,13 +20,13 @@ namespace OrchardCore.ContentTypes {
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Content"], content => content
-                .Add(T["Content Definition"], "2", contentDefinition => contentDefinition
-                    .Add(T["Content Types"], "1", contentTypes => contentTypes
+            builder.Add(S["Content"], content => content
+                .Add(S["Content Definition"], "2", contentDefinition => contentDefinition
+                    .Add(S["Content Types"], "1", contentTypes => contentTypes
                         .Action("List", "Admin", new { area = "OrchardCore.ContentTypes" })
                         .Permission(Permissions.ViewContentTypes)
                         .LocalNav())
-                    .Add(T["Content Parts"], "2", contentParts => contentParts
+                    .Add(S["Content Parts"], "2", contentParts => contentParts
                         .Action("ListParts", "Admin", new { area = "OrchardCore.ContentTypes" })
                         .Permission(Permissions.ViewContentTypes)
                         .LocalNav())

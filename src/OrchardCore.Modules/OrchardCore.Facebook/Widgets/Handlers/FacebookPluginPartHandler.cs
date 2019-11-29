@@ -13,12 +13,13 @@ namespace OrchardCore.Facebook.Widgets.Handlers
     public class FacebookPluginPartHandler : ContentPartHandler<FacebookPluginPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-
+        private readonly HtmlEncoder _htmlEncoder;
         private HtmlString _bodyAspect;
 
-        public FacebookPluginPartHandler(ILiquidTemplateManager liquidTemplateManager)
+        public FacebookPluginPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
         {
             _liquidTemplateManager = liquidTemplateManager;
+            _htmlEncoder = htmlEncoder;
         }
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, FacebookPluginPart part)
@@ -45,7 +46,7 @@ namespace OrchardCore.Facebook.Widgets.Handlers
                     templateContext.MemberAccessStrategy.Register<FacebookPluginPartViewModel>();
                     templateContext.SetValue("Model", model);
 
-                    var result = await _liquidTemplateManager.RenderAsync(part.Liquid, HtmlEncoder.Default, templateContext);
+                    var result = await _liquidTemplateManager.RenderAsync(part.Liquid, _htmlEncoder, templateContext);
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);
                 }
                 catch

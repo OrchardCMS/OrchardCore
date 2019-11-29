@@ -126,7 +126,7 @@ This part covers the basic content management concepts of Orchard Core CMS, like
 
 ### Content Modeling
 
-In Orchard Core CMS most of the content that is managed is called a __Content Item__. A content item is a versioned document like a page, and article, a blog post, a news item, or anything you need to edit. Each of these documents are based on a __Content Type__ that defines which properties it is made of. For instance any article will have a title and some text. A blog post might also have tags. Orchard Core CMS lets you model the content types the way you want, which is known as _content modeling_.
+In Orchard Core CMS most of the content that is managed is called a __Content Item__. A content item is a versioned document like a page, an article, a blog post, a news item, or anything you need to edit. Each of these documents are based on a __Content Type__ that defines which properties it is made of. For instance any article will have a title and some text. A blog post might also have tags. Orchard Core CMS lets you model the content types the way you want, which is known as _content modeling_.
 
 !!! hint "For developers"
     A Content Type is analogous to a class, where a Content Item can be seen as an instance of a Content Type.

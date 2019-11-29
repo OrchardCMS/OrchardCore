@@ -59,7 +59,7 @@
                 </div>
             </div>
         </div>
-        <fieldset class="form-group">
+        <div class="form-group">
             <div class="workflow-container">
                 <div class="workflow-canvas-container">
                     <div class="workflow-canvas" data-workflow-type="@Model.WorkflowTypeJson">
@@ -70,7 +70,7 @@
                     </div>
                 </div>
             </div>
-        </fieldset>
+        </div>
     </div>
     <div id="state" class="tab-pane" role="tabpanel" aria-labelledby="state-tab">
         <div class="card form-group">
@@ -88,10 +88,10 @@
             </div>
         </div>*@
 </div>
-<fieldset class="form-group">
+<div class="form-group">
     <a class="btn btn-secondary" asp-route-action="Index" asp-route-workflowTypeId="@Model.WorkflowType.Id">@T["Back"]</a>
     <a class="btn btn-danger" data-unsafe-url="@T["Are you sure you want to delete this workflow?"]" asp-action="Delete" asp-route-id="@Model.Workflow.Id">@T["Delete"]</a>
-</fieldset>
+</div>
 
 <style asp-src="~/OrchardCore.Workflows/Styles/jsplumbtoolkit-defaults.min.css" debug-src="~/OrchardCore.Workflows/Styles/jsplumbtoolkit-defaults.css" cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.5.5/css/jsplumbtoolkit-defaults.min.css" debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.5.5/css/jsplumbtoolkit-defaults.css" version="2.5.5"></style>
 <style asp-src="~/OrchardCore.Workflows/Styles/orchard.workflows-viewer.min.css" debug-src="~/OrchardCore.Workflows/Styles/orchard.workflows-viewer.css"></style>

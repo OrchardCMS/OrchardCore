@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Html;
@@ -25,7 +26,10 @@ public static class LiquidRazorHelperExtensions
     /// <summary>
     public static async Task<IHtmlContent> LiquidToHtmlAsync(this IOrchardHelper orchardHelper, string liquid, object model)
     {
-        var liquidTemplateManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ILiquidTemplateManager>();
+        var serviceProvider = orchardHelper.HttpContext.RequestServices;
+
+        var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
+        var htmlEncoder = serviceProvider.GetRequiredService<HtmlEncoder>();
 
         var context = new TemplateContext();
 
@@ -35,7 +39,7 @@ public static class LiquidRazorHelperExtensions
             context.SetValue("Model", model);
         }
 
-        liquid = await liquidTemplateManager.RenderAsync(liquid, context);
+        liquid = await liquidTemplateManager.RenderAsync(liquid, htmlEncoder, context);
         return new HtmlString(liquid);
     }
 }

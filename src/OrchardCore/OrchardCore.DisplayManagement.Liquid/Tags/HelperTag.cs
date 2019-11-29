@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -9,7 +8,6 @@ using Fluid.Ast;
 using Fluid.Tags;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
 using OrchardCore.Liquid.Ast;
@@ -34,8 +32,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
     public class HelperStatement : TagStatement
     {
-        private const string AspPrefix = "asp-";
-
         private LiquidTagHelperActivator _activator;
         private readonly ArgumentsExpression _arguments;
         private readonly string _helper;
@@ -120,7 +116,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 
-            tagHelperOutput.WriteTo(writer, HtmlEncoder.Default);
+            tagHelperOutput.WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
         }
