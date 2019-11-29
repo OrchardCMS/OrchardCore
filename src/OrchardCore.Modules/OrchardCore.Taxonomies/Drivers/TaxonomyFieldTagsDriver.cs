@@ -97,7 +97,7 @@ namespace OrchardCore.Taxonomies.Drivers
                         terms.Add(term);
                     }
 
-                    field.Tags = terms.Select(t => t.DisplayText).ToArray();
+                    field.Content.Tags = JArray.FromObject(terms.Select(t => t.DisplayText).ToArray());
                 }
             }
 
