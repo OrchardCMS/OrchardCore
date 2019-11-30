@@ -14,7 +14,7 @@ using YesSql.Sql;
 namespace OrchardCore.Data.Migration
 {
     /// <summary>
-    /// Represents a class that manage the database migrations.
+    /// Represents a class that manages the database migrations.
     /// </summary>
     public class DataMigrationManager : IDataMigrationManager
     {

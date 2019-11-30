@@ -13,7 +13,7 @@ namespace OrchardCore.Data
         /// For a full isolation, it needs to be used in pair with <see cref="GetForCachingAsync"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="factory">A factory methods to loads or creates a document.</param>
+        /// <param name="factory">A factory methods to load or create a document.</param>
         Task<T> LoadForUpdateAsync<T>(Func<T> factory = null) where T : class, new();
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace OrchardCore.Data
         /// For a full isolation, it needs to be used in pair with <see cref="LoadForUpdateAsync"/>.
         /// </summary>
         /// <typeparam name="T">The.</typeparam>
-        /// <param name="factory">A factory method to gets or creates a document for caching.</param>
+        /// <param name="factory">A factory method to get or create a document for caching.</param>
         /// <returns></returns>
         Task<T> GetForCachingAsync<T>(Func<T> factory = null) where T : class, new();
     }

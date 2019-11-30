@@ -6,7 +6,7 @@ using YesSql;
 namespace OrchardCore.Data
 {
     /// <summary>
-    /// Represents a class that provides a helper methods for the <see cref="ISession"/>.
+    /// Represents a class that provides helper methods for the <see cref="ISession"/>.
     /// </summary>
     public class SessionHelper : ISessionHelper
     {

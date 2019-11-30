@@ -3,7 +3,7 @@ using YesSql.Sql;
 namespace OrchardCore.Data.Migration
 {
     /// <summary>
-    /// Represents a contract for a database migrations.
+    /// Represents a contract for a database migration.
     /// </summary>
     public interface IDataMigration
     {

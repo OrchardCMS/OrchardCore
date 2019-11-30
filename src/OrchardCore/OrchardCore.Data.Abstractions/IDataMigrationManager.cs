@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace OrchardCore.Data.Migration
 {
     /// <summary>
-    /// Represents a contract for manage database migrations.
+    /// Represents a contract to manage database migrations.
     /// </summary>
     public interface IDataMigrationManager
     {
