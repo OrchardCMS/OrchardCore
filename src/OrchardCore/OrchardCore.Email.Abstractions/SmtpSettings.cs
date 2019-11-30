@@ -12,19 +12,19 @@ namespace OrchardCore.Email
     public class SmtpSettings : IValidatableObject
     {
         /// <summary>
-        /// Gete or sets the default sender mail.
+        /// Gets or sets the default sender mail.
         /// </summary>
         [Required(AllowEmptyStrings = false), EmailAddress]
         public string DefaultSender { get; set; }
 
         /// <summary>
-        /// Gete or sets the mail delivery method.
+        /// Gets or sets the mail delivery method.
         /// </summary>
         [Required]
         public SmtpDeliveryMethod DeliveryMethod { get; set; }
 
         /// <summary>
-        /// Gets or sete the mailbox directory, this used for <see cref="SmtpDeliveryMethod.SpecifiedPickupDirectory"/> option.
+        /// Gets or sets the mailbox directory, this used for <see cref="SmtpDeliveryMethod.SpecifiedPickupDirectory"/> option.
         /// </summary>
         public string PickupDirectoryLocation { get; set; }
 
@@ -48,7 +48,7 @@ namespace OrchardCore.Email
         public bool RequireCredentials { get; set; }
 
         /// <summary>
-        /// Gete or sets whether to use the default user credentials.
+        /// Gets or sets whether to use the default user credentials.
         /// </summary>
         public bool UseDefaultCredentials { get; set; }
 

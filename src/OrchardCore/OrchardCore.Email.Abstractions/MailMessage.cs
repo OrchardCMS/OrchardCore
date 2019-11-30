@@ -11,12 +11,12 @@ namespace OrchardCore.Email
         public string From {get; set;}
 
         /// <summary>
-        /// Gets or sets the recipents.
+        /// Gets or sets the recipients.
         /// </summary>
         public string To {get; set;}
 
         /// <summary>
-        /// Gets or sets the caron copy emails.
+        /// Gets or sets the carbon copy emails.
         /// </summary>
         public string Cc {get; set;}
 
@@ -26,7 +26,7 @@ namespace OrchardCore.Email
         public string Bcc {get; set;}
 
         /// <summary>
-        /// Getes or sets the replied to emails.
+        /// Gets or sets the replied to emails.
         /// </summary>
         public string ReplyTo {get; set;}
 

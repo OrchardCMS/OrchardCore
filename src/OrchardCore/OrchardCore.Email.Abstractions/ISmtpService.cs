@@ -11,7 +11,7 @@ namespace OrchardCore.Email
         /// Sends the specified message to an SMTP server for delivery.
         /// </summary>
         /// <param name="message">The message to be sent.</param>
-        /// <returns>A <see cref="SmtpResult"/> that hold information about the sent message, for intsnace if it's sent successfully or it fails,</returns>
+        /// <returns>A <see cref="SmtpResult"/> that holds information about the sent message, for instance if it has sent successfully or if it has failed.</returns>
         Task<SmtpResult> SendAsync(MailMessage message);
     }
 }
