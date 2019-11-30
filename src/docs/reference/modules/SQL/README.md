@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This modules provides database indexing for content fields.
+This module provides database indexing for content fields.
 
 ## Available Tables
 
