@@ -22,23 +22,13 @@ using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
-    public static class StringArray
-    {
-        private static string[] _empty = new string[0];
-
-        public static string[] Empty
-        {
-            get { return _empty; }
-        }
-    }
-
     public class DefaultShapeTableManagerTests : IDisposable
     {
         IServiceProvider _serviceProvider;
 
         private class TestFeatureInfo : IFeatureInfo
         {
-            public string[] Dependencies { get; set; } = StringArray.Empty;
+            public string[] Dependencies { get; set; } = Array.Empty<string>();
             public IExtensionInfo Extension { get; set; }
             public string Id { get; set; }
             public string Name { get; set; }
@@ -74,7 +64,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, StringArray.Empty, false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false) }
                     };
 
                 Features = features;
@@ -108,7 +98,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, StringArray.Empty, false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false) }
                     };
 
                 Features = features;
@@ -195,7 +185,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             return new TestFeatureInfo
             {
                 Id = "Testing",
-                Dependencies = StringArray.Empty,
+                Dependencies = Array.Empty<string>(),
                 Extension = new TestModuleExtensionInfo("Testing")
             };
         }
