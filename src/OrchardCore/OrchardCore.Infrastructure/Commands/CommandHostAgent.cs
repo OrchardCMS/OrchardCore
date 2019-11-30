@@ -17,6 +17,7 @@ namespace OrchardCore.Environment.Commands
     {
         private readonly IShellHost _orchardHost;
         private readonly IShellSettingsManager _shellSettingsManager;
+        private readonly IStringLocalizer S;
 
         public CommandHostAgent(IShellHost orchardHost,
             IShellSettingsManager shellSettingsManager,
@@ -25,10 +26,8 @@ namespace OrchardCore.Environment.Commands
             _orchardHost = orchardHost;
             _shellSettingsManager = shellSettingsManager;
 
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task<CommandReturnCodes> RunSingleCommandAsync(TextReader input, TextWriter output, string tenant, string[] args, IDictionary<string, string> switches)
         {
@@ -70,7 +69,7 @@ namespace OrchardCore.Environment.Commands
                     // If this is an exception coming from reflection and there is an innerexception which is the actual one, redirect
                     ex = ex.InnerException;
                 }
-                await OutputExceptionAsync(output, T["Error executing command \"{0}\"", string.Join(" ", args)], ex);
+                await OutputExceptionAsync(output, S["Error executing command \"{0}\"", string.Join(" ", args)], ex);
                 return CommandReturnCodes.Fail;
             }
         }
@@ -90,23 +89,23 @@ namespace OrchardCore.Environment.Commands
 
             // Display inner most exception details
             exception = errors.Peek();
-            await output.WriteLineAsync(T["--------------------------------------------------------------------------------"]);
+            await output.WriteLineAsync(S["--------------------------------------------------------------------------------"]);
             await output.WriteLineAsync();
-            await output.WriteLineAsync(T["{0}", exception.Message]);
+            await output.WriteLineAsync(S["{0}", exception.Message]);
             await output.WriteLineAsync();
 
             if (!(exception.InnerException == null))
             {
-                await output.WriteLineAsync(T["Exception Details: {0}: {1}", exception.GetType().FullName, exception.Message]);
+                await output.WriteLineAsync(S["Exception Details: {0}: {1}", exception.GetType().FullName, exception.Message]);
                 await output.WriteLineAsync();
-                await output.WriteLineAsync(T["Stack Trace:"]);
+                await output.WriteLineAsync(S["Stack Trace:"]);
                 await output.WriteLineAsync();
 
                 // Display exceptions from inner most to outer most
                 foreach (var error in errors)
                 {
-                    await output.WriteLineAsync(T["[{0}: {1}]", error.GetType().Name, error.Message]);
-                    await output.WriteLineAsync(T["{0}", error.StackTrace]);
+                    await output.WriteLineAsync(S["[{0}: {1}]", error.GetType().Name, error.Message]);
+                    await output.WriteLineAsync(S["{0}", error.StackTrace]);
                     await output.WriteLineAsync();
                 }
             }
@@ -125,7 +124,7 @@ namespace OrchardCore.Environment.Commands
                 var settings = settingsList.SingleOrDefault(s => string.Equals(s.Name, tenant, StringComparison.OrdinalIgnoreCase));
                 if (settings == null)
                 {
-                    throw new Exception(T["Tenant {0} does not exist", tenant]);
+                    throw new Exception(S["Tenant {0} does not exist", tenant]);
                 }
 
                 return _orchardHost.CreateShellContextAsync(settings);
