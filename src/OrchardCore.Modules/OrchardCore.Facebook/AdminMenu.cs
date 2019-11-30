@@ -11,24 +11,23 @@ namespace OrchardCore.Facebook
     public class AdminMenu : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
+        private readonly IStringLocalizer S;
 
         public AdminMenu(
             IStringLocalizer<AdminMenu> localizer,
             ShellDescriptor shellDescriptor)
         {
-            T = localizer;
+            S = localizer;
             _shellDescriptor = shellDescriptor;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Configuration"], configuration => configuration
-                        .Add(T["Settings"], settings => settings
-                            .Add(T["Facebook App"], T["Facebook App"], settings => settings
+                builder.Add(S["Configuration"], configuration => configuration
+                        .Add(S["Settings"], settings => settings
+                            .Add(S["Facebook App"], S["Facebook App"], settings => settings
                             .AddClass("facebookApp").Id("facebookApp")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
                             .Permission(Permissions.ManageFacebookApp)
@@ -44,24 +43,23 @@ namespace OrchardCore.Facebook
     public class AdminMenuLogin : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
+        private readonly IStringLocalizer S;
 
         public AdminMenuLogin(
             IStringLocalizer<AdminMenuLogin> localizer,
             ShellDescriptor shellDescriptor)
         {
-            T = localizer;
+            S = localizer;
             _shellDescriptor = shellDescriptor;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Security"], security => security
-                        .Add(T["Authentication"], authentication => authentication
-                        .Add(T["Facebook"], "12", settings => settings
+                builder.Add(S["Security"], security => security
+                        .Add(S["Authentication"], authentication => authentication
+                        .Add(S["Facebook"], "12", settings => settings
                         .AddClass("facebook").Id("facebook")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Login })
                             .Permission(Permissions.ManageFacebookApp)

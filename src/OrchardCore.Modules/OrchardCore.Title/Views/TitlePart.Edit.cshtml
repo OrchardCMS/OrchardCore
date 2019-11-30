@@ -9,7 +9,7 @@
 }
 @if (Model.Settings?.Options != TitlePartOptions.GeneratedHidden)
 {
-    <fieldset class="form-group" asp-validation-class-for="Title">
+    <div class="form-group" asp-validation-class-for="Title">
         <label asp-for="Title">@T["Title"]</label>
         <input asp-for="Title" class="form-control content-preview-text content-caption-text" disabled="@(Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)" autofocus="autofocus" dir="@culture.GetLanguageDirection()"/>
         <span asp-validation-for="Title"></span>
@@ -21,5 +21,5 @@
         {
             <span class="hint">@T["The title of the content item. It will be automatically generated."]</span>
         }
-    </fieldset>
+    </div>
 }

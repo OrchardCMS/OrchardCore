@@ -58,13 +58,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// (await New.MyShape()).A(1).B("Some text")
         /// </code>
         /// </example>
-        public dynamic New
-        {
-            get
-            {
-                return Factory;
-            }
-        }
+        public dynamic New => Factory;
 
         /// <summary>
         /// Gets an <see cref="IShapeFactory"/> to create new shapes.

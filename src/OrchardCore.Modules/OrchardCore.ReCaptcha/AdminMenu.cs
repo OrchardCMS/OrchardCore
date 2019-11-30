@@ -8,12 +8,12 @@ namespace OrchardCore.ReCaptcha
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -23,9 +23,9 @@ namespace OrchardCore.ReCaptcha
             }
 
             builder
-                .Add(T["Security"], security => security
-                    .Add(T["Settings"], settings => settings
-                        .Add(T["reCaptcha"], T["reCaptcha"], registration => registration
+                .Add(S["Security"], security => security
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["reCaptcha"], S["reCaptcha"], registration => registration
                             .Permission(Permissions.ManageReCaptchaSettings)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ReCaptchaSettingsDisplayDriver.GroupId })
                             .LocalNav()

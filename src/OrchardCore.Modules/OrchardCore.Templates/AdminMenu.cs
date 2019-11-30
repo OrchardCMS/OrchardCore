@@ -7,12 +7,12 @@ namespace OrchardCore.Templates
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -22,8 +22,8 @@ namespace OrchardCore.Templates
             }
 
             builder
-                .Add(T["Design"], design => design
-                    .Add(T["Templates"], "Templates", import => import
+                .Add(S["Design"], design => design
+                    .Add(S["Templates"], "Templates", import => import
                         .Action("Index", "Template", new { area = "OrchardCore.Templates" })
                         .Permission(Permissions.ManageTemplates)
                         .LocalNav()

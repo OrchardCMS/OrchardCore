@@ -65,7 +65,7 @@ namespace OrchardCore.Users.Controllers
 
             if (settings.UsersCanRegister != UserRegistrationType.NoRegistration)
             {
-                await registrationEvents.InvokeAsync(i => i.RegistrationValidationAsync((key, message) => controller.ModelState.AddModelError(key, message)), logger);
+                await registrationEvents.InvokeAsync((e, modelState) => e.RegistrationValidationAsync((key, message) => modelState.AddModelError(key, message)), controller.ModelState, logger);
 
                 if (controller.ModelState.IsValid)
                 {
@@ -84,7 +84,7 @@ namespace OrchardCore.Users.Controllers
                             await signInManager.SignInAsync(user, isPersistent: false);
                         }
                         logger.LogInformation(3, "User created a new account with password.");
-                        registrationEvents.Invoke(i => i.RegisteredAsync(user), logger);
+                        registrationEvents.Invoke((e, user) => e.RegisteredAsync(user), user, logger);
 
                         return user;
                     }

@@ -21,6 +21,7 @@ namespace OrchardCore.ContentTypes.Services
         private readonly IEnumerable<IContentDefinitionEventHandler> _contentDefinitionEventHandlers;
         private readonly IEnumerable<Type> _contentPartTypes;
         private readonly IEnumerable<Type> _contentFieldTypes;
+        private readonly IStringLocalizer S;
 
         public ContentDefinitionService(
                 IContentDefinitionManager contentDefinitionManager,
@@ -52,11 +53,10 @@ namespace OrchardCore.ContentTypes.Services
             _contentFieldTypes = contentFields.Select(cf => cf.GetType())
                 .Union(contentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type));
             Logger = logger;
-            T = localizer;
+            S = localizer;
         }
 
         public ILogger Logger { get; }
-        public IStringLocalizer T { get; }
 
         public IEnumerable<EditTypeViewModel> LoadTypes()
         {
@@ -130,7 +130,7 @@ namespace OrchardCore.ContentTypes.Services
             _contentDefinitionManager.AlterTypeDefinition(name, builder => builder.WithPart(name));
             _contentDefinitionManager.AlterTypeDefinition(name, cfg => cfg.Creatable().Draftable().Versionable().Listable().Securable());
 
-            _contentDefinitionEventHandlers.Invoke(x => x.ContentTypeCreated(new ContentTypeCreatedContext { ContentTypeDefinition = contentTypeDefinition }), Logger);
+            _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentTypeCreated(context), new ContentTypeCreatedContext { ContentTypeDefinition = contentTypeDefinition }, Logger);
 
             return contentTypeDefinition;
         }
@@ -154,13 +154,13 @@ namespace OrchardCore.ContentTypes.Services
 
             _contentDefinitionManager.DeleteTypeDefinition(name);
 
-            _contentDefinitionEventHandlers.Invoke(x => x.ContentTypeRemoved(new ContentTypeRemovedContext { ContentTypeDefinition = typeDefinition }), Logger);
+            _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentTypeRemoved(context), new ContentTypeRemovedContext { ContentTypeDefinition = typeDefinition }, Logger);
         }
 
         public void AddPartToType(string partName, string typeName)
         {
             _contentDefinitionManager.AlterTypeDefinition(typeName, typeBuilder => typeBuilder.WithPart(partName));
-            _contentDefinitionEventHandlers.Invoke(x => x.ContentPartAttached(new ContentPartAttachedContext { ContentTypeName = typeName, ContentPartName = partName }), Logger);
+            _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentPartAttached(context), new ContentPartAttachedContext { ContentTypeName = typeName, ContentPartName = partName }, Logger);
         }
 
         public void AddReusablePartToType(string name, string displayName, string description, string partName, string typeName)
@@ -171,13 +171,13 @@ namespace OrchardCore.ContentTypes.Services
                 cfg.WithDescription(description);
             }));
 
-            _contentDefinitionEventHandlers.Invoke(x => x.ContentPartAttached(new ContentPartAttachedContext { ContentTypeName = typeName, ContentPartName = partName }), Logger);
+            _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentPartAttached(context), new ContentPartAttachedContext { ContentTypeName = typeName, ContentPartName = partName }, Logger);
         }
 
         public void RemovePartFromType(string partName, string typeName)
         {
             _contentDefinitionManager.AlterTypeDefinition(typeName, typeBuilder => typeBuilder.RemovePart(partName));
-            _contentDefinitionEventHandlers.Invoke(x => x.ContentPartDetached(new ContentPartDetachedContext { ContentTypeName = typeName, ContentPartName = partName }), Logger);
+            _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentPartDetached(context), new ContentPartDetachedContext { ContentTypeName = typeName, ContentPartName = partName }, Logger);
         }
 
         public IEnumerable<EditPartViewModel> LoadParts(bool metadataPartsOnly)
@@ -281,13 +281,13 @@ namespace OrchardCore.ContentTypes.Services
             var name = partViewModel.Name;
 
             if (_contentDefinitionManager.LoadPartDefinition(name) != null)
-                throw new Exception(T["Cannot add part named '{0}'. It already exists.", name]);
+                throw new Exception(S["Cannot add part named '{0}'. It already exists.", name]);
 
             if (!string.IsNullOrEmpty(name))
             {
                 _contentDefinitionManager.AlterPartDefinition(name, builder => builder.Attachable());
                 var partDefinition = _contentDefinitionManager.LoadPartDefinition(name);
-                _contentDefinitionEventHandlers.Invoke(x => x.ContentPartCreated(new ContentPartCreatedContext { ContentPartDefinition = partDefinition }), Logger);
+                _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentPartCreated(context), new ContentPartCreatedContext { ContentPartDefinition = partDefinition }, Logger);
                 return new EditPartViewModel(partDefinition);
             }
 
@@ -311,7 +311,7 @@ namespace OrchardCore.ContentTypes.Services
             }
 
             _contentDefinitionManager.DeletePartDefinition(name);
-            _contentDefinitionEventHandlers.Invoke(x => x.ContentPartRemoved(new ContentPartRemovedContext { ContentPartDefinition = partDefinition }), Logger);
+            _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentPartRemoved(context), new ContentPartRemovedContext { ContentPartDefinition = partDefinition }, Logger);
         }
 
         public IEnumerable<Type> GetFields()
@@ -345,23 +345,23 @@ namespace OrchardCore.ContentTypes.Services
             _contentDefinitionManager.AlterPartDefinition(partName,
                 partBuilder => partBuilder.WithField(fieldName, fieldBuilder => fieldBuilder.OfType(fieldTypeName).WithDisplayName(displayName)));
 
-            _contentDefinitionEventHandlers.Invoke(x => x.ContentFieldAttached(new ContentFieldAttachedContext
+            _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentFieldAttached(context), new ContentFieldAttachedContext
             {
                 ContentPartName = partName,
                 ContentFieldTypeName = fieldTypeName,
                 ContentFieldName = fieldName,
                 ContentFieldDisplayName = displayName
-            }), Logger);
+            }, Logger);
         }
 
         public void RemoveFieldFromPart(string fieldName, string partName)
         {
             _contentDefinitionManager.AlterPartDefinition(partName, typeBuilder => typeBuilder.RemoveField(fieldName));
-            _contentDefinitionEventHandlers.Invoke(x => x.ContentFieldDetached(new ContentFieldDetachedContext
+            _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentFieldDetached(context), new ContentFieldDetachedContext
             {
                 ContentPartName = partName,
                 ContentFieldName = fieldName
-            }), Logger);
+            }, Logger);
         }
 
         public void AlterField(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel)

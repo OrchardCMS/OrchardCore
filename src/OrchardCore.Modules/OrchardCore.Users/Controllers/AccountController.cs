@@ -177,7 +177,7 @@ namespace OrchardCore.Users.Controllers
                 }
                 else
                 {
-                    await _accountEvents.InvokeAsync(i => i.LoggingInAsync(model.UserName, (key, message) => ModelState.AddModelError(key, message)), _logger);
+                    await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
                     var user = await _userManager.FindByNameAsync(model.UserName);
                     // This doesn't count login failures towards account lockout
                     // To enable password failures to trigger account lockout, set lockoutOnFailure: true
@@ -193,12 +193,12 @@ namespace OrchardCore.Users.Controllers
                                 if (result.Succeeded)
                                 {
                                     _logger.LogInformation(1, "User logged in.");
-                                    await _accountEvents.InvokeAsync(a => a.LoggedInAsync(model.UserName), _logger);
+                                    await _accountEvents.InvokeAsync((e, model) => e.LoggedInAsync(model.UserName), model, _logger);
                                     return await LoggedInActionResult(user, returnUrl);
                                 }
 
                                 ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
-                                await _accountEvents.InvokeAsync(a => a.LoggingInFailedAsync(model.UserName), _logger);
+                                await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
                             }
                         }
                     }
@@ -369,7 +369,7 @@ namespace OrchardCore.Users.Controllers
             {
                 if (!await AddConfirmEmailError(user))
                 {
-                    await _accountEvents.InvokeAsync(i => i.LoggingInAsync(user.UserName, (key, message) => ModelState.AddModelError(key, message)), _logger);
+                    await _accountEvents.InvokeAsync((e, user, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), user, ModelState, _logger);
 
                     var signInResult = await ExternalLoginSignInAsync(user, info);
                     if (signInResult.Succeeded)
@@ -573,7 +573,7 @@ namespace OrchardCore.Users.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
-            await _accountEvents.InvokeAsync(i => i.LoggingInAsync(user.UserName, (key, message) => ModelState.AddModelError(key, message)), _logger);
+            await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
             if (!signInResult.Succeeded)

@@ -24,6 +24,7 @@ namespace OrchardCore.Setup.Controllers
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IClock _clock;
         private readonly ILogger<SetupController> _logger;
+        private readonly IStringLocalizer S;
 
         public SetupController(
             ILogger<SetupController> logger,
@@ -32,7 +33,7 @@ namespace OrchardCore.Setup.Controllers
             ShellSettings shellSettings,
             IEnumerable<DatabaseProvider> databaseProviders,
             IShellHost shellHost,
-            IStringLocalizer<SetupController> t)
+            IStringLocalizer<SetupController> localizer)
         {
             _logger = logger;
             _clock = clock;
@@ -40,11 +41,8 @@ namespace OrchardCore.Setup.Controllers
             _setupService = setupService;
             _shellSettings = shellSettings;
             _databaseProviders = databaseProviders;
-
-            T = t;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public async Task<ActionResult> Index(string token)
         {
@@ -100,18 +98,18 @@ namespace OrchardCore.Setup.Controllers
             {
                 if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
                 {
-                    ModelState.AddModelError(nameof(model.ConnectionString), T["The connection string is mandatory for this provider."]);
+                    ModelState.AddModelError(nameof(model.ConnectionString), S["The connection string is mandatory for this provider."]);
                 }
             }
 
             if (String.IsNullOrEmpty(model.Password))
             {
-                ModelState.AddModelError(nameof(model.Password), T["The password is required."]);
+                ModelState.AddModelError(nameof(model.Password), S["The password is required."]);
             }
 
             if (model.Password != model.PasswordConfirmation)
             {
-                ModelState.AddModelError(nameof(model.PasswordConfirmation), T["The password confirmation doesn't match the password."]);
+                ModelState.AddModelError(nameof(model.PasswordConfirmation), S["The password confirmation doesn't match the password."]);
             }
 
             RecipeDescriptor selectedRecipe = null;
@@ -120,12 +118,12 @@ namespace OrchardCore.Setup.Controllers
                 selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
                 if (selectedRecipe == null)
                 {
-                    ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
+                    ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
                 }
             }
             else if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
             {
-                ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
+                ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
             }
 
             if (!ModelState.IsValid)
