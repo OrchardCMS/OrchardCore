@@ -182,11 +182,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class LiquidViewTemplateExtensions
     {
-        public static ValueTask RenderAsync(
-            this LiquidViewTemplate template,
-            TextWriter writer,
-            TextEncoder encoder,
-            TemplateContext templateContext)
+        public static ValueTask RenderAsync(this LiquidViewTemplate template, TextWriter writer, TextEncoder encoder, TemplateContext templateContext)
         {
             async ValueTask Awaited(Task task)
             {
@@ -215,10 +211,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             return template.RenderAsync(writer, encoder, templateContext);
         }
 
-        public static async Task<string> RenderAsync(
-            this LiquidViewTemplate template,
-            TextEncoder encoder,
-            TemplateContext templateContext)
+        public static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, TemplateContext templateContext)
         {
             // Check if a 'ViewContext' has been cached for rendering.
             var viewContext = templateContext.GetAmbientViewContext(encoder, template);
