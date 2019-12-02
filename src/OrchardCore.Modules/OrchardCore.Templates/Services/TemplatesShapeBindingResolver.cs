@@ -1,12 +1,10 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Liquid;
 using OrchardCore.Templates.Models;
 
@@ -75,9 +73,7 @@ namespace OrchardCore.Templates.Services
                 BindingSource = shapeType,
                 BindingAsync = async displayContext =>
                 {
-                    var context = new TemplateContext();
-                    await context.ContextualizeAsync(displayContext);
-                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, context);
+                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, displayContext);
                     return new HtmlString(htmlContent);
                 }
             };

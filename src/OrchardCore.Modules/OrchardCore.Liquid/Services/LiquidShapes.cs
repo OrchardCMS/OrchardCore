@@ -1,10 +1,8 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Liquid.ViewModels;
 
 namespace OrchardCore.Liquid.Services
@@ -24,12 +22,10 @@ namespace OrchardCore.Liquid.Services
             var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var liquidPart = model.LiquidPart;
 
-            var templateContext = new TemplateContext();
+            var templateContext = liquidTemplateManager.Context;
             templateContext.SetValue("ContentItem", liquidPart.ContentItem);
-            templateContext.MemberAccessStrategy.Register<LiquidPartViewModel>();
-            await templateContext.ContextualizeAsync(shapeDisplayContext.DisplayContext);
 
-            model.Html = await liquidTemplateManager.RenderAsync(liquidPart.Liquid, _htmlEncoder, templateContext);
+            model.Html = await liquidTemplateManager.RenderAsync(liquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext);
         }
 
         public void Discover(ShapeTableBuilder builder)

@@ -30,12 +30,15 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.DynamicCache.Liquid;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewTemplate : BaseFluidTemplate<LiquidViewTemplate>
     {
+        private const string ContextKey = "LiquidViewTemplateContext";
+
         public static readonly string ViewsFolder = "Views";
         public static readonly string ViewExtension = ".liquid";
         public static readonly MemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
@@ -107,14 +110,12 @@ namespace OrchardCore.DisplayManagement.Liquid
             var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
 
             var template = await ParseAsync(path, fileProviderAccessor.FileProvider, Cache, isDevelopment);
-
-            var context = new TemplateContext();
-            await context.ContextualizeAsync(page, (object)page.Model);
-
-            var options = services.GetRequiredService<IOptions<LiquidOptions>>().Value;
             var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
-            await template.RenderAsync(options, services, page.Output, htmlEncoder, context);
+            var context = Context;
+
+            await context.ContextualizeAsync(page.Context.RequestServices, (object)page.Model);
+            await template.RenderAsync(page.Output, htmlEncoder, context);
         }
 
         public static Task<LiquidViewTemplate> ParseAsync(string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
@@ -145,6 +146,11 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
             });
         }
+
+        /// <summary>
+        /// Retrieve the current <see cref="TemplateContext"/> from the current shell scope.
+        /// </summary>
+        public static TemplateContext Context => ShellScope.GetOrCreate<TemplateContext>(ContextKey);
     }
 
     internal class ShapeAccessor : DelegateAccessor
@@ -155,7 +161,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             if (o is Shape shape)
             {
-                if (shape.Properties.TryGetValue(n, out object result))
+                if (shape.Properties.TryGetValue(n, out var result))
                 {
                     return result;
                 }
@@ -164,6 +170,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 {
                     return shape.Items;
                 }
+
                 // Resolve Model.Content.MyNamedPart
                 // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
                 return shape.Named(n.Replace("__", "-"));
@@ -177,8 +184,6 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         public static ValueTask RenderAsync(
             this LiquidViewTemplate template,
-            LiquidOptions options,
-            IServiceProvider services,
             TextWriter writer,
             TextEncoder encoder,
             TemplateContext templateContext)
@@ -187,8 +192,6 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 await task;
             }
-
-            templateContext.AddAsyncFilters(options, services);
 
             // Check if a 'ViewContext' has been cached for rendering.
             var viewContext = templateContext.GetAmbientViewContext(encoder, template);
@@ -199,10 +202,12 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                 // Use the view engine to render the liquid page.
                 var task = viewContext.View.RenderAsync(viewContext);
+
                 if (task.IsCompletedSuccessfully)
                 {
                     return new ValueTask();
                 }
+
                 return Awaited(task);
             }
 
@@ -210,11 +215,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             return template.RenderAsync(writer, encoder, templateContext);
         }
 
-        public static async Task<string> RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
-            IServiceProvider services, TextEncoder encoder, TemplateContext templateContext)
+        public static async Task<string> RenderAsync(
+            this LiquidViewTemplate template,
+            TextEncoder encoder,
+            TemplateContext templateContext)
         {
-            templateContext.AddAsyncFilters(options, services);
-
             // Check if a 'ViewContext' has been cached for rendering.
             var viewContext = templateContext.GetAmbientViewContext(encoder, template);
 
@@ -258,57 +263,30 @@ namespace OrchardCore.DisplayManagement.Liquid
         internal static ViewContext GetAmbientViewContext(this TemplateContext templateContext, TextEncoder encoder, LiquidViewTemplate template)
         {
             // Check if a 'ViewContext' has been cached for rendering.
-            if (templateContext.AmbientValues.TryGetValue("ViewContext", out var context) &&
-                context is ViewContext viewContext &&
-                viewContext.View is RazorView razorView &&
-                razorView.RazorPage is LiquidPage liquidPage)
+            if (templateContext.AmbientValues.TryGetValue("ViewContext", out var context))
             {
-                liquidPage.RenderAsync = output => template.RenderAsync(output, encoder, templateContext);
+                templateContext.AmbientValues.Remove("ViewContext");
 
-                return viewContext;
+                if (context is ViewContext viewContext && viewContext.View is RazorView razorView && razorView.RazorPage is LiquidPage liquidPage)
+                {
+                    liquidPage.RenderAsync = output => template.RenderAsync(output, encoder, templateContext);
+
+                    return viewContext;
+                }
             }
 
             // Otherwise, we don't need the view engine for rendering.
             return null;
         }
 
-        public static Task ContextualizeAsync(this TemplateContext context, IServiceProvider services)
+        public static async Task ContextualizeAsync(this TemplateContext context, IServiceProvider services, object model)
         {
-            if (!context.AmbientValues.ContainsKey("Services"))
-            {
-                var displayHelper = services.GetRequiredService<IDisplayHelper>();
+            var displayContext = model as DisplayContext;
 
-                return context.ContextualizeAsync(new DisplayContext
-                {
-                    ServiceProvider = services,
-                    DisplayAsync = displayHelper,
-                    Value = null
-                });
+            if (displayContext != null)
+            {
+                model = displayContext.Value;
             }
-
-            return Task.CompletedTask;
-        }
-
-        public static Task ContextualizeAsync(this TemplateContext context, RazorPage page, object model)
-        {
-            var services = page.Context.RequestServices;
-            var displayHelper = services.GetRequiredService<IDisplayHelper>();
-
-            return context.ContextualizeAsync(new DisplayContext
-            {
-                ServiceProvider = page.Context.RequestServices,
-                DisplayAsync = displayHelper,
-                Value = model
-            });
-        }
-
-        public static async Task ContextualizeAsync(this TemplateContext context, DisplayContext displayContext)
-        {
-            var services = displayContext.ServiceProvider;
-            context.AmbientValues.EnsureCapacity(9);
-
-            context.AmbientValues.Add("Services", services);
-            context.AmbientValues.Add("DisplayHelper", displayContext.DisplayAsync);
 
             var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
             var viewContext = viewContextAccessor.ViewContext;
@@ -319,52 +297,70 @@ namespace OrchardCore.DisplayManagement.Liquid
                 viewContext = GetViewContext(services, actionContext);
 
                 // If there was no 'ViewContext' but a 'DisplayContext'.
-                if (displayContext.Value != null)
+                if (displayContext != null)
                 {
                     // Cache the 'ViewContext' to be used for rendering.
                     context.AmbientValues.Add("ViewContext", viewContext);
                 }
             }
 
-            var urlHelperFactory = services.GetRequiredService<IUrlHelperFactory>();
-            var urlHelper = urlHelperFactory.GetUrlHelper(viewContext);
-            context.AmbientValues.Add("UrlHelper", urlHelper);
+            // Check if already contextualized.
+            if (!context.AmbientValues.ContainsKey("Services"))
+            {
+                // Shared contextualization.
+                context.AmbientValues.EnsureCapacity(9);
+                context.AmbientValues.Add("Services", services);
 
-            var shapeFactory = services.GetRequiredService<IShapeFactory>();
-            context.AmbientValues.Add("ShapeFactory", shapeFactory);
+                var displayHelper = services.GetRequiredService<IDisplayHelper>();
+                context.AmbientValues.Add("DisplayHelper", displayHelper);
 
-            var localizer = services.GetRequiredService<IViewLocalizer>();
+                var urlHelperFactory = services.GetRequiredService<IUrlHelperFactory>();
+                var urlHelper = urlHelperFactory.GetUrlHelper(viewContext);
+                context.AmbientValues.Add("UrlHelper", urlHelper);
+
+                var shapeFactory = services.GetRequiredService<IShapeFactory>();
+                context.AmbientValues.Add("ShapeFactory", shapeFactory);
+
+                var viewLocalizer = services.GetRequiredService<IViewLocalizer>();
+                context.AmbientValues.Add("ViewLocalizer", viewLocalizer);
+
+                var layoutAccessor = services.GetRequiredService<ILayoutAccessor>();
+                context.AmbientValues.Add("LayoutAccessor", layoutAccessor);
+
+                var layout = await layoutAccessor.GetLayoutAsync();
+                context.AmbientValues.Add("ThemeLayout", layout);
+
+                var options = services.GetRequiredService<IOptions<LiquidOptions>>().Value;
+
+                foreach (var handler in services.GetServices<ILiquidTemplateEventHandler>())
+                {
+                    await handler.RenderingAsync(context);
+                }
+
+                context.AddAsyncFilters(options, services);
+
+                context.CultureInfo = CultureInfo.CurrentUICulture;
+            }
+
+            // Specific contextualization before each rendering.
+            var localizer = context.AmbientValues["ViewLocalizer"];
+
             if (localizer is IViewContextAware contextable)
             {
                 contextable.Contextualize(viewContext);
             }
 
-            context.AmbientValues.Add("ViewLocalizer", localizer);
-
-            var layoutAccessor = services.GetRequiredService<ILayoutAccessor>();
-            context.AmbientValues.Add("LayoutAccessor", layoutAccessor);
-
-            var layout = await layoutAccessor.GetLayoutAsync();
-            context.AmbientValues.Add("ThemeLayout", layout);
-
             if (viewContext.View is RazorView razorView)
             {
-                context.AmbientValues.Add("LiquidPage", razorView.RazorPage);
+                context.AmbientValues["LiquidPage"] = razorView.RazorPage;
             }
 
-            foreach (var handler in services.GetServices<ILiquidTemplateEventHandler>())
-            {
-                await handler.RenderingAsync(context);
-            }
-
-            var model = displayContext.Value;
             if (model != null)
             {
                 context.MemberAccessStrategy.Register(model.GetType());
-                context.SetValue("Model", model);
             }
 
-            context.CultureInfo = CultureInfo.CurrentUICulture;
+            context.SetValue("Model", model);
         }
 
         private async static Task<ActionContext> GetActionContextAsync(IServiceProvider services)

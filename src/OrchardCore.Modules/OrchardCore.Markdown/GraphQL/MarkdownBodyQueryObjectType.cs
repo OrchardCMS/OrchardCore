@@ -34,8 +34,8 @@ namespace OrchardCore.Markdown.GraphQL
             var htmlEncoder = context.ServiceProvider.GetService<HtmlEncoder>();
 
             var markdown = ctx.Source.Markdown;
-            var templateContext = new TemplateContext();
-            markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder, templateContext);
+            var templateContext = liquidTemplateManager.Context;
+            markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder);
 
             return Markdig.Markdown.ToHtml(markdown);
         }

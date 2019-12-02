@@ -268,7 +268,7 @@ namespace OrchardCore.Lucene.Controllers
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
-                var templateContext = new TemplateContext();
+                var templateContext = _liquidTemplateManager.Context;
                 var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
                 foreach (var parameter in parameters)
@@ -276,7 +276,7 @@ namespace OrchardCore.Lucene.Controllers
                     templateContext.SetValue(parameter.Key, parameter.Value);
                 }
 
-                var tokenizedContent = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, System.Text.Encodings.Web.JavaScriptEncoder.Default, templateContext);
+                var tokenizedContent = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, System.Text.Encodings.Web.JavaScriptEncoder.Default);
 
                 try
                 {

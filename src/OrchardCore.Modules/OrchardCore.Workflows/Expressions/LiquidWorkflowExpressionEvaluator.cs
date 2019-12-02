@@ -40,13 +40,13 @@ namespace OrchardCore.Workflows.Expressions
 
             await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingExpressionAsync(expressionContext), expressionContext, _logger);
 
-            var result = await _liquidTemplateManager.RenderAsync(expression.Expression, System.Text.Encodings.Web.JavaScriptEncoder.Default, templateContext);
+            var result = await _liquidTemplateManager.RenderAsync(expression.Expression, System.Text.Encodings.Web.JavaScriptEncoder.Default);
             return string.IsNullOrWhiteSpace(result) ? default(T) : (T)Convert.ChangeType(result, typeof(T));
         }
 
         private TemplateContext CreateTemplateContext(WorkflowExecutionContext workflowContext)
         {
-            var context = new TemplateContext();
+            var context = _liquidTemplateManager.Context;
 
             // Set WorkflowContext as the model.
             context.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));

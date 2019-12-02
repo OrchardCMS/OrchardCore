@@ -52,7 +52,7 @@ namespace OrchardCore.Lucene
 
             await _luceneIndexProvider.SearchAsync (luceneQuery.Index, async searcher =>
             {
-                var templateContext = new TemplateContext();
+                var templateContext = _liquidTemplateManager.Context;
 
                 if (parameters != null)
                 {
@@ -62,7 +62,7 @@ namespace OrchardCore.Lucene
                     }
                 }
 
-                var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, System.Text.Encodings.Web.JavaScriptEncoder.Default, templateContext);
+                var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, System.Text.Encodings.Web.JavaScriptEncoder.Default);
                 var parameterizedQuery = JObject.Parse(tokenizedContent);
 
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);

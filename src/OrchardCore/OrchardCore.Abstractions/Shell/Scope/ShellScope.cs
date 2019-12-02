@@ -23,6 +23,7 @@ namespace OrchardCore.Environment.Shell.Scope
 
         private readonly IServiceScope _serviceScope;
 
+        private readonly Dictionary<object, object> _items = new Dictionary<object, object>();
         private readonly List<Func<ShellScope, Task>> _beforeDispose = new List<Func<ShellScope, Task>>();
         private readonly HashSet<string> _deferredSignals = new HashSet<string>();
         private readonly List<Func<ShellScope, Task>> _deferredTasks = new List<Func<ShellScope, Task>>();
@@ -55,25 +56,39 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Retrieve the 'ShellContext' of the current shell scope.
         /// </summary>
-        public static ShellContext Context
-        {
-            get => Current?.ShellContext;
-        }
+        public static ShellContext Context => Current?.ShellContext;
 
         /// <summary>
         /// Retrieve the 'IServiceProvider' of the current shell scope.
         /// </summary>
-        public static IServiceProvider Services
-        {
-            get => Current?.ServiceProvider;
-        }
+        public static IServiceProvider Services => Current?.ServiceProvider;
 
         /// <summary>
         /// Retrieve the current shell scope from the async flow.
         /// </summary>
-        public static ShellScope Current
+        public static ShellScope Current => _current.Value;
+
+        /// <summary>
+        /// Sets a shared item to the current shell scope.
+        /// </summary>
+        public static void Set(object key, object value) => Current._items[key] = value;
+
+        /// <summary>
+        /// Gets a shared item from the current shell scope.
+        /// </summary>
+        public static T Get<T>(object key) where T : class => Current._items.TryGetValue(key, out var value) ? value as T : null;
+
+        /// <summary>
+        /// Gets (or creates) a shared item from the current shell scope.
+        /// </summary>
+        public static T GetOrCreate<T>(object key) where T : class, new()
         {
-            get => _current.Value;
+            if (!Current._items.TryGetValue(key, out var value))
+            {
+                Current._items[key] = value = new T();
+            }
+
+            return value as T;
         }
 
         /// <summary>

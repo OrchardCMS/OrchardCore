@@ -14,8 +14,9 @@ namespace OrchardCore.Liquid.Services
     public class LiquidTemplateManager : ILiquidTemplateManager
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly LiquidOptions _liquidOptions;
         private readonly IServiceProvider _serviceProvider;
+
+        private TemplateContext _context;
 
         public LiquidTemplateManager(
             IMemoryCache memoryCache,
@@ -23,11 +24,12 @@ namespace OrchardCore.Liquid.Services
             IServiceProvider serviceProvider)
         {
             _memoryCache = memoryCache;
-            _liquidOptions = options.Value;
             _serviceProvider = serviceProvider;
         }
 
-        public async Task RenderAsync(string source, TextWriter textWriter, TextEncoder encoder, TemplateContext context)
+        public TemplateContext Context => _context ??= LiquidViewTemplate.Context;
+
+        public async Task RenderAsync(string source, TextWriter textWriter, TextEncoder encoder, object model)
         {
             if (String.IsNullOrWhiteSpace(source))
             {
@@ -35,12 +37,13 @@ namespace OrchardCore.Liquid.Services
             }
 
             var result = GetCachedTemplate(source);
+            var context = Context;
 
-            await context.ContextualizeAsync(_serviceProvider);
-            await result.RenderAsync(_liquidOptions, _serviceProvider, textWriter, encoder, context);
+            await context.ContextualizeAsync(_serviceProvider, model);
+            await result.RenderAsync(textWriter, encoder, context);
         }
 
-        public async Task<string> RenderAsync(string source, TextEncoder encoder, TemplateContext context)
+        public async Task<string> RenderAsync(string source, TextEncoder encoder, object model)
         {
             if (String.IsNullOrWhiteSpace(source))
             {
@@ -48,9 +51,10 @@ namespace OrchardCore.Liquid.Services
             }
 
             var result = GetCachedTemplate(source);
+            var context = Context;
 
-            await context.ContextualizeAsync(_serviceProvider);
-            return await result.RenderAsync(_liquidOptions, _serviceProvider, encoder, context);
+            await context.ContextualizeAsync(_serviceProvider, model);
+            return await result.RenderAsync(encoder, context);
         }
 
         private LiquidViewTemplate GetCachedTemplate(string source)
@@ -71,6 +75,7 @@ namespace OrchardCore.Liquid.Services
                 e.SetSlidingExpiration(TimeSpan.FromSeconds(30));
                 return parsed;
             });
+
             return result;
         }
 
