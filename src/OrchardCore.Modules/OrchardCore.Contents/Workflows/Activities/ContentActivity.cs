@@ -56,6 +56,10 @@ namespace OrchardCore.Contents.Workflows.Activities
                 if (contentItemResult is ContentItem contentItem)
                 {
                     return contentItem;
+                } else if (contentItemResult is string contentItemId)
+                {
+                    // Latest is used to allow fetching unpublished content items
+                    return await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
                 }
 
                 // Try to map the result to a content item
@@ -78,35 +82,18 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
 
-        protected virtual async Task<string> GetContentByIdAsync(WorkflowExecutionContext workflowContext)
+        protected virtual async Task<string> GetContentItemIdAsync(WorkflowExecutionContext workflowContext)
         {
-            // Try and evaluate a content item from the Content expression, if provided.
+            // Try and evaluate a content item id from the Content expression, if provided.
             if (!string.IsNullOrWhiteSpace(Content.Expression))
             {
                 var expression = new WorkflowExpression<object> { Expression = Content.Expression };
                 var contentItemIdResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
-
-                if (contentItemIdResult is string contentItem)
+                if (contentItemIdResult is string contentItemId)
                 {
-                    return contentItem;
+                    return contentItemId;
                 }
-
-                // Try to map the result to a content item
-                //var contentItemJson = JsonConvert.SerializeObject(contentItemResult);
-                //var res = JsonConvert.DeserializeObject<ContentItem>(contentItemJson);
-
-                //return res.ContentItemId;
             }
-
-            // If no expression was provided, see if the content item was provided as an input or as a property.
-            var content = workflowContext.Input.GetValue<IContent>(ContentsHandler.ContentItemInputKey)
-                ?? workflowContext.Properties.GetValue<IContent>(ContentsHandler.ContentItemInputKey);
-
-            if (content != null)
-            {
-                return content.ContentItem.ContentItemId;
-            }
-
             return null;
         }
 

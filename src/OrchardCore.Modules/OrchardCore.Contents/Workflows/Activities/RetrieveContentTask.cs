@@ -21,17 +21,15 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Retrieve"]);
+            return Outcomes(T["Retrieved"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var contentItemId = await GetContentByIdAsync(workflowContext);
-
-            var contentItem = await ContentManager.GetAsync("", VersionOptions.Published);
-            //publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
-
-            return Outcomes("Retrieve");
+            var contentItemId = await GetContentItemIdAsync(workflowContext);
+            var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
+            workflowContext.LastResult = contentItem;
+            return Outcomes("Retrieved");
         }
     }
 }
