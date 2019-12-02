@@ -1,4 +1,8 @@
+@inject OrchardCore.Settings.ISiteService siteService
+@using OrchardCore.Entities
+@using OrchardCore.Admin.Models
 @{
+    var adminSettings = (await siteService.GetSiteSettingsAsync()).As<AdminSettings>();
     TagBuilder tag = Tag(Model, "ul");
     tag.Attributes["Id"] = "adminMenu";
 
@@ -7,14 +11,18 @@
         tag.InnerHtml.AppendHtml(await DisplayAsync(item));
     }
 }
-
-<input id="filter" class="form-control" placeholder="@T["Filter"]" type="search" data-toggle="tooltip" data-html="true" title="Ctrl+Shift+F" />
+@if (adminSettings.DisplayMenuFilter)
+{
+    <input id="filter" class="form-control" placeholder="@T["Filter"]" type="search" data-toggle="tooltip" data-html="true" title="Ctrl+Shift+F" />
+}
 <nav id="left-nav">
     @tag
 </nav>
-<script at="Foot">        
+@if (adminSettings.DisplayMenuFilter)
+{
+<script at="Foot">
     $('[data-toggle="tooltip"]').tooltip();
-    $(document).bind('keydown', function(e) {
+    $(document).bind('keydown', function (e) {
         if (e.ctrlKey && e.shiftKey && e.which == 70) {
             $('#filter').focus();
             return false;
@@ -53,4 +61,5 @@
         return false;
     });
 </script>
+}
 <!-- Menu rendered on @DateTime.UtcNow.ToString("r") -->

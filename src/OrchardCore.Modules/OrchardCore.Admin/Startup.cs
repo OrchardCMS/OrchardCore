@@ -8,6 +8,9 @@ using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Settings;
+using OrchardCore.Admin.Drivers;
 
 namespace OrchardCore.Admin
 {
@@ -27,6 +30,10 @@ namespace OrchardCore.Admin
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();
             services.AddScoped<IAdminThemeService, AdminThemeService>();
+
+            services.AddScoped<IDisplayDriver<ISite>, AdminSiteSettingsDisplayDriver>();
+            services.AddScoped<IPermissionProvider, PermissionsAdminSettings>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
