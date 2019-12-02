@@ -14,6 +14,7 @@ namespace OrchardCore.Contents
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
+        private readonly IStringLocalizer S;
 
         public AdminMenu(
             IStringLocalizer<AdminMenu> localizer,
@@ -22,10 +23,8 @@ namespace OrchardCore.Contents
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -36,18 +35,18 @@ namespace OrchardCore.Contents
 
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
 
-            builder.Add(T["Content"], "1.4", content => content
+            builder.Add(S["Content"], NavigationConstants.AdminMenuContentPosition, content => content
                 .AddClass("content").Id("content")
-                .Add(T["Content Items"], "1", contentItems => contentItems
+                .Add(S["Content Items"], "1", contentItems => contentItems
                     .Permission(Permissions.EditOwnContent)
                     .Action("List", "Admin", new { area = "OrchardCore.Contents" })
                     .LocalNav())
                 );
 
-            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
+            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
             if (contentTypes.Any())
             {
-                await builder.AddAsync(T["New"], "-1", async newMenu =>
+                await builder.AddAsync(S["New"], "-1", async newMenu =>
                 {
                     newMenu.LinkToFirstChild(false).AddClass("new").Id("new");
                     foreach (var contentTypeDefinition in contentTypes)

@@ -28,11 +28,11 @@ namespace OrchardCore.Lists.Feeds
             _session = session;
         }
 
-        public FeedQueryMatch Match(FeedContext context)
+        public async Task<FeedQueryMatch> MatchAsync(FeedContext context)
         {
             var model = new ListFeedQueryViewModel();
 
-            if (!context.Updater.TryUpdateModelAsync(model).GetAwaiter().GetResult() || model.ContentItemId == null)
+            if (!await context.Updater.TryUpdateModelAsync(model) || model.ContentItemId == null)
             {
                 return null;
             }

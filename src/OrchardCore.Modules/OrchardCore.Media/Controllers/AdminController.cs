@@ -7,53 +7,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell.Configuration;
+using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Controllers
 {
     public class AdminController : Controller
     {
-        private static string[] DefaultAllowedFileExtensions = new string[] {
-            // Images
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".ico",
-            ".svg",
-
-            // Documents
-            ".pdf", // (Portable Document Format; Adobe Acrobat)
-            ".doc", ".docx", // (Microsoft Word Document)
-            ".ppt", ".pptx", ".pps", ".ppsx", // (Microsoft PowerPoint Presentation)
-            ".odt", // (OpenDocument Text Document)
-            ".xls", ".xlsx", // (Microsoft Excel Document)
-            ".psd", // (Adobe Photoshop Document)
-
-            // Audio
-            ".mp3",
-            ".m4a",
-            ".ogg",
-            ".wav",
-
-            // Video
-            ".mp4", ".m4v", // (MPEG-4)
-            ".mov", // (QuickTime)
-            ".wmv", // (Windows Media Video)
-            ".avi",
-            ".mpg",
-            ".ogv", // (Ogg)
-            ".3gp", // (3GPP)
-        };
-
+        private readonly HashSet<string> _allowedFileExtensions;
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
-        private readonly IShellConfiguration _shellConfiguration;
         private readonly ILogger _logger;
         private readonly IStringLocalizer<AdminController> T;
 
@@ -61,14 +29,15 @@ namespace OrchardCore.Media.Controllers
             IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
-            IShellConfiguration shellConfiguration,
+            IOptions<MediaOptions> options,
             ILogger<AdminController> logger,
-            IStringLocalizer<AdminController> stringLocalizer)
+            IStringLocalizer<AdminController> stringLocalizer
+            )
         {
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
-            _shellConfiguration = shellConfiguration;
+            _allowedFileExtensions = options.Value.AllowedFileExtensions;
             _logger = logger;
             T = stringLocalizer;
         }
@@ -99,10 +68,8 @@ namespace OrchardCore.Media.Controllers
             {
                 return NotFound();
             }
-            
 
             var content = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => x.IsDirectory);
-
 
             var allowed = new List<IFileStoreEntry>();
 
@@ -114,7 +81,7 @@ namespace OrchardCore.Media.Controllers
                 }
             }
 
-            return allowed.ToArray();            
+            return allowed.ToArray();
         }
 
         public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path)
@@ -172,6 +139,7 @@ namespace OrchardCore.Media.Controllers
         }
 
         [HttpPost]
+        [MediaSizeLimit]
         public async Task<ActionResult<object>> Upload(
             string path,
             string contentType,
@@ -187,12 +155,6 @@ namespace OrchardCore.Media.Controllers
                 path = "";
             }
 
-            var section = _shellConfiguration.GetSection("OrchardCore.Media");
-
-            // var maxUploadSize = section.GetValue("MaxRequestBodySize", 100_000_000);
-            var maxFileSize = section.GetValue("MaxFileSize", 30_000_000);
-            var allowedFileExtensions = section.GetSection("AllowedFileExtensions").Get<string[]>() ?? DefaultAllowedFileExtensions;
-
             var result = new List<object>();
 
             // Loop through each file in the request
@@ -200,7 +162,7 @@ namespace OrchardCore.Media.Controllers
             {
                 // TODO: support clipboard
 
-                if (!allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
+                if (!_allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
                 {
                     result.Add(new
                     {
@@ -211,51 +173,6 @@ namespace OrchardCore.Media.Controllers
                     });
 
                     _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
-
-                    continue;
-                }                
-
-                if (file.Length > maxFileSize)
-                {
-                    result.Add(new
-                    {
-                        name = file.FileName,
-                        size = file.Length,
-                        folder = path,
-                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double) maxFileSize / 1024 / 1024)].ToString()
-                    });
-
-                    _logger.LogInformation("File too big: '{0}' ({1}B)", file.FileName, file.Length);
-
-                    continue;
-                }
-
-                if (!allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
-                {
-                    result.Add(new
-                    {
-                        name = file.FileName,
-                        size = file.Length,
-                        folder = path,
-                        error = T["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
-                    });
-
-                    _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
-
-                    continue;
-                }                
-
-                if (file.Length > maxFileSize)
-                {
-                    result.Add(new
-                    {
-                        name = file.FileName,
-                        size = file.Length,
-                        folder = path,
-                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double) maxFileSize / 1024 / 1024)].ToString()
-                    });
-
-                    _logger.LogInformation("File too big: '{0}' ({1}B)", file.FileName, file.Length);
 
                     continue;
                 }
@@ -266,7 +183,7 @@ namespace OrchardCore.Media.Controllers
 
                     using (var stream = file.OpenReadStream())
                     {
-                        await _mediaFileStore.CreateFileFromStream(mediaFilePath, stream);
+                        await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
                     }
 
                     var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
@@ -275,7 +192,7 @@ namespace OrchardCore.Media.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "An error occured while uploading a media");
+                    _logger.LogError(ex, "An error occurred while uploading a media");
 
                     result.Add(new
                     {
@@ -395,8 +312,6 @@ namespace OrchardCore.Media.Controllers
             return Ok();
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> MoveMediaList(string[] mediaNames, string sourceFolder, string targetFolder)
         {
@@ -407,7 +322,7 @@ namespace OrchardCore.Media.Controllers
                 return Unauthorized();
             }
 
-            if ((mediaNames == null) || (mediaNames.Length < 1) 
+            if ((mediaNames == null) || (mediaNames.Length < 1)
                 || string.IsNullOrEmpty(sourceFolder)
                 || string.IsNullOrEmpty(targetFolder))
             {
@@ -417,20 +332,20 @@ namespace OrchardCore.Media.Controllers
             sourceFolder = sourceFolder == "root" ? string.Empty : sourceFolder;
             targetFolder = targetFolder == "root" ? string.Empty : targetFolder;
 
-            var  filesOnError = new List<string>();
+            var filesOnError = new List<string>();
 
             foreach (var name in mediaNames)
             {
                 var sourcePath = _mediaFileStore.Combine(sourceFolder, name);
-                var targetPath = _mediaFileStore.Combine( targetFolder, name);
+                var targetPath = _mediaFileStore.Combine(targetFolder, name);
                 try
                 {
                     await _mediaFileStore.MoveFileAsync(sourcePath, targetPath);
                 }
                 catch (FileStoreException)
                 {
-                    filesOnError.Add(sourcePath);                    
-                }                
+                    filesOnError.Add(sourcePath);
+                }
             }
 
             if (filesOnError.Count > 0)

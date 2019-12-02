@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Entities;
@@ -40,12 +40,12 @@ namespace OrchardCore.Users.Controllers
             ISiteService siteService,
             INotifier notifier,
             ISmtpService smtpService,
-            IShapeFactory shapeFactory,
-            IHtmlDisplay displayManager,
+            IDisplayHelper displayHelper,
             ILogger<RegistrationController> logger,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
             IStringLocalizer<RegistrationController> stringLocalizer,
-            IEnumerable<IRegistrationFormEvents> registrationEvents) : base(smtpService, shapeFactory, displayManager)
+            IEnumerable<IRegistrationFormEvents> registrationEvents,
+            HtmlEncoder htmlEncoder) : base(smtpService, displayHelper, htmlEncoder)
         {
             _userService = userService;
             _userManager = userManager;
@@ -91,12 +91,12 @@ namespace OrchardCore.Users.Controllers
 
             ViewData["ReturnUrl"] = returnUrl;
 
-            await _registrationEvents.InvokeAsync(i => i.RegistrationValidationAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+            await _registrationEvents.InvokeAsync((e, modelState) => e.RegistrationValidationAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
             if (ModelState.IsValid)
             {
                 var user = await _userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail }, model.Password, (key, message) => ModelState.AddModelError(key, message)) as User;
-                
+
                 if (user != null)
                 {
                     if (settings.UsersMustValidateEmail)
@@ -110,7 +110,7 @@ namespace OrchardCore.Users.Controllers
                         await _signInManager.SignInAsync(user, isPersistent: false);
                     }
                     _logger.LogInformation(3, "User created a new account with password.");
-                    _registrationEvents.Invoke(i => i.RegisteredAsync(), _logger);
+                    _registrationEvents.Invoke((e, user) => e.RegisteredAsync(user), user, _logger);
 
                     return RedirectToLocal(returnUrl);
                 }

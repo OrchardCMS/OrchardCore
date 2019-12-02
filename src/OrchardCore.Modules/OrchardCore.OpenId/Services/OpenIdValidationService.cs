@@ -64,7 +64,7 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(OpenIdValidationSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
@@ -134,16 +134,17 @@ namespace OrchardCore.OpenId.Services
             // If a tenant was specified, ensure it is valid, that the OpenID server feature
             // was enabled and that at least a scope linked with the current tenant exists.
             if (!string.IsNullOrEmpty(settings.Tenant) &&
-                !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
+                !string.Equals(settings.Tenant, _shellSettings.Name))
             {
-                IServiceScope scope;
-                if ((scope = await _shellHost.TryGetScopeAsync(settings.Tenant)) == null)
+                if (!_shellHost.TryGetSettings(settings.Tenant, out var shellSettings))
                 {
                     results.Add(new ValidationResult(T["The specified tenant is not valid."]));
                 }
                 else
                 {
-                    using (scope)
+                    var shellScope = await _shellHost.GetScopeAsync(shellSettings);
+
+                    await shellScope.UsingAsync(async scope =>
                     {
                         var manager = scope.ServiceProvider.GetService<IOpenIdScopeManager>();
                         if (manager == null)
@@ -165,7 +166,7 @@ namespace OrchardCore.OpenId.Services
                                 }));
                             }
                         }
-                    }
+                    });
                 }
             }
 

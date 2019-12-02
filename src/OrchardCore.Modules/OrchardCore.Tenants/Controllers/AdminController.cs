@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data;
@@ -17,6 +18,7 @@ using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using OrchardCore.Tenants.ViewModels;
 
@@ -68,8 +70,8 @@ namespace OrchardCore.Tenants.Controllers
             H = htmlLocalizer;
         }
 
-        public IStringLocalizer S { get; set; }
-        public IHtmlLocalizer H { get; set; }
+        public IStringLocalizer S { get; }
+        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
         {
@@ -105,9 +107,9 @@ namespace OrchardCore.Tenants.Controllers
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 entries = entries.Where(t => t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
-                    (t.ShellSettings != null && t.ShellSettings != null &&
-                    ((t.ShellSettings.RequestUrlHost != null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
-                    (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
+                    (t.ShellSettings != null &&
+                     ((t.ShellSettings.RequestUrlHost != null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
+                     (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
             }
 
             switch (options.Filter)
@@ -156,10 +158,41 @@ namespace OrchardCore.Tenants.Controllers
                 Pager = pagerShape
             };
 
+            // We populate the SelectLists
+            model.Options.TenantsStates = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["All states"].Value, Value = nameof(TenantsFilter.All) },
+                new SelectListItem() { Text = H["Running"].Value, Value = nameof(TenantsFilter.Running) },
+                new SelectListItem() { Text = H["Disabled"].Value, Value = nameof(TenantsFilter.Disabled) },
+                new SelectListItem() { Text = H["Uninitialized"].Value, Value = nameof(TenantsFilter.Uninitialized) }
+            };
+
+            model.Options.TenantsSorts = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["Name"].Value, Value = nameof(TenantsOrder.Name) },
+                new SelectListItem() { Text = H["State"].Value, Value = nameof(TenantsOrder.State) }
+            };
+
+            model.Options.TenantsBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["Disable"].Value, Value = nameof(TenantsBulkAction.Disable) },
+                new SelectListItem() { Text = H["Enable"].Value, Value = nameof(TenantsBulkAction.Enable) }
+            };
+
             return View(model);
         }
 
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(AdminIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Filter", model.Options.Filter },
+                { "Options.OrderBy", model.Options.OrderBy },
+                { "Options.Search", model.Options.Search },
+                { "Options.TenantsStates", model.Options.TenantsStates }
+            });
+        }
+
         [HttpPost]
+        [FormValueRequired("submit.BulkAction")]
         public async Task<IActionResult> Index(BulkActionViewModel model)
         {
             var allSettings = _shellHost.GetAllSettings();
@@ -283,8 +316,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
 
-                _shellSettingsManager.SaveSettings(shellSettings);
-                var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
+                await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                 return RedirectToAction(nameof(Index));
             }

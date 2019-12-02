@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Microsoft.Authentication
@@ -8,9 +10,9 @@ namespace OrchardCore.Microsoft.Authentication
         public static readonly Permission ManageMicrosoftAuthentication
             = new Permission(nameof(ManageMicrosoftAuthentication), "Manage Microsoft Authentication settings");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            yield return ManageMicrosoftAuthentication;
+            return Task.FromResult(new[] { ManageMicrosoftAuthentication }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

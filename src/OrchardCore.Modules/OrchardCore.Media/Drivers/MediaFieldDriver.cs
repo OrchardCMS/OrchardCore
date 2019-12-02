@@ -27,7 +27,7 @@ namespace OrchardCore.Media.Drivers
             S = localizer;
         }
 
-        public IStringLocalizer S { get; set; }
+        public IStringLocalizer S { get; }
 
         public override IDisplayResult Display(MediaField field, BuildFieldDisplayContext context)
         {
@@ -83,7 +83,7 @@ namespace OrchardCore.Media.Drivers
                 field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? new string[] {};
 
 
-                var settings = context.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
                 
                 if (settings.Required && field.Paths.Length < 1)
                 {

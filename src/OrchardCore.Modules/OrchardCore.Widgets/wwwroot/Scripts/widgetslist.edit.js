@@ -1,32 +1,31 @@
-var createEditorUrl = $('#buildEditorUrl').attr("value");
-var widgetTemplate = function (data, prefixesName, prefix, contentTypesName, contentType, zoneName, zone) {
-    return '<div class="widget-template">' + data + '<input type="hidden" name="' + prefixesName + '" value="' + prefix + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /><input type="hidden" name="' + zoneName + '" value="' + zone + '" class="source-zone" /></div>';
-};
-function guid() {
-    function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000)
-          .toString(16)
-          .substring(1);
-    }
-    return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
-}
-
 $(function () {
+    //function scoped variables    
+    function guid() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
+    }
 
     $(document).on('click', '.add-list-widget', function (event) {
         var type = $(this).data("widget-type");
         var targetId = $(this).data("target-id");
+        var createEditorUrl = $('#' + targetId).data("buildeditorurl");
         var prefixesName = $(this).data("prefixes-name");
+        var parentContentType = $(this).data("parent-content-type");
+        var partName = $(this).data("part-name");
         var zonesName = $(this).data("zones-name");
         var zone = $(this).data("zone");
         var prefix = guid();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
-            url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId
+            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&parentContentType=" + parentContentType + "&partName=" + partName
         })
         .done(function (data) {
             var result = JSON.parse(data);
-            $(document.getElementById(targetId)).append(widgetTemplate(result.Content, prefixesName, prefix, contentTypesName, type, zonesName, zone));
+            $(document.getElementById(targetId)).append(result.Content);
 
             var dom = $(result.Scripts);
             dom.filter('script').each(function () {
@@ -39,17 +38,20 @@ $(function () {
         var type = $(this).data("widget-type");
         var target = $(this).closest('.widget-template');
         var targetId = $(this).data("target-id");
+        var createEditorUrl = $('#' + targetId).data("buildeditorurl");
         var prefixesName = $(this).data("prefixes-name");
+        var parentContentType = $(this).data("parent-content-type");
+        var partName = $(this).data("part-name");
         var zonesName = $(this).data("zones-name");
         var zone = $(this).data("zone");
         var prefix = guid();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
-            url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId
+            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&parentContentType=" + parentContentType + "&partName=" + partName
         })
         .done(function (data) {
             var result = JSON.parse(data);
-            $(widgetTemplate(result.Content, prefixesName, prefix, contentTypesName, type, zonesName, zone)).insertBefore(target);
+            $(result.Content).insertBefore(target);
 
             var dom = $(result.Scripts);
             dom.filter('script').each(function () {

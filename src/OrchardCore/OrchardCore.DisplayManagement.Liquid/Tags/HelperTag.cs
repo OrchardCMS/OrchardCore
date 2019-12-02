@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -9,7 +8,6 @@ using Fluid.Ast;
 using Fluid.Tags;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
 using OrchardCore.Liquid.Ast;
@@ -34,8 +32,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
     public class HelperStatement : TagStatement
     {
-        private const string AspPrefix = "asp-";
-
         private LiquidTagHelperActivator _activator;
         private readonly ArgumentsExpression _arguments;
         private readonly string _helper;
@@ -55,16 +51,15 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var services = servicesValue as IServiceProvider;
 
-            if (!context.AmbientValues.TryGetValue("ViewContext", out var viewContext))
-            {
-                throw new ArgumentException("ViewContext missing while invoking 'helper'");
-            }
+            var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
+            var viewContext = viewContextAccessor.ViewContext;
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
             var helper = _helper ?? arguments["helper_name"].Or(arguments.At(0)).ToStringValue();
 
             var factory = services.GetRequiredService<LiquidTagHelperFactory>();
 
+            // Each tag is a singleton, as views are
             if (_activator == null)
             {
                 lock (this)
@@ -84,31 +79,44 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var tagHelper = factory.CreateTagHelper(_activator, (ViewContext)viewContext,
                 arguments, out var contextAttributes, out var outputAttributes);
 
-            var content = new StringWriter();
-            if (Statements?.Any() ?? false)
-            {
-                Completion completion = Completion.Break;
-                for (var index = 0; index < Statements.Count; index++)
-                {
-                    completion = await Statements[index].WriteToAsync(content, encoder, context);
+            var content = "";
 
-                    if (completion != Completion.Normal)
+            // Build the ChildContent of this tag
+            using (var sb = StringBuilderPool.GetInstance())
+            {
+                using (var output = new StringWriter(sb.Builder))
+                {
+                    if (Statements != null && Statements.Count > 0)
                     {
-                        return completion;
+                        var completion = Completion.Break;
+
+                        for (var index = 0; index < Statements.Count; index++)
+                        {
+                            completion = await Statements[index].WriteToAsync(output, encoder, context);
+
+                            if (completion != Completion.Normal)
+                            {
+                                return completion;
+                            }
+                        }
                     }
+
+                    await output.FlushAsync();
                 }
+
+                content = sb.Builder.ToString();
             }
 
-            var tagHelperContext = new TagHelperContext(contextAttributes,
-                new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
+            var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
             var tagHelperOutput = new TagHelperOutput(helper, outputAttributes, (_, e)
-                => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content.ToString())));
+                => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content)));
 
-            tagHelperOutput.Content.AppendHtml(content.ToString());
+            tagHelperOutput.Content.AppendHtml(content);
+
             await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 
-            tagHelperOutput.WriteTo(writer, HtmlEncoder.Default);
+            tagHelperOutput.WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
         }

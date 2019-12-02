@@ -22,35 +22,31 @@ namespace OrchardCore.AdminMenu.Controllers
     public class MenuController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IAdminMenuService _AdminMenuService;
+        private readonly IAdminMenuService _adminMenuService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public MenuController(
             IAuthorizationService authorizationService,
-            IAdminMenuService AdminMenuService,
+            IAdminMenuService adminMenuService,
             ISiteService siteService,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            IStringLocalizer<MenuController> stringLocalizer,
             IHtmlLocalizer<MenuController> htmlLocalizer,
             ILogger<MenuController> logger)
         {
             _authorizationService = authorizationService;
-            _AdminMenuService = AdminMenuService;
+            _adminMenuService = adminMenuService;
             _siteService = siteService;
             New = shapeFactory;
             _notifier = notifier;
-
-            T = stringLocalizer;
             H = htmlLocalizer;
             Logger = logger;
         }
 
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
-        public ILogger Logger { get; set; }
-        public dynamic New { get; set; }
+        public ILogger Logger { get; }
 
         public async Task<IActionResult> List(AdminMenuListOptions options, PagerParameters pagerParameters)
         {
@@ -68,14 +64,14 @@ namespace OrchardCore.AdminMenu.Controllers
                 options = new AdminMenuListOptions();
             }
 
-            var trees = await _AdminMenuService.GetAsync();
-            
+            var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
+
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                trees = trees.Where(dp => dp.Name.Contains(options.Search)).ToList();
+                adminMenuList = adminMenuList.Where(dp => dp.Name.Contains(options.Search)).ToList();
             }
 
-            var count = trees.Count();
+            var count = adminMenuList.Count();
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
@@ -85,7 +81,7 @@ namespace OrchardCore.AdminMenu.Controllers
             // load at least the ones without error. Provide a way to delete the ones on error.
             try
             {
-                results = trees
+                results = adminMenuList
                 .Skip(startIndex)
                 .Take(pageSize)
                 .ToList();
@@ -136,13 +132,12 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (ModelState.IsValid)
             {
-                var tree = new Models.AdminMenu {Name = model.Name};
+                var tree = new Models.AdminMenu { Name = model.Name };
 
-                await _AdminMenuService.SaveAsync(tree);
-                
+                await _adminMenuService.SaveAsync(tree);
+
                 return RedirectToAction(nameof(List));
             }
-
 
             return View(model);
         }
@@ -154,17 +149,18 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuService.GetByIdAsync(id);
+            var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
+            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (tree == null)
+            if (adminMenu == null)
             {
                 return NotFound();
             }
 
             var model = new AdminMenuEditViewModel
             {
-                Id = tree.Id,
-                Name = tree.Name
+                Id = adminMenu.Id,
+                Name = adminMenu.Name
             };
 
             return View(model);
@@ -178,18 +174,19 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuService.GetByIdAsync(model.Id);
+            var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
+            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, model.Id);
 
-            if (tree == null)
+            if (adminMenu == null)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                tree.Name = model.Name;
+                adminMenu.Name = model.Name;
 
-                await _AdminMenuService.SaveAsync(tree);                
+                await _adminMenuService.SaveAsync(adminMenu);
 
                 _notifier.Success(H["Admin menu updated successfully"]);
 
@@ -207,15 +204,16 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuService.GetByIdAsync(id);
+            var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
+            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (tree == null)
+            if (adminMenu == null)
             {
                 _notifier.Error(H["Can't find the admin menu."]);
                 return RedirectToAction(nameof(List));
             }
 
-            var removed = await _AdminMenuService.DeleteAsync(tree);
+            var removed = await _adminMenuService.DeleteAsync(adminMenu);
 
 
             if (removed == 1)
@@ -239,16 +237,17 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuService.GetByIdAsync(id);
+            var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
+            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (tree == null)
+            if (adminMenu == null)
             {
                 return NotFound();
             }
 
-            tree.Enabled = !tree.Enabled;
+            adminMenu.Enabled = !adminMenu.Enabled;
 
-            await _AdminMenuService.SaveAsync(tree);
+            await _adminMenuService.SaveAsync(adminMenu);
 
             _notifier.Success(H["Admin menu toggled successfully"]);
 

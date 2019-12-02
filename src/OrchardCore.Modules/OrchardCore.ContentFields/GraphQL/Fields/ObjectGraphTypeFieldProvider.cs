@@ -39,7 +39,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                         var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
                         var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
-                        var contentField = contentPart?.Get(typeToResolve, context.FieldName.ToPascalCase());
+                        var contentField = contentPart?.Get(typeToResolve, field.Name);
                         return contentField;
                     })
                 };

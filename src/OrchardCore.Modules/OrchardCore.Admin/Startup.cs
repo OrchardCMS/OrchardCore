@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.Modules;
@@ -19,9 +19,11 @@ namespace OrchardCore.Admin
 
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(AdminZoneFilter));
                 options.Filters.Add(typeof(AdminFilter));
                 options.Filters.Add(typeof(AdminMenuFilter));
+
+                // Ordered to be called before any global filter.
+                options.Filters.Add(typeof(AdminZoneFilter), -1000);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -29,12 +31,12 @@ namespace OrchardCore.Admin
             services.AddScoped<IAdminThemeService, AdminThemeService>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Admin",
                 areaName: "OrchardCore.Admin",
-                template: "admin",
+                pattern: "admin",
                 defaults: new { controller = "Admin", action = "Index" }
             );
         }

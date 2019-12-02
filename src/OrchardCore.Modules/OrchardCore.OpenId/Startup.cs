@@ -61,6 +61,8 @@ namespace OrchardCore.OpenId
             services.AddSingleton<IOpenIdClientService, OpenIdClientService>();
             services.AddScoped<IDisplayDriver<ISite>, OpenIdClientSettingsDisplayDriver>();
 
+            services.AddRecipeExecutionStep<OpenIdClientSettingsStep>();
+
             // Register the options initializers required by the OpenID Connect client handler.
             services.TryAddEnumerable(new[]
             {
@@ -106,7 +108,7 @@ namespace OrchardCore.OpenId
             services.TryAddScoped(provider => (IOpenIdScopeManager) provider.GetRequiredService<IOpenIddictScopeManager>());
             services.TryAddScoped(provider => (IOpenIdTokenManager) provider.GetRequiredService<IOpenIddictTokenManager>());
 
-            services.AddSingleton<IIndexProvider, OpenIdApplicationIndexProvider>();
+            services.AddSingleton<IIndexProvider, OpenIdAppIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdScopeIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();
@@ -160,7 +162,7 @@ namespace OrchardCore.OpenId
             });
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             async Task<OpenIdServerSettings> GetServerSettingsAsync()
             {
@@ -185,40 +187,40 @@ namespace OrchardCore.OpenId
 
             if (settings.AuthorizationEndpointPath.HasValue)
             {
-                routes.MapAreaRoute(
+                routes.MapAreaControllerRoute(
                     name: "Access.Authorize",
                     areaName: OpenIdConstants.Features.Core,
-                    template: settings.AuthorizationEndpointPath.Value,
+                    pattern: settings.AuthorizationEndpointPath.Value,
                     defaults: new { controller = "Access", action = "Authorize" }
                 );
             }
 
             if (settings.LogoutEndpointPath.HasValue)
             {
-                routes.MapAreaRoute(
+                routes.MapAreaControllerRoute(
                     name: "Access.Logout",
                     areaName: OpenIdConstants.Features.Core,
-                    template: settings.LogoutEndpointPath.Value,
+                    pattern: settings.LogoutEndpointPath.Value,
                     defaults: new { controller = "Access", action = "Logout" }
                 );
             }
 
             if (settings.TokenEndpointPath.HasValue)
             {
-                routes.MapAreaRoute(
+                routes.MapAreaControllerRoute(
                     name: "Access.Token",
                     areaName: OpenIdConstants.Features.Core,
-                    template: settings.TokenEndpointPath.Value,
+                    pattern: settings.TokenEndpointPath.Value,
                     defaults: new { controller = "Access", action = "Token" }
                 );
             }
 
             if (settings.UserinfoEndpointPath.HasValue)
             {
-                routes.MapAreaRoute(
+                routes.MapAreaControllerRoute(
                     name: "UserInfo.Me",
                     areaName: OpenIdConstants.Features.Core,
-                    template: settings.UserinfoEndpointPath.Value,
+                    pattern: settings.UserinfoEndpointPath.Value,
                     defaults: new { controller = "UserInfo", action = "Me" }
                 );
             }
