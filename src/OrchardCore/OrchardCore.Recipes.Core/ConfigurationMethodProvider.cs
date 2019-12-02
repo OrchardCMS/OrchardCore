@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Scripting;
-
 
 namespace OrchardCore.Recipes
 {
@@ -10,15 +9,12 @@ namespace OrchardCore.Recipes
     {
         private readonly GlobalMethod _globalMethod;
 
-        public ConfigurationMethodProvider(ShellSettings settings)
+        public ConfigurationMethodProvider(IShellConfiguration configuration)
         {
             _globalMethod = new GlobalMethod
             {
                 Name = "configuration",
-                Method = serviceprovider => (Func<string, object>)(name =>
-                {
-                    return settings.ShellConfiguration[name];
-                })
+                Method = serviceprovider => (Func<string, object>)(name => configuration[name])
             };
         }
 

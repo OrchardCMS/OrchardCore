@@ -46,4 +46,3 @@ The value will be retrieved from the `appsettings.json` tenant file.
 | --- | --- |
 | `DefaultCulture` | The default culture that will be used for the setup screen. |
 | `SupportedCultures` | The list of the supported cultures for the setup screen. |
-

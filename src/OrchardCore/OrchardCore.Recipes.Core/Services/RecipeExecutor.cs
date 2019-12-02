@@ -47,7 +47,7 @@ namespace OrchardCore.Recipes.Services
             try
             {
                 _environmentMethodProvider = new ParametersMethodProvider(environment);
-                _configurationMethodProvider = new ConfigurationMethodProvider(_shellSettings);
+                _configurationMethodProvider = new ConfigurationMethodProvider(_shellSettings.ShellConfiguration);
 
                 var result = new RecipeResult { ExecutionId = executionId };
 
