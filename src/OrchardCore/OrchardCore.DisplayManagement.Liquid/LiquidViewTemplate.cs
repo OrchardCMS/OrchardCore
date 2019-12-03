@@ -190,16 +190,24 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             if (viewContext == null)
             {
-                var actionContext = await GetActionContextAsync(services);
-                viewContext = GetViewContext(services, actionContext);
+                var actionContext = services.GetService<IActionContextAccessor>()?.ActionContext;
 
-                // If there was no 'ViewContext' yet and the model is a shape using a custom dynamic binding,
-                // e.g to render a database template through 'GraphQL', here we need to use the view engine.
-
-                if (model is Shape shape && shape.Metadata.IsDynamic)
+                if (actionContext == null)
                 {
-                    await context.ContextualizeAsync(services, viewContext, model);
-                    return await template.RenderAsync(encoder, context, viewContext);
+                    actionContext = await GetActionContextAsync(services);
+                    viewContext = GetViewContext(services, actionContext);
+
+                    // If the model is a shape using a dynamic binding.
+                    if (model is Shape shape && shape.Metadata.IsDynamic)
+                    {
+                        // We need to use the view engine to render the liquid page.
+                        await context.ContextualizeAsync(services, viewContext, model);
+                        return await template.RenderAsync(viewContext, encoder, context);
+                    }
+                }
+                else
+                {
+                    viewContext = GetViewContext(services, actionContext);
                 }
             }
 
@@ -207,7 +215,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             return await template.RenderAsync(context, encoder);
         }
 
-        internal static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, TemplateContext context, ViewContext viewContext)
+        internal static async Task<string> RenderAsync(this LiquidViewTemplate template, ViewContext viewContext, TextEncoder encoder, TemplateContext context)
         {
             (((RazorView)viewContext.View).RazorPage as LiquidPage).RenderAsync = output => template.RenderAsync(output, encoder, context);
 
@@ -228,19 +236,12 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         internal async static Task<ActionContext> GetActionContextAsync(IServiceProvider services)
         {
-            var actionContext = services.GetService<IActionContextAccessor>()?.ActionContext;
-
-            if (actionContext != null)
-            {
-                return actionContext;
-            }
-
             var routeData = new RouteData();
             routeData.Routers.Add(new RouteCollection());
 
             var httpContext = services.GetRequiredService<IHttpContextAccessor>().HttpContext;
 
-            actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+            var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
             var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
 
             foreach (var filter in filters)
