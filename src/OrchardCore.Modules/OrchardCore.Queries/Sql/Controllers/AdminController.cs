@@ -72,6 +72,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
             var templateContext = new TemplateContext();
+
             foreach (var parameter in parameters)
             {
                 templateContext.SetValue(parameter.Key, parameter.Value);

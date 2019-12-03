@@ -2,6 +2,9 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Localization
 {
+    /// <summary>
+    /// Represents a contract for a localization service.
+    /// </summary>
     public interface ILocalizationService
     {
         /// <summary>

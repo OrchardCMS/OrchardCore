@@ -28,7 +28,7 @@ be disabled in `ResourceDebugMode`
 
 Named resources are well-known scripts and stylesheets that are described in a module.  
 They have a name, a type (script, stylesheet) and optionally a version.  
-The `OrchardCore.Resources` modules provides some commonly used ones:
+The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name | Type | Versions | Dependencies |
 | ---- | ---- | -------- | ------------ |

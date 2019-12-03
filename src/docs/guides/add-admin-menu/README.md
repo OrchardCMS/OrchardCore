@@ -117,12 +117,12 @@ namespace MyModule
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -135,10 +135,10 @@ namespace MyModule
             // Adding our menu items to the builder.
             // The builder represents the full admin menu tree.
             builder
-                .Add(T["My Root View"], "after",  rootView => rootView               
-                    .Add(T["Child One"],"1", childOne => childOne
+                .Add(S["My Root View"], "after",  rootView => rootView               
+                    .Add(S["Child One"],"1", childOne => childOne
                         .Action("ChildOne", "DemoNav", new { area = "MyModule"}))
-                    .Add(T["Child Two"], "2", childTwo => childTwo
+                    .Add(S["Child Two"], "2", childTwo => childTwo
                         .Action("ChildTwo", "DemoNav", new { area = "MyModule"})));
 
             return Task.CompletedTask;

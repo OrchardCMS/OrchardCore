@@ -13,12 +13,12 @@ namespace OrchardCore.ContentFields.Fields
 {
     public class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField>
     {
+        private readonly IStringLocalizer S;
+
         public TextFieldDisplayDriver(IStringLocalizer<TextFieldDisplayDriver> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(TextField field, BuildFieldDisplayContext context)
         {
@@ -50,7 +50,7 @@ namespace OrchardCore.ContentFields.Fields
                 var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Text))
                 {
-                    updater.ModelState.AddModelError(Prefix, T["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
             }
 

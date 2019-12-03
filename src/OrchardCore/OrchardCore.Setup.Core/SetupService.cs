@@ -11,7 +11,6 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -200,7 +199,7 @@ namespace OrchardCore.Setup.Services
                     var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
                     var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
 
-                    await setupEventHandlers.InvokeAsync(x => x.Setup(
+                    await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
                         context.SiteName,
                         context.AdminUsername,
                         context.AdminEmail,
@@ -210,7 +209,7 @@ namespace OrchardCore.Setup.Services
                         context.DatabaseTablePrefix,
                         context.SiteTimeZone,
                         reportError
-                    ), logger);
+                    ), context, logger);
                 });
 
                 if (context.Errors.Any())

@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.Localization;
@@ -14,11 +15,13 @@ namespace OrchardCore.ContentFields.Fields
     public class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField>
     {
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
+        private readonly HtmlEncoder _htmlEncoder;
 
-        public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<HtmlFieldDisplayDriver> localizer)
+        public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<HtmlFieldDisplayDriver> localizer, HtmlEncoder htmlEncoder)
         {
             _liquidTemplatemanager = liquidTemplatemanager;
             T = localizer;
+            _htmlEncoder = htmlEncoder;
         }
 
         public IStringLocalizer T { get; }
@@ -37,7 +40,7 @@ namespace OrchardCore.ContentFields.Fields
                 model.PartFieldDefinition = context.PartFieldDefinition;
                 templateContext.SetValue("Model", model);
 
-                model.Html = await _liquidTemplatemanager.RenderAsync(field.Html, NullEncoder.Default, templateContext);
+                model.Html = await _liquidTemplatemanager.RenderAsync(field.Html, _htmlEncoder, templateContext);
             })
             .Location("Content")
             .Location("SummaryAdmin", "");

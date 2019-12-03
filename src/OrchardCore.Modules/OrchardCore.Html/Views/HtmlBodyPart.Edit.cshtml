@@ -10,8 +10,8 @@
     var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
 }
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
     <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
     <span class="hint">@T["The body of the content item."]</span>
-</fieldset>
+</div>

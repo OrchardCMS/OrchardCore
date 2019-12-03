@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -120,7 +119,7 @@ namespace OrchardCore.Lucene
                             var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
 
                             // Update the document from the index if its lastIndexId is smaller than the current task id. 
-                            await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), Logger);
+                            await indexHandlers.InvokeAsync((handler, context) => handler.BuildIndexAsync(context), context, Logger);
 
                             foreach (var index in allIndices)
                             {

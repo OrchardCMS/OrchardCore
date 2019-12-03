@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -28,10 +27,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
         private static readonly ConcurrentDictionary<MethodInfo, ParameterInfo[]> _parameters =
             new ConcurrentDictionary<MethodInfo, ParameterInfo[]>();
-
-        private static readonly ConcurrentDictionary<Type, Func<dynamic, object>> _converters =
-            new ConcurrentDictionary<Type, Func<dynamic, object>>();
-
 
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IEnumerable<IShapeAttributeProvider> _shapeProviders;
@@ -116,14 +111,17 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
         private static IHtmlContent CoerceHtmlContent(object invoke)
         {
-            var htmlContent = invoke as IHtmlContent;
+            if (invoke == null)
+            {
+                return HtmlString.Empty;
+            }
 
-            if (htmlContent != null)
+            if (invoke is IHtmlContent htmlContent)
             {
                 return htmlContent;
             }
 
-            return invoke != null ? new HtmlString(invoke.ToString()) : null;
+            return new HtmlString(invoke.ToString());
         }
 
         private static object BindParameter(DisplayContext displayContext, ParameterInfo parameter)
@@ -200,21 +198,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             }
 
             return Convert.ChangeType(result, parameter.ParameterType);
-        }
-
-        static Func<dynamic, object> CompileConverter(Type targetType)
-        {
-            var valueParameter = Expression.Parameter(typeof(object), "value");
-
-            return Expression.Lambda<Func<object, object>>(
-                Expression.Convert(
-                    DynamicExpression.Dynamic(
-                        Microsoft.CSharp.RuntimeBinder.Binder.Convert(CSharpBinderFlags.ConvertExplicit, targetType, null),
-                                targetType,
-                                valueParameter
-                        ),
-                    typeof(object)),
-                valueParameter).Compile();
         }
 
         private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)
