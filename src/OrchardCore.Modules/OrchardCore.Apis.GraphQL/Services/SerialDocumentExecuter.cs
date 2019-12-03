@@ -20,7 +20,7 @@ namespace OrchardCore.Apis.GraphQL.Services
             switch (context.Operation.OperationType)
             {
                 case OperationType.Query:
-                    return SerialExecutionStrategy;
+                    return ParallelExecutionStrategy;
 
                 case OperationType.Mutation:
                     return SerialExecutionStrategy;
