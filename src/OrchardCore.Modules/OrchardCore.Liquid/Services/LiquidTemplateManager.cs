@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -29,32 +28,16 @@ namespace OrchardCore.Liquid.Services
 
         public TemplateContext Context => _context ??= LiquidViewTemplate.Context;
 
-        public async Task RenderAsync(string source, TextWriter textWriter, TextEncoder encoder, object model)
+        public Task<string> RenderAsync(string source, TextEncoder encoder, object model)
         {
             if (String.IsNullOrWhiteSpace(source))
             {
-                return;
+                return Task.FromResult((string)null);
             }
 
             var result = GetCachedTemplate(source);
-            var context = Context;
 
-            await context.ContextualizeAsync(_serviceProvider, model);
-            await result.RenderAsync(textWriter, encoder, context);
-        }
-
-        public async Task<string> RenderAsync(string source, TextEncoder encoder, object model)
-        {
-            if (String.IsNullOrWhiteSpace(source))
-            {
-                return null;
-            }
-
-            var result = GetCachedTemplate(source);
-            var context = Context;
-
-            await context.ContextualizeAsync(_serviceProvider, model);
-            return await result.RenderAsync(encoder, context);
+            return result.RenderAsync(_serviceProvider, encoder, Context, model);
         }
 
         private LiquidViewTemplate GetCachedTemplate(string source)

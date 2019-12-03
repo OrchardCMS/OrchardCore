@@ -139,10 +139,14 @@ namespace OrchardCore.DisplayManagement.Implementation
                 await _shapeDisplayEvents.InvokeAsync(async (e, displayContext) =>
                 {
                     var prior = displayContext.ChildContent = displayContext.Shape.Metadata.ChildContent;
+
                     await e.DisplayedAsync(displayContext);
+
                     // update the child content if the context variable has been reassigned
                     if (prior != displayContext.ChildContent)
+                    {
                         displayContext.Shape.Metadata.ChildContent = displayContext.ChildContent;
+                    }
                 }, displayContext, _logger);
 
                 if (shapeDescriptor != null)

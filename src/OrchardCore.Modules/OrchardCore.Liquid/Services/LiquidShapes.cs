@@ -25,7 +25,7 @@ namespace OrchardCore.Liquid.Services
             var templateContext = liquidTemplateManager.Context;
             templateContext.SetValue("ContentItem", liquidPart.ContentItem);
 
-            model.Html = await liquidTemplateManager.RenderAsync(liquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext);
+            model.Html = await liquidTemplateManager.RenderAsync(liquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value);
         }
 
         public void Discover(ShapeTableBuilder builder)

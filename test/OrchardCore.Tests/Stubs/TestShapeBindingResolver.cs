@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 
 namespace OrchardCore.Tests.Stubs
 {
-    public class TestShapeBindingsDictionary : Dictionary<string, ShapeBinding>
+    public class TestShapeBindingsDictionary : Dictionary<string, DynamicShapeBinding>
     {
         public TestShapeBindingsDictionary()
             : base(StringComparer.OrdinalIgnoreCase) { }
@@ -21,7 +21,7 @@ namespace OrchardCore.Tests.Stubs
             _shapeBindings = shapeBindings;
         }
 
-        public Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
+        public Task<DynamicShapeBinding> GetShapeBindingAsync(string shapeType)
         {
             if (_shapeBindings.TryGetValue(shapeType, out var binding))
             {
@@ -29,7 +29,7 @@ namespace OrchardCore.Tests.Stubs
             }
             else
             {
-                return Task.FromResult<ShapeBinding>(null);
+                return Task.FromResult<DynamicShapeBinding>(null);
             }
         }
     }

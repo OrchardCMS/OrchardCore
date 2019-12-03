@@ -33,7 +33,7 @@ namespace OrchardCore.Templates.Services
             _htmlEncoder = htmlEncoder;
         }
 
-        public async Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
+        public async Task<DynamicShapeBinding> GetShapeBindingAsync(string shapeType)
         {
             if (!AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
             {
@@ -65,15 +65,15 @@ namespace OrchardCore.Templates.Services
             }
         }
 
-        private ShapeBinding BuildShapeBinding(string shapeType, Template template)
+        private DynamicShapeBinding BuildShapeBinding(string shapeType, Template template)
         {
-            return new ShapeBinding()
+            return new DynamicShapeBinding()
             {
                 BindingName = shapeType,
                 BindingSource = shapeType,
                 BindingAsync = async displayContext =>
                 {
-                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, displayContext);
+                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, displayContext.Value);
                     return new HtmlString(htmlContent);
                 }
             };
