@@ -206,7 +206,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             {
                 if (displayContext.Value is Shape shape)
                 {
-                    shape.Metadata.IsDynamic = true;
+                    shape.Metadata.UseDynamicBinding = true;
                 }
 
                 return value(displayContext);

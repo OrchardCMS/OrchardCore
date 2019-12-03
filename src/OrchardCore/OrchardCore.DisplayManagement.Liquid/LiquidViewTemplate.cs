@@ -198,11 +198,11 @@ namespace OrchardCore.DisplayManagement.Liquid
                     viewContext = GetViewContext(services, actionContext);
 
                     // If the model is a shape using a dynamic binding.
-                    if (model is Shape shape && shape.Metadata.IsDynamic)
+                    if (model is Shape shape && shape.Metadata.UseDynamicBinding)
                     {
                         // We need to use the view engine to render the liquid page.
                         await context.ContextualizeAsync(services, viewContext, model);
-                        return await template.RenderAsync(viewContext, encoder, context);
+                        return await template.RenderViewAsync(viewContext, encoder, context);
                     }
                 }
                 else
@@ -215,23 +215,28 @@ namespace OrchardCore.DisplayManagement.Liquid
             return await template.RenderAsync(context, encoder);
         }
 
-        internal static async Task<string> RenderAsync(this LiquidViewTemplate template, ViewContext viewContext, TextEncoder encoder, TemplateContext context)
+        internal static async Task<string> RenderViewAsync(this LiquidViewTemplate template, ViewContext viewContext, TextEncoder encoder, TemplateContext context)
         {
-            (((RazorView)viewContext.View).RazorPage as LiquidPage).RenderAsync = output => template.RenderAsync(output, encoder, context);
-
-            using (var sb = StringBuilderPool.GetInstance())
+            if (viewContext.View is RazorView razorView && razorView.RazorPage is LiquidPage liquidPage)
             {
-                using (var writer = new StringWriter(sb.Builder))
+                liquidPage.RenderAsync = output => template.RenderAsync(output, encoder, context);
+
+                using (var sb = StringBuilderPool.GetInstance())
                 {
-                    viewContext.Writer = writer;
+                    using (var writer = new StringWriter(sb.Builder))
+                    {
+                        viewContext.Writer = writer;
 
-                    // Use the view engine to render the liquid page.
-                    await viewContext.View.RenderAsync(viewContext);
-                    await writer.FlushAsync();
+                        // Use the view engine to render the liquid page.
+                        await viewContext.View.RenderAsync(viewContext);
+                        await writer.FlushAsync();
+                    }
+
+                    return sb.Builder.ToString();
                 }
-
-                return sb.Builder.ToString();
             }
+
+            return String.Empty;
         }
 
         internal async static Task<ActionContext> GetActionContextAsync(IServiceProvider services)
