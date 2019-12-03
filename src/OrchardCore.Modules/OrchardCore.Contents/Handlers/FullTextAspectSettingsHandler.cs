@@ -71,9 +71,6 @@ namespace OrchardCore.Contents.Handlers
 
                 if (settings.IncludeFullTextTemplate && !String.IsNullOrEmpty(settings.FullTextTemplate))
                 {
-                    var templateContext = _liquidTemplateManager.Context;
-                    templateContext.SetValue("ContentItem", context.ContentItem);
-
                     var result = await _liquidTemplateManager.RenderAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem);
                     fullTextAspect.Segments.Add(result);
                 }

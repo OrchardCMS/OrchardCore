@@ -35,9 +35,6 @@ namespace OrchardCore.Html.GraphQL
                 ContentItem = ctx.Source.ContentItem
             };
 
-            var templateContext = liquidTemplateManager.Context;
-            templateContext.SetValue("ContentItem", ctx.Source.ContentItem);
-
             return await liquidTemplateManager.RenderAsync(ctx.Source.Html, htmlEncoder, model);
         }
     }

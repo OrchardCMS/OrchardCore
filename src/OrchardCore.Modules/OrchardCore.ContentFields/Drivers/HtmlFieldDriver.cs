@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -30,9 +29,6 @@ namespace OrchardCore.ContentFields.Fields
         {
             return Initialize<DisplayHtmlFieldViewModel>(GetDisplayShapeType(context), async model =>
             {
-                var templateContext = _liquidTemplateManager.Context;
-                templateContext.SetValue("ContentItem", field.ContentItem);
-
                 model.Html = field.Html;
                 model.Field = field;
                 model.Part = context.ContentPart;

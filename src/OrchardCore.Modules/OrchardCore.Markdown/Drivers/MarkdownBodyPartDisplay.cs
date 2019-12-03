@@ -66,9 +66,6 @@ namespace OrchardCore.Markdown.Drivers
 
         private async ValueTask BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart MarkdownBodyPart)
         {
-            var templateContext = _liquidTemplateManager.Context;
-            templateContext.SetValue("ContentItem", MarkdownBodyPart.ContentItem);
-
             model.Markdown = MarkdownBodyPart.Markdown;
             model.MarkdownBodyPart = MarkdownBodyPart;
             model.ContentItem = MarkdownBodyPart.ContentItem;

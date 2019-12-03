@@ -66,9 +66,6 @@ namespace OrchardCore.Html.Drivers
 
         private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart htmlBodyPart)
         {
-            var templateContext = _liquidTemplateManager.Context;
-            templateContext.SetValue("ContentItem", htmlBodyPart.ContentItem);
-
             model.Html = htmlBodyPart.Html;
             model.HtmlBodyPart = htmlBodyPart;
             model.ContentItem = htmlBodyPart.ContentItem;

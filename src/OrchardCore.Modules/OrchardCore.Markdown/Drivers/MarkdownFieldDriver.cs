@@ -30,9 +30,6 @@ namespace OrchardCore.Markdown.Drivers
         {
             return Initialize<MarkdownFieldViewModel>(GetDisplayShapeType(context), async model =>
             {
-                var templateContext = _liquidTemplateManager.Context;
-                templateContext.SetValue("ContentItem", field.ContentItem);
-
                 model.Markdown = field.Markdown;
                 model.Field = field;
                 model.Part = context.ContentPart;
