@@ -33,9 +33,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field(ci => ci.Owner).Description("The owner of the content item");
             Field(ci => ci.Author).Description("The author of the content item");
 
-            Field<StringGraphType>()
+            Field<StringGraphType, string>()
                 .Name("render")
-                .ResolveAsync(async context =>
+                .ResolveLockedAsync(async context =>
                 {
                     var userContext = (GraphQLContext)context.UserContext;
                     var serviceProvider = userContext.ServiceProvider;
