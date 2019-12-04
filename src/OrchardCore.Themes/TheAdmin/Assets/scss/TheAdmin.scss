@@ -1182,3 +1182,8 @@ ul.pager li a {
         }
     }
 }
+
+.dropdown-menu.scrollable{
+    overflow-y: auto;
+    max-height: 250px;
+}
