@@ -88,8 +88,8 @@
                     <div class="btn-group float-right mt-1">
                         <select asp-for="Options.SelectedContentType" asp-items="Model.Options.ContentTypeOptions" class="selectpicker show-tick mr-2" data-header="@T["Filter by content type"]" data-live-search="true" data-selected-text-format="static" data-width="fit" title="@T["Content Type"]" data-style="btn-sm">
                         </select>
-                        <select asp-for="Options.ContentsStatus" asp-items="@Model.Options.ContentStatuses" class="selectpicker show-tick mr-2" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Show"]" data-style="btn-sm"></select>
-                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.ContentSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Sort"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.ContentsStatus" asp-items="@Model.Options.ContentStatuses" class="selectpicker show-tick mr-2" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="true" title="@T["Show"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.ContentSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
                     </div>
                 </div>
             </div>
