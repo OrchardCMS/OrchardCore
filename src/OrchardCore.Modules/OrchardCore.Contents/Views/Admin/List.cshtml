@@ -13,8 +13,7 @@
         createLinkText = T["Create New {0}", (string)contentTypeDisplayName];
     }
 
-    var formActionWithoutTypeName = Context.Request.PathBase.Value + "/Admin/Contents/ContentItems";
-    var formActionCreate = Context.Request.PathBase.Value + "/Admin/Contents/ContentTypes";
+    var formActionWithoutTypeName = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "List" });
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.ContentItems.Count - 1;
 }
@@ -53,7 +52,7 @@
                     <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
                         @foreach (var item in Model.Options.CreatableTypes)
                         {
-                            <a class="dropdown-item" href="@formActionCreate/@item.Value/Create">@item.Text</a>
+                            <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value })">@item.Text</a>
                         }
                     </div>
                 }

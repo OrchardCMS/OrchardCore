@@ -27,7 +27,6 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Entities;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
@@ -146,7 +145,7 @@ namespace OrchardCore.Contents
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
                 pattern: "Admin/Contents/ContentItems/{contentTypeId?}",
-                defaults: new {controller = "Admin", action = "List" }
+                defaults: new { controller = "Admin", action = "List" }
             );
         }
     }
