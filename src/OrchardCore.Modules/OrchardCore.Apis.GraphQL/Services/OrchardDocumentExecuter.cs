@@ -11,26 +11,19 @@ namespace OrchardCore.Apis.GraphQL.Services
     /// </summary>
     public class OrchardDocumentExecuter : DocumentExecuter
     {
-        private static IExecutionStrategy ParallelExecutionStrategy = new OrchardExecutionStrategy();
-        private static IExecutionStrategy SerialExecutionStrategy = new SerialExecutionStrategy();
-        private static IExecutionStrategy SubscriptionExecutionStrategy = new SubscriptionExecutionStrategy();
+        private static readonly IExecutionStrategy _parallelExecutionStrategy = new OrchardExecutionStrategy();
+        private static readonly IExecutionStrategy _serialExecutionStrategy = new SerialExecutionStrategy();
+        private static readonly IExecutionStrategy _subscriptionExecutionStrategy = new SubscriptionExecutionStrategy();
 
         protected override IExecutionStrategy SelectExecutionStrategy(ExecutionContext context)
         {
-            switch (context.Operation.OperationType)
+            return context.Operation.OperationType switch
             {
-                case OperationType.Query:
-                    return ParallelExecutionStrategy;
-
-                case OperationType.Mutation:
-                    return SerialExecutionStrategy;
-
-                case OperationType.Subscription:
-                    return SubscriptionExecutionStrategy;
-
-                default:
-                    throw new InvalidOperationException($"Unexpected OperationType {context.Operation.OperationType}");
-            }
+                OperationType.Query => _parallelExecutionStrategy,
+                OperationType.Mutation => _serialExecutionStrategy,
+                OperationType.Subscription => _subscriptionExecutionStrategy,
+                _ => throw new InvalidOperationException($"Unexpected OperationType {context.Operation.OperationType}"),
+            };
         }
     }
 }
