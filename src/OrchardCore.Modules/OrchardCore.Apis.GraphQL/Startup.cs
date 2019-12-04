@@ -31,7 +31,7 @@ namespace OrchardCore.Apis.GraphQL
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IDependencyResolver, RequestServicesDependencyResolver>();
-            services.AddSingleton<IDocumentExecuter, OrchardDocumentExecuter>();
+            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
             services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
@@ -59,7 +59,7 @@ namespace OrchardCore.Apis.GraphQL
                 {
                     HttpContext = ctx,
                     User = ctx.User,
-                    ServiceProvider = ctx.RequestServices,
+                    ServiceProvider = ctx.RequestServices
                 };
                 c.ExposeExceptions = exposeExceptions;
                 c.MaxDepth = configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 20;
