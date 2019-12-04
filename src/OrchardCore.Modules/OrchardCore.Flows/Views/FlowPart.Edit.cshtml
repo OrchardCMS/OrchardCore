@@ -20,7 +20,7 @@
 <script asp-name="jQuery-ui" at="Foot"></script>
 
 <div class="form-group">
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.FlowPart.Widgets)
         {
@@ -56,28 +56,29 @@
             @await DisplayAsync(contentCard)
         }
     </div>
-
-    <div class="btn-group ">
-        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            @T["Add Widget"]
-        </button>
-        <div class="dropdown-menu">
-            @foreach (var type in widgetContentTypes)
-            {
-                <a class="dropdown-item add-widget  btn-sm"
-                   data-target-id="@widgetTemplatePlaceholderId"
-                   data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
-                   data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
-                   data-widget-type="@type.Name"
-                   data-flowmetadata="true"
-                   data-parent-content-type="@parentContentType"
-                   data-part-name="@partName"
-                   href="javascript:;">@type.DisplayName</a>
-            }
+    <div class="btn-widget-add-below-wrapper w-100">
+        <div class="btn-widget-add-below w-100 border border-info">
+            <div class="btn-group ">
+                <button type="button" title="@T["Add Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+                <div class="dropdown-menu">
+                    @foreach (var type in widgetContentTypes)
+                    {
+                        <a class="dropdown-item add-widget  btn-sm"
+                        data-target-id="@widgetTemplatePlaceholderId"
+                        data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
+                        data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
+                        data-widget-type="@type.Name"
+                        data-flowmetadata="true"
+                        data-parent-content-type="@parentContentType"
+                        data-part-name="@partName"
+                        href="javascript:;">@type.DisplayName</a>
+                    }
+                </div>
+            </div>
         </div>
     </div>
-
-
     @if (Context.Items["FlowPart.Edit"] == null)
     {
         Context.Items["FlowPart.Edit"] = new object();
@@ -88,9 +89,12 @@
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
         }
 
-        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
-        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
-        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
+        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.min.js"
+            debug-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
+            debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"
+            debug-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"></style>
     }
 
     <script at="Foot">
