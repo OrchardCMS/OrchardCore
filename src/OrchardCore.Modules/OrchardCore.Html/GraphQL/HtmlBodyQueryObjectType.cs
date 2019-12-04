@@ -31,6 +31,7 @@ namespace OrchardCore.Html.GraphQL
 
             var model = new HtmlBodyPartViewModel()
             {
+                Html = ctx.Source.Html,
                 HtmlBodyPart = ctx.Source,
                 ContentItem = ctx.Source.ContentItem
             };

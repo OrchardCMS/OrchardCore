@@ -5,7 +5,6 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Liquid;
 
 namespace OrchardCore.Liquid.Services
@@ -19,7 +18,6 @@ namespace OrchardCore.Liquid.Services
 
         public LiquidTemplateManager(
             IMemoryCache memoryCache,
-            IOptions<LiquidOptions> options,
             IServiceProvider serviceProvider)
         {
             _memoryCache = memoryCache;
