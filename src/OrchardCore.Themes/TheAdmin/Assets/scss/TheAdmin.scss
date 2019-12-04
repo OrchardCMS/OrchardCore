@@ -1195,3 +1195,8 @@ ul.pager li a {
     border-color: red;
     background-color: red;
 }
+
+.dropdown-menu.scrollable{
+    overflow-y: auto;
+    max-height: 250px;
+}

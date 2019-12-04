@@ -46,7 +46,7 @@
         <div class="custom-control custom-checkbox">
             <input asp-for="Roles[i].IsSelected" type="checkbox" class="custom-control-input">
             <input type="hidden" asp-for="Roles[i].Role" />
-            <label class="custom-control-label" asp-for="Roles[i].IsSelected">@Model.Roles[i].Role</label>
+            <label class="custom-control-label cursor-pointer" asp-for="Roles[i].IsSelected">@Model.Roles[i].Role</label>
         </div>
     }
 </div>
@@ -54,7 +54,7 @@
 <div class="form-group">
     <div class="custom-control custom-switch disable">
         <input asp-for="IsDisabled" type="checkbox" class="custom-control-input disable" checked="@Model.IsDisabled" />
-        <label asp-for="IsDisabled" class="custom-control-label">@T["Is disabled?"]</label>
+        <label asp-for="IsDisabled" class="custom-control-label cursor-pointer">@T["Is disabled?"]</label>
         <span class="hint">— @T["Check if you want to disable this user account"]</span>
     </div>
     

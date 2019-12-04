@@ -10325,3 +10325,7 @@ select[multiple] {
 [dir] .disable.custom-control-input:checked ~ .custom-control-label::before {
   border-color: red;
   background-color: red; }
+
+.dropdown-menu.scrollable {
+  overflow-y: auto;
+  max-height: 250px; }

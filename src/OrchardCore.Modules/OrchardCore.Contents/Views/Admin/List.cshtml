@@ -13,8 +13,7 @@
         createLinkText = T["Create New {0}", (string)contentTypeDisplayName];
     }
 
-    var formActionWithoutTypeName = Context.Request.PathBase.Value + "/Admin/Contents/ContentItems";
-    var formActionCreate = Context.Request.PathBase.Value + "/Admin/Contents/ContentTypes";
+    var formActionWithoutTypeName = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "List" });
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.ContentItems.Count - 1;
 }
@@ -50,10 +49,10 @@
                 @if (Model.Options.CreatableTypes.Any())
                 {
                     <button class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" id="new-dropdown" type="button" aria-haspopup="true" aria-expanded="false">@T["New"]</button>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="new-dropdown">
+                    <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
                         @foreach (var item in Model.Options.CreatableTypes)
                         {
-                            <a class="dropdown-item" href="@formActionCreate/@item.Value/Create">@item.Text</a>
+                            <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value })">@item.Text</a>
                         }
                     </div>
                 }
@@ -63,7 +62,7 @@
     <ul class="list-group with-checkbox">
         <li class="list-group-item bg-light">
             <div class="row">
-                <div class="form-group col-xl-4 mb-xl-n1">
+                <div class="form-group col mb-n1 text-nowrap">
                     <div class="custom-control custom-checkbox mt-2 mr-n2">
                         <input type="checkbox" class="custom-control-input" id="select-all">
                         <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
@@ -71,9 +70,9 @@
                         <label id="selected-items" class="text-muted" for="select-all"></label>
                     </div>
                 </div>
-                <div class="form-group col-xl-2 mb-xl-n1">
-                    <span class="dropdown" id="actions" style="display:none">
-                        <button class="btn btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="form-group col-2 mb-n1" style="display:none">
+                    <span class="dropdown float-right mt-1" id="actions">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @T["Actions"]
                         </button>
                         <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
@@ -84,21 +83,12 @@
                         </span>
                     </span>
                 </div>
-                <div class="col-3"></div>
-                <div class="form-group col-xl-1 mb-xl-n1 filter">
-                    <div class="float-xl-right">
-                        <select asp-for="Options.SelectedContentType" asp-items="Model.Options.ContentTypeOptions" class="selectpicker show-tick" data-header="@T["Filter by content type"]" data-live-search="true" data-selected-text-format="static" data-width="fit" title="@T["Content Type"]">
+                <div class="form-group col mb-n1 filter">
+                    <div class="btn-group float-right mt-1">
+                        <select asp-for="Options.SelectedContentType" asp-items="Model.Options.ContentTypeOptions" class="selectpicker show-tick mr-2" data-header="@T["Filter by content type"]" data-live-search="true" data-selected-text-format="static" data-width="fit" title="@T["Content Type"]" data-style="btn-sm">
                         </select>
-                    </div>
-                </div>
-                <div class="form-group col-xl-1 mb-xl-n1 filter">
-                    <div class="float-xl-right">
-                        <select asp-for="Options.ContentsStatus" asp-items="@Model.Options.ContentStatuses" class="selectpicker show-tick" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" title="@T["Show"]"></select>
-                    </div>
-                </div>
-                <div class="form-group col-xl-1 mb-n1 filter">
-                    <div class="float-xl-right">
-                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.ContentSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Sort"]"></select>
+                        <select asp-for="Options.ContentsStatus" asp-items="@Model.Options.ContentStatuses" class="selectpicker show-tick mr-2" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="true" title="@T["Show"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.ContentSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
                     </div>
                 </div>
             </div>
@@ -162,13 +152,13 @@
 
         function displayActionsOrFilters() {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                actions.show();
+                actions.parent().show();
                 filters.hide();
                 selectedItems.show();
                 items.hide();
             }
             else {
-                actions.hide();
+                actions.parent().hide();
                 filters.show();
                 selectedItems.hide();
                 items.show();

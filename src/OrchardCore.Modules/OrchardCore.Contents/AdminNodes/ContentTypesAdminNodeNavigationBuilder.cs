@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.AdminMenu.Services;
@@ -22,12 +23,14 @@ namespace OrchardCore.Contents.AdminNodes
 
         public ContentTypesAdminNodeNavigationBuilder(
             IContentDefinitionManager contentDefinitionManager,
+            LinkGenerator linkGenerator,
             IHttpContextAccessor httpContextAccessor,
             ILogger<ContentTypesAdminNodeNavigationBuilder> logger)
         {
             _contentDefinitionManager = contentDefinitionManager;
 
-            _contentItemlistUrl = httpContextAccessor.HttpContext.Request.PathBase.Add("/Admin/Contents/ContentItems/").Value;
+            _contentItemlistUrl = linkGenerator.GetPathByAction(httpContextAccessor.HttpContext,
+                "List", "Admin", new { area = "OrchardCore.Contents" }).TrimEnd('/') + "/";
 
             _logger = logger;
         }
