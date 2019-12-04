@@ -227,7 +227,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Registers a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
         /// </summary>
-        private void BeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Add(callback);
+        private void BeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Insert(0, callback);
 
         /// <summary>
         /// Adds a Signal (if not already present) to be sent just after 'BeforeDisposeAsync()'.
