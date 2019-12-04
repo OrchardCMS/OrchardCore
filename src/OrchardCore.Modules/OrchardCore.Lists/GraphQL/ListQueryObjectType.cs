@@ -27,30 +27,40 @@ namespace OrchardCore.Lists.GraphQL
                 .ResolveAsync(async g =>
                 {
                     var context = (GraphQLContext)g.UserContext;
+
+                    await context.ExecutionContextLock.WaitAsync();
+
                     var session = context.ServiceProvider.GetService<ISession>();
 
-                    var query = session.Query<ContentItem>()
-                        .With<ContainedPartIndex>(x => x.ListContentItemId == g.Source.ContentItem.ContentItemId)
-                        .With<ContentItemIndex>(x => x.Published)
-                        .OrderByDescending(x => x.CreatedUtc);
-
-                    // Apply a default limit
-                    var pagedQuery = query.Take(10);
-
-                    var skip = g.GetArgument<int>("skip");
-                    var first = g.GetArgument<int>("first");
-
-                    if (skip > 0)
+                    try
                     {
-                        pagedQuery = pagedQuery.Skip(skip);
-                    }
+                        var query = session.Query<ContentItem>()
+                            .With<ContainedPartIndex>(x => x.ListContentItemId == g.Source.ContentItem.ContentItemId)
+                            .With<ContentItemIndex>(x => x.Published)
+                            .OrderByDescending(x => x.CreatedUtc);
 
-                    if (first > 0)
+                        // Apply a default limit
+                        var pagedQuery = query.Take(10);
+
+                        var skip = g.GetArgument<int>("skip");
+                        var first = g.GetArgument<int>("first");
+
+                        if (skip > 0)
+                        {
+                            pagedQuery = pagedQuery.Skip(skip);
+                        }
+
+                        if (first > 0)
+                        {
+                            pagedQuery = pagedQuery.Take(first);
+                        }
+
+                        return await query.ListAsync();
+                    }
+                    finally
                     {
-                        pagedQuery = pagedQuery.Take(first);
+                        context.ExecutionContextLock.Release();
                     }
-
-                    return await query.ListAsync();
                 });
         }
     }

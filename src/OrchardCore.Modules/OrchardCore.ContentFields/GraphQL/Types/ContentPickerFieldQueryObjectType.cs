@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
@@ -31,14 +32,23 @@ namespace OrchardCore.ContentFields.GraphQL
             Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
                 .Name("contentItems")
                 .Description("the content items")
-                .PagingArguments()
-                .ResolveAsync(async x =>
+                .ResolveLockedAsync(async x =>
                 {
                     var ids = x.Page(x.Source.ContentItemIds);
                     var context = (GraphQLContext)x.UserContext;
-                    var session = context.ServiceProvider.GetService<ISession>();
-                    var contentItems = await session.Query<ContentItem, ContentItemIndex>(y => y.ContentItemId.IsIn(ids) && y.Published).ListAsync();
-                    return contentItems.OrderBy(c => Array.IndexOf(x.Source.ContentItemIds, c.ContentItemId));
+
+              //      await context.ExecutionContextLock.WaitAsync();
+
+                    try
+                    {
+                        var session = context.ServiceProvider.GetService<ISession>();
+                        var contentItems = await session.Query<ContentItem, ContentItemIndex>(y => y.ContentItemId.IsIn(ids) && y.Published).ListAsync();
+                        return (IEnumerable<ContentItem>) contentItems.OrderBy(c => Array.IndexOf(x.Source.ContentItemIds, c.ContentItemId));
+                    }
+                    finally
+                    {
+                     //   context.ExecutionContextLock.Release();
+                    }
                 });
         }
     }

@@ -10,6 +10,6 @@ namespace OrchardCore.Apis.GraphQL
         public HttpContext HttpContext { get; set; }
         public ClaimsPrincipal User { get; set; }
         public IServiceProvider ServiceProvider { get; set; }
-        public object ExecutionContextLock { get; } = new object();
+        public SemaphoreSlim ExecutionContextLock { get; } = new SemaphoreSlim(1, 1);
     }
 }
