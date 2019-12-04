@@ -13,19 +13,19 @@ namespace OrchardCore.Layers.GraphQL
 {
     public class SiteLayersQuery : ISchemaBuilder
     {
+        private readonly IStringLocalizer S;
+
         public SiteLayersQuery(IStringLocalizer<SiteLayersQuery> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var field = new FieldType
             {
                 Name = "SiteLayers",
-                Description = T["Site layers define the rules and zone placement for widgets."],
+                Description = S["Site layers define the rules and zone placement for widgets."],
                 Type = typeof(ListGraphType<LayerQueryObjectType>),
                 Resolver = new AsyncFieldResolver<IEnumerable<Layer>>(ResolveAsync)
             };

@@ -112,7 +112,9 @@ namespace OrchardCore.DisplayManagement.Liquid
             await context.ContextualizeAsync(page, (object)page.Model);
 
             var options = services.GetRequiredService<IOptions<LiquidOptions>>().Value;
-            await template.RenderAsync(options, services, page.Output, HtmlEncoder.Default, context);
+            var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
+
+            await template.RenderAsync(options, services, page.Output, htmlEncoder, context);
         }
 
         public static Task<LiquidViewTemplate> ParseAsync(string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)

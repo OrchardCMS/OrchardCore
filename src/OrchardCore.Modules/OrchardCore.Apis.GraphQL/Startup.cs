@@ -31,7 +31,7 @@ namespace OrchardCore.Apis.GraphQL
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IDependencyResolver, RequestServicesDependencyResolver>();
-            services.AddSingleton<IDocumentExecuter, SerialDocumentExecuter>();
+            services.AddSingleton<IDocumentExecuter, OrchardDocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
             services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();

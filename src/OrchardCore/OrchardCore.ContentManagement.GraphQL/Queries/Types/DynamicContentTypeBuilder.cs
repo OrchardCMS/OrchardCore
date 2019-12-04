@@ -13,6 +13,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly GraphQLContentOptions _contentOptions;
+        private readonly IStringLocalizer S;
 
         public DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
             IOptions<GraphQLContentOptions> contentOptionsAccessor,
@@ -21,10 +22,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             _httpContextAccessor = httpContextAccessor;
             _contentOptions = contentOptionsAccessor.Value;
 
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
@@ -65,7 +64,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     var field = contentItemType.Field(
                         typeof(DynamicPartGraphType),
                         partName.ToFieldName(),
-                        description: T["Represents a {0}.", part.PartDefinition.Name],
+                        description: S["Represents a {0}.", part.PartDefinition.Name],
                         resolve: context =>
                         {
                             var nameToResolve = partName;

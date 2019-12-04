@@ -19,7 +19,6 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
     /// </summary>
     public class ShellDescriptorManager : IShellDescriptorManager
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly ShellSettings _shellSettings;
         private readonly IShellConfiguration _shellConfiguration;
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
@@ -29,7 +28,6 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
         private ShellDescriptor _shellDescriptor;
 
         public ShellDescriptorManager(
-            IServiceProvider serviceProvider,
             ShellSettings shellSettings,
             IShellConfiguration shellConfiguration,
             IEnumerable<ShellFeature> shellFeatures,
@@ -37,7 +35,6 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             ISession session,
             ILogger<ShellDescriptorManager> logger)
         {
-            _serviceProvider = serviceProvider;
             _shellSettings = shellSettings;
             _shellConfiguration = shellConfiguration;
             _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
@@ -52,11 +49,6 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             if (_shellDescriptor == null)
             {
                 _shellDescriptor = await _session.Query<ShellDescriptor>().FirstOrDefaultAsync();
-
-                if (_shellDescriptor == null)
-                {
-                    _shellDescriptor = await _session.Query<ShellDescriptor>().FirstOrDefaultAsync();
-                }
 
                 if (_shellDescriptor != null)
                 {
@@ -115,7 +107,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             // Update cached reference
             _shellDescriptor = shellDescriptorRecord;
 
-            await _shellDescriptorManagerEventHandlers.InvokeAsync(e => e.Changed(shellDescriptorRecord, _shellSettings.Name), _logger);
+            await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptorRecord, _shellSettings) => handler.Changed(shellDescriptorRecord, _shellSettings.Name), shellDescriptorRecord, _shellSettings, _logger);
         }
 
         private class ConfiguredFeatures

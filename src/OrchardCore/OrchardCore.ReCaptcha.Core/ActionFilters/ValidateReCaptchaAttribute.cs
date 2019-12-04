@@ -1,19 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Castle.Core.Logging;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using OrchardCore.Modules;
-using OrchardCore.ReCaptcha.ActionFilters.Abuse;
-using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Services;
 
 namespace OrchardCore.ReCaptcha.ActionFilters

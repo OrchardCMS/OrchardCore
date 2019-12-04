@@ -11,7 +11,14 @@ namespace OrchardCore.Liquid.Services
 {
     public class LiquidShapes : IShapeTableProvider
     {
-        private static async Task BuildViewModelAsync(ShapeDisplayContext shapeDisplayContext)
+        private readonly HtmlEncoder _htmlEncoder;
+
+        public LiquidShapes(HtmlEncoder htmlEncoder)
+        {
+            _htmlEncoder = htmlEncoder;
+        }
+
+        private async Task BuildViewModelAsync(ShapeDisplayContext shapeDisplayContext)
         {
             var model = shapeDisplayContext.Shape as LiquidPartViewModel;
             var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
@@ -22,7 +29,7 @@ namespace OrchardCore.Liquid.Services
             templateContext.MemberAccessStrategy.Register<LiquidPartViewModel>();
             await templateContext.ContextualizeAsync(shapeDisplayContext.DisplayContext);
 
-            model.Html = await liquidTemplateManager.RenderAsync(liquidPart.Liquid, HtmlEncoder.Default, templateContext);
+            model.Html = await liquidTemplateManager.RenderAsync(liquidPart.Liquid, _htmlEncoder, templateContext);
         }
 
         public void Discover(ShapeTableBuilder builder)

@@ -58,13 +58,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// (await New.MyShape()).A(1).B("Some text")
         /// </code>
         /// </example>
-        public dynamic New
-        {
-            get
-            {
-                return Factory;
-            }
-        }
+        public dynamic New => Factory;
 
         /// <summary>
         /// Gets an <see cref="IShapeFactory"/> to create new shapes.
@@ -212,7 +206,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
         public IHtmlContent RenderTitleSegments(string segment, string position = "0", IHtmlContent separator = null)
         {
-            Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
+            Title.AddSegment(new StringHtmlContent(segment), position);
             return Title.GenerateTitle(separator);
         }
 

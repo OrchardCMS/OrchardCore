@@ -9,9 +9,9 @@ namespace OrchardCore.Apis.GraphQL.Services
     /// Defines a custom execution strategy for queries such that async lambdas are not executed in parallel.
     /// c.f. https://github.com/OrchardCMS/OrchardCore/issues/3029
     /// </summary>
-    public class SerialDocumentExecuter : DocumentExecuter
+    public class OrchardDocumentExecuter : DocumentExecuter
     {
-        private static IExecutionStrategy ParallelExecutionStrategy = new ParallelExecutionStrategy();
+        private static IExecutionStrategy ParallelExecutionStrategy = new OrchardExecutionStrategy();
         private static IExecutionStrategy SerialExecutionStrategy = new SerialExecutionStrategy();
         private static IExecutionStrategy SubscriptionExecutionStrategy = new SubscriptionExecutionStrategy();
 
