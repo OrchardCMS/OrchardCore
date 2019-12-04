@@ -61,11 +61,9 @@ namespace OrchardCore.Contents.Workflows.Activities
             if (!string.IsNullOrWhiteSpace(ContentProperties.Expression))
             {
                 var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext);
-                var propertyObject = JObject.Parse(contentProperties);
-
-                var contentItemEvaluated = propertyObject.ToObject<ContentItem>();
-                contentItem.DisplayText = contentItemEvaluated.DisplayText;
-                contentItem.Apply(contentItemEvaluated);
+                var contentItemFromJson = JsonConvert.DeserializeObject<ContentItem>(contentProperties);
+                contentItem.DisplayText = contentItemFromJson.DisplayText;
+                contentItem.Apply(contentItemFromJson);
             }
 
             var versionOptions = Publish ? VersionOptions.Published : VersionOptions.Draft;
