@@ -209,7 +209,7 @@ namespace OrchardCore.Users.Controllers
                     case UsersBulkAction.Disable:
                         foreach (var item in checkedContentItems)
                         {
-                            item.IsDisabled = true;
+                            item.IsEnabled = false;
                             await _userManager.UpdateAsync(item);
                             _notifier.Success(TH["User {0} successfully disabled.", item.UserName]);
                         }
@@ -217,7 +217,7 @@ namespace OrchardCore.Users.Controllers
                     case UsersBulkAction.Enable:
                         foreach (var item in checkedContentItems)
                         {
-                            item.IsDisabled = false;
+                            item.IsEnabled = true;
                             await _userManager.UpdateAsync(item);
                             _notifier.Success(TH["User {0} successfully enabled.", item.UserName]);
                         }

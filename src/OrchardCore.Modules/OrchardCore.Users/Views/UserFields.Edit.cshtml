@@ -52,10 +52,10 @@
 </div>
 
 <div class="form-group">
-    <div class="custom-control custom-switch disable">
-        <input asp-for="IsDisabled" type="checkbox" class="custom-control-input disable" checked="@Model.IsDisabled" />
-        <label asp-for="IsDisabled" class="custom-control-label cursor-pointer">@T["Is disabled?"]</label>
-        <span class="hint">— @T["Check if you want to disable this user account"]</span>
+    <div class="custom-control custom-switch">
+        <input asp-for="IsEnabled" type="checkbox" class="custom-control-input" checked="@Model.IsEnabled" />
+        <label asp-for="IsEnabled" class="custom-control-label cursor-pointer">@T["Is enabled?"]</label>
+        <span class="hint">— @T["Check if you want to enable this user account"]</span>
     </div>
     
 </div>

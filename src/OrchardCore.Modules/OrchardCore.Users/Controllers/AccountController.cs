@@ -82,7 +82,7 @@ namespace OrchardCore.Users.Controllers
                     }
                 }
 
-                if (user.IsDisabled)
+                if (!user.IsEnabled)
                 {
                     ModelState.AddModelError(String.Empty, T["Your account is disabled. Please contact us to re-enable it."]);
                 }

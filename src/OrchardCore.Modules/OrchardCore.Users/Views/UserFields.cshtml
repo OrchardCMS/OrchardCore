@@ -1,7 +1,7 @@
 @model SummaryAdminUserViewModel
 
 <h5 class="float-left">@Model.User.UserName</h5>
-@if (Model.User.IsDisabled)
+@if (!Model.User.IsEnabled)
 {
     <span class="badge badge-danger ml-2" title="@T["Disabled"]">
         <i class="fas fa-user-alt-slash"></i> @T["Disabled"]
