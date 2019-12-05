@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +22,6 @@ namespace OrchardCore.Media.Services
         private readonly IMediaFileStore _mediaFileStore;
 
         private readonly PathString _assetsRequestPath;
-        private readonly HashSet<string> _allowedFileExtensions;
 
         public MediaFileStoreResolverMiddleware(
             RequestDelegate next,
@@ -39,7 +37,6 @@ namespace OrchardCore.Media.Services
             _mediaFileStore = mediaFileStore;
 
             _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
-            _allowedFileExtensions = mediaOptions.Value.AllowedFileExtensions;
         }
 
         /// <summary>
@@ -67,15 +64,6 @@ namespace OrchardCore.Media.Services
 
             // subpath.Value returns an unescaped path value, subPath returns an escaped path value.
             var subPathValue = subPath.Value;
-
-            // This will not cache the file if the file extension is not supported.
-            var fileExtension = GetExtension(subPathValue);
-            if (!_allowedFileExtensions.Contains(fileExtension))
-            {
-                _logger.LogDebug("File extension not supported for request path {Path}", subPathValue);
-                await _next(context);
-                return;
-            }
 
             var isFileCached = await _mediaFileStoreCache.IsCachedAsync(subPathValue);
             if (isFileCached)
@@ -123,26 +111,6 @@ namespace OrchardCore.Media.Services
             // Always call next, this middleware always passes.
             await _next(context);
             return;
-        }
-
-        private static string GetExtension(string path)
-        {
-            // Don't use Path.GetExtension as that may throw an exception if there are
-            // invalid characters in the path. Invalid characters should be handled
-            // by the FileProviders
-
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                return null;
-            }
-
-            var index = path.LastIndexOf('.');
-            if (index < 0)
-            {
-                return null;
-            }
-
-            return path.Substring(index);
         }
     }
 }
