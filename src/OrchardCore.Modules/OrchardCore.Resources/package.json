@@ -2,9 +2,9 @@
   "name": "orchardcore.resources",
   "version": "1.0.0",
   "dependencies": {
-    "bootstrap": "4.4.0",
+    "bootstrap": "4.4.1",
     "bootstrap-select": "1.13.12",
-    "bootstrap-scss": "4.4.0",
+    "bootstrap-scss": "4.4.1",
     "bootstrap-slider": "10.6.2",
     "codemirror": "5.48.4",
     "jquery": "3.4.1",
