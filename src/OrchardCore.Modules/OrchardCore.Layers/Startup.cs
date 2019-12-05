@@ -79,6 +79,13 @@ namespace OrchardCore.Layers
             );
 
             routes.MapAreaControllerRoute(
+                name: "Layers.Delete",
+                areaName: "OrchardCore.Layers",
+                pattern: _adminOptions.AdminUrlPrefix + "/Layers/Delete",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Delete) }
+            );
+
+            routes.MapAreaControllerRoute(
                 name: "Layers.Create",
                 areaName: "OrchardCore.Layers",
                 pattern: _adminOptions.AdminUrlPrefix + "/Layers/Edit",
