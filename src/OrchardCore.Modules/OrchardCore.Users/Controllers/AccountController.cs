@@ -155,6 +155,20 @@ namespace OrchardCore.Users.Controllers
                     return true;
                 }
             }
+            
+            return false;
+        }
+        
+        bool AddUserEnabledError(IUser user)
+        {           
+            var localUser = user as User;
+
+            if (localUser == null || !localUser.IsEnabled)
+            {
+                ModelState.AddModelError(String.Empty, T["Your account is disabled. Please contact an administrator."]);
+                return true;
+            }
+            
             return false;
         }
 
@@ -186,7 +200,7 @@ namespace OrchardCore.Users.Controllers
                         var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
                         if (result.Succeeded)
                         {
-                            if (!await AddConfirmEmailError(user))
+                            if (!await AddConfirmEmailError(user) && !AddUserEnabledError(user))
                             {
                                 result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
 
