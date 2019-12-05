@@ -76,20 +76,58 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Gets a shared item from the current shell scope.
         /// </summary>
-        public static T Get<T>(object key) where T : class => Current._items.TryGetValue(key, out var value) ? value as T : null;
+        public static object Get(object key) => Current._items.TryGetValue(key, out var value) ? value : null;
 
         /// <summary>
-        /// Gets (or creates) a shared item from the current shell scope.
+        /// Gets a shared item of a given type from the current shell scope.
+        /// </summary>
+        public static T Get<T>(object key) => Current._items.TryGetValue(key, out var value) ? value is T item ? item : default : default;
+
+        /// <summary>
+        /// Gets (or creates) a shared item of a given type from the current shell scope.
+        /// </summary>
+        public static T GetOrCreate<T>(object key, Func<T> factory)
+        {
+            if (!Current._items.TryGetValue(key, out var value) || !(value is T item))
+            {
+                Current._items[key] = item = factory();
+            }
+
+            return item;
+        }
+
+        /// <summary>
+        /// Gets (or creates) a shared item of a given type from the current shell scope.
         /// </summary>
         public static T GetOrCreate<T>(object key) where T : class, new()
         {
-            if (!Current._items.TryGetValue(key, out var value))
+            if (!Current._items.TryGetValue(key, out var value) || !(value is T item))
             {
-                Current._items[key] = value = new T();
+                Current._items[key] = item = new T();
             }
 
-            return value as T;
+            return item;
         }
+
+        /// <summary>
+        /// Sets a shared feature to the current shell scope.
+        /// </summary>
+        public static void SetFeature<T>(T value) => Set(typeof(T), value);
+
+        /// <summary>
+        /// Gets a shared feature from the current shell scope.
+        /// </summary>
+        public static T GetFeature<T>() => Get<T>(typeof(T));
+
+        /// <summary>
+        /// Gets (or creates) a shared feature from the current shell scope.
+        /// </summary>
+        public static T GetOrCreateFeature<T>(Func<T> factory) => GetOrCreate(typeof(T), factory);
+
+        /// <summary>
+        /// Gets (or creates) a shared feature from the current shell scope.
+        /// </summary>
+        public static T GetOrCreateFeature<T>() where T : class, new() => GetOrCreate<T>(typeof(T));
 
         /// <summary>
         /// Creates a child scope from the current one.

@@ -36,8 +36,6 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewTemplate : BaseFluidTemplate<LiquidViewTemplate>
     {
-        private const string ContextKey = "LiquidViewTemplateContext";
-
         public static readonly string ViewsFolder = "Views";
         public static readonly string ViewExtension = ".liquid";
         public static readonly MemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
@@ -150,7 +148,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         /// <summary>
         /// Retrieve the current <see cref="TemplateContext"/> from the current shell scope.
         /// </summary>
-        public static TemplateContext Context => ShellScope.GetOrCreate<TemplateContext>(ContextKey);
+        public static TemplateContext Context => ShellScope.GetOrCreateFeature<TemplateContext>();
     }
 
     internal class ShapeAccessor : DelegateAccessor
