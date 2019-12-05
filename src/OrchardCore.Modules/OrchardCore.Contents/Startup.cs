@@ -30,7 +30,6 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Entities;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
