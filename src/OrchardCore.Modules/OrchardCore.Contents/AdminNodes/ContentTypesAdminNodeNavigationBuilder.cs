@@ -17,20 +17,20 @@ namespace OrchardCore.Contents.AdminNodes
 {
     public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     {
+        private readonly LinkGenerator _linkGenerator;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILogger<ContentTypesAdminNodeNavigationBuilder> _logger;
-        private readonly string _contentItemlistUrl;
 
         public ContentTypesAdminNodeNavigationBuilder(
-            IContentDefinitionManager contentDefinitionManager,
             LinkGenerator linkGenerator,
             IHttpContextAccessor httpContextAccessor,
+            IContentDefinitionManager contentDefinitionManager,
             ILogger<ContentTypesAdminNodeNavigationBuilder> logger)
         {
+            _linkGenerator = linkGenerator;
+            _httpContextAccessor = httpContextAccessor;
             _contentDefinitionManager = contentDefinitionManager;
-
-            _contentItemlistUrl = linkGenerator.GetPathByAction(httpContextAccessor.HttpContext,
-                "List", "Admin", new { area = "OrchardCore.Contents" }).TrimEnd('/') + "/";
 
             _logger = logger;
         }
@@ -52,7 +52,14 @@ namespace OrchardCore.Contents.AdminNodes
             {
                 builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
                 {
-                    cTypeMenu.Url(_contentItemlistUrl + ctd.Name);
+                    cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, "", new
+                    {
+                        area = "OrchardCore.Contents",
+                        controller = "Admin",
+                        action = "List",
+                        contentTypeId = ctd.Name
+                    }));
+
                     cTypeMenu.Priority(node.Priority);
                     cTypeMenu.Position(node.Position);
                     cTypeMenu.Permission(
