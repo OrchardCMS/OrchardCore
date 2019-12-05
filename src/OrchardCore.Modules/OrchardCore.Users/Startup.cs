@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -20,6 +22,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
+using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
@@ -35,10 +38,12 @@ namespace OrchardCore.Users
         private const string LoginPath = "Login";
         private const string ChangePasswordPath = "ChangePassword";
 
+        private readonly AdminOptions _adminOptions;
         private readonly string _tenantName;
 
-        public Startup(ShellSettings shellSettings)
+        public Startup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
         {
+            _adminOptions = adminOptions.Value;
             _tenantName = shellSettings.Name;
         }
 
@@ -55,6 +60,44 @@ namespace OrchardCore.Users
                 areaName: "OrchardCore.Users",
                 pattern: ChangePasswordPath,
                 defaults: new { controller = "Account", action = "ChangePassword" }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "UsersLogOff",
+                areaName: "OrchardCore.Users",
+                pattern: "/Users/LogOff",
+                defaults: new { controller = typeof(AccountController).ControllerName(), action = nameof(AccountController.LogOff) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "UsersIndex",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Index",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersCreate",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Create",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersDelete",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Delete/{id}",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersEdit",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id}",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Edit) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersEditPassword",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.EditPassword) }
             );
 
             builder.UseAuthorization();

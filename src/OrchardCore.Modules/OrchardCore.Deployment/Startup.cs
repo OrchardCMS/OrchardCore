@@ -15,11 +15,21 @@ using OrchardCore.Modules;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using YesSql.Indexes;
+using OrchardCore.Admin;
+using Microsoft.Extensions.Options;
+using OrchardCore.Deployment.Controllers;
 
 namespace OrchardCore.Deployment
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddDeploymentServices();
@@ -50,17 +60,68 @@ namespace OrchardCore.Deployment
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
-                name: "DeleteStep",
+                name: "DeploymentPlanIndex",
                 areaName: "OrchardCore.Deployment",
-                pattern: "Deployment/DeploymentPlan/{id}/Step/{stepId}/Delete",
-                defaults: new { controller = "Step", action = "Delete" }
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/Index",
+                defaults: new { controller = typeof(DeploymentPlanController).ControllerName(), action = nameof(DeploymentPlanController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "DeploymentPlanCreate",
+                areaName: "OrchardCore.Deployment",
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/Create",
+                defaults: new { controller = typeof(DeploymentPlanController).ControllerName(), action = nameof(DeploymentPlanController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "DeploymentPlanDelete",
+                areaName: "OrchardCore.Deployment",
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/Delete/{id}",
+                defaults: new { controller = typeof(DeploymentPlanController).ControllerName(), action = nameof(DeploymentPlanController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "DeploymentPlanDisplay",
+                areaName: "OrchardCore.Deployment",
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/Display/{id}",
+                defaults: new { controller = typeof(DeploymentPlanController).ControllerName(), action = nameof(DeploymentPlanController.Display) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "DeploymentPlanEdit",
+                areaName: "OrchardCore.Deployment",
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/Edit/{id}",
+                defaults: new { controller = typeof(DeploymentPlanController).ControllerName(), action = nameof(DeploymentPlanController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
-                name: "ExecutePlan",
+                name: "DeploymentPlanImport",
                 areaName: "OrchardCore.Deployment",
-                pattern: "Deployment/DeploymentPlan/{id}/Type/{type}/Execute",
-                defaults: new { controller = "DeploymentPlan", action = "Execute" }
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/Import/Index",
+                defaults: new { controller = typeof(ImportController).ControllerName(), action = nameof(ImportController.Index) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "DeploymentPlanExportFileExecute",
+                areaName: "OrchardCore.Deployment",
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/ExportFile/Execute",
+                defaults: new { controller = typeof(ExportFileController).ControllerName(), action = nameof(ExportFileController.Execute) }
+            );
+
+            // Steps
+            routes.MapAreaControllerRoute(
+                name: "DeploymentPlanCreateStep",
+                areaName: "OrchardCore.Deployment",
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/{id}/Step/Create",
+                defaults: new { controller = typeof(StepController).ControllerName(), action = nameof(StepController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "DeploymentPlanDeleteStep",
+                areaName: "OrchardCore.Deployment",
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/{id}/Step/{stepId}/Delete",
+                defaults: new { controller = typeof(StepController).ControllerName(), action = nameof(StepController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "DeploymentPlanEditStep",
+                areaName: "OrchardCore.Deployment",
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/{id}/Step/{stepId}/Edit",
+                defaults: new { controller = typeof(StepController).ControllerName(), action = nameof(StepController.Edit) }
             );
         }
     }

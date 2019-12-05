@@ -11,6 +11,9 @@ using OrchardCore.Features.Recipes.Executors;
 using OrchardCore.Features.Services;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Admin;
+using Microsoft.Extensions.Options;
+using OrchardCore.Features.Controllers;
 
 namespace OrchardCore.Features
 {
@@ -19,6 +22,13 @@ namespace OrchardCore.Features
     /// </summary>
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddRecipeExecutionStep<FeatureStep>();
@@ -34,6 +44,24 @@ namespace OrchardCore.Features
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.MapAreaControllerRoute(
+                name: "Features",
+                areaName: "OrchardCore.Features",
+                pattern: _adminOptions.AdminUrlPrefix + "/Features",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Features) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "FeaturesDisable",
+                areaName: "OrchardCore.Features",
+                pattern: _adminOptions.AdminUrlPrefix + "/Features/Disable/{id}",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Disable) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "FeaturesEnable",
+                areaName: "OrchardCore.Features",
+                pattern: _adminOptions.AdminUrlPrefix + "/Features/Enable/{id}",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Enable) }
+            );
         }
     }
 }

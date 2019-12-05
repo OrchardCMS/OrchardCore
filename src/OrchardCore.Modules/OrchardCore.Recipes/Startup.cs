@@ -1,7 +1,13 @@
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes.Controllers;
 using OrchardCore.Recipes.RecipeSteps;
 using OrchardCore.Recipes.Services;
 
@@ -12,6 +18,13 @@ namespace OrchardCore.Recipes
     /// </summary>
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddRecipes();
@@ -22,6 +35,22 @@ namespace OrchardCore.Recipes
             services.AddRecipeExecutionStep<RecipesStep>();
 
             services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "Recipes",
+                areaName: "OrchardCore.Recipes",
+                pattern: _adminOptions.AdminUrlPrefix + "/Recipes",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "RecipesExecute",
+                areaName: "OrchardCore.Recipes",
+                pattern: _adminOptions.AdminUrlPrefix + "/Recipes/Execute",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Execute) }
+            );
         }
     }
 }

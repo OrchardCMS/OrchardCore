@@ -17,6 +17,7 @@ using OpenIddict.Server;
 using OpenIddict.Server.Internal;
 using OpenIddict.Validation;
 using OpenIddict.Validation.Internal;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
@@ -25,6 +26,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Configuration;
+using OrchardCore.OpenId.Controllers;
 using OrchardCore.OpenId.Drivers;
 using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Recipes;
@@ -46,10 +48,86 @@ namespace OrchardCore.OpenId
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            // Application
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplication",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application",
+                defaults: new { controller = typeof(ApplicationController).ControllerName(), action = nameof(ApplicationController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplicationCreate",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Create",
+                defaults: new { controller = typeof(ApplicationController).ControllerName(), action = nameof(ApplicationController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplicationDelete",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Delete/{id}",
+                defaults: new { controller = typeof(ApplicationController).ControllerName(), action = nameof(ApplicationController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplicationEdit",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Edit/{id}",
+                defaults: new { controller = typeof(ApplicationController).ControllerName(), action = nameof(ApplicationController.Edit) }
+            );
+
+            // Scope
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScope",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope",
+                defaults: new { controller = typeof(ScopeController).ControllerName(), action = nameof(ScopeController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScopeCreate",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Create",
+                defaults: new { controller = typeof(ScopeController).ControllerName(), action = nameof(ScopeController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScopeDelete",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Delete/{id}",
+                defaults: new { controller = typeof(ScopeController).ControllerName(), action = nameof(ScopeController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScopeEdit",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Edit/{id}",
+                defaults: new { controller = typeof(ScopeController).ControllerName(), action = nameof(ScopeController.Edit) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdServerConfiguration",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/ServerConfiguration",
+                defaults: new { controller = typeof(ServerConfigurationController).ControllerName(), action = nameof(ServerConfigurationController.Index) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdValidationConfiguration",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/ValidationConfiguration",
+                defaults: new { controller = typeof(ValidationConfigurationController).ControllerName(), action = nameof(ValidationConfigurationController.Index) }
+            );
         }
     }
 
@@ -103,10 +181,10 @@ namespace OrchardCore.OpenId
                            .SetDefaultTokenEntity<OpenIdToken>();
                 });
 
-            services.TryAddScoped(provider => (IOpenIdApplicationManager) provider.GetRequiredService<IOpenIddictApplicationManager>());
-            services.TryAddScoped(provider => (IOpenIdAuthorizationManager) provider.GetRequiredService<IOpenIddictAuthorizationManager>());
-            services.TryAddScoped(provider => (IOpenIdScopeManager) provider.GetRequiredService<IOpenIddictScopeManager>());
-            services.TryAddScoped(provider => (IOpenIdTokenManager) provider.GetRequiredService<IOpenIddictTokenManager>());
+            services.TryAddScoped(provider => (IOpenIdApplicationManager)provider.GetRequiredService<IOpenIddictApplicationManager>());
+            services.TryAddScoped(provider => (IOpenIdAuthorizationManager)provider.GetRequiredService<IOpenIddictAuthorizationManager>());
+            services.TryAddScoped(provider => (IOpenIdScopeManager)provider.GetRequiredService<IOpenIddictScopeManager>());
+            services.TryAddScoped(provider => (IOpenIdTokenManager)provider.GetRequiredService<IOpenIddictTokenManager>());
 
             services.AddSingleton<IIndexProvider, OpenIdAppIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();

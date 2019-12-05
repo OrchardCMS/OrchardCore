@@ -17,11 +17,21 @@ using OrchardCore.Security.Services;
 using OrchardCore.Deployment;
 using OrchardCore.Roles.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
+using OrchardCore.Roles.Controllers;
 
 namespace OrchardCore.Roles
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.TryAddScoped<RoleManager<IRole>>();
@@ -43,6 +53,30 @@ namespace OrchardCore.Roles
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.MapAreaControllerRoute(
+                name: "RolesIndex",
+                areaName: "OrchardCore.Roles",
+                pattern: _adminOptions.AdminUrlPrefix + "/Roles/Index",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "RolesCreate",
+                areaName: "OrchardCore.Roles",
+                pattern: _adminOptions.AdminUrlPrefix + "/Roles/Create",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "RolesDelete",
+                areaName: "OrchardCore.Roles",
+                pattern: _adminOptions.AdminUrlPrefix + "/Roles/Delete/{id}",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "RolesEdit",
+                areaName: "OrchardCore.Roles",
+                pattern: _adminOptions.AdminUrlPrefix + "/Roles/Edit/{id}",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Edit) }
+            );
         }
     }
 }
