@@ -110,9 +110,9 @@ namespace OrchardCore.DisplayManagement.Liquid
             var template = await ParseAsync(path, fileProviderAccessor.FileProvider, Cache, isDevelopment);
 
             var context = Context;
-            var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
+            await context.ContextualizeAsync(page.ViewContext, (object)page.Model);
 
-            await context.ContextualizeAsync(services, page.ViewContext, (object)page.Model);
+            var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
             await template.RenderAsync(page.Output, htmlEncoder, context);
         }
 
@@ -198,7 +198,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     if (model is Shape shape && shape.Metadata.UseDynamicBinding)
                     {
                         // We need to use the view engine to render the liquid page.
-                        await context.ContextualizeAsync(services, viewContext, model);
+                        await context.ContextualizeAsync(viewContext, model);
                         return await template.RenderViewAsync(viewContext, encoder, context);
                     }
                 }
@@ -208,7 +208,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
             }
 
-            await context.ContextualizeAsync(services, viewContext, model);
+            await context.ContextualizeAsync(viewContext, model);
             return await template.RenderAsync(context, encoder);
         }
 
@@ -280,12 +280,14 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class TemplateContextExtensions
     {
-        internal static async Task ContextualizeAsync(this TemplateContext context, IServiceProvider services, ViewContext viewContext, object model)
+        internal static async Task ContextualizeAsync(this TemplateContext context, ViewContext viewContext, object model)
         {
             // Check if already contextualized.
             if (!context.AmbientValues.ContainsKey("Services"))
             {
-                // Shared contextualization.
+                // Shared contextualization within the current scope.
+                var services = viewContext.HttpContext.RequestServices;
+
                 context.AmbientValues.EnsureCapacity(9);
                 context.AmbientValues.Add("Services", services);
 

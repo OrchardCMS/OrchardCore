@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
@@ -76,17 +75,17 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 return Completion.Normal;
             }
 
-            var tagHelper = factory.CreateTagHelper(_activator, (ViewContext)viewContext,
+            var tagHelper = factory.CreateTagHelper(_activator, viewContext,
                 arguments, out var contextAttributes, out var outputAttributes);
 
             var content = "";
 
-            // Build the ChildContent of this tag
-            using (var sb = StringBuilderPool.GetInstance())
+            if (Statements != null && Statements.Count > 0)
             {
-                using (var output = new StringWriter(sb.Builder))
+                // Build the ChildContent of this tag
+                using (var sb = StringBuilderPool.GetInstance())
                 {
-                    if (Statements != null && Statements.Count > 0)
+                    using (var output = new StringWriter(sb.Builder))
                     {
                         var completion = Completion.Break;
 
@@ -99,12 +98,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                                 return completion;
                             }
                         }
+
+                        await output.FlushAsync();
                     }
 
-                    await output.FlushAsync();
+                    content = sb.Builder.ToString();
                 }
-
-                content = sb.Builder.ToString();
             }
 
             var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
