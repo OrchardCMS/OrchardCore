@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -7,53 +5,37 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
-using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers
 {
     [Feature("OrchardCore.Users.Registration")]
-    public class RegistrationController : BaseEmailController
+    public class RegistrationController : Controller
     {
-        private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
-        private readonly SignInManager<IUser> _signInManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        private readonly IEnumerable<IRegistrationFormEvents> _registrationEvents;
 
         private readonly INotifier _notifier;
 
         public RegistrationController(
-            IUserService userService,
             UserManager<IUser> userManager,
-            SignInManager<IUser> signInManager,
             IAuthorizationService authorizationService,
             ISiteService siteService,
             INotifier notifier,
-            ISmtpService smtpService,
-            IDisplayHelper displayHelper,
             ILogger<RegistrationController> logger,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
-            IStringLocalizer<RegistrationController> stringLocalizer,
-            IEnumerable<IRegistrationFormEvents> registrationEvents,
-            HtmlEncoder htmlEncoder) : base(smtpService, displayHelper, htmlEncoder)
+            IStringLocalizer<RegistrationController> stringLocalizer)
         {
-            _userService = userService;
             _userManager = userManager;
-            _signInManager = signInManager;
             _authorizationService = authorizationService;
             _siteService = siteService;
             _notifier = notifier;
-            _registrationEvents = registrationEvents;
 
             _logger = logger;
             TH = htmlLocalizer;
@@ -68,7 +50,8 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(string returnUrl = null)
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister)
+            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
             {
                 return NotFound();
             }
@@ -84,36 +67,17 @@ namespace OrchardCore.Users.Controllers
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
 
-            if (!settings.UsersCanRegister)
+            if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
             {
                 return NotFound();
             }
 
             ViewData["ReturnUrl"] = returnUrl;
 
-            await _registrationEvents.InvokeAsync((e, modelState) => e.RegistrationValidationAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
-
-            if (ModelState.IsValid)
+            // If we get a user, redirect to returnUrl
+            if (await this.RegisterUser(model, T["Confirm your account"], _logger) != null)
             {
-                var user = await _userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail }, model.Password, (key, message) => ModelState.AddModelError(key, message)) as User;
-
-                if (user != null)
-                {
-                    if (settings.UsersMustValidateEmail)
-                    {
-                        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                        // Send an email with this link
-                        await SendEmailConfirmationTokenAsync(user);
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                    }
-                    _logger.LogInformation(3, "User created a new account with password.");
-                    _registrationEvents.Invoke((e, user) => e.RegisteredAsync(user), user, _logger);
-
-                    return RedirectToLocal(returnUrl);
-                }
+                return RedirectToLocal(returnUrl);
             }
 
             // If we got this far, something failed, redisplay form
@@ -159,7 +123,7 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user != null)
             {
-                await SendEmailConfirmationTokenAsync(user);
+                await this.SendEmailConfirmationTokenAsync(user, T["Confirm your account"]);
 
                 _notifier.Success(TH["Verification email sent."]);
             }
@@ -167,13 +131,17 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(AdminController.Index), "Admin");
         }
 
-        private async Task<string> SendEmailConfirmationTokenAsync(User user)
+        private IActionResult RedirectToLocal(string returnUrl)
         {
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Action("ConfirmEmail", "Registration", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-            await SendEmailAsync(user.Email, T["Confirm your account"], new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl });
-
-            return callbackUrl;
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return Redirect("~/");
+            }
         }
+
     }
 }
