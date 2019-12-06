@@ -23,6 +23,8 @@ namespace OrchardCore.Users.ViewModels
 
         public bool IsEnabled { get; set; }
 
+        public bool UpdateRelated { get; set; }
+
         public RoleViewModel[] Roles { get; set; }
     }
 }

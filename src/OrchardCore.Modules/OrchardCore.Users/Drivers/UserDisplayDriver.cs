@@ -5,27 +5,36 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Security.Services;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
+using YesSql;
 
 namespace OrchardCore.Users.Drivers
 {
     public class UserDisplayDriver : DisplayDriver<User>
     {
+        private readonly ISession _session;
+        private readonly IContentManager _contentManager;
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
         private readonly IUserRoleStore<IUser> _userRoleStore;
         private readonly IStringLocalizer T;
 
         public UserDisplayDriver(
+            ISession session,
+            IContentManager contentManager,
             UserManager<IUser> userManager,
             IRoleService roleService,
             IUserRoleStore<IUser> userRoleStore,
             IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
+            _session = session;
+            _contentManager = contentManager;
             _userManager = userManager;
             _roleService = roleService;
             _userRoleStore = userRoleStore;
@@ -60,6 +69,7 @@ namespace OrchardCore.Users.Drivers
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             var model = new EditUserViewModel();
+            var oldUserName = user.UserName;
 
             if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
@@ -104,6 +114,11 @@ namespace OrchardCore.Users.Drivers
             {
                 await _userManager.SetUserNameAsync(user, model.UserName);
                 await _userManager.SetEmailAsync(user, model.Email);
+
+                if (model.UpdateRelated)
+                {
+                    await AssignContentItems(oldUserName, user.UserName);
+                }
 
                 if (model.EmailConfirmed)
                 {
@@ -156,6 +171,31 @@ namespace OrchardCore.Users.Drivers
         {
             var roleNames = await _roleService.GetRoleNamesAsync();
             return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+        }
+
+        private async Task AssignContentItems(string oldOwnerName, string newOwnerName)
+        {
+            //Update Owner of contentItems
+            var ownerContentItems = await _session.Query<ContentItem, ContentItemIndex>(c => c.Owner == oldOwnerName).ListAsync();
+            foreach (var ownerContentItem in ownerContentItems)
+            {
+                ownerContentItem.Owner = newOwnerName;
+
+                await _contentManager.UpdateAsync(ownerContentItem);
+                //_session.Save(ownerContentItem);
+            }
+
+            //Update Author of contentItems
+            var authorContentItems = await _session.Query<ContentItem, ContentItemIndex>(c => c.Author == oldOwnerName).ListAsync();
+            foreach (var authorContentItem in authorContentItems)
+            {
+                authorContentItem.Author = newOwnerName;
+
+                await _contentManager.UpdateAsync(authorContentItem);
+                //_session.Save(authorContentItem);
+            }
+
+            return;
         }
     }
 }
