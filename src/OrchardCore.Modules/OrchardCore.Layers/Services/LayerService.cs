@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data;
@@ -23,17 +25,20 @@ namespace OrchardCore.Layers.Services
         private readonly ISession _session;
         private readonly ISessionHelper _sessionHelper;
         private readonly IMemoryCache _memoryCache;
+        private readonly IOrchardHelper _orchardHelper;
 
         public LayerService(
             ISignal signal,
             ISession session,
             ISessionHelper sessionHelper,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            IOrchardHelper orchardHelper)
         {
             _signal = signal;
             _session = session;
             _sessionHelper = sessionHelper;
             _memoryCache = memoryCache;
+            _orchardHelper = orchardHelper;
         }
 
         public IChangeToken ChangeToken => _signal.GetToken(LayersCacheKey);
@@ -65,10 +70,12 @@ namespace OrchardCore.Layers.Services
         public async Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(
             Expression<Func<ContentItemIndex, bool>> predicate)
         {
-            return await _session
+            var widgets = await _session
                 .Query<ContentItem, LayerMetadataIndex>()
                 .With(predicate)
                 .ListAsync();
+
+            return await FilterWidgetsByCultureAsync(widgets);
         }
 
         public async Task<IEnumerable<LayerMetadata>> GetLayerWidgetsMetadataAsync(
@@ -95,6 +102,19 @@ namespace OrchardCore.Layers.Services
 
             _session.Save(existing);
             _signal.DeferredSignalToken(LayersCacheKey);
+        }
+
+        private async Task<IEnumerable<ContentItem>> FilterWidgetsByCultureAsync(IEnumerable<ContentItem> widgets)
+        {
+            var widgetsWithCulture = await Task.WhenAll(widgets.Select(async w =>
+            {
+                var culture = await _orchardHelper.GetContentCultureAsync(w);
+                return new { Widget = w, Culture = culture };
+            }));
+
+            return widgetsWithCulture
+                .Where(i => i.Culture.Name == CultureInfo.CurrentUICulture.Name)
+                .Select(i => i.Widget);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace OrchardCore.Layers.Services
     public interface ILayerService
     {
         /// <summary>
-        /// Returns all the layers for udpate.
+        /// Returns all the layers for update.
         /// </summary>
         Task<LayersDocument> LoadLayersAsync();
 
