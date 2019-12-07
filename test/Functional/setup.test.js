@@ -106,7 +106,7 @@ describe('Create Tenants', () => {
     });
 
     it('should display a single tenant', async () => {
-        await page.goto(`${basePath}/Admin/Tenants/Index`);
+        await page.goto(`${basePath}/Admin/Tenants`);
         await expect(await page.content()).toMatch('Default');
 
         await expect((await page.$$("div.properties")).length).toBe(1);
@@ -125,7 +125,7 @@ describe('Create Tenants', () => {
             (await page.$x("//button[contains(text(), 'Create')]"))[0].click()
         ]);
 
-        await expect(await page.url()).toBe(`${basePath}/Admin/Tenants/Index`);
+        await expect(await page.url()).toBe(`${basePath}/Admin/Tenants`);
         await expect(await page.content()).toMatch('Agency');
 
         // Go to Setup page
@@ -168,7 +168,7 @@ describe('Create Tenants', () => {
             (await page.$x("//button[contains(text(), 'Create')]"))[0].click()
         ]);
 
-        await expect(await page.url()).toBe(`${basePath}/Admin/Tenants/Index`);
+        await expect(await page.url()).toBe(`${basePath}/Admin/Tenants`);
         await expect(await page.content()).toMatch('Blog');
 
         // Go to Setup page
