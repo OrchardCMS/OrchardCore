@@ -1,5 +1,7 @@
 using System;
 using GraphQL;
+using GraphQL.DataLoader;
+using GraphQL.Execution;
 using GraphQL.Http;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
@@ -29,8 +31,10 @@ namespace OrchardCore.Apis.GraphQL
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IDependencyResolver, RequestServicesDependencyResolver>();
-            services.AddSingleton<IDocumentExecuter, SerialDocumentExecuter>();
+            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
+            services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
+            services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
             services.AddSingleton<ISchemaFactory, SchemaService>();
             services.AddScoped<IValidationRule, MaxNumberOfResultsValidationRule>();
 
@@ -55,7 +59,7 @@ namespace OrchardCore.Apis.GraphQL
                 {
                     HttpContext = ctx,
                     User = ctx.User,
-                    ServiceProvider = ctx.RequestServices,
+                    ServiceProvider = ctx.RequestServices
                 };
                 c.ExposeExceptions = exposeExceptions;
                 c.MaxDepth = configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 20;

@@ -5,6 +5,8 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.DataLoader;
+using GraphQL.Execution;
 using GraphQL.Validation;
 using GraphQL.Validation.Complexity;
 using Microsoft.AspNetCore.Authentication;
@@ -155,6 +157,8 @@ namespace OrchardCore.Apis.GraphQL
                 queryToExecute = queries[request.NamedQuery];
             }
 
+            var dataLoaderDocumentListener = context.RequestServices.GetRequiredService<IDocumentExecutionListener>();
+
             var result = await _executer.ExecuteAsync(_ =>
             {
                 _.Schema = schema;
@@ -171,6 +175,7 @@ namespace OrchardCore.Apis.GraphQL
                     MaxComplexity = _settings.MaxComplexity,
                     FieldImpact = _settings.FieldImpact
                 };
+                _.Listeners.Add(dataLoaderDocumentListener);
             });
 
             var httpResult = result.Errors?.Count > 0
