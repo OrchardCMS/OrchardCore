@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
@@ -35,29 +36,31 @@ namespace OrchardCore.Tenants
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+
             routes.MapAreaControllerRoute(
                 name: "Tenants",
                 areaName: "OrchardCore.Tenants",
                 pattern: _adminOptions.AdminUrlPrefix + "/Tenants",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
             );
             routes.MapAreaControllerRoute(
                 name: "TenantsCreate",
                 areaName: "OrchardCore.Tenants",
                 pattern: _adminOptions.AdminUrlPrefix + "/Tenants/Create",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Create) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
             );
             routes.MapAreaControllerRoute(
                 name: "TenantsEdit",
                 areaName: "OrchardCore.Tenants",
                 pattern: _adminOptions.AdminUrlPrefix + "/Tenants/Edit/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Edit) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
             );
             routes.MapAreaControllerRoute(
                 name: "TenantsReload",
                 areaName: "OrchardCore.Tenants",
                 pattern: _adminOptions.AdminUrlPrefix + "/Tenants/Reload/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Reload) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Reload) }
             );
         }
     }

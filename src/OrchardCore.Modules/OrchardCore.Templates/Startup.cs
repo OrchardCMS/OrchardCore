@@ -1,22 +1,23 @@
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Templates.Controllers;
 using OrchardCore.Templates.Deployment;
 using OrchardCore.Templates.Recipes;
 using OrchardCore.Templates.Services;
 using OrchardCore.Templates.Settings;
-using Microsoft.AspNetCore.Routing;
-using OrchardCore.Admin;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Builder;
-using OrchardCore.Templates.Controllers;
-using System;
 
 namespace OrchardCore.Templates
 {
@@ -53,29 +54,31 @@ namespace OrchardCore.Templates
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var templateControllerName = TypeHelper.GetControllerName<TemplateController>();
+
             routes.MapAreaControllerRoute(
                 name: "Templates.Index",
                 areaName: "OrchardCore.Templates",
                 pattern: _adminOptions.AdminUrlPrefix + "/Templates",
-                defaults: new { controller = typeof(TemplateController).ControllerName(), action = nameof(TemplateController.Index) }
+                defaults: new { controller = templateControllerName, action = nameof(TemplateController.Index) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Templates.Create",
                 areaName: "OrchardCore.Templates",
                 pattern: _adminOptions.AdminUrlPrefix + "/Templates/Create",
-                defaults: new { controller = typeof(TemplateController).ControllerName(), action = nameof(TemplateController.Create) }
+                defaults: new { controller = templateControllerName, action = nameof(TemplateController.Create) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Templates.Edit",
                 areaName: "OrchardCore.Templates",
                 pattern: _adminOptions.AdminUrlPrefix + "/Templates/Edit/{name}",
-                defaults: new { controller = typeof(TemplateController).ControllerName(), action = nameof(TemplateController.Edit) }
+                defaults: new { controller = templateControllerName, action = nameof(TemplateController.Edit) }
             );
         }
     }
-    
+
     [Feature("OrchardCore.AdminTemplates")]
     public class AdminTemplatesStartup : StartupBase
     {
@@ -104,7 +107,7 @@ namespace OrchardCore.Templates
                 name: "Templates.Admin",
                 areaName: "OrchardCore.Templates",
                 pattern: _adminOptions.AdminUrlPrefix + "/Templates/Admin",
-                defaults: new { controller = typeof(TemplateController).ControllerName(), action = nameof(TemplateController.Admin) }
+                defaults: new { controller = TypeHelper.GetControllerName<TemplateController>(), action = nameof(TemplateController.Admin) }
             );
         }
     }

@@ -14,6 +14,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -61,60 +62,65 @@ namespace OrchardCore.AdminMenu
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             // Menu
+            var menuControllerName = TypeHelper.GetControllerName<MenuController>();
+
             routes.MapAreaControllerRoute(
                 name: "AdminMenuList",
                 areaName: "OrchardCore.AdminMenu",
                 pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/List",
-                defaults: new { controller = typeof(MenuController).ControllerName(), action = nameof(MenuController.List) }
+                defaults: new { controller = menuControllerName, action = nameof(MenuController.List) }
             );
             routes.MapAreaControllerRoute(
                 name: "AdminMenuCreate",
                 areaName: "OrchardCore.AdminMenu",
                 pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Create",
-                defaults: new { controller = typeof(MenuController).ControllerName(), action = nameof(MenuController.Create) }
+                defaults: new { controller = menuControllerName, action = nameof(MenuController.Create) }
             );
             routes.MapAreaControllerRoute(
                 name: "AdminMenuDelete",
                 areaName: "OrchardCore.AdminMenu",
                 pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Delete/{id}",
-                defaults: new { controller = typeof(MenuController).ControllerName(), action = nameof(MenuController.Delete) }
+                defaults: new { controller = menuControllerName, action = nameof(MenuController.Delete) }
             );
             routes.MapAreaControllerRoute(
                 name: "AdminMenuEdit",
                 areaName: "OrchardCore.AdminMenu",
                 pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Edit/{id}",
-                defaults: new { controller = typeof(MenuController).ControllerName(), action = nameof(MenuController.Edit) }
+                defaults: new { controller = menuControllerName, action = nameof(MenuController.Edit) }
             );
             routes.MapAreaControllerRoute(
                 name: "AdminMenuToggle",
                 areaName: "OrchardCore.AdminMenu",
                 pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Toggle/{id}",
-                defaults: new { controller = typeof(MenuController).ControllerName(), action = nameof(MenuController.Toggle) }
+                defaults: new { controller = menuControllerName, action = nameof(MenuController.Toggle) }
             );
+
             // Node
+            var nodeControllerName = TypeHelper.GetControllerName<MenuController>();
+
             routes.MapAreaControllerRoute(
                 name: "AdminMenuNodeList",
                 areaName: "OrchardCore.AdminMenu",
                 pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/List",
-                defaults: new { controller = typeof(NodeController).ControllerName(), action = nameof(NodeController.List) }
+                defaults: new { controller = nodeControllerName, action = nameof(NodeController.List) }
             );
             routes.MapAreaControllerRoute(
                 name: "AdminMenuNodeCreate",
                 areaName: "OrchardCore.AdminMenu",
                 pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/Create",
-                defaults: new { controller = typeof(NodeController).ControllerName(), action = nameof(NodeController.Create) }
+                defaults: new { controller = nodeControllerName, action = nameof(NodeController.Create) }
             );
             routes.MapAreaControllerRoute(
                 name: "AdminMenuNodeDelete",
                 areaName: "OrchardCore.AdminMenu",
                 pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/Delete",
-                defaults: new { controller = typeof(NodeController).ControllerName(), action = nameof(NodeController.Delete) }
+                defaults: new { controller = nodeControllerName, action = nameof(NodeController.Delete) }
             );
             routes.MapAreaControllerRoute(
                 name: "AdminMenuNodeEdit",
                 areaName: "OrchardCore.AdminMenu",
                 pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/Edit",
-                defaults: new { controller = typeof(NodeController).ControllerName(), action = nameof(NodeController.Edit) }
+                defaults: new { controller = nodeControllerName, action = nameof(NodeController.Edit) }
             );
         }
     }

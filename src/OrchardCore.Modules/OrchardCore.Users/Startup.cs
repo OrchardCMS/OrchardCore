@@ -16,6 +16,7 @@ using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -49,55 +50,59 @@ namespace OrchardCore.Users
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var accountControllerName = TypeHelper.GetControllerName<AccountController>();
+
             routes.MapAreaControllerRoute(
                 name: "Login",
                 areaName: "OrchardCore.Users",
                 pattern: LoginPath,
-                defaults: new { controller = "Account", action = "Login" }
+                defaults: new { controller = accountControllerName, action = nameof(AccountController.Login) }
             );
             routes.MapAreaControllerRoute(
                 name: "ChangePassword",
                 areaName: "OrchardCore.Users",
                 pattern: ChangePasswordPath,
-                defaults: new { controller = "Account", action = "ChangePassword" }
+                defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePassword) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "UsersLogOff",
                 areaName: "OrchardCore.Users",
                 pattern: "/Users/LogOff",
-                defaults: new { controller = typeof(AccountController).ControllerName(), action = nameof(AccountController.LogOff) }
+                defaults: new { controller = accountControllerName, action = nameof(AccountController.LogOff) }
             );
+
+            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
 
             routes.MapAreaControllerRoute(
                 name: "UsersIndex",
                 areaName: "OrchardCore.Users",
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/Index",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
             );
             routes.MapAreaControllerRoute(
                 name: "UsersCreate",
                 areaName: "OrchardCore.Users",
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/Create",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Create) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
             );
             routes.MapAreaControllerRoute(
                 name: "UsersDelete",
                 areaName: "OrchardCore.Users",
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/Delete/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Delete) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
             );
             routes.MapAreaControllerRoute(
                 name: "UsersEdit",
                 areaName: "OrchardCore.Users",
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Edit) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
             );
             routes.MapAreaControllerRoute(
                 name: "UsersEditPassword",
                 areaName: "OrchardCore.Users",
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.EditPassword) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPassword) }
             );
 
             builder.UseAuthorization();

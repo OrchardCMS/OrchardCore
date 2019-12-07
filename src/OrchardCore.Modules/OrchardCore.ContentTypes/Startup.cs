@@ -1,20 +1,21 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
+using OrchardCore.ContentTypes.Controllers;
 using OrchardCore.ContentTypes.Deployment;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.RecipeSteps;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.ContentTypes.Controllers;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 
 namespace OrchardCore.ContentTypes
 {
@@ -49,81 +50,83 @@ namespace OrchardCore.ContentTypes
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+
             routes.MapAreaControllerRoute(
                 name: "EditField",
                 areaName: "OrchardCore.ContentTypes",
                 pattern: _adminOptions.AdminUrlPrefix + "/ContentParts/{id}/Fields/{name}/Edit",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.EditField) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditField) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "CreateType",
                 areaName: "OrchardCore.ContentTypes",
                 pattern: _adminOptions.AdminUrlPrefix + "/ContentTypes/Create",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Create) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "AddFieldsTo",
                 areaName: "OrchardCore.ContentTypes",
                 pattern: _adminOptions.AdminUrlPrefix + "/ContentTypes/AddFieldsTo/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.AddFieldTo) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.AddFieldTo) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "AddPartsTo",
                 areaName: "OrchardCore.ContentTypes",
                 pattern: _adminOptions.AdminUrlPrefix + "/ContentTypes/AddPartsTo/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.AddPartsTo) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.AddPartsTo) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "AddReusablePartTo",
                 areaName: "OrchardCore.ContentTypes",
                 pattern: _adminOptions.AdminUrlPrefix + "/ContentTypes/AddReusablePartTo/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.AddReusablePartTo) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.AddReusablePartTo) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "EditType",
                 areaName: "OrchardCore.ContentTypes",
                 pattern: _adminOptions.AdminUrlPrefix + "/ContentTypes/Edit/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Edit) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "EditTypePart",
                 areaName: "OrchardCore.ContentTypes",
                 pattern: _adminOptions.AdminUrlPrefix + "/ContentTypes/{id}/ContentParts/{name}/Edit",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.EditTypePart) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditTypePart) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "EditPart",
                 areaName: "OrchardCore.ContentTypes",
                 pattern: _adminOptions.AdminUrlPrefix + "/ContentParts/Edit/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.EditPart) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPart) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "ListContentTypes",
                 areaName: "OrchardCore.ContentTypes",
                 pattern: _adminOptions.AdminUrlPrefix + "/ContentTypes/List",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.List) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.List) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "ListContentParts",
                 areaName: "OrchardCore.ContentTypes",
                 pattern: _adminOptions.AdminUrlPrefix + "/ContentTypes/ListParts",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.ListParts) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.ListParts) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "RemovePart",
                 areaName: "OrchardCore.ContentTypes",
                 pattern: _adminOptions.AdminUrlPrefix + "/ContentTypes/{id}/ContentParts/{name}/Remove",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.RemovePart) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.RemovePart) }
             );
         }
     }

@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin.Controllers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
@@ -48,7 +50,7 @@ namespace OrchardCore.Admin
                 name: "Admin",
                 areaName: "OrchardCore.Admin",
                 pattern: _adminOptions.AdminUrlPrefix,
-                defaults: new { controller = "Admin", action = "Index" }
+                defaults: new { controller = TypeHelper.GetControllerName<AdminController>(), action = nameof(AdminController.Index) }
             );
         }
     }

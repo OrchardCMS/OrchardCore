@@ -14,6 +14,7 @@ using OrchardCore.Apis.GraphQL.Services;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
@@ -77,7 +78,7 @@ namespace OrchardCore.Apis.GraphQL
                 name: "GraphQL",
                 areaName: "OrchardCore.Apis.GraphQL",
                 pattern: _adminOptions.AdminUrlPrefix + "/GraphQL",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+                defaults: new { controller = TypeHelper.GetControllerName<AdminController>(), action = nameof(AdminController.Index) }
             );
 
             app.UseMiddleware<GraphQLMiddleware>(serviceProvider.GetService<IOptions<GraphQLSettings>>().Value);

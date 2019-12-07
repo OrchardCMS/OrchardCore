@@ -1,17 +1,18 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Email.Drivers;
-using OrchardCore.Email.Services;
-using OrchardCore.Navigation;
-using OrchardCore.Modules;
-using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
-using OrchardCore.Admin;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Email.Controllers;
+using OrchardCore.Email.Drivers;
+using OrchardCore.Email.Services;
+using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Email
 {
@@ -40,8 +41,8 @@ namespace OrchardCore.Email
                 name: "EmailIndex",
                 areaName: "OrchardCore.Email",
                 pattern: _adminOptions.AdminUrlPrefix + "/Email/Index",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+                defaults: new { controller = TypeHelper.GetControllerName<AdminController>(), action = nameof(AdminController.Index) }
             );
         }
-        }
+    }
 }

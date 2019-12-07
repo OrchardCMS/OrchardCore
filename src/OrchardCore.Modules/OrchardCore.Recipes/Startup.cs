@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.Controllers;
 using OrchardCore.Recipes.RecipeSteps;
@@ -39,17 +40,20 @@ namespace OrchardCore.Recipes
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+
             routes.MapAreaControllerRoute(
                 name: "Recipes",
                 areaName: "OrchardCore.Recipes",
                 pattern: _adminOptions.AdminUrlPrefix + "/Recipes",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
             );
+
             routes.MapAreaControllerRoute(
                 name: "RecipesExecute",
                 areaName: "OrchardCore.Recipes",
                 pattern: _adminOptions.AdminUrlPrefix + "/Recipes/Execute",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Execute) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Execute) }
             );
         }
     }

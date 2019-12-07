@@ -23,6 +23,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Configuration;
@@ -64,69 +65,73 @@ namespace OrchardCore.OpenId
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             // Application
+            var applicationControllerName = TypeHelper.GetControllerName<ApplicationController>();
+
             routes.MapAreaControllerRoute(
                 name: "OpenIdApplication",
                 areaName: "OrchardCore.OpenId",
                 pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application",
-                defaults: new { controller = typeof(ApplicationController).ControllerName(), action = nameof(ApplicationController.Index) }
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Index) }
             );
             routes.MapAreaControllerRoute(
                 name: "OpenIdApplicationCreate",
                 areaName: "OrchardCore.OpenId",
                 pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Create",
-                defaults: new { controller = typeof(ApplicationController).ControllerName(), action = nameof(ApplicationController.Create) }
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Create) }
             );
             routes.MapAreaControllerRoute(
                 name: "OpenIdApplicationDelete",
                 areaName: "OrchardCore.OpenId",
                 pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Delete/{id}",
-                defaults: new { controller = typeof(ApplicationController).ControllerName(), action = nameof(ApplicationController.Delete) }
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Delete) }
             );
             routes.MapAreaControllerRoute(
                 name: "OpenIdApplicationEdit",
                 areaName: "OrchardCore.OpenId",
                 pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Edit/{id}",
-                defaults: new { controller = typeof(ApplicationController).ControllerName(), action = nameof(ApplicationController.Edit) }
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Edit) }
             );
 
             // Scope
+            var scopeControllerName = TypeHelper.GetControllerName<ScopeController>();
+
             routes.MapAreaControllerRoute(
                 name: "OpenIdScope",
                 areaName: "OrchardCore.OpenId",
                 pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope",
-                defaults: new { controller = typeof(ScopeController).ControllerName(), action = nameof(ScopeController.Index) }
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Index) }
             );
             routes.MapAreaControllerRoute(
                 name: "OpenIdScopeCreate",
                 areaName: "OrchardCore.OpenId",
                 pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Create",
-                defaults: new { controller = typeof(ScopeController).ControllerName(), action = nameof(ScopeController.Create) }
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Create) }
             );
             routes.MapAreaControllerRoute(
                 name: "OpenIdScopeDelete",
                 areaName: "OrchardCore.OpenId",
                 pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Delete/{id}",
-                defaults: new { controller = typeof(ScopeController).ControllerName(), action = nameof(ScopeController.Delete) }
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Delete) }
             );
             routes.MapAreaControllerRoute(
                 name: "OpenIdScopeEdit",
                 areaName: "OrchardCore.OpenId",
                 pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Edit/{id}",
-                defaults: new { controller = typeof(ScopeController).ControllerName(), action = nameof(ScopeController.Edit) }
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "OpenIdServerConfiguration",
                 areaName: "OrchardCore.OpenId",
                 pattern: _adminOptions.AdminUrlPrefix + "/OpenId/ServerConfiguration",
-                defaults: new { controller = typeof(ServerConfigurationController).ControllerName(), action = nameof(ServerConfigurationController.Index) }
+                defaults: new { controller = TypeHelper.GetControllerName<ServerConfigurationController>(), action = nameof(ServerConfigurationController.Index) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "OpenIdValidationConfiguration",
                 areaName: "OrchardCore.OpenId",
                 pattern: _adminOptions.AdminUrlPrefix + "/OpenId/ValidationConfiguration",
-                defaults: new { controller = typeof(ValidationConfigurationController).ControllerName(), action = nameof(ValidationConfigurationController.Index) }
+                defaults: new { controller = TypeHelper.GetControllerName<ValidationConfigurationController>(), action = nameof(ValidationConfigurationController.Index) }
             );
         }
     }

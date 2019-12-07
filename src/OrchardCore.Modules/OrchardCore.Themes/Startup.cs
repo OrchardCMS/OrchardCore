@@ -1,20 +1,21 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Themes.Controllers;
 using OrchardCore.Themes.Deployment;
 using OrchardCore.Themes.Recipes;
 using OrchardCore.Themes.Services;
-using OrchardCore.Admin;
-using Microsoft.Extensions.Options;
-using OrchardCore.Themes.Controllers;
 
 namespace OrchardCore.Themes
 {
@@ -50,7 +51,7 @@ namespace OrchardCore.Themes
                 name: "Themes.Index",
                 areaName: "OrchardCore.Themes",
                 pattern: _adminOptions.AdminUrlPrefix + "/Themes",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+                defaults: new { controller = TypeHelper.GetControllerName<AdminController>(), action = nameof(AdminController.Index) }
             );
         }
     }

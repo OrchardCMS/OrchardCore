@@ -1,16 +1,17 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
+using OrchardCore.Layers.Controllers;
 using OrchardCore.Layers.Deployment;
 using OrchardCore.Layers.Drivers;
 using OrchardCore.Layers.Handlers;
@@ -18,14 +19,14 @@ using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Recipes;
 using OrchardCore.Layers.Services;
+using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using YesSql.Indexes;
-using OrchardCore.Admin;
-using Microsoft.Extensions.Options;
-using OrchardCore.Layers.Controllers;
 
 namespace OrchardCore.Layers
 {
@@ -64,32 +65,34 @@ namespace OrchardCore.Layers
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+
             routes.MapAreaControllerRoute(
                 name: "Layers.Index",
                 areaName: "OrchardCore.Layers",
                 pattern: _adminOptions.AdminUrlPrefix + "/Layers",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Layers.Create",
                 areaName: "OrchardCore.Layers",
                 pattern: _adminOptions.AdminUrlPrefix + "/Layers/Create",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Create) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Layers.Delete",
                 areaName: "OrchardCore.Layers",
                 pattern: _adminOptions.AdminUrlPrefix + "/Layers/Delete",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Delete) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Layers.Create",
                 areaName: "OrchardCore.Layers",
                 pattern: _adminOptions.AdminUrlPrefix + "/Layers/Edit",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Edit) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
             );
         }
     }

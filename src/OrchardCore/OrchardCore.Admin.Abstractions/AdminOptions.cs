@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Routing;
-
 namespace OrchardCore.Admin
 {
     public class AdminOptions

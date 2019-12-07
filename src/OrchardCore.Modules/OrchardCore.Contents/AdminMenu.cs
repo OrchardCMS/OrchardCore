@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Security;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents
@@ -40,7 +41,7 @@ namespace OrchardCore.Contents
                 .AddClass("content").Id("content")
                 .Add(S["Content Items"], "1", contentItems => contentItems
                     .Permission(Permissions.EditOwnContent)
-                    .Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), new { area = "OrchardCore.Contents" })
+                    .Action(nameof(AdminController.List), TypeHelper.GetControllerName<AdminController>(), new { area = "OrchardCore.Contents" })
                     .LocalNav())
                 );
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);

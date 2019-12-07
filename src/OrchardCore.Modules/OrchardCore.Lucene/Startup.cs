@@ -25,6 +25,7 @@ using OrchardCore.Settings;
 using OrchardCore.Admin;
 using Microsoft.Extensions.Options;
 using OrchardCore.Lucene.Controllers;
+using OrchardCore.Mvc.Core.Utilities;
 
 namespace OrchardCore.Lucene
 {
@@ -78,25 +79,27 @@ namespace OrchardCore.Lucene
                 defaults: new { controller = "Search", action = "Index" }
             );
 
+            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+
             routes.MapAreaControllerRoute(
                 name: "Lucene.Index",
                 areaName: "OrchardCore.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Index",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Lucene.Create",
                 areaName: "OrchardCore.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Create",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Create) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Lucene.Delete",
                 areaName: "OrchardCore.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Delete/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Delete) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
             );
 
 
@@ -104,21 +107,21 @@ namespace OrchardCore.Lucene
                 name: "Lucene.Query",
                 areaName: "OrchardCore.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Query",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Query) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Query) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Lucene.Rebuild",
                 areaName: "OrchardCore.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Rebuild/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Rebuild) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Rebuild) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Lucene.Reset",
                 areaName: "OrchardCore.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Reset/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Reset) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Reset) }
             );
         }
     }

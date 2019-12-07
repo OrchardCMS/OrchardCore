@@ -36,6 +36,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Settings;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -108,54 +109,58 @@ namespace OrchardCore.Contents
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var itemControllerName = TypeHelper.GetControllerName<ItemController>();
+
             routes.MapAreaControllerRoute(
                 name: "DisplayContentItem",
                 areaName: "OrchardCore.Contents",
                 pattern: "Contents/ContentItems/{contentItemId}",
-                defaults: new { controller = typeof(ItemController).ControllerName(), action = nameof(ItemController.Display) }
+                defaults: new { controller = itemControllerName, action = nameof(ItemController.Display) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "PreviewContentItem",
                 areaName: "OrchardCore.Contents",
                 pattern: "Contents/ContentItems/{contentItemId}/Preview",
-                defaults: new { controller = typeof(ItemController).ControllerName(), action = nameof(ItemController.Preview) }
+                defaults: new { controller = itemControllerName, action = nameof(ItemController.Preview) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "PreviewContentItemVersion",
                 areaName: "OrchardCore.Contents",
                 pattern: "Contents/ContentItems/{contentItemId}/Version/{version}/Preview",
-                defaults: new { controller = typeof(ItemController).ControllerName(), action = nameof(ItemController.Preview) }
+                defaults: new { controller = itemControllerName, action = nameof(ItemController.Preview) }
             );
 
             // Admin
+            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+
             routes.MapAreaControllerRoute(
                 name: "EditContentItem",
                 areaName: "OrchardCore.Contents",
                 pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Edit",
-                defaults: new { area = "OrchardCore.Contents", controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Edit) }
+                defaults: new { area = "OrchardCore.Contents", controller = adminControllerName, action = nameof(AdminController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "CreateContentItem",
                 areaName: "OrchardCore.Contents",
                 pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentTypes/{id}/Create",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Create) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "AdminContentItem",
                 areaName: "OrchardCore.Contents",
                 pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Display",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Display) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Display) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
                 pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentTypeId?}",
-                defaults: new {controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.List) }
+                defaults: new {controller = adminControllerName, action = nameof(AdminController.List) }
             );
         }
     }

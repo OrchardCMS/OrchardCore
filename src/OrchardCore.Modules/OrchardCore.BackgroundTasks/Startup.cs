@@ -7,6 +7,7 @@ using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Controllers;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
@@ -32,29 +33,31 @@ namespace OrchardCore.BackgroundTasks
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var backgroundTaskControllerName = TypeHelper.GetControllerName<BackgroundTaskController>();
+
             routes.MapAreaControllerRoute(
                 name: "BackgroundTasks",
                 areaName: "OrchardCore.BackgroundTasks",
                 pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks",
-                defaults: new { controller = typeof(BackgroundTaskController).ControllerName(), action = nameof(BackgroundTaskController.Index) }
+                defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Index) }
             );
             routes.MapAreaControllerRoute(
                 name: "BackgroundTasksDisable",
                 areaName: "OrchardCore.BackgroundTasks",
                 pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Disable/{id}",
-                defaults: new { controller = typeof(BackgroundTaskController).ControllerName(), action = nameof(BackgroundTaskController.Disable) }
+                defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Disable) }
             );
             routes.MapAreaControllerRoute(
                 name: "BackgroundTasksEdit",
                 areaName: "OrchardCore.BackgroundTasks",
                 pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Edit/{id}",
-                defaults: new { controller = typeof(BackgroundTaskController).ControllerName(), action = nameof(BackgroundTaskController.Edit) }
+                defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Edit) }
             );
             routes.MapAreaControllerRoute(
                 name: "BackgroundTasksEnable",
                 areaName: "OrchardCore.BackgroundTasks",
                 pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Enable/{id}",
-                defaults: new { controller = typeof(BackgroundTaskController).ControllerName(), action = nameof(BackgroundTaskController.Enable) }
+                defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Enable) }
             );
         }
     }

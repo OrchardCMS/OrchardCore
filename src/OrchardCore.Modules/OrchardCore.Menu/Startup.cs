@@ -15,7 +15,7 @@ using OrchardCore.Menu.Handlers;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.TagHelpers;
 using OrchardCore.Modules;
-using OrchardCore.Navigation;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Menu
@@ -50,23 +50,25 @@ namespace OrchardCore.Menu
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+
             routes.MapAreaControllerRoute(
                 name: "MenuCreate",
                 areaName: "OrchardCore.Menu",
                 pattern: _adminOptions.AdminUrlPrefix + "/Menu/Create/{id}",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Create) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
             );
             routes.MapAreaControllerRoute(
                 name: "MenuDelete",
                 areaName: "OrchardCore.Menu",
                 pattern: _adminOptions.AdminUrlPrefix + "/Menu/Delete",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Delete) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
             );
             routes.MapAreaControllerRoute(
                 name: "MenuEdit",
                 areaName: "OrchardCore.Menu",
                 pattern: _adminOptions.AdminUrlPrefix + "/Menu/Edit",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Edit) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
             );
         }
     }
