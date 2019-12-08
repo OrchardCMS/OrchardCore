@@ -33,7 +33,7 @@ namespace OrchardCore.DisplayManagement.Implementation
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
             result = InvokeAsync(binder.Name, Arguments.From(args, binder.CallInfo.ArgumentNames));
-            
+
             return true;
         }
 
@@ -63,19 +63,21 @@ namespace OrchardCore.DisplayManagement.Implementation
             var shape = await _shapeFactory.CreateAsync(name, parameters);
             return await ShapeExecuteAsync(shape);
         }
-        
-        public Task<IHtmlContent> ShapeExecuteAsync(object shape)
+
+        public Task<IHtmlContent> ShapeExecuteAsync(object shape, IServiceProvider serviceProvider = null)
         {
             if (shape == null)
             {
                 return Task.FromResult<IHtmlContent>(HtmlString.Empty);
             }
 
+            IServiceProvider localServiceProvider = serviceProvider ?? _serviceProvider;
+
             var context = new DisplayContext
             {
                 DisplayAsync = this,
                 Value = shape,
-                ServiceProvider = _serviceProvider
+                ServiceProvider = localServiceProvider
             };
 
             return _htmlDisplay.ExecuteAsync(context);
