@@ -182,17 +182,19 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         public static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, LiquidTemplateContext context, object model)
         {
-            var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
+            var services = context.Services;
+
+            var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
             var viewContext = viewContextAccessor.ViewContext;
 
             if (viewContext == null)
             {
-                var actionContext = context.Services.GetService<IActionContextAccessor>()?.ActionContext;
+                var actionContext = services.GetService<IActionContextAccessor>()?.ActionContext;
 
                 if (actionContext == null)
                 {
-                    actionContext = await GetActionContextAsync(context.Services);
-                    viewContext = GetViewContext(context.Services, actionContext);
+                    actionContext = await GetActionContextAsync(services);
+                    viewContext = GetViewContext(actionContext);
 
                     // If there was no 'ViewContext' and no 'ActionContext' (e.g through 'GraphQL'), and
                     // the model is a shape using a dynamic binding, we will need to use the view engine.
@@ -206,7 +208,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
                 else
                 {
-                    viewContext = GetViewContext(context.Services, actionContext);
+                    viewContext = GetViewContext(actionContext);
                 }
             }
 
@@ -246,7 +248,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             var httpContext = services.GetRequiredService<IHttpContextAccessor>().HttpContext;
 
             var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-            var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
+            var filters = services.GetServices<IAsyncViewActionFilter>();
 
             foreach (var filter in filters)
             {
@@ -256,8 +258,10 @@ namespace OrchardCore.DisplayManagement.Liquid
             return actionContext;
         }
 
-        internal static ViewContext GetViewContext(IServiceProvider services, ActionContext actionContext)
+        internal static ViewContext GetViewContext(ActionContext actionContext)
         {
+            var services = actionContext.HttpContext.RequestServices;
+
             var options = services.GetService<IOptions<MvcViewOptions>>();
             var viewEngine = options.Value.ViewEngines[0];
 
@@ -275,7 +279,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 new TempDataDictionary(
                     actionContext.HttpContext,
                     tempDataProvider),
-                StringWriter.Null,
+                TextWriter.Null,
                 new HtmlHelperOptions());
         }
     }
