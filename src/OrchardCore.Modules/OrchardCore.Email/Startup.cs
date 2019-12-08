@@ -41,7 +41,7 @@ namespace OrchardCore.Email
                 name: "EmailIndex",
                 areaName: "OrchardCore.Email",
                 pattern: _adminOptions.AdminUrlPrefix + "/Email/Index",
-                defaults: new { controller = TypeHelper.GetControllerName<AdminController>(), action = nameof(AdminController.Index) }
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
             );
         }
     }

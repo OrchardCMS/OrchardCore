@@ -51,7 +51,7 @@ namespace OrchardCore.Themes
                 name: "Themes.Index",
                 areaName: "OrchardCore.Themes",
                 pattern: _adminOptions.AdminUrlPrefix + "/Themes",
-                defaults: new { controller = TypeHelper.GetControllerName<AdminController>(), action = nameof(AdminController.Index) }
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
             );
         }
     }

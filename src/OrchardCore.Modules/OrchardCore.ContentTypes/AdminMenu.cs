@@ -22,7 +22,7 @@ namespace OrchardCore.ContentTypes {
                 return Task.CompletedTask;
             }
 
-            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+            var adminControllerName = typeof(AdminController).ControllerName();
 
             builder.Add(S["Content"], content => content
                 .Add(S["Content Definition"], "2", contentDefinition => contentDefinition

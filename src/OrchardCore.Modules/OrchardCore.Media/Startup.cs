@@ -188,14 +188,14 @@ namespace OrchardCore.Media
                 name: "Media.Index",
                 areaName: "OrchardCore.Media",
                 pattern: _adminOptions.AdminUrlPrefix + "/Media",
-                defaults: new { controller = TypeHelper.GetControllerName<AdminController>(), action = nameof(AdminController.Index) }
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "MediaCache.Index",
                 areaName: "OrchardCore.Media",
                 pattern: _adminOptions.AdminUrlPrefix + "/MediaCache",
-                defaults: new { controller = TypeHelper.GetControllerName<MediaCacheController>(), action = nameof(MediaCacheController.Index) }
+                defaults: new { controller = typeof(MediaCacheController).ControllerName(), action = nameof(MediaCacheController.Index) }
             );
         }
 

@@ -53,7 +53,7 @@ namespace OrchardCore.Queries
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+            var adminControllerName = typeof(AdminController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "QueriesIndex",
@@ -87,7 +87,7 @@ namespace OrchardCore.Queries
                 name: "QueriesRunSql",
                 areaName: "OrchardCore.Queries",
                 pattern: _adminOptions.AdminUrlPrefix + "/Queries/Sql/Query",
-                defaults: new { controller = TypeHelper.GetControllerName<Sql.Controllers.AdminController>(), action = nameof(Sql.Controllers.AdminController.Query) }
+                defaults: new { controller = typeof(Sql.Controllers.AdminController).ControllerName(), action = nameof(Sql.Controllers.AdminController.Query) }
             );
         }
     }

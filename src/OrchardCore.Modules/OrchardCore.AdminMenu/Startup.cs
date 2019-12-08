@@ -62,7 +62,7 @@ namespace OrchardCore.AdminMenu
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             // Menu
-            var menuControllerName = TypeHelper.GetControllerName<MenuController>();
+            var menuControllerName = typeof(MenuController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "AdminMenuList",
@@ -96,7 +96,7 @@ namespace OrchardCore.AdminMenu
             );
 
             // Node
-            var nodeControllerName = TypeHelper.GetControllerName<MenuController>();
+            var nodeControllerName = typeof(NodeController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "AdminMenuNodeList",

@@ -78,7 +78,7 @@ namespace OrchardCore.Apis.GraphQL
                 name: "GraphQL",
                 areaName: "OrchardCore.Apis.GraphQL",
                 pattern: _adminOptions.AdminUrlPrefix + "/GraphQL",
-                defaults: new { controller = TypeHelper.GetControllerName<AdminController>(), action = nameof(AdminController.Index) }
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
             );
 
             app.UseMiddleware<GraphQLMiddleware>(serviceProvider.GetService<IOptions<GraphQLSettings>>().Value);

@@ -54,7 +54,7 @@ namespace OrchardCore.Templates
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var templateControllerName = TypeHelper.GetControllerName<TemplateController>();
+            var templateControllerName = typeof(TemplateController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "Templates.Index",
@@ -107,7 +107,7 @@ namespace OrchardCore.Templates
                 name: "Templates.Admin",
                 areaName: "OrchardCore.Templates",
                 pattern: _adminOptions.AdminUrlPrefix + "/Templates/Admin",
-                defaults: new { controller = TypeHelper.GetControllerName<TemplateController>(), action = nameof(TemplateController.Admin) }
+                defaults: new { controller = typeof(TemplateController).ControllerName(), action = nameof(TemplateController.Admin) }
             );
         }
     }

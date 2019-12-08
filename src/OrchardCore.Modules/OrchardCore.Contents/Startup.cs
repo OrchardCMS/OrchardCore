@@ -109,7 +109,7 @@ namespace OrchardCore.Contents
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var itemControllerName = TypeHelper.GetControllerName<ItemController>();
+            var itemControllerName = typeof(ItemController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "DisplayContentItem",
@@ -133,13 +133,13 @@ namespace OrchardCore.Contents
             );
 
             // Admin
-            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+            var adminControllerName = typeof(AdminController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "EditContentItem",
                 areaName: "OrchardCore.Contents",
                 pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Edit",
-                defaults: new { area = "OrchardCore.Contents", controller = adminControllerName, action = nameof(AdminController.Edit) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
             );
 
             routes.MapAreaControllerRoute(

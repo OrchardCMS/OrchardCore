@@ -65,7 +65,7 @@ namespace OrchardCore.OpenId
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             // Application
-            var applicationControllerName = TypeHelper.GetControllerName<ApplicationController>();
+            var applicationControllerName = typeof(ApplicationController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "OpenIdApplication",
@@ -93,7 +93,7 @@ namespace OrchardCore.OpenId
             );
 
             // Scope
-            var scopeControllerName = TypeHelper.GetControllerName<ScopeController>();
+            var scopeControllerName = typeof(ScopeController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "OpenIdScope",
@@ -124,14 +124,14 @@ namespace OrchardCore.OpenId
                 name: "OpenIdServerConfiguration",
                 areaName: "OrchardCore.OpenId",
                 pattern: _adminOptions.AdminUrlPrefix + "/OpenId/ServerConfiguration",
-                defaults: new { controller = TypeHelper.GetControllerName<ServerConfigurationController>(), action = nameof(ServerConfigurationController.Index) }
+                defaults: new { controller = typeof(ServerConfigurationController).ControllerName(), action = nameof(ServerConfigurationController.Index) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "OpenIdValidationConfiguration",
                 areaName: "OrchardCore.OpenId",
                 pattern: _adminOptions.AdminUrlPrefix + "/OpenId/ValidationConfiguration",
-                defaults: new { controller = TypeHelper.GetControllerName<ValidationConfigurationController>(), action = nameof(ValidationConfigurationController.Index) }
+                defaults: new { controller = typeof(ValidationConfigurationController).ControllerName(), action = nameof(ValidationConfigurationController.Index) }
             );
         }
     }

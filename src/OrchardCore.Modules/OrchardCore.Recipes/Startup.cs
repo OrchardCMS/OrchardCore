@@ -40,7 +40,7 @@ namespace OrchardCore.Recipes
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+            var adminControllerName = typeof(AdminController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "Recipes",

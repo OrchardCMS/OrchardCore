@@ -50,7 +50,7 @@ namespace OrchardCore.Users
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var accountControllerName = TypeHelper.GetControllerName<AccountController>();
+            var accountControllerName = typeof(AccountController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "Login",
@@ -72,7 +72,7 @@ namespace OrchardCore.Users
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.LogOff) }
             );
 
-            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+            var adminControllerName = typeof(AdminController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "UsersIndex",

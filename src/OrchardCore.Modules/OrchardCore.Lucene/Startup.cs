@@ -79,7 +79,7 @@ namespace OrchardCore.Lucene
                 defaults: new { controller = "Search", action = "Index" }
             );
 
-            var adminControllerName = TypeHelper.GetControllerName<AdminController>();
+            var adminControllerName = typeof(AdminController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "Lucene.Index",

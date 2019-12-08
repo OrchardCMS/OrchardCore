@@ -33,7 +33,7 @@ namespace OrchardCore.Deployment
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             // RemoteClient
-            var remoteClientControllerName = TypeHelper.GetControllerName<RemoteClientController>();
+            var remoteClientControllerName = typeof(RemoteClientController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "DeploymentRemoteClient",
@@ -61,7 +61,7 @@ namespace OrchardCore.Deployment
             );
 
             // Remote Instances
-            var remoteInstanceControllerName = TypeHelper.GetControllerName<RemoteInstanceController>();
+            var remoteInstanceControllerName = typeof(RemoteInstanceController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "DeploymentRemoteInstances",

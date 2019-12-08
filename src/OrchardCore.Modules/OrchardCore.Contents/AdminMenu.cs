@@ -41,7 +41,7 @@ namespace OrchardCore.Contents
                 .AddClass("content").Id("content")
                 .Add(S["Content Items"], "1", contentItems => contentItems
                     .Permission(Permissions.EditOwnContent)
-                    .Action(nameof(AdminController.List), TypeHelper.GetControllerName<AdminController>(), new { area = "OrchardCore.Contents" })
+                    .Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), new { area = "OrchardCore.Contents" })
                     .LocalNav())
                 );
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);

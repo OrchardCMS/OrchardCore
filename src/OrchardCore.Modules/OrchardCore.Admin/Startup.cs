@@ -50,7 +50,7 @@ namespace OrchardCore.Admin
                 name: "Admin",
                 areaName: "OrchardCore.Admin",
                 pattern: _adminOptions.AdminUrlPrefix,
-                defaults: new { controller = TypeHelper.GetControllerName<AdminController>(), action = nameof(AdminController.Index) }
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
             );
         }
     }

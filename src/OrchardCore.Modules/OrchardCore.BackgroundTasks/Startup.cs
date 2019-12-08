@@ -33,7 +33,7 @@ namespace OrchardCore.BackgroundTasks
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var backgroundTaskControllerName = TypeHelper.GetControllerName<BackgroundTaskController>();
+            var backgroundTaskControllerName = typeof(BackgroundTaskController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "BackgroundTasks",

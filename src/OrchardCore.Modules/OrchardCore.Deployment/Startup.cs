@@ -60,7 +60,7 @@ namespace OrchardCore.Deployment
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var deploymentPlanControllerName = TypeHelper.GetControllerName<DeploymentPlanController>();
+            var deploymentPlanControllerName = typeof(DeploymentPlanController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "DeploymentPlanIndex",
@@ -97,18 +97,18 @@ namespace OrchardCore.Deployment
                 name: "DeploymentPlanImport",
                 areaName: "OrchardCore.Deployment",
                 pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/Import/Index",
-                defaults: new { controller = TypeHelper.GetControllerName<ImportController>(), action = nameof(ImportController.Index) }
+                defaults: new { controller = typeof(ImportController).ControllerName(), action = nameof(ImportController.Index) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "DeploymentPlanExportFileExecute",
                 areaName: "OrchardCore.Deployment",
                 pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/ExportFile/Execute",
-                defaults: new { controller = TypeHelper.GetControllerName<ExportFileController>(), action = nameof(ExportFileController.Execute) }
+                defaults: new { controller = typeof(ExportFileController).ControllerName(), action = nameof(ExportFileController.Execute) }
             );
 
             // Steps
-            var stepControllerName = TypeHelper.GetControllerName<StepController>();
+            var stepControllerName = typeof(StepController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "DeploymentPlanCreateStep",
