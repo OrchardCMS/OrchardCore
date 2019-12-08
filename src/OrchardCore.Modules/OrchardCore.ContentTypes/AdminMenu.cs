@@ -1,11 +1,12 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.ContentTypes.Controllers;
-using OrchardCore.Navigation;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.ContentTypes.Controllers;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Navigation;
 
-namespace OrchardCore.ContentTypes {
+namespace OrchardCore.ContentTypes
+{
     public class AdminMenu : INavigationProvider
     {
         private readonly IStringLocalizer S;

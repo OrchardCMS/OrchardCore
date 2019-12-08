@@ -3,6 +3,8 @@ using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -10,7 +12,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
+using OrchardCore.Lucene.Controllers;
 using OrchardCore.Lucene.Deployment;
 using OrchardCore.Lucene.Drivers;
 using OrchardCore.Lucene.Handlers;
@@ -18,14 +20,12 @@ using OrchardCore.Lucene.Recipes;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.Settings;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Admin;
-using Microsoft.Extensions.Options;
-using OrchardCore.Lucene.Controllers;
-using OrchardCore.Mvc.Core.Utilities;
 
 namespace OrchardCore.Lucene
 {
@@ -101,7 +101,6 @@ namespace OrchardCore.Lucene
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Delete/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
             );
-
 
             routes.MapAreaControllerRoute(
                 name: "Lucene.Query",
