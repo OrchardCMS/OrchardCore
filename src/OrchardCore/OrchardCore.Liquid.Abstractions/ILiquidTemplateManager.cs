@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 
 namespace OrchardCore.Liquid
 {
@@ -11,9 +10,9 @@ namespace OrchardCore.Liquid
     public interface ILiquidTemplateManager
     {
         /// <summary>
-        /// Gets the current <see cref="TemplateContext"/>.
+        /// Gets the current <see cref="LiquidTemplateContext"/>.
         /// </summary>
-        TemplateContext Context { get; }
+        LiquidTemplateContext Context { get; }
 
         /// <summary>
         /// Renders a Liquid template as a <see cref="string"/>.

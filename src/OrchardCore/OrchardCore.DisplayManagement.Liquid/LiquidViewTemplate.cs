@@ -99,6 +99,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             TemplateContext.GlobalFilters.WithLiquidViewFilters();
         }
 
+        /// <summary>
+        /// Retrieve the current <see cref="LiquidTemplateContext"/> from the current shell scope.
+        /// </summary>
+        public static LiquidTemplateContext Context => ShellScope.GetOrCreateFeature(() => new LiquidTemplateContext(ShellScope.Services));
+
         internal static async Task RenderAsync(RazorPage<dynamic> page)
         {
             var services = page.Context.RequestServices;
@@ -144,11 +149,6 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
             });
         }
-
-        /// <summary>
-        /// Retrieve the current <see cref="TemplateContext"/> from the current shell scope.
-        /// </summary>
-        public static TemplateContext Context => ShellScope.GetOrCreateFeature<TemplateContext>();
     }
 
     internal class ShapeAccessor : DelegateAccessor
@@ -180,31 +180,33 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class LiquidViewTemplateExtensions
     {
-        public static async Task<string> RenderAsync(this LiquidViewTemplate template, IServiceProvider services, TextEncoder encoder, TemplateContext context, object model)
+        public static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, LiquidTemplateContext context, object model)
         {
-            var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
+            var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
             var viewContext = viewContextAccessor.ViewContext;
 
             if (viewContext == null)
             {
-                var actionContext = services.GetService<IActionContextAccessor>()?.ActionContext;
+                var actionContext = context.Services.GetService<IActionContextAccessor>()?.ActionContext;
 
                 if (actionContext == null)
                 {
-                    actionContext = await GetActionContextAsync(services);
-                    viewContext = GetViewContext(services, actionContext);
+                    actionContext = await GetActionContextAsync(context.Services);
+                    viewContext = GetViewContext(context.Services, actionContext);
 
-                    // If the model is a shape using a dynamic binding.
+                    // If there was no 'ViewContext' and no 'ActionContext' (e.g through 'GraphQL'), and
+                    // the model is a shape using a dynamic binding, we will need to use the view engine.
+
                     if (model is Shape shape && shape.Metadata.UseDynamicBinding)
                     {
-                        // We need to use the view engine to render the liquid page.
+                        // Use the view engine to render the liquid page.
                         await context.ContextualizeAsync(viewContext, model);
                         return await template.RenderViewAsync(viewContext, encoder, context);
                     }
                 }
                 else
                 {
-                    viewContext = GetViewContext(services, actionContext);
+                    viewContext = GetViewContext(context.Services, actionContext);
                 }
             }
 

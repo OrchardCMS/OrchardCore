@@ -12,17 +12,15 @@ namespace OrchardCore.Liquid.Services
     public class LiquidTemplateManager : ILiquidTemplateManager
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly IServiceProvider _services;
 
-        private TemplateContext _context;
+        private LiquidTemplateContext _context;
 
-        public LiquidTemplateManager(IMemoryCache memoryCache, IServiceProvider services)
+        public LiquidTemplateManager(IMemoryCache memoryCache)
         {
             _memoryCache = memoryCache;
-            _services = services;
         }
 
-        public TemplateContext Context => _context ??= LiquidViewTemplate.Context;
+        public LiquidTemplateContext Context => _context ??= LiquidViewTemplate.Context;
 
         public Task<string> RenderAsync(string source, TextEncoder encoder, object model)
         {
@@ -33,7 +31,7 @@ namespace OrchardCore.Liquid.Services
 
             var result = GetCachedTemplate(source);
 
-            return result.RenderAsync(_services, encoder, Context, model);
+            return result.RenderAsync(encoder, Context, model);
         }
 
         private LiquidViewTemplate GetCachedTemplate(string source)
