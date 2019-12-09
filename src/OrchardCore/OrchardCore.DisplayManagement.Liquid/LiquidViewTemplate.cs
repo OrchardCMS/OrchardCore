@@ -246,7 +246,6 @@ namespace OrchardCore.DisplayManagement.Liquid
             routeData.Routers.Add(new RouteCollection());
 
             var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-
             var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
 
             foreach (var filter in filters)
@@ -315,16 +314,15 @@ namespace OrchardCore.DisplayManagement.Liquid
                 var layout = await layoutAccessor.GetLayoutAsync();
                 context.AmbientValues.Add("ThemeLayout", layout);
 
+                context.CultureInfo = CultureInfo.CurrentUICulture;
+
                 var options = services.GetRequiredService<IOptions<LiquidOptions>>().Value;
+                context.AddAsyncFilters(options, services);
 
                 foreach (var handler in services.GetServices<ILiquidTemplateEventHandler>())
                 {
                     await handler.RenderingAsync(context);
                 }
-
-                context.AddAsyncFilters(options, services);
-
-                context.CultureInfo = CultureInfo.CurrentUICulture;
             }
 
             // Specific contextualization before each rendering.
@@ -333,11 +331,6 @@ namespace OrchardCore.DisplayManagement.Liquid
             if (localizer is IViewContextAware contextable)
             {
                 contextable.Contextualize(viewContext);
-            }
-
-            if (viewContext.View is RazorView razorView)
-            {
-                context.AmbientValues["LiquidPage"] = razorView.RazorPage;
             }
 
             if (model != null)
