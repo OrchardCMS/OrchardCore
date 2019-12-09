@@ -1,13 +1,15 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Filters;
-using OrchardCore.Modules;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Admin
 {
@@ -29,6 +31,9 @@ namespace OrchardCore.Admin
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();
             services.AddScoped<IAdminThemeService, AdminThemeService>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, PermissionsAdminTheme>();
+            services.AddScoped<IDisplayDriver<ISite>, AdminThemeSiteSettingsDisplayDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -139,7 +139,7 @@
         {
             @foreach (var entry in Model.ShellSettingsEntries)
             {
-                <li class="list-group-item">
+                <li class="list-group-item bg-light">
                     <div class="custom-control custom-checkbox float-left">
                         <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
                         <label class="custom-control-label" for="tenantNames-@entry.Name">&nbsp;</label>
@@ -189,7 +189,7 @@
         }
         else
         {
-            <li class="list-group-item">
+            <li class="list-group-item bg-light">
                 <div class="alert alert-info">
                     @T["<strong>Nothing here!</strong> Your search returned no results."]
                 </div>

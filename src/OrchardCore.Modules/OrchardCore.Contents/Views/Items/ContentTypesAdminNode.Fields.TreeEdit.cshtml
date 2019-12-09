@@ -70,7 +70,7 @@
                             {
                                 var name = Model.ContentTypes[i].ContentTypeId;
                                 var checkd = Model.ContentTypes[i].IsChecked;
-                                <li class="list-group-item d-flex align-items-center  @(checkd ? "" : "disabled-content-type")">
+                                <li class="list-group-item bg-light d-flex align-items-center  @(checkd ? "" : "disabled-content-type")">
                                     <div class="flex-grow-1">
                                         <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeId)" value="@Model.ContentTypes[i].ContentTypeId" />
                                         <div class="custom-control custom-checkbox">

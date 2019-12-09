@@ -87,7 +87,7 @@
                             var showDisable = !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
                             var showEnable = Model.IsAllowed(feature.Descriptor) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
 
-                            <li class="list-group-item" data-filter-value="@categoryName @dependenciesNames @featureName">
+                            <li class="list-group-item bg-light" data-filter-value="@categoryName @dependenciesNames @featureName">
                                 <div class="row">
                                     <div class="col-md-10">
                                         @* Display the checkbox ?*@

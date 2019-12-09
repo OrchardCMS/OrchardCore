@@ -1,4 +1,13 @@
-﻿<!DOCTYPE html>
+@inject OrchardCore.Settings.ISiteService siteService
+@using OrchardCore.Entities
+@using OrchardCore.Admin.Models
+@{  
+    var adminThemeSettings = (await siteService.GetSiteSettingsAsync()).As<AdminThemeSettings>();
+    var theme = adminThemeSettings.Theme;    
+    var bg = adminThemeSettings.BackgroundClass;
+    var text = adminThemeSettings.TextClass;
+}
+<!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
@@ -21,9 +30,9 @@
 
     @await RenderSectionAsync("Header", required: false)
 </head>
-<body class="preload">
+<body class="preload bg-@bg text-@text">
     <div class="ta-wrapper">
-        <div class="ta-navbar-top">
+        <div class="ta-navbar-top bg-@bg">
             <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
             <div class="collapse navbar-collapse" id="navbar-links">
                 <div class="mr-auto">
@@ -31,7 +40,14 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link"><span><i class="fa fa-user" aria-hidden="true"></i></span><span> @User.Identity.Name</span></a>
+                        <a class="nav-link"><span><i class="fa fa-user" aria-hidden="true"></i></span><span> @User.Identity.Name</span></a>                        
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/Admin/Settings/adminTheme?theme=@(theme == "dark" ? "light" : "dark")"><svg class="theme-toggler" width="20" height="20" viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+  3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+  13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"></path>
+                </svg></a>
                     </li>
                 </ul>
                 <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline">
@@ -42,7 +58,7 @@
 
         <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
             @await RenderSectionAsync("Navigation", required: false)
-            <div class="footer">
+            <div class="footer bg-@bg text-@text">
                 <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
             </div>
         </div>

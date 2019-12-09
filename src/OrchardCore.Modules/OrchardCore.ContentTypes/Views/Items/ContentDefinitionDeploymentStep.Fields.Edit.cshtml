@@ -41,7 +41,7 @@
                     var ctypename = contentTypeDefinition.Name;
                     var checkd = contentTypes?.Contains(ctypename);
 
-                    <li class="list-group-item">
+                    <li class="list-group-item bg-light">
                         @* Make sure that the part with the same name is included in the step if the content type is selected. *@
                         @if (contentTypeDefinition.Parts.Any(x => x.Name == ctypename))
                         {
@@ -60,7 +60,7 @@
                                 var partName = part.PartDefinition.Name;
                                 var partChecked = contentParts?.Contains(partName);
 
-                                <li class="list-group-item">
+                                <li class="list-group-item bg-light">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input part_@partName" id="@(ctypename + "_" + partName + '_' + part.Name)" name="tempparts" value="" type="checkbox" checked="@partChecked" data-checkboxChecked="#part_@part.PartDefinition.Name">
                                         <label class="custom-control-label" for="@(ctypename + "_" + partName + '_' + part.Name)">
@@ -102,7 +102,7 @@
                     var partName = contentPartDefinition.Name;
                     var checkd = contentParts?.Contains(partName);
 
-                    <li class="list-group-item">
+                    <li class="list-group-item bg-light">
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input" name="@Html.NameFor(m => m.ContentParts)" value="@partName" checked="@checkd" id="part_@partName" data-checkboxUnchecked=".part_@partName">
                             <label class="custom-control-label" for="part_@partName">@partName</label>

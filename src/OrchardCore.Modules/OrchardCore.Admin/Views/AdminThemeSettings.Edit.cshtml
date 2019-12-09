@@ -1,0 +1,17 @@
+@model OrchardCore.Admin.ViewModels.AdminThemeSettingsViewModel
+@{     
+    var theme = this.Orchard.HttpContext.Request.Query["theme"];
+    if (!string.IsNullOrEmpty(theme))
+    {
+        Model.Theme = theme;
+    }
+}
+<div class="form-group" asp-validation-class-for="Zones">
+    <label asp-for="Theme">@T["Admin Theme"]</label>
+    <select asp-for="Theme" class="form-control">
+        <option value="light">@T["Light"]</option>
+        <option value="dark">@T["Dark"]</option>
+    </select>
+    <span asp-validation-for="Theme"></span>
+    <span class="hint">@T["The admin theme."]</span>
+</div>

@@ -31,7 +31,7 @@
             <ul class="list-group">
                 @foreach (var partSelection in Model.PartSelections)
                 {
-                    <li class="list-group-item">
+                    <li class="list-group-item bg-light">
                         <div class="custom-control custom-radio">
                             <input type="radio" class="custom-control-input" asp-for="SelectedPartName" id="@Html.IdFor(m => m.PartSelections[i].PartName)" value="@Model.PartSelections[i].PartName">
                             <label class="custom-control-label" asp-for="PartSelections[i].PartName">@partSelection.PartDisplayName</label>

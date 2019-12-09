@@ -47,7 +47,7 @@
                                         contentItemSummary.Meta.Add(Html.Raw("<span class=\"badge badge-info\"><i class=\"fa fa-bookmark-o\" aria-hidden=\"true\"></i> " + contentItemSummary.ContentItem.Content.LayerMetadata.Layer + "</span>"));
 
                                         maxPosition = Math.Max(maxPosition, (double)contentItemSummary.ContentItem.Content.LayerMetadata.Position);
-                                        <li class="list-group-item">
+                                        <li class="list-group-item bg-light">
                                             @await DisplayAsync(contentItemSummary)
                                             <input type="hidden"
                                                    class="layer-metadata"
@@ -93,7 +93,7 @@
             <ul class="list-group">
                 @foreach (var layer in Model.Layers)
                 {
-                    <li class="list-group-item">
+                    <li class="list-group-item bg-light">
                         <div class="properties">
                             <div class="d-flex flex-wrap">
                                 <div class="custom-control custom-checkbox mr-auto flex-grow-1">

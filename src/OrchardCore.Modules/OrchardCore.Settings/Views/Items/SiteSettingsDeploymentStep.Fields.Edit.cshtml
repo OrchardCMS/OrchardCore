@@ -13,7 +13,7 @@
             var name = setting.Name;
             var checkd = settings?.Contains(name);
 
-            <li class="list-group-item">
+            <li class="list-group-item bg-light">
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="@(Html.IdFor(m => m.Settings) + "-" + @name)" name="@Html.NameFor(m => m.Settings)" value="@name" checked="@checkd">
                     <label class="custom-control-label" for="@(Html.IdFor(m => m.Settings) + "-" + @name)">@name</label>

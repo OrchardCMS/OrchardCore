@@ -1,4 +1,11 @@
-@{
+@inject OrchardCore.Settings.ISiteService siteService
+@using OrchardCore.Entities
+@using OrchardCore.Admin.Models
+@{  
+    var adminThemeSettings = (await siteService.GetSiteSettingsAsync()).As<AdminThemeSettings>();
+    var theme = adminThemeSettings.Theme;    
+    var bg = adminThemeSettings.BackgroundClass;
+
     TagBuilder tag = Tag(Model, "li");
 
     // Morphing the shape to keep Model untouched
@@ -15,15 +22,16 @@
     if (Model.HasItems)
     {
         tag.AddCssClass("has-items");
+        tag.AddCssClass("bg-" + bg);
         tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 
         if ((bool)Model.Selected)
         {
-            tag.InnerHtml.AppendHtml("<ul id=\"m" + Model.GetHashCode() + "\" class=\"collapse show\" >");
+            tag.InnerHtml.AppendHtml("<ul id=\"m" + Model.GetHashCode() + "\" class=\"collapse show bg-" + bg  + "\" >");
         }
         else
         {
-            tag.InnerHtml.AppendHtml("<ul id=\"m" + Model.GetHashCode() + "\" class=\"collapse\" >");
+            tag.InnerHtml.AppendHtml("<ul id=\"m" + Model.GetHashCode() + "\" class=\"collapse bg-" + bg + "\" >");
         }
 
         foreach (var item in Model)

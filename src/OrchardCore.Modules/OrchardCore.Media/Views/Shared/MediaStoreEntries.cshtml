@@ -7,7 +7,7 @@
         var checkd = (Model.DirectoryPaths?.Contains(entry.Path) ?? false) || (Model.FilePaths?.Contains(entry.Path) ?? false);
         var hasChildren = entry.Entries?.Count != 0;
 
-        <li class="list-group-item">
+        <li class="list-group-item bg-light">
             <div class="form-check">
                 <label class="form-check-label">
                     @if (hasChildren)

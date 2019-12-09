@@ -9,7 +9,7 @@
     {
         var contentItemSummary = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "Summary", Model.Context.GroupId);
 
-        <li class="list-group-item">
+        <li class="list-group-item bg-light">
             @await DisplayAsync(contentItemSummary)
         </li>
     }

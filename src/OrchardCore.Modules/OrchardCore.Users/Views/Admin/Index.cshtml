@@ -67,7 +67,7 @@
         {
             @foreach (var entry in Model.Users)
             {
-                <li class="list-group-item">                    
+                <li class="list-group-item bg-light">                    
                     <div class="custom-control custom-checkbox float-left">
                         <input type="checkbox" class="custom-control-input" value="@entry.Id" name="itemIds" id="itemIds-@entry.Id">
                         <label class="custom-control-label" for="itemIds-@entry.Id">&nbsp;</label>
@@ -78,7 +78,7 @@
         }
         else
         {
-            <li class="list-group-item">
+            <li class="list-group-item bg-light">
                 <div class="alert alert-info" role="alert">
                     @T["<strong>Nothing here!</strong> Your search returned no results."]
                 </div>

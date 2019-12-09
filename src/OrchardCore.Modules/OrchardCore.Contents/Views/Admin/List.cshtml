@@ -1,8 +1,10 @@
 @model ListContentsViewModel
 @using OrchardCore.ContentManagement;
 @using OrchardCore.Contents.ViewModels;
+@using OrchardCore.Entities
+@using OrchardCore.Admin.Models
 @inject IContentManager ContentManager
-
+@inject OrchardCore.Settings.ISiteService siteService
 @{
     var contentTypeDisplayName = Model.Options.ContentTypeOptions.Find(x => x.Value == Model.Options.SelectedContentType && x.Value != null)?.Text;
     var pageTitle = T["Manage Content"];
@@ -16,6 +18,12 @@
     var formActionWithoutTypeName = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "List" });
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.ContentItems.Count - 1;
+
+    var adminThemeSettings = (await siteService.GetSiteSettingsAsync()).As<AdminThemeSettings>();
+    var theme = adminThemeSettings.Theme;    
+    var bg = adminThemeSettings.BackgroundClass;
+    var header = adminThemeSettings.HeaderClass;
+    var text = adminThemeSettings.TextClass;
 }
 
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
@@ -35,7 +43,7 @@
                     <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
                         @T["Filters"]
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="filter-dropdown">
+                    <div class="dropdown-menu bg-@bg" aria-labelledby="filter-dropdown">
                         <a class="dropdown-item" href="?Options.ContentsStatus=Draft">@T["Only draft items"]</a>
                         <a class="dropdown-item" href="?Options.ContentsStatus=Published">@T["Only published items"]</a>
                         <a class="dropdown-item" href="?Options.ContentsStatus=Owner">@T["Owned by me"]</a>
@@ -49,7 +57,7 @@
                 @if (Model.Options.CreatableTypes.Any())
                 {
                     <button class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" id="new-dropdown" type="button" aria-haspopup="true" aria-expanded="false">@T["New"]</button>
-                    <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
+                    <div class="dropdown-menu bg-@bg dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
                         @foreach (var item in Model.Options.CreatableTypes)
                         {
                             <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value })">@item.Text</a>
@@ -60,7 +68,7 @@
         </div>
     </div>
     <ul class="list-group with-checkbox">
-        <li class="list-group-item bg-light">
+        <li class="list-group-item bg-@header">
             <div class="row">
                 <div class="form-group col mb-n1 text-nowrap">
                     <div class="custom-control custom-checkbox mt-2 mr-n2">
@@ -75,7 +83,7 @@
                         <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @T["Actions"]
                         </button>
-                        <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                        <span class="dropdown-menu dropdown-menu-right bg-@bg" aria-labelledby="bulk-action-menu-button">
                             @foreach (var item in Model.Options.ContentsBulkAction)
                             {
                                 <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} this/these item(s)?", @item.Text.ToLower()]">@item.Text</a>
@@ -97,14 +105,14 @@
         {
             @foreach (var contentItemSummary in Model.ContentItems)
             {
-                <li class="list-group-item">
+                <li class="list-group-item bg-@bg">
                     @await DisplayAsync(contentItemSummary)
                 </li>
             }
         }
         else
         {
-            <li class="list-group-item">
+            <li class="list-group-item bg-@bg">
                 <div class="alert alert-info">
                     @T["No results found."]
                 </div>

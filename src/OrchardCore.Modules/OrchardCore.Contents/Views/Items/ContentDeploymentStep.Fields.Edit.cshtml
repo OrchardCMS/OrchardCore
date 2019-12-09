@@ -15,7 +15,7 @@
             var name = contentTypeDefinition.Name;
             var checkd = contentTypes?.Contains(name);
 
-            <li class="list-group-item">
+            <li class="list-group-item bg-light">
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="@(Html.IdFor(m => m.ContentTypes) + "_" + contentTypeDefinition.Name)" name="@Html.NameFor(m => m.ContentTypes)" value="@name" checked="@checkd">
                     <label class="custom-control-label" for="@(Html.IdFor(m => m.ContentTypes) + "_" + contentTypeDefinition.Name)">@contentTypeDefinition.DisplayName</label>

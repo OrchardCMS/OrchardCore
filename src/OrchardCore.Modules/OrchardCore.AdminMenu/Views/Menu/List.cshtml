@@ -38,7 +38,7 @@
         <ul id="content-items-list-body" class="list-group">
             @foreach (var entry in Model.AdminMenu)
             {
-                <li class="list-group-item @(entry.AdminMenu.Enabled ? "" : "disabled-tree")">
+                <li class="list-group-item bg-light @(entry.AdminMenu.Enabled ? "" : "disabled-tree")">
                     <div class="related">
                         <a asp-controller="Node" asp-action="List" asp-route-id="@entry.AdminMenu.Id" class="btn btn-secondary btn-sm">@T["Edit Nodes"]</a>
                         <a asp-action="Edit" asp-route-id="@entry.AdminMenu.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>

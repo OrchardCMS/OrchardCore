@@ -1,4 +1,12 @@
-@{
+@inject OrchardCore.Settings.ISiteService siteService
+@using OrchardCore.Entities
+@using OrchardCore.Admin.Models
+@{  
+    var adminThemeSettings = (await siteService.GetSiteSettingsAsync()).As<AdminThemeSettings>();
+    var theme = adminThemeSettings.Theme;    
+    var bg = adminThemeSettings.BackgroundClass;
+    var text = adminThemeSettings.TextClass;
+
     TagBuilder tag = Tag(Model, "ul");
 
 
@@ -8,7 +16,7 @@
     }
 }
 
-<nav id="left-nav">
+<nav id="left-nav" class="bg-@bg text-@text">
     @tag
 </nav>
 <!-- Menu rendered on @DateTime.UtcNow.ToString("r") -->

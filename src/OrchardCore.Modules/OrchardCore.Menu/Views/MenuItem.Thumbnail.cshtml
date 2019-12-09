@@ -1,6 +1,11 @@
 @model dynamic
-
-<div class="card">
+@using OrchardCore.Entities
+@using OrchardCore.Admin.Models
+@inject OrchardCore.Settings.ISiteService siteService
+@{
+    var bg = (await siteService.GetSiteSettingsAsync()).As<AdminThemeSettings>().BackgroundClass;
+}
+<div class="card bg-@bg">
     <div class="card-body">
         @if(Model.Content != null)
         {

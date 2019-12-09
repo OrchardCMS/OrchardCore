@@ -32,14 +32,14 @@
         {
             @foreach (var entry in Model.Queries)
             {
-                <li class="list-group-item">
+                <li class="list-group-item bg-light">
                     @await DisplayAsync(entry.Shape)
                 </li>
             }
         }
         else
         {
-            <li class="list-group-item">
+            <li class="list-group-item bg-light">
                 <div class="alert alert-info" role="alert">
                     @T["<strong>Nothing here!</strong> There are no queries for the moment."]
                 </div>

@@ -23,7 +23,7 @@
 <ul id="content-parts" class="list-group">
     @foreach (var type in Model.Parts)
     {
-        <li class="list-group-item" data-filter-value="@type.DisplayName" data-type-name="@type.Name">
+        <li class="list-group-item bg-light" data-filter-value="@type.DisplayName" data-type-name="@type.Name">
             @Html.DisplayFor(m => type)
         </li>
     }

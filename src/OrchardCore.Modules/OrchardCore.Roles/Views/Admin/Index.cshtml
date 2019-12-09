@@ -29,7 +29,7 @@
     <ul id="roles" class="list-group">
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
-            <li class="list-group-item" data-role="@Model.RoleEntries[i].Name">
+            <li class="list-group-item bg-light" data-role="@Model.RoleEntries[i].Name">
                 <div class="properties">
                     <div class="related">
                         <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@Model.RoleEntries[i].Name">@T["Edit"]</a>

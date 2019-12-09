@@ -17,7 +17,7 @@
     <ul class="list-group">
         @foreach (var contentItem in Model.ContentItems)
         {
-            <li class="list-group-item">
+            <li class="list-group-item bg-light">
                 @await DisplayAsync(await DisplayManager.BuildDisplayAsync(contentItem, null, "Summary"))
             </li>
         }

@@ -28,7 +28,7 @@
             </li>
             @foreach (var entry in Model.Indexes)
             {
-                <li class="list-group-item">
+                <li class="list-group-item bg-light">
                     <div class="properties">
                         <div class="related">
                             <a asp-action="Query" asp-route-IndexName="@entry.Name" class="btn btn-success btn-sm">@T["Query"]</a>
@@ -43,7 +43,7 @@
         }
         else
         {
-            <li class="list-group-item">
+            <li class="list-group-item bg-light">
                 <div class="alert alert-info" role="alert">
                     @T["<strong>Nothing here!</strong> There are no indices for the moment."]
                 </div>
