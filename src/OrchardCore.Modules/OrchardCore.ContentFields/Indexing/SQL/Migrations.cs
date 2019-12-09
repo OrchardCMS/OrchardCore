@@ -1,11 +1,18 @@
 using System;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
 {
     public class Migrations : DataMigration
     {
+        ShellSettings _shellSettings;
+        public Migrations(ShellSettings shellSettings)
+        {
+            _shellSettings = shellSettings;
+        }
+
         public int Create()
         {
             SchemaBuilder.CreateMapIndexTable(nameof(TextFieldIndex), table => table
@@ -20,9 +27,12 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("BigText", column => column.Nullable().Unlimited())
             );
 
-            SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
-                .CreateIndex("IDX_TextFieldIndex_ContentItemId", "ContentItemId")
-            );
+            if (_shellSettings["DatabaseProvider"] != "MySql")
+            {
+                SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
+                    .CreateIndex("IDX_TextFieldIndex_ContentItemId", "ContentItemId")
+                );
+            }
 
             SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
                 .CreateIndex("IDX_TextFieldIndex_ContentItemVersionId", "ContentItemVersionId")
@@ -48,9 +58,13 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .CreateIndex("IDX_TextFieldIndex_Latest", "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
-                .CreateIndex("IDX_TextFieldIndex_Text", "Text")
-            );
+            // MySql indexes are limited by length. 
+            if (_shellSettings["DatabaseProvider"] != "MySql")
+            {
+                SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
+                    .CreateIndex("IDX_TextFieldIndex_Text", "Text")
+                );
+            }
 
             SchemaBuilder.CreateMapIndexTable(nameof(BooleanFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
@@ -350,13 +364,17 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .CreateIndex("IDX_LinkFieldIndex_Latest", "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
-                .CreateIndex("IDX_LinkFieldIndex_Url", "Url")
-            );
+            // MySql indexes are limited by length. 
+            if (_shellSettings["DatabaseProvider"] != "MySql")
+            {
+                SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+                    .CreateIndex("IDX_LinkFieldIndex_Url", "Url")
+                );
 
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
-                .CreateIndex("IDX_LinkFieldIndex_Text", "Text")
-            );
+                SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+                    .CreateIndex("IDX_LinkFieldIndex_Text", "Text")
+                );
+            }
 
             SchemaBuilder.CreateMapIndexTable(nameof(HtmlFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))

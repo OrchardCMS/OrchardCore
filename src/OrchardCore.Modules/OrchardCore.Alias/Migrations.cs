@@ -4,16 +4,22 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Drivers;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Alias
 {
     public class Migrations : DataMigration
     {
         IContentDefinitionManager _contentDefinitionManager;
+        ShellSettings _shellSettings;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        public Migrations(
+            IContentDefinitionManager contentDefinitionManager,
+            ShellSettings shellSettings
+            )
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _shellSettings = shellSettings;
         }
 
         public int Create()
@@ -29,9 +35,12 @@ namespace OrchardCore.Alias
                 .Column<string>("ContentItemId", c => c.WithLength(26))
             );
 
-            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
-                .CreateIndex("IDX_AliasPartIndex_Alias", "Alias")
-            );
+            if (_shellSettings["DatabaseProvider"] != "MySql")
+            {
+                SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+                    .CreateIndex("IDX_AliasPartIndex_Alias", "Alias")
+                );
+            }
 
             return 1;
         }
