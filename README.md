@@ -58,4 +58,4 @@ Docker images and parameters can be found at <https://hub.docker.com/u/orchardpr
 
 ### Documentation
 
-The documentation can be accessed here: [https://orchardcore.readthedocs.io/en/dev/](https://orchardcore.readthedocs.io/en/dev/)
+The documentation can be accessed here: <https://docs.orchardcore.net/>
