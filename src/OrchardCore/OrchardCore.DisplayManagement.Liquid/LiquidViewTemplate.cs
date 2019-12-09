@@ -182,18 +182,18 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         public static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, LiquidTemplateContext context, object model)
         {
-            var services = context.Services;
-
-            var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
+            var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
             var viewContext = viewContextAccessor.ViewContext;
 
             if (viewContext == null)
             {
-                var actionContext = services.GetService<IActionContextAccessor>()?.ActionContext;
+                var actionContext = context.Services.GetService<IActionContextAccessor>()?.ActionContext;
 
                 if (actionContext == null)
                 {
-                    actionContext = await GetActionContextAsync(services);
+                    var httpContext = context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
+
+                    actionContext = await GetActionContextAsync(httpContext);
                     viewContext = GetViewContext(actionContext);
 
                     // If there was no 'ViewContext' and no 'ActionContext' (e.g through 'GraphQL'), and
@@ -240,15 +240,14 @@ namespace OrchardCore.DisplayManagement.Liquid
             return String.Empty;
         }
 
-        internal async static Task<ActionContext> GetActionContextAsync(IServiceProvider services)
+        internal async static Task<ActionContext> GetActionContextAsync(HttpContext httpContext)
         {
             var routeData = new RouteData();
             routeData.Routers.Add(new RouteCollection());
 
-            var httpContext = services.GetRequiredService<IHttpContextAccessor>().HttpContext;
-
             var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-            var filters = services.GetServices<IAsyncViewActionFilter>();
+
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
 
             foreach (var filter in filters)
             {
