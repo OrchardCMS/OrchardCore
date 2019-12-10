@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Scripting;
@@ -34,10 +35,12 @@ namespace OrchardCore.Contents.Scripting
                 {
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     var contentItem = contentManager.NewAsync(contentType).GetAwaiter().GetResult();
-                    var props = JObject.FromObject(properties);
-                    var content = (JObject)contentItem.ContentItem.Content;
 
-                    content.Merge(props);
+                    var json = JsonConvert.SerializeObject(properties);
+                    contentItem.Apply(JsonConvert.DeserializeObject<ContentItem>(json));
+                    if (!string.IsNullOrWhiteSpace(contentItem.Content?.TitlePart?.Title?.ToString()))
+                        contentItem.DisplayText = contentItem.Content.TitlePart.Title?.ToString();
+
                     contentManager.CreateAsync(contentItem.ContentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
 
                     return contentItem;
@@ -50,10 +53,12 @@ namespace OrchardCore.Contents.Scripting
                 Method = serviceProvider => (Action<ContentItem, object>)((contentItem, properties) =>
                 {
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
-                    var props = JObject.FromObject(properties);
-                    var content = (JObject)contentItem.ContentItem.Content;
 
-                    content.Merge(props, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+                    var json = JsonConvert.SerializeObject(properties);
+                    contentItem.Apply(JsonConvert.DeserializeObject<ContentItem>(json));
+                    if (!string.IsNullOrWhiteSpace(contentItem.Content?.TitlePart?.Title?.ToString()))
+                        contentItem.DisplayText = contentItem.Content.TitlePart.Title?.ToString();
+
                     contentManager.UpdateAsync(contentItem);
                 })
             };
