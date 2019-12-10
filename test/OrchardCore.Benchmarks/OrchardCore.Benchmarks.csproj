@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
         <RootNamespace>OrchardCore.Benchmark</RootNamespace>
     </PropertyGroup>
 
