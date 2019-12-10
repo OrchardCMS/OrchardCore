@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 
@@ -27,16 +26,16 @@ namespace OrchardCore.DisplayManagement.Liquid
                 {
                     case "QueryString": return new StringValue(request.QueryString.Value);
                     case "ContentType": return new StringValue(request.ContentType);
-                    case "ContentLength": return new NumberValue(request.ContentLength ?? 0);
-                    case "Cookies": return new ObjectValue(request.Cookies);
+                    case "ContentLength": return NumberValue.Create(request.ContentLength ?? 0);
+                    case "Cookies": return new ObjectValue(new CookieCollectionWrapper(request.Cookies));
                     case "Headers": return new ObjectValue(new HeaderDictionaryWrapper(request.Headers));
                     case "Query": return new ObjectValue(request.Query);
-                    case "Form": return request.HasFormContentType ? (FluidValue) new ObjectValue(request.Form) : NilValue.Instance;
+                    case "Form": return request.HasFormContentType ? (FluidValue)new ObjectValue(request.Form) : NilValue.Instance;
                     case "Protocol": return new StringValue(request.Protocol);
                     case "Path": return new StringValue(request.Path.Value);
                     case "PathBase": return new StringValue(request.PathBase.Value);
                     case "Host": return new StringValue(request.Host.Value);
-                    case "IsHttps": return new BooleanValue(request.IsHttps);
+                    case "IsHttps": return BooleanValue.Create(request.IsHttps);
                     case "Scheme": return new StringValue(request.Scheme);
                     case "Method": return new StringValue(request.Method);
 
@@ -46,7 +45,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             TemplateContext.GlobalMemberAccessStrategy.Register<FormCollection, FluidValue>((forms, name) =>
             {
-                if(name == "Keys")
+                if (name == "Keys")
                 {
                     return new ArrayValue(forms.Keys.Select(x => new StringValue(x)));
                 }
@@ -54,8 +53,8 @@ namespace OrchardCore.DisplayManagement.Liquid
                 return new ArrayValue(forms[name].Select(x => new StringValue(x)).ToArray());
             });
 
-            TemplateContext.GlobalMemberAccessStrategy.Register<RequestCookieCollection, string>((cookies, name) => cookies[name]);
             TemplateContext.GlobalMemberAccessStrategy.Register<QueryCollection, string[]>((queries, name) => queries[name].ToArray());
+            TemplateContext.GlobalMemberAccessStrategy.Register<CookieCollectionWrapper, string>((cookies, name) => cookies.RequestCookieCollection[name]);
             TemplateContext.GlobalMemberAccessStrategy.Register<HeaderDictionaryWrapper, string[]>((headers, name) => headers.HeaderDictionary[name].ToArray());
         }
 
@@ -71,10 +70,20 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             if (_httpContext != null)
             {
-                context.LocalScope.SetValue("Request", _httpContext.Request);
+                context.SetValue("Request", _httpContext.Request);
             }
 
             return Task.CompletedTask;
+        }
+
+        private class CookieCollectionWrapper
+        {
+            public readonly IRequestCookieCollection RequestCookieCollection;
+
+            public CookieCollectionWrapper(IRequestCookieCollection requestCookieCollection)
+            {
+                RequestCookieCollection = requestCookieCollection;
+            }
         }
 
         private class HeaderDictionaryWrapper

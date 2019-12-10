@@ -12,7 +12,7 @@ namespace OrchardCore.Modules
     /// This custom <see cref="IFileProvider"/> implementation provides the file contents of files
     /// whose path is under a Module Project 'wwwroot' folder, and while in a development environment.
     /// </summary>
-    public class ModuleProjectStaticFileProvider : IFileProvider
+    public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
     {
         private static Dictionary<string, string> _roots;
         private static readonly object _synLock = new object();

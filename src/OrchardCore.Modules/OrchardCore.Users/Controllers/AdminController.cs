@@ -1,22 +1,25 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Users.Controllers
 {
@@ -123,18 +126,109 @@ namespace OrchardCore.Users.Controllers
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
 
+            var userEntries = new List<UserEntry>();
+
+            foreach (var user in results)
+            {
+                userEntries.Add(new UserEntry
+                    {
+                        Id = user.Id,
+                        Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: this, displayType: "SummaryAdmin")
+                    }
+                );
+            }
+
             var model = new UsersIndexViewModel
             {
-                Users = await Task.WhenAll(
-                    results.Select(async x => 
-                        new UserEntry { Shape = await _userDisplayManager.BuildDisplayAsync(x, updater: this, displayType: "SummaryAdmin") })),
+                Users = userEntries,
                 Options = options,
                 Pager = pagerShape
+            };
+
+            model.Options.UserFilters = new List<SelectListItem>() {
+                new SelectListItem() { Text = TH["All"].Value, Value = nameof(UsersFilter.All) },
+                //new SelectListItem() { Text = TH["Approved"].Value, Value = nameof(UsersFilter.Approved) },
+                //new SelectListItem() { Text = TH["Email pending"].Value, Value = nameof(UsersFilter.EmailPending) },
+                //new SelectListItem() { Text = TH["Pending"].Value, Value = nameof(UsersFilter.Pending) }
+            };
+
+            model.Options.UserSorts = new List<SelectListItem>() {
+                new SelectListItem() { Text = TH["Name"].Value, Value = nameof(UsersOrder.Name) },
+                new SelectListItem() { Text = TH["Email"].Value, Value = nameof(UsersOrder.Email) },
+                //new SelectListItem() { Text = TH["Created date"].Value, Value = nameof(UsersOrder.CreatedUtc) },
+                //new SelectListItem() { Text = TH["Last Login date"].Value, Value = nameof(UsersOrder.LastLoginUtc) }
+            };
+
+            model.Options.UsersBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = TH["Approve"].Value, Value = nameof(UsersBulkAction.Approve) },
+                new SelectListItem() { Text = TH["Enable"].Value, Value = nameof(UsersBulkAction.Enable) },
+                new SelectListItem() { Text = TH["Disable"].Value, Value = nameof(UsersBulkAction.Disable) },
+                new SelectListItem() { Text = TH["Delete"].Value, Value = nameof(UsersBulkAction.Delete) }
             };
 
             return View(model);
         }
 
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(UsersIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Filter", model.Options.Filter },
+                { "Options.Order", model.Options.Order },
+                { "Options.Search", model.Options.Search }
+            });
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<int> itemIds)
+        {
+            if (itemIds?.Count() > 0)
+            {
+                var checkedContentItems = await _session.Query<User, UserIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
+                switch (options.BulkAction)
+                {
+                    case UsersBulkAction.None:
+                        break;
+                    case UsersBulkAction.Approve:
+                        foreach (var item in checkedContentItems)
+                        {
+                            var token = await _userManager.GenerateEmailConfirmationTokenAsync(item);
+                            await _userManager.ConfirmEmailAsync(item, token);
+                            _notifier.Success(TH["User {0} successfully approved.", item.UserName]);
+                        }
+                        break;
+                    case UsersBulkAction.Delete:
+                        foreach (var item in checkedContentItems)
+                        {
+                            await _userManager.DeleteAsync(item);
+                            _notifier.Success(TH["User {0} successfully deleted.", item.UserName]);
+                        }
+                        break;
+                    case UsersBulkAction.Disable:
+                        foreach (var item in checkedContentItems)
+                        {
+                            item.IsEnabled = false;
+                            await _userManager.UpdateAsync(item);
+                            _notifier.Success(TH["User {0} successfully disabled.", item.UserName]);
+                        }
+                        break;
+                    case UsersBulkAction.Enable:
+                        foreach (var item in checkedContentItems)
+                        {
+                            item.IsEnabled = true;
+                            await _userManager.UpdateAsync(item);
+                            _notifier.Success(TH["User {0} successfully enabled.", item.UserName]);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
         public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
@@ -155,9 +249,9 @@ namespace OrchardCore.Users.Controllers
             {
                 return Unauthorized();
             }
-            
+
             var user = new User();
-            
+
             var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: this, isNew: true);
 
             if (!ModelState.IsValid)
@@ -304,13 +398,16 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
+            if (ModelState.IsValid)
             {
-                _notifier.Success(TH["Password updated correctly."]);
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-                return RedirectToAction(nameof(Index));
+                if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
+                {
+                    _notifier.Success(TH["Password updated correctly."]);
+
+                    return RedirectToAction(nameof(Index));
+                }
             }
 
             return View(model);

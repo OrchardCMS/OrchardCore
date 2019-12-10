@@ -14,12 +14,12 @@ namespace OrchardCore.Recipes
             _globalMethod = new GlobalMethod
             {
                 Name = "variables",
-                Method = serviceprovider => (Func<string, object>) (name =>
+                Method = serviceprovider => (Func<string, object>)(name =>
                 {
                     var value = variables[name].Value<string>();
 
                     // Replace variable value while the result returns another script
-                    while (value.StartsWith("[") && value.EndsWith("]"))
+                    while (value.StartsWith('[') && value.EndsWith(']'))
                     {
                         value = value.Trim('[', ']');
                         value = (ScriptingManager.Evaluate(value, null, null, null) ?? "").ToString();

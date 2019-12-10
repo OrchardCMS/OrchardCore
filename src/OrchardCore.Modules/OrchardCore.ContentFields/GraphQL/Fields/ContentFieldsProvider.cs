@@ -38,7 +38,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 new FieldTypeDescriptor
                 {
                     Description = "Date & time field",
-                    FieldType = typeof(DateGraphType),
+                    FieldType = typeof(DateTimeGraphType),
                     FieldAccessor = field => (DateTime?)field.Content.Value
                 }
             },
@@ -92,12 +92,19 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 Type = fieldDescriptor.FieldType,
                 Resolver = new FuncFieldResolver<ContentElement, object>(context =>
                 {
+                    // Check if part has been collapsed by trying to get the parent part.
                     var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
-                    var contentField = contentPart?.Get(typeof(ContentField), context.FieldName.ToPascalCase());
+                    if(contentPart == null)
+                    {
+                        // Part is not collapsed, access field directly.
+                        contentPart = context.Source;
+                    }
+
+                    var contentField = contentPart?.Get(typeof(ContentField), field.Name);
 
                     if (contentField == null)
                     {
-                        contentField = context.Source.Get(typeof(ContentField), context.FieldName.ToPascalCase());
+                        contentField = context.Source.Get(typeof(ContentField), field.Name);
                     }
 
                     return contentField == null ? null : fieldDescriptor.FieldAccessor(contentField);

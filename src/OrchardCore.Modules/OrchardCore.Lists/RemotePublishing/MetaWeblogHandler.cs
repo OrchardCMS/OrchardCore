@@ -7,24 +7,24 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.FileStorage;
-using OrchardCore.XmlRpc;
-using OrchardCore.XmlRpc.Models;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using OrchardCore.Media;
 using OrchardCore.MetaWeblog;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Services;
+using OrchardCore.XmlRpc;
+using OrchardCore.XmlRpc.Models;
 using YesSql;
 
 namespace OrchardCore.Lists.RemotePublishing
@@ -166,7 +166,7 @@ namespace OrchardCore.Lists.RemotePublishing
 
             string directoryName = Path.GetDirectoryName(name);
             string filePath = _mediaFileStore.Combine(directoryName, Path.GetFileName(name));
-            await _mediaFileStore.CreateFileFromStream(filePath, new MemoryStream(bits));
+            await _mediaFileStore.CreateFileFromStreamAsync(filePath, new MemoryStream(bits));
 
             string publicUrl = _mediaFileStore.MapPathToPublicUrl(filePath);
 
@@ -496,8 +496,8 @@ namespace OrchardCore.Lists.RemotePublishing
         private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentItem contentItem)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
-            var settings = contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart"));
+            var settings = contentTypePartDefinition.GetSettings<ListPartSettings>();
             var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
             return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
         }

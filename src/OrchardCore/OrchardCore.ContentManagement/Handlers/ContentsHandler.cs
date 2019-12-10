@@ -22,6 +22,7 @@ namespace OrchardCore.ContentManagement.Handlers
             {
                 context.ContentItem.CreatedUtc = utcNow;
             }
+
             context.ContentItem.ModifiedUtc = utcNow;
 
             var httpContext = _httpContextAccessor.HttpContext;
@@ -71,6 +72,7 @@ namespace OrchardCore.ContentManagement.Handlers
             }
 
             context.ContentItem.PublishedUtc = utcNow;
+
             return Task.CompletedTask;
         }
 

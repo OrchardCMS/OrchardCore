@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
@@ -22,7 +22,7 @@ namespace OrchardCore.Content.Controllers
             _contentManager = contentManager;
         }
 
-        [Route("{contentItemId}")]
+        [Route("{contentItemId}"), HttpGet]
         public async Task<IActionResult> Get(string contentItemId)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId);
@@ -65,17 +65,24 @@ namespace OrchardCore.Content.Controllers
         public async Task<IActionResult> Post(ContentItem newContentItem, bool draft = false)
         {
             var contentItem = await _contentManager.GetAsync(newContentItem.ContentItemId, VersionOptions.DraftRequired);
-            
+
             if (contentItem == null)
             {
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent))
+                {
+                    return Unauthorized();
+                }
+
                 await _contentManager.CreateAsync(newContentItem, VersionOptions.DraftRequired);
 
                 contentItem = newContentItem;
             }
-
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            else
             {
-                return Unauthorized();
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+                {
+                    return Unauthorized();
+                }
             }
 
             if (contentItem != newContentItem)

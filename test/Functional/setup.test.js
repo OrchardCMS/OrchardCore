@@ -27,6 +27,8 @@ afterAll(async () => {
     }
 
     orchard.stop();
+    orchard.cleanAppData('../../src/OrchardCore.Cms.Web');
+    orchard.printLog();
 });
 
 describe('Browser is initialized', () => {
@@ -127,7 +129,10 @@ describe('Create Tenants', () => {
         await expect(await page.content()).toMatch('Agency');
 
         // Go to Setup page
-        await page.click('#btn-setup-Agency');
+         await Promise.all([
+            page.waitForNavigation(),
+            page.click('#btn-setup-Agency')
+        ]);
 
         await expect(await page.content()).toMatch('Orchard Setup');
 
@@ -167,7 +172,10 @@ describe('Create Tenants', () => {
         await expect(await page.content()).toMatch('Blog');
 
         // Go to Setup page
-        await page.click('#btn-setup-Blog');
+        await Promise.all([
+            page.waitForNavigation(),
+            page.click('#btn-setup-Blog')
+        ]);
 
         await expect(await page.content()).toMatch('Orchard Setup');
 

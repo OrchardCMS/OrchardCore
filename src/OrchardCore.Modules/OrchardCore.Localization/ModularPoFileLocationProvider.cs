@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Extensions;
@@ -13,7 +13,7 @@ namespace OrchardCore.Localization
     public class ModularPoFileLocationProvider : ILocalizationFileLocationProvider
     {
         private const string PoFileExtension = ".po";
-        private const string ExtensionDataFolder = "App_Data";
+        private const string CultureDelimiter = "-";
 
         private readonly IExtensionManager _extensionsManager;
         private readonly IFileProvider _fileProvider;
@@ -23,7 +23,7 @@ namespace OrchardCore.Localization
 
         public ModularPoFileLocationProvider(
             IExtensionManager extensionsManager,
-            IHostingEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             IOptions<ShellOptions> shellOptions,
             IOptions<LocalizationOptions> localizationOptions,
             ShellSettings shellSettings)
@@ -31,7 +31,7 @@ namespace OrchardCore.Localization
             _extensionsManager = extensionsManager;
 
             _fileProvider = hostingEnvironment.ContentRootFileProvider;
-            _resourcesContainer = localizationOptions.Value.ResourcesPath; // Localization
+            _resourcesContainer = localizationOptions.Value.ResourcesPath;
             _applicationDataContainer = shellOptions.Value.ShellsApplicationDataPath;
             _shellDataContainer = PathExtensions.Combine(_applicationDataContainer, shellOptions.Value.ShellsContainerName, shellSettings.Name);
         }
@@ -39,18 +39,37 @@ namespace OrchardCore.Localization
         public IEnumerable<IFileInfo> GetLocations(string cultureName)
         {
             var poFileName = cultureName + PoFileExtension;
+            var extensions = _extensionsManager.GetExtensions();
 
             // Load .po files in each extension folder first, based on the extensions order
-            foreach (var extension in _extensionsManager.GetExtensions())
+            foreach (var extension in extensions)
             {
-                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(extension.SubPath, ExtensionDataFolder, _resourcesContainer, poFileName));
+                // From [Extension]/Localization
+                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(extension.SubPath, _resourcesContainer, poFileName));
             }
 
-            // Then load global .po file for the applications
-            yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, poFileName)));
+            // Load global .po files from /Localization
+            yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, poFileName));
 
-            // Finally load tenant-specific .po file
+            // Load tenant-specific .po file from /App_Data/Sites/[Tenant]/Localization
             yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_shellDataContainer, _resourcesContainer, poFileName)));
+
+            // Load each modules .po file for extending localization when using Orchard Core as a Nuget package
+            foreach (var extension in extensions)
+            {
+                // \src\OrchardCore.Cms.Web\Localization\OrchardCore.Cms.Web\fr-CA.po
+                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, extension.Id, poFileName));
+
+                // \src\OrchardCore.Cms.Web\Localization\OrchardCore.Cms.Web-fr-CA.po
+                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, extension.Id + CultureDelimiter + poFileName));
+            }
+
+            // Load all .po files from a culture specific folder
+            // e.g, \src\OrchardCore.Cms.Web\Localization\fr-CA\*.po
+            foreach (var file in _fileProvider.GetDirectoryContents(PathExtensions.Combine(_resourcesContainer, cultureName)))
+            {
+                yield return file;
+            }
         }
     }
 }

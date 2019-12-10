@@ -7,6 +7,7 @@ using Fluid;
 using Fluid.Ast;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid.Ast;
 
@@ -17,12 +18,12 @@ namespace OrchardCore.DynamicCache.Liquid
         private static readonly char[] SplitChars = new [] { ',', ' ' };
         private readonly ArgumentsExpression _arguments;
 
-        public CacheStatement(ArgumentsExpression arguments, IList<Statement> statements = null) : base(statements)
+        public CacheStatement(ArgumentsExpression arguments, List<Statement> statements = null) : base(statements)
         {
             _arguments = arguments;
         }
 
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("Services", out var servicesObj))
             {
@@ -116,14 +117,20 @@ namespace OrchardCore.DynamicCache.Liquid
 
         private async Task<string> EvaluateStatementsAsync(TextEncoder encoder, TemplateContext context)
         {
-            var content = new StringWriter();
-            
-            foreach (var statement in Statements)
+            using (var sb = StringBuilderPool.GetInstance())
             {
-                await statement.WriteToAsync(content, encoder, context);
-            }
+                using (var content = new StringWriter(sb.Builder))
+                {
+                    foreach (var statement in Statements)
+                    {
+                        await statement.WriteToAsync(content, encoder, context);
+                    }
 
-            return content.ToString();
+                    await content.FlushAsync();
+                }
+
+                return sb.Builder.ToString();
+            }
         }
     }
 }

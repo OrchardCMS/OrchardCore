@@ -14,7 +14,7 @@ namespace OrchardCore.Navigation
             builder.Describe("Navigation")
                 .OnDisplaying(displaying =>
                 {
-                    var menu = displaying.Shape;
+                    dynamic menu = displaying.Shape;
                     string menuName = menu.MenuName;
 
                     menu.Classes.Add("menu-" + menuName.HtmlClassify());
@@ -23,7 +23,7 @@ namespace OrchardCore.Navigation
                 })
                 .OnProcessing(async context =>
                 {
-                    var menu = context.Shape;
+                    dynamic menu = context.Shape;
                     string menuName = menu.MenuName;
 
                     // Menu population is executed when processing the shape so that its value
@@ -35,10 +35,13 @@ namespace OrchardCore.Navigation
                         return;
                     }
 
+                    var viewContextAccessor = context.ServiceProvider.GetRequiredService<ViewContextAccessor>();
+                    var viewContext = viewContextAccessor.ViewContext;
+
                     var navigationManager = context.ServiceProvider.GetRequiredService<INavigationManager>();
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    var menuItems = await navigationManager.BuildMenuAsync(menuName, context.DisplayContext.ViewContext);
+                    var menuItems = await navigationManager.BuildMenuAsync(menuName, viewContext);
                     var httpContext = httpContextAccessor.HttpContext;
 
                     if (httpContext != null)
@@ -61,13 +64,13 @@ namespace OrchardCore.Navigation
                     }
 
                     // TODO: Flag Selected menu item
-                    await NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, context.DisplayContext.ViewContext);
+                    await NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, viewContext);
                 });
 
             builder.Describe("NavigationItem")
                 .OnDisplaying(displaying =>
                 {
-                    var menuItem = displaying.Shape;
+                    dynamic menuItem = displaying.Shape;
                     var menu = menuItem.Menu;
                     string menuName = menu.MenuName;
                     int level = menuItem.Level;
@@ -80,7 +83,7 @@ namespace OrchardCore.Navigation
             builder.Describe("NavigationItemLink")
                 .OnDisplaying(displaying =>
                 {
-                    var menuItem = displaying.Shape;
+                    dynamic menuItem = displaying.Shape;
                     string menuName = menuItem.Menu.MenuName;
                     int level = menuItem.Level;
 
@@ -100,7 +103,7 @@ namespace OrchardCore.Navigation
         /// <returns></returns>
         private string EncodeAlternateElement(string alternateElement)
         {
-            return alternateElement.Replace("-", "__").Replace(".", "_");
+            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
     }
 }

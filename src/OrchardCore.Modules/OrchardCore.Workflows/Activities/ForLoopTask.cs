@@ -20,6 +20,7 @@ namespace OrchardCore.Workflows.Activities
         private IStringLocalizer T { get; }
 
         public override string Name => nameof(ForLoopTask);
+        public override LocalizedString DisplayText => T["For Loop Task"];
         public override LocalizedString Category => T["Control Flow"];
 
         /// <summary>
@@ -37,6 +38,15 @@ namespace OrchardCore.Workflows.Activities
         public WorkflowExpression<double> To
         {
             get => GetProperty(() => new WorkflowExpression<double>("10"));
+            set => SetProperty(value);
+        }
+
+        /// <summary>
+        /// An expression evaluating to the end value.
+        /// </summary>
+        public WorkflowExpression<double> Step
+        {
+            get => GetProperty(() => new WorkflowExpression<double>("1"));
             set => SetProperty(value);
         }
 
@@ -75,7 +85,12 @@ namespace OrchardCore.Workflows.Activities
                 to = await _scriptEvaluator.EvaluateAsync(To, workflowContext);
             }
 
-            if(Index < from)
+            if (!double.TryParse(Step.Expression, out var step))
+            {
+                step = await _scriptEvaluator.EvaluateAsync(Step, workflowContext);
+            }
+
+            if (Index < from)
             {
                 Index = from;
             }
@@ -84,7 +99,7 @@ namespace OrchardCore.Workflows.Activities
             {
                 workflowContext.LastResult = Index;
                 workflowContext.Properties[LoopVariableName] = Index;
-                Index++;
+                Index += step;
                 return Outcomes("Iterate");
             }
             else

@@ -22,6 +22,7 @@ namespace OrchardCore.Forms.Workflows.Activities
         }
 
         public override string Name => nameof(ValidateFormTask);
+        public override LocalizedString DisplayText => T["Validate Form Task"];
         public override LocalizedString Category => T["Validation"];
         public override bool HasEditor => false;
 

@@ -1,9 +1,8 @@
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
@@ -25,7 +24,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                     .Query("Blog", builder =>
                     {
                         builder
-                            .AddField("contentItemId");
+                            .WithField("contentItemId");
                     });
 
                 Assert.Single(result["data"]["blog"].Children()["contentItemId"]
@@ -84,10 +83,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                     .Query("BlogPost", builder =>
                     {
                         builder
-                            .WithNestedQueryField("AutoroutePart", "path: \"Path1\"");
+                            .WithQueryStringArgument("where", "path", "Path1");
 
                         builder
-                            .AddField("DisplayText");
+                            .WithField("DisplayText");
                     });
 
                 Assert.Equal(
@@ -108,7 +107,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                     .Content
                     .Query("BlogPost", builder =>
                     {
-                        builder.AddField("Subtitle");
+                        builder.WithField("Subtitle");
                     });
 
                 Assert.Equal(
@@ -157,10 +156,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                     .Query("BlogPost", builder =>
                     {
                         builder
-                            .WithQueryField("ContentItemId", blogPostContentItemId);
+                            .WithQueryStringArgument("where", "ContentItemId", blogPostContentItemId);
 
                         builder
-                            .AddField("Subtitle");
+                            .WithField("Subtitle");
                     });
 
                 Assert.Equal(

@@ -1,40 +1,41 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.AdminTrees.Services;
-using OrchardCore.Navigation;
 using System.Linq;
-using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Metadata.Models;
-using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using OrchardCore.AdminMenu.Services;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Contents.Security;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents.AdminNodes
 {
     public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     {
+        private readonly LinkGenerator _linkGenerator;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILogger<ContentTypesAdminNodeNavigationBuilder> _logger;
-        private readonly string _contentItemlistUrl;
 
         public ContentTypesAdminNodeNavigationBuilder(
+            LinkGenerator linkGenerator,
+            IHttpContextAccessor httpContextAccessor,
             IContentDefinitionManager contentDefinitionManager,
-            ShellSettings shellSettings,
             ILogger<ContentTypesAdminNodeNavigationBuilder> logger)
         {
+            _linkGenerator = linkGenerator;
+            _httpContextAccessor = httpContextAccessor;
             _contentDefinitionManager = contentDefinitionManager;
-
-            var tenantPrefix = ('/' + (shellSettings.RequestUrlPrefix ?? string.Empty)).TrimEnd('/');
-            _contentItemlistUrl = tenantPrefix + "/Admin/Contents/ContentItems/";
-
 
             _logger = logger;
         }
 
         public string Name => typeof(ContentTypesAdminNode).Name;
-
 
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
@@ -45,20 +46,28 @@ namespace OrchardCore.Contents.AdminNodes
                 return;
             }
 
-            // Add ContentTypes specific children            
+            // Add ContentTypes specific children
             var typesToShow = GetContentTypesToShow(node);
             foreach (var ctd in typesToShow)
             {
                 builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
                 {
-                    cTypeMenu.Url(_contentItemlistUrl + ctd.Name);
-                    cTypeMenu.SelectionPriority(node.SelectionPriority);
-                    cTypeMenu.Permission(Permissions.EditOwnContent);
+                    cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, "", new
+                    {
+                        area = "OrchardCore.Contents",
+                        controller = "Admin",
+                        action = "List",
+                        contentTypeId = ctd.Name
+                    }));
+
+                    cTypeMenu.Priority(node.Priority);
+                    cTypeMenu.Position(node.Position);
+                    cTypeMenu.Permission(
+                        ContentTypePermissions.CreateDynamicPermission(ContentTypePermissions.PermissionTemplates[Permissions.PublishOwnContent.Name], ctd));
 
                     GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
                 });
             }
-            
 
             // Add external children
             foreach (var childNode in node.Items)
@@ -73,24 +82,20 @@ namespace OrchardCore.Contents.AdminNodes
                     _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childNode.GetType().Name);
                 }
             }
-
         }
 
         private IEnumerable<ContentTypeDefinition> GetContentTypesToShow(ContentTypesAdminNode node)
         {
-
             var typesToShow = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Listable);
-
+                .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Listable);
 
             if (!node.ShowAll)
             {
-                node.ContentTypes = node.ContentTypes ?? (new ContentTypeEntry[] { });
+                node.ContentTypes = node.ContentTypes;
 
                 typesToShow = typesToShow
                     .Where(ctd => node.ContentTypes.ToList()
                                     .Any(s => String.Equals(ctd.Name, s.ContentTypeId, StringComparison.OrdinalIgnoreCase)));
-
             }
 
             return typesToShow.OrderBy(t => t.DisplayName);
@@ -100,7 +105,7 @@ namespace OrchardCore.Contents.AdminNodes
         {
             if (node.ShowAll)
             {
-              return AddPrefixToClasses(node.IconClass);
+                return AddPrefixToClasses(node.IconClass);
             }
             else
             {
@@ -109,7 +114,6 @@ namespace OrchardCore.Contents.AdminNodes
                                 .FirstOrDefault();
 
                 return AddPrefixToClasses(typeEntry.IconClass);
-
             }
         }
 
@@ -121,7 +125,5 @@ namespace OrchardCore.Contents.AdminNodes
                 .ToList<string>()
                 ?? new List<string>();
         }
-        
     }
-
 }

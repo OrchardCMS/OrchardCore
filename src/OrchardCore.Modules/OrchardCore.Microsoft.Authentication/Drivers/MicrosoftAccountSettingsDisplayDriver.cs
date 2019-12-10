@@ -56,7 +56,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 }
                 if (settings.CallbackPath.HasValue)
                 {
-                    model.CallbackPath = settings.CallbackPath;
+                    model.CallbackPath = settings.CallbackPath.Value;
                 }
             }).Location("Content:5").OnGroup(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
         }

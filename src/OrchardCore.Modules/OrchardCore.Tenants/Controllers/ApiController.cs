@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
@@ -15,7 +15,6 @@ using OrchardCore.Data;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Hosting.ShellBuilders;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -69,11 +68,11 @@ namespace OrchardCore.Tenants.Controllers
             H = htmlLocalizer;
         }
 
-        public IStringLocalizer S { get; set; }
-        public IHtmlLocalizer H { get; set; }
+        public IStringLocalizer S { get; }
+        public IHtmlLocalizer H { get; }
 
         [HttpPost]
-        [Route("create")]        
+        [Route("create")]
         public async Task<IActionResult> Create(CreateApiViewModel model)
         {
             if (!IsDefaultShell())
@@ -86,21 +85,33 @@ namespace OrchardCore.Tenants.Controllers
                 return Unauthorized();
             }
 
-            var allShells = await GetShellsAsync();
-
             if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
             {
                 ModelState.AddModelError(nameof(CreateApiViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
             }
 
-            if (!IsDefaultShell() && string.IsNullOrWhiteSpace(model.RequestUrlHost) && string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            // Creates a default shell settings based on the configuration.
+            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+
+            shellSettings.Name = model.Name;
+            shellSettings.RequestUrlHost = model.RequestUrlHost;
+            shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+            shellSettings.State = TenantState.Uninitialized;
+
+            shellSettings["ConnectionString"] = model.ConnectionString;
+            shellSettings["TablePrefix"] = model.TablePrefix;
+            shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+            shellSettings["Secret"] = Guid.NewGuid().ToString();
+            shellSettings["RecipeName"] = model.RecipeName;
+
+            if (!IsDefaultShell() && string.IsNullOrWhiteSpace(shellSettings.RequestUrlHost) && string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
             {
                 ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
             }
 
-            if (!string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if (!string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
             {
-                if (model.RequestUrlPrefix.Contains('/'))
+                if (shellSettings.RequestUrlPrefix.Contains('/'))
                 {
                     ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]);
                 }
@@ -108,35 +119,21 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_shellHost.TryGetSettings(model.Name, out var shellSettings))
+                if (_shellHost.TryGetSettings(model.Name, out var settings))
                 {
-                    // Site already exists, return 200 for indempotency purpose
+                    // Site already exists, return 201 for indempotency purpose
 
-                    var token = CreateSetupToken(shellSettings);
+                    var token = CreateSetupToken(settings);
 
-                    return StatusCode(201, GetTenantUrl(shellSettings, token));
+                    return StatusCode(201, GetEncodedUrl(settings, token));
                 }
                 else
                 {
-                    shellSettings = new ShellSettings
-                    {
-                        Name = model.Name,
-                        RequestUrlPrefix = model.RequestUrlPrefix?.Trim(),
-                        RequestUrlHost = model.RequestUrlHost,
-                        ConnectionString = model.ConnectionString,
-                        TablePrefix = model.TablePrefix,
-                        DatabaseProvider = model.DatabaseProvider,
-                        State = TenantState.Uninitialized,
-                        Secret = Guid.NewGuid().ToString(),
-                        RecipeName = model.RecipeName
-                    };
-
-                    _shellSettingsManager.SaveSettings(shellSettings);
-                    var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
+                    await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                     var token = CreateSetupToken(shellSettings);
 
-                    return Ok(GetTenantUrl(shellSettings, token));
+                    return Ok(GetEncodedUrl(shellSettings, token));
                 }
             }
 
@@ -177,21 +174,28 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest(S["The tenant can't be setup."]);
             }
 
-            var selectedProvider = _databaseProviders.FirstOrDefault(x => String.Equals(x.Value, model.DatabaseProvider, StringComparison.OrdinalIgnoreCase));
+            var databaseProvider = shellSettings["DatabaseProvider"];
+
+            if (String.IsNullOrEmpty(databaseProvider))
+            {
+                databaseProvider = model.DatabaseProvider;
+            }
+
+            var selectedProvider = _databaseProviders.FirstOrDefault(x => String.Equals(x.Value, databaseProvider, StringComparison.OrdinalIgnoreCase));
 
             if (selectedProvider == null)
             {
                 return BadRequest(S["The database provider is not defined."]);
             }
 
-            var tablePrefix = shellSettings.TablePrefix;
+            var tablePrefix = shellSettings["TablePrefix"];
 
             if (String.IsNullOrEmpty(tablePrefix))
             {
                 tablePrefix = model.TablePrefix;
             }
 
-            var connectionString = shellSettings.ConnectionString;
+            var connectionString = shellSettings["connectionString"];
 
             if (String.IsNullOrEmpty(connectionString))
             {
@@ -203,7 +207,7 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest(S["The connection string is required for this database provider."]);
             }
 
-            var recipeName = shellSettings.RecipeName;
+            var recipeName = shellSettings["RecipeName"];
 
             if (String.IsNullOrEmpty(recipeName))
             {
@@ -278,46 +282,47 @@ namespace OrchardCore.Tenants.Controllers
             return Ok(executionId);
         }
 
-        private async Task<IEnumerable<ShellContext>> GetShellsAsync()
-        {
-            return (await _shellHost.ListShellContextsAsync()).OrderBy(x => x.Settings.Name);
-        }
-
         private bool IsDefaultShell()
         {
             return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
 
-        public string GetTenantUrl(ShellSettings shellSettings, string token)
+        private string GetEncodedUrl(ShellSettings shellSettings, string token)
         {
-            var requestHostInfo = Request.Host;
+            var requestHost = Request.Host;
+            var host = shellSettings.RequestUrlHost?.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
 
-            var tenantUrlHost = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).First() ?? requestHostInfo.Host;
-            if (requestHostInfo.Port.HasValue)
+            var port = requestHost.Port;
+
+            if (port.HasValue)
             {
-                tenantUrlHost += ":" + requestHostInfo.Port;
+                host += ":" + port;
             }
 
-            var result = $"{Request.Scheme}://{tenantUrlHost}";
+            var hostString = new HostString(host);
+
+            var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
 
             if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
-                result += "/" + shellSettings.RequestUrlPrefix;
+                pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
             }
+
+            QueryString queryString;
 
             if (!string.IsNullOrEmpty(token))
             {
-                result += "?token=" + WebUtility.UrlEncode(token);
+                queryString = QueryString.Create("token", token);
             }
 
-            return result;
+            return $"{Request.Scheme}://{hostString + pathString + queryString}";
         }
 
         private string CreateSetupToken(ShellSettings shellSettings)
         {
             // Create a public url to setup the new tenant
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
-            var token = dataProtector.Protect(shellSettings.Secret, _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+            var token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
             return token;
         }
     }

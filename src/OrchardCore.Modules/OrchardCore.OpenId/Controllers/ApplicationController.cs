@@ -31,30 +31,27 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IStringLocalizer<ApplicationController> T;
         private readonly IHtmlLocalizer<ApplicationController> H;
         private readonly ISiteService _siteService;
-        private readonly IShapeFactory _shapeFactory;
-        private readonly IRoleProvider _roleProvider;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
+        private readonly dynamic New;
 
         public ApplicationController(
             IShapeFactory shapeFactory,
             ISiteService siteService,
             IStringLocalizer<ApplicationController> stringLocalizer,
             IAuthorizationService authorizationService,
-            IRoleProvider roleProvider,
             IOpenIdApplicationManager applicationManager,
             IHtmlLocalizer<ApplicationController> htmlLocalizer,
             INotifier notifier,
             ShellDescriptor shellDescriptor)
         {
-            _shapeFactory = shapeFactory;
+            New = shapeFactory;
             _siteService = siteService;
             T = stringLocalizer;
             H = htmlLocalizer;
             _authorizationService = authorizationService;
             _applicationManager = applicationManager;
-            _roleProvider = roleProvider;
             _notifier = notifier;
             _shellDescriptor = shellDescriptor;
         }
@@ -68,13 +65,11 @@ namespace OrchardCore.OpenId.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var count = await _applicationManager.CountAsync();
 
             var model = new OpenIdApplicationsIndexViewModel
             {
-                Pager = await _shapeFactory.CreateAsync("Pager", new
-                {
-                    TotalItemCount = await _applicationManager.CountAsync()
-                })
+                Pager = (await New.Pager(pager)).TotalItemCount(count)
             };
 
             foreach (var application in await _applicationManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
@@ -99,12 +94,20 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new CreateOpenIdApplicationViewModel();
 
-            foreach (var role in await _roleProvider.GetRoleNamesAsync())
+            var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
+            if (roleService != null)
             {
-                model.RoleEntries.Add(new CreateOpenIdApplicationViewModel.RoleEntry
+                foreach (var role in await roleService.GetRoleNamesAsync())
                 {
-                    Name = role
-                });
+                    model.RoleEntries.Add(new CreateOpenIdApplicationViewModel.RoleEntry
+                    {
+                        Name = role
+                    });
+                }
+            }
+            else
+            {
+                _notifier.Warning(H["There are no registered services to provide roles."]);
             }
 
             ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
@@ -245,13 +248,21 @@ namespace OrchardCore.OpenId.Controllers
                 Type = await _applicationManager.GetClientTypeAsync(application)
             };
 
-            foreach (var role in await _roleProvider.GetRoleNamesAsync())
+            var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
+            if (roleService != null)
             {
-                model.RoleEntries.Add(new EditOpenIdApplicationViewModel.RoleEntry
+                foreach (var role in await roleService.GetRoleNamesAsync())
                 {
-                    Name = role,
-                    Selected = await _applicationManager.IsInRoleAsync(application, role)
-                });
+                    model.RoleEntries.Add(new EditOpenIdApplicationViewModel.RoleEntry
+                    {
+                        Name = role,
+                        Selected = await _applicationManager.IsInRoleAsync(application, role)
+                    });
+                }
+            }
+            else
+            {
+                _notifier.Warning(H["There are no registered services to provide roles."]);
             }
 
             ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();

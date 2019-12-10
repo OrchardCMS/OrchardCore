@@ -3,25 +3,27 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization.PortableObject
 {
+    /// <summary>
+    /// Represents an <see cref="HtmlLocalizer"/> for portable objects.
+    /// </summary>
     public class PortableObjectHtmlLocalizer : HtmlLocalizer
     {
         private readonly IStringLocalizer _localizer;
 
-        public string Context { get; private set; }
-
+        /// <summary>
+        /// Creates a new instance of <see cref="PortableObjectHtmlLocalizer"/>.
+        /// </summary>
+        /// <param name="localizer"></param>
         public PortableObjectHtmlLocalizer(IStringLocalizer localizer) : base(localizer)
         {
             _localizer = localizer;
         }
 
+        /// <inheritdocs />
         public override LocalizedHtmlString this[string name]
-        {
-            get
-            {
-                return ToHtmlString(_localizer[name]);
-            }
-        }
+            => ToHtmlString(_localizer[name]);
 
+        /// <inheritdocs />
         public override LocalizedHtmlString this[string name, params object[] arguments]
         {
             get
@@ -36,7 +38,7 @@ namespace OrchardCore.Localization.PortableObject
 
                 // Otherwise an already formatted string containing curly braces will be wrongly reformatted.
 
-                if (_localizer is IPluralStringLocalizer pluralLocalizer)
+                if (_localizer is IPluralStringLocalizer pluralLocalizer && arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
                 {
                     // Get an unformatted string and all non plural arguments (1st one is the plural count).
                     var (translation, argumentsWithCount) = pluralLocalizer.GetTranslation(name, arguments);

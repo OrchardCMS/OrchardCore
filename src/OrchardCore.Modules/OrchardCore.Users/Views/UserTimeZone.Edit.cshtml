@@ -1,7 +1,7 @@
 @model UserTimeZoneViewModel
 @inject OrchardCore.Modules.IClock Clock
 
-<fieldset class="form-group" asp-validation-class-for="TimeZoneId">
+<div class="form-group" asp-validation-class-for="TimeZoneId">
     <label asp-for="TimeZoneId">@T["Default Time Zone"]</label>
     <select asp-for="TimeZoneId" class="form-control">
         <option value="">@T["Use site's time zone"]</option>
@@ -14,4 +14,4 @@
     </select>
     <span asp-validation-for="TimeZoneId"></span>
     <span class="hint">@T["Determines the time zone used when displaying and editing dates and times."]</span>
-</fieldset>
+</div>

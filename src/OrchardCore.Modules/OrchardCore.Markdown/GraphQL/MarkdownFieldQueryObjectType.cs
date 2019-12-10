@@ -1,5 +1,11 @@
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Fluid;
 using GraphQL.Types;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Apis.GraphQL;
+using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
 
 namespace OrchardCore.Markdown.GraphQL
@@ -13,18 +19,25 @@ namespace OrchardCore.Markdown.GraphQL
 
             Field("markdown", x => x.Markdown, nullable: true)
                 .Description(T["the markdown value"])
-                .Type(new StringGraphType())
-                ;
+                .Type(new StringGraphType());
 
-            Field("html", x => ToHtml(x.Markdown), nullable: true)
+            Field<StringGraphType>()
+                .Name("html")
                 .Description(T["the HTML representation of the markdown content"])
-                .Type(new StringGraphType())
-                ;
+                .ResolveLockedAsync(ToHtml);
         }
 
-        private static string ToHtml(string markdown)
+        private static async Task<object> ToHtml(ResolveFieldContext<MarkdownField> ctx)
         {
-            return Markdig.Markdown.ToHtml(markdown ?? "");
+            var serviceProvider = ctx.ResolveServiceProvider();
+            var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
+            var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
+
+            var markdown = ctx.Source.Markdown;
+            var templateContext = new TemplateContext();
+            markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder, templateContext);
+
+            return Markdig.Markdown.ToHtml(markdown);
         }
     }
 }
