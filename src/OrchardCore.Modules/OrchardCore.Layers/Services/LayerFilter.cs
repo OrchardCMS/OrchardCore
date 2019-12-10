@@ -155,9 +155,10 @@ namespace OrchardCore.Layers.Services
 
         private async Task<IEnumerable<LayerMetadata>> FilterWidgetsByCultureAsync(IEnumerable<LayerMetadata> widgets)
         {
+            var orchardHelper = _orchardHelper;
             var widgetsWithCulture = await Task.WhenAll(widgets.Select(async w =>
             {
-                var culture = await _orchardHelper.GetContentCultureAsync(w.ContentItem);
+                var culture = await orchardHelper.GetContentCultureAsync(w.ContentItem);
                 return new { Widget = w, Culture = culture };
             }));
 
