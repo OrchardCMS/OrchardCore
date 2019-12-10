@@ -7,11 +7,11 @@ using OrchardCore.Spatial.Fields;
 namespace OrchardCore.Spatial.Settings
 {
 
-    public class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<Fields.GeoPointField>
+    public class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<GeoPointField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<GeoPointFieldSettings>("GeoPointFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
+            return Initialize<GeoPointFieldSettings>("GeoPointFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
                 .Location("Content");
         }
 
@@ -21,7 +21,7 @@ namespace OrchardCore.Spatial.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            context.Builder.MergeSettings(model);
+            context.Builder.WithSettings(model);
 
             return Edit(partFieldDefinition);
         }

@@ -11,9 +11,9 @@ namespace OrchardCore.DisplayManagement.Zones
                 .Describe("Layout")
                 .OnCreating(creating =>
                 {
-                    creating.CreateAsync = () => Task.FromResult<IShape>(new ZoneHolding(() => creating.ShapeFactory.CreateAsync("Zone")));
+                    creating.CreateAsync = () => new ValueTask<IShape>(new ZoneHolding(() => creating.ShapeFactory.CreateAsync("Zone")));
                 })
-                .OnCreated(async created => 
+                .OnCreated(async created =>
                 {
                     dynamic layout = created.Shape;
 
@@ -24,5 +24,5 @@ namespace OrchardCore.DisplayManagement.Zones
                     layout.Content = await created.ShapeFactory.CreateAsync("Zone", new { ZoneName = "Content" });
                 });
         }
-   }
+    }
 }

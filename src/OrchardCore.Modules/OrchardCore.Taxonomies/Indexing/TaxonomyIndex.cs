@@ -11,8 +11,6 @@ using YesSql.Indexes;
 
 namespace OrchardCore.Taxonomies.Indexing
 {
-    // Remark: 
-
     public class TaxonomyIndex : MapIndex
     {
         public string TaxonomyContentItemId { get; set; }
@@ -61,7 +59,7 @@ namespace OrchardCore.Taxonomies.Indexing
 
                     // This type doesn't have any TaxonomyField, ignore it
                     if (fieldDefinitions.Length == 0)
-                    {                        
+                    {
                         _ignoredTypes.Add(contentItem.ContentType);
                         return null;
                     }
@@ -72,7 +70,19 @@ namespace OrchardCore.Taxonomies.Indexing
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
                         var jPart = (JObject)contentItem.Content[fieldDefinition.PartDefinition.Name];
+
+                        if (jPart == null)
+                        {
+                            continue;
+                        }
+
                         var jField = (JObject)jPart[fieldDefinition.Name];
+
+                        if (jField == null)
+                        {
+                            continue;
+                        }
+
                         var field = jField.ToObject<TaxonomyField>();
 
                         foreach (var termContentItemId in field.TermContentItemIds)

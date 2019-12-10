@@ -7,25 +7,31 @@
           "Name": "Menu",
           "DisplayName": "Menu",
           "Settings": {
-            "Draftable": "True",
-            "Versionable": "True",
-            "Listable": "True"
+            "ContentTypeSettings": {
+              "Listable": true,
+              "Draftable": true,
+              "Versionable": true
+            }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "TitlePart",
               "Name": "TitlePart",
               "Settings": {
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
               }
             },
             {
               "PartName": "AliasPart",
               "Name": "AliasPart",
               "Settings": {
-                "Position": "1",
                 "AliasPartSettings": {
                   "Pattern": "{{ ContentItem | display_text | slugify }}"
+                },
+                "ContentTypePartSettings": {
+                  "Position": "1"
                 }
               }
             },
@@ -33,13 +39,15 @@
               "PartName": "MenuPart",
               "Name": "MenuPart",
               "Settings": {
-                "Position": "2"
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                }
               }
             },
             {
               "PartName": "MenuItemsListPart",
               "Name": "MenuItemsListPart",
-              "Settings": {
+              "ContentTypePartSettings": {
                 "Position": "3"
               }
             }
@@ -49,24 +57,47 @@
           "Name": "LinkMenuItem",
           "DisplayName": "Link Menu Item",
           "Settings": {
-            "Stereotype": "MenuItem",
+            "ContentTypeSettings": {
+              "Stereotype": "MenuItem"
+            }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "LinkMenuItemPart",
               "Name": "LinkMenuItemPart",
               "Settings": {
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
               }
             },
             {
               "PartName": "LinkMenuItem",
               "Name": "LinkMenuItem",
               "Settings": {
-                "Position": "1"
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
               }
             }
           ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "MenuPart"
+        },
+        {
+          "Name": "MenuItemPart"
+        },
+        {
+          "Name": "LinkMenuItemPart",
+          "Settings": {
+            "ContentPartSettings": {
+              "Attachable": true,
+              "Description": "Provides a menu link behavior for your content item."
+            }
+          }
         }
       ]
     }

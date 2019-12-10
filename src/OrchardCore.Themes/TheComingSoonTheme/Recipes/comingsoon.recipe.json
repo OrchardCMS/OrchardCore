@@ -3,7 +3,7 @@
   "displayName": "Coming Soon",
   "description": "Coming Soon website.",
   "author": "The Orchard Team",
-  "website": "http://orchardproject.net",
+  "website": "https://orchardproject.net",
   "version": "2.0",
   "issetuprecipe": true,
   "categories": [ "default" ],
@@ -14,7 +14,8 @@
     "comingSoonContentItemId": "[js:uuid()]",
     "workflowTypeId": "[js:uuid()]",
     "workflowActivityId": "[js:uuid()]",
-    "now": "[js: new Date().toISOString()]"
+    "now": "[js: new Date().toISOString()]",
+    "readyDate": "[js: const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];var date = new Date();date.setMonth(date.getMonth() + 1);return '<strong>' + monthNames[date.getMonth()] + ' ' + date.getFullYear()+'</strong>';]"
   },
 
   "steps": [
@@ -49,6 +50,7 @@
         "OrchardCore.Liquid",
         "OrchardCore.Localization",
 
+        "OrchardCore.Media",
         "OrchardCore.Navigation",
 
         "OrchardCore.Recipes",
@@ -218,7 +220,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Html": "<p class=\"mb-5\">We're working hard to finish the development of this site. Our target launch date is\r\n                <strong>January 2019</strong>! Sign up for updates using the form below!</p>"
+                  "Html": "[js: '<p class=\"mb-5\">We&#39;re working hard to finish the development of this site. Our target launch date is ' +  variables('readyDate') + '! Sign up for updates using the form below!</p>']"
                 },
                 "FlowMetadata": {
                   "Alignment": 3,
@@ -257,63 +259,79 @@
           "Name": "ComingSoon",
           "DisplayName": "Coming Soon",
           "Settings": {
-            "Creatable": "True",
-            "Draftable": "True",
-            "Versionable": "True",
-            "Listable": "True",
-            "Securable": "True",
-            "Stereotype": null
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true,
+              "Securable":  true
+            }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "ComingSoon",
               "Name": "ComingSoon",
               "Settings": {
-                "Position": "4"
+                "ContentTypePartSettings": {
+                  "Position": "4"
+                }
               }
             },
             {
               "PartName": "AutoroutePart",
               "Name": "AutoroutePart",
               "Settings": {
-                "Position": "1",
-                "Pattern": null,
-                "AllowCustomPath": "False",
-                "ShowHomepageOption": "True"
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": false,
+                  "Pattern": null,
+                  "ShowHomepageOption": true
+                }
               }
             },
             {
               "PartName": "TitlePart",
               "Name": "TitlePart",
               "Settings": {
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
               }
             },
             {
               "PartName": "BagPart",
               "Name": "SocialIcons",
               "Settings": {
-                "DisplayName": "Social Icons",
-                "Description": "The list of social icons to display in the Coming Soon page",
-                "Position": "5",
-                "ContainedContentTypes": [
-                  "SocialIcon"
-                ],
-                "DisplayType": null
+                "ContentTypePartSettings": {
+                  "DisplayName": "Social Icons",
+                  "Description": "The list of social icons to display in the Coming Soon page",
+                  "Position": "5"
+                },
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "SocialIcon"
+                  ]
+                }
               }
             },
             {
               "PartName": "FlowPart",
               "Name": "FlowPart",
               "Settings": {
-                "Position": "3"
+                "ContentTypePartSettings": {
+                  "Position": "3"
+                }
               }
             },
             {
               "PartName": "FormPart",
               "Name": "FormPart",
               "Settings": {
-                "Position": "2"
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                }
               }
             }
           ]
@@ -322,26 +340,26 @@
           "Name": "SocialIcon",
           "DisplayName": "Social Icon",
           "Settings": {
-            "Creatable": "False",
-            "Draftable": "False",
-            "Versionable": "False",
-            "Listable": "False",
-            "Securable": "False",
-            "Stereotype": null
+            "ContentTypeSettings": {
+            }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "SocialIcon",
               "Name": "SocialIcon",
               "Settings": {
-                "Position": "1"
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
               }
             },
             {
               "PartName": "TitlePart",
               "Name": "TitlePart",
               "Settings": {
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
               }
             }
           ]
@@ -350,30 +368,28 @@
           "Name": "Register",
           "DisplayName": "Register",
           "Settings": {
-            "Creatable": "False",
-            "Draftable": "False",
-            "Versionable": "False",
-            "Listable": "False",
-            "Securable": "False",
-            "Stereotype": "Widget"
+            "ContentTypeSettings": {
+              "Stereotype": "Widget"
+            }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Register",
               "Name": "Register",
               "Settings": {
-                "Position": "1"
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
               }
             },
             {
               "PartName": "HtmlBodyPart",
               "Name": "HtmlBodyPart",
               "Settings": {
-                "DisplayName": null,
-                "Description": null,
-                "Editor": "Wysiwyg",
-                "HtmlBodyPartSettings": {},
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0",
+                  "Editor": "Wysiwyg"
+                }
               }
             }
           ]
@@ -388,21 +404,28 @@
               "FieldName": "TextField",
               "Name": "IconClass",
               "Settings": {
-                "DisplayName": "Icon Class",
-                "Editor": "IconPicker",
-                "Hint": "Select which icon to use for this social site.",
-                "Position": "0"
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Icon Class",
+                  "Editor": "IconPicker",
+                  "Position": "0"
+                },
+                "TextFieldSettings": {
+                  "Hint": "Select which icon to use for this social site."
+                }
               }
             },
             {
               "FieldName": "TextField",
               "Name": "Url",
               "Settings": {
-                "DisplayName": "Social Site Url",
-                "Editor": null,
-                "Hint": "The url where the icon will link to.",
-                "Required": true,
-                "Position": "1"
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Social Site Url",
+                  "Position": "1"
+                },
+                "TextFieldSettings": {
+                  "Hint": "The url where the icon will link to.",
+                  "Required": true
+                }
               }
             }
           ]
@@ -415,30 +438,39 @@
               "FieldName": "TextField",
               "Name": "Placeholder",
               "Settings": {
-                "DisplayName": "Placeholder",
-                "Editor": null,
-                "Hint": "The text to display in the input field",
-                "Position": "0"
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Placeholder",
+                  "Position": "0"
+                },
+                "TextFieldSettings": {
+                  "Hint": "The text to display in the input field"
+                }
               }
             },
             {
               "FieldName": "TextField",
               "Name": "Button",
               "Settings": {
-                "DisplayName": "Button",
-                "Editor": null,
-                "Hint": "Text to display on submit button",
-                "Position": "2"
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Button",
+                  "Position": "2"
+                },
+                "TextFieldSettings": {
+                  "Hint": "Text to display on submit button"
+                }
               }
             },
             {
               "FieldName": "TextField",
               "Name": "InputFieldName",
               "Settings": {
-                "DisplayName": "InputFieldName",
-                "Editor": null,
-                "Hint": "The name of the input field",
-                "Position": "1"
+                "ContentPartFieldSettings": {
+                  "DisplayName": "InputFieldName",
+                  "Position": "1"
+                },
+                "TextFieldSettings": {
+                  "Hint": "The name of the input field"
+                }
               }
             }
           ]
@@ -573,8 +605,12 @@
                 },
                 "SendConfirmationEmail": true,
                 "ConfirmationEmailTemplate": {
-                  "Expression": "Thank you for your interest! Please <a href=\"{{ Workflow.Properties.EmailConfirmationUrl }}\">click here</a> to confirm your email."
+                  "Expression": "Thank you for your interest! Please <a href=\"{{ Workflow.Properties.EmailConfirmationUrl | raw }}\">click here</a> to confirm your email."
+                },
+                "ConfirmationEmailSubject": {
+                  "Expression": "Welcome to {{Site.SiteName}}"
                 }
+
               }
             },
             {

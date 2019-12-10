@@ -10,12 +10,16 @@ namespace OrchardCore.ResourceManagement.TagHelpers
     {
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
+        private const string AppendVersionAttributeName = "asp-append-version";
 
         [HtmlAttributeName(NameAttributeName)]
         public string Name { get; set; }
 
         [HtmlAttributeName(SrcAttributeName)]
-        public string Source { get; set; }
+        public string Src { get; set; }
+
+        [HtmlAttributeName(AppendVersionAttributeName)]
+        public bool? AppendVersion { get; set; }
 
         public string CdnSrc { get; set; }
         public string DebugSrc { get; set; }
@@ -25,7 +29,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public string Condition { get; set; }
         public string Culture { get; set; }
         public bool? Debug { get; set; }
-        public string Dependencies { get; set; }
+        public string DependsOn { get; set; }
         public string Version { get; set; }
 
         public ResourceLocation At { get; set; }
@@ -39,10 +43,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Source))
+            if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
                 // Include custom script
-                var setting = _resourceManager.Include("stylesheet", Source, DebugSrc);
+                var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -58,6 +62,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCondition(Condition);
                 }
 
+                if (AppendVersion.HasValue == true)
+                {
+                    setting.ShouldAppendVersion(AppendVersion);
+                }
+
                 if (Debug != null)
                 {
                     setting.UseDebugMode(Debug.Value);
@@ -68,7 +77,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCulture(Culture);
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Source))
+            else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
                 // Resource required
 
@@ -103,17 +112,28 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCulture(Culture);
                 }
 
+                if (AppendVersion.HasValue == true)
+                {
+                    setting.ShouldAppendVersion(AppendVersion);
+                }
+
                 if (!String.IsNullOrEmpty(Version))
                 {
                     setting.UseVersion(Version);
                 }
+
+                // This allows additions to the pre registered scripts dependencies.
+                if (!String.IsNullOrEmpty(DependsOn))
+                {
+                    setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                }
             }
-            else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Source))
+            else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
                 // Inline declaration
 
                 var definition = _resourceManager.InlineManifest.DefineStyle(Name);
-                definition.SetUrl(Source, DebugSrc);
+                definition.SetUrl(Src, DebugSrc);
 
                 if (!String.IsNullOrEmpty(Version))
                 {
@@ -127,12 +147,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (!String.IsNullOrEmpty(Culture))
                 {
-                    definition.SetCultures(Culture.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetCultures(Culture.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                if (!String.IsNullOrEmpty(Dependencies))
+                if (!String.IsNullOrEmpty(DependsOn))
                 {
-                    definition.SetDependencies(Dependencies.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 // Also include the style

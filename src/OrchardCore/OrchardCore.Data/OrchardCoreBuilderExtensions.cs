@@ -2,14 +2,12 @@ using System;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
-using OrchardCore.Data.Abstractions;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Indexes;
@@ -22,11 +20,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
     {
-        public static IApplicationBuilder UseDataAccess(this IApplicationBuilder app)
-        {
-            return app.UseMiddleware<CommitSessionMiddleware>();
-        }
-
         /// <summary>
         /// Adds tenant level data access services.
         /// </summary>
@@ -38,10 +31,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
                 // Adding supported databases
-                services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true, hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
                 services.TryAddDataProvider(name: "Sqlite", value: "Sqlite", hasConnectionString: false, hasTablePrefix: false, isDefault: true);
-                services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true, hasTablePrefix: true, isDefault: false);
-                services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true, hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
                 // Configuring data access
 
@@ -49,17 +42,20 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var shellSettings = sp.GetService<ShellSettings>();
 
-                    if (shellSettings.DatabaseProvider == null)
+                    // Before the setup a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
+                    if (shellSettings.State == TenantState.Uninitialized || shellSettings["DatabaseProvider"] == null)
                     {
                         return null;
                     }
 
-                    var storeConfiguration = new YesSql.Configuration();
+                    IConfiguration storeConfiguration = new YesSql.Configuration();
 
-                    switch (shellSettings.DatabaseProvider)
+                    switch (shellSettings["DatabaseProvider"])
                     {
                         case "SqlConnection":
-                            storeConfiguration.UseSqlServer(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseBlockIdGenerator();
                             break;
                         case "Sqlite":
                             var shellOptions = sp.GetService<IOptions<ShellOptions>>();
@@ -67,24 +63,30 @@ namespace Microsoft.Extensions.DependencyInjection
                             var databaseFolder = Path.Combine(option.ShellsApplicationDataPath, option.ShellsContainerName, shellSettings.Name);
                             var databaseFile = Path.Combine(databaseFolder, "yessql.db");
                             Directory.CreateDirectory(databaseFolder);
-                            storeConfiguration.UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted)
+                                .UseDefaultIdGenerator();
                             break;
                         case "MySql":
-                            storeConfiguration.UseMySql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseBlockIdGenerator();
                             break;
                         case "Postgres":
-                            storeConfiguration.UsePostgreSql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseBlockIdGenerator();
                             break;
                         default:
-                            throw new ArgumentException("Unknown database provider: " + shellSettings.DatabaseProvider);
+                            throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(shellSettings.TablePrefix))
+                    if (!string.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
                     {
-                        storeConfiguration.TablePrefix = shellSettings.TablePrefix + "_";
+                        storeConfiguration = storeConfiguration.SetTablePrefix(shellSettings["TablePrefix"] + "_");
                     }
 
-                    var store = new Store(storeConfiguration);
+                    var store = StoreFactory.CreateAsync(storeConfiguration).GetAwaiter().GetResult();
                     var indexes = sp.GetServices<IIndexProvider>();
 
                     store.RegisterIndexes(indexes);
@@ -107,60 +109,20 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     session.RegisterIndexes(scopedServices.ToArray());
 
-                    var httpContext = sp.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
-
-                    if (httpContext != null)
+                    ShellScope.RegisterBeforeDispose(scope =>
                     {
-                        httpContext.Items[typeof(YesSql.ISession)] = session;
-                    }
+                        return session.CommitAsync();
+                    });
 
                     return session;
                 });
 
-                services.AddScoped<IDbConnectionAccessor>(sp =>
-                {
-                    var store = sp.GetService<IStore>();
+                services.AddScoped<ISessionHelper, SessionHelper>();
 
-                    if (store == null)
-                    {
-                        return null;
-                    }
-
-                    return new DbConnectionAccessor(store);                   
-                });
+                services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });
 
             return builder;
-        }
-    }
-
-    public class CommitSessionMiddleware
-    {
-        private readonly RequestDelegate _next;
-
-        public CommitSessionMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
-
-        public async Task Invoke(HttpContext httpContext)
-        {
-            await _next.Invoke(httpContext);
-
-            // Don't resolve to prevent instantiating one in case of static sites
-            var session = httpContext.Items[typeof(YesSql.ISession)] as YesSql.ISession;
-
-            if (session != null)
-            {
-                try
-                {
-                    await session.CommitAsync();
-                }
-                catch (ObjectDisposedException)
-                {
-                    // The session might already be disposed by the ServiceScope
-                }
-            }
         }
     }
 }

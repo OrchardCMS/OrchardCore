@@ -1,7 +1,7 @@
 using GraphQL.Types;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Queries;
-using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Models;
 
 namespace OrchardCore.Autoroute.GraphQL
 {

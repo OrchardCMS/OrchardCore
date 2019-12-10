@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -26,7 +26,7 @@ namespace OrchardCore.Lists.Services
         public async Task FilterAsync(IQuery<ContentItem> query, ListContentsViewModel model, PagerParameters pagerParameters, IUpdateModel updateModel)
         {
             var viewModel = new ListPartContentAdminFilterModel();
-            if(await updateModel.TryUpdateModelAsync(viewModel, ""))
+            if (await updateModel.TryUpdateModelAsync(viewModel, ""))
             {
                 // Show list content items 
                 if (viewModel.ShowListContentTypes)
@@ -42,7 +42,7 @@ namespace OrchardCore.Lists.Services
                 }
 
                 // Show contained elements for the specified list
-                else if(viewModel.ListContentItemId != null)
+                else if (viewModel.ListContentItemId != null)
                 {
                     query.With<ContainedPartIndex>(x => x.ListContentItemId == viewModel.ListContentItemId);
                 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Settings;
@@ -40,19 +40,19 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var mockSmtpService = Mock.Of<ISmtpService>();
 
             var controller = new RegistrationController(
-                Mock.Of<IUserService>(), 
+                Mock.Of<IUserService>(),
                 mockUserManager,
                 MockSignInManager(mockUserManager).Object,
                 Mock.Of<IAuthorizationService>(),
                 mockSiteService,
                 Mock.Of<INotifier>(),
-                mockSmtpService, 
-                Mock.Of<IShapeFactory>(),
-                Mock.Of<IHtmlDisplay>(),
+                mockSmtpService,
+                Mock.Of<IDisplayHelper>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 Mock.Of<IStringLocalizer<RegistrationController>>(),
-                Mock.Of<IEnumerable<IRegistrationFormEvents>>());
+                Mock.Of<IEnumerable<IRegistrationFormEvents>>(),
+                Mock.Of<HtmlEncoder>());
 
             var result = await controller.Register();
             Assert.IsType<NotFoundResult>(result);
@@ -82,12 +82,12 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 mockSiteService,
                 Mock.Of<INotifier>(),
                 mockSmtpService,
-                Mock.Of<IShapeFactory>(),
-                Mock.Of<IHtmlDisplay>(),
+                Mock.Of<IDisplayHelper>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 Mock.Of<IStringLocalizer<RegistrationController>>(),
-                Enumerable.Empty<IRegistrationFormEvents>());
+                Enumerable.Empty<IRegistrationFormEvents>(),
+                Mock.Of<HtmlEncoder>());
 
             var result = await controller.Register();
             Assert.IsType<ViewResult>(result);
@@ -105,6 +105,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 manager,
                 new HttpContextAccessor { HttpContext = context.Object },
                 Mock.Of<IUserClaimsPrincipalFactory<TUser>>(),
+                null,
                 null,
                 null,
                 null)

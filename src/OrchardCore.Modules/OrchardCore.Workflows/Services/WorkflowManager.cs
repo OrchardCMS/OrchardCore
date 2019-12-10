@@ -122,7 +122,7 @@ namespace OrchardCore.Workflows.Services
             var workflowTypesToStart = await _workflowTypeStore.GetByStartActivityAsync(name);
 
             // And any workflow halted on this kind of activity for the specified target.
-            var haltedWorkflows = await _workflowStore.ListAsync(name, correlationId);
+            var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId);
 
             // If no workflow matches the event, do nothing.
             if (!workflowTypesToStart.Any() && !haltedWorkflows.Any())
@@ -300,7 +300,7 @@ namespace OrchardCore.Workflows.Services
                     break;
                 }
 
-                IList<string> outcomes = new List<string>(0);
+                var outcomes = Enumerable.Empty<string>();
 
                 try
                 {
@@ -434,14 +434,14 @@ namespace OrchardCore.Workflows.Services
         private async Task<object> SerializeAsync(object value)
         {
             var context = new SerializeWorkflowValueContext(value);
-            await _workflowValueSerializers.Resolve().InvokeAsync(x => x.SerializeValueAsync(context), _logger);
+            await _workflowValueSerializers.Resolve().InvokeAsync((s, context) => s.SerializeValueAsync(context), context, _logger);
             return context.Output;
         }
 
         private async Task<object> DeserializeAsync(object value)
         {
             var context = new SerializeWorkflowValueContext(value);
-            await _workflowValueSerializers.Resolve().InvokeAsync(x => x.DeserializeValueAsync(context), _logger);
+            await _workflowValueSerializers.Resolve().InvokeAsync((s, context) => s.DeserializeValueAsync(context), context, _logger);
             return context.Output;
         }
     }

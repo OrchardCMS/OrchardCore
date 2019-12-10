@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration.Records;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Modules;
 using YesSql;
 using YesSql.Sql;
 
@@ -21,8 +21,8 @@ namespace OrchardCore.Data.Migration
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
-
         private readonly List<string> _processedFeatures;
+
         private DataMigrationRecord _dataMigrationRecord;
 
         public DataMigrationManager(
@@ -31,8 +31,7 @@ namespace OrchardCore.Data.Migration
             ISession session,
             IStore store,
             IExtensionManager extensionManager,
-            ILogger<DataMigrationManager> logger,
-            IStringLocalizer<DataMigrationManager> localizer)
+            ILogger<DataMigrationManager> logger)
         {
             _typeFeatureProvider = typeFeatureProvider;
             _dataMigrations = dataMigrations;
@@ -40,13 +39,8 @@ namespace OrchardCore.Data.Migration
             _store = store;
             _extensionManager = extensionManager;
             _logger = logger;
-
             _processedFeatures = new List<string>();
-
-            T = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public async Task<DataMigrationRecord> GetDataMigrationRecordAsync()
         {
@@ -148,7 +142,7 @@ namespace OrchardCore.Data.Migration
 
             // proceed with dependent features first, whatever the module it's in
             var dependencies = _extensionManager
-                .GetDependentFeatures(
+                .GetFeatureDependencies(
                     featureId)
                 .Where(x => x.Id != featureId)
                 .Select(x => x.Id);
@@ -160,7 +154,7 @@ namespace OrchardCore.Data.Migration
             // apply update methods to each migration class for the module
             foreach (var migration in migrations)
             {
-                var schemaBuilder = new SchemaBuilder(_session);
+                var schemaBuilder = new SchemaBuilder(_store.Configuration, await _session.DemandAsync());
                 migration.SchemaBuilder = schemaBuilder;
 
                 // copy the object for the Linq query
@@ -282,9 +276,9 @@ namespace OrchardCore.Data.Migration
             const string updateFromPrefix = "UpdateFrom";
             const string asyncSuffix = "Async";
 
-            if (methodInfo.Name.StartsWith(updateFromPrefix) && (methodInfo.ReturnType == typeof (int) || methodInfo.ReturnType == typeof (Task<int>)))
+            if (methodInfo.Name.StartsWith(updateFromPrefix, StringComparison.Ordinal) && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
             {
-                var version = methodInfo.Name.EndsWith(asyncSuffix)
+                var version = methodInfo.Name.EndsWith(asyncSuffix, StringComparison.Ordinal)
                     ? methodInfo.Name.Substring(updateFromPrefix.Length, methodInfo.Name.Length - updateFromPrefix.Length - asyncSuffix.Length)
                     : methodInfo.Name.Substring(updateFromPrefix.Length);
 

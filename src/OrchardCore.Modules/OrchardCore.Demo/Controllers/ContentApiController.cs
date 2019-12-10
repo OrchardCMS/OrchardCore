@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Demo.Controllers
 {
+    [Route("api/demo")]
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     [ApiController]
     public class ContentApiController : Controller

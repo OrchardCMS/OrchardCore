@@ -7,12 +7,12 @@ namespace OrchardCore.Workflows
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -21,7 +21,7 @@ namespace OrchardCore.Workflows
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Workflows"], "5", workflow => workflow
+            builder.Add(S["Workflows"], NavigationConstants.AdminMenuWorkflowsPosition, workflow => workflow
                 .AddClass("workflows").Id("workflows").Action("Index", "WorkflowType", new { area = "OrchardCore.Workflows" })
                     .Permission(Permissions.ManageWorkflows)
                     .LocalNav());

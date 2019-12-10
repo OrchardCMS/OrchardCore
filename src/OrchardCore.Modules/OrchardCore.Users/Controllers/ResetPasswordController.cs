@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -22,7 +21,6 @@ using OrchardCore.Users.ViewModels;
 namespace OrchardCore.Users.Controllers
 {
     [Feature("OrchardCore.Users.ResetPassword")]
-    [Admin]
     public class ResetPasswordController : BaseEmailController
     {
         private readonly IUserService _userService;
@@ -36,11 +34,11 @@ namespace OrchardCore.Users.Controllers
             UserManager<IUser> userManager,
             ISiteService siteService,
             ISmtpService smtpService,
-            IShapeFactory shapeFactory,
-            IHtmlDisplay displayManager,
+            IDisplayHelper displayHelper,
             IStringLocalizer<ResetPasswordController> stringLocalizer,
             ILogger<ResetPasswordController> logger,
-            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents) : base(smtpService, shapeFactory, displayManager)
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
+            HtmlEncoder htmlEncoder) : base(smtpService, displayHelper, htmlEncoder)
         {
             _userService = userService;
             _userManager = userManager;
@@ -74,12 +72,15 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            await _passwordRecoveryFormEvents.InvokeAsync(i => i.RecoveringPasswordAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+            await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.RecoveringPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
             if (ModelState.IsValid)
             {
                 var user = await _userService.GetForgotPasswordUserAsync(model.UserIdentifier) as User;
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                if (user == null || (
+                        (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail
+                        && !await _userManager.IsEmailConfirmedAsync(user))
+                    )
                 {
                     // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
                     return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "ResetPassword"));
@@ -91,7 +92,8 @@ namespace OrchardCore.Users.Controllers
                 await SendEmailAsync(user.Email, T["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
 
                 await _passwordRecoveryFormEvents.InvokeAsync(i => i.PasswordRecoveredAsync(), _logger);
-                
+
+                return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "ResetPassword"));
             }
 
             // If we got this far, something failed, redisplay form
@@ -130,7 +132,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            await _passwordRecoveryFormEvents.InvokeAsync(i => i.ResettingPasswordAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+            await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.ResettingPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
             if (ModelState.IsValid)
             {

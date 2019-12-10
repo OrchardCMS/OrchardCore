@@ -1,126 +1,113 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Environment.Shell
 {
     public class RunningShellTable : IRunningShellTable
     {
-        private readonly Dictionary<string, ShellSettings> _shellsByHostAndPrefix = new Dictionary<string, ShellSettings>(StringComparer.OrdinalIgnoreCase);
-        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
+        private static readonly char[] HostSeparators = new[] { ',', ' ' };
 
+        private ImmutableDictionary<string, ShellSettings> _shellsByHostAndPrefix = ImmutableDictionary<string, ShellSettings>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase);
         private ShellSettings _default;
         private bool _hasStarMapping = false;
 
         public void Add(ShellSettings settings)
         {
-            _lock.EnterWriteLock();
-            try
+            if (ShellHelper.DefaultShellName == settings.Name)
             {
-                if(ShellHelper.DefaultShellName == settings.Name)
-                {
-                    _default = settings;
-                }
-
-                var allHostsAndPrefix = GetAllHostsAndPrefix(settings);
-                foreach (var hostAndPrefix in allHostsAndPrefix)
-                {
-                    _hasStarMapping = _hasStarMapping || hostAndPrefix.StartsWith("*");
-                    _shellsByHostAndPrefix[hostAndPrefix] = settings;
-                }
+                _default = settings;
             }
-            finally
+
+            var allHostsAndPrefix = GetAllHostsAndPrefix(settings);
+
+            var settingsByHostAndPrefix = new Dictionary<string, ShellSettings>();
+
+            foreach (var hostAndPrefix in allHostsAndPrefix)
             {
-                _lock.ExitWriteLock();
+                _hasStarMapping = _hasStarMapping || hostAndPrefix.StartsWith('*');
+                settingsByHostAndPrefix.TryAdd(hostAndPrefix, settings);
+            }
+
+            lock (this)
+            {
+                _shellsByHostAndPrefix = _shellsByHostAndPrefix.SetItems(settingsByHostAndPrefix);
             }
         }
 
         public void Remove(ShellSettings settings)
         {
-            _lock.EnterWriteLock();
-            try
-            {
-                var allHostsAndPrefix = GetAllHostsAndPrefix(settings);
-                foreach (var hostAndPrefix in allHostsAndPrefix)
-                {
-                    _shellsByHostAndPrefix.Remove(hostAndPrefix);
-                }
+            var allHostsAndPrefix = GetAllHostsAndPrefix(settings);
 
-                if (_default == settings)
-                {
-                    _default = null;
-                }
-            }
-            finally
+            lock (this)
             {
-                _lock.ExitWriteLock();
+                _shellsByHostAndPrefix = _shellsByHostAndPrefix.RemoveRange(allHostsAndPrefix);
+            }
+
+            if (_default == settings)
+            {
+                _default = null;
             }
         }
 
-        public ShellSettings Match(string host, string appRelativePath, bool fallbackToDefault = true)
+        public ShellSettings Match(HostString host, PathString path, bool fallbackToDefault = true)
         {
-            _lock.EnterReadLock();
-            try
+            // Supports IPv6 format.
+            var hostOnly = host.Host;
+
+            // Specific match?
+            if (TryMatchInternal(host.Value, hostOnly, path.Value, out var result))
             {
-                // Specific match?
-                if(TryMatchInternal(host, appRelativePath, fallbackToDefault, out ShellSettings result))
-                {
-                    return result;
-                }
-
-                // Search for star mapping
-                // Optimization: only if a mapping with a '*' has been added
-
-                if (_hasStarMapping && TryMatchStarMapping(host, appRelativePath, fallbackToDefault, out result))
-                {
-                    return result;
-                }
-
-                // Check if the Default tenant is a catch-all
-                if (fallbackToDefault && DefaultIsCatchAll())
-                {
-                    return _default;
-                }
-
-                // Search for another catch-all 
-                if (fallbackToDefault && TryMatchInternal("", "/", fallbackToDefault, out result))
-                {
-                    return result;
-                }
-
-                return null;
+                return result;
             }
-            finally
+
+            // Search for star mapping
+            // Optimization: only if a mapping with a '*' has been added
+
+            if (_hasStarMapping && TryMatchStarMapping(host.Value, hostOnly, path.Value, out result))
             {
-                _lock.ExitReadLock();
+                return result;
             }
+
+            // Check if the Default tenant is a catch-all
+            if (fallbackToDefault && DefaultIsCatchAll())
+            {
+                return _default;
+            }
+
+            // Search for another catch-all
+            if (fallbackToDefault && TryMatchInternal("", "", "/", out result))
+            {
+                return result;
+            }
+
+            return null;
         }
 
-        private bool TryMatchInternal(string host, string appRelativePath, bool fallbackToDefault, out ShellSettings result)
+        private bool TryMatchInternal(StringSegment host, StringSegment hostOnly, StringSegment path, out ShellSettings result)
         {
-            // We can skip some checks for port matching if we know the host doesn't contain one
-            var hasPort = host.Contains(':');
-
             // 1. Search for Host:Port + Prefix match
 
-            if (!hasPort || !_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, appRelativePath, true), out result))
+            if (host.Length == 0 || !_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, path), out result))
             {
                 // 2. Search for Host + Prefix match
 
-                if (!_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, appRelativePath, false), out result))
+                if (host.Length == hostOnly.Length || !_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(hostOnly, path), out result))
                 {
                     // 3. Search for Host:Port only match
 
-                    if (!hasPort || !_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, "/", true), out result))
+                    if (host.Length == 0 || !_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, "/"), out result))
                     {
                         // 4. Search for Host only match
 
-                        if (!_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, "/", false), out result))
+                        if (host.Length == hostOnly.Length || !_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(hostOnly, "/"), out result))
                         {
                             // 5. Search for Prefix only match
 
-                            if (!_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix("", appRelativePath, false), out result))
+                            if (!_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix("", path), out result))
                             {
                                 result = null;
                                 return false;
@@ -133,9 +120,9 @@ namespace OrchardCore.Environment.Shell
             return true;
         }
 
-        private bool TryMatchStarMapping(string host, string appRelativePath, bool fallbackToDefault, out ShellSettings result)
+        private bool TryMatchStarMapping(StringSegment host, StringSegment hostOnly, StringSegment path, out ShellSettings result)
         {
-            if (TryMatchInternal("*." + host, appRelativePath, fallbackToDefault, out result))
+            if (TryMatchInternal("*." + host, "*." + hostOnly, path, out result))
             {
                 return true;
             }
@@ -145,7 +132,7 @@ namespace OrchardCore.Environment.Shell
             // Take the longest subdomain and look for a mapping
             while (-1 != (index = host.IndexOf('.', index + 1)))
             {
-                if(TryMatchInternal("*" + host.Substring(index), appRelativePath, fallbackToDefault, out result))
+                if (TryMatchInternal("*" + host.Subsegment(index), "*" + hostOnly.Subsegment(index), path, out result))
                 {
                     return true;
                 }
@@ -155,29 +142,18 @@ namespace OrchardCore.Environment.Shell
             return false;
         }
 
-        private string GetHostAndPrefix(string host, string appRelativePath, bool includePort)
+        private string GetHostAndPrefix(StringSegment host, StringSegment path)
         {
-            if (!includePort)
-            {
-                // removing the port from the host
-                var hostLength = host.IndexOf(':');
-                if (hostLength != -1)
-                {
-                    host = host.Substring(0, hostLength);
-                }
-            }
-
-            // appRelativePath starts with /
-            var firstSegmentIndex = appRelativePath.Length > 0 ? appRelativePath.IndexOf('/', 1) : -1;
+            // The request path starts with a leading '/'
+            var firstSegmentIndex = path.Length > 0 ? path.IndexOf('/', 1) : -1;
             if (firstSegmentIndex > -1)
             {
-                return host + appRelativePath.Substring(0, firstSegmentIndex);
+                return host + path.Subsegment(0, firstSegmentIndex).Value;
             }
             else
             {
-                return host + appRelativePath;
+                return host + path.Value;
             }
-
         }
 
         private string[] GetAllHostsAndPrefix(ShellSettings shellSettings)
@@ -191,8 +167,8 @@ namespace OrchardCore.Environment.Shell
 
             return shellSettings
                 .RequestUrlHost
-                .Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(ruh => ruh + "/" + shellSettings.RequestUrlPrefix ?? "")
+                .Split(HostSeparators, StringSplitOptions.RemoveEmptyEntries)
+                .Select(ruh => ruh + "/" + shellSettings.RequestUrlPrefix)
                 .ToArray();
         }
 

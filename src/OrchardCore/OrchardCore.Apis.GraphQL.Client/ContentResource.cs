@@ -28,7 +28,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception(await response.Content.ReadAsStringAsync());
+                throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
             }
 
             return JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -44,7 +44,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception(await response.Content.ReadAsStringAsync());
+                throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
             }
 
             return JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -60,7 +60,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception(await response.Content.ReadAsStringAsync());
+                throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
             }
 
             return JObject.Parse(await response.Content.ReadAsStringAsync());

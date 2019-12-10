@@ -13,7 +13,7 @@
 
 {% if Model.ContentItem.Content.Services.ContentItems.size > 0 %}
 <!-- Services -->
-<section id="services">
+<section class="page-section" id="services">
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center">
@@ -39,7 +39,7 @@
 
 {% if Model.ContentItem.Content.Portfolio.ContentItems.size > 0 %}
 <!-- Portfolio Grid -->
-<section class="bg-light" id="portfolio">
+<section class="page-section bg-light" id="portfolio">
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center">
@@ -56,7 +56,7 @@
                             <i class="fas fa-plus fa-3x"></i>
                         </div>
                     </div>
-                    <img class="img-fluid" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: width:400, height: 300, mode: 'stretch' }}" alt="{{ project.DisplayText }}">
+                    <img class="img-fluid" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: width:480, height: 480, mode: 'stretch' }}" alt="{{ project.DisplayText }}">
                 </div>
                 <div class="portfolio-caption">
                     <h4>{{ project.DisplayText }}</h4>
@@ -71,7 +71,7 @@
 
 {% if Model.ContentItem.Content.About.ContentItems.size > 0 %}
 <!-- About -->
-<section id="about">
+<section class="page-section" id="about">
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center">
@@ -116,7 +116,7 @@
 
 {% if Model.ContentItem.Content.Team.ContentItems.size > 0 %}
 <!-- Team -->
-<section class="bg-light" id="team">
+<section class="page-section bg-light" id="team">
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center">
@@ -169,7 +169,7 @@
 
 {% if Model.ContentItem.Content.Clients.ContentItems.size > 0 %}
 <!-- Clients -->
-<section class="py-5">
+<section class="page-section py-5">
     <div class="container">
         <div class="row">
             {% for client in Model.ContentItem.Content.Clients.ContentItems %}
@@ -185,7 +185,7 @@
 {% endif %}
 
 <!-- Contact -->
-<section id="contact">
+<section class="page-section" id="contact">
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center">
@@ -246,7 +246,7 @@
                             <!-- Project Details Go Here -->
                             <h2 class="text-uppercase">{{ project.DisplayText }}</h2>
                             <p class="item-intro text-muted">{{ project.Project.Category.Text }}</p>
-                            <img class="img-fluid d-block mx-auto" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: width:400, height: 300, mode: 'stretch' }}" alt="{{ project.DisplayText }}">
+                            <img class="img-fluid d-block mx-auto" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: width:480, height: 480, mode: 'max' }}" alt="{{ project.DisplayText }}">
                             <p>{{ project.HtmlBodyPart.Html | raw }}</p>
                             {% comment %}
                             <ul class="list-inline">

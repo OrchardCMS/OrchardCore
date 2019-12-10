@@ -13,12 +13,12 @@ namespace OrchardCore.ContentFields.Fields
 {
     public class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField>
     {
+        private readonly IStringLocalizer S;
+
         public LinkFieldDisplayDriver(IStringLocalizer<LinkFieldDisplayDriver> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Display(LinkField field, BuildFieldDisplayContext context)
         {
@@ -36,7 +36,7 @@ namespace OrchardCore.ContentFields.Fields
         {
             return Initialize<EditLinkFieldViewModel>(GetEditorShapeType(context), model =>
             {
-                var settings = context.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
                 model.Url = context.IsNew ? settings.DefaultUrl : field.Url;
                 model.Text = context.IsNew ? settings.DefaultText : field.Text;
                 model.Field = field;
@@ -51,23 +51,23 @@ namespace OrchardCore.ContentFields.Fields
 
             if (modelUpdated)
             {                
-                var settings = context.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
 
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Url))
                 {
-                    updater.ModelState.AddModelError(Prefix, T["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else if (!string.IsNullOrWhiteSpace(field.Url) && !Uri.IsWellFormedUriString(field.Url, UriKind.RelativeOrAbsolute))
                 {
-                    updater.ModelState.AddModelError(Prefix, T["{0} is an invalid url.", field.Url]);
+                    updater.ModelState.AddModelError(Prefix, S["{0} is an invalid url.", field.Url]);
                 }
                 else if (settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(field.Text))
                 {
-                    updater.ModelState.AddModelError(Prefix, T["The link text is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, S["The link text is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else if (settings.LinkTextMode == LinkTextMode.Static && string.IsNullOrWhiteSpace(settings.DefaultText))
                 {
-                    updater.ModelState.AddModelError(Prefix, T["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, S["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
             }
 

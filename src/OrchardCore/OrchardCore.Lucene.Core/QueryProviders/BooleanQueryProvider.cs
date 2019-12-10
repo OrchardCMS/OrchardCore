@@ -55,11 +55,7 @@ namespace OrchardCore.Lucene.QueryProviders
                 switch (property.Value.Type)
                 {
                     case JTokenType.Object:
-                        var obj = (JObject) property.Value;
-                        if (obj["match_all"] != null)
-                        {
-                            boolQuery.Add(new MatchAllDocsQuery(), occur);
-                        }
+                        boolQuery.Add(builder.CreateQueryFragment(context, (JObject)property.Value), occur);
                         break;
                     case JTokenType.Array:
                         foreach (var item in ((JArray)property.Value))

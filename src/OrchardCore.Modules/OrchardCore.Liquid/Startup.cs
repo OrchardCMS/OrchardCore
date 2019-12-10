@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Views;
@@ -13,7 +14,7 @@ using OrchardCore.Liquid.Drivers;
 using OrchardCore.Liquid.Filters;
 using OrchardCore.Liquid.Handlers;
 using OrchardCore.Liquid.Indexing;
-using OrchardCore.Liquid.Model;
+using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
 using OrchardCore.Modules;
 
@@ -26,14 +27,19 @@ namespace OrchardCore.Liquid
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentItem>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentElement>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentTypePartDefinition>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartFieldDefinition>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentFieldDefinition>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartDefinition>();
+            
 
             // When accessing a property of a JObject instance
             TemplateContext.GlobalMemberAccessStrategy.Register<JObject, object>((obj, name) => obj[name]);
 
             // Prevent JTokens from being converted to an ArrayValue as they implement IEnumerable
-            FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
-            FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
-            FluidValue.TypeMappings.Add(typeof(System.DateTime), o => new ObjectValue(o));
+            FluidValue.SetTypeMapping<JObject>(o => new ObjectValue(o));
+            FluidValue.SetTypeMapping<JValue>(o => FluidValue.Create(((JValue)o).Value));
+            FluidValue.SetTypeMapping<System.DateTime>(o => new ObjectValue(o));
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -48,6 +54,8 @@ namespace OrchardCore.Liquid
             services.AddLiquidFilter<DisplayUrlFilter>("display_url");
             services.AddLiquidFilter<ContentUrlFilter>("href");
             services.AddLiquidFilter<AbsoluteUrlFilter>("absolute_url");
+            services.AddLiquidFilter<LiquidFilter>("liquid");
+            services.AddLiquidFilter<JsonFilter>("json");
         }
     }
 
@@ -59,7 +67,7 @@ namespace OrchardCore.Liquid
             // Liquid Part
             services.AddScoped<IContentPartDisplayDriver, LiquidPartDisplay>();
             services.AddScoped<IShapeTableProvider, LiquidShapes>();
-            services.AddSingleton<ContentPart, LiquidPart>();
+            services.AddContentPart<LiquidPart>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
             services.AddScoped<IContentPartHandler, LiquidPartHandler>();

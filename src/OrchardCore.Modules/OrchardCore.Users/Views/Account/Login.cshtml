@@ -7,8 +7,8 @@
 @inject SignInManager<IUser> _signInManager
 @inject ISiteService _site
 
-@{ 
-    ThemeLayout.Metadata.Alternates.Add("Layout__Login");
+@{
+    ViewLayout = "Layout__Login";
 
     var userCanRegister = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister;
     var allowResetPassword = (await _site.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
@@ -27,22 +27,23 @@
                 <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Password" class="">@T["Password"]
+                <label asp-for="Password" class="">
+                    @T["Password"]
                     @if (allowResetPassword)
                     {
                         <a asp-controller="ResetPassword" asp-action="ForgotPassword" class="label-link">@T["Forgot your password?"]</a>
                     }
                 </label>
-                
-                <input asp-for="Password" class="form-control"  tabindex="2" />
+
+                <input asp-for="Password" class="form-control" tabindex="2" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <input asp-for="RememberMe" class="form-check-input" tabindex="3" />
-                <label asp-for="RememberMe" class="form-check-label">@T["Remember me"]</label>
+            <div class="form-group custom-control custom-checkbox">
+                <input asp-for="RememberMe" class="custom-control-input" tabindex="3">
+                <label asp-for="RememberMe" class="custom-control-label">@T["Remember me"]</label>
             </div>
             @await RenderSectionAsync("AfterLogin", required: false)
-            <div ></div>
+            <div></div>
             <button type="submit" class="btn btn-primary" tabindex="4">@T["Log in"]</button>
             @if (userCanRegister)
             {
@@ -57,14 +58,14 @@
     {
         <div class="col-md-6">
             <section>
-                <h4>Use another service to log in.</h4>
+                <h4>@T["Use another service to log in."]</h4>
                 <hr />
                 <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
                     <div>
                         <p>
                             @foreach (var provider in loginProviders)
                             {
-                                <button type="submit" class="btn btn-default" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
                             }
                         </p>
                     </div>

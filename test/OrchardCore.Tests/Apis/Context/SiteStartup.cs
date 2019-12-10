@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
@@ -22,8 +22,10 @@ namespace OrchardCore.Tests.Apis.Context
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOrchardCms(builder =>
-                builder.AddGlobalFeatures(
-                    "OrchardCore.Tenants",
+                builder.AddSetupFeatures(
+                    "OrchardCore.Tenants"
+                )
+                .AddTenantFeatures(
                     "OrchardCore.Apis.GraphQL"
                 )
                 .ConfigureServices(collection =>
@@ -33,12 +35,13 @@ namespace OrchardCore.Tests.Apis.Context
                     {
                         options.AddScheme<AlwaysLoggedInApiAuthenticationHandler>("Api", null);
                     });
-                }));
+                })
+                .Configure(appBuilder => appBuilder.UseAuthorization()));
 
             services.AddSingleton<IModuleNamesProvider, ModuleNamesProvider>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseOrchardCore();
         }

@@ -1,0 +1,31 @@
+#media-pager {   
+    
+    .page-number {
+        // set all numeric page links the same width (9 -> 10) to keep the "next" button in the same position.
+        min-width: 34px;
+        text-align: center;
+    }
+
+    .page-size-info, .page-info, .total-info {
+        white-space: nowrap;
+        user-select: none;
+
+        span:hover {
+            background-color: inherit;
+        }
+    }
+}
+
+@media only screen and ( max-width: 576px ) {
+    #media-pager {
+        .media-last-button, .media-first-button, .total-info, .page-size-label  {
+            display: none;
+        }
+    }
+}
+
+@media only screen and ( max-width: 1200px ) {
+    #media-pager .page-number {
+        display: none;
+    }
+}

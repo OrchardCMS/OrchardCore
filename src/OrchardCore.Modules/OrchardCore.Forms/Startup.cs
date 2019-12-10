@@ -1,4 +1,5 @@
 using Fluid;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -25,10 +26,11 @@ namespace OrchardCore.Forms
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(config =>
+            services.Configure<MvcOptions>(options =>
             {
-                config.Filters.Add<ExportModelStateAttribute>();
-                config.Filters.Add<ImportModelStateAttribute>();
+                options.Filters.Add<ExportModelStateAttribute>();
+                options.Filters.Add<ImportModelStateAttribute>();
+                options.Filters.Add<ImportModelStatePageFilter>();
             });
 
             services.AddScoped<IContentPartDisplayDriver, FormPartDisplay>();
@@ -41,15 +43,17 @@ namespace OrchardCore.Forms
             services.AddScoped<IContentPartDisplayDriver, ValidationSummaryPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, ValidationPartDisplay>();
 
-            services.AddSingleton<ContentPart, FormPart>();
-            services.AddSingleton<ContentPart, FormElementPart>();
-            services.AddSingleton<ContentPart, FormInputElementPart>();
-            services.AddSingleton<ContentPart, LabelPart>();
-            services.AddSingleton<ContentPart, ButtonPart>();
-            services.AddSingleton<ContentPart, InputPart>();
-            services.AddSingleton<ContentPart, TextAreaPart>();
-            services.AddSingleton<ContentPart, ValidationSummaryPart>();
-            services.AddSingleton<ContentPart, ValidationPart>();
+            services
+                .AddContentPart<FormPart>()
+                .AddContentPart<FormElementPart>()
+                .AddContentPart<FormInputElementPart>()
+                .AddContentPart<LabelPart>()
+                .AddContentPart<ButtonPart>()
+                .AddContentPart<InputPart>()
+                .AddContentPart<TextAreaPart>()
+                .AddContentPart<ValidationSummaryPart>()
+                .AddContentPart<ValidationPart>()
+                ;
 
             services.AddScoped<IDataMigration, Migrations>();
         }

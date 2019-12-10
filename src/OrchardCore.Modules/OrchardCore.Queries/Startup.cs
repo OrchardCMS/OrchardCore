@@ -1,7 +1,4 @@
-using System;
-using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
@@ -15,6 +12,7 @@ using OrchardCore.Queries.Recipes;
 using OrchardCore.Queries.Services;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Scripting;
 
 namespace OrchardCore.Queries
 {
@@ -37,6 +35,7 @@ namespace OrchardCore.Queries
             services.AddTransient<IDeploymentSource, AllQueriesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllQueriesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllQueriesDeploymentStepDriver>();
+            services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
         }
     }
 

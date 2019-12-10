@@ -4,7 +4,7 @@ using OrchardCore.OpenId;
 [assembly: Module(
     Name = "OpenID",
     Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
+    Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
 
@@ -12,7 +12,7 @@ using OrchardCore.OpenId;
     Id = OpenIdConstants.Features.Client,
     Name = "OpenID Client",
     Category = "OpenID Connect",
-    Description = "Auhenticates users from an external OpenID Connect identity provider.",
+    Description = "Authenticates users from an external OpenID Connect identity provider.",
     Dependencies = new[] { OpenIdConstants.Features.Core }
 )]
 
