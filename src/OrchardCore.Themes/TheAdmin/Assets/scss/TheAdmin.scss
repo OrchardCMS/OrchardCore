@@ -82,6 +82,16 @@ body {
     }
 }
 
+.navbar-light .navbar-nav .nav-link,
+.ta-navbar-top .navbar-nav .nav-link,
+.admin-toolbar .navbar-nav .nav-link,
+.ta-navbar-top .btn-link {
+    color: $gray-600;
+}
+
+.ta-navbar-top .btn-link:hover {
+    color: $blue;
+}
 
 .ta-navbar-brand {
     @extend .navbar-brand;

@@ -9372,6 +9372,15 @@ html[dir], [dir] body {
     background-color: transparent;
     margin-top: 1rem; }
 
+.navbar-light .navbar-nav .nav-link, .ta-navbar-top .navbar-nav .nav-link, .admin-toolbar .navbar-nav .nav-link,
+.ta-navbar-top .navbar-nav .nav-link,
+.admin-toolbar .navbar-nav .nav-link,
+.ta-navbar-top .btn-link {
+  color: #6c757d; }
+
+.ta-navbar-top .btn-link:hover {
+  color: #007bff; }
+
 .ta-navbar-brand {
   overflow: hidden;
   width: 230px;
