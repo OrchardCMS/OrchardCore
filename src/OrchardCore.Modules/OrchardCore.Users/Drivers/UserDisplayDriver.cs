@@ -53,6 +53,7 @@ namespace OrchardCore.Users.Drivers
                 model.Email = await _userManager.GetEmailAsync(user);
                 model.Roles = roles;
                 model.EmailConfirmed = user.EmailConfirmed;
+                model.IsEnabled = user.IsEnabled;
             }).Location("Content:1"));
         }
 
@@ -67,6 +68,7 @@ namespace OrchardCore.Users.Drivers
 
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
+            user.IsEnabled = model.IsEnabled;
 
             if (string.IsNullOrWhiteSpace(model.UserName))
             {
