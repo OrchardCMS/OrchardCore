@@ -1,19 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp3.0</TargetFramework>
-        <RootNamespace>OrchardCore.Benchmark</RootNamespace>
-    </PropertyGroup>
+  <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
 
-    <ItemGroup>
-      <PackageReference Include="BenchmarkDotNet" Version="0.12.0" />
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <RootNamespace>OrchardCore.Benchmark</RootNamespace>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.DisplayManagement.Liquid\OrchardCore.DisplayManagement.Liquid.csproj" />
-      <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
-      <ProjectReference Include="..\OrchardCore.Tests\OrchardCore.Tests.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.DisplayManagement.Liquid\OrchardCore.DisplayManagement.Liquid.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests\OrchardCore.Tests.csproj" />
+  </ItemGroup>
 
 </Project>
