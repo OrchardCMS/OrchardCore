@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -10,6 +12,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Contents.AdminNodes;
+using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
@@ -33,6 +36,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Settings;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -41,6 +45,13 @@ namespace OrchardCore.Contents
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddContentManagement();
@@ -98,54 +109,58 @@ namespace OrchardCore.Contents
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var itemControllerName = typeof(ItemController).ControllerName();
+
             routes.MapAreaControllerRoute(
                 name: "DisplayContentItem",
                 areaName: "OrchardCore.Contents",
                 pattern: "Contents/ContentItems/{contentItemId}",
-                defaults: new { controller = "Item", action = "Display" }
+                defaults: new { controller = itemControllerName, action = nameof(ItemController.Display) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "PreviewContentItem",
                 areaName: "OrchardCore.Contents",
                 pattern: "Contents/ContentItems/{contentItemId}/Preview",
-                defaults: new { controller = "Item", action = "Preview" }
+                defaults: new { controller = itemControllerName, action = nameof(ItemController.Preview) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "PreviewContentItemVersion",
                 areaName: "OrchardCore.Contents",
                 pattern: "Contents/ContentItems/{contentItemId}/Version/{version}/Preview",
-                defaults: new { controller = "Item", action = "Preview" }
+                defaults: new { controller = itemControllerName, action = nameof(ItemController.Preview) }
             );
 
             // Admin
+            var adminControllerName = typeof(AdminController).ControllerName();
+
             routes.MapAreaControllerRoute(
                 name: "EditContentItem",
                 areaName: "OrchardCore.Contents",
-                pattern: "Admin/Contents/ContentItems/{contentItemId}/Edit",
-                defaults: new { area = "OrchardCore.Contents", controller = "Admin", action = "Edit" }
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Edit",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "CreateContentItem",
                 areaName: "OrchardCore.Contents",
-                pattern: "Admin/Contents/ContentTypes/{id}/Create",
-                defaults: new { controller = "Admin", action = "Create" }
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentTypes/{id}/Create",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "AdminContentItem",
                 areaName: "OrchardCore.Contents",
-                pattern: "Admin/Contents/ContentItems/{contentItemId}/Display",
-                defaults: new { controller = "Admin", action = "Display" }
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Display",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Display) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
-                pattern: "Admin/Contents/ContentItems/{contentTypeId?}",
-                defaults: new { controller = "Admin", action = "List" }
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentTypeId?}",
+                defaults: new {controller = adminControllerName, action = nameof(AdminController.List) }
             );
         }
     }
