@@ -210,12 +210,11 @@ namespace OrchardCore.Users.Controllers
                                     await _accountEvents.InvokeAsync((e, model) => e.LoggedInAsync(model.UserName), model, _logger);
                                     return await LoggedInActionResult(user, returnUrl);
                                 }
-
-                                ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
-                                await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
                             }
                         }
                     }
+                    ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
+                    await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
                 }
             }
             // If we got this far, something failed, redisplay form
