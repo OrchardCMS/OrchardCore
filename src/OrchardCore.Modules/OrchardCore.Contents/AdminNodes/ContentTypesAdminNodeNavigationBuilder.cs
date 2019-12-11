@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -17,21 +19,24 @@ namespace OrchardCore.Contents.AdminNodes
 {
     public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     {
+        private readonly AdminOptions _adminOptions;       
         private readonly LinkGenerator _linkGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILogger<ContentTypesAdminNodeNavigationBuilder> _logger;
 
         public ContentTypesAdminNodeNavigationBuilder(
+            IOptions<AdminOptions> adminOptions,
+            IContentDefinitionManager contentDefinitionManager,
             LinkGenerator linkGenerator,
             IHttpContextAccessor httpContextAccessor,
-            IContentDefinitionManager contentDefinitionManager,
             ILogger<ContentTypesAdminNodeNavigationBuilder> logger)
         {
+            _adminOptions = adminOptions.Value;
+            _contentDefinitionManager = contentDefinitionManager;
             _linkGenerator = linkGenerator;
             _httpContextAccessor = httpContextAccessor;
-            _contentDefinitionManager = contentDefinitionManager;
-
+			
             _logger = logger;
         }
 
