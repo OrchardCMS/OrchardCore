@@ -115,9 +115,9 @@ namespace OrchardCore.Users.Drivers
                 await _userManager.SetUserNameAsync(user, model.UserName);
                 await _userManager.SetEmailAsync(user, model.Email);
 
-                if (model.UpdateRelated)
+                if (oldUserName != user.UserName && model.UpdateRelated)
                 {
-                    await AssignContentItems(oldUserName, user.UserName);
+                    await ReAssignContentItems(oldUserName, user.UserName);
                 }
 
                 if (model.EmailConfirmed)
@@ -173,29 +173,17 @@ namespace OrchardCore.Users.Drivers
             return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
         }
 
-        private async Task AssignContentItems(string oldOwnerName, string newOwnerName)
+        private async Task ReAssignContentItems(string oldOwnerName, string newOwnerName)
         {
-            //Update Owner of contentItems
+            //Update Owner of contentItems and use contentManager to trigger events for indexation
             var ownerContentItems = await _session.Query<ContentItem, ContentItemIndex>(c => c.Owner == oldOwnerName).ListAsync();
+
             foreach (var ownerContentItem in ownerContentItems)
             {
                 ownerContentItem.Owner = newOwnerName;
 
                 await _contentManager.UpdateAsync(ownerContentItem);
-                //_session.Save(ownerContentItem);
             }
-
-            //Update Author of contentItems
-            var authorContentItems = await _session.Query<ContentItem, ContentItemIndex>(c => c.Author == oldOwnerName).ListAsync();
-            foreach (var authorContentItem in authorContentItems)
-            {
-                authorContentItem.Author = newOwnerName;
-
-                await _contentManager.UpdateAsync(authorContentItem);
-                //_session.Save(authorContentItem);
-            }
-
-            return;
         }
     }
 }
