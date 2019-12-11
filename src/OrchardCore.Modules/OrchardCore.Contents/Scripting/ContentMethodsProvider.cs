@@ -37,11 +37,12 @@ namespace OrchardCore.Contents.Scripting
                     var contentItem = contentManager.NewAsync(contentType).GetAwaiter().GetResult();
 
                     var json = JsonConvert.SerializeObject(properties);
-                    contentItem.Apply(JsonConvert.DeserializeObject<ContentItem>(json));
-                    if (!string.IsNullOrWhiteSpace(contentItem.Content?.TitlePart?.Title?.ToString()))
-                        contentItem.DisplayText = contentItem.Content.TitlePart.Title?.ToString();
+                    var item = JsonConvert.DeserializeObject<ContentItem>(json);
+                    if (item.DisplayText != null)
+                        contentItem.DisplayText = item.DisplayText;
+                    contentItem.Apply(item);
 
-                    contentManager.CreateAsync(contentItem.ContentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
+                    contentManager.CreateAsync(contentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
 
                     return contentItem;
                 })
@@ -55,9 +56,10 @@ namespace OrchardCore.Contents.Scripting
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
 
                     var json = JsonConvert.SerializeObject(properties);
-                    contentItem.Apply(JsonConvert.DeserializeObject<ContentItem>(json));
-                    if (!string.IsNullOrWhiteSpace(contentItem.Content?.TitlePart?.Title?.ToString()))
-                        contentItem.DisplayText = contentItem.Content.TitlePart.Title?.ToString();
+                    var item = JsonConvert.DeserializeObject<ContentItem>(json);
+                    if (item.DisplayText != null)
+                        contentItem.DisplayText = item.DisplayText;
+                    contentItem.Apply(item);
 
                     contentManager.UpdateAsync(contentItem);
                 })
