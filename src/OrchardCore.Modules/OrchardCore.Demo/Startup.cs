@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -26,6 +28,13 @@ namespace OrchardCore.Demo
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
@@ -52,7 +61,7 @@ namespace OrchardCore.Demo
             routes.MapAreaControllerRoute(
                 name: "AdminDemo",
                 areaName: "OrchardCore.Demo",
-                pattern: "Admin/Demo/Index",
+                pattern: _adminOptions.AdminUrlPrefix + "/Demo/Index",
                 defaults: new { controller = "Admin", action = "Index" }
             );
 

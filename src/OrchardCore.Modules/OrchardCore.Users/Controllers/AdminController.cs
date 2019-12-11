@@ -161,7 +161,8 @@ namespace OrchardCore.Users.Controllers
 
             model.Options.UsersBulkAction = new List<SelectListItem>() {
                 new SelectListItem() { Text = TH["Approve"].Value, Value = nameof(UsersBulkAction.Approve) },
-                //new SelectListItem() { Text = TH["Disable"].Value, Value = nameof(UsersBulkAction.Disable) },
+                new SelectListItem() { Text = TH["Enable"].Value, Value = nameof(UsersBulkAction.Enable) },
+                new SelectListItem() { Text = TH["Disable"].Value, Value = nameof(UsersBulkAction.Disable) },
                 new SelectListItem() { Text = TH["Delete"].Value, Value = nameof(UsersBulkAction.Delete) }
             };
 
@@ -208,8 +209,17 @@ namespace OrchardCore.Users.Controllers
                     case UsersBulkAction.Disable:
                         foreach (var item in checkedContentItems)
                         {
-                            //await _userManager.d(item);
+                            item.IsEnabled = false;
+                            await _userManager.UpdateAsync(item);
                             _notifier.Success(TH["User {0} successfully disabled.", item.UserName]);
+                        }
+                        break;
+                    case UsersBulkAction.Enable:
+                        foreach (var item in checkedContentItems)
+                        {
+                            item.IsEnabled = true;
+                            await _userManager.UpdateAsync(item);
+                            _notifier.Success(TH["User {0} successfully enabled.", item.UserName]);
                         }
                         break;
                     default:

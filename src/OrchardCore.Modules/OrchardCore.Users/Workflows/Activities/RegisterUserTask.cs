@@ -1,15 +1,13 @@
-using System;
 using System.Collections.Generic;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
-using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -24,15 +22,24 @@ namespace OrchardCore.Users.Workflows.Activities
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer T;
+        private readonly LinkGenerator _linkGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IStringLocalizer T;
 
-        public RegisterUserTask(IUserService userService, UserManager<IUser> userManager, IWorkflowExpressionEvaluator expressionEvaluator, IHttpContextAccessor httpContextAccessor, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<RegisterUserTask> t)
+        public RegisterUserTask(
+            IUserService userService,
+            UserManager<IUser> userManager,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            LinkGenerator linkGenerator,
+            IHttpContextAccessor httpContextAccessor,
+            IUpdateModelAccessor updateModelAccessor,
+            IStringLocalizer<RegisterUserTask> t)
         {
             _userService = userService;
             _userManager = userManager;
             _expressionEvaluator = expressionEvaluator;
+            _linkGenerator = linkGenerator;
             _httpContextAccessor = httpContextAccessor;
             _updateModelAccessor = updateModelAccessor;
             T = t;
@@ -110,15 +117,11 @@ namespace OrchardCore.Users.Workflows.Activities
                 else if (SendConfirmationEmail)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var request = _httpContextAccessor.HttpContext.Request;
-                    var uriBuilder = new UriBuilder(request.Scheme, request.Host.Host);
-                    if (request.Host.Port.HasValue)
-                        uriBuilder.Port = request.Host.Port.Value;
 
-                    uriBuilder.Path = request.PathBase.Add("/OrchardCore.Users/Registration/ConfirmEmail").Value;
-                    uriBuilder.Query = string.Format("userId={0}&code={1}", user.Id, UrlEncoder.Default.Encode(code));
-                    workflowContext.Properties["EmailConfirmationUrl"] = uriBuilder.Uri.ToString();
+                    var uri = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "ConfirmEmail",
+                        "Registration", new { area = "OrchardCore.Users", userId = user.Id, code });
 
+                    workflowContext.Properties["EmailConfirmationUrl"] = uri;
 
                     var subject = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailSubject, workflowContext);
                     var localizedSubject = new LocalizedString(nameof(RegisterUserTask), subject);
