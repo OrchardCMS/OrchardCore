@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Admin;
-using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -17,7 +16,6 @@ using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Layers.Handlers;
-using OrchardCore.Layers.Models;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Scripting;
@@ -35,7 +33,6 @@ namespace OrchardCore.Layers.Services
         private readonly IThemeManager _themeManager;
         private readonly IAdminThemeService _adminThemeService;
         private readonly ILayerService _layerService;
-        private readonly IOrchardHelper _orchardHelper;
 
         public LayerFilter(
             ILayerService layerService,
@@ -46,8 +43,7 @@ namespace OrchardCore.Layers.Services
             IMemoryCache memoryCache,
             ISignal signal,
             IThemeManager themeManager,
-            IAdminThemeService adminThemeService,
-            IOrchardHelper orchardHelper)
+            IAdminThemeService adminThemeService)
         {
             _layerService = layerService;
             _layoutAccessor = layoutAccessor;
@@ -58,7 +54,6 @@ namespace OrchardCore.Layers.Services
             _signal = signal;
             _themeManager = themeManager;
             _adminThemeService = adminThemeService;
-            _orchardHelper = orchardHelper;
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
@@ -82,13 +77,10 @@ namespace OrchardCore.Layers.Services
                 {
                     entry.AddExpirationToken(_signal.GetToken(LayerMetadataHandler.LayerChangeToken));
 
-                    var cacheValue = new List<LayerMetadata>();
-                    await foreach (var widget in FilterWidgetsByCultureAsync(await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)))
-                    {
-                        cacheValue.Add(widget);
-                    }
-                    
-                    return cacheValue;
+                    var allWidgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published);
+                    return await _layerService
+                        .FilterWidgetsByCultureAsync(allWidgets, CultureInfo.CurrentUICulture.Name)
+                        .ToListAsync();
                 });
 
                 var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
@@ -158,16 +150,6 @@ namespace OrchardCore.Layers.Services
             }
 
             await next.Invoke();
-        }
-
-        private async IAsyncEnumerable<LayerMetadata> FilterWidgetsByCultureAsync(IEnumerable<LayerMetadata> widgets)
-        {
-            foreach (var widget in widgets)
-            {
-                var culture = await _orchardHelper.GetContentCultureAsync(widget.ContentItem);
-                if (culture.Name == CultureInfo.CurrentUICulture.Name)
-                    yield return widget;
-            }
         }
     }
 }

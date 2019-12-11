@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Layers.Models;
 
@@ -14,5 +14,7 @@ namespace OrchardCore.Layers.ViewModels
      
         [BindNever]
         public List<Layer> Layers { get; set; }
+
+        public LayersOptions Options { get; set; } = new LayersOptions();
     }
 }

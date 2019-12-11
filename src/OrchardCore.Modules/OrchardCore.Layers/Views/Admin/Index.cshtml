@@ -10,6 +10,8 @@
     var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
 }
 <script asp-name="jquery-ui" at="Foot"></script>
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<style asp-name="bootstrap-select"></style>
 
 <h1>@RenderTitleSegments(T["Edit Widgets and Layers"])</h1>
 
@@ -27,7 +29,23 @@
 
 <div class="row">
     <div class="col-md-8">
-        <h3>@T["Zones"]</h3>
+        <div class="row">
+            <div class="col-md-8">
+                <h3>@T["Zones"]</h3>
+            </div>
+                <div class="col-md-4">
+                    @if (Model.Options.Cultures.Count > 0)
+                    {
+                        <div class="form-group col mb-n1 filter">
+                            <div class="btn-group float-right mt-1">
+                                <form asp-action="Index" asp-controller="Admin" method="post" name="filter-form">
+                                    <select asp-for="@Model.Options.Culture" asp-items="Model.Options.Cultures" class="selectpicker show-tick mr-2" data-header="@T["Filter by culture"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="true" title="@T["Culture"]" data-style="btn-sm"></select>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
         <form asp-action="Index">
             @foreach (var zone in Model.Zones)
             {
@@ -75,7 +93,7 @@
                                     <a class="dropdown-item add-list-widget btn-sm"
                                        data-widget-type="@type.Name"
                                        data-zone="@zone"
-                                       href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
+                                       href="@Url.Action((string)createRoute["Action"], (string) createRoute["controller"], createRoute)">@type.DisplayName</a>
                                 }
                             </div>
                         </div>
@@ -123,6 +141,14 @@
 </div>
 
 <script at="Foot">
+    $(function() {
+        $('select').selectpicker();
+
+        $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $("[name='filter-form']").submit();
+        });
+    });
+
     $(".list-group").sortable({
         handle: ".properties",
         cursor: "move",
