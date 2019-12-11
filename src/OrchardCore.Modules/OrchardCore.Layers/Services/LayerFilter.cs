@@ -81,7 +81,14 @@ namespace OrchardCore.Layers.Services
                 var widgets = await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
                 {
                     entry.AddExpirationToken(_signal.GetToken(LayerMetadataHandler.LayerChangeToken));
-                    return await FilterWidgetsByCultureAsync(await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published));
+
+                    var cacheValue = new List<LayerMetadata>();
+                    await foreach (var widget in FilterWidgetsByCultureAsync(await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)))
+                    {
+                        cacheValue.Add(widget);
+                    }
+                    
+                    return cacheValue;
                 });
 
                 var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
@@ -153,18 +160,14 @@ namespace OrchardCore.Layers.Services
             await next.Invoke();
         }
 
-        private async Task<IEnumerable<LayerMetadata>> FilterWidgetsByCultureAsync(IEnumerable<LayerMetadata> widgets)
+        private async IAsyncEnumerable<LayerMetadata> FilterWidgetsByCultureAsync(IEnumerable<LayerMetadata> widgets)
         {
-            var orchardHelper = _orchardHelper;
-            var widgetsWithCulture = await Task.WhenAll(widgets.Select(async w =>
+            foreach (var widget in widgets)
             {
-                var culture = await orchardHelper.GetContentCultureAsync(w.ContentItem);
-                return new { Widget = w, Culture = culture };
-            }));
-
-            return widgetsWithCulture
-                .Where(i => i.Culture.Name == CultureInfo.CurrentUICulture.Name)
-                .Select(i => i.Widget);
+                var culture = await _orchardHelper.GetContentCultureAsync(widget.ContentItem);
+                if (culture.Name == CultureInfo.CurrentUICulture.Name)
+                    yield return widget;
+            }
         }
     }
 }
