@@ -199,7 +199,7 @@ namespace OrchardCore.Setup.Services
                     var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
                     var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
 
-                    await setupEventHandlers.InvokeAsync(x => x.Setup(
+                    await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
                         context.SiteName,
                         context.AdminUsername,
                         context.AdminEmail,
@@ -209,7 +209,7 @@ namespace OrchardCore.Setup.Services
                         context.DatabaseTablePrefix,
                         context.SiteTimeZone,
                         reportError
-                    ), logger);
+                    ), context, logger);
                 });
 
                 if (context.Errors.Any())

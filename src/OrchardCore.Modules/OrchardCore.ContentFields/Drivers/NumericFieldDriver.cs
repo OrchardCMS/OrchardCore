@@ -14,12 +14,12 @@ namespace OrchardCore.ContentFields.Fields
 {
     public class NumericFieldDisplayDriver : ContentFieldDisplayDriver<NumericField>
     {
+        private readonly IStringLocalizer S;
+
         public NumericFieldDisplayDriver(IStringLocalizer<NumericFieldDisplayDriver> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(NumericField field, BuildFieldDisplayContext context)
         {
@@ -64,12 +64,12 @@ namespace OrchardCore.ContentFields.Fields
                 {
                     if (settings.Required)
                     {
-                        updater.ModelState.AddModelError(Prefix, T["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                        updater.ModelState.AddModelError(Prefix, S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
                     }
                 }
                 else if (!decimal.TryParse(viewModel.Value, NumberStyles.Any, CultureInfo.CurrentUICulture, out value))
                 {
-                    updater.ModelState.AddModelError(Prefix, T["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else
                 {
@@ -77,12 +77,12 @@ namespace OrchardCore.ContentFields.Fields
 
                     if (settings.Minimum.HasValue && value < settings.Minimum.Value)
                     {
-                        updater.ModelState.AddModelError(Prefix, T["The value must be greater than {0}.", settings.Minimum.Value]);
+                        updater.ModelState.AddModelError(Prefix, S["The value must be greater than {0}.", settings.Minimum.Value]);
                     }
 
                     if (settings.Maximum.HasValue && value > settings.Maximum.Value)
                     {
-                        updater.ModelState.AddModelError(Prefix, T["The value must be less than {0}.", settings.Maximum.Value]);
+                        updater.ModelState.AddModelError(Prefix, S["The value must be less than {0}.", settings.Maximum.Value]);
                     }
 
                     // checking the number of decimals
@@ -90,11 +90,11 @@ namespace OrchardCore.ContentFields.Fields
                     {
                         if (settings.Scale == 0)
                         {
-                            updater.ModelState.AddModelError(Prefix, T["The {0} field must be an integer.", context.PartFieldDefinition.DisplayName()]);
+                            updater.ModelState.AddModelError(Prefix, S["The {0} field must be an integer.", context.PartFieldDefinition.DisplayName()]);
                         }
                         else
                         {
-                            updater.ModelState.AddModelError(Prefix, T["Invalid number of digits for {0}, max allowed: {1}.", context.PartFieldDefinition.DisplayName(), settings.Scale]);
+                            updater.ModelState.AddModelError(Prefix, S["Invalid number of digits for {0}, max allowed: {1}.", context.PartFieldDefinition.DisplayName(), settings.Scale]);
                         }
                     }
                 }

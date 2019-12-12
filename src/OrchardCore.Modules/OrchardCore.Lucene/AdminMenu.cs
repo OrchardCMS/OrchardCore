@@ -7,12 +7,12 @@ namespace OrchardCore.Lucene
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -22,19 +22,19 @@ namespace OrchardCore.Lucene
             }
 
             builder
-                .Add(T["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+                .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                     .AddClass("search").Id("search")
-                    .Add(T["Indexing"], T["Indexing"], import => import
-                        .Add(T["Lucene Indices"], "7", indexes => indexes
+                    .Add(S["Indexing"], S["Indexing"], import => import
+                        .Add(S["Lucene Indices"], "7", indexes => indexes
                             .Action("Index", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav())
-                        .Add(T["Run Lucene Query"], "8", queries => queries
+                        .Add(S["Run Lucene Query"], "8", queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav()))
-                    .Add(T["Settings"], settings => settings
-                        .Add(T["Search"], T["Search"], entry => entry
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Search"], S["Search"], entry => entry
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "search" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav()

@@ -39,8 +39,7 @@ namespace OrchardCore.Email.Controllers
         IStringLocalizer T { get; set; }
 
         [HttpGet]
-        [ActionName("Index")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
@@ -51,8 +50,7 @@ namespace OrchardCore.Email.Controllers
         }
 
         [HttpPost]
-        [ActionName("Index")]
-        public async Task<IActionResult> Post(SmtpSettingsViewModel model)
+        public async Task<IActionResult> IndexPost(SmtpSettingsViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {

@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.ReCaptcha.ActionFilters.Abuse;
+using OrchardCore.ReCaptcha.ActionFilters.Detection;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Services;
 using Polly;

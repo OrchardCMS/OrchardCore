@@ -9,7 +9,7 @@
        "of the tenant hosting the authorization server."]
 </p>
 
-<fieldset class="form-group" asp-validation-class-for="Tenant">
+<div class="form-group" asp-validation-class-for="Tenant">
     <label asp-for="Tenant">@T["Authorization server tenant"]</label>
     <select asp-for="Tenant" class="form-control">
         <option value="" selected="@(Model.Tenant == null)">(none)</option>
@@ -19,21 +19,21 @@
         }
     </select>
     <span asp-validation-for="Tenant"></span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="Authority">
+<div class="form-group" asp-validation-class-for="Authority">
     <label asp-for="Authority">@T["Authority"]</label>
     <input asp-for="Authority" class="form-control" />
     <span asp-validation-for="Authority"></span>
     <span class="hint">@T["The address of the remote OpenID Connect server. Using a HTTPS address is strongly recommended."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="Audience">
+<div class="form-group" asp-validation-class-for="Audience">
     <label asp-for="Audience">@T["Audience"]</label>
     <input asp-for="Audience" class="form-control" />
     <span asp-validation-for="Audience"></span>
     <span class="hint">@T["The unique name associated with this tenant. If none is provided, the tenant name is automatically used as the default audience."]</span>
-</fieldset>
+</div>
 
 <script at="Foot" type="text/javascript">
     $(function () {

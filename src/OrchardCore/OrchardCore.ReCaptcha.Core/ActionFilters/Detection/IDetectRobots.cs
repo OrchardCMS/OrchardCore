@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace OrchardCore.ReCaptcha.ActionFilters.Abuse
+namespace OrchardCore.ReCaptcha.ActionFilters.Detection
 {
     /// <summary>
     /// This interface describes the contract for components that can detect Robots.

@@ -25,7 +25,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             _themeManager = themeManager;
         }
 
-        public dynamic New { get { return this; } }
+        public dynamic New => this;
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
