@@ -51,7 +51,7 @@ namespace OrchardCore.Lucene
             var luceneQuery = query as LuceneQuery;
             var luceneQueryResults = new LuceneQueryResults();
 
-            await _luceneIndexProvider.SearchAsync (luceneQuery.Index, async searcher =>
+            await _luceneIndexProvider.SearchAsync(luceneQuery.Index, async searcher =>
             {
                 var templateContext = new TemplateContext();
 
@@ -74,12 +74,16 @@ namespace OrchardCore.Lucene
                 if (luceneQuery.ReturnContentItems)
                 {
                     // Load corresponding content item versions
-                    var contentItemVersionIds = docs.TopDocs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("Content.ContentItem.ContentItemVersionId")).ToArray();
-                    var contentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(contentItemVersionIds)).ListAsync();
+                    var indexedContentItemVersionIds = docs.TopDocs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("Content.ContentItem.ContentItemVersionId")).ToArray();
+                    var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
                     // Reorder the result to preserve the one from the lucene query
-                    var indexed = contentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
-                    luceneQueryResults.Items = contentItemVersionIds.Select(x => indexed[x]).ToArray();
+                    if (dbContentItems.Any())
+                    {
+                        var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
+                        var indexedAndInDB = indexedContentItemVersionIds.Where(dbContentItemVersionIds.ContainsKey);
+                        luceneQueryResults.Items = indexedAndInDB.Select(x => dbContentItemVersionIds[x]).ToArray();
+                    }
                 }
                 else
                 {
