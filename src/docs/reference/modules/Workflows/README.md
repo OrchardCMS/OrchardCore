@@ -183,6 +183,7 @@ The following Liquid tags, properties and filters are available by default to an
 | `Workflow.Input` | Property | Returns the Input dictionary. | `{{ Workflow.Input["ContentItem"] }}` |
 | `Workflow.Output` | Property | Returns the Output dictionary. | `{{ Workflow.Output["SomeResult"] }}` |
 | `Workflow.Properties` | Property | Returns the Properties dictionary. | `{{ Workflow.Properties["Foo"] }}` |
+| `signal_url` | Filter | Generates a path string including a SAS token in a querystring containing a specified signal name. | `{{ "Approve" | signal_url | absolute_url }}` |
 
 Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you can also use dot notation, e.g.:
 
