@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Security.Services;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -15,17 +16,19 @@ namespace OrchardCore.Users.Workflows.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<IUser> _userManager;
+        private readonly IStringLocalizer T;
+        private readonly IRoleService _roleService;
 
-        public ValidateUserTask(UserManager<IUser> userManager, IHttpContextAccessor httpContextAccessor, IStringLocalizer<ValidateUserTask> localizer)
+        public ValidateUserTask(UserManager<IUser> userManager, IHttpContextAccessor httpContextAccessor, IStringLocalizer<ValidateUserTask> localizer, IRoleService roleService)
         {
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
+            _roleService = roleService;
             T = localizer;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(ValidateUserTask);
+
         public override LocalizedString Category => T["User"];
 
         public bool SetUser
@@ -34,7 +37,7 @@ namespace OrchardCore.Users.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public IList<string> Roles
+        public IEnumerable<string> Roles
         {
             get => GetProperty(() => new List<string>());
             set => SetProperty(value);
@@ -47,6 +50,7 @@ namespace OrchardCore.Users.Workflows.Activities
             var outcomes = Roles.Select(x => T[x]).ToList();
             outcomes.Add(T["Authenticated"]);
             outcomes.Add(T["Anonymous"]);
+
             return Outcomes(outcomes.ToArray());
         }
 
@@ -54,15 +58,20 @@ namespace OrchardCore.Users.Workflows.Activities
         {
             var user = _httpContextAccessor.HttpContext.User;
             var isAuthenticated = user?.Identity?.IsAuthenticated;
+
             if (isAuthenticated == true)
             {
                 if (SetUser)
                 {
                     workflowContext.Properties["User"] = user;
                 }
-                var outcomes = new List<string>();
-                outcomes.Add("Authenticated");
-                if (Roles.Count > 0)
+
+                var outcomes = new List<string>
+                {
+                    "Authenticated"
+                };
+
+                if (Roles.Any())
                 {
                     var userRoleNames = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(user));
                     foreach (var role in Roles)
@@ -72,10 +81,11 @@ namespace OrchardCore.Users.Workflows.Activities
                             outcomes.Add(role);
                         }
                     }
-
                 }
-                return Outcomes(outcomes);
+
+                return Outcomes(outcomes.ToArray());
             }
+
             return Outcomes("Anonymous");
         }
     }
