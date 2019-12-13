@@ -60,9 +60,10 @@ namespace OrchardCore.Users.Workflows.Activities
                 {
                     workflowContext.Properties["User"] = user;
                 }
+                var outcomes = new List<string>();
+                outcomes.Add("Authenticated");
                 if (Roles.Count > 0)
                 {
-                    var outcomes = new List<string>();
                     var userRoleNames = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(user));
                     foreach (var role in Roles)
                     {
@@ -71,12 +72,9 @@ namespace OrchardCore.Users.Workflows.Activities
                             outcomes.Add(role);
                         }
                     }
-                    if (outcomes.Count > 0)
-                    {
-                        return Outcomes(outcomes);
-                    }
+
                 }
-                return Outcomes("Authenticated");
+                return Outcomes(outcomes);
             }
             return Outcomes("Anonymous");
         }
