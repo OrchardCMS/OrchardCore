@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
@@ -52,8 +50,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     break;
 
                 case ResourceType.Header:
-                    var htmlBuilder = new HtmlContentBuilder();
-
                     _resourceManager.RenderMeta(output.Content);
                     _resourceManager.RenderHeadLink(output.Content);
                     _resourceManager.RenderStylesheet(output.Content);

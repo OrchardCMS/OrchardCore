@@ -177,7 +177,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
                 if (_t == null)
                 {
                     _t = HttpContext.RequestServices.GetRequiredService<IViewLocalizer>();
-                    ((IViewContextAware)_t).Contextualize(this.ViewContext);
+                    ((IViewContextAware)_t).Contextualize(ViewContext);
                 }
 
                 return _t;

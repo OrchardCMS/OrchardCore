@@ -181,7 +181,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 if (_t == null)
                 {
                     _t = Context.RequestServices.GetRequiredService<IViewLocalizer>();
-                    ((IViewContextAware)_t).Contextualize(this.ViewContext);
+                    ((IViewContextAware)_t).Contextualize(ViewContext);
                 }
 
                 return _t;

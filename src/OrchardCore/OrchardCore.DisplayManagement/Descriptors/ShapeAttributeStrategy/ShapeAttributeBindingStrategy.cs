@@ -184,7 +184,9 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             object result = getter.Target(getter, displayContext.Value);
 
             if (result == null)
+            {
                 return null;
+            }
 
             if (parameter.ParameterType.IsAssignableFrom(result.GetType()))
             {

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.Mvc.Utilities;
 
@@ -16,8 +14,6 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         };
 
         protected const string PropertyPrefix = "prop-";
-        protected IDictionary<string, string> _properties;
-
         private static readonly char[] Separators = { ',', ' ' };
 
         protected IShapeFactory _shapeFactory;
@@ -34,10 +30,6 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         internal TimeSpan? SlidingDuration { get; set; }
         internal string Context { get; set; }
         internal string Tag { get; set; }
-
-        [HtmlAttributeNotBound]
-        [ViewContext]
-        public ViewContext ViewContext { get; set; }
 
         protected BaseShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
         {

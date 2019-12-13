@@ -284,42 +284,39 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class TemplateContextExtensions
     {
-        internal static async Task ContextualizeAsync(this TemplateContext context, ViewContext viewContext, object model)
+        internal static async Task ContextualizeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
         {
             // Check if already contextualized.
             if (!context.AmbientValues.ContainsKey("Services"))
             {
-                // Shared contextualization within the current scope.
-                var services = viewContext.HttpContext.RequestServices;
-
                 context.AmbientValues.EnsureCapacity(9);
-                context.AmbientValues.Add("Services", services);
 
-                var displayHelper = services.GetRequiredService<IDisplayHelper>();
+                // Shared contextualization within the current scope.
+                context.AmbientValues.Add("Services", context.Services);
+
+                var displayHelper = context.Services.GetRequiredService<IDisplayHelper>();
                 context.AmbientValues.Add("DisplayHelper", displayHelper);
 
-                var urlHelperFactory = services.GetRequiredService<IUrlHelperFactory>();
+                var urlHelperFactory = context.Services.GetRequiredService<IUrlHelperFactory>();
                 var urlHelper = urlHelperFactory.GetUrlHelper(viewContext);
                 context.AmbientValues.Add("UrlHelper", urlHelper);
 
-                var shapeFactory = services.GetRequiredService<IShapeFactory>();
+                var shapeFactory = context.Services.GetRequiredService<IShapeFactory>();
                 context.AmbientValues.Add("ShapeFactory", shapeFactory);
 
-                var viewLocalizer = services.GetRequiredService<IViewLocalizer>();
+                var viewLocalizer = context.Services.GetRequiredService<IViewLocalizer>();
                 context.AmbientValues.Add("ViewLocalizer", viewLocalizer);
 
-                var layoutAccessor = services.GetRequiredService<ILayoutAccessor>();
-                context.AmbientValues.Add("LayoutAccessor", layoutAccessor);
-
+                var layoutAccessor = context.Services.GetRequiredService<ILayoutAccessor>();
                 var layout = await layoutAccessor.GetLayoutAsync();
                 context.AmbientValues.Add("ThemeLayout", layout);
 
                 context.CultureInfo = CultureInfo.CurrentUICulture;
 
-                var options = services.GetRequiredService<IOptions<LiquidOptions>>().Value;
-                context.AddAsyncFilters(options, services);
+                var options = context.Services.GetRequiredService<IOptions<LiquidOptions>>().Value;
+                context.AddAsyncFilters(options);
 
-                foreach (var handler in services.GetServices<ILiquidTemplateEventHandler>())
+                foreach (var handler in context.Services.GetServices<ILiquidTemplateEventHandler>())
                 {
                     await handler.RenderingAsync(context);
                 }
@@ -341,15 +338,15 @@ namespace OrchardCore.DisplayManagement.Liquid
             context.SetValue("Model", model);
         }
 
-        internal static void AddAsyncFilters(this TemplateContext templateContext, LiquidOptions options, IServiceProvider services)
+        internal static void AddAsyncFilters(this LiquidTemplateContext context, LiquidOptions options)
         {
-            templateContext.Filters.EnsureCapacity(options.FilterRegistrations.Count);
+            context.Filters.EnsureCapacity(options.FilterRegistrations.Count);
 
             foreach (var registration in options.FilterRegistrations)
             {
-                templateContext.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
+                context.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
                 {
-                    var filter = (ILiquidFilter)services.GetRequiredService(registration.Value);
+                    var filter = (ILiquidFilter)context.Services.GetRequiredService(registration.Value);
                     return filter.ProcessAsync(input, arguments, ctx);
                 });
             }
