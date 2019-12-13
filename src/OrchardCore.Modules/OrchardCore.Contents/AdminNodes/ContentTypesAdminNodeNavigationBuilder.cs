@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -17,21 +19,24 @@ namespace OrchardCore.Contents.AdminNodes
 {
     public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     {
+        private readonly AdminOptions _adminOptions;       
+        private readonly LinkGenerator _linkGenerator;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILogger<ContentTypesAdminNodeNavigationBuilder> _logger;
-        private readonly string _contentItemlistUrl;
 
         public ContentTypesAdminNodeNavigationBuilder(
+            IOptions<AdminOptions> adminOptions,
             IContentDefinitionManager contentDefinitionManager,
             LinkGenerator linkGenerator,
             IHttpContextAccessor httpContextAccessor,
             ILogger<ContentTypesAdminNodeNavigationBuilder> logger)
         {
+            _adminOptions = adminOptions.Value;
             _contentDefinitionManager = contentDefinitionManager;
-
-            _contentItemlistUrl = linkGenerator.GetPathByAction(httpContextAccessor.HttpContext,
-                "List", "Admin", new { area = "OrchardCore.Contents" }).TrimEnd('/') + "/";
-
+            _linkGenerator = linkGenerator;
+            _httpContextAccessor = httpContextAccessor;
+			
             _logger = logger;
         }
 
@@ -52,7 +57,14 @@ namespace OrchardCore.Contents.AdminNodes
             {
                 builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
                 {
-                    cTypeMenu.Url(_contentItemlistUrl + ctd.Name);
+                    cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, "", new
+                    {
+                        area = "OrchardCore.Contents",
+                        controller = "Admin",
+                        action = "List",
+                        contentTypeId = ctd.Name
+                    }));
+
                     cTypeMenu.Priority(node.Priority);
                     cTypeMenu.Position(node.Position);
                     cTypeMenu.Permission(
