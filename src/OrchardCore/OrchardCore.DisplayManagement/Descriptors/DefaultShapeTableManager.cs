@@ -19,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
     public class DefaultShapeTableManager : IShapeTableManager
     {
         private static ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<string, FeatureShapeDescriptor>();
-        private static object _syncLock = new object();
+        private static readonly object _syncLock = new object();
 
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
