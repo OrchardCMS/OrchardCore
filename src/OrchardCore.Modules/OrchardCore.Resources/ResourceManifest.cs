@@ -181,21 +181,21 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineStyle("font-awesome")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.10.2/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.10.2/css/all.css")
-                .SetCdnIntegrity("sha384-rtJEYb85SiYWgfpCr0jn174XgJTn4rptSOQsMroFBPQSGLdOC5IbubP6lJ35qoM9", "sha384-Ex0vLvgbKZTFlqEetkjk2iUgM+H5udpQKFKjBoGFwPaHRGhiWyVI6jLz/3fBm5ht")
-                .SetVersion("5.10.2");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/css/all.css")
+                .SetCdnIntegrity("sha384-REHJTs1r2ErKBuJB0fCK99gCYsVjwxHrSU0N7I1zl9vZbggVJXRMsv/sLlOAGb4M", "sha384-FozkkIZqRmr4BfooWVG/w7UbmmhssZ8jGI0fImoQjxxMCR49K3wuhkAl4L3Pm8Jr")
+                .SetVersion("5.12.0");
 
             manifest
                 .DefineScript("font-awesome")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.10.2/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.10.2/js/all.js")
-                .SetCdnIntegrity("sha384-QMu+Y+eu45Nfr9fmFOlw8EqjiUreChmoQ7k7C1pFNO8hEbGv9yzsszTmz+RzwyCh", "sha384-7/I8Wc+TVwiZpEjE4qTV6M27LYR5Dus6yPGzQZowRtgh+0gDW9BNR9GmII1/YwmG")
-                .SetVersion("5.10.2");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/js/all.js")
+                .SetCdnIntegrity("sha384-S+e0w/GqyDFzOU88KBBRbedIB4IMF55OzWmROqS6nlDcXlEaV8PcFi4DHZYfDk4Y", "ha384-4yJXyYcQJQynz08thMlmIdGJtc1pH25IWEUxeXk25FYh7YxDQqu1NCAbhCC7zip6")
+                .SetVersion("5.12.0");
 
             manifest
                 .DefineScript("font-awesome-v4-shims")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.10.2/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.10.2/js/v4-shims.js")
-                .SetCdnIntegrity("sha384-gDM1aRghQ5DRg+fSCROSYawrJhbAHqa6Teb2Br0qRJtb+vRJlyU4U4xnmN5cwJ9j", "sha384-yy3rOHt7QC9qH7QUhNJiVCBckn4YziGYiKEvnwv9xuo9PrJTR8hYnHrZTA6S28V8")
-                .SetVersion("5.10.2");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/js/v4-shims.js")
+                .SetCdnIntegrity("sha384-NNQFVmb048Dmy0GH4ex0kGVcjxaPeY6JA1+ImM4Lsfr4HOD5CNMvCSoIfjeJJWX9", "sha384-GRL+whSFS4qAoUG6xDB/5buVvCJ9ZN9jms+GfJYWRNUm0eq2/KRYX9qRJcwxGo+Y")
+                .SetVersion("5.12.0");
 
             manifest
                 .DefineStyle("trumbowyg")
