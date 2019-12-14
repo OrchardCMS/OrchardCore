@@ -19,6 +19,7 @@ namespace OrchardCore.Users.Liquid
         {
             var user = _httpContextAccessor.HttpContext.User;
 
+            context.MemberAccessStrategy.Register<User>();
             context.MemberAccessStrategy.Register<ClaimsPrincipal>();
             context.MemberAccessStrategy.Register<ClaimsIdentity>();
             context.SetValue("User", user);
