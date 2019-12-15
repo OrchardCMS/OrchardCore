@@ -22,6 +22,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
+        private readonly IImageStreamService _imageStreamService;
         private readonly ILogger _logger;
         private readonly IStringLocalizer<AdminController> T;
 
@@ -29,6 +30,7 @@ namespace OrchardCore.Media.Controllers
             IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
+            IImageStreamService imageStreamService,
             IOptions<MediaOptions> options,
             ILogger<AdminController> logger,
             IStringLocalizer<AdminController> stringLocalizer
@@ -37,6 +39,7 @@ namespace OrchardCore.Media.Controllers
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
+            _imageStreamService = imageStreamService;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
             _logger = logger;
             T = stringLocalizer;
@@ -183,7 +186,8 @@ namespace OrchardCore.Media.Controllers
 
                     using (var stream = file.OpenReadStream())
                     {
-                        await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
+                        var outputStream = _imageStreamService.ProcessStream(stream);
+                        await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, outputStream.Stream);           
                     }
 
                     var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
