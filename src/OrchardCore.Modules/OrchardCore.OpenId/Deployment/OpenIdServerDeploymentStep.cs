@@ -5,9 +5,9 @@ namespace OrchardCore.OpenId.Deployment
     /// <summary>
     /// Adds Open ID settings to a <see cref="DeploymentPlanResult"/>. 
     /// </summary>
-    public class OpenIdDeploymentStep : DeploymentStep
+    public class OpenIdServerDeploymentStep : DeploymentStep
     {
-        public OpenIdDeploymentStep()
+        public OpenIdServerDeploymentStep()
         {
             Name = "OpenId";
         }

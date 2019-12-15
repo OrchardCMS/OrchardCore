@@ -64,9 +64,9 @@ namespace OrchardCore.OpenId
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             // Deployment
-            services.AddTransient<IDeploymentSource, OpenIdDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<OpenIdDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, OpenIdServerDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<OpenIdServerDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
