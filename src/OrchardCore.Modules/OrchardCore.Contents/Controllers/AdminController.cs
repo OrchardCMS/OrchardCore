@@ -175,6 +175,7 @@ namespace OrchardCore.Contents.Controllers
                         creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
                     }
                 }
+
                 model.Options.CreatableTypes = creatableList;
             }
 
