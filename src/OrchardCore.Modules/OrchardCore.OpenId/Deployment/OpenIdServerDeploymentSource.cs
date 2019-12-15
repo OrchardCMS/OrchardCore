@@ -16,9 +16,9 @@ namespace OrchardCore.OpenId.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var OpenIdState = step as OpenIdServerDeploymentStep;
+            var openIdServerStep = step as OpenIdServerDeploymentStep;
 
-            if (OpenIdState == null)
+            if (openIdServerStep == null)
             {
                 return;
             }
@@ -26,8 +26,8 @@ namespace OrchardCore.OpenId.Deployment
             var serverSettings = await _openIdServerService.GetSettingsAsync();
 
             result.Steps.Add(new JObject(
-                new JProperty("name", "OpenId"),
-                new JProperty("OpenId", JObject.FromObject(serverSettings))
+                new JProperty("name", "OpenIdServer"),
+                new JProperty("OpenIdServer", JObject.FromObject(serverSettings))
             ));
         }
     }

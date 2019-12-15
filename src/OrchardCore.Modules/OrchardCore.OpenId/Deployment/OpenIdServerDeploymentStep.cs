@@ -9,7 +9,7 @@ namespace OrchardCore.OpenId.Deployment
     {
         public OpenIdServerDeploymentStep()
         {
-            Name = "OpenId";
+            Name = "OpenID Server";
         }
     }
 }
