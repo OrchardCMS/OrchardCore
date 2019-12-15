@@ -367,8 +367,16 @@ namespace OrchardCore.ResourceManagement
                 var resource = FindResource(settings);
                 if (resource == null)
                 {
-                    throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}.");
+                    throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
                 }
+
+                // Register any additional dependencies for the resource here, 
+                // rather than in Combine as they are additive, and should not be Combined.
+                if (settings.Dependencies != null)
+                {
+                    resource.SetDependencies(settings.Dependencies);
+                }
+
                 ExpandDependencies(resource, settings, allResources);
             }
 

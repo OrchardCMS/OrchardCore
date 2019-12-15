@@ -27,11 +27,11 @@ namespace OrchardCore.Lists.Settings
             TS = localizer;
         }
 
-        public IStringLocalizer TS { get; set; }
+        public IStringLocalizer TS { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -53,7 +53,7 @@ namespace OrchardCore.Lists.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }

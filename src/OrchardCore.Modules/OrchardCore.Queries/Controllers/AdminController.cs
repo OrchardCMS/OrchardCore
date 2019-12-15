@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.ViewModels;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using YesSql;
 
@@ -26,13 +27,14 @@ namespace OrchardCore.Queries.Controllers
         private readonly IEnumerable<IQuerySource> _querySources;
         private readonly IDisplayManager<Query> _displayManager;
         private readonly ISession _session;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public AdminController(
             IDisplayManager<Query> displayManager,
             IAuthorizationService authorizationService,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
             IQueryManager queryManager,
@@ -47,14 +49,8 @@ namespace OrchardCore.Queries.Controllers
             _querySources = querySources;
             New = shapeFactory;
             _notifier = notifier;
-
-            T = stringLocalizer;
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; set; }
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
 
         public async Task<IActionResult> Index(QueryIndexOptions options, PagerParameters pagerParameters)
         {
@@ -73,6 +69,7 @@ namespace OrchardCore.Queries.Controllers
             }
 
             var queries = await _queryManager.ListQueriesAsync();
+            queries = queries.OrderBy(x => x.Name);
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -100,7 +97,8 @@ namespace OrchardCore.Queries.Controllers
 
             foreach (var query in results)
             {
-                model.Queries.Add(new QueryEntry {
+                model.Queries.Add(new QueryEntry
+                {
                     Query = query,
                     Shape = await _displayManager.BuildDisplayAsync(query, this, "SummaryAdmin")
                 });
@@ -109,13 +107,22 @@ namespace OrchardCore.Queries.Controllers
             return View(model);
         }
 
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(QueriesIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
+        }
+
         public async Task<IActionResult> Create(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
                 return Unauthorized();
             }
-            
+
             var query = _querySources.FirstOrDefault(x => x.Name == id)?.Create();
 
             if (query == null)
@@ -139,7 +146,7 @@ namespace OrchardCore.Queries.Controllers
             {
                 return Unauthorized();
             }
-            
+
             var query = _querySources.FirstOrDefault(x => x.Name == model.SourceName)?.Create();
 
             if (query == null)
@@ -183,7 +190,7 @@ namespace OrchardCore.Queries.Controllers
                 Name = query.Name,
                 Schema = query.Schema,
                 Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: false)
-            };   
+            };
 
             return View(model);
         }
@@ -196,7 +203,7 @@ namespace OrchardCore.Queries.Controllers
                 return Unauthorized();
             }
 
-            var query = await _queryManager.GetQueryAsync(model.Name);
+            var query = (await _queryManager.LoadQueryAsync(model.Name));
 
             if (query == null)
             {
@@ -227,7 +234,7 @@ namespace OrchardCore.Queries.Controllers
                 return Unauthorized();
             }
 
-            var query = await _queryManager.GetQueryAsync(id);
+            var query = await _queryManager.LoadQueryAsync(id);
 
             if (query == null)
             {

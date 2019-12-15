@@ -23,7 +23,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly ISecurityTokenService _securityTokenService;
         private readonly IAntiforgery _antiforgery;
         private readonly ILogger<HttpWorkflowController> _logger;
-        private const int _tokenLifeSpan = 36500;
+        public const int NoExpiryTokenLifespan = 36500;
 
         public HttpWorkflowController(
             IAuthorizationService authorizationService,
@@ -62,7 +62,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return NotFound();
             }
 
-            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(tokenLifeSpan==0?_tokenLifeSpan: tokenLifeSpan));
+            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(tokenLifeSpan == 0 ? NoExpiryTokenLifespan : tokenLifeSpan));
             var url = Url.Action("Invoke", "HttpWorkflow", new { token = token });
 
             return Ok(url);

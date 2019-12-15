@@ -370,7 +370,7 @@ namespace OrchardCore.Mvc.Utilities
             if (rough == null)
                 return null;
 
-            return rough.EndsWith(trim)
+            return rough.EndsWith(trim, StringComparison.Ordinal)
                        ? rough.Substring(0, rough.Length - trim.Length)
                        : rough;
         }

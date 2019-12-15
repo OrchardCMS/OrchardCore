@@ -77,7 +77,7 @@ namespace OrchardCore.Lists.Drivers
                 }
             }
 
-            return await base.UpdateAsync(model, updater);
+            return await EditAsync(model, updater);
         }
     }
 }

@@ -21,7 +21,11 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             return context.ForAsync<CultureAspect>(cultureAspect =>
             {
-                cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
+                if(part.Culture != null)
+                {
+                    cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
+                }
+
                 return Task.CompletedTask;
             });
         }

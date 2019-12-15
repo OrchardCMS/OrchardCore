@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public Task RenderingAsync(TemplateContext context)
         {
-            context.LocalScope.SetValue("Culture", CultureInfo.CurrentUICulture);
+            context.SetValue("Culture", CultureInfo.CurrentUICulture);
 
             return Task.CompletedTask;
         }

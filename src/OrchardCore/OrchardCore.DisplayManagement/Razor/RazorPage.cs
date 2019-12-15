@@ -62,13 +62,7 @@ namespace OrchardCore.DisplayManagement.Razor
         /// (await New.MyShape()).A(1).B("Some text")
         /// </code>
         /// </example>
-        public dynamic New
-        {
-            get
-            {
-                return Factory;
-            }
-        }
+        public dynamic New => Factory;
 
         /// <summary>
         /// Gets an <see cref="IShapeFactory"/> to create new shapes.
@@ -218,7 +212,7 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             if (!String.IsNullOrEmpty(segment))
             {
-                Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
+                Title.AddSegment(new StringHtmlContent(segment), position);
             }
 
             return Title.GenerateTitle(separator);
@@ -341,7 +335,7 @@ namespace OrchardCore.DisplayManagement.Razor
         }
 
         /// <summary>
-        /// Returns the full path of the current request.
+        /// Returns the full escaped path of the current request.
         /// </summary>
         public string FullRequestPath => Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString;
 

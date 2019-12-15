@@ -16,6 +16,11 @@ namespace OrchardCore.Html.Media
                     {
                         editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlBodyPart");
                     }
+
+                    if (editor.Metadata.Type == "HtmlBodyPart_Edit__Trumbowyg")
+                    {
+                        editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlBodyPart");
+                    }
                 });
         }
     }

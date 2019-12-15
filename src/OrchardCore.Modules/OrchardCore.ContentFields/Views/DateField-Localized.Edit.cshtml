@@ -6,13 +6,13 @@
     var datepickerId = Html.IdFor(m => m.Value);
 }       
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="row col-md-6 col-lg-4">
         <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
         <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" required="@settings.Required" />
         <span class="hint">@settings.Hint</span>
     </div>
-</fieldset>
+</div>
 
 <script at="Foot">
     $(function () {
