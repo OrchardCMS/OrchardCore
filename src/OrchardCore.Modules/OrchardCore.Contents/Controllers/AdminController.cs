@@ -118,7 +118,7 @@ namespace OrchardCore.Contents.Controllers
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
                 if (contentTypeDefinition == null)
                     return NotFound();
-                contentTypeDefinitions= contentTypeDefinitions.Append(contentTypeDefinition);
+                contentTypeDefinitions = contentTypeDefinitions.Append(contentTypeDefinition);
 
                 // We display a specific type even if it's not listable so that admin pages
                 // can reuse the Content list page for specific types.
