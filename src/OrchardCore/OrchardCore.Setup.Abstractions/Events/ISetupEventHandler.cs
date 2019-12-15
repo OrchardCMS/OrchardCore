@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace OrchardCore.Setup.Events
 {
     /// <summary>
-    /// Contract that called when a tenant is set up.
+    /// Contract that is called when a tenant is set up.
     /// </summary>
     public interface ISetupEventHandler
     {
