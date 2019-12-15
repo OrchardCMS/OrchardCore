@@ -37,13 +37,13 @@ A field can have different Editors (Ex: The value of a Numeric Field can be set 
 
 ### Autoroute
 
-Custom Permalink used for Routing.  
+A custom Permalink used for Routing.  
 It can use a Liquid pattern to be automatically generated.  
 See [Autoroute](../reference/modules/Autoroute)
 
 ### Bag
 
-Collection of content items of a certain type in a parent content item.
+A collection of content items of a certain type in a parent content item.
 
 ### List
 
@@ -52,12 +52,12 @@ See [List](../reference/modules/List)
 
 ### Taxonomy
 
-Category that contains specific terms.  
+A category that contains specific terms.  
 See [Taxonomies](../reference/modules/Taxonomies)
 
 ### Admin menu
 
-Custom link added in the left admin menu.  
+A custom link added in the left admin menu.  
 See [Admin menu](../reference/modules/AdminMenu)
 
 ### Alias
@@ -72,7 +72,7 @@ See [Content Preview](../reference/modules/ContentPreview)
 
 ### Indexing
 
-Define the way the content will be indexed in order to be search it from a query.  
+Define the way the content will be indexed in order to search it from a query.  
 See [Indexing](../reference/modules/Indexing)
 
 ### Query
@@ -82,7 +82,7 @@ See [Queries](../reference/modules/Queries)
 
 ### Tenant
 
-Independent subsite with its own url.  
+An independent subsite with its own url.  
 One instance can have multiple tenants.  
 They can only be managed in the Default one.  
 See [Tenants](../reference/modules/Tenants)
@@ -91,22 +91,22 @@ See [Tenants](../reference/modules/Tenants)
 
 ### Theme
 
-Module that contains assets (Images, Styles, Scripts) and views used to customize the display.  
+A module that contains assets (Images, Styles, Scripts) and views used to customize the display.  
 It can also contain a recipe to initialize some content types and content items.
 
 ### Liquid
 
-Code Syntax that you can use in the views instead of Razor or in the Templates.  
+A syntax that you can use in the views instead of Razor or in the Templates.  
 See [Liquid](../reference/modules/Liquid)
 
 ### Alternate
 
-Override of content type or part or field using a file in a Theme.  
+An override of content type or part or field using a file in a Theme.  
 See [Alternates](../reference/modules/Templates/#shape-differentiators)
 
 ### Placement
 
-Mapping file to set the order of appearance or hide contents for a specific content type or Part/Field name or display type in a Theme.  
+A mapping file to set the order of appearance or hide contents for a specific content type or Part/Field name or display type in a Theme.  
 See [Placement](../reference/modules/Placement)
 
 ### Assets
@@ -124,21 +124,22 @@ See [Resources](../reference/modules/Resources)
 
 ### Template
 
-Liquid Override of a Shape or a Display type in admin.  
+A Liquid override of a Shape or a Display type in admin.  
 See [Templates](../reference/modules/Templates)
 
 ### Zone
 
-Section in the Layout (ex: Footer) in which you can render items.
+A section in the Layout (ex: Footer) in which you can render items.
 
 ### Layer
 
-Display Rule in which you specify a condition to be rendered (ex: isHomepage()).  
+A display Rule in which you specify a condition to be rendered (ex: isHomepage()).  
 See [Layers](../reference/modules/Layers)
 
 ### Widget
 
-Display Content in a specific zone and layer.
+A content displayed in a specific zone and layer.  
+It has the `Widget` stereotype in its content definition.
 
 ### Flow
 
@@ -149,7 +150,7 @@ See [Flow](../reference/modules/Flow)
 
 ### Recipe
 
-Json file used to import Wizard with different steps to execute.
+A json file used to execute different import and configuration steps.
 
 ### Setup Recipe
 
@@ -157,12 +158,12 @@ Import steps like Set theme, Define types, Import data, ... executed during setu
 
 ### Permission
 
-Allow a Users in a Role to do a have access to a specific action.
+Allow Users in a Role to have access to a specific action.
 
 ### Deployment Step
 
-Export of a specific set of information (Configuration or Data).
+An export of a specific set of information (Configuration or Data).
 
 ### Deployment Plan
 
-Batch Export that executes multiple deployment steps.
+A batch Export that executes multiple deployment steps.
