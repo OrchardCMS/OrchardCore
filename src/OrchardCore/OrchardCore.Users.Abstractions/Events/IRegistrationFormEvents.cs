@@ -11,7 +11,7 @@ namespace OrchardCore.Users.Events
         /// <summary>
         /// Occurs during the user registration.
         /// </summary>
-        /// <param name="reportError">The reported error if fauilar happened in validation process.</param>
+        /// <param name="reportError">The reported error if failure happened in validation process.</param>
         Task RegistrationValidationAsync(Action<string, string> reportError);
 
         /// <summary>

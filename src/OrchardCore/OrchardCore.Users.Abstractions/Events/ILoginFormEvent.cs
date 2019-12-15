@@ -9,14 +9,14 @@ namespace OrchardCore.Users.Events
     public interface ILoginFormEvent
     {
         /// <summary>
-        /// Occurs when the user is login.
+        /// Occurs when the user is logging.
         /// </summary>
         /// <param name="userName">The username.</param>
-        /// <param name="reportError">The reported error if fauilar happened during the login process.</param>
+        /// <param name="reportError">The reported error if failure happened during the login process.</param>
         Task LoggingInAsync(string userName, Action<string, string> reportError);
 
         /// <summary>
-        /// Occurs when the user login is failed.
+        /// Occurs when the user login has failed.
         /// </summary>
         /// <param name="userName">The username.</param>
         Task LoggingInFailedAsync(string userName);

@@ -33,7 +33,7 @@ namespace OrchardCore.Users.Handlers
         public IEnumerable<SerializableClaim> ExternalClaims { get; }
 
         /// <summary>
-        /// Gets a user roles.
+        /// Gets the user's roles.
         /// </summary>
         public IEnumerable<string> UserRoles { get; }
 

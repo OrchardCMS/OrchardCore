@@ -11,24 +11,24 @@ namespace OrchardCore.Users.Events
     public interface IPasswordRecoveryFormEvents
     {
         /// <summary>
-        /// Occures during the user password resetting.
+        /// Occurs during the user password is being reset.
         /// </summary>
-        /// <param name="reportError">The reported error if fauilar happened during the ressting process.</param>
+        /// <param name="reportError">The reported error if failure happened during the rest process.</param>
         Task ResettingPasswordAsync(Action<string, string> reportError);
 
         /// <summary>
-        /// Occures after the user password has been reset.
+        /// Occurs after the user password has been reset.
         /// </summary>
         Task PasswordResetAsync();
 
         /// <summary>
-        /// Occures during the user password recovery.
+        /// Occurs during the user password recovery.
         /// </summary>
-        /// <param name="reportError">The reported error if fauilar happened during the recovery process.</param>
+        /// <param name="reportError">The reported error if failure happened during the recovery process.</param>
         Task RecoveringPasswordAsync(Action<string, string> reportError);
 
         /// <summary>
-        /// Occures after the user password has been recovered.
+        /// Occurs after the user password has been recovered.
         /// </summary>
         Task PasswordRecoveredAsync();
     }

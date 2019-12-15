@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace OrchardCore.Users.Services
 {
     /// <summary>
-    /// Contract that provides a common user operations.
+    /// Contract that provides an abstraction for common user operations.
     /// </summary>
     public interface IUserService
     {
