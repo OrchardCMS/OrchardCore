@@ -6,12 +6,12 @@
 
 <div class="row">
     <div class="col-xl-6 col-sm-12 title">
-        <div class="selectors d-inline cursor-pointer">
-            @if (Model.Selectors != null)
-            {
+        @if (Model.Selectors != null)
+        {
+            <div class="selectors d-inline cursor-pointer">
                 @await DisplayAsync(Model.Selectors)
-            }
-        </div>
+            </div>
+        }
         <div class="custom-control custom-checkbox d-inline">
             <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
             <label class="custom-control-label" for="itemIds-@contentItem.Id"></label>
