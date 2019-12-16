@@ -54,6 +54,29 @@ When a list of content item ids is available, the `content_item_id` filter shoul
 {% contentitem alias:"alias:test" display_type="Detail" %}
 ```
 
+### Logging to the browser console
+
+The `console_log` liquid filter can be used to dump data from well known properties, or objects serializable to json, to the browser console.
+
+```liquid
+{{ Model.Content | console_log }}
+```
+
+```liquid
+{{ Model.ContentItem | console_log }}
+```
+
+Well known properties include
+- Strings
+- JTokens
+- Content Items
+- Shapes (from the `Content` property)
+- Objects that can serialize to json.
+
+!!! note
+    To dump shapes call `{{ Model.Content | console_log }}` before calling `{{ Model.Content | shape_render }}`
+    This will allow any child shapes (items) to also be logged. They will be logged as a separate object in the console, after the parent shape.
+
 ## Razor Helper
 
 The following methods are available from the Razor helper.
@@ -65,8 +88,28 @@ The following methods are available from the Razor helper.
 | `GetContentItemByIdAsync` | `string contentItemId, bool latest = false` | Loads a content item from its id, seeking the latest version or not. |
 | `GetContentItemsByIdAsync` | `IEnumerable<string> contentItemIds, bool latest = false` | Loads a list of content items by ids, seeking the latest version or not. |
 | `GetContentItemByVersionIdAsync` | `string contentItemVersionId` | Loads a content item from its version id. |
+| `ConsoleLog` | `object content` | Logs content to the browser console |
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
+
+### Razor console log
+
+The `ConsoleLog` extension method can be used to dump data from well known properties, or objects serializable to json, to the browser console.
+
+`@Orchard.ConsoleLog(Model.Content as object)` noting that we cast to an object, as extension methods do not support dynamic dispatching.
+
+`@Orchard.ConsoleLog(Model.ContentItem as object)` noting that we cast to an object, as extension methods do not support dynamic dispatching.
+
+Well known properties include
+- Strings
+- JTokens
+- Content Items
+- Shapes (from the `Content` property)
+- Objects that can serialize to json.
+
+!!! note
+    To dump shapes call `@Orchard.ConsoleLog(Model.Content as object)` before calling `@await DisplayAsync(Model.Content)`
+    This will allow any child shapes (items) to also be logged. They will be logged as a separate object in the console, after the parent shape.
 
 ## GraphQL
 
