@@ -5,7 +5,7 @@ using OrchardCore.OpenId.Services;
 
 namespace OrchardCore.OpenId.Deployment
 {
-    public class OpenIdServerDeploymentSource : IDeploymentSource
+    public class OpenIdServerDeploymentSource : DeploymentSourceBase
     {
         private readonly IOpenIdServerService _openIdServerService;
 
@@ -14,7 +14,7 @@ namespace OrchardCore.OpenId.Deployment
             _openIdServerService = openIdServerService;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var openIdServerStep = step as OpenIdServerDeploymentStep;
 
