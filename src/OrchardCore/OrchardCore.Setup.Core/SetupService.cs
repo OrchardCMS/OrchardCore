@@ -19,6 +19,9 @@ using YesSql;
 
 namespace OrchardCore.Setup.Services
 {
+    /// <summary>
+    /// Represents a setup service.
+    /// </summary>
     public class SetupService : ISetupService
     {
         private readonly IShellHost _shellHost;
@@ -30,6 +33,17 @@ namespace OrchardCore.Setup.Services
         private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="SetupService"/>.
+        /// </summary>
+        /// <param name="shellHost">The <see cref="IShellHost"/>.</param>
+        /// <param name="hostingEnvironment">The <see cref="IHostEnvironment"/>.</param>
+        /// <param name="shellContextFactory">The <see cref="IShellContextFactory"/>.</param>
+        /// <param name="runningShellTable">The <see cref="IRunningShellTable"/>.</param>
+        /// <param name="recipeHarvesters">A list of <see cref="IRecipeHarvester"/>s.</param>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
+        /// <param name="stringLocalizer">The <see cref="IStringLocalizer"/>.</param>
+        /// <param name="applicationLifetime">The <see cref="IHostApplicationLifetime"/>.</param>
         public SetupService(
             IShellHost shellHost,
             IHostEnvironment hostingEnvironment,
@@ -37,7 +51,6 @@ namespace OrchardCore.Setup.Services
             IRunningShellTable runningShellTable,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             ILogger<SetupService> logger,
-            IStringLocalizerFactory stringLocalizerFactory,
             IStringLocalizer<SetupService> stringLocalizer,
             IHostApplicationLifetime applicationLifetime
             )
@@ -51,6 +64,7 @@ namespace OrchardCore.Setup.Services
             _applicationLifetime = applicationLifetime;
         }
 
+        /// <inheridoc />
         public async Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync()
         {
             if (_recipes == null)
@@ -62,6 +76,7 @@ namespace OrchardCore.Setup.Services
             return _recipes;
         }
 
+        /// <inheridoc />
         public async Task<string> SetupAsync(SetupContext context)
         {
             var initialState = context.ShellSettings.State;
@@ -83,7 +98,7 @@ namespace OrchardCore.Setup.Services
             }
         }
 
-        public async Task<string> SetupInternalAsync(SetupContext context)
+        private async Task<string> SetupInternalAsync(SetupContext context)
         {
             string executionId;
 

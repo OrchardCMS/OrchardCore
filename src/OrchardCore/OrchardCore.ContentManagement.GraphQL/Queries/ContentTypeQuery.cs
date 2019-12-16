@@ -12,6 +12,7 @@ using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Contents;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
@@ -59,6 +60,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     Description = S["Represents a {0}.", typeDefinition.DisplayName],
                     ResolvedType = new ListGraphType(typeType)
                 };
+
+                query.RequirePermission(CommonPermissions.ViewContent, typeDefinition.Name);
 
                 foreach (var builder in contentTypeBuilders)
                 {

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.GraphQL
@@ -39,7 +40,7 @@ namespace OrchardCore.Media.GraphQL
                         Description = S["Whether to get the assets from just the top directory or from all sub-directories as well."]
                     }
                 ),
-                Resolver = new AsyncFieldResolver<IEnumerable<IFileStoreEntry>>(ResolveAsync)
+                Resolver = new LockedAsyncFieldResolver<IEnumerable<IFileStoreEntry>>(ResolveAsync)
             };
 
             schema.Query.AddField(field);
@@ -49,8 +50,7 @@ namespace OrchardCore.Media.GraphQL
 
         private async Task<IEnumerable<IFileStoreEntry>> ResolveAsync(ResolveFieldContext resolveContext)
         {
-            var context = (GraphQLContext)resolveContext.UserContext;
-            var mediaFileStore = context.ServiceProvider.GetService<IMediaFileStore>();
+            var mediaFileStore = resolveContext.ResolveServiceProvider().GetService<IMediaFileStore>();
 
             var path = resolveContext.GetArgument("path", string.Empty);
             var includeSubDirectories = resolveContext.GetArgument("includeSubDirectories", false);

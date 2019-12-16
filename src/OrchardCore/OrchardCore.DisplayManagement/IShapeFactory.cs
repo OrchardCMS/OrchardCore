@@ -55,14 +55,14 @@ namespace OrchardCore.DisplayManagement
             }
         }
 
+        public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType)
+        {
+            return factory.CreateAsync(shapeType, NewShape);
+        }
+
         public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType, Func<ValueTask<IShape>> shapeFactory)
         {
             return factory.CreateAsync(shapeType, shapeFactory, null, null);
-        }
-
-        public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType)
-        {
-            return factory.CreateAsync(shapeType, NewShape, null, null);
         }
 
         /// <summary>
@@ -112,33 +112,36 @@ namespace OrchardCore.DisplayManagement
             });
         }
 
-        public static ValueTask<IShape> CreateAsync<T>(this IShapeFactory factory, string shapeType, INamedEnumerable<T> parameters = null)
+        public static ValueTask<IShape> CreateAsync<T>(this IShapeFactory factory, string shapeType, INamedEnumerable<T> parameters)
         {
+            if (parameters == null || parameters == Arguments.Empty)
+            {
+                return factory.CreateAsync(shapeType);
+            }
+
             return factory.CreateAsync(shapeType, NewShape, null, createdContext =>
             {
                 var shape = (Shape)createdContext.Shape;
 
                 // If only one non-Type, use it as the source object to copy
-                if (parameters != null && parameters != Arguments.Empty)
+                
+                var initializer = parameters.Positional.SingleOrDefault();
+
+                if (initializer != null)
                 {
-                    var initializer = parameters.Positional.SingleOrDefault();
+                    // Use the Arguments class to optimize reflection code
+                    var arguments = Arguments.From(initializer);
 
-                    if (initializer != null)
+                    foreach (var prop in arguments.Named)
                     {
-                        // Use the Arguments class to optimize reflection code
-                        var arguments = Arguments.From(initializer);
-
-                        foreach (var prop in arguments.Named)
-                        {
-                            shape.Properties[prop.Key] = prop.Value;
-                        }
+                        shape.Properties[prop.Key] = prop.Value;
                     }
-                    else
+                }
+                else
+                {
+                    foreach (var kv in parameters.Named)
                     {
-                        foreach (var kv in parameters.Named)
-                        {
-                            shape.Properties[kv.Key] = kv.Value;
-                        }
+                        shape.Properties[kv.Key] = kv.Value;
                     }
                 }
             });

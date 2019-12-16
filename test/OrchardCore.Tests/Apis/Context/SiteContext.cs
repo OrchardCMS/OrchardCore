@@ -1,12 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
+using Newtonsoft.Json;
 
 namespace OrchardCore.Tests.Apis.Context
 {
-    public class SiteContext : IDisposable
+    public class SiteContext : IDisposable 
     {
         public static OrchardTestFixture<SiteStartup> Site { get; }
         public static HttpClient DefaultTenantClient { get; }
@@ -20,7 +22,7 @@ namespace OrchardCore.Tests.Apis.Context
             DefaultTenantClient = Site.CreateDefaultClient();
         }
 
-        public virtual async Task InitializeAsync()
+        public virtual async Task InitializeAsync(PermissionsContext permissionsContext = null)
         {
             var tenantName = Guid.NewGuid().ToString().Replace("-", "");
 
@@ -59,14 +61,23 @@ namespace OrchardCore.Tests.Apis.Context
                 Client = Site.CreateDefaultClient(url);
             }
 
+            if (permissionsContext != null)
+            {
+                var permissionContextKey = Guid.NewGuid().ToString();
+                SiteStartup.PermissionsContexts.TryAdd(permissionContextKey, permissionsContext);
+                Client.DefaultRequestHeaders.Add("PermissionsContext", permissionContextKey);
+            }
+            
             GraphQLClient = new OrchardGraphQLClient(Client);
         }
 
         public async Task<string> CreateContentItem(string contentType, Action<ContentItem> func, bool draft = false)
         {
-            var contentItem = new ContentItem();
-            contentItem.ContentItemId = Guid.NewGuid().ToString();
-            contentItem.ContentType = contentType;
+            var contentItem = new ContentItem
+            {
+                ContentItemId = Guid.NewGuid().ToString(),
+                ContentType = contentType
+            };
 
             func(contentItem);
 

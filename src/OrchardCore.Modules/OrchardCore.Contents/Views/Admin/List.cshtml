@@ -12,7 +12,6 @@
         pageTitle = T["Manage {0} Content", (string)contentTypeDisplayName];
         createLinkText = T["Create New {0}", (string)contentTypeDisplayName];
     }
-
     var formActionWithoutTypeName = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "List" });
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.ContentItems.Count - 1;
