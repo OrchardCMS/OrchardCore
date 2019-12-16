@@ -13,7 +13,9 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
     public class LiquidTagHelperActivator
     {
-        public readonly static LiquidTagHelperActivator None = new LiquidTagHelperActivator();
+        public static readonly LiquidTagHelperActivator None = new LiquidTagHelperActivator();
+        private static readonly MethodInfo CallPropertySetterOpenGenericMethod = typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertySetter));
+
         private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activator;
         private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue>>(StringComparer.OrdinalIgnoreCase);
 
@@ -27,8 +29,11 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             foreach (var property in accessibleProperties)
             {
-                var invokeType = typeof(Action<,>).MakeGenericType(type, property.PropertyType);
-                var setterDelegate = Delegate.CreateDelegate(invokeType, property.GetSetMethod());
+                // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
+                var propertySetterAsAction = property.SetMethod.CreateDelegate(typeof(Action<,>).MakeGenericType(type, property.PropertyType));
+                var callPropertySetterClosedGenericMethod = CallPropertySetterOpenGenericMethod.MakeGenericMethod(type, property.PropertyType);
+                var callPropertySetterDelegate = callPropertySetterClosedGenericMethod.CreateDelegate(typeof(Action<object, object>), propertySetterAsAction);
+                var fastPropertySetter = (Action<object, object>)callPropertySetterDelegate;
 
                 var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { property.Name };
                 var htmlAttribute = property.GetCustomAttribute<HtmlAttributeNameAttribute>();
@@ -53,15 +58,15 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                         {
                             value = Enum.Parse(property.PropertyType, v.ToStringValue());
                         }
-                        else if (property.PropertyType == typeof(String))
+                        else if (property.PropertyType == typeof(string))
                         {
                             value = v.ToStringValue();
                         }
-                        else if (property.PropertyType == typeof(Boolean))
+                        else if (property.PropertyType == typeof(bool))
                         {
                             value = Convert.ToBoolean(v.ToStringValue());
                         }
-                        else if (property.PropertyType == typeof(Nullable<Boolean>))
+                        else if (property.PropertyType == typeof(bool?))
                         {
                             value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue());
                         }
@@ -70,7 +75,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                             value = v.ToObjectValue();
                         }
 
-                        setterDelegate.DynamicInvoke(new[] { h, value });
+                        fastPropertySetter(h, value);
                     });
                 }
             }
@@ -81,6 +86,9 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             _activator = Delegate.CreateDelegate(typeof(Func<ITagHelperFactory, ViewContext, ITagHelper>),
                 factoryMethod) as Func<ITagHelperFactory, ViewContext, ITagHelper>;
         }
+
+        private static void CallPropertySetter<TDeclaringType, TValue>(Action<TDeclaringType, TValue> setter, object target, object value)
+            => setter((TDeclaringType)target, (TValue)value);
 
         public ITagHelper Create(ITagHelperFactory factory, ViewContext context, FilterArguments arguments,
             out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
