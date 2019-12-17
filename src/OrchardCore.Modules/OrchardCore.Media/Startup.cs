@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -21,6 +22,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
+using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
@@ -36,6 +38,7 @@ using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -50,6 +53,13 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
@@ -173,6 +183,20 @@ namespace OrchardCore.Media
                     ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
                 }
             });
+
+            routes.MapAreaControllerRoute(
+                name: "Media.Index",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "MediaCache.Index",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/MediaCache",
+                defaults: new { controller = typeof(MediaCacheController).ControllerName(), action = nameof(MediaCacheController.Index) }
+            );
         }
 
         private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)

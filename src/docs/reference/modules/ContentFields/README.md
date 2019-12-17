@@ -1,8 +1,6 @@
 # Content Fields (`OrchardCore.ContentFields`)
 
-## Purpose
-
-This modules provides common content fields.
+This module provides common content fields.
 
 ## Available Fields
 

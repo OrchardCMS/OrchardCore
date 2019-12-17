@@ -96,7 +96,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             }
             catch (CultureNotFoundException)
             {
-                _logger.LogWarning(T["Language with name; {0} not found", language]);
+                _logger.LogWarning(T["Language with name {0} not found", language]);
             }
 
             return culture;

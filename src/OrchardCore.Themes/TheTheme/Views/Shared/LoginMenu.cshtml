@@ -1,6 +1,9 @@
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
+@using OrchardCore.Admin
 @using OrchardCore.Users
 @inject SignInManager<IUser> SignInManager
+@inject IOptions<AdminOptions> AdminOptions
 
 @{ 
     var externalAuthenticationSchemes = await SignInManager.GetExternalAuthenticationSchemesAsync();

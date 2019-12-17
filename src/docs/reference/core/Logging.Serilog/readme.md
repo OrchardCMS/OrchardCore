@@ -64,3 +64,11 @@ add a reference to `OrchardCore.Logging.Serilog`
             app.UseOrchardCore(c => c.UseSerilogTenantNameLoggingMiddleware());
         }
 ```
+
+## Credits
+
+### Serilog
+
+<https://github.com/serilog/serilog-aspnetcore>
+
+Apache-2.0 License

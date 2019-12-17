@@ -272,6 +272,11 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
+            if (!_allowedFileExtensions.Contains(Path.GetExtension(newPath), StringComparer.OrdinalIgnoreCase))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, T["This file extension is not allowed: {0}", Path.GetExtension(newPath)]);
+            }
+
             if (await _mediaFileStore.GetFileInfoAsync(newPath) != null)
             {
                 return StatusCode(StatusCodes.Status403Forbidden, T["Cannot move media because a file already exists with the same name"]);

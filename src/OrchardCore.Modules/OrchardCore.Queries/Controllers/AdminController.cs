@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.ViewModels;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using YesSql;
 
@@ -104,6 +105,15 @@ namespace OrchardCore.Queries.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(QueriesIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
         }
 
         public async Task<IActionResult> Create(string id)

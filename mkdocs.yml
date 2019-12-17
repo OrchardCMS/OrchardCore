@@ -97,6 +97,7 @@ nav:
             - Resources: docs/reference/modules/Resources/README.md
             - Menu: docs/reference/modules/Menu/README.md
             - Navigation: docs/reference/modules/Navigation/README.md
+            - Admin: docs/reference/modules/Admin/README.md
             - Admin Menu: docs/reference/modules/AdminMenu/README.md
             - Taxonomies: docs/reference/modules/Taxonomies/README.md
             - Authentication:
