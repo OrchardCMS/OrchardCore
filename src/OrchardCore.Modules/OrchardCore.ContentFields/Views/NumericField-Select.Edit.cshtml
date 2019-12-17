@@ -8,7 +8,7 @@
     decimal to = settings.Maximum.HasValue ? settings.Maximum.Value : 10;
 }
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="row col-sm-3">
         <label asp-for="Value">@name</label>
         <select asp-for="Value" class="form-control content-preview-select">
@@ -23,4 +23,4 @@
         </select>
         <span class="hint">@settings.Hint</span>
     </div>
-</fieldset>
+</div>

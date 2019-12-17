@@ -51,8 +51,21 @@ namespace OrchardCore.Contents.Workflows.Activities
             if (!string.IsNullOrWhiteSpace(Content.Expression))
             {
                 var expression = new WorkflowExpression<object> { Expression = Content.Expression };
-                var contentItemJson = JsonConvert.SerializeObject(await ScriptEvaluator.EvaluateAsync(expression, workflowContext));
+                var contentItemResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
+
+                if (contentItemResult is ContentItem contentItem)
+                {
+                    return contentItem;
+                } else if (contentItemResult is string contentItemId)
+                {
+                    // Latest is used to allow fetching unpublished content items
+                    return await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
+                }
+
+                // Try to map the result to a content item
+                var contentItemJson = JsonConvert.SerializeObject(contentItemResult);
                 var res = JsonConvert.DeserializeObject<ContentItem>(contentItemJson);
+
                 return res;
             }
 
@@ -67,5 +80,22 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             return null;
         }
+
+
+        protected virtual async Task<string> GetContentItemIdAsync(WorkflowExecutionContext workflowContext)
+        {
+            // Try and evaluate a content item id from the Content expression, if provided.
+            if (!string.IsNullOrWhiteSpace(Content.Expression))
+            {
+                var expression = new WorkflowExpression<object> { Expression = Content.Expression };
+                var contentItemIdResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
+                if (contentItemIdResult is string contentItemId)
+                {
+                    return contentItemId;
+                }
+            }
+            return null;
+        }
+
     }
 }

@@ -77,7 +77,7 @@ body {
     }
 
     .breadcrumb {
-        background-color:transparent;
+        background-color: transparent;
         margin-top: 1rem;
     }
 }
@@ -1047,7 +1047,7 @@ ul.pager li a {
 }
 // Tabs
 // ------------------------------
-// 
+//
 .tab-pane {
     border-left: $nav-tabs-border-width solid $nav-tabs-border-color;
     border-right: $nav-tabs-border-width solid $nav-tabs-border-color;
@@ -1056,24 +1056,27 @@ ul.pager li a {
     border-bottom-left-radius: $nav-tabs-border-radius;
     border-bottom-right-radius: $nav-tabs-border-radius;
     border-top-right-radius: $nav-tabs-border-radius;
-    margin-bottom:  map-get($map: $spacers, $key: 3); 
-    padding-left: map-get($map: $spacers, $key: 3); 
-    padding-right: map-get($map: $spacers, $key: 3); 
-    padding-top: map-get($map: $spacers, $key: 3); 
+    margin-bottom: map-get($map: $spacers, $key: 3);
+    padding-left: map-get($map: $spacers, $key: 3);
+    padding-right: map-get($map: $spacers, $key: 3);
+    padding-top: map-get($map: $spacers, $key: 3);
 }
 
 .nav-tabs {
     border-bottom: none;
     margin-top: 1px;
     margin-bottom: -1px;
+
     .nav-link {
         border: none;
         color: $white;
         background-color: $gray-600;
         @include transition($btn-transition);
-        &:hover{
+
+        &:hover {
             background-color: darken($gray-600, 7.5%)
         }
+
         &.active {
             border-left: $nav-tabs-border-width solid $nav-tabs-border-color;
             border-right: $nav-tabs-border-width solid $nav-tabs-border-color;
@@ -1081,14 +1084,16 @@ ul.pager li a {
             cursor: initial;
             color: $gray-900;
             background-color: $white;
+
             &:hover {
                 background-color: $white;
             }
         }
     }
-    .nav-item{
+
+    .nav-item {
         margin-bottom: 0px;
-    }      
+    }
 }
 
 @include media-breakpoint-down(sm) {
@@ -1096,9 +1101,11 @@ ul.pager li a {
         .nav-item:not(.nav-link) {
             padding-bottom: map-get($map: $spacers, $key: 1);
         }
+
         .nav-link {
             border-bottom-left-radius: $nav-tabs-border-radius;
             border-bottom-right-radius: $nav-tabs-border-radius;
+
             &.active {
                 border-bottom: $nav-tabs-border-width solid $nav-tabs-border-color;
             }
@@ -1114,6 +1121,7 @@ ul.pager li a {
 .with-checkbox .list-group-item {
     padding: 0.75rem 0.5rem;
 }
+
 .properties {
     @extend .w-100;
 }
@@ -1181,4 +1189,14 @@ ul.pager li a {
             line-height: 24px;
         }
     }
+}
+
+.disable.custom-control-input:checked ~ .custom-control-label::before {
+    border-color: red;
+    background-color: red;
+}
+
+.dropdown-menu.scrollable{
+    overflow-y: auto;
+    max-height: 250px;
 }

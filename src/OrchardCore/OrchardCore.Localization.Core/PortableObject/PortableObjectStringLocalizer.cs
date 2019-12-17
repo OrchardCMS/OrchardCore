@@ -9,6 +9,9 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Localization.PortableObject
 {
+    /// <summary>
+    /// Represents <see cref="IPluralStringLocalizer"/> for portable objects.
+    /// </summary>
     public class PortableObjectStringLocalizer : IPluralStringLocalizer
     {
         private readonly ILocalizationManager _localizationManager;
@@ -16,6 +19,13 @@ namespace OrchardCore.Localization.PortableObject
         private readonly ILogger _logger;
         private string _context;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="PortableObjectStringLocalizer"/>.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="localizationManager"></param>
+        /// <param name="fallBackToParentCulture"></param>
+        /// <param name="logger"></param>
         public PortableObjectStringLocalizer(
             string context,
             ILocalizationManager localizationManager,
@@ -28,6 +38,7 @@ namespace OrchardCore.Localization.PortableObject
             _logger = logger;
         }
 
+        /// <inheritdocs />
         public LocalizedString this[string name]
         {
             get
@@ -43,6 +54,7 @@ namespace OrchardCore.Localization.PortableObject
             }
         }
 
+        /// <inheritdocs />
         public LocalizedString this[string name, params object[] arguments]
         {
             get
@@ -54,6 +66,7 @@ namespace OrchardCore.Localization.PortableObject
             }
         }
 
+        /// <inheritdocs />
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
             var culture = CultureInfo.CurrentUICulture;
@@ -63,48 +76,10 @@ namespace OrchardCore.Localization.PortableObject
                 : GetAllStrings(culture);
         }
 
-        private IEnumerable<LocalizedString> GetAllStringsFromCultureHierarchy(CultureInfo culture)
-        {
-            var currentCulture = culture;
-            var allLocalizedStrings = new List<LocalizedString>();
+        [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
+        public IStringLocalizer WithCulture(CultureInfo culture) => this;
 
-            do
-            {
-                var localizedStrings = GetAllStrings(currentCulture);
-
-                if (localizedStrings != null)
-                {
-                    foreach (var localizedString in localizedStrings)
-                    {
-                        if (!allLocalizedStrings.Any(ls => ls.Name == localizedString.Name))
-                        {
-                            allLocalizedStrings.Add(localizedString);
-                        }
-                    }
-                }
-
-                currentCulture = currentCulture.Parent;
-            } while (currentCulture != currentCulture.Parent);
-
-            return allLocalizedStrings;
-        }
-
-        private IEnumerable<LocalizedString> GetAllStrings(CultureInfo culture)
-        {
-            var dictionary = _localizationManager.GetDictionary(culture);
-
-            foreach (var translation in dictionary.Translations)
-            {
-                yield return new LocalizedString(translation.Key, translation.Value.FirstOrDefault());
-            }
-        }
-
-        public IStringLocalizer WithCulture(CultureInfo culture)
-        {
-            // This method is never used in ASP.NET and is made obsolete in future releases.
-            return this;
-        }
-
+        /// <inheritdocs />
         public (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
         {
             if (name == null)
@@ -139,6 +114,42 @@ namespace OrchardCore.Localization.PortableObject
                 var translation = this[name];
                 return (new LocalizedString(name, translation, translation.ResourceNotFound), arguments);
             }
+        }
+
+        private IEnumerable<LocalizedString> GetAllStrings(CultureInfo culture)
+        {
+            var dictionary = _localizationManager.GetDictionary(culture);
+
+            foreach (var translation in dictionary.Translations)
+            {
+                yield return new LocalizedString(translation.Key, translation.Value.FirstOrDefault());
+            }
+        }
+
+        private IEnumerable<LocalizedString> GetAllStringsFromCultureHierarchy(CultureInfo culture)
+        {
+            var currentCulture = culture;
+            var allLocalizedStrings = new List<LocalizedString>();
+
+            do
+            {
+                var localizedStrings = GetAllStrings(currentCulture);
+
+                if (localizedStrings != null)
+                {
+                    foreach (var localizedString in localizedStrings)
+                    {
+                        if (!allLocalizedStrings.Any(ls => ls.Name == localizedString.Name))
+                        {
+                            allLocalizedStrings.Add(localizedString);
+                        }
+                    }
+                }
+
+                currentCulture = currentCulture.Parent;
+            } while (currentCulture != currentCulture.Parent);
+
+            return allLocalizedStrings;
         }
 
         private string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)

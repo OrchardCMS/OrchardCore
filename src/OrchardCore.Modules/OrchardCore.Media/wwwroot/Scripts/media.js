@@ -758,14 +758,15 @@ Vue.component('mediaItemsGrid', {
                     draggable="true" v-on:dragstart="dragStart(media, $event)"> \
                     <div class="thumb-container" :style="{height: thumbSize + \'px\'}"> \
                         <img v-if="media.mime.startsWith(\'image\')" \
-                                :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" \
+                                :src="buildMediaUrl(media.url, thumbSize)" \
                                 :data-mime="media.mime" \
                                 :style="{maxHeight: thumbSize + \'px\', maxWidth: thumbSize + \'px\'}" /> \
                         <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
                     </div> \
                 <div class="media-container-main-item-title card-body"> \
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button edit-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a> \
+                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button edit-button" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a> \
                         <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button" v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash"></i></a> \
+                        <a :href="media.url" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download"></i></a> \
                         <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span> \
                     </div> \
                  </li> \
@@ -794,6 +795,9 @@ Vue.component('mediaItemsGrid', {
         return element.url.toLowerCase() === media.url.toLowerCase();
       });
       return result;
+    },
+    buildMediaUrl: function buildMediaUrl(url, thumbSize) {
+      return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
     },
     toggleSelectionOfMedia: function toggleSelectionOfMedia(media) {
       bus.$emit('mediaToggleRequested', media);
@@ -843,7 +847,7 @@ Vue.component('mediaItemsTable', {
                           :key="media.name"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
-                                    <img v-if="media.mime.startsWith(\'image\')" draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
+                                    <img v-if="media.mime.startsWith(\'image\')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" /> \
                                     <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
                                 </div> \
                             </td> \
@@ -895,6 +899,9 @@ Vue.component('mediaItemsTable', {
         return element.url.toLowerCase() === media.url.toLowerCase();
       });
       return result;
+    },
+    buildMediaUrl: function buildMediaUrl(url, thumbSize) {
+      return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
     },
     changeSort: function changeSort(newSort) {
       bus.$emit('sortChangeRequested', newSort);
@@ -1486,14 +1493,15 @@ Vue.component('mediaFieldThumbsContainer', {
                     <div v-if="media.mediaPath!== \'not-found\'">\
                         <div class="thumb-container" :style="{height: thumbSize + \'px\'}" >\
                             <img v-if="media.mime.startsWith(\'image\')" \
-                            :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" \
+                            :src="buildMediaUrl(media.url, thumbSize)" \
                             :data-mime="media.mime"\
                             :style="{maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\'}"/>\
                             <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i>\
                          </div>\
                          <div class="media-container-main-item-title card-body">\
-                                <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button"\
-                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
+                                <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
+                                    v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
+                                <a :href="media.url" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download"></i></a> \
                                 <span class="media-filename card-text small" :title="media.mediaPath">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\
                          </div>\
                     </div>\
@@ -1504,7 +1512,7 @@ Vue.component('mediaFieldThumbsContainer', {
                             <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>\
                         </div>\
                         <div class="media-container-main-item-title card-body">\
-                            <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button"\
+                            <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
                                 v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
                             <span class="media-filename card-text small text-danger" :title="media.name">{{ media.name }}</span>\
                         </div>\
@@ -1536,6 +1544,9 @@ Vue.component('mediaFieldThumbsContainer', {
     },
     selectMedia: function selectMedia(media) {
       this.$parent.$emit('selectMediaRequested', media);
+    },
+    buildMediaUrl: function buildMediaUrl(url, thumbSize) {
+      return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
     }
   }
 });

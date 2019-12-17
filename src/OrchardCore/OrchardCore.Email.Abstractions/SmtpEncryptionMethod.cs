@@ -4,6 +4,9 @@ using System.Text;
 
 namespace OrchardCore.Email
 {
+    /// <summary>
+    /// Represents an enumeration for mail encryption methods.
+    /// </summary>
     public enum SmtpEncryptionMethod
     {
         None = 0,

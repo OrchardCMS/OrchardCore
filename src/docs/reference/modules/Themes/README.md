@@ -199,7 +199,7 @@ When content items are rendered in a list, the convention is to use the `Summary
 Looking at how our __Portfolio__ content item is rendered, the __Project__ content items are displayed as a list, using the `Summary` display type.  
 Alternates exist to target templates for a specific display type.  
 For instance we can customize how __Project__ content items are displayed when rendered as part of a list by create a template for the shape `Content_Summary__Project`, which corresponds to the file `Content-Project.Summary.cshtml`.  
-See [Templates documentation](../OrchardCore.Templates/#content_displaytype__contenttype)
+See [Templates documentation](../Templates/#content_displaytype__contenttype)
 
 Here, the `_` in the shape name is replaced by a dot (`.`) in the template name, and the dotted portion of the name is moved at the end.
 
@@ -219,7 +219,7 @@ The `TitlePart` shape is rendered in the zone called `Header`.
 Some templating helpers provide ways to select and remove these shapes.
 
 In order to cherrypick specific shapes from a zone, shapes are given a nickname called a __Differentiator__.  
-This is necessary, as multiple identical shape types can be added to content zones. See [Shape differentiators](../OrchardCore.Templates/#shape-differentiators)
+This is necessary, as multiple identical shape types can be added to content zones. See [Shape differentiators](../Templates/#shape-differentiators)
 
 For the `Url` text field the differentiator is `Project-Url`. For the __Markdown__ part it is `MarkdownPart`.
 

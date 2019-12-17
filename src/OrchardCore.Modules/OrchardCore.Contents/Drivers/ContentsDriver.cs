@@ -41,7 +41,7 @@ namespace OrchardCore.Contents.Drivers
 
                     if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                     {
-                        ctx.ShapeMetadata.Alternates.Add($"{stereotype}__ContentsMetadata");
+                        ctx.Shape.Metadata.Alternates.Add($"{stereotype}__ContentsMetadata");
                     }
                 });
             }

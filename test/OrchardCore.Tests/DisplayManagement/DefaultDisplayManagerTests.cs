@@ -43,6 +43,7 @@ namespace OrchardCore.Tests.DisplayManagement
 
             serviceCollection.AddSingleton(_defaultShapeTable);
             serviceCollection.AddSingleton(_additionalBindings);
+            serviceCollection.AddWebEncoders();
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
@@ -162,8 +163,9 @@ namespace OrchardCore.Tests.DisplayManagement
                 ProcessingAsync = new Func<ShapeDisplayContext, Task>[] {
                     context =>
                     {
-                            context.Shape.Data = "some data";
-                            return Task.CompletedTask;
+                        dynamic shape = context.Shape;
+                        shape.Data = "some data";
+                        return Task.CompletedTask;
                     }
                 }
             };
@@ -225,7 +227,7 @@ namespace OrchardCore.Tests.DisplayManagement
                 DisplayingAsync = new Func<ShapeDisplayContext, Task>[] {
                     context =>
                     {
-                            context.ShapeMetadata.Alternates.Add("Bar");
+                            context.Shape.Metadata.Alternates.Add("Bar");
                             return Task.CompletedTask;
                     }
                 }
@@ -260,7 +262,7 @@ namespace OrchardCore.Tests.DisplayManagement
                 ProcessingAsync = new Func<ShapeDisplayContext, Task>[] {
                     context =>
                     {
-                            context.ShapeMetadata.Alternates.Add("Bar");
+                            context.Shape.Metadata.Alternates.Add("Bar");
                             return Task.CompletedTask;
                     }
                 }
@@ -395,7 +397,7 @@ namespace OrchardCore.Tests.DisplayManagement
 
             shapeFoo = new Shape();
             shapeFoo.Metadata.Type = "Foo";
-            descriptorFoo.DisplayingAsync = new Func<ShapeDisplayContext, Task>[] { ctx => { ctx.ShapeMetadata.Alternates.Add("Bar"); return Task.CompletedTask; } };
+            descriptorFoo.DisplayingAsync = new Func<ShapeDisplayContext, Task>[] { ctx => { ctx.Shape.Metadata.Alternates.Add("Bar"); return Task.CompletedTask; } };
             var resultWithOverride = await htmlDisplay.ExecuteAsync(CreateDisplayContext(shapeFoo));
 
             Assert.Equal("alpha", resultNormally.ToString());

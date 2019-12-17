@@ -12,8 +12,9 @@
 
 <script asp-name="trumbowyg" depends-on="admin" version="2" at="Foot"></script>
 <style asp-name="trumbowyg" version="2"></style>
+<script asp-src="~/OrchardCore.Html/Scripts/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.Html/Scripts/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
     @if (culture.IsRightToLeft())
     {

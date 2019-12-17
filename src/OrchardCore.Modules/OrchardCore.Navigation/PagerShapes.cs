@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -19,12 +19,12 @@ namespace OrchardCore.Navigation
 {
     public class PagerShapesTableProvider : IShapeTableProvider
     {
+        private readonly IStringLocalizer S;
+
         public PagerShapesTableProvider(IStringLocalizer<PagerShapes> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public void Discover(ShapeTableBuilder builder)
         {
@@ -40,7 +40,7 @@ namespace OrchardCore.Navigation
                 })
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape;
+                    dynamic pager = displaying.Shape;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -63,7 +63,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Gap")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -74,7 +75,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_First")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -85,7 +87,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Previous")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -96,7 +99,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Next")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -107,7 +111,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Last")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -118,7 +123,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_CurrentPage")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -129,7 +135,7 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Links")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape;
+                    dynamic pager = displaying.Shape;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -147,12 +153,12 @@ namespace OrchardCore.Navigation
 
     public class PagerShapes : IShapeAttributeProvider
     {
+        private readonly IStringLocalizer S;
+
         public PagerShapes(IStringLocalizer<PagerShapes> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         [Shape]
         public async Task<IHtmlContent> Pager_Links(Shape Shape, dynamic DisplayAsync, dynamic New,
@@ -193,11 +199,11 @@ namespace OrchardCore.Navigation
             }
 
 
-            var firstText = FirstText ?? T["<<"];
-            var previousText = PreviousText ?? T["<"];
-            var nextText = NextText ?? T[">"];
-            var lastText = LastText ?? T[">>"];
-            var gapText = GapText ?? T["..."];
+            var firstText = FirstText ?? S["<<"];
+            var previousText = PreviousText ?? S["<"];
+            var nextText = NextText ?? S[">"];
+            var lastText = LastText ?? S[">>"];
+            var gapText = GapText ?? S["..."];
 
             var httpContextAccessor = DisplayContext.ServiceProvider.GetService<IHttpContextAccessor>();
             var httpContext = httpContextAccessor.HttpContext;
@@ -328,8 +334,8 @@ namespace OrchardCore.Navigation
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "List";
 
-            var previousText = PreviousText ?? T["<"];
-            var nextText = NextText ?? T[">"];
+            var previousText = PreviousText ?? S["<"];
+            var nextText = NextText ?? S[">"];
 
             var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
 
@@ -445,18 +451,19 @@ namespace OrchardCore.Navigation
             return DisplayAsync(Shape);
         }
 
-        static IHtmlContent CoerceHtmlString(object value)
+        private IHtmlContent CoerceHtmlString(object value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
-            var result = value as IHtmlContent;
-            if (result != null)
+            if (value is IHtmlContent result)
+            {
                 return result;
+            }
 
-            return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
+            return new StringHtmlContent(value.ToString());
         }
-
-
     }
 }

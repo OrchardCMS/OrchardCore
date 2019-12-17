@@ -13,12 +13,13 @@ namespace OrchardCore.Html.Handlers
     public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-
+        private readonly HtmlEncoder _htmlEncoder;
         private HtmlString _bodyAspect;
 
-        public HtmlBodyPartHandler(ILiquidTemplateManager liquidTemplateManager)
+        public HtmlBodyPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
         {
             _liquidTemplateManager = liquidTemplateManager;
+            _htmlEncoder = htmlEncoder;
         }
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, HtmlBodyPart part)
@@ -45,7 +46,7 @@ namespace OrchardCore.Html.Handlers
                     templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
                     templateContext.SetValue("Model", model);
 
-                    var result = await _liquidTemplateManager.RenderAsync(part.Html, HtmlEncoder.Default, templateContext);
+                    var result = await _liquidTemplateManager.RenderAsync(part.Html, _htmlEncoder, templateContext);
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);
                 }
                 catch

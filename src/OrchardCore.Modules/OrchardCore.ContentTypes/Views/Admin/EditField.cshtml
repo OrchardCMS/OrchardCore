@@ -20,31 +20,31 @@
 
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="row col-md">
             <label asp-for="DisplayName">@T["Display Name"]</label>
             <input asp-for="DisplayName" autofocus class="form-control" />
             <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
         </div>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="row col-sm">
             <label asp-for="Name">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" readonly />
             <span class="hint">@T["Technical name of the field."]</span>
         </div>
-    </fieldset>
+    </div>
 
     @if (Model.Shape.Content != null)
     {
-        <fieldset class="form-group">
+        <div class="form-group">
             @await DisplayAsync(Model.Shape.Content)
-        </fieldset>
+        </div>
 
         @if (editorShapes.Any())
         {
-            <fieldset class="form-group">
+            <div class="form-group">
                 <label asp-for="Editor">@T["What type of editor should be used?"]</label>
                 <select asp-for="Editor" class="form-control col-sm-6" id="field-editor-select">
                     @foreach (var editorShape in editorShapes)
@@ -54,16 +54,16 @@
                         @await DisplayAsync(shape)
                     }
                 </select>
-            </fieldset>
+            </div>
         }
 
-        <fieldset id="field-editor-container" class="form-group" style="display: none">
+        <div id="field-editor-container" class="form-group" style="display: none">
             @await DisplayAsync(Model.Shape.Editor)
-        </fieldset>
+        </div>
 
         @if (displayShapes.Any())
         {
-            <fieldset class="form-group">
+            <div class="form-group">
                 <label asp-for="DisplayMode">@T["What type of display mode should be used?"]</label>
                 <select asp-for="DisplayMode" class="form-control col-sm-6" id="field-display-select">
                     @foreach (var displayShape in displayShapes)
@@ -73,21 +73,21 @@
                         @await DisplayAsync(shape)
                     }
                 </select>
-            </fieldset>
+            </div>
         }
 
-        <fieldset id="field-display-container" class="form-group" style="display: none">
+        <div id="field-display-container" class="form-group" style="display: none">
             @await DisplayAsync(Model.Shape.DisplayMode)
-        </fieldset>
+        </div>
     }
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
         @if (Url.IsLocalUrl(returnUrl))
         {
             <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
         }
-    </fieldset>
+    </div>
 </form>
 
 <script at="Foot" type="text/javascript">

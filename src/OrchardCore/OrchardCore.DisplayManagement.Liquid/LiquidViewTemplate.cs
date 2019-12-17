@@ -112,7 +112,9 @@ namespace OrchardCore.DisplayManagement.Liquid
             await context.ContextualizeAsync(page, (object)page.Model);
 
             var options = services.GetRequiredService<IOptions<LiquidOptions>>().Value;
-            await template.RenderAsync(options, services, page.Output, HtmlEncoder.Default, context);
+            var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
+
+            await template.RenderAsync(options, services, page.Output, htmlEncoder, context);
         }
 
         public static Task<LiquidViewTemplate> ParseAsync(string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
@@ -270,19 +272,21 @@ namespace OrchardCore.DisplayManagement.Liquid
             return null;
         }
 
-        public static async Task ContextualizeAsync(this TemplateContext context, IServiceProvider services)
+        public static Task ContextualizeAsync(this TemplateContext context, IServiceProvider services)
         {
             if (!context.AmbientValues.ContainsKey("Services"))
             {
                 var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
-                await context.ContextualizeAsync(new DisplayContext
+                return context.ContextualizeAsync(new DisplayContext
                 {
                     ServiceProvider = services,
                     DisplayAsync = displayHelper,
                     Value = null
                 });
             }
+
+            return Task.CompletedTask;
         }
 
         public static Task ContextualizeAsync(this TemplateContext context, RazorPage page, object model)
@@ -378,11 +382,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             var httpContext = services.GetRequiredService<IHttpContextAccessor>().HttpContext;
 
             actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-            var filters = httpContext.RequestServices.GetServices<IAsyncViewResultFilter>();
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
 
             foreach (var filter in filters)
             {
-                await filter.OnResultExecutionAsync(actionContext);
+                await filter.OnActionExecutionAsync(actionContext);
             }
 
             return actionContext;

@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using GraphQL.Types;
@@ -20,13 +21,14 @@ namespace OrchardCore.Html.GraphQL
             Field<StringGraphType>()
                 .Name("html")
                 .Description(T["the HTML content"])
-                .ResolveAsync(RenderHtml);
+                .ResolveLockedAsync(RenderHtml);
         }
 
         private static async Task<object> RenderHtml(ResolveFieldContext<HtmlBodyPart> ctx)
         {
-            var context = (GraphQLContext)ctx.UserContext;
-            var liquidTemplateManager = context.ServiceProvider.GetService<ILiquidTemplateManager>();
+            var serviceProvider = ctx.ResolveServiceProvider();
+            var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
+            var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
             var model = new HtmlBodyPartViewModel()
             {
@@ -39,7 +41,7 @@ namespace OrchardCore.Html.GraphQL
             templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
             templateContext.SetValue("Model", model);
 
-            return await liquidTemplateManager.RenderAsync(ctx.Source.Html, templateContext);
+            return await liquidTemplateManager.RenderAsync(ctx.Source.Html, htmlEncoder, templateContext);
         }
     }
 }
