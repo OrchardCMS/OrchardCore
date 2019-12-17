@@ -6,7 +6,9 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
@@ -16,7 +18,9 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public static readonly LiquidTagHelperActivator None = new LiquidTagHelperActivator();
         private static readonly MethodInfo CallPropertySetterOpenGenericMethod = typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertySetter));
 
-        private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activator;
+        private readonly Func<ITagHelper> _activatorByService;
+        private readonly Action<object, object> _viewContextSetter;
+        private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activatorByFactory;
         private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue>>(StringComparer.OrdinalIgnoreCase);
 
         public LiquidTagHelperActivator() { }
@@ -24,7 +28,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public LiquidTagHelperActivator(Type type)
         {
             var accessibleProperties = type.GetProperties().Where(p =>
-                p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() == null &&
+                (p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() == null ||
+                p.GetCustomAttribute<ViewContextAttribute>() != null) &&
                 p.GetSetMethod() != null);
 
             foreach (var property in accessibleProperties)
@@ -50,6 +55,12 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
                 foreach (var propertyName in allNames)
                 {
+                    if (propertyName == "ViewContext")
+                    {
+                        _viewContextSetter = (helper, context) => fastPropertySetter(helper, context);
+                        continue;
+                    }
+
                     _setters.Add(propertyName, (h, v) =>
                     {
                         object value = null;
@@ -80,11 +91,18 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 }
             }
 
-            var genericFactory = typeof(ReusableTagHelperFactory<>).MakeGenericType(type);
-            var factoryMethod = genericFactory.GetMethod("CreateTagHelper");
+            if (ShellScope.Services.GetService(type) as ITagHelper != null)
+            {
+                _activatorByService = () => ShellScope.Services.GetService(type) as ITagHelper;
+            }
+            else
+            {
+                var genericFactory = typeof(ReusableTagHelperFactory<>).MakeGenericType(type);
+                var factoryMethod = genericFactory.GetMethod("CreateTagHelper");
 
-            _activator = Delegate.CreateDelegate(typeof(Func<ITagHelperFactory, ViewContext, ITagHelper>),
-                factoryMethod) as Func<ITagHelperFactory, ViewContext, ITagHelper>;
+                _activatorByFactory = Delegate.CreateDelegate(typeof(Func<ITagHelperFactory, ViewContext, ITagHelper>),
+                    factoryMethod) as Func<ITagHelperFactory, ViewContext, ITagHelper>;
+            }
         }
 
         private static void CallPropertySetter<TDeclaringType, TValue>(Action<TDeclaringType, TValue> setter, object target, object value)
@@ -96,7 +114,18 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             contextAttributes = new TagHelperAttributeList();
             outputAttributes = new TagHelperAttributeList();
 
-            var tagHelper = _activator(factory, context);
+            ITagHelper tagHelper;
+
+            if (_activatorByService != null)
+            {
+                tagHelper = _activatorByService();
+
+                _viewContextSetter?.Invoke(tagHelper, context);
+            }
+            else
+            {
+                tagHelper = _activatorByFactory(factory, context);
+            }
 
             foreach (var name in arguments.Names)
             {
