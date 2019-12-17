@@ -24,6 +24,7 @@ namespace OrchardCore.Recipes.Services
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
 
         private VariablesMethodProvider _variablesMethodProvider;
+        private ConfigurationMethodProvider _configurationMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
 
         public RecipeExecutor(IEnumerable<IRecipeEventHandler> recipeEventHandlers,
@@ -46,6 +47,7 @@ namespace OrchardCore.Recipes.Services
             try
             {
                 _environmentMethodProvider = new ParametersMethodProvider(environment);
+                _configurationMethodProvider = new ConfigurationMethodProvider(_shellSettings.ShellConfiguration);
 
                 var result = new RecipeResult { ExecutionId = executionId };
 
@@ -156,6 +158,7 @@ namespace OrchardCore.Recipes.Services
                 var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
                 var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
                 scriptingManager.GlobalMethodProviders.Add(_environmentMethodProvider);
+                scriptingManager.GlobalMethodProviders.Add(_configurationMethodProvider);
 
                 // Substitutes the script elements by their actual values
                 EvaluateScriptNodes(recipeStep, scriptingManager);

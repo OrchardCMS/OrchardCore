@@ -89,9 +89,9 @@ namespace OrchardCore.Environment.Commands
 
             // Display inner most exception details
             exception = errors.Peek();
-            await output.WriteLineAsync(S["--------------------------------------------------------------------------------"]);
+            await output.WriteLineAsync("--------------------------------------------------------------------------------");
             await output.WriteLineAsync();
-            await output.WriteLineAsync(S["{0}", exception.Message]);
+            await output.WriteLineAsync(exception.Message);
             await output.WriteLineAsync();
 
             if (!(exception.InnerException == null))

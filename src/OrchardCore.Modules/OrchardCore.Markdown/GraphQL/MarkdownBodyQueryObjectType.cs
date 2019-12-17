@@ -24,14 +24,14 @@ namespace OrchardCore.Markdown.GraphQL
             Field<StringGraphType>()
                 .Name("html")
                 .Description(T["the HTML representation of the markdown content"])
-                .ResolveAsync(ToHtml);
+                .ResolveLockedAsync(ToHtml);
         }
 
         private static async Task<object> ToHtml(ResolveFieldContext<MarkdownBodyPart> ctx)
         {
-            var context = (GraphQLContext) ctx.UserContext;
-            var liquidTemplateManager = context.ServiceProvider.GetService<ILiquidTemplateManager>();
-            var htmlEncoder = context.ServiceProvider.GetService<HtmlEncoder>();
+            var serviceProvider = ctx.ResolveServiceProvider();
+            var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
+            var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
             var markdown = ctx.Source.Markdown;
             var templateContext = new TemplateContext();
