@@ -13,6 +13,9 @@ using YesSql.Sql;
 
 namespace OrchardCore.Data.Migration
 {
+    /// <summary>
+    /// Represents a class that manages the database migrations.
+    /// </summary>
     public class DataMigrationManager : IDataMigrationManager
     {
         private readonly IEnumerable<IDataMigration> _dataMigrations;
@@ -21,18 +24,26 @@ namespace OrchardCore.Data.Migration
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
-
         private readonly List<string> _processedFeatures;
+
         private DataMigrationRecord _dataMigrationRecord;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DataMigrationManager"/>.
+        /// </summary>
+        /// <param name="typeFeatureProvider">The <see cref="ITypeFeatureProvider"/>.</param>
+        /// <param name="dataMigrations">A list of <see cref="IDataMigration"/>.</param>
+        /// <param name="session">The <see cref="ISession"/>.</param>
+        /// <param name="store">The <see cref="IStore"/>.</param>
+        /// <param name="extensionManager">The <see cref="IExtensionManager"/>.</param>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
         public DataMigrationManager(
             ITypeFeatureProvider typeFeatureProvider,
             IEnumerable<IDataMigration> dataMigrations,
             ISession session,
             IStore store,
             IExtensionManager extensionManager,
-            ILogger<DataMigrationManager> logger,
-            IStringLocalizer<DataMigrationManager> localizer)
+            ILogger<DataMigrationManager> logger)
         {
             _typeFeatureProvider = typeFeatureProvider;
             _dataMigrations = dataMigrations;
@@ -40,14 +51,10 @@ namespace OrchardCore.Data.Migration
             _store = store;
             _extensionManager = extensionManager;
             _logger = logger;
-
             _processedFeatures = new List<string>();
-
-            T = localizer;
         }
 
-        public IStringLocalizer T { get; }
-
+        /// <inheritdocs />
         public async Task<DataMigrationRecord> GetDataMigrationRecordAsync()
         {
             if (_dataMigrationRecord == null)
@@ -109,7 +116,7 @@ namespace OrchardCore.Data.Migration
                 var uninstallAsyncMethod = GetUninstallAsyncMethod(migration);
                 if (uninstallAsyncMethod != null)
                 {
-                    await (Task)uninstallAsyncMethod.Invoke(migration, new object[0]);
+                    await (Task) uninstallAsyncMethod.Invoke(migration, new object[0]);
                 }
 
                 if (dataMigrationRecord == null)
@@ -214,11 +221,11 @@ namespace OrchardCore.Data.Migration
                         var isAwaitable = methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
                         if (isAwaitable)
                         {
-                            current = await (Task<int>)methodInfo.Invoke(migration, new object[0]);
+                            current = await (Task<int>) methodInfo.Invoke(migration, new object[0]);
                         }
                         else
                         {
-                            current = (int)methodInfo.Invoke(migration, new object[0]);
+                            current = (int) methodInfo.Invoke(migration, new object[0]);
                         }
                     }
 

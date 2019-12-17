@@ -394,7 +394,7 @@ namespace OrchardCore.ContentTypes.Controllers
         }
 
         [HttpPost, ActionName("RemovePart")]
-        public async Task<ActionResult> RemovePartPOST(string id, string name)
+        public async Task<ActionResult> RemovePart(string id, string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {

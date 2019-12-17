@@ -10,12 +10,12 @@ namespace OrchardCore.ContentLocalization
     [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -25,9 +25,9 @@ namespace OrchardCore.ContentLocalization
             }
 
             builder
-                .Add(T["Configuration"], localization => localization
-                    .Add(T["Settings"], settings => settings
-                        .Add(T["Content Culture Picker"], T["Content Culture Picker"], registration => registration
+                .Add(S["Configuration"], localization => localization
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Content Culture Picker"], S["Content Culture Picker"], registration => registration
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ContentCulturePickerSettingsDriver.GroupId })
                             .Permission(Permissions.ManageContentCulturePicker)
                             .LocalNav()

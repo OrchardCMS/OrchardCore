@@ -11,5 +11,6 @@ using OrchardCore.Modules.Manifest;
         "OrchardCore.Features",
         "OrchardCore.Scripting"
     },
-    Category = "Infrastructure"
+    Category = "Infrastructure",
+    IsAlwaysEnabled = true
 )]

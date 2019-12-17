@@ -16,6 +16,21 @@ During setup, all recipes have access to the setup screen values using these par
 
 These parameters can be used in the recipe using a scripted value like `[js: parameters('AdminUsername')]`.
 
+### Custom Parameters
+
+Custom parameters can also be used in the recipe, using a scripted value like `[js: configuration('CustomParameterKey')]`.
+
+The value will be retrieved from the `appsettings.json` tenant file.
+
+```json
+    {
+        "ConnectionString": "...",
+        "DatabaseProvider": "Sqlite",
+        "TablePrefix": "Test",
+        "CustomParameterKey": "Custom Parameter Value"
+    }
+```
+
 ## Configuration
 
 `OrchardCore.Setup` can be configured through `appsettings.json` as follows:

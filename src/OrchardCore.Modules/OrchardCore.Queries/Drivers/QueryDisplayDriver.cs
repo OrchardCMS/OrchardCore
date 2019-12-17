@@ -76,7 +76,7 @@ namespace OrchardCore.Queries.Drivers
             }
             else
             {
-                var existing = await _queryManager.GetQueryAsync(safeName);
+                var existing = await _queryManager.LoadQueryAsync(safeName);
 
                 if (existing != null && existing != model)
                 {

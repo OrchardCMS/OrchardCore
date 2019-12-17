@@ -18,6 +18,7 @@ namespace OrchardCore.ContentFields.Fields
     {
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
+        private readonly IStringLocalizer S;
 
         public ContentPickerFieldDisplayDriver(
             IContentManager contentManager,
@@ -26,10 +27,8 @@ namespace OrchardCore.ContentFields.Fields
         {
             _contentManager = contentManager;
             _session = session;
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext context)
         {
@@ -92,12 +91,12 @@ namespace OrchardCore.ContentFields.Fields
 
             if (settings.Required && field.ContentItemIds.Length == 0)
             {
-                updater.ModelState.AddModelError(Prefix, T["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                updater.ModelState.AddModelError(Prefix, S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
             }
 
             if (!settings.Multiple && field.ContentItemIds.Length > 1)
             {
-                updater.ModelState.AddModelError(Prefix, T["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
+                updater.ModelState.AddModelError(Prefix, S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

@@ -188,6 +188,7 @@ namespace OrchardCore.Roles.Controllers
             {
                 Role = role,
                 Name = role.RoleName,
+                RoleDescription = role.RoleDescription,
                 EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
                 RoleCategoryPermissions = installedPermissions
             };
@@ -196,7 +197,7 @@ namespace OrchardCore.Roles.Controllers
         }
 
         [HttpPost, ActionName(nameof(Edit))]
-        public async Task<IActionResult> EditPost(string id)
+        public async Task<IActionResult> EditPost(string id, string roleDescription)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
             {
@@ -209,6 +210,8 @@ namespace OrchardCore.Roles.Controllers
             {
                 return NotFound();
             }
+
+            role.RoleDescription = roleDescription;
 
             // Save
             var rolePermissions = new List<RoleClaim>();
