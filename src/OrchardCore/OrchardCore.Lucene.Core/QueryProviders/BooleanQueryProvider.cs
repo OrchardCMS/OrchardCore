@@ -32,10 +32,10 @@ namespace OrchardCore.Lucene.QueryProviders
                         occur = Occur.SHOULD;
                         break;
                     case "boost":
-                        boolQuery.Boost = query.Value<float>();
+                        boolQuery.Boost = property.Value.Value<float>();
                         break;
                     case "minimum_should_match":
-                        boolQuery.MinimumNumberShouldMatch = query.Value<int>();
+                        boolQuery.MinimumNumberShouldMatch = property.Value.Value<int>();
                         break;
                     default: throw new ArgumentException($"Invalid property '{property.Name}' in boolean query");
                 }
@@ -43,9 +43,7 @@ namespace OrchardCore.Lucene.QueryProviders
                 switch (property.Value.Type)
                 {
                     case JTokenType.Object:
-
                         boolQuery.Add(builder.CreateQueryFragment(context, (JObject)property.Value), occur);
-
                         break;
                     case JTokenType.Array:
                         foreach (var item in ((JArray)property.Value))
@@ -58,7 +56,6 @@ namespace OrchardCore.Lucene.QueryProviders
                         }
                         break;
                     default: throw new ArgumentException($"Invalid value in boolean query");
-
                 }
             }
 
