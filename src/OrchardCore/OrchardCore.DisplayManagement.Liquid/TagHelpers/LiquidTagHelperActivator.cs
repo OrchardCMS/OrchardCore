@@ -16,12 +16,13 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
     public class LiquidTagHelperActivator
     {
         public static readonly LiquidTagHelperActivator None = new LiquidTagHelperActivator();
-        private static readonly MethodInfo CallPropertySetterOpenGenericMethod = typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertySetter));
 
-        private readonly Func<ITagHelper> _activatorByService;
-        private readonly Action<object, object> _viewContextSetter;
         private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activatorByFactory;
-        private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters =
+            new Dictionary<string, Action<ITagHelper, FluidValue>>(StringComparer.OrdinalIgnoreCase);
+
+        private readonly Func<ViewContext, ITagHelper> _activatorByService;
+        private readonly Action<object, object> _viewContextSetter;
 
         public LiquidTagHelperActivator() { }
 
@@ -34,12 +35,6 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             foreach (var property in accessibleProperties)
             {
-                // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
-                var propertySetterAsAction = property.SetMethod.CreateDelegate(typeof(Action<,>).MakeGenericType(type, property.PropertyType));
-                var callPropertySetterClosedGenericMethod = CallPropertySetterOpenGenericMethod.MakeGenericMethod(type, property.PropertyType);
-                var callPropertySetterDelegate = callPropertySetterClosedGenericMethod.CreateDelegate(typeof(Action<object, object>), propertySetterAsAction);
-                var fastPropertySetter = (Action<object, object>)callPropertySetterDelegate;
-
                 var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { property.Name };
                 var htmlAttribute = property.GetCustomAttribute<HtmlAttributeNameAttribute>();
 
@@ -53,11 +48,13 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
                 }
 
+                var setter = MakeFastPropertySetter(type, property);
+
                 foreach (var propertyName in allNames)
                 {
                     if (propertyName == "ViewContext")
                     {
-                        _viewContextSetter = (helper, context) => fastPropertySetter(helper, context);
+                        _viewContextSetter = (helper, context) => setter(helper, context);
                         continue;
                     }
 
@@ -86,14 +83,19 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                             value = v.ToObjectValue();
                         }
 
-                        fastPropertySetter(h, value);
+                        setter(h, value);
                     });
                 }
             }
 
             if (ShellScope.Services.GetService(type) as ITagHelper != null)
             {
-                _activatorByService = () => ShellScope.Services.GetService(type) as ITagHelper;
+                _activatorByService = (context) =>
+                {
+                    var helper = ShellScope.Services.GetService(type) as ITagHelper;
+                    _viewContextSetter?.Invoke(helper, context);
+                    return helper;
+                };
             }
             else
             {
@@ -105,9 +107,6 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             }
         }
 
-        private static void CallPropertySetter<TDeclaringType, TValue>(Action<TDeclaringType, TValue> setter, object target, object value)
-            => setter((TDeclaringType)target, (TValue)value);
-
         public ITagHelper Create(ITagHelperFactory factory, ViewContext context, FilterArguments arguments,
             out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
         {
@@ -118,9 +117,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             if (_activatorByService != null)
             {
-                tagHelper = _activatorByService();
-
-                _viewContextSetter?.Invoke(tagHelper, context);
+                tagHelper = _activatorByService(context);
             }
             else
             {
@@ -146,13 +143,13 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
                 }
 
-                var attr = new TagHelperAttribute(name.Replace('_', '-'), arguments[name].ToObjectValue());
+                var attribute = new TagHelperAttribute(name.Replace('_', '-'), arguments[name].ToObjectValue());
 
-                contextAttributes.Add(attr);
+                contextAttributes.Add(attribute);
 
                 if (!found)
                 {
-                    outputAttributes.Add(attr);
+                    outputAttributes.Add(attribute);
                 }
             }
 
@@ -166,5 +163,21 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 return tagHelperFactory.CreateTagHelper<T>(viewContext);
             }
         }
+
+        private static Action<object, object> MakeFastPropertySetter(Type type, PropertyInfo prop)
+        {
+            // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
+            var setterAsAction = prop.SetMethod.CreateDelegate(typeof(Action<,>).MakeGenericType(type, prop.PropertyType));
+            var setterClosedGenericMethod = CallPropertySetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
+            var setterDelegate = setterClosedGenericMethod.CreateDelegate(typeof(Action<object, object>), setterAsAction);
+
+            return (Action<object, object>)setterDelegate;
+        }
+
+        private static readonly MethodInfo CallPropertySetterOpenGenericMethod =
+            typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertySetter));
+
+        private static void CallPropertySetter<TDeclaringType, TValue>(Action<TDeclaringType, TValue> setter, object target, object value)
+            => setter((TDeclaringType)target, (TValue)value);
     }
 }
