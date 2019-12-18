@@ -185,9 +185,8 @@ namespace OrchardCore.Media.Controllers
                     var mediaFilePath = _mediaFileStore.Combine(path, file.FileName);
 
                     using (var stream = file.OpenReadStream())
-                    {
-                        var outputStream = _imageStreamService.ProcessStream(stream);
-                        await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, outputStream.Stream);           
+                    {                        
+                        await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);           
                     }
 
                     var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
