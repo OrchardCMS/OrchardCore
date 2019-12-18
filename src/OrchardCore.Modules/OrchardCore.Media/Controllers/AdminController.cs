@@ -11,7 +11,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
-using OrchardCore.Media.Core;
+using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Controllers
 {

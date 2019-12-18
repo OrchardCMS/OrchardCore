@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Media.Core
+namespace OrchardCore.Media.Services
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class MediaSizeLimitAttribute : Attribute, IFilterFactory, IOrderedFilter
