@@ -10,9 +10,8 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.FileStorage;
-using OrchardCore.Media.Services;
+using OrchardCore.Media.Core;
 
 namespace OrchardCore.Media.Controllers
 {
