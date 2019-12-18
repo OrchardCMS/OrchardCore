@@ -2,6 +2,9 @@
 
 <div class="d-inline field field-type-taxonomyfield field-name-{{ name }}">
     {% for tag in Model.Tags %}
-        <span class="badge badge-secondary"><i class="fas fa-tag fa-xs fa-rotate-90"></i> {{ tag }} </span>
+        <span class="badge badge-secondary">
+            <i class="fas fa-tag fa-xs fa-rotate-90 align-middel"></i>
+            <span class="align-middle"> {{ tag }} </span> 
+        </span>
     {% endfor %}
 </div>
