@@ -1,6 +1,3 @@
-using System.IO;
-using System.Text;
-using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Modules;
@@ -10,24 +7,19 @@ namespace OrchardCore.DisplayManagement.Shapes
     [Feature(Application.DefaultFeatureId)]
     public class ConsoleLogWrapperShapes : IShapeAttributeProvider
     {
-        const string FormatConsole = "<script>console.log({0})</script>";
-
         [Shape]
-        public IHtmlContent ShapeConsoleLogWrapper(dynamic Shape)
+        public IHtmlContent ShapeConsoleLogWrapper(IShape Shape)
         {
-            var iShape = (IShape)Shape;
+            var contentBuilder = new HtmlContentBuilder(3);
+            var metadata = Shape.Metadata;
 
-            var sb = new StringBuilder();
-            var metadata = (ShapeMetadata)Shape.Metadata;
+            contentBuilder.AppendHtml("<script>console.log(");
+            contentBuilder.AppendHtml(Shape.ShapeToJson().ToString());
+            contentBuilder.AppendHtml(")</script>");
 
-            sb.Append(string.Format(FormatConsole, iShape.ShapeToJson().ToString()));
-            using (var sw = new StringWriter())
-            {
-                metadata.ChildContent.WriteTo(sw, HtmlEncoder.Default);
-                sb.AppendLine(sw.ToString());
-            }
+            contentBuilder.AppendHtml(metadata.ChildContent);
 
-            return new HtmlString(sb.ToString());
+            return contentBuilder;
         }
     }
 }
