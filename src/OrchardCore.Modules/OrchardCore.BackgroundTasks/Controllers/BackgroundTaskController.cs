@@ -27,6 +27,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IStringLocalizer S;
+        private readonly dynamic New;
         
         public BackgroundTaskController(
             ShellSettings shellSettings,
@@ -36,7 +38,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             IShapeFactory shapeFactory,
             ISiteService siteService,
             IStringLocalizer<BackgroundTaskController> stringLocalizer,
-            IHtmlLocalizer<BackgroundTaskController> htmlLocalizer,
             INotifier notifier)
         {
             _tenant = shellSettings.Name;
@@ -46,14 +47,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
             New = shapeFactory;
             _siteService = siteService;
             _notifier = notifier;
-            T = stringLocalizer;
-            H = htmlLocalizer;
+            S = stringLocalizer;
         }
-
-        public dynamic New { get; set; }
-
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
 
         public async Task<IActionResult> Index(PagerParameters pagerParameters)
         {
@@ -127,7 +122,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
-                    ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), S["The name is mandatory."]);
                 }
             }
 
@@ -191,7 +186,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
-                    ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), S["The name is mandatory."]);
                 }
             }
 
@@ -222,7 +217,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Unauthorized();
             }
 
-            var document = await _backgroundTaskManager.GetDocumentAsync();
+            var document = await _backgroundTaskManager.LoadDocumentAsync();
 
             if (!document.Settings.ContainsKey(name))
             {
@@ -242,7 +237,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Unauthorized();
             }
 
-            var document = await _backgroundTaskManager.GetDocumentAsync();
+            var document = await _backgroundTaskManager.LoadDocumentAsync();
 
             if (!document.Settings.TryGetValue(name, out var settings))
             {
@@ -266,7 +261,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Unauthorized();
             }
 
-            var document = await _backgroundTaskManager.GetDocumentAsync();
+            var document = await _backgroundTaskManager.LoadDocumentAsync();
 
             if (!document.Settings.TryGetValue(name, out var settings))
             {

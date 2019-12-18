@@ -78,7 +78,7 @@ namespace OrchardCore.Email.Services
 
             mimeMessage.From.Add(mimeMessage.Sender);
 
-            if (message.To != null)
+            if (!string.IsNullOrWhiteSpace(message.To))
             {
                 foreach (var address in message.To.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -86,7 +86,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (message.Cc != null)
+            if (!string.IsNullOrWhiteSpace(message.Cc))
             {
                 foreach (var address in message.Cc.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -94,7 +94,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (message.Bcc != null)
+            if (!string.IsNullOrWhiteSpace(message.Bcc))
             {
                 foreach (var address in message.Bcc.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -102,7 +102,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (message.ReplyTo != null)
+            if (!string.IsNullOrWhiteSpace(message.ReplyTo))
             {
                 foreach (var address in message.ReplyTo.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {

@@ -390,7 +390,7 @@ namespace OrchardCore.OpenId.Controllers
             if (request.IsRefreshTokenGrantType())
             {
                 var type = info.Principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value;
-                if (!string.Equals(type, OpenIdConstants.EntityTypes.User, StringComparison.Ordinal))
+                if (!string.Equals(type, OpenIdConstants.EntityTypes.User))
                 {
                     return BadRequest(new OpenIdConnectResponse
                     {

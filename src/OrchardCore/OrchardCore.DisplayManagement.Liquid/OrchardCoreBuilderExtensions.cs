@@ -22,8 +22,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices(services =>
             {
                 services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<LiquidViewOptions>,
-                LiquidViewOptionsSetup>());
+                    ServiceDescriptor.Transient<IConfigureOptions<LiquidViewOptions>,
+                    LiquidViewOptionsSetup>());
 
                 services.TryAddEnumerable(
                     ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>,

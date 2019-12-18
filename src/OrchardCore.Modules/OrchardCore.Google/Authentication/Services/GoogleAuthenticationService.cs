@@ -1,14 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Google.Authentication.Settings;
 using OrchardCore.Google.Authentication.ViewModels;
 using OrchardCore.Settings;
@@ -19,14 +14,11 @@ namespace OrchardCore.Google.Authentication.Services
     {
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<GoogleAuthenticationService> T;
-        private readonly ShellSettings _shellSettings;
 
         public GoogleAuthenticationService(
             ISiteService siteService,
-            ShellSettings shellSettings,
             IStringLocalizer<GoogleAuthenticationService> stringLocalizer)
         {
-            _shellSettings = shellSettings;
             _siteService = siteService;
             T = stringLocalizer;
         }
@@ -43,7 +35,7 @@ namespace OrchardCore.Google.Authentication.Services
             {
                 throw new ArgumentNullException(nameof(settings));
             }
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<GoogleAuthenticationSettings>(nameof(GoogleAuthenticationSettings), aspect =>
             {
                 aspect.ClientID = settings.ClientID;

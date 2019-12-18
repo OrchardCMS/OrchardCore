@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Templates.Models;
 using YesSql;
@@ -9,49 +11,49 @@ namespace OrchardCore.Templates.Services
 {
     public class TemplatesManager
     {
-        private readonly IMemoryCache _memoryCache;
-        private readonly ISignal _signal;
-        private readonly ISession _session;
-
         private const string CacheKey = nameof(TemplatesManager);
 
-        public TemplatesManager(IMemoryCache memoryCache, ISignal signal, ISession session)
+        private readonly ISignal _signal;
+        private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
+        private readonly IMemoryCache _memoryCache;
+
+        public TemplatesManager(
+            ISignal signal,
+            ISession session,
+            ISessionHelper sessionHelper,
+            IMemoryCache memoryCache)
         {
-            _memoryCache = memoryCache;
             _signal = signal;
             _session = session;
+            _sessionHelper = sessionHelper;
+            _memoryCache = memoryCache;
         }
 
         public IChangeToken ChangeToken => _signal.GetToken(CacheKey);
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Returns the document from the database to be updated.
+        /// </summary>
+        public Task<TemplatesDocument> LoadTemplatesDocumentAsync() => _sessionHelper.LoadForUpdateAsync<TemplatesDocument>();
+
+        /// <summary>
+        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// </summary>
         public async Task<TemplatesDocument> GetTemplatesDocumentAsync()
         {
-            TemplatesDocument document;
-
-            if (!_memoryCache.TryGetValue(CacheKey, out document))
+            if (!_memoryCache.TryGetValue<TemplatesDocument>(CacheKey, out var document))
             {
-                document = await _session.Query<TemplatesDocument>().FirstOrDefaultAsync();
+                var changeToken = ChangeToken;
 
-                if (document == null)
-                {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(CacheKey, out document))
-                        {
-                            document = new TemplatesDocument();
+                document = await _sessionHelper.GetForCachingAsync<TemplatesDocument>();
 
-                            _session.Save(document);
-                            _memoryCache.Set(CacheKey, document);
-                            _signal.SignalToken(CacheKey);
-                        }
-                    }
-                }
-                else
+                foreach (var template in document.Templates.Values)
                 {
-                    _memoryCache.Set(CacheKey, document);
-                    _signal.SignalToken(CacheKey);
+                    template.IsReadonly = true;
                 }
+
+                _memoryCache.Set(CacheKey, document, changeToken);
             }
 
             return document;
@@ -59,25 +61,25 @@ namespace OrchardCore.Templates.Services
 
         public async Task RemoveTemplateAsync(string name)
         {
-            var document = await GetTemplatesDocumentAsync();
-
+            var document = await LoadTemplatesDocumentAsync();
             document.Templates.Remove(name);
-            _session.Save(document);
 
-            _memoryCache.Set(CacheKey, document);
-            _signal.SignalToken(CacheKey);
+            _session.Save(document);
+            _signal.DeferredSignalToken(CacheKey);
         }
-        
+
         public async Task UpdateTemplateAsync(string name, Template template)
         {
-            var document = await GetTemplatesDocumentAsync();
+            if (template.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
 
+            var document = await LoadTemplatesDocumentAsync();
             document.Templates[name] = template;
+
             _session.Save(document);
-
-            _memoryCache.Set(CacheKey, document);
-            _signal.SignalToken(CacheKey);
+            _signal.DeferredSignalToken(CacheKey);
         }
-
     }
 }

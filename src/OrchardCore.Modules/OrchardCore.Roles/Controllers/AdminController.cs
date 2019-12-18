@@ -98,7 +98,7 @@ namespace OrchardCore.Roles.Controllers
             {
                 model.RoleName = model.RoleName.Trim();
 
-                if (model.RoleName.Contains("/"))
+                if (model.RoleName.Contains('/'))
                 {
                     ModelState.AddModelError(string.Empty, T["Invalid role name."]);
                 }
@@ -188,6 +188,7 @@ namespace OrchardCore.Roles.Controllers
             {
                 Role = role,
                 Name = role.RoleName,
+                RoleDescription = role.RoleDescription,
                 EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
                 RoleCategoryPermissions = installedPermissions
             };
@@ -196,7 +197,7 @@ namespace OrchardCore.Roles.Controllers
         }
 
         [HttpPost, ActionName(nameof(Edit))]
-        public async Task<IActionResult> EditPost(string id)
+        public async Task<IActionResult> EditPost(string id, string roleDescription)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
             {
@@ -210,11 +211,13 @@ namespace OrchardCore.Roles.Controllers
                 return NotFound();
             }
 
+            role.RoleDescription = roleDescription;
+
             // Save
-            List<RoleClaim> rolePermissions = new List<RoleClaim>();
+            var rolePermissions = new List<RoleClaim>();
             foreach (string key in Request.Form.Keys)
             {
-                if (key.StartsWith("Checkbox.") && Request.Form[key] == "true")
+                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
                 {
                     string permissionName = key.Substring("Checkbox.".Length);
                     rolePermissions.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permissionName });
