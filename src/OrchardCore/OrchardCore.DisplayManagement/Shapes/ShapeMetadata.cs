@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Cache;
 
@@ -38,19 +39,22 @@ namespace OrchardCore.DisplayManagement.Shapes
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
+        [JsonIgnore]
         public IEnumerable<Action<ShapeDisplayContext>> Displaying { get; private set; }
 
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
+        [JsonIgnore]
         public IEnumerable<Func<IShape, Task>> ProcessingAsync { get; private set; }
 
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
+        [JsonIgnore]
         public IEnumerable<Action<ShapeDisplayContext>> Displayed { get; private set; }
 
-
+        [JsonIgnore]
         public IList<string> BindingSources { get; set; }
 
         public void OnDisplaying(Action<ShapeDisplayContext> context)

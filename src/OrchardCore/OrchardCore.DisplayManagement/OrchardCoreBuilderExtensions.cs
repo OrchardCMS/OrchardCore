@@ -70,7 +70,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddShapeAttributes<CoreShapes>();
                     services.AddScoped<IShapeTableProvider, CoreShapesTableProvider>();
                     services.AddShapeAttributes<ZoneShapes>();
-                    services.AddScoped<IShapeTableProvider, LayoutShapes>();
 
                     services.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
                     services.AddScoped<ILayoutAccessor, LayoutAccessor>();
@@ -84,6 +83,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     services.AddShapeAttributes<DateTimeShapes>();
                     services.AddShapeAttributes<PageTitleShapes>();
+                    services.AddShapeAttributes<ConsoleLogWrapperShapes>();
 
                     services.AddTagHelpers<AddAlternateTagHelper>();
                     services.AddTagHelpers<AddClassTagHelper>();

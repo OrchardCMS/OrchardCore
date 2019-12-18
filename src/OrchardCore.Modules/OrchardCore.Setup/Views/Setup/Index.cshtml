@@ -21,14 +21,14 @@
     if (options.Password.RequireNonAlphanumeric)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one non-alphanumeric"]);
-        separator = T[", "];
+        separator = new HtmlString(", ");
         passwordRegex += @"(?=.*[^A-Za-z0-9])";
     }
 
     if (options.Password.RequireUppercase)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one uppercase"]);
-        separator = T[", "];
+        separator = new HtmlString(", ");
         passwordRegex += @"(?=.*[A-Z])";
     }
 
@@ -42,7 +42,7 @@
     if (options.Password.RequireDigit)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one digit"]);
-        separator = T[", "];
+        separator = new HtmlString(", ");
         passwordRegex += @"(?=.*[0-9])";
     }
 
