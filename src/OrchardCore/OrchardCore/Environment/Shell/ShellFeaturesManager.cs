@@ -30,7 +30,7 @@ namespace OrchardCore.Environment.Shell
 
         public Task<IEnumerable<IFeatureInfo>> GetAlwaysEnabledFeaturesAsync()
         {
-            return Task.FromResult(_extensionManager.GetFeatures().Where(f => _shellDescriptor.Features.Any(sf => sf.Id == f.Id && sf.AlwaysEnabled)));
+            return Task.FromResult(_extensionManager.GetFeatures().Where(f => f.IsAlwaysEnabled || _shellDescriptor.Features.Any(sf => sf.Id == f.Id && sf.AlwaysEnabled)));
         }
 
         public Task<IEnumerable<IFeatureInfo>> GetDisabledFeaturesAsync()

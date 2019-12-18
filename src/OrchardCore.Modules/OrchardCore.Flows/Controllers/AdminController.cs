@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
@@ -15,16 +16,19 @@ namespace OrchardCore.Flows.Controllers
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
+        private readonly IShapeFactory _shapeFactory;
 
         public AdminController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
+            IShapeFactory shapeFactory,
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> localizer
             )
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
+            _shapeFactory = shapeFactory;
 
             T = localizer;
             Logger = logger;
@@ -34,7 +38,7 @@ namespace OrchardCore.Flows.Controllers
 
         public ILogger Logger { get; set; }
 
-        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string targetId, bool flowmetadata)
+        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string targetId, bool flowmetadata, string parentContentType, string partName)
         {
             if (String.IsNullOrWhiteSpace(id))
             {
@@ -44,32 +48,55 @@ namespace OrchardCore.Flows.Controllers
             var contentItem = await _contentManager.NewAsync(id);
 
             // Does this editor need the flow metadata editor?
+            string cardCollectionType = null;
+            int colSize = 12;
             if (flowmetadata)
             {
-                contentItem.Weld(new FlowMetadata());
-            }
+                var metadata = new FlowMetadata();
+                contentItem.Weld(metadata);
+                colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
 
-            dynamic editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true, htmlFieldPrefix: prefix);
-
-            editor.PrefixesName = prefixesName;
-            editor.ContentTypesName = contentTypesName;
-            editor.TargetId = targetId;
-            editor.Inline = true;
-
-            var model = new BuildEditorViewModel
-            {
-                EditorShape = editor
-            };
-
-            if (flowmetadata)
-            {
-                model.EditorShape.Metadata.Alternates.Add("Widget_Edit__Flow");
+                cardCollectionType = nameof(FlowPart);
             }
             else
             {
-                model.EditorShape.Metadata.Alternates.Add("Widget_Edit__Bag");
+                cardCollectionType = nameof(BagPart);
             }
 
+            //Create a Card Shape
+            dynamic contentCard = await _shapeFactory.New.ContentCard(
+                //Updater is the controller for AJAX Requests
+                Updater: this,
+                //Shape Specific
+                CollectionShapeType: cardCollectionType,
+                ContentItem: contentItem,
+                BuildEditor: true,
+                ParentContentType: parentContentType,
+                CollectionPartName: partName,
+                //Card Specific Properties
+                TargetId: targetId,
+                Inline: true,
+                CanMove: true,
+                CanDelete: true,
+                //Input hidden
+                //Prefixes
+                HtmlFieldPrefix: prefix,
+                PrefixesId: prefixesName.Replace('.', '_'),
+                PrefixesName: prefixesName,
+                //ContentTypes
+                ContentTypesId: contentTypesName.Replace('.', '_'),
+                ContentTypesName: contentTypesName
+            );
+            //Only Add ColumnSize Property if Part has FlowMetadata
+            if (flowmetadata)
+            {
+                contentCard.ColumnSize = colSize;
+            }
+
+            var model = new BuildEditorViewModel
+            {
+                EditorShape = contentCard
+            };
             return View("Display", model);
         }
     }

@@ -50,7 +50,7 @@ namespace OrchardCore.CustomSettings.Recipes
                 }
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.LoadSiteSettingsAsync();
 
             foreach (var customSettings in customSettingsList)
             {

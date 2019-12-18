@@ -49,7 +49,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(string name, OpenIdConnectOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, OpenIdConnectDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, OpenIdConnectDefaults.AuthenticationScheme))
             {
                 return;
             }

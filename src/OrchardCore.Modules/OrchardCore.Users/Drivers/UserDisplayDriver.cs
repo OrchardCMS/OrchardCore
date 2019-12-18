@@ -53,6 +53,7 @@ namespace OrchardCore.Users.Drivers
                 model.Email = await _userManager.GetEmailAsync(user);
                 model.Roles = roles;
                 model.EmailConfirmed = user.EmailConfirmed;
+                model.IsEnabled = user.IsEnabled;
             }).Location("Content:1"));
         }
 
@@ -67,7 +68,7 @@ namespace OrchardCore.Users.Drivers
 
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
-            user.EmailConfirmed = model.EmailConfirmed;
+            user.IsEnabled = model.IsEnabled;
 
             if (string.IsNullOrWhiteSpace(model.UserName))
             {
@@ -103,6 +104,12 @@ namespace OrchardCore.Users.Drivers
             {
                 await _userManager.SetUserNameAsync(user, model.UserName);
                 await _userManager.SetEmailAsync(user, model.Email);
+
+                if (model.EmailConfirmed)
+                {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    await _userManager.ConfirmEmailAsync(user, token);
+                }
 
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
 

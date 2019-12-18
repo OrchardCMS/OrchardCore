@@ -53,7 +53,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             foreach (var path in _sharedPaths)
             {
-                if (!Path.GetFileName(path).StartsWith("_"))
+                if (!Path.GetFileName(path).StartsWith('_'))
                 {
                     var viewPath = Path.ChangeExtension(path, RazorViewEngine.ViewExtension);
                     feature.ViewDescriptors.Add(new CompiledViewDescriptor

@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Settings;
 
@@ -16,14 +13,11 @@ namespace OrchardCore.Microsoft.Authentication.Services
     {
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<AzureADService> T;
-        private readonly ShellSettings _shellSettings;
 
         public AzureADService(
             ISiteService siteService,
-            ShellSettings shellSettings,
             IStringLocalizer<AzureADService> stringLocalizer)
         {
-            _shellSettings = shellSettings;
             _siteService = siteService;
             T = stringLocalizer;
         }
@@ -41,7 +35,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<AzureADSettings>(nameof(AzureADSettings), aspect =>
             {
                 aspect.AppId = settings.AppId;

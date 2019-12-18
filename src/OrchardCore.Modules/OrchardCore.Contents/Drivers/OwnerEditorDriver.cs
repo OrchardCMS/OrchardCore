@@ -110,7 +110,7 @@ namespace OrchardCore.Contents.Drivers
         public CommonPartSettings GetSettings(CommonPart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "CommonPart", StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "CommonPart"));
             return contentTypePartDefinition.GetSettings<CommonPartSettings>();
         }
     }
