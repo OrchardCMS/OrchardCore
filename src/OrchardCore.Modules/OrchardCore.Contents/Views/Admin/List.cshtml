@@ -47,13 +47,20 @@
             <div class="btn-group float-right">
                 @if (Model.Options.CreatableTypes.Any())
                 {
-                    <button class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" id="new-dropdown" type="button" aria-haspopup="true" aria-expanded="false">@T["New"]</button>
-                    <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
-                        @foreach (var item in Model.Options.CreatableTypes)
-                        {
-                            <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value })">@item.Text</a>
-                        }
-                    </div>
+                    @if (Model.Options.CreatableTypes.Count == 1)
+                    {
+                        <a class="btn btn-sm btn-success" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @Model.Options.CreatableTypes.First().Value })">@T["New {0}", Model.Options.CreatableTypes.First().Text]</a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" id="new-dropdown" type="button" aria-haspopup="true" aria-expanded="false">@T["New"]</button>
+                        <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
+                            @foreach (var item in Model.Options.CreatableTypes)
+                            {
+                                <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value })">@T[item.Text]</a>
+                            }
+                        </div>
+                    }
                 }
             </div>
         </div>
