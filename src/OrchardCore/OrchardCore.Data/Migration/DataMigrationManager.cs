@@ -13,6 +13,9 @@ using YesSql.Sql;
 
 namespace OrchardCore.Data.Migration
 {
+    /// <summary>
+    /// Represents a class that manages the database migrations.
+    /// </summary>
     public class DataMigrationManager : IDataMigrationManager
     {
         private readonly IEnumerable<IDataMigration> _dataMigrations;
@@ -25,6 +28,15 @@ namespace OrchardCore.Data.Migration
 
         private DataMigrationRecord _dataMigrationRecord;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DataMigrationManager"/>.
+        /// </summary>
+        /// <param name="typeFeatureProvider">The <see cref="ITypeFeatureProvider"/>.</param>
+        /// <param name="dataMigrations">A list of <see cref="IDataMigration"/>.</param>
+        /// <param name="session">The <see cref="ISession"/>.</param>
+        /// <param name="store">The <see cref="IStore"/>.</param>
+        /// <param name="extensionManager">The <see cref="IExtensionManager"/>.</param>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
         public DataMigrationManager(
             ITypeFeatureProvider typeFeatureProvider,
             IEnumerable<IDataMigration> dataMigrations,
@@ -42,6 +54,7 @@ namespace OrchardCore.Data.Migration
             _processedFeatures = new List<string>();
         }
 
+        /// <inheritdocs />
         public async Task<DataMigrationRecord> GetDataMigrationRecordAsync()
         {
             if (_dataMigrationRecord == null)

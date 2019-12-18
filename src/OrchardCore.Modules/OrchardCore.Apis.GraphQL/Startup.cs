@@ -42,6 +42,7 @@ namespace OrchardCore.Apis.GraphQL
             services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
             services.AddSingleton<ISchemaFactory, SchemaService>();
             services.AddScoped<IValidationRule, MaxNumberOfResultsValidationRule>();
+            services.AddScoped<IValidationRule, RequiresPermissionValidationRule>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();
