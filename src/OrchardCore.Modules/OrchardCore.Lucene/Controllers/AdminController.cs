@@ -369,7 +369,7 @@ namespace OrchardCore.Lucene.Controllers
                 catch (Exception e)
                 {
                     Logger.LogError(e, "Error while executing query");
-                    ModelState.AddModelError(nameof(model.DecodedQuery), "Invalid query");
+                    ModelState.AddModelError(nameof(model.DecodedQuery), String.Format("Invalid query : {0}", e.Message));
                 }
 
                 stopwatch.Stop();
