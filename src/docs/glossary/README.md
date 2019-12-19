@@ -4,32 +4,33 @@ List of terms and concepts that you can find in Orchard Core and a small explana
 
 They are grouped by roles: User, Theme designer, Administrator.
 
-## User
+## Authenticated users
 
 ### Content Item
 
-A content item is a single piece of content, often associated with a single URL (address) on the site. Examples of content items are pages, blog posts or products.
+A single document containing some content of a specific content type, that can be versioned and localized. Examples of content items are pages, blog posts and products. They are often associated with a unique URL (address) on the site.
+
+### Content Item Version
+
+A single document that represent a specific version of a content item. These can be draft, published, or pasts versions
 
 ### Content Type
 
-Content items are instances of content types. Said differently, content types are classes of content items.
+Define the list of Content Parts and Content Fields a content item can be made of. An analogy is to compare them to classes, whose instances are the content items.
 
 ### Content Part
 
-Content parts are atoms of content that are enough to build a specific coherent behavior and that can be reused across content types.  
-There can be only one part of the same kind by content type.  
+Content parts are atoms of content that are enough to build a specific coherent behavior and that can be reused across content types. 
 See [Content Parts](../reference/modules/ContentParts)
-
-### Display type
-
-A way to specify in which context a content is rendered (ex: Details, Summary, SummaryAdmin).  
-A content can be displayed differently depending on which Display type is rendered.
 
 ### Content Field
 
-A content field extends a content type with a simple piece.  
-There can be multiple fields of the same kind attached to a content type.  
+A content field extends a content type with a named piece of data. There can be multiple fields of the same kind attached to a content type or a content part. For instance __Description__ could be a field defined on a __Product__ content type.
 See [Content Fields](../reference/modules/ContentFields)
+
+### Display Type
+
+A way to specify in which context a content element is rendered (ex: Details, Summary, SummaryAdmin). A template can be defined for each display type.
 
 ### Field Editor
 
@@ -37,32 +38,31 @@ A field can have different Editors (Ex: The value of a Numeric Field can be set 
 
 ### Autoroute
 
-A custom Permalink used for Routing.  
-It can use a Liquid pattern to be automatically generated.  
+A part that dynamically creates and registers a url to access a content item. It can use a Liquid pattern to be automatically generated.
 See [Autoroute](../reference/modules/Autoroute)
 
 ### Bag
 
-A collection of content items of a certain type in a parent content item.
+A collection of content items of a certain type in a parent content item. The content items are aggregated in the bag.
 
 ### List
 
-To attach content items to a parent Container (Ex: A blog contains a list of blog posts).  
+A list of content items to a parent container (Ex: A blog contains a list of blog posts). The content items are referenced.
 See [List](../reference/modules/List)
 
 ### Taxonomy
 
-A category that contains specific terms.  
+A hierarchy of content items that are used as references for other content items. Also called managed vocabularies. And example is a list of colors which can then be attached to products. Also often used for categories of articles for instance.
 See [Taxonomies](../reference/modules/Taxonomies)
 
 ### Admin menu
 
-A custom link added in the left admin menu.  
+A hierarchy of menu items that are displayed in the admin section of the site.
 See [Admin menu](../reference/modules/AdminMenu)
 
 ### Alias
 
-A way to identify an item with a key that you can call to retrieve it, instead of an Id.  
+A part that generates A way to identify an item with a key that you can call to retrieve it, instead of an Id.  
 See [Alias](../reference/modules/Alias)
 
 ### Content Preview
