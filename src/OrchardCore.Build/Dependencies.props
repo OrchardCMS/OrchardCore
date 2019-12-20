@@ -35,7 +35,7 @@
     <PackageManagement Include="Serilog.AspNetCore" Version="3.2.0" />
     <PackageManagement Include="Serilog.Settings.Configuration" Version="3.1.0" />
     <PackageManagement Include="Serilog.Sinks.Console" Version="3.1.1" />
-    <PackageManagement Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageManagement Include="Serilog.Sinks.File" Version="4.1.0" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0009" />
     <PackageManagement Include="Microsoft.Azure.Storage.Blob" Version="11.1.1" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
