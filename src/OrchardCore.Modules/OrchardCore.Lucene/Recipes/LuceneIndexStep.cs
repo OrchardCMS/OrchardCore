@@ -24,11 +24,11 @@ namespace OrchardCore.Lucene.Recipes
             _luceneIndexingService = luceneIndexingService;
         }
 
-        public Task ExecuteAsync(RecipeExecutionContext context)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "lucene-index", StringComparison.OrdinalIgnoreCase))
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var indexSettingsList = context.Step["Indices"].ToObject<IEnumerable<LuceneIndexSettings>>();
@@ -37,11 +37,9 @@ namespace OrchardCore.Lucene.Recipes
             {
                 if (!_luceneIndexManager.Exists(indexSettings.IndexName))
                 {
-                    _luceneIndexingService.CreateIndex(indexSettings);
+                    await _luceneIndexingService.CreateIndexAsync(indexSettings);
                 }
             }
-
-            return Task.CompletedTask;
         }
     }
 }

@@ -29,11 +29,11 @@ namespace OrchardCore.Lucene.Deployment
 
         public override IDisplayResult Edit(LuceneIndexDeploymentStep step)
         {
-            return Initialize<LuceneIndexDeploymentStepViewModel>("LuceneIndexDeploymentStep_Fields_Edit", model =>
+            return Initialize<LuceneIndexDeploymentStepViewModel>("LuceneIndexDeploymentStep_Fields_Edit", async model =>
             {
                 model.IncludeAll = step.IncludeAll;
                 model.IndexNames = step.IndexNames;
-                model.AllIndexNames = _luceneIndexSettingsService.GetIndices().ToArray();
+                model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
             }).Location("Content");
         }
 

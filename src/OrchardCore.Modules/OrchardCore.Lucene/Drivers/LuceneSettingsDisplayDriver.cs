@@ -21,15 +21,15 @@ namespace OrchardCore.Lucene.Drivers
 
         public override IDisplayResult Edit(LuceneSettings section, BuildEditorContext context)
         {
-            return Initialize<LuceneSettingsViewModel>("LuceneSettings_Edit", model =>
+            return Initialize<LuceneSettingsViewModel>("LuceneSettings_Edit", async model =>
                 {
                     model.SearchIndex = section.SearchIndex;
                     model.SearchFields = String.Join(", ", section.DefaultSearchFields ?? new string[0]);
-                    model.SearchIndexes = _luceneIndexSettingsService.GetIndices();
+                    model.SearchIndexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
                 }).Location("Content:2").OnGroup("search");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section,  BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section, BuildEditorContext context)
         {
             if (context.GroupId == "search")
             {

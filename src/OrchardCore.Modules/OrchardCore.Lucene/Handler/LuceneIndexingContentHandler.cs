@@ -62,7 +62,7 @@ namespace OrchardCore.Lucene.Handlers
                 ContentItem published = null, latest = null;
                 bool publishedLoaded = false, latestLoaded = false;
 
-                foreach (var indexSettings in luceneIndexSettingsService.GetSettings())
+                foreach (var indexSettings in await luceneIndexSettingsService.GetSettingsAsync())
                 {
                     if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                     {
@@ -82,15 +82,15 @@ namespace OrchardCore.Lucene.Handlers
 
                         if (contentItem == null)
                         {
-                            luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                            await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
                         }
                         else
                         {
                             var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId), contentItem, new string[] { contentItem.ContentType });
                             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
-                            luceneIndexManager.DeleteDocuments(indexSettings.IndexName, new string[] { contentItem.ContentItemId });
-                            luceneIndexManager.StoreDocuments(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
+                            await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemId });
+                            await luceneIndexManager.StoreDocumentsAsync(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
                         }
                     }
                 }

@@ -18,10 +18,10 @@ namespace OrchardCore.Lucene.Settings
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<ContentPickerFieldLuceneEditorSettings>("ContentPickerFieldLuceneEditorSettings_Edit", model =>
+            return Initialize<ContentPickerFieldLuceneEditorSettings>("ContentPickerFieldLuceneEditorSettings_Edit", async model =>
             {
                 partFieldDefinition.PopulateSettings<ContentPickerFieldLuceneEditorSettings>(model);
-                model.Indices = _luceneIndexSettingsService.GetIndices().ToArray();
+                model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
             }).Location("Editor");
         }
 

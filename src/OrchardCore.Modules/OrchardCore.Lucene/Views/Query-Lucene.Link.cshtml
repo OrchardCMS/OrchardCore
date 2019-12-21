@@ -3,7 +3,7 @@
 @inject LuceneIndexSettingsService LuceneIndexSettingsService
 
 @{ 
-    var disabled = !LuceneIndexSettingsService.GetIndices().Any();
+    var disabled = !(await LuceneIndexSettingsService.GetSettingsAsync()).Any();
 }
 <div class="card">
     <div class="card-body">

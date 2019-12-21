@@ -61,14 +61,14 @@ namespace OrchardCore.Lucene
             _luceneIndexSettingsService = luceneIndexSettingsService;
         }
 
-        public void CreateIndex(string indexName)
+        public async Task CreateIndexAsync(string indexName)
         {
-            Write(indexName, _ => { }, true);
+            await WriteAsync(indexName, _ => { }, true);
         }
 
-        public void DeleteDocuments(string indexName, IEnumerable<string> contentItemIds)
+        public async Task DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
         {
-            Write(indexName, writer =>
+            await WriteAsync(indexName, writer =>
             {
                 writer.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
 
@@ -124,17 +124,9 @@ namespace OrchardCore.Lucene
             return Directory.Exists(PathExtensions.Combine(_rootPath, indexName));
         }
 
-        [Obsolete("Please use LuceneIndexSettingsService.List() if you need to list indices.")]
-        public IEnumerable<string> List()
+        public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            return _rootDirectory
-                .GetDirectories()
-                .Select(x => x.Name);
-        }
-
-        public void StoreDocuments(string indexName, IEnumerable<DocumentIndex> indexDocuments)
-        {
-            Write(indexName, writer =>
+            await WriteAsync(indexName, writer =>
             {
                 foreach (var indexDocument in indexDocuments)
                 {
@@ -297,16 +289,17 @@ namespace OrchardCore.Lucene
             }
         }
 
-        private void Write(string indexName, Action<IndexWriter> action, bool close = false)
+        private async Task WriteAsync(string indexName, Action<IndexWriter> action, bool close = false)
         {
             if (!_writers.TryGetValue(indexName, out var writer))
             {
+                var indexAnalyzer = await _luceneIndexSettingsService.GetIndexAnalyzerAsync(indexName);
                 lock (this)
                 {
                     if (!_writers.TryGetValue(indexName, out writer))
                     {
                         var directory = CreateDirectory(indexName);
-                        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(_luceneIndexSettingsService.GetIndexAnalyzer(indexName));
+                        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(indexAnalyzer);
                         var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
                             OpenMode = OpenMode.CREATE_OR_APPEND,

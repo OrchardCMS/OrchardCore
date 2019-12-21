@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Lucene.Model;
+using YesSql;
 
 namespace OrchardCore.Lucene
 {
@@ -15,70 +17,101 @@ namespace OrchardCore.Lucene
     /// </summary>
     public class LuceneIndexSettingsService
     {
-        private readonly string _indexSettingsFilename;
+        private readonly IStore _store;
         private ImmutableDictionary<string, LuceneIndexSettings> _indexSettings;
 
-        public LuceneIndexSettingsService(
-            IOptions<ShellOptions> shellOptions,
-            ShellSettings shellSettings
-            )
+        public LuceneIndexSettingsService(IStore store)
         {
-            _indexSettingsFilename = PathExtensions.Combine(
-                shellOptions.Value.ShellsApplicationDataPath,
-                shellOptions.Value.ShellsContainerName,
-                shellSettings.Name,
-                "lucene.settings.json");
+            _store = store;
+        }
 
-            if (!File.Exists(_indexSettingsFilename))
+        public async Task<IEnumerable<LuceneIndexSettings>> GetSettingsAsync()
+        {
+            await EnsureSettingsLoaded();
+            return _indexSettings.Values;
+        }
+
+        private async Task EnsureSettingsLoaded()
+        {
+            using (var session = _store.CreateSession())
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
-                File.WriteAllText(_indexSettingsFilename, "[]");
-            }
+                if (_indexSettings == null)
+                {
+                    var document = await session.Query<LuceneIndexSettingsDocument>().FirstOrDefaultAsync();
 
-            var settings = JsonConvert.DeserializeObject<List<LuceneIndexSettings>>(File.ReadAllText(_indexSettingsFilename)) ?? new List<LuceneIndexSettings>();
+                    if (document == null)
+                    {
+                        _indexSettings = ImmutableDictionary<string, LuceneIndexSettings>.Empty;
+                    }
+                    else
+                    {
+                        _indexSettings = document.LuceneIndexSettings.ToImmutableDictionary();
 
-            _indexSettings = settings.ToImmutableDictionary(s => s.IndexName, s => s, StringComparer.OrdinalIgnoreCase);
-        }
-
-        public IEnumerable<string> GetIndices() => _indexSettings.Keys;
-
-        public IEnumerable<LuceneIndexSettings> GetSettings() => _indexSettings.Values;
-
-        public LuceneIndexSettings GetSettings(string indexName)
-        {
-            _indexSettings.TryGetValue(indexName, out var settings);
-            return settings;
-        }
-
-        public string GetIndexAnalyzer(string indexName)
-        {
-            _indexSettings.TryGetValue(indexName, out var settings);
-            return settings?.AnalyzerName ?? LuceneSettings.StandardAnalyzer;
-        }
-
-        public void UpdateIndex(LuceneIndexSettings settings)
-        {
-            lock (this)
-            {
-                _indexSettings = _indexSettings.SetItem(settings.IndexName, settings);
-                Update();
+                        foreach (var name in _indexSettings.Keys)
+                        {
+                            _indexSettings[name].IndexName = name;
+                        }
+                    }
+                }
             }
         }
 
-        public void DeleteIndex(string indexName)
+        public async Task<LuceneIndexSettings> GetSettingsAsync(string indexName)
         {
-            lock (this)
+            await EnsureSettingsLoaded();
+
+            if (_indexSettings.TryGetValue(indexName, out var settings))
             {
-                _indexSettings = _indexSettings.Remove(indexName);
-                Update();
+                return settings;
             }
+
+            return null;
         }
 
-        private void Update()
+        public async Task<string> GetIndexAnalyzerAsync(string indexName)
         {
-            lock (this)
+            await EnsureSettingsLoaded();
+
+            if (_indexSettings.TryGetValue(indexName, out var settings))
             {
-                File.WriteAllText(_indexSettingsFilename, JsonConvert.SerializeObject(GetSettings(), Formatting.Indented));
+                return settings.AnalyzerName;
+            }
+
+            return LuceneSettings.StandardAnalyzer;
+        }
+
+        public async Task UpdateIndexAsync(LuceneIndexSettings settings)
+        {
+            await EnsureSettingsLoaded();
+
+            _indexSettings = _indexSettings.SetItem(settings.IndexName, settings);
+
+            await SaveAsync();
+        }
+
+        public async Task DeleteIndexAsync(string indexName)
+        {
+            await EnsureSettingsLoaded();
+
+            _indexSettings = _indexSettings.Remove(indexName);
+
+            await SaveAsync();
+        }
+
+        private async Task SaveAsync()
+        {
+            using (var session = _store.CreateSession())
+            {
+                var document = await session.Query<LuceneIndexSettingsDocument>().FirstOrDefaultAsync();
+                if (document == null)
+                {
+                    document = new LuceneIndexSettingsDocument();
+                }
+
+                document.LuceneIndexSettings = new Dictionary<string, LuceneIndexSettings>(_indexSettings);
+
+                session.Save(document);
+                await session.CommitAsync();
             }
         }
     }

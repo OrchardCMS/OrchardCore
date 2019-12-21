@@ -33,17 +33,17 @@ namespace OrchardCore.Lucene.Drivers
 
         public override IDisplayResult Edit(LuceneQuery query, IUpdateModel updater)
         {
-            return Initialize<LuceneQueryViewModel>("LuceneQuery_Edit", model =>
+            return Initialize<LuceneQueryViewModel>("LuceneQuery_Edit", async model =>
             {
                 model.Query = query.Template;
                 model.Index = query.Index;
                 model.ReturnContentItems = query.ReturnContentItems;
-                model.Indices = _luceneIndexSettingsService.GetIndices().ToArray();
+                model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
 
                 // Extract query from the query string if we come from the main query editor
                 if (String.IsNullOrEmpty(query.Template))
                 {
-                    updater.TryUpdateModelAsync(model, "", m => m.Query);
+                    await updater.TryUpdateModelAsync(model, "", m => m.Query);
                 }
             }).Location("Content:5");
         }

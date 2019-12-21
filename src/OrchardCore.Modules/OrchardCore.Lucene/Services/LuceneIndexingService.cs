@@ -62,7 +62,7 @@ namespace OrchardCore.Lucene
 
             if (String.IsNullOrEmpty(indexName))
             {
-                indexSettingsList = _luceneIndexSettingsService.GetSettings();
+                indexSettingsList = await _luceneIndexSettingsService.GetSettingsAsync();
 
                 if (!indexSettingsList.Any())
                 {
@@ -79,7 +79,7 @@ namespace OrchardCore.Lucene
             }
             else
             {
-                var settings = _luceneIndexSettingsService.GetSettings(indexName);
+                var settings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
 
                 if (settings == null)
                 {
@@ -139,10 +139,6 @@ namespace OrchardCore.Lucene
                     {
                         indexSettingsList = indexSettingsList.Where(x => x.IndexName == indexName);
                     }
-                    else
-                    {
-                        indexSettingsList = indexSettingsList.Where(x => x.IndexInBackgroundTask);
-                    }
 
                     var needLatest = indexSettingsList.FirstOrDefault(x => x.IndexLatest) != null;
                     var needPublished = indexSettingsList.FirstOrDefault(x => !x.IndexLatest) != null;
@@ -201,13 +197,13 @@ namespace OrchardCore.Lucene
                     {
                         var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
 
-                        _indexManager.DeleteDocuments(index.Key, deletedDocuments);
+                        await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
                     }
 
                     // Submits all the new documents to the index
                     foreach (var index in updatedDocumentsByIndex)
                     {
-                        _indexManager.StoreDocuments(index.Key, updatedDocumentsByIndex[index.Key]);
+                        await _indexManager.StoreDocumentsAsync(index.Key, updatedDocumentsByIndex[index.Key]);
                     }
 
 
@@ -232,29 +228,29 @@ namespace OrchardCore.Lucene
         /// Creates a new index
         /// </summary>
         /// <returns></returns>
-        public void CreateIndex(LuceneIndexSettings indexSettings)
+        public async Task CreateIndexAsync(LuceneIndexSettings indexSettings)
         {
-            _luceneIndexSettingsService.UpdateIndex(indexSettings);
-            RebuildIndex(indexSettings.IndexName);
+            await _luceneIndexSettingsService.UpdateIndexAsync(indexSettings);
+            await RebuildIndexAsync(indexSettings.IndexName);
         }
 
         /// <summary>
         /// Update an existing index
         /// </summary>
         /// <returns></returns>
-        public void UpdateIndex(LuceneIndexSettings indexSettings)
+        public Task UpdateIndexAsync(LuceneIndexSettings indexSettings)
         {
-            _luceneIndexSettingsService.UpdateIndex(indexSettings);
+            return _luceneIndexSettingsService.UpdateIndexAsync(indexSettings);
         }
 
         /// <summary>
         /// Deletes permanently an index
         /// </summary>
         /// <returns></returns>
-        public void DeleteIndex(string indexName)
+        public Task DeleteIndexAsync(string indexName)
         {
             _indexManager.DeleteIndex(indexName);
-            _luceneIndexSettingsService.DeleteIndex(indexName);
+            return _luceneIndexSettingsService.DeleteIndexAsync(indexName);
         }
 
         /// <summary>
@@ -270,10 +266,10 @@ namespace OrchardCore.Lucene
         /// <summary>
         /// Deletes and recreates the full index content.
         /// </summary>
-        public void RebuildIndex(string indexName)
+        public async Task RebuildIndexAsync(string indexName)
         {
             _indexManager.DeleteIndex(indexName);
-            _indexManager.CreateIndex(indexName);
+            await _indexManager.CreateIndexAsync(indexName);
 
             ResetIndex(indexName);
         }

@@ -81,7 +81,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             var viewModel = new AdminIndexViewModel
             {
-                Indexes = _luceneIndexSettingsService.GetIndices().Select(i => new IndexViewModel { Name = i })
+                Indexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName })
             };
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -130,7 +130,7 @@ namespace OrchardCore.Lucene.Controllers
                 return Unauthorized();
             }
 
-            var settings = _luceneIndexSettingsService.GetSettings(indexName);
+            var settings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
 
             if (settings == null)
             {
@@ -142,7 +142,6 @@ namespace OrchardCore.Lucene.Controllers
                 IndexName = settings.IndexName,
                 AnalyzerName = settings.AnalyzerName,
                 IndexLatest = settings.IndexLatest,
-                IndexInBackgroundTask = settings.IndexInBackgroundTask,
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
                 IndexedContentTypes = settings.IndexedContentTypes
@@ -175,7 +174,7 @@ namespace OrchardCore.Lucene.Controllers
             {
                 var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes };
 
-                _luceneIndexingService.UpdateIndex(settings);
+                await _luceneIndexingService.UpdateIndexAsync(settings);
             }
             catch (Exception e)
             {
@@ -215,7 +214,7 @@ namespace OrchardCore.Lucene.Controllers
 
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.
-                _luceneIndexingService.CreateIndex(settings);
+                await _luceneIndexingService.CreateIndexAsync(settings);
             }
             catch (Exception e)
             {
@@ -263,7 +262,7 @@ namespace OrchardCore.Lucene.Controllers
                 return NotFound();
             }
 
-            _luceneIndexingService.RebuildIndex(id);
+            await _luceneIndexingService.RebuildIndexAsync(id);
             await _luceneIndexingService.ProcessContentItemsAsync(id);
 
             _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", id]);
@@ -286,7 +285,7 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                _luceneIndexingService.DeleteIndex(model.IndexName);
+                await _luceneIndexingService.DeleteIndexAsync(model.IndexName);
 
                 _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
             }
@@ -313,7 +312,7 @@ namespace OrchardCore.Lucene.Controllers
                 return Unauthorized();
             }
 
-            model.Indices = _luceneIndexSettingsService.GetIndices().ToArray();
+            model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
 
             // Can't query if there are no indices
             if (model.Indices.Length == 0)
@@ -346,7 +345,7 @@ namespace OrchardCore.Lucene.Controllers
 
             await _luceneIndexManager.SearchAsync(model.IndexName, async searcher =>
             {
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(_luceneIndexSettingsService.GetIndexAnalyzer(model.IndexName));
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(model.IndexName));
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
                 var templateContext = new TemplateContext();
@@ -369,7 +368,7 @@ namespace OrchardCore.Lucene.Controllers
                 catch (Exception e)
                 {
                     Logger.LogError(e, "Error while executing query");
-                    ModelState.AddModelError(nameof(model.DecodedQuery), String.Format("Invalid query : {0}", e.Message));
+                    ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query : {0}", e.Message]);
                 }
 
                 stopwatch.Stop();
