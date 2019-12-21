@@ -422,7 +422,7 @@ namespace OrchardCore.Mvc.Utilities
             var result = new StringBuilder(attribute.Length);
             var endsWithDelimiter = attribute.EndsWith(upperAfterDelimiter);
             foreach (var c in attribute)
-            {                
+            {
                 if (c == upperAfterDelimiter)
                 {
                     nextIsUpper = true;
@@ -438,7 +438,7 @@ namespace OrchardCore.Mvc.Utilities
                     result.Append(c);
                 }
 
-                nextIsUpper = false;                
+                nextIsUpper = false;
             }
 
             if(endsWithDelimiter)
