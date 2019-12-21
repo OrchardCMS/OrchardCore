@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using OrchardCore.FileStorage;
-using OrchardCore.Media.Events;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Core
 {
@@ -13,16 +10,12 @@ namespace OrchardCore.Media.Core
         private readonly IFileStore _fileStore;
         private readonly string _requestBasePath;
         private readonly string _cdnBaseUrl;
-        private readonly IEnumerable<IMediaEventHandler> _mediaEventHandlers;
-        public DefaultMediaFileStore(
-            ILogger<DefaultMediaFileStore> logger,
-            IEnumerable<IMediaEventHandler> mediaEventHandlers,
+        
+        public DefaultMediaFileStore(          
             IFileStore fileStore,
             string requestBasePath,
             string cdnBaseUrl)
-        {
-            Logger = logger;
-            _mediaEventHandlers = mediaEventHandlers;
+        {          
             _fileStore = fileStore;
 
             // Ensure trailing slash removed.
@@ -30,9 +23,7 @@ namespace OrchardCore.Media.Core
 
             // Media options configuration ensures any trailing slash is removed.
             _cdnBaseUrl = cdnBaseUrl;
-        }
-
-        public ILogger Logger { get; }
+        }        
         public Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
             return _fileStore.GetFileInfoAsync(path);
@@ -55,9 +46,7 @@ namespace OrchardCore.Media.Core
 
         public Task<bool> TryDeleteFileAsync(string path)
         {
-            _mediaEventHandlers.Invoke((handler, context) => handler.MediaRemoving(context), new MediaRemovingContext { Path = path }, Logger);
             var task = _fileStore.TryDeleteFileAsync(path);
-            _mediaEventHandlers.Invoke((handler, context) => handler.MediaRemoved(context), new MediaRemovedContext { Path = path }, Logger);
             return task;
         }
 
@@ -87,10 +76,8 @@ namespace OrchardCore.Media.Core
         }
 
         public Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
-        {
-            var mediaCreatingContext = new MediaCreatingContext { Stream = inputStream };
-            _mediaEventHandlers.Invoke((handler, context) => handler.MediaCreating(context), mediaCreatingContext, Logger);
-            var task = _fileStore.CreateFileFromStreamAsync(path, mediaCreatingContext.Stream, overwrite);           
+        {           
+            var task = _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);           
             return task;
         }
 
