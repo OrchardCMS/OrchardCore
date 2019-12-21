@@ -25,7 +25,7 @@ namespace OrchardCore.Media.Core
         public async Task<OutputStream> CreateFileFromStreamAsync(MediaCreationContext mediaContext)
         {                       
             
-            if(mediaContext.NeedPreProcess)
+            if(mediaContext.NeedToBePreprocessed)
             {
                 _mediaEventHandlers.Invoke((handler, context) => handler.MediaCreating(context), mediaContext, Logger);
             }
@@ -37,7 +37,7 @@ namespace OrchardCore.Media.Core
             outputImage.Width = mediaContext.OutputWidth;
             outputImage.Height = mediaContext.OutputHeight;            
 
-            if (mediaContext.NeedPostProcess)
+            if (mediaContext.NeedToBePostprocessed)
             {
                 _mediaEventHandlers.Invoke((handler, context) => handler.MediaCreated(context), mediaContext, Logger);
             }
@@ -48,14 +48,14 @@ namespace OrchardCore.Media.Core
 
         public async Task<bool> TryDeleteFileAsync(MediaContext mediaContext)
         {
-            if (mediaContext.NeedPreProcess)
+            if (mediaContext.NeedToBePreprocessed)
             {
                 _mediaEventHandlers.Invoke((handler, context) => handler.MediaDeleting(context), mediaContext, Logger);
             }
 
             bool result = await _mediaFileStore.TryDeleteFileAsync(mediaContext.Path);
 
-            if (mediaContext.NeedPostProcess)
+            if (mediaContext.NeedToBePostprocessed)
             {
                 if (result)
                 {
