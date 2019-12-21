@@ -715,17 +715,6 @@
               "ValidationSummary"
             ]
           }
-        },
-        {
-          "Search2": {
-            "AnalyzerName": "standardanalyzer",
-            "IndexLatest": false,
-            "IndexedContentTypes": [
-              "Article",
-              "Blog",
-              "BlogPost"
-            ]
-          }
         }
       ]
     },

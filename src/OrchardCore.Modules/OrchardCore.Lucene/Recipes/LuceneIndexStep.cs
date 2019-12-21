@@ -33,20 +33,18 @@ namespace OrchardCore.Lucene.Recipes
                 return;
             }
 
-            var model = context.Step["Indices"].ToObject<IEnumerable<ContentStepModel>>();
-
-            //var dict = new Dictionary<string, LuceneIndexSettings>();
-            //foreach (var item in model)
-            //{
-            //    var settings = item.Data;
-            //    //dict.Add(settings.Value, settings);
-            //}
-
-            foreach (var item in dict)
+            var indices = context.Step["Indices"];
+            if (indices != null)
             {
-                if (!_luceneIndexManager.Exists(item.Key))
+                foreach (var index in indices)
                 {
-                    await _luceneIndexingService.CreateIndexAsync(item.Value);
+                    var luceneIndexSettings = index.ToObject<Dictionary<string, LuceneIndexSettings>>().FirstOrDefault();
+
+                    if (!_luceneIndexManager.Exists(luceneIndexSettings.Key))
+                    {
+                        luceneIndexSettings.Value.IndexName = luceneIndexSettings.Key;
+                        await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings.Value);
+                    }
                 }
             }
         }
