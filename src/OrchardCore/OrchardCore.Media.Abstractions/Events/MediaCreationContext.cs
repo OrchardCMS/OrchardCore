@@ -29,10 +29,6 @@ namespace OrchardCore.Media.Events
         /// The height of output stream.
         /// </summary>
         public int? OutputHeight { get; set; }
-
-        /// <summary>
-        /// Any dynamic stuff used for transforming the image.
-        /// </summary>
-        public dynamic Options { get; set; }
+        
     }
 }
