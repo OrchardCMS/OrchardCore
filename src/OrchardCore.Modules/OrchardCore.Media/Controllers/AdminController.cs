@@ -255,7 +255,7 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            MediaContext mediaContext = new MediaContext()
+            MediaRemoveContext mediaContext = new MediaRemoveContext()
             {
                 Path = path
             };
@@ -322,7 +322,7 @@ namespace OrchardCore.Media.Controllers
 
             foreach (var p in paths)
             {
-                MediaContext mediaContext = new MediaContext()
+                MediaRemoveContext mediaContext = new MediaRemoveContext()
                 {
                     Path = p
                 };

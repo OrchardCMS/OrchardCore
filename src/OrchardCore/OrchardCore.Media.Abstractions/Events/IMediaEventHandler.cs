@@ -4,8 +4,8 @@ namespace OrchardCore.Media.Events
     {
         void MediaCreating(MediaCreationContext context);
         void MediaCreated(MediaCreationContext context);
-        void MediaDeleting(MediaContext context);
-        void MediaDeleted(MediaContext context);
-        void MediaDeletedUncomplete(MediaContext context);
+        void MediaDeleting(MediaRemoveContext context);
+        void MediaDeleted(MediaRemoveContext context);
+        void MediaDeletedUncomplete(MediaRemoveContext context);
     }
 }

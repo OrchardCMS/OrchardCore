@@ -46,7 +46,7 @@ namespace OrchardCore.Media.Core
 
         }
 
-        public async Task<bool> TryDeleteFileAsync(MediaContext mediaContext)
+        public async Task<bool> TryDeleteFileAsync(MediaRemoveContext mediaContext)
         {
             if (mediaContext.NeedToBePreprocessed)
             {

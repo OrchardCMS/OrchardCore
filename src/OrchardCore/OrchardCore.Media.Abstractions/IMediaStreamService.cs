@@ -6,6 +6,6 @@ namespace OrchardCore.Media
     public interface IMediaStreamService
     {
         Task<OutputStream> CreateFileFromStreamAsync(MediaCreationContext mediaCreatingContext);
-        Task<bool> TryDeleteFileAsync(MediaContext mediaContext);
+        Task<bool> TryDeleteFileAsync(MediaRemoveContext mediaContext);
     }
 }
