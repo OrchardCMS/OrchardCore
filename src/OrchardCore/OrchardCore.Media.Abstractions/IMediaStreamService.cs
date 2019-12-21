@@ -5,6 +5,6 @@ namespace OrchardCore.Media
 {
     public interface IMediaStreamService
     {
-        Task<OutputStream> Preprocess( MediaCreatingContext mediaCreatingContext);
+        Task Preprocess( MediaCreatingContext mediaCreatingContext);
     }
 }

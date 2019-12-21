@@ -22,7 +22,7 @@ namespace OrchardCore.Media.Core
         }
 
         public ILogger Logger { get; }
-        public async Task<OutputStream> Preprocess(MediaCreatingContext mediaCreatingContext)
+        public async Task Preprocess(MediaCreatingContext mediaCreatingContext)
         {                       
             
             if(mediaCreatingContext.NeedPreprocess)
@@ -31,12 +31,7 @@ namespace OrchardCore.Media.Core
             }
 
             await _mediaFileStore.CreateFileFromStreamAsync(mediaCreatingContext.Path, mediaCreatingContext.Stream);
-
-            OutputStream outputImage = new OutputStream();
-            outputImage.Stream = mediaCreatingContext.Stream;
-            outputImage.Width = mediaCreatingContext.OutputWidth;
-            outputImage.Height = mediaCreatingContext.OutputHeight;
-            return outputImage;
+            
         }
 
 
