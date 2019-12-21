@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.FileStorage;
-using OrchardCore.Media.Events;
 using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Controllers
@@ -22,24 +22,21 @@ namespace OrchardCore.Media.Controllers
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
-        private readonly IMediaStreamService _mediaStreamService;
         private readonly ILogger _logger;
         private readonly IStringLocalizer<AdminController> T;
-        
+
         public AdminController(
-            IMediaFileStore mediaFileStore,            
+            IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
-            IMediaStreamService mediaStreamService,
             IOptions<MediaOptions> options,
             ILogger<AdminController> logger,
             IStringLocalizer<AdminController> stringLocalizer
             )
         {
             _mediaFileStore = mediaFileStore;
-            _mediaStreamService = mediaStreamService;
             _authorizationService = authorizationService;
-            _contentTypeProvider = contentTypeProvider;            
+            _contentTypeProvider = contentTypeProvider;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
             _logger = logger;
             T = stringLocalizer;
@@ -186,12 +183,7 @@ namespace OrchardCore.Media.Controllers
 
                     using (var stream = file.OpenReadStream())
                     {
-                        MediaCreationContext mediaContext = new MediaCreationContext()
-                        {
-                            Path = mediaFilePath,
-                            Stream = stream
-                        };
-                        await _mediaStreamService.CreateFileFromStreamAsync(mediaContext);
+                        await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
                     }
 
                     var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
@@ -255,11 +247,7 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            MediaRemoveContext mediaContext = new MediaRemoveContext()
-            {
-                Path = path
-            };
-            if (await _mediaStreamService.TryDeleteFileAsync(mediaContext) == false)
+            if (await _mediaFileStore.TryDeleteFileAsync(path) == false)
                 return NotFound();
 
             return Ok();
@@ -322,11 +310,7 @@ namespace OrchardCore.Media.Controllers
 
             foreach (var p in paths)
             {
-                MediaRemoveContext mediaContext = new MediaRemoveContext()
-                {
-                    Path = p
-                };
-                if (await _mediaStreamService.TryDeleteFileAsync(mediaContext) == false)
+                if (await _mediaFileStore.TryDeleteFileAsync(p) == false)
                     return NotFound();
             }
 
