@@ -1,11 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Lucene.Model;
 using YesSql;
 
