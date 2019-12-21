@@ -691,7 +691,6 @@
             "IndexName": "Search",
             "AnalyzerName": "standardanalyzer",
             "IndexLatest": false,
-            "IndexInBackgroundTask": true,
             "IndexedContentTypes": [
               "Article",
               "Blockquote",
