@@ -10,12 +10,12 @@ namespace OrchardCore.Media.Core
         private readonly IFileStore _fileStore;
         private readonly string _requestBasePath;
         private readonly string _cdnBaseUrl;
-        
-        public DefaultMediaFileStore(          
+
+        public DefaultMediaFileStore(
             IFileStore fileStore,
             string requestBasePath,
             string cdnBaseUrl)
-        {          
+        {
             _fileStore = fileStore;
 
             // Ensure trailing slash removed.
@@ -23,7 +23,8 @@ namespace OrchardCore.Media.Core
 
             // Media options configuration ensures any trailing slash is removed.
             _cdnBaseUrl = cdnBaseUrl;
-        }        
+        }
+
         public Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
             return _fileStore.GetFileInfoAsync(path);
@@ -46,8 +47,7 @@ namespace OrchardCore.Media.Core
 
         public Task<bool> TryDeleteFileAsync(string path)
         {
-            var task = _fileStore.TryDeleteFileAsync(path);
-            return task;
+            return _fileStore.TryDeleteFileAsync(path);
         }
 
         public Task<bool> TryDeleteDirectoryAsync(string path)
@@ -76,9 +76,8 @@ namespace OrchardCore.Media.Core
         }
 
         public Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
-        {           
-            var task = _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);           
-            return task;
+        {
+            return _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
         }
 
         public string MapPathToPublicUrl(string path)
