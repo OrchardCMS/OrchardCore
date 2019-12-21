@@ -13,6 +13,8 @@ namespace OrchardCore.Lucene.Model
         public bool IndexLatest { get; set; }
 
         public string[] IndexedContentTypes { get; set; }
+
+        public string Culture { get; set; }
     }
 
     public class LuceneIndexSettingsDocument

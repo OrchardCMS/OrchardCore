@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
@@ -114,6 +115,8 @@ namespace OrchardCore.Lucene.Controllers
             {
                 IndexName = "",
                 AnalyzerName = "standardanalyzer",
+                Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
                 IndexedContentTypes = _contentDefinitionManager.ListTypeDefinitions()
@@ -142,6 +145,9 @@ namespace OrchardCore.Lucene.Controllers
                 IndexName = settings.IndexName,
                 AnalyzerName = settings.AnalyzerName,
                 IndexLatest = settings.IndexLatest,
+                Culture = settings.Culture,
+                Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
                 IndexedContentTypes = settings.IndexedContentTypes
@@ -172,7 +178,7 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes };
+                var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "" };
 
                 await _luceneIndexingService.UpdateIndexAsync(settings);
             }
@@ -210,7 +216,7 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes };
+                var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "" };
 
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.

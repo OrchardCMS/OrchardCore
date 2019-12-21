@@ -180,9 +180,10 @@ namespace OrchardCore.Lucene
                                 }
 
                                 var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
+                                bool ignoreIndexedCulture = settings.Culture == "any" ? false : context.ContentItem.Content?.LocalizationPart?.Culture != settings.Culture;
 
-                                // Ignore if the content item content type is not indexed in this index
-                                if (context.ContentItem == null || !settings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
+                                // Ignore if the content item content type or culture is not indexed in this index
+                                if (context.ContentItem == null || !settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
                                 {
                                     continue;
                                 }
