@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
     {
         public readonly static LiquidTagHelperActivator None = new LiquidTagHelperActivator();
         private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activator;
-        private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Action<ITagHelper, FluidValue, string>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue, string>>(StringComparer.OrdinalIgnoreCase);
 
         public LiquidTagHelperActivator() { }
 
@@ -28,11 +28,13 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             foreach (var property in accessibleProperties)
             {
                 var invokeType = typeof(Action<,>).MakeGenericType(type, property.PropertyType);
+                var invokeTypeGet = typeof(Func<,>).MakeGenericType(type, property.PropertyType);                
                 var setterDelegate = Delegate.CreateDelegate(invokeType, property.GetSetMethod());
+                var getterDelegate = Delegate.CreateDelegate(invokeTypeGet, property.GetGetMethod());
 
                 var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { property.Name };
                 var htmlAttribute = property.GetCustomAttribute<HtmlAttributeNameAttribute>();
-
+               
                 if (htmlAttribute != null && htmlAttribute.Name != null)
                 {
                     allNames.Add(htmlAttribute.Name.ToPascalCaseDash());
@@ -41,11 +43,21 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     {
                         allNames.Add(htmlAttribute.Name.Substring(4).ToPascalCaseDash());
                     }
+                    var dictonaryPrefix =  htmlAttribute.DictionaryAttributePrefix;
+                    if(dictonaryPrefix != null)
+                    {
+                        allNames.Add(dictonaryPrefix.ToPascalCaseDash());
+
+                        if (dictonaryPrefix.StartsWith("asp-", StringComparison.Ordinal))
+                        {
+                            allNames.Add(dictonaryPrefix.Substring(4).ToPascalCaseDash());
+                        }
+                    }
                 }
 
                 foreach (var propertyName in allNames)
                 {
-                    _setters.Add(propertyName, (h, v) =>
+                    _setters.Add(propertyName, (h, v, k) =>
                     {
                         object value = null;
 
@@ -64,6 +76,26 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                         else if (property.PropertyType == typeof(Nullable<Boolean>))
                         {
                             value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue());
+                        }
+                        else if(property.PropertyType == typeof(IDictionary<string, string>)) 
+                        {
+                            IDictionary<string, string> dictValue = (IDictionary<string, string>) getterDelegate.DynamicInvoke(new[] { h }); 
+                            if(!string.IsNullOrWhiteSpace(k))
+                                dictValue[k] = v.ToStringValue();
+                            value = dictValue;
+                        }
+                        else if(property.PropertyType == typeof(IDictionary<string, object>)) 
+                        {
+                            IDictionary<string, object> dictValue = (IDictionary<string, object>) getterDelegate.DynamicInvoke(new[] { h });
+                            if(!string.IsNullOrWhiteSpace(k)) 
+                                dictValue[k] = v.ToObjectValue();
+                            value = dictValue;
+                        }
+                        else if(property.PropertyType == typeof(Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpression))
+                        {
+                            //Todo : Convert String presentation to expression. 
+                            // e.g. convert string "Model.DisplayText" to (Model) => Model.DisplayText
+                             value = null;
                         }
                         else
                         {
@@ -89,18 +121,20 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             outputAttributes = new TagHelperAttributeList();
 
             var tagHelper = _activator(factory, context);
+            var dictKeySeperator =new char[] {'-','_'};
 
             foreach (var name in arguments.Names)
             {
                 var propertyName = name.ToPascalCaseUnderscore();
-
+                var dictPropertyName = propertyName.LastIndexOfAny(dictKeySeperator) > -1 ? propertyName.Substring(0,propertyName.LastIndexOfAny(dictKeySeperator)+1) : String.Empty;
+                var dictPropertyKey = propertyName.LastIndexOfAny(dictKeySeperator) > -1 ? propertyName.Substring(propertyName.LastIndexOfAny(dictKeySeperator)+1) : String.Empty;
                 var found = false;
 
-                if (_setters.TryGetValue(propertyName, out var setter))
+                if (_setters.TryGetValue(propertyName, out var setter) || ( !string.IsNullOrWhiteSpace(dictPropertyName) && _setters.TryGetValue(dictPropertyName, out setter) ) )
                 {
                     try
                     {
-                        setter(tagHelper, arguments[name]);
+                        setter(tagHelper, arguments[name], dictPropertyKey);
                         found = true;
                     }
                     catch (ArgumentException e)
