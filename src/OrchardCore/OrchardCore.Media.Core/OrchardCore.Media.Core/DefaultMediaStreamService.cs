@@ -11,7 +11,7 @@ namespace OrchardCore.Media.Core
         private readonly IEnumerable<IMediaEventHandler> _mediaEventHandlers;
         private readonly IMediaFileStore _mediaFileStore;
         public DefaultMediaStreamService(           
-            ILogger<DefaultMediaFileStore> logger,
+            ILogger<DefaultMediaStreamService> logger,
             IEnumerable<IMediaEventHandler> mediaEventHandlers,
             IMediaFileStore mediaFileStore
             )
