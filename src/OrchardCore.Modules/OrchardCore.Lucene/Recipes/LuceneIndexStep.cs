@@ -31,13 +31,14 @@ namespace OrchardCore.Lucene.Recipes
                 return;
             }
 
-            var indexSettingsList = context.Step["Indices"].ToObject<IEnumerable<LuceneIndexSettings>>();
+            var indexSettingsList = context.Step["Indices"].ToObject<Dictionary<string, LuceneIndexSettings>>();
 
             foreach(var indexSettings in indexSettingsList)
             {
-                if (!_luceneIndexManager.Exists(indexSettings.IndexName))
+                if (!_luceneIndexManager.Exists(indexSettings.Key))
                 {
-                    await _luceneIndexingService.CreateIndexAsync(indexSettings);
+                    indexSettings.Value.IndexName = indexSettings.Key;
+                    await _luceneIndexingService.CreateIndexAsync(indexSettings.Value);
                 }
             }
         }
