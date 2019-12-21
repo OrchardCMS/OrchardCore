@@ -20,12 +20,6 @@ namespace OrchardCore.Lucene
             _store = store;
         }
 
-        public async Task<IEnumerable<LuceneIndexSettings>> GetSettingsAsync()
-        {
-            await EnsureSettingsLoaded();
-            return _indexSettings.Values;
-        }
-
         private async Task EnsureSettingsLoaded()
         {
             using (var session = _store.CreateSession())
@@ -49,6 +43,12 @@ namespace OrchardCore.Lucene
                     }
                 }
             }
+        }
+
+        public async Task<IEnumerable<LuceneIndexSettings>> GetSettingsAsync()
+        {
+            await EnsureSettingsLoaded();
+            return _indexSettings.Values;
         }
 
         public async Task<LuceneIndexSettings> GetSettingsAsync(string indexName)

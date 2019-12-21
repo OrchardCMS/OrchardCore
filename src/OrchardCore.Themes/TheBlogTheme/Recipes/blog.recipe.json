@@ -267,7 +267,7 @@
               "Draftable": true,
               "Versionable": true,
               "Listable": true,
-              "Securable":  true
+              "Securable": true
             }
           },
           "ContentTypePartDefinitionRecords": [
@@ -415,7 +415,7 @@
               "Draftable": true,
               "Versionable": true,
               "Securable": true,
-              "Listable":  true,
+              "Listable": true,
               "Stereotype": "Widget"
             }
           },
@@ -511,10 +511,10 @@
           "DisplayName": "Page",
           "Settings": {
             "ContentTypeSettings": {
-              "Creatable":  true,
+              "Creatable": true,
               "Draftable": true,
               "Versionable": true,
-              "Listable":  true,
+              "Listable": true,
               "Securable": true
             }
           },
@@ -685,7 +685,7 @@
     {
       // Create the indices before the content items so they are indexed automatically.
       "name": "lucene-index",
-      "Indices": 
+      "Indices": [
         {
           "Search": {
             "AnalyzerName": "standardanalyzer",
@@ -715,8 +715,19 @@
               "ValidationSummary"
             ]
           }
+        },
+        {
+          "Search2": {
+            "AnalyzerName": "standardanalyzer",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
+              "Article",
+              "Blog",
+              "BlogPost"
+            ]
+          }
         }
-      
+      ]
     },
     {
       "name": "content",

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -31,16 +33,27 @@ namespace OrchardCore.Lucene.Recipes
                 return;
             }
 
-            var indexSettingsList = context.Step["Indices"].ToObject<Dictionary<string, LuceneIndexSettings>>();
+            var model = context.Step["Indices"].ToObject<IEnumerable<ContentStepModel>>();
 
-            foreach(var indexSettings in indexSettingsList)
+            //var dict = new Dictionary<string, LuceneIndexSettings>();
+            //foreach (var item in model)
+            //{
+            //    var settings = item.Data;
+            //    //dict.Add(settings.Value, settings);
+            //}
+
+            foreach (var item in dict)
             {
-                if (!_luceneIndexManager.Exists(indexSettings.Key))
+                if (!_luceneIndexManager.Exists(item.Key))
                 {
-                    indexSettings.Value.IndexName = indexSettings.Key;
-                    await _luceneIndexingService.CreateIndexAsync(indexSettings.Value);
+                    await _luceneIndexingService.CreateIndexAsync(item.Value);
                 }
             }
         }
+    }
+
+    public class ContentStepModel
+    {
+        public JObject Data { get; set; }
     }
 }
