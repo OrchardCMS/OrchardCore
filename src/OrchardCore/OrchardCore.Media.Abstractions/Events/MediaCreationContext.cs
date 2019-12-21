@@ -1,9 +1,13 @@
+using System.IO;
 
 namespace OrchardCore.Media.Events
 {
-    public class MediaCreatingContext : MediaContext
+    public class MediaCreationContext : MediaContext
     {
-        public bool NeedPreprocess { get; set; }
+        /// <summary>
+        /// The input or output stream.
+        /// </summary>
+        public Stream Stream { get; set; }       
         public int? X { get; set; }
         public int? Y { get; set; }
         /// <summary>
@@ -25,5 +29,10 @@ namespace OrchardCore.Media.Events
         /// The height of output stream.
         /// </summary>
         public int? OutputHeight { get; set; }
+
+        /// <summary>
+        /// Any dynamic stuff used for transforming the image.
+        /// </summary>
+        public dynamic Options { get; set; }
     }
 }

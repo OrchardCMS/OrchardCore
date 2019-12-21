@@ -22,16 +22,54 @@ namespace OrchardCore.Media.Core
         }
 
         public ILogger Logger { get; }
-        public async Task Preprocess(MediaCreatingContext mediaCreatingContext)
+        public async Task<OutputStream> CreateFileFromStreamAsync(MediaCreationContext mediaContext)
         {                       
             
-            if(mediaCreatingContext.NeedPreprocess)
+            if(mediaContext.NeedPreProcess)
             {
-                _mediaEventHandlers.Invoke((handler, context) => handler.MediaCreating(context), mediaCreatingContext, Logger);
+                _mediaEventHandlers.Invoke((handler, context) => handler.MediaCreating(context), mediaContext, Logger);
             }
 
-            await _mediaFileStore.CreateFileFromStreamAsync(mediaCreatingContext.Path, mediaCreatingContext.Stream);
-            
+            await _mediaFileStore.CreateFileFromStreamAsync(mediaContext.Path, mediaContext.Stream);
+
+            OutputStream outputImage = new OutputStream();
+            outputImage.Stream = mediaContext.Stream;
+            outputImage.Width = mediaContext.OutputWidth;
+            outputImage.Height = mediaContext.OutputHeight;            
+
+            if (mediaContext.NeedPostProcess)
+            {
+                _mediaEventHandlers.Invoke((handler, context) => handler.MediaCreated(context), mediaContext, Logger);
+            }
+
+            return outputImage;
+
+        }
+
+        public async Task<bool> TryDeleteFileAsync(MediaContext mediaContext)
+        {
+            if (mediaContext.NeedPreProcess)
+            {
+                _mediaEventHandlers.Invoke((handler, context) => handler.MediaDeleting(context), mediaContext, Logger);
+            }
+
+            bool result = await _mediaFileStore.TryDeleteFileAsync(mediaContext.Path);
+
+            if (mediaContext.NeedPostProcess)
+            {
+                if (result)
+                {
+                    _mediaEventHandlers.Invoke((handler, context) => handler.MediaDeleted(context), mediaContext, Logger);
+                }
+                else
+                {
+                    _mediaEventHandlers.Invoke((handler, context) => handler.MediaDeletedUncomplete(context), mediaContext, Logger);
+                }
+
+            }      
+
+            return result;
+
         }
 
 

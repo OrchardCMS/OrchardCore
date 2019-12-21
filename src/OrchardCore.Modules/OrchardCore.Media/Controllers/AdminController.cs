@@ -186,12 +186,12 @@ namespace OrchardCore.Media.Controllers
 
                     using (var stream = file.OpenReadStream())
                     {
-                        MediaCreatingContext mediaCreatingContext = new MediaCreatingContext()
+                        MediaCreationContext mediaContext = new MediaCreationContext()
                         {
                             Path = mediaFilePath,
                             Stream = stream
                         };
-                        await _mediaStreamService.Preprocess(mediaCreatingContext);
+                        await _mediaStreamService.CreateFileFromStreamAsync(mediaContext);
                     }
 
                     var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
@@ -255,7 +255,11 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            if (await _mediaFileStore.TryDeleteFileAsync(path) == false)
+            MediaContext mediaContext = new MediaContext()
+            {
+                Path = path
+            };
+            if (await _mediaStreamService.TryDeleteFileAsync(mediaContext) == false)
                 return NotFound();
 
             return Ok();
@@ -318,7 +322,11 @@ namespace OrchardCore.Media.Controllers
 
             foreach (var p in paths)
             {
-                if (await _mediaFileStore.TryDeleteFileAsync(p) == false)
+                MediaContext mediaContext = new MediaContext()
+                {
+                    Path = p
+                };
+                if (await _mediaStreamService.TryDeleteFileAsync(mediaContext) == false)
                     return NotFound();
             }
 
