@@ -369,6 +369,10 @@ namespace OrchardCore.Lucene.Controllers
 
         private void ValidateModel(LuceneIndexSettingsViewModel model)
         {
+            if (model.IndexedContentTypes == null || model.IndexedContentTypes.Count() < 1) {
+                ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexedContentTypes), S["At least one content type selection is required."]);
+            }
+
             if (String.IsNullOrWhiteSpace(model.IndexName))
             {
                 ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["The index name is required."]);

@@ -29,7 +29,7 @@ else
         <span asp-validation-for="Culture" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" asp-validation-class-for="IndexedContentTypes">
         <label asp-for="IndexedContentTypes">@T["Content Types"]</label>
         <span class="hint">— @T["The content types to index. Choose at least one."]</span>
         @if (Model.IsCreate)
@@ -40,6 +40,7 @@ else
         {
             @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.IndexedContentTypes, htmlName = Html.NameFor(m => m.IndexedContentTypes) })
         }
+        <span asp-validation-for="IndexedContentTypes" class="text-danger"></span>
     </div>
 
     <div class="form-group" asp-validation-class-for="IndexLatest">
