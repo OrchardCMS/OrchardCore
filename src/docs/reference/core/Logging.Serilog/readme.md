@@ -43,6 +43,8 @@ add a reference to `OrchardCore.Logging.Serilog`
 ### Modify `program.cs` to use Serilog
 
 ``` csharp
+        using Serilog;
+        ...
         public static IHost BuildHost(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(logging => logging.ClearProviders())
@@ -56,7 +58,7 @@ add a reference to `OrchardCore.Logging.Serilog`
 
 ``` csharp
         using OrchardCore.Logging;
-
+        ...
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
