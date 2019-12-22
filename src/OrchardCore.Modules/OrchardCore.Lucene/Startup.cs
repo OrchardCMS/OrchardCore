@@ -91,13 +91,6 @@ namespace OrchardCore.Lucene
             );
 
             routes.MapAreaControllerRoute(
-                name: "Lucene.Create",
-                areaName: "OrchardCore.Lucene",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Create",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
-            );
-
-            routes.MapAreaControllerRoute(
                 name: "Lucene.Delete",
                 areaName: "OrchardCore.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Delete/{id}",

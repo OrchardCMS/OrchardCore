@@ -103,54 +103,40 @@ namespace OrchardCore.Lucene.Controllers
 
             return View(model);
         }
-
-        public async Task<ActionResult> Create()
+        
+        public async Task<ActionResult> Edit(string indexName = null)
         {
+            var IsCreate = String.IsNullOrWhiteSpace(indexName);
+            var settings = new LuceneIndexSettings();
+
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
                 return Unauthorized();
             }
 
-            var model = new LuceneIndexSettingsViewModel
+            if (!IsCreate)
             {
-                IndexName = "",
-                AnalyzerName = "standardanalyzer",
-                Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
-                Analyzers = _luceneAnalyzerManager.GetAnalyzers()
-                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
-                IndexedContentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                    .Select(x => x.Name).ToArray()
-            };
+                settings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
 
-            return View(model);
-        }
-
-        public async Task<ActionResult> Edit(string indexName)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
-            {
-                return Unauthorized();
-            }
-
-            var settings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
-
-            if (settings == null)
-            {
-                return NotFound();
+                if (settings == null)
+                {
+                    return NotFound();
+                }
             }
 
             var model = new LuceneIndexSettingsViewModel
             {
-                IndexName = settings.IndexName,
-                AnalyzerName = settings.AnalyzerName,
+                IsCreate = IsCreate,
+                IndexName = IsCreate ? "" : settings.IndexName,
+                AnalyzerName = IsCreate ? "standardanalyzer" : settings.AnalyzerName,
                 IndexLatest = settings.IndexLatest,
                 Culture = settings.Culture,
                 Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
                     .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
-                IndexedContentTypes = settings.IndexedContentTypes
+                IndexedContentTypes = IsCreate ? _contentDefinitionManager.ListTypeDefinitions()
+                    .Select(x => x.Name).ToArray() : settings.IndexedContentTypes
             };
 
             return View(model);
@@ -166,74 +152,71 @@ namespace OrchardCore.Lucene.Controllers
 
             ValidateModel(model);
 
-            if (!_luceneIndexManager.Exists(model.IndexName))
+            if (model.IsCreate)
             {
-                ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exists."]);
+                if (_luceneIndexManager.Exists(model.IndexName))
+                {
+                    ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} already exists."]);
+                }
+            }
+            else
+            {
+                if (!_luceneIndexManager.Exists(model.IndexName))
+                {
+                    ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exists."]);
+                }
             }
 
             if (!ModelState.IsValid)
             {
+                model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
+                model.Analyzers = _luceneAnalyzerManager.GetAnalyzers()
+                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Name });
                 return View(model);
             }
 
-            try
+            if (model.IsCreate)
             {
-                var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "" };
+                try
+                {
+                    var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "" };
 
-                await _luceneIndexingService.UpdateIndexAsync(settings);
+                    // We call Rebuild in order to reset the index state cursor too in case the same index
+                    // name was also used previously.
+                    await _luceneIndexingService.CreateIndexAsync(settings);
+                }
+                catch (Exception e)
+                {
+                    _notifier.Error(H["An error occurred while creating the index"]);
+                    Logger.LogError(e, "An error occurred while creating an index");
+                    return View(model);
+                }
+
+                _notifier.Success(H["Index <em>{0}</em> created successfully.", model.IndexName]);
             }
-            catch (Exception e)
+            else
             {
-                _notifier.Error(H["An error occurred while editing the index"]);
-                Logger.LogError(e, "An error occurred while editing an index");
-                return View(model);
+                try
+                {
+                    var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "" };
+
+                    await _luceneIndexingService.UpdateIndexAsync(settings);
+                }
+                catch (Exception e)
+                {
+                    _notifier.Error(H["An error occurred while editing the index"]);
+                    Logger.LogError(e, "An error occurred while editing an index");
+                    return View(model);
+                }
+
+                _notifier.Success(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
             }
 
-            _notifier.Success(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
 
             return RedirectToAction("Index");
         }
-
-        [HttpPost, ActionName("Create")]
-        public async Task<ActionResult> CreatePOST(LuceneIndexSettingsViewModel model, string[] indexedContentTypes)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
-            {
-                return Unauthorized();
-            }
-
-            ValidateModel(model);
-
-            if (_luceneIndexManager.Exists(model.IndexName))
-            {
-                ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} already exists."]);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            try
-            {
-                var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "" };
-
-                // We call Rebuild in order to reset the index state cursor too in case the same index
-                // name was also used previously.
-                await _luceneIndexingService.CreateIndexAsync(settings);
-            }
-            catch (Exception e)
-            {
-                _notifier.Error(H["An error occurred while creating the index"]);
-                Logger.LogError(e, "An error occurred while creating an index");
-                return View(model);
-            }
-
-            _notifier.Success(H["Index <em>{0}</em> created successfully.", model.IndexName]);
-
-            return RedirectToAction("Index");
-        }
-
+        
         [HttpPost]
         public async Task<ActionResult> Reset(string id)
         {

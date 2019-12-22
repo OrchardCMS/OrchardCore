@@ -18,6 +18,8 @@ namespace OrchardCore.Lucene.ViewModels
 
         public string[] IndexedContentTypes { get; set; }
 
+        public bool IsCreate { get; set; }
+
         #region List to populate
         [BindNever]
         public IEnumerable<SelectListItem> Analyzers { get; set; }
