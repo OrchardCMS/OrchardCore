@@ -1,11 +1,13 @@
+using System.Threading.Tasks;
+
 namespace OrchardCore.Media.Events
 {
     public interface IMediaEventHandler
     {
-        void MediaCreating(MediaCreationContext context);
-        void MediaCreated(MediaCreationContext context);
-        void MediaDeleting(MediaRemoveContext context);
-        void MediaDeleted(MediaRemoveContext context);
-        void MediaDeletedUncomplete(MediaRemoveContext context);
+        Task MediaCreatingAsync(MediaCreatingContext context);        
+        Task MediaDeletingAsync(MediaDeleteContext context);
+        Task MediaDeletedSuccessAsync(MediaDeleteContext context);
+        Task MediaDeletedUnsuccessAsync(MediaDeleteContext context);
+        Task MediaMovingAsync(MediaMovingContext context);
     }
 }

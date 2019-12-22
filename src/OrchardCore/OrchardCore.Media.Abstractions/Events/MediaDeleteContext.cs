@@ -1,6 +1,6 @@
 namespace OrchardCore.Media.Events
 {
-    public class MediaRemoveContext : MediaContext
+    public class MediaDeleteContext : MediaContext
     {
     }
 }

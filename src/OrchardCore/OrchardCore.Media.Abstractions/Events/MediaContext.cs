@@ -8,16 +8,7 @@ namespace OrchardCore.Media.Events
         /// <summary>
         /// The path of the file for this media to be created in the file store.
         /// </summary>
-        public string Path { get; set; }        
+        public string Path { get; set; }   
         
-        /// <summary>
-        /// Any dynamic input data.
-        /// </summary>
-        public object Input { get; set; }
-
-        /// <summary>
-        /// Any dynamic output data.
-        /// </summary>
-        public object Output { get; set; }
     }
 }

@@ -53,16 +53,20 @@ namespace OrchardCore.Media.Core
             return _fileStore.TryCreateDirectoryAsync(path);
         }
 
-        public Task<bool> TryDeleteFileAsync(string path)
+        public async Task<bool> TryDeleteFileAsync(string path)
         {
-            MediaRemoveContext mediaContext = new MediaRemoveContext
+            MediaDeleteContext mediaContext = new MediaDeleteContext
             {
                 Path = path
             };
-            _mediaEventHandlers.Invoke((handler, context) => handler.MediaDeleting(context), mediaContext, Logger);
-            var task = _fileStore.TryDeleteFileAsync(path);            
-            _mediaEventHandlers.Invoke((handler, context) => handler.MediaDeleted(context), mediaContext, Logger);
-            return task;
+            _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaDeletingAsync(context), mediaContext, Logger);
+            bool result = await _fileStore.TryDeleteFileAsync(mediaContext.Path);
+            if(result)
+                _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaDeletedSuccessAsync(context), mediaContext, Logger);
+            else
+                _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaDeletedUnsuccessAsync(context), mediaContext, Logger);
+
+            return result;
         }
 
         public Task<bool> TryDeleteDirectoryAsync(string path)
@@ -72,7 +76,13 @@ namespace OrchardCore.Media.Core
 
         public Task MoveFileAsync(string oldPath, string newPath)
         {
-            return _fileStore.MoveFileAsync(oldPath, newPath);
+            MediaMovingContext mediaContext = new MediaMovingContext
+            {
+                OldPath = oldPath,
+                Path = newPath
+            };
+            _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaMovingAsync(context), mediaContext, Logger);
+            return _fileStore.MoveFileAsync(mediaContext.OldPath, mediaContext.Path);
         }
 
         public Task CopyFileAsync(string srcPath, string dstPath)
@@ -90,17 +100,15 @@ namespace OrchardCore.Media.Core
             return _fileStore.GetFileStreamAsync(fileStoreEntry);
         }
 
-        public Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+        public async Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
-            MediaCreationContext mediaContext = new MediaCreationContext
+            MediaCreatingContext mediaContext = new MediaCreatingContext
             {
                 Path = path,
                 Stream = inputStream
             };
-            _mediaEventHandlers.Invoke((handler, context) => handler.MediaCreating(context), mediaContext, Logger);
-            var task = _fileStore.CreateFileFromStreamAsync(path, mediaContext.Stream, overwrite);
-            _mediaEventHandlers.Invoke((handler, context) => handler.MediaCreated(context), mediaContext, Logger);
-            return task;
+            _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaCreatingAsync(context), mediaContext, Logger);
+             await _fileStore.CreateFileFromStreamAsync(mediaContext.Path, mediaContext.Stream, overwrite);     
         }
 
         public string MapPathToPublicUrl(string path)
