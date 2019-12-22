@@ -156,14 +156,14 @@ namespace OrchardCore.Lucene.Controllers
             {
                 if (_luceneIndexManager.Exists(model.IndexName))
                 {
-                    ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} already exists."]);
+                    ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} already exists.", model.IndexName]);
                 }
             }
             else
             {
                 if (!_luceneIndexManager.Exists(model.IndexName))
                 {
-                    ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exists."]);
+                    ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exists.", model.IndexName]);
                 }
             }
 
