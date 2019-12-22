@@ -33,7 +33,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
         public static ValueTask<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("ViewLocalizer", out var item) || !(item is IViewLocalizer localizer))
+            var localizer = context.GetValue("ViewLocalizer")?.ToObjectValue() as IViewLocalizer;
+
+            if (localizer == null)
             {
                 return ThrowArgumentException<ValueTask<FluidValue>>("ViewLocalizer missing while invoking 't'");
             }

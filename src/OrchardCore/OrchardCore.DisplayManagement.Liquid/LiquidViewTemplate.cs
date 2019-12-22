@@ -115,13 +115,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             var template = await ParseAsync(path, fileProviderAccessor.FileProvider, Cache, isDevelopment);
 
             var context = Context;
-            await context.ContextualizeAsync(page.ViewContext);
             var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
-            using (context.EnterChildScope((object)page.Model))
-            {
-                await template.RenderAsync(page.Output, htmlEncoder, context);
-            }
+            await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
+            await template.RenderAsync(page.Output, htmlEncoder, context);
+            context.ReleaseScope();
         }
 
         public static Task<LiquidViewTemplate> ParseAsync(string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
@@ -172,7 +170,6 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return shape.Items;
                 }
 
-                // Resolve
                 // Model.Content.MyNamedPart
                 // Model.Content.MyType__MyField
                 // Model.Content.MyType-MyField
@@ -203,12 +200,11 @@ namespace OrchardCore.DisplayManagement.Liquid
                 viewContext = GetViewContext(actionContext);
             }
 
-            await context.ContextualizeAsync(viewContext);
+            await context.EnterScopeAsync(viewContext, model);
+            var result = await template.RenderAsync(context, encoder);
+            context.ReleaseScope();
 
-            using (context.EnterChildScope(model))
-            {
-                return await template.RenderAsync(context, encoder);
-            }
+            return result;
         }
 
         internal async static Task<ActionContext> GetActionContextAsync(HttpContext httpContext)
@@ -255,14 +251,14 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class LiquidTemplateContextExtensions
     {
-        internal static async Task ContextualizeAsync(this LiquidTemplateContext context, ViewContext viewContext)
+        internal static async Task EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
         {
             // Check if already contextualized.
             if (!context.AmbientValues.ContainsKey("Services"))
             {
                 context.AmbientValues.EnsureCapacity(9);
 
-                // Shared contextualization within the current scope.
+                // Shared contextualization from scoped services.
                 context.AmbientValues.Add("Services", context.Services);
 
                 var displayHelper = context.Services.GetRequiredService<IDisplayHelper>();
@@ -274,9 +270,6 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                 var shapeFactory = context.Services.GetRequiredService<IShapeFactory>();
                 context.AmbientValues.Add("ShapeFactory", shapeFactory);
-
-                var viewLocalizer = context.Services.GetRequiredService<IViewLocalizer>();
-                context.AmbientValues.Add("ViewLocalizer", viewLocalizer);
 
                 var layoutAccessor = context.Services.GetRequiredService<ILayoutAccessor>();
                 var layout = await layoutAccessor.GetLayoutAsync();
@@ -293,13 +286,24 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
             }
 
-            // Specific contextualization before each rendering.
-            var localizer = context.AmbientValues["ViewLocalizer"];
+            // Specific contextualization from transient services.
+            var viewLocalizer = context.Services.GetRequiredService<IViewLocalizer>();
 
-            if (localizer is IViewContextAware contextable)
+            if (viewLocalizer is IViewContextAware contextable)
             {
                 contextable.Contextualize(viewContext);
             }
+
+            if (model != null)
+            {
+                context.MemberAccessStrategy.Register(model.GetType());
+            }
+
+            context.EnterChildScope();
+
+            context.SetValue("ViewLocalizer", viewLocalizer);
+
+            context.SetValue("Model", model);
         }
 
         internal static void AddAsyncFilters(this LiquidTemplateContext context, LiquidOptions options)

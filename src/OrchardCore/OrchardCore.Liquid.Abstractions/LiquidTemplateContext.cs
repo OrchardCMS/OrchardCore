@@ -3,7 +3,7 @@ using Fluid;
 
 namespace OrchardCore.Liquid
 {
-    public class LiquidTemplateContext : TemplateContext, IDisposable
+    public class LiquidTemplateContext : TemplateContext
     {
         public LiquidTemplateContext(IServiceProvider services)
         {
@@ -11,23 +11,5 @@ namespace OrchardCore.Liquid
         }
 
         public IServiceProvider Services { get; }
-
-        public LiquidTemplateContext EnterChildScope(object model)
-        {
-            if (model != null)
-            {
-                MemberAccessStrategy.Register(model.GetType());
-            }
-
-            EnterChildScope();
-            SetValue("Model", model);
-
-            return this;
-        }
-
-        public void Dispose()
-        {
-            ReleaseScope();
-        }
     }
 }
