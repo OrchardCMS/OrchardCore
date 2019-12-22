@@ -184,8 +184,8 @@ namespace OrchardCore.Lucene.Controllers
             }
             catch (Exception e)
             {
-                _notifier.Error(H["An error occurred while creating the index"]);
-                Logger.LogError(e, "An error occurred while creating an index");
+                _notifier.Error(H["An error occurred while editing the index"]);
+                Logger.LogError(e, "An error occurred while editing an index");
                 return View(model);
             }
 
