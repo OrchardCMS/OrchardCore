@@ -107,6 +107,8 @@ namespace OrchardCore.Lucene.Controllers
             model.Pager = pagerShape;
 
             model.Options.ContentsBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["Reset"].Value, Value = nameof(ContentsBulkAction.Reset) },
+                new SelectListItem() { Text = H["Rebuild"].Value, Value = nameof(ContentsBulkAction.Rebuild) },
                 new SelectListItem() { Text = H["Delete"].Value, Value = nameof(ContentsBulkAction.Remove) }
             };
 
@@ -398,10 +400,47 @@ namespace OrchardCore.Lucene.Controllers
                                 return Unauthorized();
                             }
 
-                            _luceneIndexManager.DeleteIndex(item.IndexName);
-                            await _luceneIndexSettingsService.DeleteIndexAsync(item.IndexName);
+                            await _luceneIndexingService.DeleteIndexAsync(item.IndexName);
                         }
                         _notifier.Success(H["Index successfully removed."]);
+                        break;
+                    case ContentsBulkAction.Reset:
+                        foreach (var item in checkedContentItems)
+                        {
+                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+                            {
+                                return Unauthorized();
+                            }
+
+                            if (!_luceneIndexManager.Exists(item.IndexName))
+                            {
+                                return NotFound();
+                            }
+
+                            _luceneIndexingService.ResetIndex(item.IndexName);
+                            await _luceneIndexingService.ProcessContentItemsAsync(item.IndexName);
+
+                            _notifier.Success(H["Index <em>{0}</em> reset successfully.", item.IndexName]);
+                        }
+                        break;
+                    case ContentsBulkAction.Rebuild:
+                        foreach (var item in checkedContentItems)
+                        {
+                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+                            {
+                                return Unauthorized();
+                            }
+
+                            if (!_luceneIndexManager.Exists(item.IndexName))
+                            {
+                                return NotFound();
+                            }
+
+                            await _luceneIndexingService.RebuildIndexAsync(item.IndexName);
+                            await _luceneIndexingService.ProcessContentItemsAsync(item.IndexName);
+
+                            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", item.IndexName]);
+                        }
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

@@ -37,6 +37,8 @@ namespace OrchardCore.Lucene.ViewModels
     public enum ContentsBulkAction
     {
         None,
+        Reset,
+        Rebuild,
         Remove
     }
 }
