@@ -1,20 +1,23 @@
-using System.Security.Claims;
-
 namespace OrchardCore.Media.Events
 {
     /// <summary>
-    /// The media context
+    /// Represents a media context.
     /// </summary>
     public class MediaContext
     {
         /// <summary>
-        /// The file path when this media saved to the application.
+        /// The path of the file for this media to be created in the file store.
         /// </summary>
         public string Path { get; set; }        
         
         /// <summary>
-        /// Any dynamic stuff used for transforming the image.
+        /// Any dynamic input data.
         /// </summary>
-        public dynamic Data { get; set; }
+        public object Input { get; set; }
+
+        /// <summary>
+        /// Any dynamic output data.
+        /// </summary>
+        public object Output { get; set; }
     }
 }
