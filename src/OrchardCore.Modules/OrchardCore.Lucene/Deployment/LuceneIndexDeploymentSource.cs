@@ -29,11 +29,16 @@ namespace OrchardCore.Lucene.Deployment
             var indexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
 
             var data = new JArray();
-            
-            foreach (var index in indexSettings) {
-                var indexSettingsDict = new Dictionary<string, LuceneIndexSettings>();
-                indexSettingsDict.Add(index.IndexName, index);
-                data.Add(JObject.FromObject(indexSettingsDict));
+            var indicesToAdd = luceneIndexStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : luceneIndexStep.IndexNames;
+
+            foreach (var index in indexSettings)
+            {
+                if (indicesToAdd.Contains(index.IndexName))
+                {
+                    var indexSettingsDict = new Dictionary<string, LuceneIndexSettings>();
+                    indexSettingsDict.Add(index.IndexName, index);
+                    data.Add(JObject.FromObject(indexSettingsDict));
+                }
             }
 
             // Adding Lucene settings
