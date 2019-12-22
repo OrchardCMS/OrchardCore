@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.DisplayManagement.Descriptors
@@ -192,25 +191,5 @@ namespace OrchardCore.DisplayManagement.Descriptors
         public string BindingName { get; set; }
         public string BindingSource { get; set; }
         public virtual Func<DisplayContext, Task<IHtmlContent>> BindingAsync { get; set; }
-    }
-
-    public class DynamicShapeBinding : ShapeBinding
-    {
-        private Func<DisplayContext, Task<IHtmlContent>> _bindingAsync;
-
-        public override Func<DisplayContext, Task<IHtmlContent>> BindingAsync
-        {
-            get => _bindingAsync;
-
-            set => _bindingAsync = displayContext =>
-            {
-                if (displayContext.Value is Shape shape)
-                {
-                    shape.Metadata.UseDynamicBinding = true;
-                }
-
-                return value(displayContext);
-            };
-        }
     }
 }

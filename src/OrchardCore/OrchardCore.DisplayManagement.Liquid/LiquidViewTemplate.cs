@@ -115,10 +115,13 @@ namespace OrchardCore.DisplayManagement.Liquid
             var template = await ParseAsync(path, fileProviderAccessor.FileProvider, Cache, isDevelopment);
 
             var context = Context;
-            await context.ContextualizeAsync(page.ViewContext, (object)page.Model);
-
+            await context.ContextualizeAsync(page.ViewContext);
             var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
-            await template.RenderAsync(page.Output, htmlEncoder, context);
+
+            using (context.EnterChildScope((object)page.Model))
+            {
+                await template.RenderAsync(page.Output, htmlEncoder, context);
+            }
         }
 
         public static Task<LiquidViewTemplate> ParseAsync(string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
@@ -169,8 +172,10 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return shape.Items;
                 }
 
-                // Resolve Model.Content.MyNamedPart
-                // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
+                // Resolve
+                // Model.Content.MyNamedPart
+                // Model.Content.MyType__MyField
+                // Model.Content.MyType-MyField
                 return shape.Named(n.Replace("__", "-"));
             }
 
@@ -192,52 +197,18 @@ namespace OrchardCore.DisplayManagement.Liquid
                 if (actionContext == null)
                 {
                     var httpContext = context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
-
                     actionContext = await GetActionContextAsync(httpContext);
-                    viewContext = GetViewContext(actionContext);
-
-                    // If there was no 'ViewContext' and no 'ActionContext' (e.g through 'GraphQL'), and
-                    // the model is a shape using a dynamic binding, we will need to use the view engine.
-
-                    if (model is Shape shape && shape.Metadata.UseDynamicBinding)
-                    {
-                        // Use the view engine to render the liquid page.
-                        await context.ContextualizeAsync(viewContext, model);
-                        return await template.RenderViewAsync(viewContext, encoder, context);
-                    }
                 }
-                else
-                {
-                    viewContext = GetViewContext(actionContext);
-                }
+
+                viewContext = GetViewContext(actionContext);
             }
 
-            await context.ContextualizeAsync(viewContext, model);
-            return await template.RenderAsync(context, encoder);
-        }
+            await context.ContextualizeAsync(viewContext);
 
-        internal static async Task<string> RenderViewAsync(this LiquidViewTemplate template, ViewContext viewContext, TextEncoder encoder, TemplateContext context)
-        {
-            if (viewContext.View is RazorView razorView && razorView.RazorPage is LiquidPage liquidPage)
+            using (context.EnterChildScope(model))
             {
-                liquidPage.RenderAsync = output => template.RenderAsync(output, encoder, context);
-
-                using (var sb = StringBuilderPool.GetInstance())
-                {
-                    using (var writer = new StringWriter(sb.Builder))
-                    {
-                        viewContext.Writer = writer;
-
-                        // Use the view engine to render the liquid page.
-                        await viewContext.View.RenderAsync(viewContext);
-                        await writer.FlushAsync();
-                    }
-
-                    return sb.Builder.ToString();
-                }
+                return await template.RenderAsync(context, encoder);
             }
-
-            return String.Empty;
         }
 
         internal async static Task<ActionContext> GetActionContextAsync(HttpContext httpContext)
@@ -282,9 +253,9 @@ namespace OrchardCore.DisplayManagement.Liquid
         }
     }
 
-    public static class TemplateContextExtensions
+    public static class LiquidTemplateContextExtensions
     {
-        internal static async Task ContextualizeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
+        internal static async Task ContextualizeAsync(this LiquidTemplateContext context, ViewContext viewContext)
         {
             // Check if already contextualized.
             if (!context.AmbientValues.ContainsKey("Services"))
@@ -329,13 +300,6 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 contextable.Contextualize(viewContext);
             }
-
-            if (model != null)
-            {
-                context.MemberAccessStrategy.Register(model.GetType());
-            }
-
-            context.SetValue("Model", model);
         }
 
         internal static void AddAsyncFilters(this LiquidTemplateContext context, LiquidOptions options)

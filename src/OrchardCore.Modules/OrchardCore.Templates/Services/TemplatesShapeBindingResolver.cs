@@ -33,7 +33,7 @@ namespace OrchardCore.Templates.Services
             _htmlEncoder = htmlEncoder;
         }
 
-        public async Task<DynamicShapeBinding> GetShapeBindingAsync(string shapeType)
+        public async Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
         {
             if (AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
             {
@@ -65,9 +65,9 @@ namespace OrchardCore.Templates.Services
             }
         }
 
-        private DynamicShapeBinding BuildShapeBinding(string shapeType, Template template)
+        private ShapeBinding BuildShapeBinding(string shapeType, Template template)
         {
-            return new DynamicShapeBinding()
+            return new ShapeBinding()
             {
                 BindingName = shapeType,
                 BindingSource = shapeType,
