@@ -20,7 +20,7 @@
         {
             <li class="list-group-item bg-light">
                 <div class="row">
-                    <div class="form-group col-xl-4 mb-xl-n1">
+                    <div class="form-group col-xl-4 mb-n1">
                         <label id="items" for="select-all">@T.Plural(Model.Indexes.Count(), "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
                         <label id="selected-items" class="text-muted" for="select-all"></label>
                     </div>
@@ -30,6 +30,10 @@
             {
                 <li class="list-group-item">
                     <div class="properties">
+                        <div class="float-left">
+                            <h5>@entry.Name</h5>
+                            <p>@entry.AnalyzerName</p>
+                        </div>
                         <div class="related">
                             <a asp-action="Query" asp-route-IndexName="@entry.Name" class="btn btn-success btn-sm">@T["Query"]</a>
                             <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" itemprop="UnsafeUrl">@T["Reset"]</a>
@@ -37,8 +41,6 @@
                             <a asp-action="Edit" asp-route-IndexName="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
                             <a asp-action="Delete" asp-route-IndexName="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
-                        <h5>@entry.Name</h5>
-                        <p>@entry.AnalyzerName</p>
                     </div>
                 </li>
             }
