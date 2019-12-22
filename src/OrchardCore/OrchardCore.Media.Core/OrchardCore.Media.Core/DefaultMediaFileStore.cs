@@ -62,9 +62,9 @@ namespace OrchardCore.Media.Core
             _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaDeletingAsync(context), mediaContext, Logger);
             bool result = await _fileStore.TryDeleteFileAsync(mediaContext.Path);
             if(result)
-                _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaDeletedSuccessAsync(context), mediaContext, Logger);
+                _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaDeletedSuccessfullyAsync(context), mediaContext, Logger);
             else
-                _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaDeletedUnsuccessAsync(context), mediaContext, Logger);
+                _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaDeletedUnsuccessfullyAsync(context), mediaContext, Logger);
 
             return result;
         }
