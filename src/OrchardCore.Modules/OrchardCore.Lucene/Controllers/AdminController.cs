@@ -14,6 +14,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -23,12 +24,17 @@ using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
+using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Lucene.Controllers
 {
     public class AdminController : Controller
     {
+        private readonly ISession _session;
+        private readonly IContentManager _contentManager;
         private readonly LuceneIndexManager _luceneIndexManager;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly IAuthorizationService _authorizationService;
@@ -42,6 +48,8 @@ namespace OrchardCore.Lucene.Controllers
         private readonly dynamic New;
 
         public AdminController(
+            ISession session,
+            IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
             LuceneIndexManager luceneIndexManager,
             LuceneIndexingService luceneIndexingService,
@@ -57,6 +65,8 @@ namespace OrchardCore.Lucene.Controllers
             IHtmlLocalizer<AdminController> h,
             ILogger<AdminController> logger)
         {
+            _session = session;
+            _contentManager = contentManager;
             _luceneIndexManager = luceneIndexManager;
             _luceneIndexingService = luceneIndexingService;
             _authorizationService = authorizationService;
@@ -78,27 +88,26 @@ namespace OrchardCore.Lucene.Controllers
         public IStringLocalizer S { get; }
         public IHtmlLocalizer H { get; }
 
-        public async Task<ActionResult> Index(PagerParameters pagerParameters)
+        public async Task<ActionResult> Index(AdminIndexViewModel model, PagerParameters pagerParameters)
         {
-            var viewModel = new AdminIndexViewModel
-            {
-                Indexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName })
-            };
+            model.Indexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName });
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var count = viewModel.Indexes.Count();
-            var results = viewModel.Indexes
+            var count = model.Indexes.Count();
+            var results = model.Indexes
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize).ToList();
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
-            var model = new AdminIndexViewModel
-            {
-                Indexes = results,
-                Pager = pagerShape
+
+            model.Indexes = results;
+            model.Pager = pagerShape;
+
+            model.Options.ContentsBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["Delete"].Value, Value = nameof(ContentsBulkAction.Remove) }
             };
 
             return View(model);
@@ -365,6 +374,40 @@ namespace OrchardCore.Lucene.Controllers
             });
 
             return View(model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        {
+            if (itemIds?.Count() > 0)
+            {
+                var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
+                var checkedContentItems = luceneIndexSettings.Where(x => itemIds.Contains(x.IndexName));
+                switch (options.BulkAction)
+                {
+                    case ContentsBulkAction.None:
+                        break;
+                    case ContentsBulkAction.Remove:
+                        foreach (var item in checkedContentItems)
+                        {
+                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes, item))
+                            {
+                                _notifier.Warning(H["Couldn't remove selected index."]);
+                                _session.Cancel();
+                                return Unauthorized();
+                            }
+
+                            await _luceneIndexSettingsService.DeleteIndexAsync(item.IndexName);
+                        }
+                        _notifier.Success(H["Index successfully removed."]);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return RedirectToAction("Index");
         }
 
         private void ValidateModel(LuceneIndexSettingsViewModel model)

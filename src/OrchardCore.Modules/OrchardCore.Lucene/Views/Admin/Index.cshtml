@@ -4,8 +4,9 @@
     int endIndex = startIndex + Model.Indexes.Count() - 1;
 }
 
-
 <form asp-action="Index">
+    <input asp-for="Options.BulkAction" type="hidden" />
+    <input type="submit" name="submit.BulkAction" class="d-none" />
     @* the form is necessary to generate and antiforgery token for the delete action *@
     <div class="row">
         <div class="form-group col-xl-4 col-sm-6"><h1>@RenderTitleSegments(T["Indices"])</h1></div>
@@ -15,14 +16,31 @@
             </div>
         </div>
     </div>
-    <ul class="list-group">
+    <ul class="list-group with-checkbox">
         @if (Model.Indexes.Any())
         {
             <li class="list-group-item bg-light">
                 <div class="row">
-                    <div class="form-group col-xl-4 mb-n1">
-                        <label id="items" for="select-all">@T.Plural(Model.Indexes.Count(), "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
-                        <label id="selected-items" class="text-muted" for="select-all"></label>
+                    <div class="form-group col mb-n1 text-nowrap">
+                        <div class="custom-control custom-checkbox mt-2 mr-n2">
+                            <input type="checkbox" class="custom-control-input" id="select-all">
+                            <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                            <label id="items" for="select-all">@T.Plural(Model.Indexes.Count(), "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                            <label id="selected-items" class="text-muted" for="select-all"></label>
+                        </div>
+                    </div>
+                    <div class="form-group col-2 mb-n1" style="display:none">
+                        <span class="dropdown float-right mt-1" id="actions">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @T["Actions"]
+                            </button>
+                            <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                                @foreach (var item in Model.Options.ContentsBulkAction)
+                                {
+                                    <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} this/these item(s)?", @item.Text.ToLower()]">@item.Text</a>
+                                }
+                            </span>
+                        </span>
                     </div>
                 </div>
             </li>
@@ -30,6 +48,10 @@
             {
                 <li class="list-group-item">
                     <div class="properties">
+                        <div class="custom-control custom-checkbox float-left">
+                            <input type="checkbox" class="custom-control-input" value="@entry.Name" name="itemIds" id="itemIds-@entry.Name">
+                            <label class="custom-control-label" for="itemIds-@entry.Name">&nbsp;</label>
+                        </div>
                         <div class="float-left">
                             <h5>@entry.Name</h5>
                             <p>@entry.AnalyzerName</p>
@@ -57,3 +79,54 @@
 </form>
 
 @await DisplayAsync(Model.Pager)
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        //$('select').selectpicker();
+
+        var actions = $("#actions");
+        var items = $("#items");
+        var filters = $(".filter");
+        var selectAllCtrl = $("#select-all");
+        var selectedItems = $("#selected-items");
+        var contentItemsCheckboxes = $(":checkbox[name='itemIds']");
+
+        function displayActionsOrFilters() {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                actions.parent().show();
+                filters.hide();
+                selectedItems.show();
+                items.hide();
+            }
+            else {
+                actions.parent().hide();
+                filters.show();
+                selectedItems.hide();
+                items.show();
+            }
+        }
+
+        $(".dropdown-menu .dropdown-item").on("click", function () {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                var $this = $(this);
+                confirmDialog({...$this.data(), callback: function(r) {
+                    if (r) {
+                        $("[name='Options.BulkAction']").val($this.data("action"));
+                        $("[name='submit.BulkAction']").click();
+                    }
+                }});
+            }
+        });
+
+        selectAllCtrl.click(function(){
+            contentItemsCheckboxes.not(this).prop("checked", this.checked);
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+
+        contentItemsCheckboxes.on("click", function () {
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+    })
+</script>
