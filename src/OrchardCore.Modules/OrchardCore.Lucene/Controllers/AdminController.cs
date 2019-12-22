@@ -398,6 +398,7 @@ namespace OrchardCore.Lucene.Controllers
                                 return Unauthorized();
                             }
 
+                            _luceneIndexManager.DeleteIndex(item.IndexName);
                             await _luceneIndexSettingsService.DeleteIndexAsync(item.IndexName);
                         }
                         _notifier.Success(H["Index successfully removed."]);
