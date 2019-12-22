@@ -107,7 +107,7 @@ namespace OrchardCore.Tests.DisplayManagement
             var shape = new Shape();
             shape.Metadata.Type = "Baz";
 
-            _additionalBindings["Baz"] = new DynamicShapeBinding
+            _additionalBindings["Baz"] = new ShapeBinding
             {
                 BindingName = "Baz",
                 BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi from IShapeBindingResolver."))
@@ -176,7 +176,7 @@ namespace OrchardCore.Tests.DisplayManagement
             };
             AddShapeDescriptor(descriptor);
 
-            _additionalBindings["Foo"] = new DynamicShapeBinding
+            _additionalBindings["Foo"] = new ShapeBinding
             {
                 BindingName = "Foo",
                 BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString($"Yes there is { ((dynamic)ctx.Value).Data }."))
