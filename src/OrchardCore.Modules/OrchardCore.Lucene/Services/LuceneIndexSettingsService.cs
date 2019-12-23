@@ -29,7 +29,7 @@ namespace OrchardCore.Lucene
         /// <summary>
         /// Returns the document from the cache or creates a new one. The result should not be updated.
         /// </summary>
-        public async Task<LuceneIndexSettingsDocument> GetDocumentAsync()
+        private async Task<LuceneIndexSettingsDocument> GetDocumentAsync()
         {
             if (_document == null || (_changeToken?.HasChanged ?? true))
             {
