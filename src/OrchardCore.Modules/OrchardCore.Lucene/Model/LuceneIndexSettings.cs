@@ -5,6 +5,12 @@ namespace OrchardCore.Lucene.Model
 {
     public class LuceneIndexSettings
     {
+        /// <summary>
+        /// True if the object can't be used to update the database.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsReadonly { get; set; }
+
         [JsonIgnore]
         public string IndexName { get; set; }
 

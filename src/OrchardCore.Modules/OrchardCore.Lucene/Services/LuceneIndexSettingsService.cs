@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Lucene.Model;
 using YesSql;
 
@@ -12,50 +14,60 @@ namespace OrchardCore.Lucene
     /// </summary>
     public class LuceneIndexSettingsService
     {
-        private readonly IStore _store;
-        private ImmutableDictionary<string, LuceneIndexSettings> _indexSettings;
+        private const string CacheKey = nameof(LuceneIndexSettingsService);
 
-        public LuceneIndexSettingsService(IStore store)
+        private readonly IStore _store;
+        private readonly ISignal _signal;
+
+        private IChangeToken _changeToken;
+        private LuceneIndexSettingsDocument _document;
+
+        public LuceneIndexSettingsService(IStore store, ISignal signal)
         {
             _store = store;
+            _signal = signal;
         }
 
-        private async Task EnsureSettingsLoaded()
+        public IChangeToken ChangeToken => _signal.GetToken(CacheKey);
+
+        /// <summary>
+        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// </summary>
+        private async Task<LuceneIndexSettingsDocument> GetDocumentAsync()
         {
-            using (var session = _store.CreateSession())
+            if (_document == null || (_changeToken?.HasChanged ?? true))
             {
-                if (_indexSettings == null)
+                _changeToken = ChangeToken;
+
+                LuceneIndexSettingsDocument document;
+
+                using (var session = _store.CreateSession())
                 {
-                    var document = await session.Query<LuceneIndexSettingsDocument>().FirstOrDefaultAsync();
-
-                    if (document == null)
-                    {
-                        _indexSettings = ImmutableDictionary<string, LuceneIndexSettings>.Empty;
-                    }
-                    else
-                    {
-                        _indexSettings = document.LuceneIndexSettings.ToImmutableDictionary();
-
-                        foreach (var name in _indexSettings.Keys)
-                        {
-                            _indexSettings[name].IndexName = name;
-                        }
-                    }
+                    document = await LoadDocumentAsync(session);
                 }
+
+                foreach (var name in document.LuceneIndexSettings.Keys)
+                {
+                    document.LuceneIndexSettings[name].IndexName = name;
+                    document.LuceneIndexSettings[name].IsReadonly = true;
+                }
+
+                _document = document;
             }
+
+            return _document;
         }
 
         public async Task<IEnumerable<LuceneIndexSettings>> GetSettingsAsync()
         {
-            await EnsureSettingsLoaded();
-            return _indexSettings.Values;
+            return (await GetDocumentAsync()).LuceneIndexSettings.Values;
         }
 
         public async Task<LuceneIndexSettings> GetSettingsAsync(string indexName)
         {
-            await EnsureSettingsLoaded();
+            var document = await GetDocumentAsync();
 
-            if (_indexSettings.TryGetValue(indexName, out var settings))
+            if (document.LuceneIndexSettings.TryGetValue(indexName, out var settings))
             {
                 return settings;
             }
@@ -65,9 +77,9 @@ namespace OrchardCore.Lucene
 
         public async Task<string> GetIndexAnalyzerAsync(string indexName)
         {
-            await EnsureSettingsLoaded();
+            var document = await GetDocumentAsync();
 
-            if (_indexSettings.TryGetValue(indexName, out var settings))
+            if (document.LuceneIndexSettings.TryGetValue(indexName, out var settings))
             {
                 return settings.AnalyzerName;
             }
@@ -77,37 +89,49 @@ namespace OrchardCore.Lucene
 
         public async Task UpdateIndexAsync(LuceneIndexSettings settings)
         {
-            await EnsureSettingsLoaded();
+            if (settings.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
 
-            _indexSettings = _indexSettings.SetItem(settings.IndexName, settings);
-
-            await SaveAsync();
-        }
-
-        public async Task DeleteIndexAsync(string indexName)
-        {
-            await EnsureSettingsLoaded();
-
-            _indexSettings = _indexSettings.Remove(indexName);
-
-            await SaveAsync();
-        }
-
-        private async Task SaveAsync()
-        {
             using (var session = _store.CreateSession())
             {
-                var document = await session.Query<LuceneIndexSettingsDocument>().FirstOrDefaultAsync();
-                if (document == null)
-                {
-                    document = new LuceneIndexSettingsDocument();
-                }
-
-                document.LuceneIndexSettings = new Dictionary<string, LuceneIndexSettings>(_indexSettings);
+                var document = await LoadDocumentAsync(session);
+                document.LuceneIndexSettings[settings.IndexName] = settings;
 
                 session.Save(document);
                 await session.CommitAsync();
             }
+
+            // We don't need a deferred signal as the session has been committed
+            _signal.SignalToken(CacheKey);
+        }
+
+        public async Task DeleteIndexAsync(string indexName)
+        {
+            using (var session = _store.CreateSession())
+            {
+                var document = await LoadDocumentAsync(session);
+                document.LuceneIndexSettings.Remove(indexName);
+
+                session.Save(document);
+                await session.CommitAsync();
+            }
+
+            // We don't need a deferred signal as the session has been committed
+            _signal.SignalToken(CacheKey);
+        }
+
+        private async Task<LuceneIndexSettingsDocument> LoadDocumentAsync(ISession session)
+        {
+            var document = await session.Query<LuceneIndexSettingsDocument>().FirstOrDefaultAsync();
+
+            if (document == null)
+            {
+                document = new LuceneIndexSettingsDocument();
+            }
+
+            return document;
         }
     }
 }
