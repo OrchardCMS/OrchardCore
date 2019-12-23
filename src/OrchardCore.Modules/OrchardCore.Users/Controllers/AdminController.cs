@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -38,6 +40,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IUserService _userService;
         private readonly ILogger _logger;
         private readonly IEnumerable<IAccountActivationEventHandler> _handlers;
+        private readonly ShellSettings _shellSettings;
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer TH;
@@ -53,6 +56,7 @@ namespace OrchardCore.Users.Controllers
             IEnumerable<IAccountActivationEventHandler> handlers,
             ISiteService siteService,
             IShapeFactory shapeFactory,
+            ShellSettings shellSettings,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             ILogger<AdminController> logger
@@ -67,6 +71,7 @@ namespace OrchardCore.Users.Controllers
             _userService = userService;
             _logger = logger;
             _handlers = handlers;
+            _shellSettings = shellSettings;
 
             New = shapeFactory;
             TH = htmlLocalizer;
@@ -293,11 +298,12 @@ namespace OrchardCore.Users.Controllers
             if (sendActivationEmail != null && Convert.ToBoolean(sendActivationEmail))
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var url = Url.Action("ActivateAccount", "Registration", new { Area = "OrchardCore.Users", email = user.Email, activationToken = token });
+                var path = Url.Action("ActivateAccount", "Registration", new { Area = "OrchardCore.Users", email = user.Email, activationToken = token });
                 var context = new AccountActivationContext(user)
                 {
-                    ActivationUrl = url
-                };
+                    // inject the tenant path
+                    ActivationUrl = PathExtensions.Combine(_shellSettings.Name, path)
+            };
                 await _handlers.InvokeAsync((handler, context) => handler.AccountActivationEventHandler(context), context, _logger);
             }
         }
