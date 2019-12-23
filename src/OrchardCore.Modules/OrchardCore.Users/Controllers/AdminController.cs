@@ -92,7 +92,10 @@ namespace OrchardCore.Users.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                users = users.Where(u => u.NormalizedUserName.Contains(options.Search) || u.NormalizedEmail.Contains(options.Search));
+                var normalizedSearchUserName = _userManager.NormalizeName(options.Search);
+                var normalizedSearchEMail = _userManager.NormalizeEmail(options.Search);
+
+                users = users.Where(u => u.NormalizedUserName.Contains(normalizedSearchUserName) || u.NormalizedEmail.Contains(normalizedSearchEMail));
             }
 
             switch (options.Order)

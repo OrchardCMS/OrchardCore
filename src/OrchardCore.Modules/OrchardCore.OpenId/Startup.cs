@@ -20,6 +20,7 @@ using OpenIddict.Validation.Internal;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -27,6 +28,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Configuration;
+using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Controllers;
 using OrchardCore.OpenId.Drivers;
 using OrchardCore.OpenId.Handlers;
@@ -60,6 +62,11 @@ namespace OrchardCore.OpenId
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+
+            // Deployment
+            services.AddTransient<IDeploymentSource, OpenIdServerDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<OpenIdServerDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
