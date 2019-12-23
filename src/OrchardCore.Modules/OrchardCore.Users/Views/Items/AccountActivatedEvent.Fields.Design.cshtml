@@ -1,0 +1,6 @@
+@using  OrchardCore.Users.Workflows.ViewModels
+@model AccountActivatedEventViewModel
+
+<header>
+    <h4><i class="fa fa-user"></i>@Model.Activity.GetTitleOrDefault(() => T["Account Activated"])</h4>
+</header>

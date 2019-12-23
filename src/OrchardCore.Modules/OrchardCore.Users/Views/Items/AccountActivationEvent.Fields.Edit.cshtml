@@ -1,0 +1,9 @@
+@using OrchardCore.Users.Workflows.ViewModels
+@model AccountActivationEventViewModel
+
+<div class="form-group" asp-validation-class-for="PropertyName">
+    <label asp-for="PropertyName">@T["Name"]</label>
+    <input asp-for="PropertyName" class="form-control" autofocus="autofocus" />
+    <span asp-validation-for="PropertyName"></span>
+    <span class="hint">@T["The property to set. If the specified property doesn't exist yet, it will be added."]</span>
+</div>

@@ -8,12 +8,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -32,9 +36,12 @@ namespace OrchardCore.Users.Controllers
         private readonly IDisplayManager<User> _userDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUserService _userService;
+        private readonly ILogger _logger;
+        private readonly IEnumerable<IAccountActivationEventHandler> _handlers;
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer TH;
+        private readonly IStringLocalizer TS;
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
@@ -43,9 +50,12 @@ namespace OrchardCore.Users.Controllers
             UserManager<IUser> userManager,
             IUserService userService,
             INotifier notifier,
+            IEnumerable<IAccountActivationEventHandler> handlers,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            IHtmlLocalizer<AdminController> htmlLocalizer
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            IStringLocalizer<AdminController> stringLocalizer,
+            ILogger<AdminController> logger
             )
         {
             _userDisplayManager = userDisplayManager;
@@ -55,9 +65,12 @@ namespace OrchardCore.Users.Controllers
             _notifier = notifier;
             _siteService = siteService;
             _userService = userService;
+            _logger = logger;
+            _handlers = handlers;
 
             New = shapeFactory;
             TH = htmlLocalizer;
+            TS = stringLocalizer;
         }
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
         {
@@ -226,7 +239,7 @@ namespace OrchardCore.Users.Controllers
                         }
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(TS["UserBulkAction not supported"]);
                 }
             }
 
@@ -263,15 +276,30 @@ namespace OrchardCore.Users.Controllers
             }
 
             await _userService.CreateUserAsync(user, null, ModelState.AddModelError);
-
-            if (!ModelState.IsValid)
-            {
-                return View(shape);
-            }
-
+            await SendActivationEmail(user);
             _notifier.Success(TH["User created successfully"]);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task SendActivationEmail(User user)
+        {
+            // if the account is activated, no need to send email
+            if(user.IsEnabled)
+                return;
+
+            var sendActivationEmail = Request.Form["User.SendActivationEmail"].FirstOrDefault();
+
+            if (sendActivationEmail != null && Convert.ToBoolean(sendActivationEmail))
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var url = Url.Action("ActivateAccount", "Registration", new { Area = "OrchardCore.Users", email = user.Email, activationToken = token });
+                var context = new AccountActivationContext(user)
+                {
+                    ActivationUrl = url
+                };
+                await _handlers.InvokeAsync((handler, context) => handler.AccountActivationEventHandler(context), context, _logger);
+            }
         }
 
         public async Task<IActionResult> Edit(string id)
@@ -325,6 +353,8 @@ namespace OrchardCore.Users.Controllers
             {
                 return View(shape);
             }
+
+            await SendActivationEmail(user);
 
             _notifier.Success(TH["User updated successfully"]);
 

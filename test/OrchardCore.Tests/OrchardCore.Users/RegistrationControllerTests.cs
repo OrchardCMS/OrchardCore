@@ -19,6 +19,7 @@ using OrchardCore.Settings;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Events;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
@@ -46,6 +47,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 mockSiteService,
                 Mock.Of<INotifier>(),
                 Mock.Of<ILogger<RegistrationController>>(),
+                Mock.Of<IEnumerable<IAccountActivatedEventHandler>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 Mock.Of<IStringLocalizer<RegistrationController>>());
 
@@ -75,6 +77,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 mockSiteService,
                 Mock.Of<INotifier>(),
                 Mock.Of<ILogger<RegistrationController>>(),
+                Mock.Of<IEnumerable<IAccountActivatedEventHandler>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 Mock.Of<IStringLocalizer<RegistrationController>>());
 

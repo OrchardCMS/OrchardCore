@@ -2,29 +2,22 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Users.ViewModels
 {
-    public class EditUserViewModel
+    public class AccountActivationViewModel
     {
-        public string Id { get; set; }
+        [Required]
+        public string ActivationToken { get; set; }
 
         [Required]
-        public string UserName { get; set; }
-
-        [Required]
-        [EmailAddress]
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
-        
+
+        [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
+        [Required]
         [DataType(DataType.Password)]
+        [Compare(nameof(Password))]
         public string PasswordConfirmation { get; set; }
-
-        public bool EmailConfirmed { get; set; }
-
-        public bool IsEnabled { get; set; }
-
-        public bool SendActivationEmail { get; set; }
-
-        public RoleViewModel[] Roles { get; set; }
     }
 }

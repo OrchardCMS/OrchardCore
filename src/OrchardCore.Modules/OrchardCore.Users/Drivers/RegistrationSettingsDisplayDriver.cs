@@ -25,7 +25,7 @@ namespace OrchardCore.Users.Drivers
                 model.NoEmailForExternalUsers = section.NoEmailForExternalUsers;
                 model.UseScriptToGenerateUsername = section.UseScriptToGenerateUsername;
                 model.GenerateUsernameScript = section.GenerateUsernameScript;
-
+                model.AllowSendActivationEmail = section.AllowSendActivationEmail;
             }).Location("Content:5").OnGroup(GroupId);
         }
 

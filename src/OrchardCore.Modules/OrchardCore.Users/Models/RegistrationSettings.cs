@@ -10,5 +10,6 @@ namespace OrchardCore.Users.Models
         public bool NoEmailForExternalUsers { get; set; }
         public bool UseScriptToGenerateUsername { get; set; }
         public string GenerateUsernameScript { get; set; }
+        public bool AllowSendActivationEmail { get; set; }
     }
 }

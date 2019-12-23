@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +10,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
@@ -20,8 +22,9 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-
+        private readonly IEnumerable<IAccountActivatedEventHandler> _handlers;
         private readonly INotifier _notifier;
+        private readonly ILogger _logger;
 
         public RegistrationController(
             UserManager<IUser> userManager,
@@ -29,6 +32,7 @@ namespace OrchardCore.Users.Controllers
             ISiteService siteService,
             INotifier notifier,
             ILogger<RegistrationController> logger,
+            IEnumerable<IAccountActivatedEventHandler> handlers,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
             IStringLocalizer<RegistrationController> stringLocalizer)
         {
@@ -37,14 +41,18 @@ namespace OrchardCore.Users.Controllers
             _siteService = siteService;
             _notifier = notifier;
 
+            _handlers = handlers;
+
             _logger = logger;
             TH = htmlLocalizer;
             T = stringLocalizer;
         }
 
-        ILogger _logger;
-        IHtmlLocalizer TH { get; set; }
-        IStringLocalizer T { get; set; }
+        
+
+        private IHtmlLocalizer TH { get; }
+
+        private IStringLocalizer T { get; }
 
         [HttpGet]
         [AllowAnonymous]
@@ -129,6 +137,82 @@ namespace OrchardCore.Users.Controllers
             }
 
             return RedirectToAction(nameof(AdminController.Index), "Admin");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ActivateAccount([FromQuery]string email, [FromQuery]string activationToken, string returnUrl = null)
+        {
+            if (activationToken == null)
+                return BadRequest(T["activationToken is null"]);
+
+            if (email == null)
+                return BadRequest(T["email is null"]);
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                // Do not provide too much detail
+                return BadRequest();
+
+            var isTokenValid = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.EmailConfirmationTokenProvider, "EmailConfirmation", activationToken);
+            if (!isTokenValid)
+                return BadRequest(T["Invalid token"]);
+
+            ViewData["returnUrl"] = returnUrl;
+
+            var model = new AccountActivationViewModel
+            {
+                Email = email,
+                ActivationToken = activationToken
+            };
+
+            return View("Activation", model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ActivateAccount(AccountActivationViewModel model, string returnUrl = null)
+        {
+            if (model == null)
+                return BadRequest();
+
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email) as User;
+                if (user == null)
+                    // Do not provide too much detail
+                    return BadRequest();
+
+                var isTokenValid = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.EmailConfirmationTokenProvider, "EmailConfirmation", model.ActivationToken);
+                if (!isTokenValid)
+                    return BadRequest(T["Invalid token"]);
+
+                user.IsEnabled = true;
+                await _userManager.UpdateAsync(user);
+                await _userManager.ChangePasswordAsync(user, null, model.Password);
+                await _userManager.ConfirmEmailAsync(user, model.ActivationToken);
+
+                var context = new AccountActivatedContext(user);
+                await _handlers.InvokeAsync((handler, context) => handler.AccountActivatedAsync(context), context, _logger);
+
+                if (returnUrl == null)
+                {
+                    return RedirectToLocal("~/");
+                }
+                else
+                {
+                    return Redirect(returnUrl);
+                }
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ActivateAccountConfirmation()
+        {
+            return View();
         }
 
         private IActionResult RedirectToLocal(string returnUrl)

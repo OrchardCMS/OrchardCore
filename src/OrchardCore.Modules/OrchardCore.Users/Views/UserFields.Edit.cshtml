@@ -57,5 +57,16 @@
         <label asp-for="IsEnabled" class="custom-control-label cursor-pointer">@T["Is enabled?"]</label>
         <span class="hint">— @T["Uncheck to disable this user account."]</span>
     </div>
-    
+
 </div>
+
+@if (Site.As<RegistrationSettings>().AllowSendActivationEmail)
+{
+    <div class="form-group">
+        <div class="custom-control custom-switch">
+            <input asp-for="SendActivationEmail" type="checkbox" class="custom-control-input" checked="@Model.SendActivationEmail" />
+            <label asp-for="SendActivationEmail" class="custom-control-label cursor-pointer">@T["Send Activation Email?"]</label>
+            <span class="hint">— @T["An Email will be sent with a link to activate the account and the user will be ask to choose a password"]</span>
+        </div>
+    </div>
+}

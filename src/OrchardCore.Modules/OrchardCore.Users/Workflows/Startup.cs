@@ -5,6 +5,8 @@ using OrchardCore.Modules;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Workflows.Handlers;
+using Fluid;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Workflows
 {
@@ -18,6 +20,15 @@ namespace OrchardCore.Users.Workflows
             services.AddActivity<UserLoggedInEvent, UserLoggedInEventDisplay>();
             services.AddScoped<IUserCreatedEventHandler, UserCreatedHandler>();
             services.AddActivity<AssignUserRoleTask, AssignUserRoleTaskDisplay>();
+
+            services.AddScoped<IAccountActivatedEventHandler, AccountActivatedHandler>();
+            services.AddActivity<AccountActivatedEvent, AccountActivatedEventDisplay>();
+            services.AddScoped<IAccountActivationEventHandler, AccountActivationHandler>();
+            services.AddActivity<AccountActivationEvent, AccountActivationEventDisplay> ();
+
+            TemplateContext.GlobalMemberAccessStrategy.Register<AccountActivatedContext>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<AccountActivationContext>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<User>();
         }
     }
 }
