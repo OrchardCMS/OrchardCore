@@ -25,14 +25,14 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         public async Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
         {
-            var holder = ShellScope.Services.GetRequiredService<FileContentDefinitionScopedCache>();
+            var scopedCache = ShellScope.Services.GetRequiredService<FileContentDefinitionScopedCache>();
 
-            if (holder.ContentDefinitionRecord != null)
+            if (scopedCache.ContentDefinitionRecord != null)
             {
-                return holder.ContentDefinitionRecord;
+                return scopedCache.ContentDefinitionRecord;
             }
 
-            return holder.ContentDefinitionRecord = await GetContentDefinitionAsync();
+            return scopedCache.ContentDefinitionRecord = await GetContentDefinitionAsync();
         }
 
         /// <summary>
