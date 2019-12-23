@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
@@ -78,31 +79,20 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var tagHelper = factory.CreateTagHelper(_activator, viewContext,
                 arguments, out var contextAttributes, out var outputAttributes);
 
-            var content = "";
+            var content = new HtmlContentStringWriter();
 
             if (Statements != null && Statements.Count > 0)
             {
-                // Build the ChildContent of this tag
-                using (var sb = StringBuilderPool.GetInstance())
+                var completion = Completion.Break;
+
+                for (var index = 0; index < Statements.Count; index++)
                 {
-                    using (var output = new StringWriter(sb.Builder))
+                    completion = await Statements[index].WriteToAsync(content, encoder, context);
+
+                    if (completion != Completion.Normal)
                     {
-                        var completion = Completion.Break;
-
-                        for (var index = 0; index < Statements.Count; index++)
-                        {
-                            completion = await Statements[index].WriteToAsync(output, encoder, context);
-
-                            if (completion != Completion.Normal)
-                            {
-                                return completion;
-                            }
-                        }
-
-                        await output.FlushAsync();
+                        return completion;
                     }
-
-                    content = sb.Builder.ToString();
                 }
             }
 
