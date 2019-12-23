@@ -8,10 +8,6 @@ using YesSql;
 
 namespace OrchardCore.Lucene
 {
-    /// <summary>
-    /// This class persists the indexing state, a cursor, on the filesystem alongside the index itself.
-    /// This state has to be on the filesystem as each node has its own local storage for the index.
-    /// </summary>
     public class LuceneIndexSettingsService
     {
         private const string CacheKey = nameof(LuceneIndexSettingsService);
@@ -19,8 +15,8 @@ namespace OrchardCore.Lucene
         private readonly IStore _store;
         private readonly ISignal _signal;
 
-        private IChangeToken _changeToken;
         private LuceneIndexSettingsDocument _document;
+        private IChangeToken _changeToken;
 
         public LuceneIndexSettingsService(IStore store, ISignal signal)
         {
@@ -33,7 +29,7 @@ namespace OrchardCore.Lucene
         /// <summary>
         /// Returns the document from the cache or creates a new one. The result should not be updated.
         /// </summary>
-        private async Task<LuceneIndexSettingsDocument> GetDocumentAsync()
+        public async Task<LuceneIndexSettingsDocument> GetDocumentAsync()
         {
             if (_document == null || (_changeToken?.HasChanged ?? true))
             {
@@ -103,7 +99,6 @@ namespace OrchardCore.Lucene
                 await session.CommitAsync();
             }
 
-            // We don't need a deferred signal as the session has been committed
             _signal.SignalToken(CacheKey);
         }
 
@@ -118,7 +113,6 @@ namespace OrchardCore.Lucene
                 await session.CommitAsync();
             }
 
-            // We don't need a deferred signal as the session has been committed
             _signal.SignalToken(CacheKey);
         }
 
