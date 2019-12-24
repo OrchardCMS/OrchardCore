@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -311,6 +312,25 @@ namespace OrchardCore.Tests.Localization
         [Fact]
         public async Task PortableObjectStringLocalizerShouldRegisterIStringLocalizerOfT()
             => await StartupRunner.Run(typeof(PortableObjectLocalizationStartup),"en", "Hello");
+
+        [Theory]
+        [InlineData("ar", 2)]
+        [InlineData("ar-YE", 4)]
+        public void LocalizerWithContextShouldCallGetDictionaryTwicePerCulture(string culture, int expectedCalls)
+        {
+            // Arrange
+            SetupDictionary(culture, Array.Empty<CultureDictionaryRecord>());
+
+            var localizer = new PortableObjectStringLocalizer("context", _localizationManager.Object, true, _logger.Object);
+            CultureInfo.CurrentUICulture = new CultureInfo(culture);
+
+            // Act
+            var translation = localizer["Hello"];
+
+            // Assert
+            _localizationManager.Verify(lm => lm.GetDictionary(It.IsAny<CultureInfo>()), Times.Exactly(expectedCalls));
+            Assert.Equal("Hello", translation);
+        }
 
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
         {

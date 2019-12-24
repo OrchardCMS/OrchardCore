@@ -182,7 +182,7 @@ namespace OrchardCore.Localization.PortableObject
                 var translation = dictionary[key, count];
 
                 // Should we search in the parent culture?
-                if (translation == null && _fallBackToParentCulture && culture.Parent != null && culture.Parent != culture)
+                if (translation == null && _fallBackToParentCulture && culture.Parent != CultureInfo.InvariantCulture && culture.Parent != culture)
                 {
                     dictionary = _localizationManager.GetDictionary(culture.Parent);
 
