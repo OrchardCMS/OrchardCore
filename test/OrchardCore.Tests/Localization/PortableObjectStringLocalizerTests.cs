@@ -316,6 +316,8 @@ namespace OrchardCore.Tests.Localization
         [Theory]
         [InlineData("ar", 1)]
         [InlineData("ar-YE", 2)]
+        [InlineData("zh-CN", 3)]
+        [InlineData("zh-TW", 3)]
         public void LocalizerWithContextShouldCallGetDictionaryOncePerCulture(string culture, int expectedCalls)
         {
             // Arrange
