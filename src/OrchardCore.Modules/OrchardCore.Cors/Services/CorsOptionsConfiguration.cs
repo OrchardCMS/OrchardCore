@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Linq;
 
@@ -7,10 +8,12 @@ namespace OrchardCore.Cors.Services
     public class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
     {
         private readonly CorsService _corsService;
+        private readonly ILogger<CorsOptionsConfiguration> _logger;
 
-        public CorsOptionsConfiguration(CorsService corsService)
+        public CorsOptionsConfiguration(CorsService corsService, ILogger<CorsOptionsConfiguration> logger)
         {
             _corsService = corsService;
+            _logger = logger;
         }
 
         public void Configure(CorsOptions options)
@@ -21,6 +24,12 @@ namespace OrchardCore.Cors.Services
 
             foreach (var corsPolicy in corsSettings.Policies)
             {
+                if(corsPolicy.AllowCredentials && corsPolicy.AllowAnyOrigin)
+                {
+                    _logger.LogWarning($"AllowCredentials and AllowAnyOrigin is considered a security risk, policy {corsPolicy.Name} not loaded");
+                    continue;
+                }
+
                 options.AddPolicy(corsPolicy.Name, configurePolicy =>
                 {
                     if (corsPolicy.AllowAnyHeader)

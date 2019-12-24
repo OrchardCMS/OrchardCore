@@ -25,7 +25,8 @@ namespace OrchardCore.Cors
                 .Add(T["Configuration"], configuration => configuration
                     .Add(T["Settings"], settings => settings
                         .Add(T["Cors"], "100", entry => entry
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "Cors" })
+                            .Action("Index", "Admin", new { area = "OrchardCore.Cors" })
+                            .Permission(Permissions.ManageCorsSettings)
                             .LocalNav()
                         ))
                 );

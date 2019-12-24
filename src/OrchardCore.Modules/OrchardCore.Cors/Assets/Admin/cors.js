@@ -46,21 +46,31 @@ var corsApp = new Vue({
         },
         editPolicy: function (policy) {
             this.selectedPolicy = Object.assign({}, policy);
+            this.selectedPolicy.OriginalName = this.selectedPolicy.Name;
         },
         deletePolicy: function (policy, event) {
             this.selectedPolicy = null;
             var policyToRemove = this.policies.filter(function (item) { return item.Name === policy.Name; });
             if (policyToRemove.length > 0)
                 this.policies.splice($.inArray(policyToRemove[0], this.policies), 1);
-            document.getElementById('ISite_Policies').value = JSON.stringify(this.policies);
             event.stopPropagation();
+            this.save();
         },
         updatePolicy: function (policy, event) {
-            this.deletePolicy(policy, event);
-            this.policies.push(policy);
-            document.getElementById('ISite_Policies').value = JSON.stringify(this.policies);
+            if (policy.OriginalName) {
+                var policyIndex = this.policies.findIndex((oldPolicy) => oldPolicy.Name === policy.OriginalName);
+                this.policies[policyIndex] = policy;
+            }
+            else {
+                this.policies.push(policy);
+            }
+            this.save();
         },
-        cancelUpdate: function () {
+        save: function () {
+            document.getElementById('CorsSettings').value = JSON.stringify(this.policies);
+            document.getElementById('corsForm').submit();
+        },
+        back: function () {
             this.selectedPolicy = null;
         }
     }
