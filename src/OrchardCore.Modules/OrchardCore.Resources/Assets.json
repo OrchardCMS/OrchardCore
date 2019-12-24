@@ -21,15 +21,15 @@
   },
   {
     "generateRTL": true,
-    "inputs": [ 
-		"node_modules/bootstrap-select/dist/css/bootstrap-select.css" 
-	],
+    "inputs": [
+      "node_modules/bootstrap-select/dist/css/bootstrap-select.css"
+    ],
     "output": "wwwroot/Styles/bootstrap-select.css"
   },
   {
-    "inputs": [ 
-		"node_modules/bootstrap-select/dist/js/bootstrap-select.js" 
-	],
+    "inputs": [
+      "node_modules/bootstrap-select/dist/js/bootstrap-select.js"
+    ],
     "output": "wwwroot/Scripts/bootstrap-select.js"
   },
   {
@@ -75,6 +75,18 @@
       "node_modules/codemirror/addon/mode/simple.js"
     ],
     "output": "wwwroot/Scripts/codemirror/addon/mode/simple.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/mode/css/css.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/mode/css/css.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/mode/htmlmixed/htmlmixed.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/mode/htmlmixed/htmlmixed.js"
   },
   {
     "inputs": [
