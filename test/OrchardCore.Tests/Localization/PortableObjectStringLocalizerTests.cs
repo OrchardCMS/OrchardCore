@@ -314,9 +314,9 @@ namespace OrchardCore.Tests.Localization
             => await StartupRunner.Run(typeof(PortableObjectLocalizationStartup),"en", "Hello");
 
         [Theory]
-        [InlineData("ar", 2)]
-        [InlineData("ar-YE", 4)]
-        public void LocalizerWithContextShouldCallGetDictionaryTwicePerCulture(string culture, int expectedCalls)
+        [InlineData("ar", 1)]
+        [InlineData("ar-YE", 2)]
+        public void LocalizerWithContextShouldCallGetDictionaryOncePerCulture(string culture, int expectedCalls)
         {
             // Arrange
             SetupDictionary(culture, Array.Empty<CultureDictionaryRecord>());
