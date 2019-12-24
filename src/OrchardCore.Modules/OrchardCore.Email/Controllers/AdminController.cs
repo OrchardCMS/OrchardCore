@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -41,8 +39,7 @@ namespace OrchardCore.Email.Controllers
         IStringLocalizer T { get; set; }
 
         [HttpGet]
-        [ActionName("Index")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
@@ -53,8 +50,7 @@ namespace OrchardCore.Email.Controllers
         }
 
         [HttpPost]
-        [ActionName("Index")]
-        public async Task<IActionResult> Post(SmtpSettingsViewModel model)
+        public async Task<IActionResult> IndexPost(SmtpSettingsViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
@@ -91,55 +87,13 @@ namespace OrchardCore.Email.Controllers
 
         private MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
         {
-            var message = new MailMessage();
-
-            foreach (var email in ParseEmailAddresses(testSettings.To))
+            var message = new MailMessage
             {
-                if (ValidateEmail(email))
-                {
-                    message.To.Add(email);
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, T["Invalid \"To\" email : "] + email);
-                }
-            }
-
-            foreach (var email in ParseEmailAddresses(testSettings.Bcc))
-            {
-                if (ValidateEmail(email))
-                {
-                    message.Bcc.Add(email);
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, T["Invalid \"Bcc\" email : "] + email);
-                }
-            }
-
-            foreach (var email in ParseEmailAddresses(testSettings.Cc))
-            {
-                if (ValidateEmail(email))
-                {
-                    message.CC.Add(email);
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, T["Invalid \"Cc\" email : "] + email);
-                }
-            }
-
-            foreach (var email in ParseEmailAddresses(testSettings.ReplyTo))
-            {
-                if (ValidateEmail(email))
-                {
-                    message.ReplyToList.Add(email);
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, T["Invalid \"Reply To\" email : "] + email);
-                }
-            }
+                To = testSettings.To,
+                Bcc = testSettings.Bcc,
+                Cc = testSettings.Cc,
+                ReplyTo = testSettings.ReplyTo
+            };
 
             if (!String.IsNullOrWhiteSpace(testSettings.Subject))
             {
@@ -152,16 +106,6 @@ namespace OrchardCore.Email.Controllers
             }
 
             return message;
-        }
-
-        private static IEnumerable<string> ParseEmailAddresses(string adresses)
-        {
-            if (String.IsNullOrWhiteSpace(adresses))
-            {
-                return Array.Empty<string>();
-            }
-
-            return adresses.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         private static bool ValidateEmail(string email)

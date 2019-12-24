@@ -17,14 +17,19 @@ using OpenIddict.Server;
 using OpenIddict.Server.Internal;
 using OpenIddict.Validation;
 using OpenIddict.Validation.Internal;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Configuration;
+using OrchardCore.OpenId.Deployment;
+using OrchardCore.OpenId.Controllers;
 using OrchardCore.OpenId.Drivers;
 using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Recipes;
@@ -46,10 +51,95 @@ namespace OrchardCore.OpenId
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+
+            // Deployment
+            services.AddTransient<IDeploymentSource, OpenIdServerDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<OpenIdServerDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            // Application
+            var applicationControllerName = typeof(ApplicationController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplication",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application",
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplicationCreate",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Create",
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplicationDelete",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Delete/{id}",
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplicationEdit",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Edit/{id}",
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Edit) }
+            );
+
+            // Scope
+            var scopeControllerName = typeof(ScopeController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScope",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope",
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScopeCreate",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Create",
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScopeDelete",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Delete/{id}",
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScopeEdit",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Edit/{id}",
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Edit) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdServerConfiguration",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/ServerConfiguration",
+                defaults: new { controller = typeof(ServerConfigurationController).ControllerName(), action = nameof(ServerConfigurationController.Index) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdValidationConfiguration",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/ValidationConfiguration",
+                defaults: new { controller = typeof(ValidationConfigurationController).ControllerName(), action = nameof(ValidationConfigurationController.Index) }
+            );
         }
     }
 
@@ -60,6 +150,8 @@ namespace OrchardCore.OpenId
         {
             services.AddSingleton<IOpenIdClientService, OpenIdClientService>();
             services.AddScoped<IDisplayDriver<ISite>, OpenIdClientSettingsDisplayDriver>();
+
+            services.AddRecipeExecutionStep<OpenIdClientSettingsStep>();
 
             // Register the options initializers required by the OpenID Connect client handler.
             services.TryAddEnumerable(new[]
@@ -101,12 +193,12 @@ namespace OrchardCore.OpenId
                            .SetDefaultTokenEntity<OpenIdToken>();
                 });
 
-            services.TryAddScoped(provider => (IOpenIdApplicationManager) provider.GetRequiredService<IOpenIddictApplicationManager>());
-            services.TryAddScoped(provider => (IOpenIdAuthorizationManager) provider.GetRequiredService<IOpenIddictAuthorizationManager>());
-            services.TryAddScoped(provider => (IOpenIdScopeManager) provider.GetRequiredService<IOpenIddictScopeManager>());
-            services.TryAddScoped(provider => (IOpenIdTokenManager) provider.GetRequiredService<IOpenIddictTokenManager>());
+            services.TryAddScoped(provider => (IOpenIdApplicationManager)provider.GetRequiredService<IOpenIddictApplicationManager>());
+            services.TryAddScoped(provider => (IOpenIdAuthorizationManager)provider.GetRequiredService<IOpenIddictAuthorizationManager>());
+            services.TryAddScoped(provider => (IOpenIdScopeManager)provider.GetRequiredService<IOpenIddictScopeManager>());
+            services.TryAddScoped(provider => (IOpenIdTokenManager)provider.GetRequiredService<IOpenIddictTokenManager>());
 
-            services.AddSingleton<IIndexProvider, OpenIdApplicationIndexProvider>();
+            services.AddSingleton<IIndexProvider, OpenIdAppIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdScopeIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();
@@ -160,7 +252,7 @@ namespace OrchardCore.OpenId
             });
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             async Task<OpenIdServerSettings> GetServerSettingsAsync()
             {
@@ -185,40 +277,40 @@ namespace OrchardCore.OpenId
 
             if (settings.AuthorizationEndpointPath.HasValue)
             {
-                routes.MapAreaRoute(
+                routes.MapAreaControllerRoute(
                     name: "Access.Authorize",
                     areaName: OpenIdConstants.Features.Core,
-                    template: settings.AuthorizationEndpointPath.Value,
+                    pattern: settings.AuthorizationEndpointPath.Value,
                     defaults: new { controller = "Access", action = "Authorize" }
                 );
             }
 
             if (settings.LogoutEndpointPath.HasValue)
             {
-                routes.MapAreaRoute(
+                routes.MapAreaControllerRoute(
                     name: "Access.Logout",
                     areaName: OpenIdConstants.Features.Core,
-                    template: settings.LogoutEndpointPath.Value,
+                    pattern: settings.LogoutEndpointPath.Value,
                     defaults: new { controller = "Access", action = "Logout" }
                 );
             }
 
             if (settings.TokenEndpointPath.HasValue)
             {
-                routes.MapAreaRoute(
+                routes.MapAreaControllerRoute(
                     name: "Access.Token",
                     areaName: OpenIdConstants.Features.Core,
-                    template: settings.TokenEndpointPath.Value,
+                    pattern: settings.TokenEndpointPath.Value,
                     defaults: new { controller = "Access", action = "Token" }
                 );
             }
 
             if (settings.UserinfoEndpointPath.HasValue)
             {
-                routes.MapAreaRoute(
+                routes.MapAreaControllerRoute(
                     name: "UserInfo.Me",
                     areaName: OpenIdConstants.Features.Core,
-                    template: settings.UserinfoEndpointPath.Value,
+                    pattern: settings.UserinfoEndpointPath.Value,
                     defaults: new { controller = "UserInfo", action = "Me" }
                 );
             }

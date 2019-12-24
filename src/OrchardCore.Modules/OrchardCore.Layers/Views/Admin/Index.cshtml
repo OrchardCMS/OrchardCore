@@ -7,11 +7,11 @@
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
 }
 <script asp-name="jquery-ui" at="Foot"></script>
 
-<h1>@RenderTitleSegments(T["Edit Widget Layers"])</h1>
+<h1>@RenderTitleSegments(T["Edit Widgets and Layers"])</h1>
 
 <form id="undo-form" asp-action="UpdatePosition" method="post">
     <div id="layer-undo-message" class="alert alert-success alert-dismissible show d-none" role="alert">

@@ -4,12 +4,16 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.Demo.Commands;
 using OrchardCore.Demo.ContentElementDisplays;
 using OrchardCore.Demo.Drivers;
+using OrchardCore.Demo.Models;
 using OrchardCore.Demo.Services;
 using OrchardCore.Demo.TagHelpers;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -24,33 +28,40 @@ namespace OrchardCore.Demo
 {
     public class Startup : StartupBase
     {
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
         {
-            routes.MapAreaRoute(
+            _adminOptions = adminOptions.Value;
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
                 name: "Home",
                 areaName: "OrchardCore.Demo",
-                template: "Home/Index",
+                pattern: "Home/Index",
                 defaults: new { controller = "Home", action = "Index" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Display",
                 areaName: "OrchardCore.Demo",
-                template: "Home/Display/{contentItemId}",
+                pattern: "Home/Display/{contentItemId}",
                 defaults: new { controller = "Home", action = "Display" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Error",
                 areaName: "OrchardCore.Demo",
-                template: "Home/IndexError",
+                pattern: "Home/IndexError",
                 defaults: new { controller = "Home", action = "IndexError" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "AdminDemo",
                 areaName: "OrchardCore.Demo",
-                template: "Admin/Demo/Index",
+                pattern: _adminOptions.AdminUrlPrefix + "/Demo/Index",
                 defaults: new { controller = "Admin", action = "Index" }
             );
 
@@ -69,6 +80,7 @@ namespace OrchardCore.Demo
             services.AddScoped<IContentDisplayDriver, TestContentElementDisplay>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddContentPart<TestContentPartA>();
 
             services.AddScoped<IDisplayDriver<User>, UserProfileDisplayDriver>();
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -18,12 +18,13 @@ namespace OrchardCore.Security.Permissions
             Name = name;
         }
 
-        public Permission(string name, string description) : this(name)
+        public Permission(string name, string description, bool isSecurityCritical = false) : this(name)
         {
             Description = description;
+            IsSecurityCritical = isSecurityCritical;
         }
 
-        public Permission(string name, string description, IEnumerable<Permission> impliedBy) : this(name, description)
+        public Permission(string name, string description, IEnumerable<Permission> impliedBy, bool isSecurityCritical = false) : this(name, description, isSecurityCritical)
         {
             ImpliedBy = impliedBy;
         }
@@ -32,6 +33,7 @@ namespace OrchardCore.Security.Permissions
         public string Description { get; set; }
         public string Category { get; set; }
         public IEnumerable<Permission> ImpliedBy { get; set; }
+        public bool IsSecurityCritical { get; set; }
 
         public static implicit operator Claim(Permission p)
         {

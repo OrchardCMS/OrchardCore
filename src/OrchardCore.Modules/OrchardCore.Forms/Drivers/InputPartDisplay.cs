@@ -15,7 +15,7 @@ namespace OrchardCore.Forms.Drivers
             return View("InputPart", part).Location("Detail", "Content");
         }
 
-        public override IDisplayResult Edit(InputPart part, BuildPartEditorContext context)
+        public override IDisplayResult Edit(InputPart part)
         {
             return Initialize<InputPartEditViewModel>("InputPart_Fields_Edit", m =>
             {

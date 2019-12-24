@@ -13,7 +13,7 @@ namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheExpiresAfterTag : ArgumentsTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
         {
             if (arguments.Length < 1)
             {

@@ -16,6 +16,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(DeleteContentTask);
+        public override LocalizedString DisplayText => T["Delete Content Task"];
         public override LocalizedString Category => T["Content"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

@@ -27,6 +27,8 @@ function toggleConnectionStringAndPrefix() {
         $(this).data("connection-string").toLowerCase() === "true"
             ? $(".pwd").attr('required', 'required')
             : $(".pwd").removeAttr('required');
+
+        $("#connectionStringHint").text($(this).data("connection-string-sample"));
     });
 }
 

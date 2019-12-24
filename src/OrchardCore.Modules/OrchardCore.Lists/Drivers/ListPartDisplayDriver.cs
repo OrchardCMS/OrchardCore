@@ -42,7 +42,7 @@ namespace OrchardCore.Lists.Drivers
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
             return
-                Combine( 
+                Combine(
                     Initialize<ListPartViewModel>("ListPart", async model =>
                     {
                         var pager = await GetPagerAsync(context.Updater, listPart);
@@ -213,8 +213,8 @@ namespace OrchardCore.Lists.Drivers
         private ListPartSettings GetSettings(ListPart listPart)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(listPart.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
-            return contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart"));
+            return contentTypePartDefinition.GetSettings<ListPartSettings>();
         }
     }
 }

@@ -1,8 +1,4 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -57,7 +53,7 @@ namespace OrchardCore.Google.Authentication.Configuration
 
         public void Configure(string name, GoogleOptions options)
         {
-            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -76,17 +72,6 @@ namespace OrchardCore.Google.Authentication.Configuration
             {
                 options.CallbackPath = settings.CallbackPath;
             }
-
-            // should be removed after February 2.2 patches
-            options.UserInformationEndpoint = "https://www.googleapis.com/oauth2/v2/userinfo";
-            options.ClaimActions.Clear();
-            options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
-            options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
-            options.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "given_name");
-            options.ClaimActions.MapJsonKey(ClaimTypes.Surname, "family_name");
-            options.ClaimActions.MapJsonKey("urn:google:profile", "link");
-            options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
-
         }
 
         public void Configure(GoogleOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

@@ -1,21 +1,23 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>OrchardCore.Tests</AssemblyName>
     <PackageId>OrchardCore.Tests</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\OrchardCore.Cms.Web\NLog.config" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\OrchardCore.Cms.Web\*.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\src\OrchardCore.Cms.Web\wwwroot\**\*"
-          Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)"
-          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\OrchardCore.Cms.Web\wwwroot\**\*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,14 +62,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Microsoft.AspNetCore" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Moq" />
     <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="xunit.analyzers" />
+    <PackageReference Include="xunit.runner.visualstudio" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(DotNetXunitVersion)" />
   </ItemGroup>
 

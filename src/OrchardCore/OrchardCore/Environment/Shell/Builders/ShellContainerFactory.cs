@@ -1,14 +1,13 @@
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
-using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -16,27 +15,21 @@ namespace OrchardCore.Environment.Shell.Builders
     {
         private IFeatureInfo _applicationFeature;
 
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly IExtensionManager _extensionManager;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger _logger;
-        private readonly ILoggerFactory _loggerFactory;
         private readonly IServiceCollection _applicationServices;
 
         public ShellContainerFactory(
-            IHostingEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             IExtensionManager extensionManager,
             IServiceProvider serviceProvider,
-            ILoggerFactory loggerFactory,
-            ILogger<ShellContainerFactory> logger,
             IServiceCollection applicationServices)
         {
             _hostingEnvironment = hostingEnvironment;
             _extensionManager = extensionManager;
             _applicationServices = applicationServices;
             _serviceProvider = serviceProvider;
-            _loggerFactory = loggerFactory;
-            _logger = logger;
         }
 
         public void AddCoreServices(IServiceCollection services)
@@ -51,7 +44,7 @@ namespace OrchardCore.Environment.Shell.Builders
             var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             tenantServiceCollection.AddSingleton(settings);
-            tenantServiceCollection.AddSingleton<IShellConfiguration>(sp =>
+            tenantServiceCollection.AddSingleton(sp =>
             {
                 // Resolve it lazily as it's constructed lazily
                 var shellSettings = sp.GetRequiredService<ShellSettings>();
@@ -65,24 +58,74 @@ namespace OrchardCore.Environment.Shell.Builders
 
             // Execute IStartup registrations
 
-            // TODO: Use StartupLoader in RTM and then don't need to register the classes anymore then
-
             var moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
-            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(Modules.IStartup).IsAssignableFrom(t.Key)))
+            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(IStartup).IsAssignableFrom(t.Key)))
             {
-                moduleServiceCollection.AddSingleton(typeof(Modules.IStartup), dependency.Key);
-                tenantServiceCollection.AddSingleton(typeof(Modules.IStartup), dependency.Key);
+                moduleServiceCollection.AddSingleton(typeof(IStartup), dependency.Key);
+                tenantServiceCollection.AddSingleton(typeof(IStartup), dependency.Key);
             }
 
-            // Add a default configuration if none has been provided
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            moduleServiceCollection.TryAddSingleton(configuration);
-            tenantServiceCollection.TryAddSingleton(configuration);
+            // To not trigger features loading before it is normally done by 'ShellHost',
+            // init here the application feature in place of doing it in the constructor.
+            EnsureApplicationFeature();
+
+            foreach (var rawStartup in blueprint.Dependencies.Keys.Where(t => t.Name == "Startup"))
+            {
+                // Startup classes inheriting from IStartup are already treated
+                if (typeof(IStartup).IsAssignableFrom(rawStartup))
+                {
+                    continue;
+                }
+
+                // Ignore Startup class from main application
+                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeature) && startupFeature.FeatureInfo.Id == _applicationFeature.Id)
+                {
+                    continue;
+                }
+
+                // Create a wrapper around this method
+                var configureServicesMethod = rawStartup.GetMethod(
+                    nameof(IStartup.ConfigureServices),
+                    BindingFlags.Public | BindingFlags.Instance,
+                    null,
+                    CallingConventions.Any,
+                    new Type[] { typeof(IServiceCollection) },
+                    null);
+
+                var configureMethod = rawStartup.GetMethod(
+                    nameof(IStartup.Configure),
+                    BindingFlags.Public | BindingFlags.Instance);
+
+                var orderProperty = rawStartup.GetProperty(
+                    nameof(IStartup.Order),
+                    BindingFlags.Public | BindingFlags.Instance);
+
+                var configureOrderProperty = rawStartup.GetProperty(
+                    nameof(IStartup.ConfigureOrder),
+                    BindingFlags.Public | BindingFlags.Instance);
+
+                // Add the startup class to the DI so we can instantiate it with
+                // valid ctor arguments
+                moduleServiceCollection.AddSingleton(rawStartup);
+                tenantServiceCollection.AddSingleton(rawStartup);
+
+                moduleServiceCollection.AddSingleton<IStartup>(sp =>
+                {
+                    var startupInstance = sp.GetService(rawStartup);
+                    return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod, orderProperty, configureOrderProperty);
+                });
+
+                tenantServiceCollection.AddSingleton<IStartup>(sp =>
+                {
+                    var startupInstance = sp.GetService(rawStartup);
+                    return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod, orderProperty, configureOrderProperty);
+                });
+            }
 
             // Make shell settings available to the modules
             moduleServiceCollection.AddSingleton(settings);
-            moduleServiceCollection.AddSingleton<IShellConfiguration>(sp =>
+            moduleServiceCollection.AddSingleton(sp =>
             {
                 // Resolve it lazily as it's constructed lazily
                 var shellSettings = sp.GetRequiredService<ShellSettings>();
@@ -94,15 +137,11 @@ namespace OrchardCore.Environment.Shell.Builders
             // Index all service descriptors by their feature id
             var featureAwareServiceCollection = new FeatureAwareServiceCollection(tenantServiceCollection);
 
-            var startups = moduleServiceProvider.GetServices<Modules.IStartup>();
+            var startups = moduleServiceProvider.GetServices<IStartup>();
 
             // IStartup instances are ordered by module dependency with an Order of 0 by default.
             // OrderBy performs a stable sort so order is preserved among equal Order values.
             startups = startups.OrderBy(s => s.Order);
-
-            // To not trigger features loading before it is normally done by 'ShellHost',
-            // init here the application feature in place of doing it in the constructor.
-            EnsureApplicationFeature();
 
             // Let any module add custom service descriptors to the tenant
             foreach (var startup in startups)
@@ -127,17 +166,25 @@ namespace OrchardCore.Environment.Shell.Builders
             {
                 foreach (var serviceDescriptor in featureServiceCollection.Value)
                 {
-                    if (serviceDescriptor.ImplementationType != null)
+                    var type = serviceDescriptor.GetImplementationType();
+
+                    if (type != null)
                     {
-                        typeFeatureProvider.TryAdd(serviceDescriptor.ImplementationType, featureServiceCollection.Key);
-                    }
-                    else if (serviceDescriptor.ImplementationInstance != null)
-                    {
-                        typeFeatureProvider.TryAdd(serviceDescriptor.ImplementationInstance.GetType(), featureServiceCollection.Key);
-                    }
-                    else
-                    {
-                        // Factory, we can't know which type will be returned
+                        var feature = featureServiceCollection.Key;
+
+                        if (feature == _applicationFeature)
+                        {
+                            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
+
+                            if (attribute != null)
+                            {
+                                feature = featureServiceCollection.Key.Extension.Features
+                                    .FirstOrDefault(f => f.Id == attribute.FeatureName)
+                                    ?? feature;
+                            }
+                        }
+
+                        typeFeatureProvider.TryAdd(type, feature);
                     }
                 }
             }

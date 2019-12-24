@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OrchardCore.ContentManagement.Metadata.Models;
 using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.Metadata.Builders
 {
     public class ContentPartDefinitionBuilder
     {
         private readonly ContentPartDefinition _part;
-        private string _name;
         private readonly IList<ContentPartFieldDefinition> _fields;
         private readonly JObject _settings;
 
@@ -31,22 +30,22 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                _name = existing.Name;
+                Name = existing.Name;
                 _fields = existing.Fields.ToList();
                 _settings = new JObject(existing.Settings);
             }
         }
 
-        public string Name { get { return _name; } }
+        public string Name { get; private set; }
 
         public ContentPartDefinition Build()
         {
-            return new ContentPartDefinition(_name, _fields, _settings);
+            return new ContentPartDefinition(Name, _fields, _settings);
         }
 
         public ContentPartDefinitionBuilder Named(string name)
         {
-            _name = name;
+            Name = name;
             return this;
         }
 
@@ -60,6 +59,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
+        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
         public ContentPartDefinitionBuilder WithSetting(string name, string value)
         {
             _settings[name] = value;
@@ -69,6 +69,22 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public ContentPartDefinitionBuilder MergeSettings(JObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
+            return this;
+        }
+
+        public ContentPartDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
+        {
+            var existingJObject = _settings[typeof(T).Name] as JObject;
+            // If existing settings do not exist, create.
+            if (existingJObject == null)
+            {
+                existingJObject = JObject.FromObject(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                _settings[typeof(T).Name] = existingJObject;
+            }
+
+            var settingsToMerge = existingJObject.ToObject<T>();
+            setting(settingsToMerge);
+            _settings[typeof(T).Name] = JObject.FromObject(settingsToMerge, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             return this;
         }
 

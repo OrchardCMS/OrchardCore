@@ -1,9 +1,6 @@
 using System.Collections.Generic;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using OrchardCore.Liquid;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -15,24 +12,21 @@ namespace OrchardCore.Email.Workflows.Activities
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly ILogger<EmailTask> _logger;
-
+        
         public EmailTask(
             ISmtpService smtpService,
             IWorkflowExpressionEvaluator expressionEvaluator,
-            IStringLocalizer<EmailTask> localizer, 
-            ILiquidTemplateManager liquidTemplateManager, 
-            ILogger<EmailTask> logger
+            IStringLocalizer<EmailTask> localizer
         )
         {
             _smtpService = smtpService;
-            _expressionEvaluator = expressionEvaluator;
-            _logger = logger;
+            _expressionEvaluator = expressionEvaluator;           
             T = localizer;
         }
-        
+
         private IStringLocalizer T { get; }
         public override string Name => nameof(EmailTask);
+        public override LocalizedString DisplayText => T["Email Task"];
         public override LocalizedString Category => T["Messaging"];
 
         public WorkflowExpression<string> Sender
@@ -73,25 +67,22 @@ namespace OrchardCore.Email.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var senderTask = _expressionEvaluator.EvaluateAsync(Sender, workflowContext);
-            var recipientsTask = _expressionEvaluator.EvaluateAsync(Recipients, workflowContext);
-            var subjectTask = _expressionEvaluator.EvaluateAsync(Subject, workflowContext);
-            var bodyTask = _expressionEvaluator.EvaluateAsync(Body, workflowContext);
-
-            await Task.WhenAll(senderTask, recipientsTask, subjectTask, bodyTask);
+            var sender = await _expressionEvaluator.EvaluateAsync(Sender, workflowContext);
+            var recipients = await _expressionEvaluator.EvaluateAsync(Recipients, workflowContext);
+            var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext);
+            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext);
 
             var message = new MailMessage
             {
-                Subject = subjectTask.Result.Trim(),
-                Body = bodyTask.Result?.Trim(),
+                To = recipients.Trim(),
+                Subject = subject.Trim(),
+                Body = body?.Trim(),
                 IsBodyHtml = IsBodyHtml
             };
 
-            message.To.Add(recipientsTask.Result.Trim());
-
-            if(!string.IsNullOrWhiteSpace(senderTask.Result))
+            if (!string.IsNullOrWhiteSpace(sender))
             {
-                message.From = new MailAddress(senderTask.Result.Trim());
+                message.From = sender.Trim();
             }
 
             var result = await _smtpService.SendAsync(message);
@@ -101,7 +92,7 @@ namespace OrchardCore.Email.Workflows.Activities
             {
                 return Outcomes("Failed");
             }
-            
+
             return Outcomes("Done");
         }
     }

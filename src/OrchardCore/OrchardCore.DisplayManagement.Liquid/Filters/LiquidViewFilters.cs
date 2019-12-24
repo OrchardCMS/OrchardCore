@@ -1,135 +1,155 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
+
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
 {
     public static class LiquidViewFilters
     {
+        private static readonly AsyncFilterDelegate _localizeDelegate = Localize;
+        private static readonly AsyncFilterDelegate _htmlClassDelegate = HtmlClass;
+        private static readonly AsyncFilterDelegate _newShapeDelegate = NewShape;
+        private static readonly AsyncFilterDelegate _shapeRenderDelegate = ShapeRender;
+        private static readonly AsyncFilterDelegate _shapeStringifyDelegate = ShapeStringify;
+        private static readonly FilterDelegate _shapePropertiesDelegate = ShapeProperties;
+
         public static FilterCollection WithLiquidViewFilters(this FilterCollection filters)
         {
-            filters.AddAsyncFilter("t", Localize);
-            filters.AddAsyncFilter("html_class", HtmlClass);
-            filters.AddAsyncFilter("shape_new", NewShape);
-            filters.AddAsyncFilter("shape_render", ShapeRender);
-            filters.AddAsyncFilter("shape_stringify", ShapeStringify);
+            filters.AddAsyncFilter("t", _localizeDelegate);
+            filters.AddAsyncFilter("html_class", _htmlClassDelegate);
+            filters.AddAsyncFilter("shape_new", _newShapeDelegate);
+            filters.AddAsyncFilter("shape_render", _shapeRenderDelegate);
+            filters.AddAsyncFilter("shape_stringify", _shapeStringifyDelegate);
+            filters.AddFilter("shape_properties", _shapePropertiesDelegate);
 
             return filters;
         }
 
-        public static Task<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("ViewLocalizer", out var localizer))
+            if (!context.AmbientValues.TryGetValue("ViewLocalizer", out var item) || !(item is IViewLocalizer localizer))
             {
-                throw new ArgumentException("ViewLocalizer missing while invoking 't'");
+                return ThrowArgumentException<ValueTask<FluidValue>>("ViewLocalizer missing while invoking 't'");
             }
 
-            var parameters = new List<object>();
+            var parameters = new object[arguments.Count];
             for (var i = 0; i < arguments.Count; i++)
             {
-                parameters.Add(arguments.At(i).ToStringValue());
+                parameters[i] = arguments.At(i).ToStringValue();
             }
 
-            return Task.FromResult<FluidValue>(new StringValue(((IViewLocalizer)localizer)
-                .GetString(input.ToStringValue(), parameters.ToArray())));
+            return new ValueTask<FluidValue>(new StringValue(localizer.GetString(input.ToStringValue(), parameters)));
         }
 
-        public static Task<FluidValue> HtmlClass(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> HtmlClass(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            return Task.FromResult<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
+            return new ValueTask<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
         }
 
-        public static async Task<FluidValue> NewShape(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> NewShape(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("ShapeFactory", out dynamic shapeFactory))
+            static async ValueTask<FluidValue> Awaited(ValueTask<IShape> task)
             {
-                throw new ArgumentException("ShapeFactory missing while invoking 'shape_new'");
+                return FluidValue.Create(await task);
+            }
+
+            if (!context.AmbientValues.TryGetValue("ShapeFactory", out var item) || !(item is IShapeFactory shapeFactory))
+            {
+                return ThrowArgumentException<ValueTask<FluidValue>>("ShapeFactory missing while invoking 'shape_new'");
             }
 
             var type = input.ToStringValue();
-            var properties = new Dictionary<string, object>();
+            var properties = new Dictionary<string, object>(arguments.Count);
 
             foreach (var name in arguments.Names)
             {
-                properties.Add(LowerKebabToPascalCase(name), arguments[name].ToObjectValue());
+                properties.Add(name.ToPascalCaseUnderscore(), arguments[name].ToObjectValue());
             }
 
-            return FluidValue.Create(await ((IShapeFactory)shapeFactory).CreateAsync(type, Arguments.From(properties)));
+            var task = shapeFactory.CreateAsync(type, Arguments.From(properties));
+            if (!task.IsCompletedSuccessfully)
+            {
+                return Awaited(task);
+            }
+            return new ValueTask<FluidValue>(FluidValue.Create(task.Result));
         }
 
-        public static async Task<FluidValue> ShapeStringify(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> ShapeStringify(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
+            static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
             {
-                throw new ArgumentException("DisplayHelper missing while invoking 'shape_stringify'");
+                return new HtmlContentValue(await task);
             }
 
             if (input.ToObjectValue() is IShape shape)
             {
-                return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(shape));
+                if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
+                {
+                    return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_stringify'");
+                }
+
+                var task = displayHelper.ShapeExecuteAsync(shape);
+                if (!task.IsCompletedSuccessfully)
+                {
+                    return Awaited(task);
+                }
+                return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
+            }
+
+            return new ValueTask<FluidValue>(NilValue.Instance);
+        }
+
+        public static ValueTask<FluidValue> ShapeRender(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
+            {
+                return new HtmlContentValue(await task);
+            }
+
+            if (input.ToObjectValue() is IShape shape)
+            {
+                if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
+                {
+                    return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_render'");
+                }
+
+                var task = displayHelper.ShapeExecuteAsync(shape);
+                if (!task.IsCompletedSuccessfully)
+                {
+                    return Awaited(task);
+                }
+                return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
+            }
+
+            return new ValueTask<FluidValue>(NilValue.Instance);
+        }
+
+        public static FluidValue ShapeProperties(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            if (input.ToObjectValue() is IShape shape)
+            {
+                foreach (var name in arguments.Names)
+                {
+                    shape.Properties[name.ToPascalCaseUnderscore()] = arguments[name].ToObjectValue();
+                }
+                return FluidValue.Create(shape);
             }
 
             return NilValue.Instance;
         }
 
-        public static async Task<FluidValue> ShapeRender(FluidValue input, FilterArguments arguments, TemplateContext context)
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static T ThrowArgumentException<T>(string message)
         {
-            if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
-            {
-                throw new ArgumentException("DisplayHelper missing while invoking 'shape_render'");
-            }
-
-            if (input.ToObjectValue() is IShape shape)
-            {
-                return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(shape));
-            }
-
-            return NilValue.Instance;
-        }
-
-        public static Task<FluidValue> ShapeTab(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (input.ToObjectValue() is IShape shape)
-            {
-                shape.Metadata.Tab = arguments["tab"].Or(arguments.At(0)).ToStringValue();
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static string LowerKebabToPascalCase(string attribute)
-        {
-            attribute = attribute.Trim();
-            var nextIsUpper = true;
-            var result = new StringBuilder();
-            for (int i = 0; i < attribute.Length; i++)
-            {
-                var c = attribute[i];
-                if (c == '_')
-                {
-                    nextIsUpper = true;
-                    continue;
-                }
-
-                if (nextIsUpper)
-                {
-                    result.Append(c.ToString().ToUpper());
-                }
-                else
-                {
-                    result.Append(c);
-                }
-
-                nextIsUpper = false;
-            }
-
-            return result.ToString();
+            throw new ArgumentException(message);
         }
     }
 }
