@@ -6,6 +6,7 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.Mvc.Utilities;
 
@@ -15,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
     {
         public readonly static LiquidTagHelperActivator None = new LiquidTagHelperActivator();
         private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activator;
-        private readonly Dictionary<string, Action<ITagHelper, FluidValue, string>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue, string>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Action<ITagHelper, ModelExpressionProvider, ViewDataDictionary<dynamic> ,FluidValue, string>> _setters = new Dictionary<string, Action<ITagHelper, ModelExpressionProvider, ViewDataDictionary<dynamic> ,FluidValue, string>>(StringComparer.OrdinalIgnoreCase);
 
         public LiquidTagHelperActivator() { }
 
@@ -57,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
                 foreach (var propertyName in allNames)
                 {
-                    _setters.Add(propertyName, (h, v, k) =>
+                    _setters.Add(propertyName, (h, mp, vd, v, k) =>
                     {
                         object value = null;
 
@@ -93,9 +94,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                         }
                         else if(property.PropertyType == typeof(Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpression))
                         {
-                            //Todo : Convert String presentation to expression. 
-                            // e.g. convert string "Model.DisplayText" to (Model) => Model.DisplayText
-                             value = null;
+                            value = mp.CreateModelExpression<dynamic>(vd,v.ToStringValue() );                            
                         }
                         else
                         {
@@ -122,6 +121,11 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             var tagHelper = _activator(factory, context);
             var dictKeySeperator =new char[] {'-','_'};
+            
+            var expresionProvider = context.HttpContext.RequestServices.GetService(typeof(Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpressionProvider)) as 
+                            Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpressionProvider;
+
+            var viewData = context.ViewData as ViewDataDictionary<dynamic>;
 
             foreach (var name in arguments.Names)
             {
@@ -134,7 +138,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 {
                     try
                     {
-                        setter(tagHelper, arguments[name], dictPropertyKey);
+                        setter(tagHelper, expresionProvider, viewData, arguments[name], dictPropertyKey);
                         found = true;
                     }
                     catch (ArgumentException e)
