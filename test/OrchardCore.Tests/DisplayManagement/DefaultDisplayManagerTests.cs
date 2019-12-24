@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Localization;
 using OrchardCore.Tests.Stubs;
 using Xunit;
 
@@ -38,7 +39,9 @@ namespace OrchardCore.Tests.DisplayManagement
             serviceCollection.AddScoped<IShapeBindingResolver, TestShapeBindingResolver>();
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-            serviceCollection.AddScoped<IStringLocalizer<DefaultHtmlDisplay>, NullStringLocalizer<DefaultHtmlDisplay>>();
+            serviceCollection.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+            serviceCollection.AddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
+
             serviceCollection.AddLogging();
 
             serviceCollection.AddSingleton(_defaultShapeTable);
