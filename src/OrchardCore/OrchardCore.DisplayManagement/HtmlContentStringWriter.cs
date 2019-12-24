@@ -11,10 +11,10 @@ namespace OrchardCore.DisplayManagement
     {
         private List<string> _fragments = new List<string>();
 
-        public override Encoding Encoding => UTF8Encoding.UTF8;
+        public override Encoding Encoding => Encoding.UTF8;
 
         // Invoked when used as TextWriter to intercept what is supposed to be written
-        public override void Write(String value)
+        public override void Write(string value)
         {
             _fragments.Add(value);
         }
@@ -29,7 +29,7 @@ namespace OrchardCore.DisplayManagement
             _fragments.Add(new String(buffer, index, count));
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return String.Concat(_fragments);
         }
@@ -37,7 +37,7 @@ namespace OrchardCore.DisplayManagement
         // Invoked by IHtmlContent when rendered on the final output
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
-            foreach(var fragment in _fragments)
+            foreach (var fragment in _fragments)
             {
                 writer.Write(fragment);
             }

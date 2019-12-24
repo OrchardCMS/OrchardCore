@@ -253,12 +253,9 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         internal static async Task EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
         {
-            // Check if already contextualized.
-            if (!context.AmbientValues.ContainsKey("Services"))
+            if (!context.IsInitialized)
             {
                 context.AmbientValues.EnsureCapacity(9);
-
-                // Shared contextualization from scoped services.
                 context.AmbientValues.Add("Services", context.Services);
 
                 var displayHelper = context.Services.GetRequiredService<IDisplayHelper>();
@@ -275,18 +272,22 @@ namespace OrchardCore.DisplayManagement.Liquid
                 var layout = await layoutAccessor.GetLayoutAsync();
                 context.AmbientValues.Add("ThemeLayout", layout);
 
-                context.CultureInfo = CultureInfo.CurrentUICulture;
-
                 var options = context.Services.GetRequiredService<IOptions<LiquidOptions>>().Value;
+
                 context.AddAsyncFilters(options);
 
                 foreach (var handler in context.Services.GetServices<ILiquidTemplateEventHandler>())
                 {
                     await handler.RenderingAsync(context);
                 }
+
+                context.CultureInfo = CultureInfo.CurrentUICulture;
+
+                context.IsInitialized = true;
             }
 
-            // Specific contextualization from transient services.
+            context.EnterChildScope();
+
             var viewLocalizer = context.Services.GetRequiredService<IViewLocalizer>();
 
             if (viewLocalizer is IViewContextAware contextable)
@@ -294,14 +295,12 @@ namespace OrchardCore.DisplayManagement.Liquid
                 contextable.Contextualize(viewContext);
             }
 
+            context.SetValue("ViewLocalizer", viewLocalizer);
+
             if (model != null)
             {
                 context.MemberAccessStrategy.Register(model.GetType());
             }
-
-            context.EnterChildScope();
-
-            context.SetValue("ViewLocalizer", viewLocalizer);
 
             context.SetValue("Model", model);
         }
