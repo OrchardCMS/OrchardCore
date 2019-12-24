@@ -69,13 +69,13 @@ The `console_log` liquid filter can be used to dump data from well known propert
 Well known properties include
 - Strings
 - JTokens
-- Content Items
-- Shapes (from the `Content` property)
+- Content Items (from the `Model.ContentItem` property)
+- Shapes (from the `Model.Content` property)
 - Objects that can serialize to json.
 
 !!! note
-    To dump shapes call `{{ Model.Content | console_log }}` before calling `{{ Model.Content | shape_render }}`
-    This will allow any child shapes (items) to also be logged. They will be logged as a separate object in the console, after the parent shape.
+    To log shapes call `{{ Model.Content | console_log }}` after calling `{{ Model.Content | shape_render }}`
+    This will allow the shape to execute, and populate the alternates for any child shapes.
 
 ## Razor Helper
 
@@ -103,13 +103,13 @@ The `ConsoleLog` extension method can be used to dump data from well known prope
 Well known properties include
 - Strings
 - JTokens
-- Content Items
-- Shapes (from the `Content` property)
+- Content Items (from the `Model.ContentItem` property)
+- Shapes (from the `Model.Content` property)
 - Objects that can serialize to json.
 
 !!! note
-    To dump shapes call `@Orchard.ConsoleLog(Model.Content as object)` before calling `@await DisplayAsync(Model.Content)`
-    This will allow any child shapes (items) to also be logged. They will be logged as a separate object in the console, after the parent shape.
+    To log shapes call `@Orchard.ConsoleLog(Model.Content as object)` after calling `@await DisplayAsync(Model.Content)`
+    This will allow the shape to execute, and populate the alternates for any child shapes.
 
 ## GraphQL
 
