@@ -19,12 +19,27 @@ namespace OrchardCore.DisplayManagement
             _fragments.Add(value);
         }
 
+        public override void Write(char value)
+        {
+            _fragments.Add(value.ToString());
+        }
+
+        public override void Write(char[] buffer, int index, int count)
+        {
+            _fragments.Add(new String(buffer, index, count));
+        }
+
+        public override String ToString()
+        {
+            return String.Concat(_fragments);
+        }
+
         // Invoked by IHtmlContent when rendered on the final output
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
             foreach(var fragment in _fragments)
             {
-                writer.Write(fragment, encoder);
+                writer.Write(fragment);
             }
         }
     }
