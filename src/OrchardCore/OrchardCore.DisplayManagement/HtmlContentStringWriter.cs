@@ -26,7 +26,7 @@ namespace OrchardCore.DisplayManagement
 
         public override void Write(char[] buffer, int index, int count)
         {
-            _fragments.Add(new String(buffer, index, count));
+            _fragments.Add(new string(buffer, index, count));
         }
 
         public override string ToString()

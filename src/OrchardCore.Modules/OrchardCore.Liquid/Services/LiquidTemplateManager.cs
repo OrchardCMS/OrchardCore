@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -32,6 +33,18 @@ namespace OrchardCore.Liquid.Services
             var result = GetCachedTemplate(source);
 
             return result.RenderAsync(encoder, Context, model);
+        }
+
+        public Task RenderAsync(string source, TextWriter writer, TextEncoder encoder, object model)
+        {
+            if (String.IsNullOrWhiteSpace(source))
+            {
+                return Task.FromResult((string)null);
+            }
+
+            var result = GetCachedTemplate(source);
+
+            return result.RenderAsync(writer, encoder, Context, model);
         }
 
         private LiquidViewTemplate GetCachedTemplate(string source)

@@ -207,6 +207,29 @@ namespace OrchardCore.DisplayManagement.Liquid
             return result;
         }
 
+        public static async Task RenderAsync(this LiquidViewTemplate template, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context, object model)
+        {
+            var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
+            var viewContext = viewContextAccessor.ViewContext;
+
+            if (viewContext == null)
+            {
+                var actionContext = context.Services.GetService<IActionContextAccessor>()?.ActionContext;
+
+                if (actionContext == null)
+                {
+                    var httpContext = context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    actionContext = await GetActionContextAsync(httpContext);
+                }
+
+                viewContext = GetViewContext(actionContext);
+            }
+
+            await context.EnterScopeAsync(viewContext, model);
+            await template.RenderAsync(writer, encoder, context);
+            context.ReleaseScope();
+        }
+
         internal async static Task<ActionContext> GetActionContextAsync(HttpContext httpContext)
         {
             var routeData = new RouteData();
