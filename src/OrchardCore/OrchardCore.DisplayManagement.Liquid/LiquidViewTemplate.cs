@@ -184,20 +184,11 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         public static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, LiquidTemplateContext context, object model)
         {
-            var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
-            var viewContext = viewContextAccessor.ViewContext;
+            var viewContext = context.Services.GetRequiredService<ViewContextAccessor>().ViewContext;
 
             if (viewContext == null)
             {
-                var actionContext = context.Services.GetService<IActionContextAccessor>()?.ActionContext;
-
-                if (actionContext == null)
-                {
-                    var httpContext = context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    actionContext = await GetActionContextAsync(httpContext);
-                }
-
-                viewContext = GetViewContext(actionContext);
+                viewContext = await GetViewContextAsync(context);
             }
 
             await context.EnterScopeAsync(viewContext, model);
@@ -209,20 +200,11 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public static async Task RenderAsync(this LiquidViewTemplate template, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context, object model)
         {
-            var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
-            var viewContext = viewContextAccessor.ViewContext;
+            var viewContext = context.Services.GetRequiredService<ViewContextAccessor>().ViewContext;
 
             if (viewContext == null)
             {
-                var actionContext = context.Services.GetService<IActionContextAccessor>()?.ActionContext;
-
-                if (actionContext == null)
-                {
-                    var httpContext = context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    actionContext = await GetActionContextAsync(httpContext);
-                }
-
-                viewContext = GetViewContext(actionContext);
+                viewContext = await GetViewContextAsync(context);
             }
 
             await context.EnterScopeAsync(viewContext, model);
@@ -230,7 +212,20 @@ namespace OrchardCore.DisplayManagement.Liquid
             context.ReleaseScope();
         }
 
-        internal async static Task<ActionContext> GetActionContextAsync(HttpContext httpContext)
+        public static async Task<ViewContext> GetViewContextAsync(LiquidTemplateContext context)
+        {
+            var actionContext = context.Services.GetService<IActionContextAccessor>()?.ActionContext;
+
+            if (actionContext == null)
+            {
+                var httpContext = context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                actionContext = await GetActionContextAsync(httpContext);
+            }
+
+            return GetViewContext(actionContext);
+        }
+
+        internal static async Task<ActionContext> GetActionContextAsync(HttpContext httpContext)
         {
             var routeData = new RouteData();
             routeData.Routers.Add(new RouteCollection());

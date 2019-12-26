@@ -39,7 +39,7 @@ namespace OrchardCore.Liquid.Services
         {
             if (String.IsNullOrWhiteSpace(source))
             {
-                return Task.FromResult((string)null);
+                return Task.CompletedTask;
             }
 
             var result = GetCachedTemplate(source);
