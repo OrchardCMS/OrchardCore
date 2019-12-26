@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,7 @@ using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using OrchardCore.Mvc.Core.Utilities;
 using YesSql;
 using YesSql.Services;
 
@@ -40,7 +42,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IUserService _userService;
         private readonly ILogger _logger;
         private readonly IEnumerable<IAccountActivationEventHandler> _handlers;
-        private readonly ShellSettings _shellSettings;
+        private readonly IUrlHelper _urlHelper;
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer TH;
@@ -56,9 +58,10 @@ namespace OrchardCore.Users.Controllers
             IEnumerable<IAccountActivationEventHandler> handlers,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            ShellSettings shellSettings,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
+            IUrlHelperFactory urlHelperFactory,
+            IActionContextAccessor actionContextAccessor,
             ILogger<AdminController> logger
             )
         {
@@ -71,7 +74,7 @@ namespace OrchardCore.Users.Controllers
             _userService = userService;
             _logger = logger;
             _handlers = handlers;
-            _shellSettings = shellSettings;
+            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
 
             New = shapeFactory;
             TH = htmlLocalizer;
@@ -152,10 +155,10 @@ namespace OrchardCore.Users.Controllers
             foreach (var user in results)
             {
                 userEntries.Add(new UserEntry
-                    {
-                        Id = user.Id,
-                        Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: this, displayType: "SummaryAdmin")
-                    }
+                {
+                    Id = user.Id,
+                    Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: this, displayType: "SummaryAdmin")
+                }
                 );
             }
 
@@ -290,7 +293,7 @@ namespace OrchardCore.Users.Controllers
         private async Task SendActivationEmail(User user)
         {
             // if the account is activated, no need to send email
-            if(user.IsEnabled)
+            if (user.IsEnabled)
                 return;
 
             var sendActivationEmail = Request.Form["User.SendActivationEmail"].FirstOrDefault();
@@ -298,12 +301,12 @@ namespace OrchardCore.Users.Controllers
             if (sendActivationEmail != null && Convert.ToBoolean(sendActivationEmail))
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var path = Url.Action("ActivateAccount", "Registration", new { Area = "OrchardCore.Users", email = user.Email, activationToken = token });
+
                 var context = new AccountActivationContext(user)
                 {
-                    // inject the tenant path
-                    ActivationUrl = PathExtensions.Combine(_shellSettings.Name, path)
-            };
+                    ActivationUrl = _urlHelper.ToAbsoluteAction("ActivateAccount", "Registration", new { Area = "OrchardCore.Users", email = user.Email, activationToken = token })
+                };
+
                 await _handlers.InvokeAsync((handler, context) => handler.AccountActivationEventHandler(context), context, _logger);
             }
         }
