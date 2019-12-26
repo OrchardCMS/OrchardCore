@@ -82,7 +82,8 @@ namespace OrchardCore.Media.Azure
                     var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                     var clock = serviceProvider.GetRequiredService<IClock>();
                     var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
-                    var eventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                    var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                    var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
                     var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
                     var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
@@ -99,7 +100,7 @@ namespace OrchardCore.Media.Azure
                         mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                     }
 
-                    return new DefaultMediaFileStore(logger, eventHandlers, fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
+                    return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
                 }));
             }
         }

@@ -95,7 +95,8 @@ namespace OrchardCore.Media
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
-                var eventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
                 var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsPath);
@@ -111,7 +112,7 @@ namespace OrchardCore.Media
                     mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                 }
 
-                return new DefaultMediaFileStore(logger,eventHandlers, fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
+                return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
             });
 
             

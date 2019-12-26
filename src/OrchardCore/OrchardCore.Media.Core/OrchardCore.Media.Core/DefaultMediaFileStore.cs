@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.FileStorage;
@@ -14,15 +15,18 @@ namespace OrchardCore.Media.Core
         private readonly string _requestBasePath;
         private readonly string _cdnBaseUrl;
         private readonly IEnumerable<IMediaEventHandler> _mediaEventHandlers;
+        private readonly IEnumerable<IMediaCreatingEventHandler> _mediaCreatingEventHandlers;
+        private readonly ILogger _logger;
+
         public DefaultMediaFileStore(
-            ILogger<DefaultMediaFileStore> logger,
-            IEnumerable<IMediaEventHandler> mediaEventHandlers,
             IFileStore fileStore,
             string requestBasePath,
-            string cdnBaseUrl)
+            string cdnBaseUrl,
+            IEnumerable<IMediaEventHandler> mediaEventHandlers,
+            IEnumerable<IMediaCreatingEventHandler> mediaCreatingEventHandlers,
+            ILogger<DefaultMediaFileStore> logger
+            )
         {
-            Logger = logger;
-            _mediaEventHandlers = mediaEventHandlers;
             _fileStore = fileStore;
 
             // Ensure trailing slash removed.
@@ -30,9 +34,12 @@ namespace OrchardCore.Media.Core
 
             // Media options configuration ensures any trailing slash is removed.
             _cdnBaseUrl = cdnBaseUrl;
+
+            _mediaEventHandlers = mediaEventHandlers;
+            _mediaCreatingEventHandlers = mediaCreatingEventHandlers;
+            _logger = logger;
         }
 
-        public ILogger Logger { get; }
         public Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
             return _fileStore.GetFileInfoAsync(path);
@@ -55,34 +62,61 @@ namespace OrchardCore.Media.Core
 
         public async Task<bool> TryDeleteFileAsync(string path)
         {
-            MediaDeleteContext mediaContext = new MediaDeleteContext
+            var context = new MediaDeleteContext
             {
                 Path = path
             };
-            _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaDeletingAsync(context), mediaContext, Logger);
-            bool result = await _fileStore.TryDeleteFileAsync(mediaContext.Path);
-            if(result)
-                _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaDeletedSuccessfullyAsync(context), mediaContext, Logger);
+
+            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingFileAsync(context), context, _logger);
+
+            var result = await _fileStore.TryDeleteFileAsync(context.Path);
+
+            if (result)
+            {
+                await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletedFileSuccessAsync(context), context, _logger);
+            }
             else
-                _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaDeletedUnsuccessfullyAsync(context), mediaContext, Logger);
+            {
+                await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingFileFailureAsync(context), context, _logger);
+            }
 
             return result;
         }
 
-        public Task<bool> TryDeleteDirectoryAsync(string path)
+        public async Task<bool> TryDeleteDirectoryAsync(string path)
         {
-            return _fileStore.TryDeleteDirectoryAsync(path);
+            var context = new MediaDeleteContext
+            {
+                Path = path
+            };
+
+            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingDirectoryAsync(context), context, _logger);
+
+            var result = await _fileStore.TryDeleteDirectoryAsync(path);
+
+            if (result)
+            {
+                await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletedDirectorySuccessAsync(context), context, _logger);
+            }
+            else
+            {
+                await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingDirectoryFailureAsync(context), context, _logger);
+            }
+
+            return result;
         }
 
-        public Task MoveFileAsync(string oldPath, string newPath)
+        public async Task MoveFileAsync(string oldPath, string newPath)
         {
-            MediaMovingContext mediaContext = new MediaMovingContext
+            var context = new MediaMovingContext
             {
                 OldPath = oldPath,
-                Path = newPath
+                NewPath = newPath
             };
-            _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaMovingAsync(context), mediaContext, Logger);
-            return _fileStore.MoveFileAsync(mediaContext.OldPath, mediaContext.Path);
+
+            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaMovingAsync(context), context, _logger);
+
+            await _fileStore.MoveFileAsync(context.OldPath, context.NewPath);
         }
 
         public Task CopyFileAsync(string srcPath, string dstPath)
@@ -102,13 +136,38 @@ namespace OrchardCore.Media.Core
 
         public async Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
-            MediaCreatingContext mediaContext = new MediaCreatingContext
+            if (_mediaCreatingEventHandlers.Any())
             {
-                Path = path,
-                Stream = inputStream
-            };
-            _mediaEventHandlers.Invoke(async (handler, context) => await handler.MediaCreatingAsync(context), mediaContext, Logger);
-             await _fileStore.CreateFileFromStreamAsync(mediaContext.Path, mediaContext.Stream, overwrite);     
+                // Follows https://rules.sonarsource.com/csharp/RSPEC-3966
+                // Assumes that each stream should be disposed of only once by it's caller.
+                var outputStream = inputStream;
+                try
+                {
+                    foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
+                    {
+                        // Creating stream disposed by using.
+                        using (var creatingStream = outputStream)
+                        {
+                            // Stop disposal of inputStream, as creating stream is the object to dispose.
+                            inputStream = null;
+                            // Outputstream must be created by event handler.
+                            outputStream = null;
+                            (path, outputStream) = await mediaCreatingEventHandler.MediaCreatingAsync(path, creatingStream);
+                        }
+                    }
+
+                    await _fileStore.CreateFileFromStreamAsync(path, outputStream, overwrite);
+                }
+                finally
+                {
+                    // This disposes the last outputStream.
+                    outputStream?.Dispose();
+                }
+            }
+            else
+            {
+                await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
+            }
         }
 
         public string MapPathToPublicUrl(string path)
