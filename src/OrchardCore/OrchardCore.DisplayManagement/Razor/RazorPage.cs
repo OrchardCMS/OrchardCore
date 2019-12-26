@@ -252,6 +252,32 @@ namespace OrchardCore.DisplayManagement.Razor
         }
 
         /// <summary>
+        /// Check if a zone is defined in the layout or it has items.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public new bool IsSectionDefined(string name)
+        {
+            // We can replace the base implementation as it can't be called on a view that is not an actual MVC Layout.
+
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            var zone = ThemeLayout[name];
+
+            if (zone != null && zone.Items.Count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Renders a zone from the layout.
         /// </summary>
         /// <param name="name">The name of the zone to render.</param>
