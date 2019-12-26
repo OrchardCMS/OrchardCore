@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -33,14 +34,17 @@ namespace OrchardCore.Workflows.Expressions
 
         private IStringLocalizer T { get; }
 
-        public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext)
+        public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, TextEncoder encoder = null)
         {
+            if(encoder == null)
+                encoder = System.Text.Encodings.Web.JavaScriptEncoder.Default;
+
             var templateContext = CreateTemplateContext(workflowContext);
             var expressionContext = new WorkflowExecutionExpressionContext(templateContext, workflowContext);
 
             await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingExpressionAsync(expressionContext), expressionContext, _logger);
 
-            var result = await _liquidTemplateManager.RenderAsync(expression.Expression, System.Text.Encodings.Web.JavaScriptEncoder.Default, templateContext);
+            var result = await _liquidTemplateManager.RenderAsync(expression.Expression, encoder, templateContext);
             return string.IsNullOrWhiteSpace(result) ? default(T) : (T)Convert.ChangeType(result, typeof(T));
         }
 
