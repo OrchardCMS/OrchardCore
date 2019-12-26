@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration.Records;
 using OrchardCore.Environment.Extensions;

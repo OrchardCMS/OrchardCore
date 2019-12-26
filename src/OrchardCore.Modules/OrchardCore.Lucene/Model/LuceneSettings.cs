@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Lucene.Net.Util;
 using OrchardCore.Contents.Indexing;
 
-namespace OrchardCore.Lucene
+namespace OrchardCore.Lucene.Model
 {
     public class LuceneSettings
     {
@@ -19,12 +19,6 @@ namespace OrchardCore.Lucene
         /// <summary>
         /// Gets the list of indices and their settings.
         /// </summary>
-        public Dictionary<string, IndexSettings> IndexSettings { get; } = new Dictionary<string, IndexSettings>();
-    }
-
-    public class IndexSettings
-    {
-        public string Name { get; set; }
-        public string Analyzer { get; set; }
+        public Dictionary<string, LuceneIndexSettings> IndexSettings { get; } = new Dictionary<string, LuceneIndexSettings>();
     }
 }
