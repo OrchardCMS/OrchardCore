@@ -267,14 +267,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             var zone = ThemeLayout[name];
 
-            if (zone != null && zone.Items.Count > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return zone != null && zone.Items.Count > 0;
         }
 
         /// <summary>
