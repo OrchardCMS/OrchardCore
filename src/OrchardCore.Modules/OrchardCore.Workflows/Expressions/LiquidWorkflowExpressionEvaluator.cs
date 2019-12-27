@@ -37,7 +37,9 @@ namespace OrchardCore.Workflows.Expressions
         public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, TextEncoder encoder = null)
         {
             if(encoder == null)
+            { 
                 encoder = System.Text.Encodings.Web.JavaScriptEncoder.Default;
+            }
 
             var templateContext = CreateTemplateContext(workflowContext);
             var expressionContext = new WorkflowExecutionExpressionContext(templateContext, workflowContext);

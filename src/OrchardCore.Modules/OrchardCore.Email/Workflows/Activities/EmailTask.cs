@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -15,18 +16,21 @@ namespace OrchardCore.Email.Workflows.Activities
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         private readonly ILogger<EmailTask> _logger;
+        private readonly HtmlEncoder _htmlEncoder;
 
         public EmailTask(
             ISmtpService smtpService,
             IWorkflowExpressionEvaluator expressionEvaluator,
             IStringLocalizer<EmailTask> localizer,
             ILiquidTemplateManager liquidTemplateManager,
-            ILogger<EmailTask> logger
+            ILogger<EmailTask> logger,
+            HtmlEncoder htmlEncoder
         )
         {
             _smtpService = smtpService;
             _expressionEvaluator = expressionEvaluator;
             _logger = logger;
+            _htmlEncoder = htmlEncoder;
             T = localizer;
         }
 
@@ -76,7 +80,7 @@ namespace OrchardCore.Email.Workflows.Activities
             var sender = await _expressionEvaluator.EvaluateAsync(Sender, workflowContext);
             var recipients = await _expressionEvaluator.EvaluateAsync(Recipients, workflowContext);
             var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext);
-            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, System.Text.Encodings.Web.HtmlEncoder.Default);
+            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder);
 
             var message = new MailMessage
             {
