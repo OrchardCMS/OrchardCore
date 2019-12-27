@@ -7,12 +7,10 @@ namespace OrchardCore.Media.Events
     /// </summary>
     public interface IMediaEventHandler
     {
-        Task MediaDeletingFileAsync(MediaDeleteContext context);
-        Task MediaDeletedFileSuccessAsync(MediaDeleteContext context);
-        Task MediaDeletingFileFailureAsync(MediaDeleteContext context);
-        Task MediaDeletingDirectoryAsync(MediaDeleteContext context);
-        Task MediaDeletedDirectorySuccessAsync(MediaDeleteContext context);
-        Task MediaDeletingDirectoryFailureAsync(MediaDeleteContext context);
+        Task MediaDeletingFileAsync(MediaDeletingContext context);
+        Task MediaDeletedFileAsync(MediaDeletedContext context);
+        Task MediaDeletingDirectoryAsync(MediaDeletingContext context);
+        Task MediaDeletedDirectoryAsync(MediaDeletedContext context);
         Task MediaMovingAsync(MediaMovingContext context);
     }
 }

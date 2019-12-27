@@ -62,46 +62,44 @@ namespace OrchardCore.Media.Core
 
         public async Task<bool> TryDeleteFileAsync(string path)
         {
-            var context = new MediaDeleteContext
+            var deletingContext = new MediaDeletingContext
             {
                 Path = path
             };
 
-            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingFileAsync(context), context, _logger);
+            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingFileAsync(context), deletingContext, _logger);
 
-            var result = await _fileStore.TryDeleteFileAsync(context.Path);
+            var result = await _fileStore.TryDeleteFileAsync(deletingContext.Path);
 
-            if (result)
+            var deletedContext = new MediaDeletedContext
             {
-                await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletedFileSuccessAsync(context), context, _logger);
-            }
-            else
-            {
-                await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingFileFailureAsync(context), context, _logger);
-            }
+                Path = path,
+                Result = result
+            };
+
+            await _mediaEventHandlers.InvokeAsync((handler, deletedContext) => handler.MediaDeletedFileAsync(deletedContext), deletedContext, _logger);
 
             return result;
         }
 
         public async Task<bool> TryDeleteDirectoryAsync(string path)
         {
-            var context = new MediaDeleteContext
+            var deletingContext = new MediaDeletingContext
             {
                 Path = path
             };
 
-            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingDirectoryAsync(context), context, _logger);
+            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingDirectoryAsync(context), deletingContext, _logger);
 
             var result = await _fileStore.TryDeleteDirectoryAsync(path);
 
-            if (result)
+            var deletedContext = new MediaDeletedContext
             {
-                await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletedDirectorySuccessAsync(context), context, _logger);
-            }
-            else
-            {
-                await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingDirectoryFailureAsync(context), context, _logger);
-            }
+                Path = path,
+                Result = result
+            };
+
+            await _mediaEventHandlers.InvokeAsync((handler, deletedContext) => handler.MediaDeletedDirectoryAsync(deletedContext), deletedContext, _logger);
 
             return result;
         }
