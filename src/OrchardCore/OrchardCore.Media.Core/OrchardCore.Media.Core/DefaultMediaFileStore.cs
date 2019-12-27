@@ -134,7 +134,7 @@ namespace OrchardCore.Media.Core
             return _fileStore.GetFileStreamAsync(fileStoreEntry);
         }
 
-        public async Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+        public async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
             if (_mediaCreatingEventHandlers.Any())
             {
@@ -162,7 +162,7 @@ namespace OrchardCore.Media.Core
                         }
                     }
 
-                    await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
+                    return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
                 }
                 finally
                 {
@@ -172,7 +172,7 @@ namespace OrchardCore.Media.Core
             }
             else
             {
-                await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
+                return await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
             }
         }
 
