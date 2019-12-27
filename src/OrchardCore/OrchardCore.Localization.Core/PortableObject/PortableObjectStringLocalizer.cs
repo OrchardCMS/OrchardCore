@@ -179,7 +179,7 @@ namespace OrchardCore.Localization.PortableObject
                 {
                     do
                     {
-                        if(ExtractTranslation() != null)
+                        if (ExtractTranslation() != null)
                         {
                             break;
                         }
