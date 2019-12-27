@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using OrchardCore.Liquid;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -15,21 +13,17 @@ namespace OrchardCore.Email.Workflows.Activities
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly ILogger<EmailTask> _logger;
         private readonly HtmlEncoder _htmlEncoder;
 
         public EmailTask(
             ISmtpService smtpService,
             IWorkflowExpressionEvaluator expressionEvaluator,
             IStringLocalizer<EmailTask> localizer,
-            ILiquidTemplateManager liquidTemplateManager,
-            ILogger<EmailTask> logger,
             HtmlEncoder htmlEncoder
         )
         {
             _smtpService = smtpService;
             _expressionEvaluator = expressionEvaluator;
-            _logger = logger;
             _htmlEncoder = htmlEncoder;
             T = localizer;
         }
