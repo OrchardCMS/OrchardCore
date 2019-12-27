@@ -117,9 +117,16 @@ namespace OrchardCore.DisplayManagement.Liquid
             var context = Context;
             var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
-            await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
-            await template.RenderAsync(page.Output, htmlEncoder, context);
-            context.ReleaseScope();
+            try
+            {
+                await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
+                await template.RenderAsync(page.Output, htmlEncoder, context);
+            }
+
+            finally
+            {
+                context.ReleaseScope();
+            }
         }
 
         public static Task<LiquidViewTemplate> ParseAsync(string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
@@ -191,11 +198,16 @@ namespace OrchardCore.DisplayManagement.Liquid
                 viewContext = await GetViewContextAsync(context);
             }
 
-            await context.EnterScopeAsync(viewContext, model);
-            var result = await template.RenderAsync(context, encoder);
-            context.ReleaseScope();
+            try
+            {
+                await context.EnterScopeAsync(viewContext, model);
+                return await template.RenderAsync(context, encoder);
+            }
 
-            return result;
+            finally
+            {
+                context.ReleaseScope();
+            }
         }
 
         public static async Task RenderAsync(this LiquidViewTemplate template, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context, object model)
@@ -207,9 +219,16 @@ namespace OrchardCore.DisplayManagement.Liquid
                 viewContext = await GetViewContextAsync(context);
             }
 
-            await context.EnterScopeAsync(viewContext, model);
-            await template.RenderAsync(writer, encoder, context);
-            context.ReleaseScope();
+            try
+            {
+                await context.EnterScopeAsync(viewContext, model);
+                await template.RenderAsync(writer, encoder, context);
+            }
+
+            finally
+            {
+                context.ReleaseScope();
+            }
         }
 
         public static async Task<ViewContext> GetViewContextAsync(LiquidTemplateContext context)
