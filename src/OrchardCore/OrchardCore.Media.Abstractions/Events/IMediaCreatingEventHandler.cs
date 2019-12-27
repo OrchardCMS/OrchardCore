@@ -13,6 +13,6 @@ namespace OrchardCore.Media.Events
         /// Any implementation must return a new stream,
         /// which should be disposed by the caller.
         /// </summary>
-        Task<(string path, Stream outputStream)> MediaCreatingAsync(string path, Stream creatingStream);
+        Task<Stream> MediaCreatingAsync(MediaCreatingContext context, Stream creatingStream);
     }
 }

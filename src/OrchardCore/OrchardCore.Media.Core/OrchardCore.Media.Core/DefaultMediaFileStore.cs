@@ -143,6 +143,11 @@ namespace OrchardCore.Media.Core
                 var outputStream = inputStream;
                 try
                 {
+                    var context = new MediaCreatingContext
+                    {
+                        Path = path
+                    };
+
                     foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
                     {
                         // Creating stream disposed by using.
@@ -152,11 +157,12 @@ namespace OrchardCore.Media.Core
                             inputStream = null;
                             // Outputstream must be created by event handler.
                             outputStream = null;
-                            (path, outputStream) = await mediaCreatingEventHandler.MediaCreatingAsync(path, creatingStream);
+
+                            outputStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
                         }
                     }
 
-                    await _fileStore.CreateFileFromStreamAsync(path, outputStream, overwrite);
+                    await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
                 }
                 finally
                 {

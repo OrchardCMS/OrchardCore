@@ -34,6 +34,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 var outputStream = inputStream;
                 try
                 {
+                    var context = new MediaCreatingContext
+                    {
+                        Path = path
+                    };
+
                     foreach (var eventHandler in creatingEventHandlers)
                     {
                         // Creating stream disposed by using.
@@ -43,7 +48,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                             streams.Add(creatingStream);
                             inputStream = null;
                             outputStream = null;
-                            (path, outputStream) = await eventHandler.MediaCreatingAsync(path, creatingStream);
+                            outputStream = await eventHandler.MediaCreatingAsync(context, creatingStream);
                         }
                     }
                 }
@@ -67,12 +72,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
     public class TestMediaEventHandler : IMediaCreatingEventHandler
     {
-        public async Task<(string path, Stream outputStream)> MediaCreatingAsync(string path, Stream inputStream)
+        public async Task<Stream> MediaCreatingAsync(MediaCreatingContext context, Stream inputStream)
         {
             var outStream = new MemoryStream();
             await inputStream.CopyToAsync(outStream);
 
-            return (path, outStream);
+            return outStream;
         }
     }
 }
