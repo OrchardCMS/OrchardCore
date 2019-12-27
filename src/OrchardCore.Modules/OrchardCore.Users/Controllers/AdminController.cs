@@ -42,7 +42,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IUserService _userService;
         private readonly ILogger _logger;
         private readonly IEnumerable<IAccountActivationEventHandler> _handlers;
-        private readonly IUrlHelper _urlHelper;
+        private readonly LinkGenerator _linkGenerator;
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer TH;
@@ -60,8 +60,7 @@ namespace OrchardCore.Users.Controllers
             IShapeFactory shapeFactory,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
-            IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor,
+            LinkGenerator linkGenerator,
             ILogger<AdminController> logger
             )
         {
@@ -74,7 +73,7 @@ namespace OrchardCore.Users.Controllers
             _userService = userService;
             _logger = logger;
             _handlers = handlers;
-            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            _linkGenerator = linkGenerator;
 
             New = shapeFactory;
             TH = htmlLocalizer;
@@ -304,7 +303,7 @@ namespace OrchardCore.Users.Controllers
 
                 var context = new AccountActivationContext(user)
                 {
-                    ActivationUrl = _urlHelper.ToAbsoluteAction("ActivateAccount", "Registration", new { Area = "OrchardCore.Users", email = user.Email, activationToken = token })
+                    ActivationUrl = _linkGenerator.GetUriByAction(HttpContext, "ActivateAccount", "Registration", new { Area = "OrchardCore.Users", email = user.Email, activationToken = token })
                 };
 
                 await _handlers.InvokeAsync((handler, context) => handler.AccountActivationEventHandler(context), context, _logger);
