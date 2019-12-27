@@ -56,7 +56,7 @@ The newly created website should be able to run, and look like this:
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>netcoreapp3.0</TargetFramework>
+  <TargetFramework>netcoreapp3.1</TargetFramework>
   <PreserveCompilationReferences>true</PreserveCompilationReferences>
 </PropertyGroup>
 ```

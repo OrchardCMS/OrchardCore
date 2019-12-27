@@ -13,6 +13,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             "id", "alternate", "wrapper", "cache-id", "cache-context", "cache-tag", "cache-fixed-duration", "cache-sliding-duration"
         };
 
+        protected const string PropertyDictionaryName = "prop-all";
         protected const string PropertyPrefix = "prop-";
         private static readonly char[] Separators = { ',', ' ' };
 
@@ -40,7 +41,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         /// <summary>
         /// Additional properties for the shape.
         /// </summary>
-        [HtmlAttributeName(DictionaryAttributePrefix = PropertyPrefix)]
+        [HtmlAttributeName(PropertyDictionaryName,DictionaryAttributePrefix = PropertyPrefix)]
         public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         public override async Task ProcessAsync(TagHelperContext tagHelperContext, TagHelperOutput output)
