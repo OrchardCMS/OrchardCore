@@ -78,10 +78,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var tagHelper = factory.CreateTagHelper(_activator, viewContext,
                 arguments, out var contextAttributes, out var outputAttributes);
 
-            var content = new HtmlContentWriter();
+            HtmlContentWriter content = null;
 
             if (Statements != null && Statements.Count > 0)
             {
+                content = new HtmlContentWriter();
+
                 var completion = Completion.Break;
 
                 for (var index = 0; index < Statements.Count; index++)
@@ -97,10 +99,24 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
-            var tagHelperOutput = new TagHelperOutput(helper, outputAttributes, (_, e)
-                => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content)));
+            TagHelperOutput tagHelperOutput = null;
 
-            tagHelperOutput.Content.AppendHtml(content);
+            if (content != null)
+            {
+                tagHelperOutput = new TagHelperOutput(
+                    helper,
+                    outputAttributes, (_, e) => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content))
+                );
+
+                tagHelperOutput.Content.AppendHtml(content);
+            }
+            else
+            {
+                tagHelperOutput = new TagHelperOutput(
+                    helper,
+                    outputAttributes, (_, e) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+                );
+            }
 
             await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 
