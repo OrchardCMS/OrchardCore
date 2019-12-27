@@ -1,6 +1,8 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
@@ -9,16 +11,16 @@ namespace OrchardCore.DisplayManagement
 {
     public struct HtmlContentFragment
     {
-        public string StringValue;
-        public char[] CharArrayValue;
+        private string _stringValue;
+        private char[] _charArrayValue;
         private int _index;
         private int _length;
-        public char CharValue;
-
+        private char CharValue;
+        
         public HtmlContentFragment(string stringValue)
         {
-            StringValue = stringValue;
-            CharArrayValue = null;
+            _stringValue = stringValue;
+            _charArrayValue = null;
             CharValue = Char.MinValue;
             _index = 0;
             _length = 0;
@@ -26,8 +28,8 @@ namespace OrchardCore.DisplayManagement
 
         public HtmlContentFragment(char[] charArrayValue, int index, int length)
         {
-            StringValue = null;
-            CharArrayValue = charArrayValue;
+            _stringValue = null;
+            _charArrayValue = charArrayValue;
             CharValue = Char.MinValue;
             _index = index;
             _length = length;
@@ -35,8 +37,8 @@ namespace OrchardCore.DisplayManagement
 
         public HtmlContentFragment(char charValue)
         {
-            StringValue = null;
-            CharArrayValue = null;
+            _stringValue = null;
+            _charArrayValue = null;
             CharValue = charValue;
             _index = 0;
             _length = 0;
@@ -44,13 +46,13 @@ namespace OrchardCore.DisplayManagement
 
         public void WriteTo(TextWriter writer)
         {
-            if (StringValue != null)
+            if (_stringValue != null)
             {
-                writer.Write(StringValue);
+                writer.Write(_stringValue);
             }
-            else if (CharArrayValue != null)
+            else if (_charArrayValue != null)
             {
-                writer.Write(CharArrayValue, _index, _length);
+                writer.Write(_charArrayValue, _index, _length);
             }
             else
             {
@@ -60,13 +62,13 @@ namespace OrchardCore.DisplayManagement
 
         public override string ToString()
         {
-            if (StringValue != null)
+            if (_stringValue != null)
             {
-                return StringValue;
+                return _stringValue;
             }
-            else if (CharArrayValue != null)
+            else if (_charArrayValue != null)
             {
-                return new string(CharArrayValue, _index, _length);
+                return new string(_charArrayValue, _index, _length);
             }
             else
             {
@@ -78,7 +80,7 @@ namespace OrchardCore.DisplayManagement
     public class HtmlContentWriter : TextWriter, IHtmlContent
     {
         private List<HtmlContentFragment> _fragments = new List<HtmlContentFragment>();
-
+        private List<char[]> _rented = new List<char[]>();
         public override Encoding Encoding => Encoding.UTF8;
 
         // Invoked when used as TextWriter to intercept what is supposed to be written
@@ -97,9 +99,28 @@ namespace OrchardCore.DisplayManagement
             _fragments.Add(new HtmlContentFragment(buffer, index, count));
         }
 
+        public override void Write(ReadOnlySpan<char> buffer)
+        {
+            char[] array = ArrayPool<char>.Shared.Rent(buffer.Length);
+            _rented.Add(array);
+
+            buffer.CopyTo(new Span<char>(array));
+            Write(array, 0, buffer.Length);
+        }
+
+        ~HtmlContentWriter()
+        {
+            foreach (var array in _rented)
+            {
+                ArrayPool<char>.Shared.Return(array);
+            }
+
+            _rented.Clear();
+        }
+
         public override string ToString()
         {
-            return String.Concat(_fragments.ToString());
+            return String.Concat(_fragments.Select(x => x.ToString()));
         }
 
         // Invoked by IHtmlContent when rendered on the final output
