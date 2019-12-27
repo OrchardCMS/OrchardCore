@@ -73,7 +73,7 @@ namespace OrchardCore.Templates.Services
                 BindingSource = shapeType,
                 BindingAsync = async displayContext =>
                 {
-                    var content = new HtmlContentStringWriter();
+                    var content = new HtmlContentWriter();
                     await _liquidTemplateManager.RenderAsync(template.Content, content, _htmlEncoder, displayContext.Value);
                     return content;
                 }

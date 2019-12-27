@@ -79,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var tagHelper = factory.CreateTagHelper(_activator, viewContext,
                 arguments, out var contextAttributes, out var outputAttributes);
 
-            var content = new HtmlContentStringWriter();
+            var content = new HtmlContentWriter();
 
             if (Statements != null && Statements.Count > 0)
             {
