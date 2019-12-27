@@ -70,7 +70,7 @@ namespace OrchardCore.Localization.PortableObject
         private string TryFixInnerClassPath(string context)
         {
             const char innerClassSeparator = '+';
-            var path = context
+            var path = context;
             if (context.Contains(innerClassSeparator))
             {
                 path = context.Replace(innerClassSeparator, '.');
