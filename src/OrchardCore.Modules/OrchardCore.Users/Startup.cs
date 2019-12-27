@@ -146,7 +146,8 @@ namespace OrchardCore.Users
                 // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
                 // Note: it has no practical impact on the security of the site since all endpoints are always
                 // protected by antiforgery checks, that are enforced with or without this setting being changed.
-                options.Cookie.SameSite = SameSiteMode.None;
+                // 2019-12-10; Removed, since https://github.com/aspnet/Announcements/issues/390
+                // options.Cookie.SameSite = SameSiteMode.None;
             });
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
