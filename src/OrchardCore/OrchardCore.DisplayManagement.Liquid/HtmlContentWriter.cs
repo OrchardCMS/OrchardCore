@@ -111,7 +111,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         }
     }
 
-    public struct CharArrayFragment
+    public class CharArrayFragment
     {
         public char[] CharArray;
         public int Index;
