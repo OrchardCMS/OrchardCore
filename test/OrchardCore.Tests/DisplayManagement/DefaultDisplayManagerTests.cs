@@ -166,8 +166,8 @@ namespace OrchardCore.Tests.DisplayManagement
                 ProcessingAsync = new Func<ShapeDisplayContext, Task>[] {
                     context =>
                     {
-                        dynamic shape = context.Shape;
-                        shape.Data = "some data";
+                        dynamic dynamicShape = context.Shape;
+                        dynamicShape.Data = "some data";
                         return Task.CompletedTask;
                     }
                 }
