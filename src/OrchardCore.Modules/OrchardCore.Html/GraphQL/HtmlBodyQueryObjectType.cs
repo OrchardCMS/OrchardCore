@@ -21,14 +21,14 @@ namespace OrchardCore.Html.GraphQL
             Field<StringGraphType>()
                 .Name("html")
                 .Description(T["the HTML content"])
-                .ResolveAsync(RenderHtml);
+                .ResolveLockedAsync(RenderHtml);
         }
 
         private static async Task<object> RenderHtml(ResolveFieldContext<HtmlBodyPart> ctx)
         {
-            var context = (GraphQLContext)ctx.UserContext;
-            var liquidTemplateManager = context.ServiceProvider.GetService<ILiquidTemplateManager>();
-            var htmlEncoder = context.ServiceProvider.GetService<HtmlEncoder>();
+            var serviceProvider = ctx.ResolveServiceProvider();
+            var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
+            var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
             var model = new HtmlBodyPartViewModel()
             {

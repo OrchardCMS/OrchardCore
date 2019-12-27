@@ -28,7 +28,7 @@ be disabled in `ResourceDebugMode`
 
 Named resources are well-known scripts and stylesheets that are described in a module.  
 They have a name, a type (script, stylesheet) and optionally a version.  
-The `OrchardCore.Resources` modules provides some commonly used ones:
+The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name | Type | Versions | Dependencies |
 | ---- | ---- | -------- | ------------ |
@@ -36,14 +36,14 @@ The `OrchardCore.Resources` modules provides some commonly used ones:
 | jQuery.slim | Script | 3.4.1 | - |
 | jQuery-ui | Script | 1.12.1 | jQuery |
 | jQuery-ui-i18n | Script | 1.7.2 | jQuery-ui |
-| popper | Script | 1.14.7 | - |
-| bootstrap | Script | 3.4.0, 4.3.1 | jQuery, Popper |
-| bootstrap | Style | 3.4.0, 4.3.1 | - |
+| popper | Script | 1.16.0 | - |
+| bootstrap | Script | 3.4.0, 4.4.1 | jQuery, Popper |
+| bootstrap | Style | 3.4.0, 4.4.1 | - |
 | codemirror | Script | 5.48.4 | - |
 | codemirror | Style | 5.48.4 | - |
-| font-awesome | Style | 4.7.0, 5.10.2 | - |
-| font-awesome | Script | 5.10.2 | - |
-| font-awesome-v4-shims | Script | 5.10.2 | - |
+| font-awesome | Style | 4.7.0, 5.12.0 | - |
+| font-awesome | Script | 5.12.0 | - |
+| font-awesome-v4-shims | Script | 5.12.0 | - |
 
 ## Usage
 

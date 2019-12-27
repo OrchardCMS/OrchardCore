@@ -5,8 +5,11 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.DataLoader;
+using GraphQL.Execution;
 using GraphQL.Validation;
 using GraphQL.Validation.Complexity;
+using GraphQL.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Routing;
+using OrchardCore.Apis.GraphQL.ValidationRules;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -83,7 +87,6 @@ namespace OrchardCore.Apis.GraphQL
 
             if (HttpMethods.IsPost(context.Request.Method))
             {
-
                 var mediaType = new MediaType(context.Request.ContentType);
 
                 try
@@ -108,9 +111,10 @@ namespace OrchardCore.Apis.GraphQL
                     }
                     else if (context.Request.Query.ContainsKey("query"))
                     {
-                        request = new GraphQLRequest();
-
-                        request.Query = context.Request.Query["query"];
+                        request = new GraphQLRequest
+                        {
+                            Query = context.Request.Query["query"]
+                        };
 
                         if (context.Request.Query.ContainsKey("variables"))
                         {
@@ -137,9 +141,10 @@ namespace OrchardCore.Apis.GraphQL
                     return;
                 }
 
-                request = new GraphQLRequest();
-
-                request.Query = context.Request.Query["query"];
+                request = new GraphQLRequest
+                {
+                    Query = context.Request.Query["query"]
+                };
             }
 
             var queryToExecute = request.Query;
@@ -154,6 +159,8 @@ namespace OrchardCore.Apis.GraphQL
 
                 queryToExecute = queries[request.NamedQuery];
             }
+
+            var dataLoaderDocumentListener = context.RequestServices.GetRequiredService<IDocumentExecutionListener>();
 
             var result = await _executer.ExecuteAsync(_ =>
             {
@@ -171,13 +178,15 @@ namespace OrchardCore.Apis.GraphQL
                     MaxComplexity = _settings.MaxComplexity,
                     FieldImpact = _settings.FieldImpact
                 };
+                _.Listeners.Add(dataLoaderDocumentListener);
             });
 
-            var httpResult = result.Errors?.Count > 0
-                ? HttpStatusCode.BadRequest
-                : HttpStatusCode.OK;
+            context.Response.StatusCode = (int) (result.Errors == null || result.Errors.Count == 0
+                ? HttpStatusCode.OK
+                : result.Errors.Any(x => x.Code == RequiresPermissionValidationRule.ErrorCode)
+                    ? HttpStatusCode.Unauthorized
+                    : HttpStatusCode.BadRequest);
 
-            context.Response.StatusCode = (int)httpResult;
             context.Response.ContentType = "application/json";
 
             // Asynchronous write to the response body is mandatory.
@@ -192,8 +201,10 @@ namespace OrchardCore.Apis.GraphQL
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var errorResult = new ExecutionResult();
-            errorResult.Errors = new ExecutionErrors();
+            var errorResult = new ExecutionResult
+            {
+                Errors = new ExecutionErrors()
+            };
 
             if (e == null)
             {

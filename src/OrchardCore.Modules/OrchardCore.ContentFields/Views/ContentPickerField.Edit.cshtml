@@ -7,7 +7,7 @@
     var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
-    var tenantPath = Context.Request.PathBase.Value;
+    var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "ContentPickerAdmin", action = "SearchContentItems", part = partName, field = fieldName });
     var vueElementId = $"ContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
 }
@@ -22,7 +22,7 @@
 
 <label asp-for="ContentItemIds">@Model.PartFieldDefinition.DisplayName()</label>
 
-<div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-tenant-path="@tenantPath" data-search-url="ContentFields/SearchContentItems?part=@partName&field=@fieldName" data-multiple="@multiple">
+<div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple">
 
     <div class="form-group">
         <ul class="list-group w-xl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>

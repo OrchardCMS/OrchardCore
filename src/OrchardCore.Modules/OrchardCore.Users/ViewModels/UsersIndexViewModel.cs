@@ -54,6 +54,7 @@ namespace OrchardCore.Users.ViewModels
     {
         None,
         Delete,
+        Enable,
         Disable,
         Approve,
         ChallengeEmail

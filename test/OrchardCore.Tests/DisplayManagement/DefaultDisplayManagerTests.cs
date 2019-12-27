@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Localization;
 using OrchardCore.Tests.Stubs;
 using Xunit;
 
@@ -38,7 +39,9 @@ namespace OrchardCore.Tests.DisplayManagement
             serviceCollection.AddScoped<IShapeBindingResolver, TestShapeBindingResolver>();
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-            serviceCollection.AddScoped<IStringLocalizer<DefaultHtmlDisplay>, NullStringLocalizer<DefaultHtmlDisplay>>();
+            serviceCollection.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+            serviceCollection.AddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
+
             serviceCollection.AddLogging();
 
             serviceCollection.AddSingleton(_defaultShapeTable);
@@ -163,8 +166,9 @@ namespace OrchardCore.Tests.DisplayManagement
                 ProcessingAsync = new Func<ShapeDisplayContext, Task>[] {
                     context =>
                     {
-                            context.Shape.Data = "some data";
-                            return Task.CompletedTask;
+                        dynamic shape = context.Shape;
+                        shape.Data = "some data";
+                        return Task.CompletedTask;
                     }
                 }
             };
@@ -226,7 +230,7 @@ namespace OrchardCore.Tests.DisplayManagement
                 DisplayingAsync = new Func<ShapeDisplayContext, Task>[] {
                     context =>
                     {
-                            context.ShapeMetadata.Alternates.Add("Bar");
+                            context.Shape.Metadata.Alternates.Add("Bar");
                             return Task.CompletedTask;
                     }
                 }
@@ -261,7 +265,7 @@ namespace OrchardCore.Tests.DisplayManagement
                 ProcessingAsync = new Func<ShapeDisplayContext, Task>[] {
                     context =>
                     {
-                            context.ShapeMetadata.Alternates.Add("Bar");
+                            context.Shape.Metadata.Alternates.Add("Bar");
                             return Task.CompletedTask;
                     }
                 }
@@ -396,7 +400,7 @@ namespace OrchardCore.Tests.DisplayManagement
 
             shapeFoo = new Shape();
             shapeFoo.Metadata.Type = "Foo";
-            descriptorFoo.DisplayingAsync = new Func<ShapeDisplayContext, Task>[] { ctx => { ctx.ShapeMetadata.Alternates.Add("Bar"); return Task.CompletedTask; } };
+            descriptorFoo.DisplayingAsync = new Func<ShapeDisplayContext, Task>[] { ctx => { ctx.Shape.Metadata.Alternates.Add("Bar"); return Task.CompletedTask; } };
             var resultWithOverride = await htmlDisplay.ExecuteAsync(CreateDisplayContext(shapeFoo));
 
             Assert.Equal("alpha", resultNormally.ToString());

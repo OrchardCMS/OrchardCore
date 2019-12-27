@@ -54,7 +54,7 @@ namespace OrchardCore.Contents.Scripting
                     var content = (JObject)contentItem.ContentItem.Content;
 
                     content.Merge(props, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
-                    contentManager.UpdateAsync(contentItem);
+                    contentManager.UpdateAsync(contentItem).GetAwaiter().GetResult();
                 })
             };
         }

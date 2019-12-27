@@ -102,8 +102,8 @@ namespace OrchardCore.ContentLocalization
 
             var context = new LocalizationContentContext(cloned, content, localizationPart.LocalizationSet, targetCulture);
 
-            await Handlers.InvokeAsync(handler => handler.LocalizingAsync(context), _logger);
-            await ReversedHandlers.InvokeAsync(handler => handler.LocalizedAsync(context), _logger);
+            await Handlers.InvokeAsync((handler, context) => handler.LocalizingAsync(context), context, _logger);
+            await ReversedHandlers.InvokeAsync((handler, context) => handler.LocalizedAsync(context), context, _logger);
 
             _session.Save(cloned);
             return cloned;
@@ -137,8 +137,8 @@ namespace OrchardCore.ContentLocalization
             // This loop keeps the original ordering of localizationSets for the LocalizationSetContentPicker
             foreach (var set in localizationSets)
             {
-                var idxValue = cleanedIndexValues.FirstOrDefault(x=>x.LocalizationSet == set);
-                if(idxValue == null)
+                var idxValue = cleanedIndexValues.FirstOrDefault(x => x.LocalizationSet == set);
+                if (idxValue == null)
                 {
                     continue;
                 }

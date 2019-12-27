@@ -111,11 +111,14 @@ namespace OrchardCore.Contents.Controllers
                 model.Options.SelectedContentType = contentTypeId;
             }
 
+
+            IEnumerable<ContentTypeDefinition> contentTypeDefinitions = new List<ContentTypeDefinition>();
             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
                 if (contentTypeDefinition == null)
                     return NotFound();
+                contentTypeDefinitions = contentTypeDefinitions.Append(contentTypeDefinition);
 
                 // We display a specific type even if it's not listable so that admin pages
                 // can reuse the Content list page for specific types.
@@ -123,6 +126,8 @@ namespace OrchardCore.Contents.Controllers
             }
             else
             {
+                contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+
                 var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
                 if (listableTypes.Any())
                 {
@@ -149,7 +154,6 @@ namespace OrchardCore.Contents.Controllers
                     break;
             }
 
-            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
             var creatableList = new List<SelectListItem>();
             if (contentTypes.Any())
@@ -162,7 +166,7 @@ namespace OrchardCore.Contents.Controllers
             model.Options.CreatableTypes = creatableList;
 
             // Invoke any service that could alter the query
-            await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
+            await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, this, Logger);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)

@@ -28,9 +28,10 @@ add a reference to `OrchardCore.Logging.Serilog`
         }
       },
       {
-        "Name": "RollingFile",
+        "Name": "File",
         "Args": {
-          "pathFormat": "app_data/logs/orchard-log-{Date}.txt",
+          "path": "app_data/logs/orchard-log.txt",
+          "rollingInterval": "Day",
           "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.ffff}|{TenantName}|{RequestId}|{SourceContext}|{Level:u3}|{Message:lj}{NewLine}{Exception}",
           "restrictedToMinimumLevel": "Warning"
         }
@@ -42,10 +43,14 @@ add a reference to `OrchardCore.Logging.Serilog`
 ### Modify `program.cs` to use Serilog
 
 ``` csharp
-        public static IWebHost BuildWebHost(string[] args)
-            => WebHost.CreateDefaultBuilder(args)
-                .UseSerilogWeb()
-                .UseStartup<Startup>()
+        using Serilog;
+        ...
+        public static IHost BuildHost(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging => logging.ClearProviders())
+                .UseSerilog()
+                .ConfigureWebHostDefaults(webBuilder => webBuilder
+                    .UseStartup<Startup>())
                 .Build();
 ```
 
@@ -53,7 +58,7 @@ add a reference to `OrchardCore.Logging.Serilog`
 
 ``` csharp
         using OrchardCore.Logging;
-
+        ...
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -61,6 +66,14 @@ add a reference to `OrchardCore.Logging.Serilog`
                 app.UseDeveloperExceptionPage();
             }
             app.UseStaticFiles();
-            app.UseOrchardCore(c => c.UseSerilogTenantNameLoggingMiddleware());
+            app.UseOrchardCore(c => c.UseSerilogTenantNameLogging());
         }
 ```
+
+## Credits
+
+### Serilog
+
+<https://github.com/serilog/serilog-aspnetcore>
+
+Apache-2.0 License
