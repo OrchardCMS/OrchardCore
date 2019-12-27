@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Cors.Settings
+namespace OrchardCore.Cors.Settings
 {
     public class CorsPolicySetting
     {
@@ -17,5 +17,7 @@
         public string[] AllowedMethods { get; set; }
 
         public bool AllowCredentials { get; set; }
+
+        public bool IsDefaultPolicy { get; set; }
     }
 }

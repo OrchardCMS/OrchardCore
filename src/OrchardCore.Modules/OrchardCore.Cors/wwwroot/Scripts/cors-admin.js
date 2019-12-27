@@ -35,7 +35,8 @@ var corsApp = new Vue({
   },
   data: {
     selectedPolicy: null,
-    policies: null
+    policies: null,
+    defaultPolicyName: null
   },
   methods: {
     newPolicy: function newPolicy() {
@@ -47,7 +48,8 @@ var corsApp = new Vue({
         AllowAnyMethod: true,
         AllowedHeaders: [],
         AllowAnyHeader: true,
-        AllowCredentials: true
+        AllowCredentials: true,
+        IsDefaultPolicy: false
       };
     },
     editPolicy: function editPolicy(policy) {
@@ -64,6 +66,12 @@ var corsApp = new Vue({
       this.save();
     },
     updatePolicy: function updatePolicy(policy, event) {
+      if (policy.IsDefaultPolicy) {
+        this.policies.forEach(function (p) {
+          return p.IsDefaultPolicy = false;
+        });
+      }
+
       if (policy.OriginalName) {
         var policyIndex = this.policies.findIndex(function (oldPolicy) {
           return oldPolicy.Name === policy.OriginalName;
@@ -74,10 +82,10 @@ var corsApp = new Vue({
       }
 
       this.save();
+      this.back();
     },
     save: function save() {
       document.getElementById('CorsSettings').value = JSON.stringify(this.policies);
-      document.getElementById('corsForm').submit();
     },
     back: function back() {
       this.selectedPolicy = null;

@@ -16,7 +16,7 @@
     }
 </style>
 <div asp-validation-summary="ModelOnly"></div>
-
+<h1>@T["Cors Settings"]</h1>
 <span class="subscript">@T["CORS stands for Cross-Origin Request more information can be found here"] <a target="_blank" href="https://docs.microsoft.com/en-us/aspnet/core/security/cors">https://docs.microsoft.com/en-us/aspnet/core/security/cors</a></span>
 <form id="corsForm" asp-action="Index" method="post">
     <input type="hidden" name="CorsSettings" id="CorsSettings" value='@Html.Raw(Json.Serialize(Model.Policies, settings))' />
@@ -29,10 +29,11 @@
                     </li>
                 </ul>
             </nav>
-            <ul class="list-group" v-for="policy in policies" v-cloak>
-                <li class="list-group-item">
+            <ul class="list-group mb-2" v-cloak>
+                <li class="list-group-item" v-for="policy in policies">
                     <div class="properties">
                         <div class="related float-xs-right">
+                            <span v-if="policy.IsDefaultPolicy" class="badge badge-info">Default Policy</span>
                             <button class="btn btn-primary btn-sm" type="button" v-on:click="editPolicy(policy)">Edit</button>
                             <button class="delete btn btn-danger btn-sm" type="button" v-on:click="deletePolicy(policy, $event)">Delete</button>
                         </div>
@@ -40,19 +41,36 @@
                     </div>
                 </li>
             </ul>
+            <div class="form-group">
+                <button class="primaryAction btn btn-primary" type="submit">Save</button>
+            </div>
         </div>
-        <policy-details v-if="selectedPolicy" v-bind:policy="selectedPolicy" v-on:save="updatePolicy" v-on:back="back" />
+        <policy-details v-if="selectedPolicy" v-bind:policy="selectedPolicy" v-on:ok="updatePolicy" v-on:back="back" />
     </div>
 </form>
 
 <script type="text/x-template" id="policy-details">
     <div>
         <h3>{{ policy.Name }}</h3>
-
-        <div class="form-group">
-            <label>@T["Policy name"]</label>
-            <input v-model="policy.Name" placeholder="edit me" type="text" class="form-control" />
-            <span class="hint">@T["Name of the policy"]</span>
+        <div class="card mb-2">
+            <div class="card-body">
+                <h5 class="card-title">
+                    @T["Details"]
+                    <span class="hint">@T[" - Provide policy details"]</span>
+                </h5>
+                <div class="form-group">
+                    <label>@T["Policy name"]</label>
+                    <input v-model="policy.Name" placeholder="edit me" type="text" class="form-control" />
+                    <span class="hint">@T["Name of the policy"]</span>
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                        <label>
+                            <input class="form-check-input" v-model="policy.IsDefaultPolicy" type="checkbox">@T["Set policy as default policy"]
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="card mb-2">
@@ -64,7 +82,9 @@
 
                 <div class="form-group">
                     <div class="form-check">
-                        <label><input class="form-check-input" v-model="policy.AllowCredentials" type="checkbox" />@T["Allow credentials"]</label>
+                        <label>
+                            <input class="form-check-input" v-model="policy.AllowCredentials" type="checkbox" />@T["Allow credentials"]
+                        </label>
                     </div>
                     <span class="hint">@T["Allows credentials to be transported in requests. Be aware that this setting is not allowed in combination with Allow Any Origin."]</span>
                 </div>
@@ -111,7 +131,7 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card mb-2">
             <div class="card-body">
                 <h5 class="card-title">
                     @T["Methods"]
@@ -129,7 +149,7 @@
             </div>
         </div>
         <div class="form-group">
-            <button type="button" class="btn btn-primary" v-on:click="$emit('save', policy, $event)">Save</button>
+            <button type="button" class="btn btn-primary" v-on:click="$emit('ok', policy, $event)">Ok</button>
             <button type="button" class="btn btn-warning" v-on:click="$emit('back')">Back</button>
         </div>
     </div>

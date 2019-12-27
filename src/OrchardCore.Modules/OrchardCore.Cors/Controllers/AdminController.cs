@@ -1,18 +1,16 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Admin;
-using OrchardCore.Cors.ViewModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Localization;
-using Microsoft.AspNetCore.Mvc.Localization;
-using OrchardCore.Settings;
-using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Cors.Settings;
-using OrchardCore.Entities;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
+using OrchardCore.Admin;
+using OrchardCore.Cors.Services;
+using OrchardCore.Cors.Settings;
+using OrchardCore.Cors.ViewModels;
+using OrchardCore.DisplayManagement.Notify;
 
 namespace OrchardCore.Cors.Controllers
 {
@@ -20,7 +18,7 @@ namespace OrchardCore.Cors.Controllers
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISiteService _siteService;
+        private readonly CorsService _corsService;
         private readonly INotifier _notifier;
 
         private readonly IStringLocalizer T;
@@ -30,13 +28,13 @@ namespace OrchardCore.Cors.Controllers
             IAuthorizationService authorizationService,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
-            ISiteService siteService,
+            CorsService corsService,
             INotifier notifier
             )
         {
             TH = htmlLocalizer;
             _notifier = notifier;
-            _siteService = siteService;
+            _corsService = corsService;
             T = stringLocalizer;
             _authorizationService = authorizationService;
         }
@@ -49,7 +47,7 @@ namespace OrchardCore.Cors.Controllers
                 return Unauthorized();
             }
 
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<CorsSettings>();
+            var settings = await _corsService.GetSettingsAsync();
 
             var list = new List<CorsPolicyViewModel>();
 
@@ -66,7 +64,8 @@ namespace OrchardCore.Cors.Controllers
                         AllowedMethods = policySetting.AllowedMethods,
                         AllowAnyOrigin = policySetting.AllowAnyOrigin,
                         AllowedOrigins = policySetting.AllowedOrigins,
-                        AllowCredentials = policySetting.AllowCredentials
+                        AllowCredentials = policySetting.AllowCredentials,
+                        IsDefaultPolicy = policySetting.IsDefaultPolicy
                     };
 
                     list.Add(policyViewModel);
@@ -107,7 +106,9 @@ namespace OrchardCore.Cors.Controllers
                     AllowCredentials = settingViewModel.AllowCredentials,
                     AllowedHeaders = settingViewModel.AllowedHeaders,
                     AllowedMethods = settingViewModel.AllowedMethods,
-                    AllowedOrigins = settingViewModel.AllowedOrigins
+                    AllowedOrigins = settingViewModel.AllowedOrigins,
+                    IsDefaultPolicy =settingViewModel.IsDefaultPolicy
+
                 });
             }
 
@@ -116,9 +117,7 @@ namespace OrchardCore.Cors.Controllers
                 Policies = corsPolicies
             };
 
-            var siteSettings = await _siteService.LoadSiteSettingsAsync();
-            siteSettings.Properties[nameof(CorsSettings)] = JObject.FromObject(corsSettings);
-            await _siteService.UpdateSiteSettingsAsync(siteSettings);
+            await _corsService.UpdateSettingsAsync(corsSettings);
 
             _notifier.Success(TH["Cors settings are updated"]);
 

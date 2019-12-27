@@ -19,12 +19,12 @@ namespace OrchardCore.Cors.Services
         public void Configure(CorsOptions options)
         {
             var corsSettings = _corsService.GetSettingsAsync().GetAwaiter().GetResult();
-            if(corsSettings?.Policies == null || !corsSettings.Policies.Any())
+            if (corsSettings?.Policies == null || !corsSettings.Policies.Any())
                 return;
 
             foreach (var corsPolicy in corsSettings.Policies)
             {
-                if(corsPolicy.AllowCredentials && corsPolicy.AllowAnyOrigin)
+                if (corsPolicy.AllowCredentials && corsPolicy.AllowAnyOrigin)
                 {
                     _logger.LogWarning($"AllowCredentials and AllowAnyOrigin is considered a security risk, policy {corsPolicy.Name} not loaded");
                     continue;
@@ -68,9 +68,17 @@ namespace OrchardCore.Cors.Services
                         configurePolicy.DisallowCredentials();
                     }
                 });
+
+                if(corsPolicy.IsDefaultPolicy)
+                {
+                    options.DefaultPolicyName = corsPolicy.Name;
+                }
             }
 
-            options.DefaultPolicyName = corsSettings.Policies.First().Name;
+            if (options.DefaultPolicyName == null)
+            {
+                options.DefaultPolicyName = corsSettings.Policies.FirstOrDefault()?.Name;
+            }
         }
     }
 }

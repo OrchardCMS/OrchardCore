@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Cors.ViewModels
+namespace OrchardCore.Cors.ViewModels
 {
     public class CorsPolicyViewModel
     {
@@ -17,5 +17,7 @@
         public string[] AllowedMethods { get; set; }
 
         public bool AllowCredentials { get; set; }
+
+        public bool IsDefaultPolicy { get; set; }
     }
 }
