@@ -11,42 +11,71 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public class HtmlContentWriter : TextWriter, IHtmlContent
     {
-        private List<HtmlContentFragment> _fragments = new List<HtmlContentFragment>();
-        private List<char[]> _rented = new List<char[]>();
+        private static readonly ArrayPool<char> _arrayPool = ArrayPool<char>.Shared;
+        private static readonly string[] _internedChars;
+        private const int _internedCharsLength = 256;
+
+        private readonly List<object> _fragments = new List<object>();
+        private readonly List<char[]> _rented = new List<char[]>();
+
+        static HtmlContentWriter()
+        {
+            // Memoize all ASCII chars to prevent allocations
+            _internedChars = new string[_internedCharsLength];
+
+            for (var i = 0; i < _internedCharsLength; i++)
+            {
+                _internedChars[i] = ((char)i).ToString();
+            }
+        }
 
         public override Encoding Encoding => Encoding.UTF8;
 
         // Invoked when used as TextWriter to intercept what is supposed to be written
         public override void Write(string value)
         {
-            _fragments.Add(new HtmlContentFragment(value));
+            _fragments.Add(value);
         }
 
         public override void Write(char value)
         {
-            _fragments.Add(new HtmlContentFragment(value));
+            if (value < _internedCharsLength)
+            {
+                _fragments.Add(_internedChars[value]);
+            }
+            else
+            {
+                _fragments.Add(value.ToString());
+            }
         }
 
         public override void Write(char[] buffer, int index, int count)
         {
-            _fragments.Add(new HtmlContentFragment(buffer, index, count));
+            if (index == 0 && buffer.Length == count)
+            {
+                _fragments.Add(buffer);
+            }
+            else
+            {
+                _fragments.Add(new CharArrayFragment(buffer, index, count));
+            }            
         }
 
         public override void Write(ReadOnlySpan<char> buffer)
         {
-            char[] array = ArrayPool<char>.Shared.Rent(buffer.Length);
+            var array = _arrayPool.Rent(buffer.Length);
             _rented.Add(array);
 
             buffer.CopyTo(new Span<char>(array));
 
-            _fragments.Add(new HtmlContentFragment(array, 0, buffer.Length));
+            Write(array, 0, buffer.Length);
         }
 
         ~HtmlContentWriter()
         {
             foreach (var array in _rented)
             {
-                ArrayPool<char>.Shared.Return(array);
+                _arrayPool.Return(array);
             }
 
             _rented.Clear();
@@ -62,76 +91,37 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             foreach (var fragment in _fragments)
             {
-                fragment.WriteTo(writer);
+                if (fragment is char[] charArray)
+                {
+                    writer.Write(charArray, 0, charArray.Length);
+                }
+                else if (fragment is string stringValue)
+                {
+                    writer.Write(stringValue);
+                }
+                else if (fragment is CharArrayFragment charArrayFragment)
+                {
+                    writer.Write(charArrayFragment.CharArray, charArrayFragment.Index, charArrayFragment.Length);
+                }
+                else
+                {
+                    throw new NotSupportedException("Unexpected fragment type: " + fragment.GetType());
+                }
             }
         }
     }
 
-    public struct HtmlContentFragment
+    public struct CharArrayFragment
     {
-        private string _stringValue;
-        private char[] _charArrayValue;
-        private char _charValue;
-        private int _index;
-        private int _length;
+        public char[] CharArray;
+        public int Index;
+        public int Length;
 
-        public HtmlContentFragment(string stringValue)
+        public CharArrayFragment(char[] charArrayValue, int index, int length)
         {
-            _stringValue = stringValue;
-            _charArrayValue = null;
-            _charValue = Char.MinValue;
-            _index = 0;
-            _length = 0;
-        }
-
-        public HtmlContentFragment(char[] charArrayValue, int index, int length)
-        {
-            _stringValue = null;
-            _charArrayValue = charArrayValue;
-            _charValue = Char.MinValue;
-            _index = index;
-            _length = length;
-        }
-
-        public HtmlContentFragment(char charValue)
-        {
-            _stringValue = null;
-            _charArrayValue = null;
-            _charValue = charValue;
-            _index = 0;
-            _length = 0;
-        }
-
-        public void WriteTo(TextWriter writer)
-        {
-            if (_stringValue != null)
-            {
-                writer.Write(_stringValue);
-            }
-            else if (_charArrayValue != null)
-            {
-                writer.Write(_charArrayValue, _index, _length);
-            }
-            else
-            {
-                writer.Write(_charValue);
-            }
-        }
-
-        public override string ToString()
-        {
-            if (_stringValue != null)
-            {
-                return _stringValue;
-            }
-            else if (_charArrayValue != null)
-            {
-                return new string(_charArrayValue, _index, _length);
-            }
-            else
-            {
-                return _charValue.ToString();
-            }
+            CharArray = charArrayValue;
+            Index = index;
+            Length = length;
         }
     }
 }
