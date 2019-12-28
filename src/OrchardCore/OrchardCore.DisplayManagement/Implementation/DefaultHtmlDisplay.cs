@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
 
@@ -125,7 +126,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 {
                     foreach (var frameType in shape.Metadata.Wrappers)
                     {
-                        var frameBinding = await GetShapeBindingAsync(frameType, Enumerable.Empty<string>(), shapeTable);
+                        var frameBinding = await GetShapeBindingAsync(frameType, AlternatesCollection.Empty, shapeTable);
                         if (frameBinding != null)
                         {
                             shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, localContext);
@@ -191,14 +192,16 @@ namespace OrchardCore.DisplayManagement.Implementation
             return null;
         }
 
-        private async Task<ShapeBinding> GetShapeBindingAsync(string shapeType, IEnumerable<string> shapeAlternates, ShapeTable shapeTable)
+        private async Task<ShapeBinding> GetShapeBindingAsync(string shapeType, AlternatesCollection shapeAlternates, ShapeTable shapeTable)
         {
             // shape alternates are optional, fully qualified binding names
             // the earliest added alternates have the lowest priority
             // the descriptor returned is based on the binding that is matched, so it may be an entirely
             // different descriptor if the alternate has a different base name
-            foreach (var shapeAlternate in shapeAlternates.Reverse())
+            for (var i = shapeAlternates.Count - 1; i >= 0; i--)
             {
+                var shapeAlternate = shapeAlternates[i];
+
                 foreach (var shapeBindingResolver in _shapeBindingResolvers)
                 {
                     var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeAlternate);
@@ -209,7 +212,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                     }
                 }
 
-                if (shapeTable.Bindings.TryGetValue(shapeAlternate, out var shapeBinding))
+                if (shapeTable.TryGetShapeBinding(shapeAlternate, shapeType, out var shapeBinding))
                 {
                     return shapeBinding;
                 }
@@ -219,6 +222,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             // the shapetype name can break itself into shorter fallbacks at double-underscore marks
             // so the shapetype itself may contain a longer alternate forms that falls back to a shorter one
             var shapeTypeScan = shapeType;
+
             do
             {
                 foreach (var shapeBindingResolver in _shapeBindingResolvers)
@@ -231,7 +235,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                     }
                 }
 
-                if (shapeTable.Bindings.TryGetValue(shapeTypeScan, out var shapeBinding))
+                if (shapeTable.TryGetShapeBinding(shapeTypeScan, shapeType, out var shapeBinding))
                 {
                     return shapeBinding;
                 }

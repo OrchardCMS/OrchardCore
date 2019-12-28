@@ -127,7 +127,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 {
                     if (layout.Metadata.Alternates.Count > 0)
                     {
-                        return layout.Metadata.Alternates.Last();
+                        return layout.Metadata.Alternates[layout.Metadata.Alternates.Count - 1];
                     }
 
                     return layout.Metadata.Type;
@@ -142,7 +142,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 {
                     if (layout.Metadata.Alternates.Contains(value))
                     {
-                        if (layout.Metadata.Alternates.Last() == value)
+                        if (layout.Metadata.Alternates[layout.Metadata.Alternates.Count - 1] == value)
                         {
                             return;
                         }
