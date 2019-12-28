@@ -53,16 +53,6 @@ namespace OrchardCore.Localization
         public bool Equals(CultureDictionaryRecordKey other) => String.Equals(_key, other._key);
 
         /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = 13;
-                hashCode = (hashCode * 397) ^ (!String.IsNullOrEmpty(_messageId) ? _messageId.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (!String.IsNullOrEmpty(_context) ? _context.GetHashCode() : 0);
-
-                return hashCode;
-            }
-        }
+        public override int GetHashCode() => HashCode.Combine(_messageId, _context);
     }
 }
