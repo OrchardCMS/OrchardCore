@@ -30,12 +30,9 @@ namespace OrchardCore.Localization
             _messageId = messageId;
             _context = context;
 
-            if (String.IsNullOrEmpty(context))
-            {
-                _key = messageId;
-            }
-
-            _key = String.IsNullOrEmpty(context) ? messageId : context.ToLowerInvariant() + "|" + messageId;
+            _key = String.IsNullOrEmpty(context)
+                ? messageId
+                : context.ToLowerInvariant() + "|" + messageId;
         }
 
         public static implicit operator string(CultureDictionaryRecordKey cultureDictionaryRecordKey)
