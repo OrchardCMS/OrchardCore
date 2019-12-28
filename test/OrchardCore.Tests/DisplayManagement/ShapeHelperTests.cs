@@ -29,10 +29,11 @@ namespace OrchardCore.Tests.DisplayManagement
 
 
             var defaultShapeTable = new TestShapeTable
-            {
-                Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
-                Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
-            };
+            (
+                new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
+                new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
+            );
+
             serviceCollection.AddSingleton(defaultShapeTable);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();

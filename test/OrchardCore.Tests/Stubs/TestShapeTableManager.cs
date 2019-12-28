@@ -8,7 +8,11 @@ namespace OrchardCore.Tests.Stubs
 {
     public class TestShapeTable : ShapeTable
     {
-        public override IDictionary<string, ShapeBinding> Bindings { get; set; }
+        public TestShapeTable(Dictionary<string, ShapeDescriptor> descriptors, Dictionary<string, ShapeBinding> bindings) : base(descriptors, bindings)
+        {
+        }
+
+        internal IDictionary<string, ShapeBinding> ShapeBindings { get => _shapeBindings; }
     }
 
     public class TestShapeTableManager : IShapeTableManager

@@ -30,10 +30,10 @@ namespace OrchardCore.Benchmark
         {
             _templateContext = new TemplateContext();
             var defaultShapeTable = new TestShapeTable
-            {
-                Bindings = new Dictionary<string, ShapeBinding>(),
-                Descriptors = new Dictionary<string, ShapeDescriptor>()
-            };
+            (
+                new Dictionary<string, ShapeDescriptor>(),
+                new Dictionary<string, ShapeBinding>()
+            );
             var shapeFactory = new DefaultShapeFactory(
                 events: Enumerable.Empty<IShapeFactoryEvents>(),
                 shapeTableManager: new TestShapeTableManager(defaultShapeTable),

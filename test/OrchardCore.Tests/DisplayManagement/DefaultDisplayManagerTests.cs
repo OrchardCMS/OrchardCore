@@ -25,10 +25,10 @@ namespace OrchardCore.Tests.DisplayManagement
         public DefaultDisplayManagerTests()
         {
             _defaultShapeTable = new TestShapeTable
-            {
-                Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
-                Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
-            };
+            (
+                new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
+                new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
+            );
             _additionalBindings = new TestShapeBindingsDictionary();
 
             IServiceCollection serviceCollection = new ServiceCollection();
@@ -67,7 +67,7 @@ namespace OrchardCore.Tests.DisplayManagement
             _defaultShapeTable.Descriptors[shapeDescriptor.ShapeType] = shapeDescriptor;
             foreach (var binding in shapeDescriptor.Bindings)
             {
-                _defaultShapeTable.Bindings[binding.Key] = binding.Value;
+                _defaultShapeTable.ShapeBindings[binding.Key] = binding.Value;
             }
         }
 
@@ -166,8 +166,8 @@ namespace OrchardCore.Tests.DisplayManagement
                 ProcessingAsync = new Func<ShapeDisplayContext, Task>[] {
                     context =>
                     {
-                        dynamic shape = context.Shape;
-                        shape.Data = "some data";
+                        dynamic dynamicShape = context.Shape;
+                        dynamicShape.Data = "some data";
                         return Task.CompletedTask;
                     }
                 }
