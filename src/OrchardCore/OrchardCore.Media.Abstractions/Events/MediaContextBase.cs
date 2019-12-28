@@ -5,7 +5,6 @@ namespace OrchardCore.Media.Events
         /// <summary>
         /// The path of the file for the current filestore operation.
         /// </summary>
-        public string Path { get; set; }   
-        
+        public string Path { get; set; }
     }
 }
