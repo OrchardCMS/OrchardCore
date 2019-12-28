@@ -1,8 +1,6 @@
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
@@ -11,12 +9,10 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public class HtmlContentWriter : TextWriter, IHtmlContent
     {
-        private static readonly ArrayPool<char> _arrayPool = ArrayPool<char>.Shared;
         private static readonly string[] _internedChars;
         private const int _internedCharsLength = 256;
 
         private readonly List<object> _fragments = new List<object>();
-        private readonly List<char[]> _rented = new List<char[]>();
 
         static HtmlContentWriter()
         {
@@ -49,6 +45,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
         }
 
+        public override void Write(char[] buffer)
+        {
+            _fragments.Add(buffer);
+        }
+
         public override void Write(char[] buffer, int index, int count)
         {
             if (index == 0 && buffer.Length == count)
@@ -59,31 +60,6 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 _fragments.Add(new CharArrayFragment(buffer, index, count));
             }            
-        }
-
-        public override void Write(ReadOnlySpan<char> buffer)
-        {
-            var array = _arrayPool.Rent(buffer.Length);
-            _rented.Add(array);
-
-            buffer.CopyTo(new Span<char>(array));
-
-            Write(array, 0, buffer.Length);
-        }
-
-        ~HtmlContentWriter()
-        {
-            foreach (var array in _rented)
-            {
-                _arrayPool.Return(array);
-            }
-
-            _rented.Clear();
-        }
-
-        public override string ToString()
-        {
-            return String.Concat(_fragments.Select(x => x.ToString()));
         }
 
         // Invoked by IHtmlContent when rendered on the final output
@@ -109,19 +85,19 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
             }
         }
-    }
 
-    public class CharArrayFragment
-    {
-        public char[] CharArray;
-        public int Index;
-        public int Length;
-
-        public CharArrayFragment(char[] charArrayValue, int index, int length)
+        private class CharArrayFragment
         {
-            CharArray = charArrayValue;
-            Index = index;
-            Length = length;
+            public char[] CharArray;
+            public int Index;
+            public int Length;
+
+            public CharArrayFragment(char[] charArrayValue, int index, int length)
+            {
+                CharArray = charArrayValue;
+                Index = index;
+                Length = length;
+            }
         }
-    }
+    }    
 }
