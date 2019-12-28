@@ -67,7 +67,7 @@ namespace OrchardCore.Tests.DisplayManagement
             _defaultShapeTable.Descriptors[shapeDescriptor.ShapeType] = shapeDescriptor;
             foreach (var binding in shapeDescriptor.Bindings)
             {
-                _defaultShapeTable.ShapeBindings[binding.Key] = binding.Value;
+                _defaultShapeTable.Bindings[binding.Key] = binding.Value;
             }
         }
 

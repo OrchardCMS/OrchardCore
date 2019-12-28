@@ -4,7 +4,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class ShapeTable
     {
-        protected readonly Dictionary<string, ShapeBinding> _shapeBindings;
+        private readonly Dictionary<string, ShapeBinding> _shapeBindings;
 
         public ShapeTable(Dictionary<string, ShapeDescriptor> descriptors, Dictionary<string, ShapeBinding> bindings)
         {
@@ -14,7 +14,6 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public Dictionary<string, ShapeDescriptor> Descriptors { get; }
 
-        public ICollection<ShapeBinding> Bindings => _shapeBindings.Values;
         public ICollection<string> BindingNames => _shapeBindings.Keys;
 
         public bool TryGetShapeBinding(string shapeAlternate, out ShapeBinding binding)
