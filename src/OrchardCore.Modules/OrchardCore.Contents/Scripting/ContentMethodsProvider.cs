@@ -61,7 +61,7 @@ namespace OrchardCore.Contents.Scripting
                         contentItem.DisplayText = item.DisplayText;
                     contentItem.Apply(item);
 
-                    contentManager.UpdateAsync(contentItem);
+                    contentManager.UpdateAsync(contentItem).GetAwaiter().GetResult();
                 })
             };
         }

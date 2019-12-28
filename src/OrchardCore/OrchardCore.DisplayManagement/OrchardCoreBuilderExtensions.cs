@@ -70,7 +70,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddShapeAttributes<CoreShapes>();
                     services.AddScoped<IShapeTableProvider, CoreShapesTableProvider>();
                     services.AddShapeAttributes<ZoneShapes>();
-                    services.AddScoped<IShapeTableProvider, LayoutShapes>();
 
                     services.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
                     services.AddScoped<ILayoutAccessor, LayoutAccessor>();
