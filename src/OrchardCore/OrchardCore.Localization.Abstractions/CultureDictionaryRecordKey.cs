@@ -9,7 +9,6 @@ namespace OrchardCore.Localization
     {
         private readonly string _messageId;
         private readonly string _context;
-        private readonly string _key;
 
         /// <summary>
         /// Creates new instance of <see cref="CultureDictionaryRecordKey"/>.
@@ -29,14 +28,12 @@ namespace OrchardCore.Localization
         {
             _messageId = messageId;
             _context = context;
-
-            _key = String.IsNullOrEmpty(context)
-                ? messageId
-                : context.ToLowerInvariant() + "|" + messageId;
         }
 
         public static implicit operator string(CultureDictionaryRecordKey cultureDictionaryRecordKey)
-            => cultureDictionaryRecordKey._key;
+            => String.IsNullOrEmpty(cultureDictionaryRecordKey._context)
+                ? cultureDictionaryRecordKey._messageId
+                : cultureDictionaryRecordKey._context.ToLowerInvariant() + "|" + cultureDictionaryRecordKey._messageId;
 
         /// <inheritdoc />
         public override bool Equals(object obj)
@@ -50,7 +47,8 @@ namespace OrchardCore.Localization
         }
 
         /// <inheritdoc />
-        public bool Equals(CultureDictionaryRecordKey other) => String.Equals(_key, other._key);
+        public bool Equals(CultureDictionaryRecordKey other)
+            => String.Equals(_messageId, other._messageId) && String.Equals(_context, other._context);
 
         /// <inheritdoc />
         public override int GetHashCode() => HashCode.Combine(_messageId, _context);
