@@ -212,7 +212,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                     }
                 }
 
-                if (shapeTable.TryGetShapeBinding(shapeAlternate, shapeType, out var shapeBinding))
+                if (shapeTable.TryGetShapeBinding(shapeAlternate, out var shapeBinding))
                 {
                     return shapeBinding;
                 }
@@ -235,7 +235,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                     }
                 }
 
-                if (shapeTable.TryGetShapeBinding(shapeTypeScan, shapeType, out var shapeBinding))
+                if (shapeTable.TryGetShapeBinding(shapeTypeScan, out var shapeBinding))
                 {
                     return shapeBinding;
                 }

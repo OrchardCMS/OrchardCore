@@ -17,7 +17,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         public ICollection<ShapeBinding> Bindings => _shapeBindings.Values;
         public ICollection<string> BindingNames => _shapeBindings.Keys;
 
-        public bool TryGetShapeBinding(string shapeAlternate, string shapeType, out ShapeBinding binding)
+        public bool TryGetShapeBinding(string shapeAlternate, out ShapeBinding binding)
         {
             ShapeBinding shapeBinding;
 
