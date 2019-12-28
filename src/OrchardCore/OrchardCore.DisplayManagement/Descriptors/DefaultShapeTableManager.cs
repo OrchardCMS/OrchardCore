@@ -117,7 +117,8 @@ namespace OrchardCore.DisplayManagement.Descriptors
                     ))
                     .ToList();
 
-                shapeTable = new ShapeTable(
+                shapeTable = new ShapeTable
+                (
                     descriptors: descriptors.ToDictionary(sd => sd.ShapeType, x => (ShapeDescriptor)x, StringComparer.OrdinalIgnoreCase),
                     bindings: descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
                 );

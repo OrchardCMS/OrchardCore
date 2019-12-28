@@ -23,33 +23,14 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
             if (_shapeBindings.TryGetValue(shapeAlternate, out shapeBinding))
             {
-                // Look for the descriptor associated with the shape type
-
-                ShapeDescriptor descriptor;
-
-                if (!Descriptors.TryGetValue(shapeType, out descriptor))
+                binding = new ShapeBinding
                 {
-                    // Try to reduce the shape type in case it was built with __. The descriptors created
-                    // from files are explicitely removing this part. c.f. ShapeAlterationBuilder.ctor().
+                    BindingName = shapeBinding.BindingName,
+                    BindingSource = shapeBinding.BindingSource,
+                    BindingAsync = shapeBinding.BindingAsync
+                };
 
-                    var index = shapeType.IndexOf("__");
-                    shapeType = index < 0 ? shapeAlternate : shapeAlternate.Substring(0, index);
-
-                    Descriptors.TryGetValue(shapeType, out descriptor);
-                }
-
-                if (descriptor != null)
-                {
-                    binding = new ShapeBinding
-                    {
-                        BindingName = shapeBinding.BindingName,
-                        BindingSource = shapeBinding.BindingSource,
-                        BindingAsync = shapeBinding.BindingAsync
-                    };
-
-                    return true;
-                }
-
+                return true;
             }
 
             binding = null;

@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         static HtmlContentWriter()
         {
-            // Memoize all ASCII chars to prevent allocations
+            // Memorize all ASCII chars to prevent allocations
             _internedChars = new string[_internedCharsLength];
 
             for (var i = 0; i < _internedCharsLength; i++)
@@ -59,7 +59,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             else
             {
                 _fragments.Add(new CharArrayFragment(buffer, index, count));
-            }            
+            }
         }
 
         // Invoked by IHtmlContent when rendered on the final output
@@ -99,5 +99,5 @@ namespace OrchardCore.DisplayManagement.Liquid
                 Length = length;
             }
         }
-    }    
+    }
 }
