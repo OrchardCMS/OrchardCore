@@ -27,7 +27,15 @@ namespace OrchardCore.Contents.Workflows.Activities
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var content = await GetContentAsync(workflowContext);
-            await ContentManager.PublishAsync(content.ContentItem);
+            var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.DraftRequired);
+            if (contentItem != null)
+            {
+                await ContentManager.PublishAsync(contentItem);
+            }
+            else
+            {
+                await ContentManager.PublishAsync(content.ContentItem);
+            }
             return Outcomes("Published");
         }
     }
