@@ -170,7 +170,7 @@ namespace OrchardCore.Lists.RemotePublishing
             try
             {
                 stream = new MemoryStream(bits);
-                await _mediaFileStore.CreateFileFromStreamAsync(filePath, stream);
+                filePath = await _mediaFileStore.CreateFileFromStreamAsync(filePath, stream);
             }
             finally
             {
