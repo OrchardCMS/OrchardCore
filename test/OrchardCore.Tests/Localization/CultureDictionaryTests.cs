@@ -35,8 +35,8 @@ namespace OrchardCore.Tests.Localization
         public void IndexerReturnNullIfKeyDoesntExist()
         {
             var dictionary = new CultureDictionary("cs", _csPluralRule);
-
-            var translation = dictionary["ball"];
+            var key = new CultureDictionaryRecordKey("ball");
+            var translation = dictionary[key];
 
             Assert.Null(translation);
         }
@@ -48,7 +48,12 @@ namespace OrchardCore.Tests.Localization
             var record = new CultureDictionaryRecord("ball", null, new[] { "míč", "míče" });
             dictionary.MergeTranslations(new[] { record });
 
-            Assert.Throws<PluralFormNotFoundException>(() => dictionary["ball", 5]);
+            Assert.Throws<PluralFormNotFoundException>(() =>
+            {
+                var key = new CultureDictionaryRecordKey("ball");
+
+                return dictionary[key, 5];
+            });
         }
     }
 }

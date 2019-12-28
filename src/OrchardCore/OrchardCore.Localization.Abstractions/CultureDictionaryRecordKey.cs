@@ -9,6 +9,16 @@ namespace OrchardCore.Localization
     {
         private readonly string _messageId;
         private readonly string _context;
+        private readonly string _key;
+
+        /// <summary>
+        /// Creates new instance of <see cref="CultureDictionaryRecordKey"/>.
+        /// </summary>
+        /// <param name="messageId">The message Id.</param>
+        public CultureDictionaryRecordKey(string messageId) : this(messageId, null)
+        {
+
+        }
 
         /// <summary>
         /// Creates new instance of <see cref="CultureDictionaryRecordKey"/>.
@@ -22,13 +32,14 @@ namespace OrchardCore.Localization
 
             if (String.IsNullOrEmpty(context))
             {
-                Key = messageId;
+                _key = messageId;
             }
 
-            Key = String.IsNullOrEmpty(context) ? messageId : context.ToLowerInvariant() + "|" + messageId;
+            _key = String.IsNullOrEmpty(context) ? messageId : context.ToLowerInvariant() + "|" + messageId;
         }
 
-        private string Key { get; }
+        public static implicit operator string(CultureDictionaryRecordKey cultureDictionaryRecordKey)
+            => cultureDictionaryRecordKey._key;
 
         /// <inheritdoc />
         public override bool Equals(object obj)
@@ -42,7 +53,7 @@ namespace OrchardCore.Localization
         }
 
         /// <inheritdoc />
-        public bool Equals(CultureDictionaryRecordKey other) => String.Equals(Key, other.Key);
+        public bool Equals(CultureDictionaryRecordKey other) => String.Equals(_key, other._key);
 
         /// <inheritdoc />
         public override int GetHashCode()
@@ -56,7 +67,5 @@ namespace OrchardCore.Localization
                 return hashCode;
             }
         }
-
-        public override string ToString() => Key;
     }
 }

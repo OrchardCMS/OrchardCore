@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace OrchardCore.Localization
 {
@@ -15,7 +16,7 @@ namespace OrchardCore.Localization
         /// <param name="pluralRule">The pluralization rule.</param>
         public CultureDictionary(string cultureName, PluralizationRuleDelegate pluralRule)
         {
-            Translations = new Dictionary<CultureDictionaryRecordKey, string[]>();
+            Translations = new ConcurrentDictionary<CultureDictionaryRecordKey, string[]>();
             CultureName = cultureName;
             PluralRule = pluralRule;
         }
@@ -70,7 +71,7 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets a list of the culture translations including the plural forms. 
         /// </summary>
-        public IDictionary<CultureDictionaryRecordKey, string[]> Translations { get; private set; }
+        public IDictionary<CultureDictionaryRecordKey, string[]> Translations { get; }
 
         /// <summary>
         /// Merges the translations from multiple dictionary records.
