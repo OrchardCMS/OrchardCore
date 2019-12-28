@@ -24,7 +24,8 @@ The following configuration values are used by default and can be customized:
       // Set to the Azure Blob container name.
       "ContainerName": "somecontainer",
       // Optionally, set to a path to store media in a subdirectory inside your container.
-      "BasePath": "some/base/path"
+      "BasePath": "some/base/path",
+      "CreateContainer": true
     }
   }
 }
@@ -33,7 +34,9 @@ The following configuration values are used by default and can be customized:
 Refer also to the [Configuration Section](../../core/Configuration/README.md), 
 and the [Media Section](../Media/README.md) for other Media related configuration settings.
 
-The Azure Media Storage module will check on Startup for a connection string, and container string.
+If the `CreateContainer` option is set to `true` an activating event will check on `Startup` for a
+valid connection string, and test that the container exists, creating if it does not.
+Set `CreateContainer` to `false` to disable this check if your container already exists.
 
 If these are not present in `appSettings.json`, it will not enable the feature, and report an error message in the log file.
 
@@ -45,6 +48,8 @@ or a single container with a base path per tenant.
 The `ShellSettings` property is made available to the liquid template.
 The `ContainerName` property and the `BasePath` property are the only templatable properties.
 
+### Configuring a container per tenant.
+ 
 ```json
 {
   "OrchardCore": {
@@ -52,9 +57,28 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
       // Optionally configure with liquid.
-      "ContainerName": "{{ ShellSettings.Name }}",
+      "ContainerName": "{{ ShellSettings.Name }}-media",
       // Optionally configure with liquid.
-      "BasePath": "{{ ShellSettings.Name }}/Media"
+      "BasePath": "Media",
+      "CreateContainer": true
+    }
+  }
+}
+```
+
+### Configuring a single container, with a base folder per tenant.
+ 
+```json
+{
+  "OrchardCore": {
+    "OrchardCore.Media.Azure": {
+      // Set to your Azure Storage account connection string.
+      "ConnectionString": "", 
+      // Optionally configure with liquid.
+      "ContainerName": "somecontainer",
+      // Optionally configure with liquid.
+      "BasePath": "{{ ShellSettings.Name }}/Media",
+      "CreateContainer": true
     }
   }
 }

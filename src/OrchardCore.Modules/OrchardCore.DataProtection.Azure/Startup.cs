@@ -55,7 +55,6 @@ namespace OrchardCore.DataProtection.Azure
                 var templateContext = new TemplateContext();
                 templateContext.MemberAccessStrategy.Register<ShellSettings>();
                 templateContext.SetValue("ShellSettings", _shellSettings);
-                templateContext.SetValue("ShellOptions", _shellOptions);
 
                 var template = FluidTemplate.Parse(containerName);
 
@@ -74,7 +73,14 @@ namespace OrchardCore.DataProtection.Azure
                 var blobClient = storageAccount.CreateCloudBlobClient();
 
                 var blobContainer = blobClient.GetContainerReference(containerName);
-                blobContainer.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Off, new BlobRequestOptions(), new OperationContext()).GetAwaiter().GetResult();
+
+                var createContainer = _configuration.GetValue("OrchardCore.DataProtection.Azure:CreateContainer", true);
+                if (createContainer)
+                {
+                    _logger.LogDebug("Testing data protection container {ContainerName} existence", containerName);
+                    var result = blobContainer.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Off, new BlobRequestOptions(), new OperationContext()).GetAwaiter().GetResult();
+                    _logger.LogDebug("Data protection container {ContainerName} created: {Result}.", containerName, result);
+                }
 
                 return blobContainer;
             }

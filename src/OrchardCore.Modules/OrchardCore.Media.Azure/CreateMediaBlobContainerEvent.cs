@@ -13,19 +13,16 @@ namespace OrchardCore.Media.Azure
     public class CreateMediaBlobContainerEvent : ModularTenantEvents
     {
         private readonly MediaBlobStorageOptions _options;
-        private readonly IShellConfiguration _shellConfiguration;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public CreateMediaBlobContainerEvent(
             IOptions<MediaBlobStorageOptions> options,
-            IShellConfiguration shellConfiguration,
             ShellSettings shellSettings,
             ILogger<CreateMediaBlobContainerEvent> logger
             )
         {
             _options = options.Value;
-            _shellConfiguration = shellConfiguration;
             _shellSettings = shellSettings;
             _logger = logger;
         }
@@ -33,15 +30,14 @@ namespace OrchardCore.Media.Azure
         public override async Task ActivatingAsync()
         {
             // Only create container if options are valid.
-            var connectionString = _shellConfiguration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
-            var containerName = _shellConfiguration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
 
             if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized &&
-                !String.IsNullOrEmpty(connectionString) &&
-                !String.IsNullOrEmpty(containerName)
+                !String.IsNullOrEmpty(_options.ConnectionString) &&
+                !String.IsNullOrEmpty(_options.ContainerName) &&
+                _options.CreateContainer
                 )
             {
-                _logger.LogDebug("Creating Azure Media Storage Container {ContainerName}", _options.ContainerName);
+                _logger.LogDebug("Testing Azure Media Storage container {ContainerName} existence", _options.ContainerName);
 
                 try
                 {
@@ -49,9 +45,9 @@ namespace OrchardCore.Media.Azure
                     var blobClient = storageAccount.CreateCloudBlobClient();
 
                     var blobContainer = blobClient.GetContainerReference(_options.ContainerName);
-                    await blobContainer.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Off, new BlobRequestOptions(), new OperationContext());
+                    var result = await blobContainer.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Off, new BlobRequestOptions(), new OperationContext());
 
-                    _logger.LogDebug("Azure Media Storage Container {ContainerName} created.", _options.ContainerName);
+                    _logger.LogDebug("Azure Media Storage container {ContainerName} created: {Result}.", _options.ContainerName, result);
                 }
                 catch (Exception e)
                 {

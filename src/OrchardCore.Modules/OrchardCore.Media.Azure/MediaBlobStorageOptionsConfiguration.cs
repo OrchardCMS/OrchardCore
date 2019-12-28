@@ -32,6 +32,7 @@ namespace OrchardCore.Media.Azure
             options.BasePath = section.GetValue(nameof(options.BasePath), String.Empty);
             options.ContainerName = section.GetValue(nameof(options.ContainerName), String.Empty);
             options.ConnectionString = section.GetValue(nameof(options.ConnectionString), String.Empty);
+            options.CreateContainer = section.GetValue(nameof(options.CreateContainer), true);
 
             var templateContext = new TemplateContext();
             templateContext.MemberAccessStrategy.Register<ShellSettings>();
