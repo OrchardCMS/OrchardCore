@@ -61,8 +61,10 @@ else
         <button class="btn btn-primary" type="submit">@T["Save"]</button>
         @if (!Model.IsNew)
         {
-            <a href="@Url.Action("Index", "Sitemap", new { area = "OrchardCore.Sitemaps", sitemapId = Model.SitemapId })" class="btn btn-success" itemprop="">@T["View"]</a>
+            <a asp-action="Index" asp-controller="Sitemap" asp-area="OrchardCore.Sitemaps" asp-route-sitemapId="@Model.SitemapId" class="btn btn-success" itemprop="">@T["View"]</a>
+            <a asp-action="Delete" asp-route-sitemapId="@Model.SitemapId" class="btn btn-danger" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
         }
+
         <a class="btn btn-secondary" asp-controller="Admin" asp-action="Index" asp-area="OrchardCore.Admin">@T["Cancel"]</a>
     </div>
 </form>

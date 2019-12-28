@@ -174,5 +174,30 @@ namespace OrchardCore.Sitemaps.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string sitemapId)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+            {
+                return Unauthorized();
+            }
+
+            var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
+
+            if (sitemap == null)
+            {
+                return NotFound();
+            }
+
+            // Clear sitemap cache when deleted.
+            await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
+
+            await _sitemapManager.DeleteSitemapAsync(sitemapId);
+
+            _notifier.Success(H["Sitemap index deleted successfully"]);
+
+            return RedirectToAction(nameof(Edit));
+        }
     }
 }

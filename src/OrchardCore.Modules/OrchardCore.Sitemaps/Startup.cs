@@ -133,6 +133,13 @@ namespace OrchardCore.Sitemaps
                  defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Edit) }
             );
 
+            routes.MapAreaControllerRoute(
+                 name: "SitemapsIndexDelete",
+                 areaName: "OrchardCore.Sitemaps",
+                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapsIndex/Delete/{sitemapId}",
+                 defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Delete) }
+            );
+
             var sourceController = typeof(SourceController).ControllerName();
 
             routes.MapAreaControllerRoute(
