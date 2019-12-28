@@ -15,7 +15,7 @@ namespace OrchardCore.Localization
         /// <param name="pluralRule">The pluralization rule.</param>
         public CultureDictionary(string cultureName, PluralizationRuleDelegate pluralRule)
         {
-            Translations = new Dictionary<string, string[]>();
+            Translations = new Dictionary<CultureDictionaryRecordKey, string[]>();
             CultureName = cultureName;
             PluralRule = pluralRule;
         }
@@ -35,7 +35,7 @@ namespace OrchardCore.Localization
         /// </summary>
         /// <param name="key">The resource key.</param>
         /// <returns></returns>
-        public string this[string key] => this[key, null];
+        public string this[CultureDictionaryRecordKey key] => this[key, null];
 
         /// <summary>
         /// Gets the localized value.
@@ -43,16 +43,16 @@ namespace OrchardCore.Localization
         /// <param name="key">The resource key.</param>
         /// <param name="count">The number to specify the pluralization form.</param>
         /// <returns></returns>
-        public string this[string key, int? count]
+        public string this[CultureDictionaryRecordKey key, int? count]
         {
             get
             {
-                if (key == null)
+                if (key.Equals(null))
                 {
                     throw new ArgumentNullException(nameof(key));
                 }
 
-                if (!Translations.TryGetValue(key, out string[] translations))
+                if (!Translations.TryGetValue(key, out var translations))
                 {
                     return null;
                 }
@@ -70,7 +70,7 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets a list of the culture translations including the plural forms. 
         /// </summary>
-        public IDictionary<string, string[]> Translations { get; private set; }
+        public IDictionary<CultureDictionaryRecordKey, string[]> Translations { get; private set; }
 
         /// <summary>
         /// Merges the translations from multiple dictionary records.

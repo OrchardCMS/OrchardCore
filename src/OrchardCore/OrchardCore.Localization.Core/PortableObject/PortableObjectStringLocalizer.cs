@@ -120,7 +120,7 @@ namespace OrchardCore.Localization.PortableObject
 
             foreach (var translation in dictionary.Translations)
             {
-                yield return new LocalizedString(translation.Key, translation.Value.FirstOrDefault());
+                yield return new LocalizedString(translation.Key.ToString(), translation.Value.FirstOrDefault());
             }
         }
 
