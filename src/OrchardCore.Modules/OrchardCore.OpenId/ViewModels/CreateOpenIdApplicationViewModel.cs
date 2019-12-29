@@ -24,11 +24,8 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowImplicitFlow { get; set; }
         public bool AllowLogoutEndpoint { get; set; }
 
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            return OpenIdUrlValidator.ValidateUrls(nameof(RedirectUris), RedirectUris)
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) => OpenIdUrlValidator.ValidateUrls(nameof(RedirectUris), RedirectUris)
                 .Union(OpenIdUrlValidator.ValidateUrls(nameof(PostLogoutRedirectUris), PostLogoutRedirectUris));
-        }
 
         public class RoleEntry
         {
