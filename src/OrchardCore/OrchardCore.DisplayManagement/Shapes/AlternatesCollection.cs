@@ -24,10 +24,9 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
         }
 
-        public string this[int index]
-        {
-            get { return _collection[index]; }
-        }
+        public string this[int index] => _collection[index];
+
+        public string Last => _collection[_collection.Count - 1];
 
         public void Add(string alternate)
         {
