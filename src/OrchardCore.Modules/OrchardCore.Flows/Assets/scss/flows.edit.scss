@@ -37,15 +37,15 @@
     white-space: nowrap;
     text-align: center;
     transition: 0.3s visibility;   
+    > .btn-group {
+        top: -20px;
+    }
 }
 .widget-editor-header{
     &.card-header{
         &:hover {
             > .btn-widget-metadata {
-                visibility:visible;
-                > .btn-group {
-                    top: -20px;
-                }
+                visibility:visible;                
             } 
         }
     }
@@ -64,9 +64,20 @@
     position: relative;
     opacity: 0.1;
     transition: 0.3s opacity;
-    > .btn-group {
-        left: calc(-14px + 50%);
+    > .btn-group {        
         margin: 0 auto;
         bottom: 17px;
+    }
+}
+[dir="ltr"] .btn-widget-add-below {
+    >  .btn-group {
+        left: calc(-14px + 50%);
+    }
+}
+
+
+[dir="rtl"] .btn-widget-add-below {
+    >  .btn-group {
+        right: calc(-14px + 50%);
     }
 }

@@ -34,12 +34,17 @@ namespace OrchardCore.Localization.PortableObject
         /// <inheritedoc />
         public IStringLocalizer Create(Type resourceSource)
         {
-            return new PortableObjectStringLocalizer(resourceSource.FullName, _localizationManager, _fallBackToParentCulture, _logger);
+            var resourceFullName = resourceSource.FullName;
+            resourceFullName = TryFixInnerClassPath(resourceFullName);
+
+            return new PortableObjectStringLocalizer(resourceFullName, _localizationManager, _fallBackToParentCulture, _logger);
         }
 
         /// <inheritedoc />
         public IStringLocalizer Create(string baseName, string location)
         {
+            baseName = TryFixInnerClassPath(baseName);
+
             var index = 0;
             if (baseName.StartsWith(location, StringComparison.OrdinalIgnoreCase))
             {
@@ -59,6 +64,19 @@ namespace OrchardCore.Localization.PortableObject
             var relativeName = baseName.Substring(index);
 
             return new PortableObjectStringLocalizer(relativeName, _localizationManager, _fallBackToParentCulture, _logger);
+        }
+
+        // The context within inner class
+        private string TryFixInnerClassPath(string context)
+        {
+            const char innerClassSeparator = '+';
+            var path = context;
+            if (context.Contains(innerClassSeparator))
+            {
+                path = context.Replace(innerClassSeparator, '.');
+            }
+
+            return path;
         }
     }
 }
