@@ -30,7 +30,6 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             var model = context.Step.ToObject<OpenIdValidationSettingsStepModel>();
-
             var settings = await _validationService.GetSettingsAsync();
             settings.Tenant = model.Tenant;
             settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
@@ -38,12 +37,5 @@ namespace OrchardCore.OpenId.Recipes
 
             await _validationService.UpdateSettingsAsync(settings);
         }
-    }
-
-    public class OpenIdValidationSettingsStepModel
-    {
-        public string Audience { get; set; }
-        public string Authority { get; set; }
-        public string Tenant { get; set; }
     }
 }
