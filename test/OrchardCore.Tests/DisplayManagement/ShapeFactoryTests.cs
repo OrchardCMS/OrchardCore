@@ -17,7 +17,7 @@ namespace OrchardCore.Tests.DisplayManagement
     public class ShapeFactoryTests
     {
         IServiceProvider _serviceProvider;
-        TestShapeTable _shapeTable;
+        ShapeTable _shapeTable;
 
         public ShapeFactoryTests()
         {
@@ -29,7 +29,7 @@ namespace OrchardCore.Tests.DisplayManagement
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
-            _shapeTable = new TestShapeTable
+            _shapeTable = new ShapeTable
             (
                 new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)

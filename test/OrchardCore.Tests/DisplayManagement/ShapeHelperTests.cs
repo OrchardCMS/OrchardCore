@@ -27,8 +27,7 @@ namespace OrchardCore.Tests.DisplayManagement
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
-
-            var defaultShapeTable = new TestShapeTable
+            var defaultShapeTable = new ShapeTable
             (
                 new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)

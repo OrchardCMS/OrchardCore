@@ -18,13 +18,13 @@ namespace OrchardCore.Tests.DisplayManagement
 {
     public class DefaultDisplayManagerTests
     {
-        TestShapeTable _defaultShapeTable;
+        ShapeTable _defaultShapeTable;
         TestShapeBindingsDictionary _additionalBindings;
         IServiceProvider _serviceProvider;
 
         public DefaultDisplayManagerTests()
         {
-            _defaultShapeTable = new TestShapeTable
+            _defaultShapeTable = new ShapeTable
             (
                 new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
