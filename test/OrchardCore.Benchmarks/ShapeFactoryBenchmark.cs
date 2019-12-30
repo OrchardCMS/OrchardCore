@@ -29,7 +29,7 @@ namespace OrchardCore.Benchmark
         static ShapeFactoryBenchmark()
         {
             _templateContext = new TemplateContext();
-            var defaultShapeTable = new TestShapeTable
+            var defaultShapeTable = new ShapeTable
             (
                 new Dictionary<string, ShapeDescriptor>(),
                 new Dictionary<string, ShapeBinding>()
