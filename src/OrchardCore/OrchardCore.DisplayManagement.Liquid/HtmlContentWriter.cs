@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         static HtmlContentWriter()
         {
-            // Memorize all ASCII chars to prevent allocations
+            // Memoize all ASCII chars to prevent allocations
             _internedChars = new string[_internedCharsLength];
 
             for (var i = 0; i < _internedCharsLength; i++)

@@ -191,7 +191,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
                 if (index > 0)
                 {
-                    // Try again by using the fundamental shape type.
+                    // Try again by using the fundamental shape type without any '__' separator.
                     shapeTable.Descriptors.TryGetValue(shapeType.Substring(0, index), out shapeDescriptor);
                 }
             }
