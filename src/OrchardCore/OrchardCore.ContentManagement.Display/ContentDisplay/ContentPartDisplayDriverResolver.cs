@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
@@ -17,14 +18,32 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             _contentDisplayOptions = contentDisplayOptions.Value;
         }
 
-        public IReadOnlyList<IContentPartDisplayDriver> GetDisplayDrivers(string partName)
+        public IReadOnlyList<IContentPartDisplayDriver> GetDriversForDisplay(string partName)
         {
             if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
             {
                 var services = new List<IContentPartDisplayDriver>();
                 foreach (var resolver in contentPartDisplayOption.DisplayDrivers)
                 {
-                    services.Add((IContentPartDisplayDriver)_serviceProvider.GetService(resolver));
+                    services.Add((IContentPartDisplayDriver)_serviceProvider.GetService(resolver.DisplayDriverType));
+                }
+
+                return services;
+            }
+
+            return null;
+        }
+
+        public IReadOnlyList<IContentPartDisplayDriver> GetDriversForEdit(string partName, string editor)
+        {
+            if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
+            {
+                var services = new List<IContentPartDisplayDriver>();
+                var resolvers = contentPartDisplayOption.DisplayDrivers.Where(x => x.Editors.Contains("*") || x.Editors.Contains(editor));
+
+                foreach (var resolver in contentPartDisplayOption.DisplayDrivers)
+                {
+                    services.Add((IContentPartDisplayDriver)_serviceProvider.GetService(resolver.DisplayDriverType));
                 }
 
                 return services;

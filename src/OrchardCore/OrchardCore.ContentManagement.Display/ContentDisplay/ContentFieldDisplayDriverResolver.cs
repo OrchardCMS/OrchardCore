@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
@@ -17,18 +18,39 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             _contentDisplayOptions = contentDisplayOptions.Value;
         }
 
-        public IReadOnlyList<IContentFieldDisplayDriver> GetDisplayDrivers(string fieldName)
+        public IReadOnlyList<IContentFieldDisplayDriver> GetDriversForDisplay(string fieldName, string displayMode)
         {
             if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
             {
                 var services = new List<IContentFieldDisplayDriver>();
-                foreach (var resolver in contentFieldDisplayOption.DisplayDrivers)
+                var resolvers = contentFieldDisplayOption.DisplayDrivers.Where(x => x.DisplayModes.Contains("*") || x.DisplayModes.Contains(displayMode));
+ 
+                foreach (var resolver in resolvers)
                 {
-                    services.Add((IContentFieldDisplayDriver)_serviceProvider.GetService(resolver));
+                    services.Add((IContentFieldDisplayDriver)_serviceProvider.GetService(resolver.DisplayDriverType));
                 }
 
                 return services;
             }
+
+            return null;
+        }
+
+        public IReadOnlyList<IContentFieldDisplayDriver> GetDriversForEdit(string fieldName, string editor)
+        {
+            if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
+            {
+                var services = new List<IContentFieldDisplayDriver>();
+                var resolvers = contentFieldDisplayOption.DisplayDrivers.Where(x => x.Editors.Contains("*") || x.Editors.Contains(editor));
+
+                foreach (var resolver in resolvers)
+                {
+                    services.Add((IContentFieldDisplayDriver)_serviceProvider.GetService(resolver.DisplayDriverType));
+                }
+
+                return services;
+            }
+
             return null;
         }
     }

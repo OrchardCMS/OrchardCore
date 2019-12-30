@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -84,7 +85,7 @@ namespace OrchardCore.ContentManagement.Display
 
                 if (part != null)
                 {
-                    var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayDrivers(partTypeName);
+                    var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDriversForDisplay(partTypeName);
                     if (partDisplayDrivers != null)
                     {
                         foreach (var partDisplayDriver in partDisplayDrivers)
@@ -166,7 +167,7 @@ namespace OrchardCore.ContentManagement.Display
 
                     foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                     {
-                        var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDisplayDrivers(contentPartFieldDefinition.FieldDefinition.Name);
+                        var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDriversForDisplay(contentPartFieldDefinition.FieldDefinition.Name, contentPartFieldDefinition.DisplayMode());
                         if (fieldDisplayDrivers != null)
                         {
                             foreach (var fieldDisplayDriver in fieldDisplayDrivers)
@@ -260,7 +261,7 @@ namespace OrchardCore.ContentManagement.Display
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}";
                 context.DefaultPosition = partPosition;
 
-                var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayDrivers(partTypeName);
+                var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDriversForEdit(partTypeName, typePartDefinition.Editor());
                 if (partDisplayDrivers != null)
                 {
                     await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
@@ -289,10 +290,10 @@ namespace OrchardCore.ContentManagement.Display
                     var fieldPosition = partFieldDefinition.GetSettings<ContentPartFieldSettings>().Position ?? "before";
 
                     context.DefaultZone = $"Parts.{typePartDefinition.Name}:{fieldPosition}";
-                    var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDisplayDrivers(partFieldDefinition.FieldDefinition.Name);
+                    var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDriversForEdit(partFieldDefinition.FieldDefinition.Name, partFieldDefinition.Editor());
                     if (fieldDisplayDrivers != null)
                     {
-                        await _fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
+                        await fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                         {
                             var result = await driver.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
                             if (result != null)
@@ -363,7 +364,7 @@ namespace OrchardCore.ContentManagement.Display
                 partsShape[typePartDefinition.Name] = typePartShape;
 
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}:{partPosition}";
-                var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayDrivers(partTypeName);
+                var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDriversForEdit(partTypeName, typePartDefinition.Editor());
                 if (partDisplayDrivers != null)
                 {
                     await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
@@ -392,7 +393,7 @@ namespace OrchardCore.ContentManagement.Display
                     var fieldPosition = partFieldDefinition.GetSettings<ContentPartFieldSettings>().Position ?? "before";
 
                     context.DefaultZone = $"Parts.{typePartDefinition.Name}:{fieldPosition}";
-                    var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDisplayDrivers(partFieldDefinition.FieldDefinition.Name);
+                    var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDriversForEdit(partFieldDefinition.FieldDefinition.Name, partFieldDefinition.Editor());
                     if (fieldDisplayDrivers != null)
                     {
                         await fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
