@@ -86,7 +86,7 @@ public void ConfigureServices(IServiceCollection services)
     `AddRazorPages` must not be called directly as `services.AddOrchardCms()` already invokes it internally.
 
 - Edit the `Startup.cs` file `Configure`
-- Remove everything after `app.UseStaticFiles();` and replace it by `app.UserOrchardCore();` like this:
+- Remove everything after `app.UseStaticFiles();` and replace it by `app.UseOrchardCore();` like this:
 
 ```cs
    ...
