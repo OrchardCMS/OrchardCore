@@ -69,7 +69,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 if (fragment is char[] charArray)
                 {
-                    writer.Write(charArray, 0, charArray.Length);
+                    writer.Write(charArray);
                 }
                 else if (fragment is string stringValue)
                 {
