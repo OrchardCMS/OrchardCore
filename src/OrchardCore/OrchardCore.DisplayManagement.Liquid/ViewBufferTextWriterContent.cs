@@ -22,7 +22,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         static HtmlString[] InitInternedChars()
         {
-            // Memorize all ASCII chars to prevent allocations
+            // Memoize all ASCII chars to prevent allocations
             var internedChars = new HtmlString[_internedCharsLength];
 
             for (var i = 0; i < _internedCharsLength; i++)
