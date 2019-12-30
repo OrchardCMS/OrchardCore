@@ -78,11 +78,11 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var tagHelper = factory.CreateTagHelper(_activator, viewContext,
                 arguments, out var contextAttributes, out var outputAttributes);
 
-            HtmlContentWriter content = null;
+            ViewBufferTextWriterContent content = null;
 
             if (Statements != null && Statements.Count > 0)
             {
-                content = new HtmlContentWriter();
+                content = new ViewBufferTextWriterContent();
 
                 var completion = Completion.Break;
 
