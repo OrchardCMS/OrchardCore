@@ -4,6 +4,7 @@
 @using OrchardCore.ContentLocalization
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Localization
+@using System.Globalization
 
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
@@ -31,7 +32,13 @@
 
 <script at="Foot">
     $(function () {
-        $('#@Html.IdFor(m => m.Html)').trumbowyg().on('tbwchange', function () {
+        jQuery.trumbowyg.langs.@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName = {
+            _dir: '@CultureInfo.CurrentUICulture.GetLanguageDirection()',
+        };
+
+        var settings = { lang: '@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName' };
+
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
     });

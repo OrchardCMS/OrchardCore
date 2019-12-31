@@ -1,10 +1,10 @@
 @model HtmlBodyPartViewModel
-@using Newtonsoft.Json.Linq;
 @using OrchardCore.Html.ViewModels;
 @using OrchardCore.Html.Settings;
 @using OrchardCore.ContentLocalization
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Localization
+@using System.Globalization
 
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
@@ -39,6 +39,12 @@ else {
 
 <script at="Foot">
     $(function () {
+        jQuery.trumbowyg.langs.@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName = {
+            _dir: '@CultureInfo.CurrentUICulture.GetLanguageDirection()',
+        };
+
+        var settings = { lang: '@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName' };
+
         $('#@Html.IdFor(m => m.Html)').trumbowyg(@Html.Raw(trumbowygSettings.Options)).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
