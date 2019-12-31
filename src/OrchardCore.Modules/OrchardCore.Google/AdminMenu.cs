@@ -71,4 +71,35 @@ namespace OrchardCore.Google
         }
     }
 
+    [Feature(GoogleConstants.Features.GoogleAdSense)]
+    public class GoogleAdSenseAdminMenu : INavigationProvider
+    {
+        private readonly ShellDescriptor _shellDescriptor;
+        private readonly IStringLocalizer S;
+
+        public GoogleAdSenseAdminMenu(
+            IStringLocalizer<GoogleAdSenseAdminMenu> localizer,
+            ShellDescriptor shellDescriptor)
+        {
+            S = localizer;
+            _shellDescriptor = shellDescriptor;
+        }
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            {
+                builder.Add(S["Configuration"], configuration => configuration
+                   .Add(S["Settings"], settings => settings
+                       .Add(S["Google AdSense"], S["Google AdSense"], settings => settings
+                           .AddClass("googleAdSense").Id("googleAdSense")
+                           .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAdSense })
+                           .Permission(Permissions.ManageGoogleAdSense)
+                           .LocalNav())
+                    )
+                );
+            }
+            return Task.CompletedTask;
+        }
+    }
 }
