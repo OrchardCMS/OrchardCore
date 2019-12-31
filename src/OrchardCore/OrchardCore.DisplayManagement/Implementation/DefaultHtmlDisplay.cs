@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
 
@@ -76,7 +77,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
                 // Find base shape association using only the fundamental shape type.
                 // Alternates that may already be registered do not affect the "displaying" event calls.
-                var shapeDescriptor = GetShapeDescriptor(shapeMetadata.Type, shapeTable); ;
+                var shapeDescriptor = GetShapeDescriptor(shapeMetadata.Type, shapeTable);
                 if (shapeDescriptor != null)
                 {
                     await shapeDescriptor.DisplayingAsync.InvokeAsync((action, displayContext) => action(displayContext), displayContext, _logger);
@@ -125,7 +126,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 {
                     foreach (var frameType in shape.Metadata.Wrappers)
                     {
-                        var frameBinding = await GetShapeBindingAsync(frameType, Enumerable.Empty<string>(), shapeTable);
+                        var frameBinding = await GetShapeBindingAsync(frameType, AlternatesCollection.Empty, shapeTable);
                         if (frameBinding != null)
                         {
                             shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, localContext);
@@ -139,10 +140,14 @@ namespace OrchardCore.DisplayManagement.Implementation
                 await _shapeDisplayEvents.InvokeAsync(async (e, displayContext) =>
                 {
                     var prior = displayContext.ChildContent = displayContext.Shape.Metadata.ChildContent;
+
                     await e.DisplayedAsync(displayContext);
+
                     // update the child content if the context variable has been reassigned
                     if (prior != displayContext.ChildContent)
+                    {
                         displayContext.Shape.Metadata.ChildContent = displayContext.ChildContent;
+                    }
                 }, displayContext, _logger);
 
                 if (shapeDescriptor != null)
@@ -172,29 +177,38 @@ namespace OrchardCore.DisplayManagement.Implementation
             return shape.Metadata.ChildContent;
         }
 
-        private ShapeDescriptor GetShapeDescriptor(string shapeType, ShapeTable shapeTable)
+        private static ShapeDescriptor GetShapeDescriptor(string shapeType, ShapeTable shapeTable)
         {
-            var shapeTypeScan = shapeType;
-            do
+            // Note: The shape type of a descriptor is a fundamental shape type that never contains
+            // any '__' separator. If a shape type contains some '__' separators, its fundamental
+            // shape type is the left part just before the 1st occurence of the '__' separator.
+
+            // As a fast path we 1st use the shapeType as is but it may contain some '__'.
+            if (!shapeTable.Descriptors.TryGetValue(shapeType, out var shapeDescriptor))
             {
-                if (shapeTable.Descriptors.TryGetValue(shapeTypeScan, out var shapeDescriptor))
+                // Check if not a fundamental type.
+                var index = shapeType.IndexOf("__");
+
+                if (index > 0)
                 {
-                    return shapeDescriptor;
+                    // Try again by using the fundamental shape type without any '__' separator.
+                    shapeTable.Descriptors.TryGetValue(shapeType.Substring(0, index), out shapeDescriptor);
                 }
             }
-            while (TryGetParentShapeTypeName(ref shapeTypeScan));
 
-            return null;
+            return shapeDescriptor;
         }
 
-        private async Task<ShapeBinding> GetShapeBindingAsync(string shapeType, IEnumerable<string> shapeAlternates, ShapeTable shapeTable)
+        private async Task<ShapeBinding> GetShapeBindingAsync(string shapeType, AlternatesCollection shapeAlternates, ShapeTable shapeTable)
         {
             // shape alternates are optional, fully qualified binding names
             // the earliest added alternates have the lowest priority
             // the descriptor returned is based on the binding that is matched, so it may be an entirely
             // different descriptor if the alternate has a different base name
-            foreach (var shapeAlternate in shapeAlternates.Reverse())
+            for (var i = shapeAlternates.Count - 1; i >= 0; i--)
             {
+                var shapeAlternate = shapeAlternates[i];
+
                 foreach (var shapeBindingResolver in _shapeBindingResolvers)
                 {
                     var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeAlternate);
@@ -215,6 +229,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             // the shapetype name can break itself into shorter fallbacks at double-underscore marks
             // so the shapetype itself may contain a longer alternate forms that falls back to a shorter one
             var shapeTypeScan = shapeType;
+
             do
             {
                 foreach (var shapeBindingResolver in _shapeBindingResolvers)
@@ -237,7 +252,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             return null;
         }
 
-        static IHtmlContent CoerceHtmlString(object value)
+        private static IHtmlContent CoerceHtmlString(object value)
         {
             if (value == null)
             {
@@ -274,7 +289,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             return false;
         }
 
-        private ValueTask<IHtmlContent> ProcessAsync(ShapeBinding shapeBinding, IShape shape, DisplayContext context)
+        private static ValueTask<IHtmlContent> ProcessAsync(ShapeBinding shapeBinding, IShape shape, DisplayContext context)
         {
             async ValueTask<IHtmlContent> Awaited(Task<IHtmlContent> task)
             {

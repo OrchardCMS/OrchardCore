@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Logging;
 
@@ -36,7 +35,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         {
             try
             {
-
                 switch (Type)
                 {
                     case ResourceType.Meta:
@@ -60,8 +58,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                         break;
 
                     case ResourceType.Header:
-                        var htmlBuilder = new HtmlContentBuilder();
-
                         _resourceManager.RenderMeta(output.Content);
                         _resourceManager.RenderHeadLink(output.Content);
                         _resourceManager.RenderStylesheet(output.Content);
