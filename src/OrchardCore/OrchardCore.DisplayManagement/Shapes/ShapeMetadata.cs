@@ -33,8 +33,8 @@ namespace OrchardCore.DisplayManagement.Shapes
         public AlternatesCollection Wrappers { get; set; }
         public AlternatesCollection Alternates { get; set; }
         public bool IsCached => _cacheContext != null;
-        public bool WasExecuted { get; set; }
         public IHtmlContent ChildContent { get; set; }
+        public bool UseDynamicBinding { get; set; }
 
         /// <summary>
         /// Event use for a specific shape instance.
@@ -77,7 +77,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         /// </summary>
         public CacheContext Cache(string cacheId)
         {
-            if(_cacheContext == null || _cacheContext.CacheId != cacheId)
+            if (_cacheContext == null || _cacheContext.CacheId != cacheId)
             {
                 _cacheContext = new CacheContext(cacheId);
             }
@@ -93,5 +93,4 @@ namespace OrchardCore.DisplayManagement.Shapes
             return _cacheContext;
         }
     }
-
 }

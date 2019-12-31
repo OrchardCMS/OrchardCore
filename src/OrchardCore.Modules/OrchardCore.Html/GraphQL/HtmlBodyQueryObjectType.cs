@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -32,16 +31,12 @@ namespace OrchardCore.Html.GraphQL
 
             var model = new HtmlBodyPartViewModel()
             {
+                Html = ctx.Source.Html,
                 HtmlBodyPart = ctx.Source,
                 ContentItem = ctx.Source.ContentItem
             };
 
-            var templateContext = new TemplateContext();
-            templateContext.SetValue("ContentItem", ctx.Source.ContentItem);
-            templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
-            templateContext.SetValue("Model", model);
-
-            return await liquidTemplateManager.RenderAsync(ctx.Source.Html, htmlEncoder, templateContext);
+            return await liquidTemplateManager.RenderAsync(ctx.Source.Html, htmlEncoder, model);
         }
     }
 }

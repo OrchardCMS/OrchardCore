@@ -27,12 +27,12 @@ namespace OrchardCore.Tests.DisplayManagement
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
+            var defaultShapeTable = new ShapeTable
+            (
+                new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
+                new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
+            );
 
-            var defaultShapeTable = new TestShapeTable
-            {
-                Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
-                Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
-            };
             serviceCollection.AddSingleton(defaultShapeTable);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();

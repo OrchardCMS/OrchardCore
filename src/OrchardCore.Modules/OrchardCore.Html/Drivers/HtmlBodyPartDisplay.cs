@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -15,12 +14,12 @@ namespace OrchardCore.Html.Drivers
 {
     public class HtmlBodyPartDisplay : ContentPartDisplayDriver<HtmlBodyPart>
     {
-        private readonly ILiquidTemplateManager _liquidTemplatemanager;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
 
-        public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<HtmlBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
+        public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
         {
-            _liquidTemplatemanager = liquidTemplatemanager;
+            _liquidTemplateManager = liquidTemplateManager;
             T = localizer;
             _htmlEncoder = htmlEncoder;
         }
@@ -51,7 +50,7 @@ namespace OrchardCore.Html.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html))
             {
-                if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplatemanager.Validate(viewModel.Html, out var errors))
+                if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
                     context.Updater.ModelState.AddModelError(nameof(model.Html), T["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
@@ -67,16 +66,11 @@ namespace OrchardCore.Html.Drivers
 
         private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart htmlBodyPart)
         {
-            var templateContext = new TemplateContext();
-            templateContext.SetValue("ContentItem", htmlBodyPart.ContentItem);
-            templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
-
             model.Html = htmlBodyPart.Html;
             model.HtmlBodyPart = htmlBodyPart;
             model.ContentItem = htmlBodyPart.ContentItem;
-            templateContext.SetValue("Model", model);
 
-            model.Html = await _liquidTemplatemanager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, templateContext);
+            model.Html = await _liquidTemplateManager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, model);
         }
     }
 }

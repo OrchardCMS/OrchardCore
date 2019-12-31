@@ -127,7 +127,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 {
                     if (layout.Metadata.Alternates.Count > 0)
                     {
-                        return layout.Metadata.Alternates.Last();
+                        return layout.Metadata.Alternates.Last;
                     }
 
                     return layout.Metadata.Type;
@@ -142,7 +142,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 {
                     if (layout.Metadata.Alternates.Contains(value))
                     {
-                        if (layout.Metadata.Alternates.Last() == value)
+                        if (layout.Metadata.Alternates.Last == value)
                         {
                             return;
                         }
@@ -181,7 +181,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 if (_t == null)
                 {
                     _t = Context.RequestServices.GetRequiredService<IViewLocalizer>();
-                    ((IViewContextAware)_t).Contextualize(this.ViewContext);
+                    ((IViewContextAware)_t).Contextualize(ViewContext);
                 }
 
                 return _t;

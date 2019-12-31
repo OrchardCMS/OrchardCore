@@ -43,12 +43,7 @@ namespace OrchardCore.Title.Handlers
                     ContentItem = part.ContentItem
                 };
 
-                var templateContext = new TemplateContext();
-                templateContext.SetValue("ContentItem", part.ContentItem);
-                templateContext.MemberAccessStrategy.Register<TitlePartViewModel>();
-                templateContext.SetValue("Model", model);
-
-                var title = await _liquidTemplateManager.RenderAsync(settings.Pattern, NullEncoder.Default, templateContext);
+                var title = await _liquidTemplateManager.RenderAsync(settings.Pattern, NullEncoder.Default, model);
                 title = title.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
                 part.Title = title;
