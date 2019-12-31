@@ -43,9 +43,10 @@ else {
             _dir: '@CultureInfo.CurrentUICulture.GetLanguageDirection()',
         };
 
-        var settings = { lang: '@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName' };
+        var settings = @Html.Raw(trumbowygSettings.Options);
+        settings['lang'] = '@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName';
 
-        $('#@Html.IdFor(m => m.Html)').trumbowyg(@Html.Raw(trumbowygSettings.Options)).on('tbwchange', function () {
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
     });
