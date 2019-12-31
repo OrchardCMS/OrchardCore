@@ -12,6 +12,9 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Google.AdSense;
+using OrchardCore.Google.AdSense.Drivers;
+using OrchardCore.Google.AdSense.Recipes;
 using OrchardCore.Google.Analytics;
 using OrchardCore.Google.Analytics.Drivers;
 using OrchardCore.Google.Analytics.Recipes;
@@ -45,7 +48,6 @@ namespace OrchardCore.Google
     [Feature(GoogleConstants.Features.GoogleAnalytics)]
     public class GoogleAnalyticsStartup : StartupBase
     {
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions.GoogleAnalytics>();
@@ -57,7 +59,21 @@ namespace OrchardCore.Google
                 options.Filters.Add(typeof(GoogleAnalyticsFilter));
             });
         }
-
     }
 
+    [Feature(GoogleConstants.Features.GoogleAdSense)]
+    public class GoogleAdSenseStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IPermissionProvider, Permissions.GoogleAdSense>();
+            services.AddRecipeExecutionStep<GoogleAdSenseSettingsStep>();
+            services.AddScoped<IDisplayDriver<ISite>, GoogleAdSenseSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, GoogleAdSenseAdminMenu>();
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(GoogleAdSenseFilter));
+            });
+        }
+    }
 }
