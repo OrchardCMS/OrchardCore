@@ -1,0 +1,47 @@
+@model SearchIndexViewModel
+@inject IContentItemDisplayManager DisplayManager
+
+<!-- Page Header -->
+<!-- Set your background image for this header on the line below. -->
+<zone name="Header">
+    <header class="masthead">
+        <div class="container">
+            <div class="intro-text">
+                <div class="intro-lead-in"></div>
+                <div class="intro-heading text-uppercase">@T["Search"]</div>
+            </div>
+        </div>
+    </header>
+</zone>
+
+<form action="@Url.Action("Index", "Search", new { area = "OrchardCore.Lucene", id = Model.IndexName })" method="get">
+    <div class="input-group mb-3 mt-5">
+        <input name="q" type="text" class="form-control form-control-lg" value="@Model.Query" autofocus />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary btn-sm">@T["Search"]</button>
+        </div>
+    </div>
+</form>
+
+
+@if (Model.ContentItems.Any())
+{
+    <ul class="list-group">
+        @foreach (var contentItem in Model.ContentItems)
+        {
+            <li class="list-group-item">
+                @await DisplayAsync(await DisplayManager.BuildDisplayAsync(contentItem, null, "Summary"))
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p class="alert alert-warning">@T["There are no such results."]</p>
+}
+
+@{
+    var pager = (await New.Pager(Model.Pager)).ShowNext(Model.HasMoreResults);
+}
+
+@await DisplayAsync(pager)
