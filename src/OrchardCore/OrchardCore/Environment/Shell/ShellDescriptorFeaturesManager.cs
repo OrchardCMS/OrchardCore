@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -41,8 +41,10 @@ namespace OrchardCore.Environment.Shell
 
             var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToArray();
 
+            var isDefaultTenant = ShellScope.Context.Settings.Name == ShellHelper.DefaultShellName;
+
             var AllFeaturesToDisable = featuresToDisable
-                .Where(f => !alwaysEnabledIds.Contains(f.Id))
+                .Where(f => !alwaysEnabledIds.Contains(f.Id) && (isDefaultTenant || (!f.DefaultTenantOnly && !f.AcrossTenants)))
                 .SelectMany(feature => GetFeaturesToDisable(feature, enabledFeatureIds, force))
                 .Distinct()
                 .ToList();
@@ -63,6 +65,7 @@ namespace OrchardCore.Environment.Shell
             enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToArray();
 
             var AllFeaturesToEnable = featuresToEnable
+                .Where(f => isDefaultTenant || (!f.DefaultTenantOnly && !f.AcrossTenants))
                 .SelectMany(feature => GetFeaturesToEnable(feature, enabledFeatureIds, force))
                 .Distinct()
                 .ToList();
@@ -84,7 +87,7 @@ namespace OrchardCore.Environment.Shell
             {
                 await _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
-                    enabledFeatures.Select(x => new ShellFeature(x.Id)).ToList(),
+                    enabledFeatures.Select(f => new ShellFeature(f.Id) { AcrossTenants = f.AcrossTenants }).ToList(),
                     shellDescriptor.Parameters);
             }
 

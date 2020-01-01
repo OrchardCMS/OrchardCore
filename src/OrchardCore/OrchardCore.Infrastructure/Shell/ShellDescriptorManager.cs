@@ -19,15 +19,19 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
     /// </summary>
     public class ShellDescriptorManager : IShellDescriptorManager
     {
+        private ShellDescriptor _shellDescriptor;
+        private List<ShellFeature> _featuresAccrossTenants;
+
+        private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IShellConfiguration _shellConfiguration;
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly IEnumerable<IShellDescriptorManagerEventHandler> _shellDescriptorManagerEventHandlers;
         private readonly ISession _session;
         private readonly ILogger _logger;
-        private ShellDescriptor _shellDescriptor;
 
         public ShellDescriptorManager(
+            IShellHost shellHost,
             ShellSettings shellSettings,
             IShellConfiguration shellConfiguration,
             IEnumerable<ShellFeature> shellFeatures,
@@ -35,6 +39,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             ISession session,
             ILogger<ShellDescriptorManager> logger)
         {
+            _shellHost = shellHost;
             _shellSettings = shellSettings;
             _shellConfiguration = shellConfiguration;
             _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
@@ -44,6 +49,42 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
         }
 
         public async Task<ShellDescriptor> GetShellDescriptorAsync()
+        {
+            var descriptor = await LoadShellDescriptorAsync();
+
+            if (_featuresAccrossTenants == null)
+            {
+                var featuresAccrossTenants = new List<ShellFeature>();
+
+                if (_shellSettings.Name != ShellHelper.DefaultShellName)
+                {
+                    var settings = _shellHost.GetSettings(ShellHelper.DefaultShellName);
+
+                    if (settings.State == Models.TenantState.Running)
+                    {
+                        var shell = await _shellHost.GetOrCreateShellContextAsync(settings);
+
+                        using (var scope = shell.ServiceProvider.CreateScope())
+                        {
+                            var manager = scope.ServiceProvider.GetRequiredService<IShellDescriptorManager>();
+                            var featuresToAdd = (await manager.GetShellDescriptorAsync()).Features.Where(f => f.AcrossTenants);
+                            featuresAccrossTenants.AddRange(featuresToAdd);
+                        }
+                    }
+                }
+
+                _featuresAccrossTenants = featuresAccrossTenants;
+            }
+
+            return new ShellDescriptor()
+            {
+                SerialNumber = descriptor.SerialNumber,
+                Features = _featuresAccrossTenants.Concat(descriptor.Features).Distinct().ToList(),
+                Parameters = descriptor.Parameters.ToList()
+            };
+        }
+
+        public async Task<ShellDescriptor> LoadShellDescriptorAsync()
         {
             // Prevent multiple queries during the same request
             if (_shellDescriptor == null)
@@ -70,7 +111,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
         public async Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures, IEnumerable<ShellParameter> parameters)
         {
-            var shellDescriptorRecord = await GetShellDescriptorAsync();
+            var shellDescriptorRecord = await LoadShellDescriptorAsync();
             var serialNumber = shellDescriptorRecord == null
                 ? 0
                 : shellDescriptorRecord.SerialNumber;

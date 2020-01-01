@@ -22,7 +22,6 @@ namespace OrchardCore.Features.Controllers
     [Admin]
     public class AdminController : Controller
     {
-        private readonly IModuleService _moduleService;
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
@@ -30,7 +29,6 @@ namespace OrchardCore.Features.Controllers
         private readonly INotifier _notifier;
 
         public AdminController(
-            IModuleService moduleService,
             IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
             IShellDescriptorManager shellDescriptorManager,
@@ -39,7 +37,6 @@ namespace OrchardCore.Features.Controllers
             ShellSettings shellSettings,
             INotifier notifier)
         {
-            _moduleService = moduleService;
             _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
@@ -165,7 +162,7 @@ namespace OrchardCore.Features.Controllers
             // TODO: Implement white-list of modules allowed in the shell settings
 
             // Checks if the feature is only allowed on the Default tenant
-            return _shellSettings.Name == ShellHelper.DefaultShellName || !feature.DefaultTenantOnly;
+            return _shellSettings.Name == ShellHelper.DefaultShellName || (!feature.DefaultTenantOnly && !feature.AcrossTenants);
         }
 
         private async Task EnableOrDisableFeaturesAsync(IEnumerable<IFeatureInfo> features, FeaturesBulkAction action, bool? force)

@@ -37,6 +37,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             public string Description { get; set; }
             public bool DefaultTenantOnly { get; set; }
             public bool IsAlwaysEnabled { get; set; }
+            public bool AcrossTenants { get; set; }
 
             public bool DependencyOn(IFeatureInfo feature)
             {
@@ -64,7 +65,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false, false) }
                     };
 
                 Features = features;
@@ -98,7 +99,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false, false) }
                     };
 
                 Features = features;
@@ -125,7 +126,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false, false) }
                     };
 
                 Id = name;

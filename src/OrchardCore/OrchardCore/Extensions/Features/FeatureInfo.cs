@@ -11,7 +11,8 @@ namespace OrchardCore.Environment.Extensions.Features
             IExtensionInfo extension,
             string[] dependencies,
             bool defaultTenantOnly,
-            bool isAlwaysEnabled)
+            bool isAlwaysEnabled,
+            bool acrossTenants)
         {
             Id = id;
             Name = name;
@@ -22,6 +23,7 @@ namespace OrchardCore.Environment.Extensions.Features
             Dependencies = dependencies;
             DefaultTenantOnly = defaultTenantOnly;
             IsAlwaysEnabled = isAlwaysEnabled;
+            AcrossTenants = acrossTenants;
         }
 
         public string Id { get; }
@@ -33,5 +35,6 @@ namespace OrchardCore.Environment.Extensions.Features
         public IExtensionInfo Extension { get; }
         public string[] Dependencies { get; }
         public bool IsAlwaysEnabled { get; }
+        public bool AcrossTenants { get; }
     }
 }

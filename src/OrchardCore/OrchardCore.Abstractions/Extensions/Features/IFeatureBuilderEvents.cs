@@ -19,7 +19,8 @@ namespace OrchardCore.Environment.Extensions.Features
         public string Description { get; set; }
         public string[] FeatureDependencyIds { get; set; }
         public bool DefaultTenantOnly { get; set; }
-        public bool IsAlwaysEnabled { get; set;}
+        public bool IsAlwaysEnabled { get; set; }
+        public bool AcrossTenants { get; set; }
     }
 
     public abstract class FeatureBuilderEvents : IFeatureBuilderEvents

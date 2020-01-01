@@ -12,5 +12,6 @@ namespace OrchardCore.Environment.Extensions.Features
         string[] Dependencies { get; }
 
         bool IsAlwaysEnabled { get; }
+        bool AcrossTenants { get; }
     }
 }
