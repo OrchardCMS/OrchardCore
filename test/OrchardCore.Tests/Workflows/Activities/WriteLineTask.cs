@@ -13,9 +13,9 @@ namespace OrchardCore.Tests.Workflows.Activities
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly TextWriter _output;
-        private readonly IStringLocalizer<WriteLineTask> S;
+        private readonly IStringLocalizer S;
 
-        public WriteLineTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<WriteLineTask> stringLocalizer, TextWriter output)
+        public WriteLineTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer stringLocalizer, TextWriter output)
         {
             _scriptEvaluator = scriptEvaluator;
             _output = output;
