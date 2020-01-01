@@ -21,7 +21,7 @@ namespace OrchardCore.Alias.Drivers
 
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
-        private readonly IStringLocalizer<AliasPartDisplayDriver> T;
+        private readonly IStringLocalizer<AliasPartDisplayDriver> S;
 
         public AliasPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
@@ -30,7 +30,7 @@ namespace OrchardCore.Alias.Drivers
         {
             _contentDefinitionManager = contentDefinitionManager;
             _session = session;
-            T = localizer;
+            S = localizer;
         }
 
         public override IDisplayResult Edit(AliasPart aliasPart)
@@ -71,12 +71,12 @@ namespace OrchardCore.Alias.Drivers
         {
             if (alias.Alias?.Length > MaxAliasLength)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(alias.Alias), T["Your alias is too long. The alias can only be up to {0} characters.", MaxAliasLength]);
+                updater.ModelState.AddModelError(Prefix, nameof(alias.Alias), S["Your alias is too long. The alias can only be up to {0} characters.", MaxAliasLength]);
             }
 
             if (alias.Alias != null && (await _session.QueryIndex<AliasPartIndex>(o => o.Alias == alias.Alias && o.ContentItemId != alias.ContentItem.ContentItemId).CountAsync()) > 0)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(alias.Alias), T["Your alias is already in use."]);
+                updater.ModelState.AddModelError(Prefix, nameof(alias.Alias), S["Your alias is already in use."]);
             }
         }
     }
