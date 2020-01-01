@@ -360,7 +360,7 @@ namespace OrchardCore.Users.Controllers
 
                 foreach (var error in result.Errors)
                 {
-                    _notifier.Error(TH[error.Description]);
+                    _notifier.Error(H[error.Description]);
                 }
             }
 
