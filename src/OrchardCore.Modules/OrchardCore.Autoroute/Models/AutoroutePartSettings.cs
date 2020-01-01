@@ -12,8 +12,8 @@ namespace OrchardCore.Autoroute.Models
         /// <summary>
         /// The pattern used to build the Path.
         /// </summary>
-        [DefaultValue("{{ ContentItem.DisplayText | slugify }}")]
-        public string Pattern { get; set; } = "{{ ContentItem.DisplayText | slugify }}";
+        [DefaultValue("{{ Model.ContentItem.DisplayText | slugify }}")]
+        public string Pattern { get; set; } = "{{ Model.ContentItem.DisplayText | slugify }}";
 
         /// <summary>
         /// Whether to display an option to set the content item as the homepage.
