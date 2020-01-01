@@ -15,16 +15,17 @@ namespace OrchardCore.Tests.Workflows.Activities
         private readonly TextWriter _output;
         private readonly IStringLocalizer<WriteLineTask> S;
 
-        public WriteLineTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer stringLocalizer, TextWriter output)
+        public WriteLineTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<WriteLineTask> stringLocalizer, TextWriter output)
         {
             _scriptEvaluator = scriptEvaluator;
             _output = output;
             S = stringLocalizer;
         }
 
-        private IStringLocalizer T { get; }
         public override string Name => nameof(WriteLineTask);
+        
         public override LocalizedString DisplayText => S["Write Line Task"];
+        
         public override LocalizedString Category => S["Test"];
 
         public WorkflowExpression<string> Text
