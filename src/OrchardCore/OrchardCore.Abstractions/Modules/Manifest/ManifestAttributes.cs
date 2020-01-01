@@ -82,7 +82,7 @@ namespace OrchardCore.Modules.Manifest
         public string Category { get; set; }
 
         /// <summary>
-        /// Set to <c>true</c> to only allow the Default tenant to manage the feature.
+        /// Set to <c>true</c> to only allow the Default tenant to enable / disable the feature.
         /// </summary>
         public bool DefaultTenantOnly { get; set; }
 
@@ -92,8 +92,8 @@ namespace OrchardCore.Modules.Manifest
         public bool IsAlwaysEnabled { get; set; }
 
         /// <summary>
-        /// Set to <c>true</c> to only allow the Default tenant to manage the feature,
-        /// and then share its state (in the default tenant) across all other tenants.
+        /// Set to <c>true</c> to define a feature that can only be enable / disable by
+        /// the default tenant but whose state will be shared across all other tenants.
         /// </summary>
         public bool AcrossTenants { get; set; }
     }
