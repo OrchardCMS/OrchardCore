@@ -1,16 +1,15 @@
 @model SearchIndexViewModel
 @inject IContentItemDisplayManager DisplayManager
 
-<div class="form-group">
-    <form action="@Url.Action("Index", "Search", new { area = "OrchardCore.Lucene", id = Model.IndexName })" method="get">
-        <div class="input-group">
-            <input name="q" type="text" class="form-control col-md-6" value="@Model.Query" autofocus />
-            <span class="input-group-btn">
-                <button type="submit" class="btn btn-primary">@T["Search"]</button>
-            </span>
+<form action="@Url.Action("Index", "Search", new { area = "OrchardCore.Lucene", id = Model.IndexName })" method="get">
+    <div class="input-group mb-3 mt-5">
+        <input name="q" type="text" class="form-control form-control-lg" value="@Model.Query" autofocus />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary btn-sm">@T["Search"]</button>
         </div>
-    </form>
-</div>
+    </div>
+</form>
+
 
 @if (Model.ContentItems.Any())
 {

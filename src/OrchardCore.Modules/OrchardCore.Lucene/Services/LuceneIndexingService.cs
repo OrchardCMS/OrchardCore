@@ -283,8 +283,10 @@ namespace OrchardCore.Lucene
             {
                 return siteSettings.As<LuceneSettings>();
             }
-
-            return null;
+            else
+            {
+                return new LuceneSettings();
+            }
         }
     }
 }
