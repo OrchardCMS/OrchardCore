@@ -29,7 +29,6 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                     {
                         var context = (GraphQLContext)validationContext.UserContext;
                        
-
                         int? value = null;
 
                         if (arg.Value is IntValue)
