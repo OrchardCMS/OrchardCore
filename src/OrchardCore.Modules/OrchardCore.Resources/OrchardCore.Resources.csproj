@@ -5,21 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="wwwroot\Scripts\resizable-resolveconflict.js" />
-    <EmbeddedResource Remove="wwwroot\Scripts\resizable-resolveconflict.min.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\Scripts\resizable-resolveconflict.min.js">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
-    <None Include="wwwroot\Scripts\resizable-resolveconflict.js">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
