@@ -184,6 +184,7 @@ namespace OrchardCore.Lucene
                                 //We index only if we actually found a content item in the database
                                 if (context == null)
                                 {
+                                    //TODO purge these content items from IndexingTask table
                                     continue;
                                 }
 
