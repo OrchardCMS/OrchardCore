@@ -14,9 +14,10 @@ namespace OrchardCore.Admin
             if (action.Controller.ControllerName.StartsWith("Admin", StringComparison.OrdinalIgnoreCase) ||
                 action.Controller.Attributes.OfType<AdminAttribute>().Any())
             {
+                var factory = new AdminActionConstraintFactory();
                 foreach (var selector in action.Selectors)
                 {
-                    selector.ActionConstraints.Add(new AdminActionConstraint());
+                    selector.ActionConstraints.Add(factory);
                 }
             }
         }
