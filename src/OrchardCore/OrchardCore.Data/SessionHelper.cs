@@ -5,21 +5,25 @@ using YesSql;
 
 namespace OrchardCore.Data
 {
+    /// <summary>
+    /// Represents a class that provides helper methods for the <see cref="ISession"/>.
+    /// </summary>
     public class SessionHelper : ISessionHelper
     {
         private readonly ISession _session;
 
         private readonly Dictionary<Type, object> _loaded = new Dictionary<Type, object>();
 
+        /// <summary>
+        /// Creates a new instance of <see cref="SessionHelper"/>.
+        /// </summary>
+        /// <param name="session">The <see cref="ISession"/>.</param>
         public SessionHelper(ISession session)
         {
             _session = session;
         }
 
-        /// <summary>
-        /// Loads a single document (or create a new one) for updating and that should not be cached.
-        /// For a full isolation, it needs to be used in pair with <see cref="GetForCachingAsync"/>.
-        /// </summary>
+        /// <inheritdocs/>
         public async Task<T> LoadForUpdateAsync<T>(Func<T> factory = null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
@@ -34,10 +38,7 @@ namespace OrchardCore.Data
             return document;
         }
 
-        /// <summary>
-        /// Gets a single document (or create a new one) for caching and that should not be updated.
-        /// For a full isolation, it needs to be used in pair with <see cref="LoadForUpdateAsync"/>.
-        /// </summary>
+        /// <inheritdocs/>
         public async Task<T> GetForCachingAsync<T>(Func<T> factory = null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))

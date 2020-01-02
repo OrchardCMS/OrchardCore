@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Localization.PortableObject
 {
@@ -174,38 +172,54 @@ namespace OrchardCore.Localization.PortableObject
 
         private string GetTranslation(string name, string context, CultureInfo culture, int? count)
         {
-            var key = CultureDictionaryRecord.GetKey(name, context);
+            string translation = null;
             try
             {
-                var dictionary = _localizationManager.GetDictionary(culture);
-
-                var translation = dictionary[key, count];
-
-                // Should we search in the parent culture?
-                if (translation == null && _fallBackToParentCulture && culture.Parent != null && culture.Parent != culture)
+                if (_fallBackToParentCulture)
                 {
-                    dictionary = _localizationManager.GetDictionary(culture.Parent);
+                    do
+                    {
+                        if (ExtractTranslation() != null)
+                        {
+                            break;
+                        }
+
+                        culture = culture.Parent;
+                    }
+                    while (culture != CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    ExtractTranslation();
+                }
+
+                string ExtractTranslation()
+                {
+                    var dictionary = _localizationManager.GetDictionary(culture);
 
                     if (dictionary != null)
                     {
-                        translation = dictionary[key, count]; // fallback to the parent culture
+                        // Extract translation with context
+                        var key = CultureDictionaryRecord.GetKey(name, context);
+                        translation = dictionary[key, count];
+
+                        if (context != null && translation == null)
+                        {
+                            // Extract translation without context
+                            key = CultureDictionaryRecord.GetKey(name, null);
+                            translation = dictionary[key, count];
+                        }
                     }
-                }
 
-                // No exact translation found, search without context
-                if (translation == null && context != null)
-                {
-                    translation = GetTranslation(name, null, culture, count);
+                    return translation;
                 }
-
-                return translation;
             }
             catch (PluralFormNotFoundException ex)
             {
                 _logger.LogWarning(ex.Message);
             }
 
-            return null;
+            return translation;
         }
     }
 }

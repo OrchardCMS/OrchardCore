@@ -65,7 +65,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 linkEntry.AppendVersion = AppendVersion.Value;
             }
 
-            foreach(var attribute in output.Attributes)
+            foreach (var attribute in output.Attributes)
             {
                 if (String.Equals(attribute.Name, "href", StringComparison.OrdinalIgnoreCase))
                 {

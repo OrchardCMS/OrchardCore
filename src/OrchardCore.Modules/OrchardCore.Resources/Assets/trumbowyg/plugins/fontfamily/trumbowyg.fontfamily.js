@@ -7,9 +7,6 @@
             en: {
                 fontFamily: 'Font'
             },
-            es: {
-                fontFamily: 'Fuente'
-            },
             da: {
                 fontFamily: 'Skrifttype'
             },

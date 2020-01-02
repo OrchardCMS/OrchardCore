@@ -1869,13 +1869,13 @@ textarea.form-control {
   border-color: #28a745;
   box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25); }
 
-.invalid-feedback, .field-validation-error {
+.invalid-feedback {
   display: none;
   width: 100%;
   font-size: 80%;
   color: #dc3545; }
 
-[dir] .invalid-feedback, [dir] .field-validation-error {
+[dir] .invalid-feedback {
   margin-top: 0.25rem; }
 
 .invalid-tooltip {
@@ -1894,14 +1894,11 @@ textarea.form-control {
   background-color: rgba(220, 53, 69, 0.9);
   border-radius: 0.25rem; }
 
-.was-validated :invalid ~ .invalid-feedback, .was-validated :invalid ~ .field-validation-error,
+.was-validated :invalid ~ .invalid-feedback,
 .was-validated :invalid ~ .invalid-tooltip,
 .is-invalid ~ .invalid-feedback,
 .input-validation-error ~ .invalid-feedback,
 .has-validation-error ~ .invalid-feedback,
-.is-invalid ~ .field-validation-error,
-.input-validation-error ~ .field-validation-error,
-.has-validation-error ~ .field-validation-error,
 .is-invalid ~ .invalid-tooltip,
 .input-validation-error ~ .invalid-tooltip,
 .has-validation-error ~ .invalid-tooltip {
@@ -1949,8 +1946,8 @@ textarea.form-control {
 .was-validated .form-check-input:invalid ~ .form-check-label, .form-check-input.is-invalid ~ .form-check-label, .form-check-input.input-validation-error ~ .form-check-label, .form-check-input.has-validation-error ~ .form-check-label {
   color: #dc3545; }
 
-.was-validated .form-check-input:invalid ~ .invalid-feedback, .was-validated .form-check-input:invalid ~ .field-validation-error,
-.was-validated .form-check-input:invalid ~ .invalid-tooltip, .form-check-input.is-invalid ~ .invalid-feedback, .form-check-input.input-validation-error ~ .invalid-feedback, .form-check-input.has-validation-error ~ .invalid-feedback, .form-check-input.is-invalid ~ .field-validation-error, .form-check-input.input-validation-error ~ .field-validation-error, .form-check-input.has-validation-error ~ .field-validation-error,
+.was-validated .form-check-input:invalid ~ .invalid-feedback,
+.was-validated .form-check-input:invalid ~ .invalid-tooltip, .form-check-input.is-invalid ~ .invalid-feedback, .form-check-input.input-validation-error ~ .invalid-feedback, .form-check-input.has-validation-error ~ .invalid-feedback,
 .form-check-input.is-invalid ~ .invalid-tooltip,
 .form-check-input.input-validation-error ~ .invalid-tooltip,
 .form-check-input.has-validation-error ~ .invalid-tooltip {

@@ -56,7 +56,7 @@ The newly created website should be able to run, and look like this:
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>netcoreapp3.0</TargetFramework>
+  <TargetFramework>netcoreapp3.1</TargetFramework>
   <PreserveCompilationReferences>true</PreserveCompilationReferences>
 </PropertyGroup>
 ```
@@ -86,7 +86,7 @@ public void ConfigureServices(IServiceCollection services)
     `AddRazorPages` must not be called directly as `services.AddOrchardCms()` already invokes it internally.
 
 - Edit the `Startup.cs` file `Configure`
-- Remove everything after `app.UseStaticFiles();` and replace it by `app.UserOrchardCore();` like this:
+- Remove everything after `app.UseStaticFiles();` and replace it by `app.UseOrchardCore();` like this:
 
 ```cs
    ...

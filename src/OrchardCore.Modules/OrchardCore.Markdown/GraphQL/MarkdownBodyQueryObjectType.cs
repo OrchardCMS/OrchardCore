@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
+using OrchardCore.Markdown.ViewModels;
 
 namespace OrchardCore.Markdown.GraphQL
 {
@@ -33,10 +34,14 @@ namespace OrchardCore.Markdown.GraphQL
             var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
             var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
-            var markdown = ctx.Source.Markdown;
-            var templateContext = new TemplateContext();
-            markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder, templateContext);
+            var model = new MarkdownBodyPartViewModel()
+            {
+                Markdown = ctx.Source.Markdown,
+                MarkdownBodyPart = ctx.Source,
+                ContentItem = ctx.Source.ContentItem
+            };
 
+            var markdown = await liquidTemplateManager.RenderAsync(ctx.Source.Markdown, htmlEncoder, model);
             return Markdig.Markdown.ToHtml(markdown);
         }
     }
