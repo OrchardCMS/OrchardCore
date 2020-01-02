@@ -13,18 +13,18 @@ namespace OrchardCore.Markdown.GraphQL
 {
     public class MarkdownBodyQueryObjectType : ObjectGraphType<MarkdownBodyPart>
     {
-        public MarkdownBodyQueryObjectType(IStringLocalizer<MarkdownBodyQueryObjectType> T)
+        public MarkdownBodyQueryObjectType(IStringLocalizer<MarkdownBodyQueryObjectType> S)
         {
             Name = nameof(MarkdownBodyPart);
-            Description = T["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
+            Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
 
             Field("markdown", x => x.Markdown, nullable: true)
-                .Description(T["the markdown value"])
+                .Description(S["the markdown value"])
                 .Type(new StringGraphType());
 
             Field<StringGraphType>()
                 .Name("html")
-                .Description(T["the HTML representation of the markdown content"])
+                .Description(S["the HTML representation of the markdown content"])
                 .ResolveLockedAsync(ToHtml);
         }
 

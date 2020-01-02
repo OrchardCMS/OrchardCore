@@ -12,6 +12,7 @@ namespace OrchardCore.Users.Workflows.Activities
         }
 
         public override string Name => nameof(UserLoggedInEvent);
-        public override LocalizedString DisplayText => T["User Loggedin Event"];
+        
+        public override LocalizedString DisplayText => S["User Loggedin Event"];
     }
 }

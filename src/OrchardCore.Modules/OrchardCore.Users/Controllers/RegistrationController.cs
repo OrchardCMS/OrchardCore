@@ -20,8 +20,10 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-
         private readonly INotifier _notifier;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer<RegistrationController> S;
+        private readonly IHtmlLocalizer<RegistrationController> H;
 
         public RegistrationController(
             UserManager<IUser> userManager,
@@ -36,15 +38,10 @@ namespace OrchardCore.Users.Controllers
             _authorizationService = authorizationService;
             _siteService = siteService;
             _notifier = notifier;
-
             _logger = logger;
-            TH = htmlLocalizer;
-            T = stringLocalizer;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
-
-        ILogger _logger;
-        IHtmlLocalizer TH { get; set; }
-        IStringLocalizer T { get; set; }
 
         [HttpGet]
         [AllowAnonymous]
@@ -75,7 +72,7 @@ namespace OrchardCore.Users.Controllers
             ViewData["ReturnUrl"] = returnUrl;
 
             // If we get a user, redirect to returnUrl
-            if (await this.RegisterUser(model, T["Confirm your account"], _logger) != null)
+            if (await this.RegisterUser(model, S["Confirm your account"], _logger) != null)
             {
                 return RedirectToLocal(returnUrl);
             }
@@ -123,9 +120,9 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user != null)
             {
-                await this.SendEmailConfirmationTokenAsync(user, T["Confirm your account"]);
+                await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
 
-                _notifier.Success(TH["Verification email sent."]);
+                _notifier.Success(H["Verification email sent."]);
             }
 
             return RedirectToAction(nameof(AdminController.Index), "Admin");
