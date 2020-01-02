@@ -171,29 +171,33 @@ namespace OrchardCore.Lucene
                                 }
                             }
 
-                            //We index only if we actually found a content item in the database
-                            if (publishedIndexContext != null || latestIndexContext != null)
+                            // Update the document from the index if its lastIndexId is smaller than the current task id. 
+                            foreach (var index in allIndices)
                             {
-                                // Update the document from the index if its lastIndexId is smaller than the current task id. 
-                                foreach (var index in allIndices)
+                                if (index.Value >= task.Id || !settingsByIndex.TryGetValue(index.Key, out var settings))
                                 {
-                                    if (index.Value >= task.Id || !settingsByIndex.TryGetValue(index.Key, out var settings))
-                                    {
-                                        continue;
-                                    }
-
-                                    var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
-                                    bool ignoreIndexedCulture = settings?.Culture == "any" ? false : context.ContentItem.Content?.LocalizationPart?.Culture != settings?.Culture;
-
-                                    // Ignore if the content item content type or culture is not indexed in this index
-                                    if (context.ContentItem == null || !settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
-                                    {
-                                        continue;
-                                    }
-
-                                    updatedDocumentsByIndex[index.Key].Add(context.DocumentIndex);
+                                    continue;
                                 }
+
+                                var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
+
+                                //We index only if we actually found a content item in the database
+                                if (context == null)
+                                {
+                                    continue;
+                                }
+
+                                bool ignoreIndexedCulture = settings?.Culture == "any" ? false : context.ContentItem.Content?.LocalizationPart?.Culture != settings?.Culture;
+
+                                // Ignore if the content item content type or culture is not indexed in this index
+                                if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
+                                {
+                                    continue;
+                                }
+
+                                updatedDocumentsByIndex[index.Key].Add(context.DocumentIndex);
                             }
+
                         }
                     }
 
