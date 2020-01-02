@@ -323,7 +323,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 context.IsInitialized = true;
             }
 
-            context.EnterChildScope();
+            context.EnterScope(model);
 
             var viewLocalizer = context.Services.GetRequiredService<IViewLocalizer>();
 

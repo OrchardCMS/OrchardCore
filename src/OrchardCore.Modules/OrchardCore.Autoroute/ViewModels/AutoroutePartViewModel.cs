@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Autoroute.ViewModels
 {
-    public class AutoroutePartViewModel
+    public class AutoroutePartViewModel: IContent
     {
         public string Path { get; set; }
         public bool SetHomepage { get; set; }

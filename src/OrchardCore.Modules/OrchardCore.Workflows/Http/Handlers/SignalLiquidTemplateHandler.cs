@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Fluid;
 using OrchardCore.Liquid;
 using OrchardCore.Workflows.Services;
 
@@ -14,7 +13,7 @@ namespace OrchardCore.Workflows.Http.WorkflowContextProviders
             _signalService = signalService;
         }
 
-        public Task RenderingAsync(TemplateContext context)
+        public Task RenderingAsync(LiquidTemplateContext context)
         {
             context.AmbientValues.Add("SignalService", _signalService);
             return Task.CompletedTask;

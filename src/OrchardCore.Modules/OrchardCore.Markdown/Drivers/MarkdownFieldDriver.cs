@@ -33,6 +33,7 @@ namespace OrchardCore.Markdown.Drivers
                 model.Markdown = field.Markdown;
                 model.Field = field;
                 model.Part = context.ContentPart;
+                model.ContentItem = field.ContentItem;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
                 model.Markdown = await _liquidTemplateManager.RenderAsync(field.Markdown, _htmlEncoder, model);

@@ -32,6 +32,7 @@ namespace OrchardCore.ContentFields.Fields
                 model.Html = field.Html;
                 model.Field = field;
                 model.Part = context.ContentPart;
+                model.ContentItem = field.ContentItem;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
                 model.Html = await _liquidTemplateManager.RenderAsync(field.Html, _htmlEncoder, model);

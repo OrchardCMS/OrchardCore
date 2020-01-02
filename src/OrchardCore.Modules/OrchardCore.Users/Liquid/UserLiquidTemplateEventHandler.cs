@@ -16,7 +16,7 @@ namespace OrchardCore.Users.Liquid
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public Task RenderingAsync(TemplateContext context)
+        public Task RenderingAsync(LiquidTemplateContext context)
         {
             var user = _httpContextAccessor.HttpContext.User;
 

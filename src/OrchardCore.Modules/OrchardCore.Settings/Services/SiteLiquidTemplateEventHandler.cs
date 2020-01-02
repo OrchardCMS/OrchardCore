@@ -13,7 +13,7 @@ namespace OrchardCore.Settings.Services
             _siteService = siteService;
         }
 
-        public async Task RenderingAsync(TemplateContext context)
+        public async Task RenderingAsync(LiquidTemplateContext context)
         {
             var site = await _siteService.GetSiteSettingsAsync();
             context.MemberAccessStrategy.Register(site.GetType());

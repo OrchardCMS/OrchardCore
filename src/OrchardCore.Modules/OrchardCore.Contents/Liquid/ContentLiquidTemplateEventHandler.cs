@@ -17,7 +17,7 @@ namespace OrchardCore.Contents.Liquid
             _contentAliasManager = contentAliasManager;
         }
 
-        public Task RenderingAsync(TemplateContext context)
+        public Task RenderingAsync(LiquidTemplateContext context)
         {
             context.SetValue("Content", new LiquidContentAccessor());
             context.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
@@ -35,6 +35,15 @@ namespace OrchardCore.Contents.Liquid
             context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Latest", obj => new LiquidPropertyAccessor(name => GetContentByAlias(name, true)));
 
             context.MemberAccessStrategy.Register<LiquidContentAccessor, FluidValue>((obj, name) => GetContentByAlias(name));
+
+            context.OnEnterScope((context, model) =>
+            {
+                if (model is IContent content)
+                {
+                    // 'ContentItem' as a root property for backwards compatibility.
+                    context.SetValue("ContentItem", content.ContentItem);
+                }
+            });
 
             return Task.CompletedTask;
         }

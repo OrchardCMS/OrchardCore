@@ -4,7 +4,7 @@ using OrchardCore.ContentPreview.Models;
 
 namespace OrchardCore.ContentPreview.ViewModels
 {
-    public class PreviewPartViewModel
+    public class PreviewPartViewModel : IContent
     {
         public string Pattern { get; set; }
 

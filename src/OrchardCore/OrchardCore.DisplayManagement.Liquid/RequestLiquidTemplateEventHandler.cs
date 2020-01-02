@@ -63,7 +63,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             _serviceProvider = serviceProvider;
         }
 
-        public Task RenderingAsync(TemplateContext context)
+        public Task RenderingAsync(LiquidTemplateContext context)
         {
             // Reuse the value as the service can be resolved by multiple templates
             _httpContext = _httpContext ?? _serviceProvider.GetService<IHttpContextAccessor>()?.HttpContext;

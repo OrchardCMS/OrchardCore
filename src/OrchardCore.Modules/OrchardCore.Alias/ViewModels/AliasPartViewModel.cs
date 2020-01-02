@@ -5,7 +5,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Alias.ViewModels
 {
-    public class AliasPartViewModel
+    public class AliasPartViewModel : IContent
     {
         public string Alias { get; set; }
 

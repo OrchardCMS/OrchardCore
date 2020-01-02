@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.Facebook.Widgets.Models;
-using System.ComponentModel.DataAnnotations;
-using OrchardCore.Facebook.Widgets.Settings;
 using OrchardCore.ContentManagement;
+using OrchardCore.Facebook.Widgets.Models;
+using OrchardCore.Facebook.Widgets.Settings;
 
 namespace OrchardCore.Facebook.Widgets.ViewModels
 {
-    public class FacebookPluginPartViewModel
+    public class FacebookPluginPartViewModel : IContent
     {
         public string Liquid { get; set; }
         public string Html { get; set; }

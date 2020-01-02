@@ -5,7 +5,7 @@ using OrchardCore.Html.Models;
 
 namespace OrchardCore.Html.ViewModels
 {
-    public class HtmlBodyPartViewModel
+    public class HtmlBodyPartViewModel : IContent
     {
         public string Html { get; set; }
 

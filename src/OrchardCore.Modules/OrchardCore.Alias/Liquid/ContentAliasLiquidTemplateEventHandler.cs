@@ -19,7 +19,7 @@ namespace OrchardCore.Alias.Liquid
             _session = session;
         }
 
-        public Task RenderingAsync(TemplateContext context)
+        public Task RenderingAsync(LiquidTemplateContext context)
         {
             context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Alias", obj =>
             {

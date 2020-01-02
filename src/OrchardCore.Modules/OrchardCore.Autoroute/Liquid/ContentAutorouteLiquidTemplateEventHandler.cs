@@ -18,7 +18,7 @@ namespace OrchardCore.Autoroute.Liquid
             _autorouteEntries = autorouteEntries;
         }
 
-        public Task RenderingAsync(TemplateContext context)
+        public Task RenderingAsync(LiquidTemplateContext context)
         {
             context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Slug", obj =>
             {

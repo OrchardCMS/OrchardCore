@@ -5,7 +5,7 @@ using OrchardCore.Markdown.Models;
 
 namespace OrchardCore.Markdown.ViewModels
 {
-    public class MarkdownBodyPartViewModel
+    public class MarkdownBodyPartViewModel : IContent
     {
         public string Markdown { get; set; }
         public string Html { get; set; }

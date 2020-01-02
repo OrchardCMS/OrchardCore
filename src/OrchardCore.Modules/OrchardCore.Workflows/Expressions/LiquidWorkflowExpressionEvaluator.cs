@@ -55,7 +55,7 @@ namespace OrchardCore.Workflows.Expressions
             context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Output, name)));
             context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Properties, name)));
 
-            context.SetValue("Workflow", workflowContext);
+            context.OnEnterScope((context, model) => context.SetValue("Workflow", workflowContext));
             return context;
         }
 

@@ -4,7 +4,7 @@ using OrchardCore.Liquid.Models;
 
 namespace OrchardCore.Liquid.ViewModels
 {
-    public class LiquidPartViewModel
+    public class LiquidPartViewModel : IContent
     {
         public string Liquid { get; set; }
         public string Html { get; set; }

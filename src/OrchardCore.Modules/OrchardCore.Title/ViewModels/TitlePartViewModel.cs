@@ -4,7 +4,7 @@ using OrchardCore.Title.Models;
 
 namespace OrchardCore.Title.ViewModels
 {
-    public class TitlePartViewModel
+    public class TitlePartViewModel : IContent
     {
         public string Title { get; set; }
 
