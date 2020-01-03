@@ -5,6 +5,7 @@ WSL 2 is (Windows Subsystem for Linux) can now run Docker natively without requi
 To have WSL 2 installed you will require to have at least Windows 10 Insider Preview build 19018 or higher. For those who don't know yet, it means that as of now 2020/01/03 you will require to at least opt-in the Windows 10 slow ring insiders preview. Also you will require to install Docker Desktop Edge 2.1.6.0 or a later release.
 
 https://docs.microsoft.com/en-us/windows/wsl/wsl2-install
+https://docs.docker.com/docker-for-windows/wsl-tech-preview/
 
 Now that we have installed WSL 2 and a Linux distro in it I strongly suggest that you get the new Windows Terminal to work with it. You will be able to open a powershell, cmd or even a command shell to the linux distro you installed.
 
