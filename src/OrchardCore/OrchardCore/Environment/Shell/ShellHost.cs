@@ -292,13 +292,21 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// A feature is enabled/disabled, the tenant needs to be restarted
+        /// A feature is enabled / disabled, the tenant needs to be restarted.
+        /// A null tenant means that all tenant needs to be restarted.
         /// </summary>
         Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("A tenant needs to be restarted '{TenantName}'", tenant);
+                if (tenant != null)
+                {
+                    _logger.LogInformation("A tenant needs to be restarted '{TenantName}'", tenant);
+                }
+                else
+                {
+                    _logger.LogInformation("All tenants need to be restarted");
+                }
             }
 
             if (_shellContexts == null)
@@ -306,9 +314,22 @@ namespace OrchardCore.Environment.Shell
                 return Task.CompletedTask;
             }
 
-            if (_shellContexts.TryRemove(tenant, out var context))
+            if (tenant != null)
             {
-                context.Release();
+                if (_shellContexts.TryRemove(tenant, out var context))
+                {
+                    context.Release();
+                }
+            }
+            else
+            {
+                foreach (var name in _shellContexts.Keys.ToArray())
+                {
+                    if (_shellContexts.TryRemove(name, out var context))
+                    {
+                        context.Release();
+                    }
+                }
             }
 
             return Task.CompletedTask;

@@ -6,12 +6,12 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell
 {
     public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
     {
+        private readonly ShellSettings _shellSettings;
         private readonly IExtensionManager _extensionManager;
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly IShellDescriptorManager _shellDescriptorManager;
@@ -20,11 +20,13 @@ namespace OrchardCore.Environment.Shell
         public FeatureDependencyNotificationHandler FeatureDependencyNotification { get; set; }
 
         public ShellDescriptorFeaturesManager(
+            ShellSettings shellSettings,
             IExtensionManager extensionManager,
             IEnumerable<ShellFeature> shellFeatures,
             IShellDescriptorManager shellDescriptorManager,
             ILogger<ShellFeaturesManager> logger)
         {
+            _shellSettings = shellSettings;
             _extensionManager = extensionManager;
             _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
             _shellDescriptorManager = shellDescriptorManager;
@@ -41,7 +43,7 @@ namespace OrchardCore.Environment.Shell
 
             var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToArray();
 
-            var isDefaultTenant = ShellScope.Context.Settings.Name == ShellHelper.DefaultShellName;
+            var isDefaultTenant = _shellSettings.Name == ShellHelper.DefaultShellName;
 
             var AllFeaturesToDisable = featuresToDisable
                 .Where(f => !alwaysEnabledIds.Contains(f.Id) && (isDefaultTenant || (!f.DefaultTenantOnly && !f.AcrossTenants)))
