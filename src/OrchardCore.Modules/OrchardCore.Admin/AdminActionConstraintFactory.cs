@@ -13,6 +13,7 @@ namespace OrchardCore.Admin
         public IActionConstraint CreateInstance(IServiceProvider services)
         {
             var adminOptions = services.GetRequiredService<IOptions<AdminOptions>>();
+
             return new AdminActionConstraint(new PathString('/' + adminOptions.Value.AdminUrlPrefix.TrimStart('/')));
         }
     }
