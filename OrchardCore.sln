@@ -1,4 +1,5 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28822.285
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -359,9 +360,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Contents.Core",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application.Cms.Core.Targets", "src\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.csproj", "{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Media.Core", "src\OrchardCore\OrchardCore.Media.Core\OrchardCore.Media.Core\OrchardCore.Media.Core.csproj", "{8BC282D3-B7AF-495A-A5B1-D175875EB90E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Media.Core", "src\OrchardCore\OrchardCore.Media.Core\OrchardCore.Media.Core\OrchardCore.Media.Core.csproj", "{8BC282D3-B7AF-495A-A5B1-D175875EB90E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Benchmarks", "test\OrchardCore.Benchmarks\OrchardCore.Benchmarks.csproj", "{85610AB6-07E8-45E3-9C48-34D952CC5DD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Benchmarks", "test\OrchardCore.Benchmarks\OrchardCore.Benchmarks.csproj", "{85610AB6-07E8-45E3-9C48-34D952CC5DD2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StandardTheme", "src\OrchardCore.Themes\StandardTheme\StandardTheme.csproj", "{B89576A7-2EA0-4C19-8F16-B1674EEC3940}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyTheme", "src\OrchardCore.Themes\MyTheme\MyTheme.csproj", "{86D90FF4-6444-400B-A73F-D58618E822CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -973,6 +978,14 @@ Global
 		{85610AB6-07E8-45E3-9C48-34D952CC5DD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85610AB6-07E8-45E3-9C48-34D952CC5DD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85610AB6-07E8-45E3-9C48-34D952CC5DD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B89576A7-2EA0-4C19-8F16-B1674EEC3940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B89576A7-2EA0-4C19-8F16-B1674EEC3940}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B89576A7-2EA0-4C19-8F16-B1674EEC3940}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B89576A7-2EA0-4C19-8F16-B1674EEC3940}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86D90FF4-6444-400B-A73F-D58618E822CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86D90FF4-6444-400B-A73F-D58618E822CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86D90FF4-6444-400B-A73F-D58618E822CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86D90FF4-6444-400B-A73F-D58618E822CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1144,6 +1157,8 @@ Global
 		{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2} = {3398AB60-2DB7-464C-B211-C4120BE75582}
 		{8BC282D3-B7AF-495A-A5B1-D175875EB90E} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{85610AB6-07E8-45E3-9C48-34D952CC5DD2} = {B8D16C60-99B4-43D5-A3AD-4CD89AF39B25}
+		{B89576A7-2EA0-4C19-8F16-B1674EEC3940} = {AF3BADEA-CC93-4116-B3C1-F8D074EBEE4F}
+		{86D90FF4-6444-400B-A73F-D58618E822CF} = {AF3BADEA-CC93-4116-B3C1-F8D074EBEE4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

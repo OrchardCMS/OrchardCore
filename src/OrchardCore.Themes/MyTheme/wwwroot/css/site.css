@@ -1,0 +1,238 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+/*super script*/
+.sup {
+    line-height: 0;
+    font-size: 70%;
+    vertical-align: text-top;    
+}
+
+/*Home Page Background - testing to see if we can create a background that changes with screen size*/
+/*@media (max-width: 300px) {
+    body {
+        background-color: #d6d1d1;
+        background-image: url("http://placekitten.com/g/200/300");
+    }
+}
+
+@media (min-width: 301px) and (max-width: 600px) {
+    body {
+        background-color: #d6d1d1;
+        background-image: url("http://placekitten.com/g/400/600");
+    }
+}
+
+@media (min-width: 601px) and (max-width: 768px) {
+    body {
+        background-color: #d6d1d1;
+        background-image: url("http://placekitten.com/g/500/768");
+    }
+}
+
+@media (min-width: 769px) {
+    body {
+        background-color: #d6d1d1;
+        background-image: url("http://placekitten.com/g/800/1048");
+    }
+}*/
+
+/* Provide sufficient contrast against white background */
+a {
+  color: #0366d6;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+/* Logo Styles */
+.logo-primary-color {
+    color: #FF6F62
+}
+
+.logo-secondary-color-light{
+    color:#ffffff;
+}
+
+.logo-secondary-color-dark {
+    color:#000000;
+}
+
+.logo-primary-style-light {
+    font-family: 'Josefin Sans';
+    text-transform: lowercase;
+    color: #FF6F62;
+    font-weight: bolder;
+    letter-spacing: 0.14em
+}
+
+.logo-primary-style-dark {
+    font-family: 'Josefin Sans';
+    text-transform: lowercase;
+    color: #FF6F62;
+    font-weight: bolder;
+    letter-spacing: 0.14em
+}
+
+.logo-secondary-style-light {
+    font-family: 'Josefin Sans';
+    text-transform: lowercase;
+    color: #ffffff;
+    font-weight: bolder;
+    letter-spacing: 0.14em
+}
+
+.logo-secondary-style-dark {
+    font-family: 'Josefin Sans';
+    text-transform: lowercase;
+    color: #000000;
+    font-weight: bolder;
+    letter-spacing: 0.14em
+}
+
+.minor-title {
+    /*letter-spacing: 0.14em;*/
+    font-size: 1.25rem;
+    color: #000000;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+}
+
+.minor-title2 {
+    /*letter-spacing: 0.14em;*/
+    font-size: 1.10rem;
+    color: #000000;
+    text-transform: none;
+    margin-bottom: 0;
+}
+
+    .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        color: #fff;
+        background-color: #1b6ec2;
+        border-color: #1861ac;
+    }
+
+/* Order Lists
+-------------------------------------------------- */
+ol h5 {
+
+}
+
+/* Buttons
+-------------------------------------------------- */
+.center-button {
+    display: table;
+}
+
+    .center-button a {
+        display: table-cell;      
+        vertical-align: middle;
+    }
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  /*margin-bottom: 60px;*/
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px; /* Vertically center the text there */
+}
+
+/* Google Material Icons */
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px; /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+    /* Rules for sizing the icon. */
+    .material-icons.md-18 {
+        font-size: 18px;
+    }
+
+    .material-icons.md-24 {
+        font-size: 24px;
+    }
+
+    .material-icons.md-36 {
+        font-size: 36px;
+    }
+
+    .material-icons.md-48 {
+        font-size: 48px;
+    }
+    /* Rules for using matieral icons as black on a light background. */
+    .material-icons.md-dark {
+        color: rgba(0, 0, 0, 1);
+    }
+    .material-icons.md-dark.md-inactive {
+            color: rgba(0, 0, 0, 0.26);
+        }
+    /* Rules for using material icons as white on a dark background. */
+    .material-icons.md-light {
+        color: rgba(255, 255, 255, 1);
+    }
+    .material-icons.md-light.md-inactive {
+            color: rgba(255, 255, 255, 0.3);
+        }
