@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Lucene.ViewModels
+namespace OrchardCore.Search.Abstractions.ViewModels
 {
     public class SearchIndexViewModel
     {
@@ -10,6 +10,6 @@ namespace OrchardCore.Lucene.ViewModels
         public Pager Pager { get; set; }
         public string Query { get; set; }
         public string IndexName { get; set; }
-        public IEnumerable<ContentItem> ContentItems { get; set; } 
+        public IEnumerable<ContentItem> ContentItems { get; set; }
     }
 }

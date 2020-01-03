@@ -11,6 +11,7 @@ using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Navigation;
+using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Lucene.Controllers

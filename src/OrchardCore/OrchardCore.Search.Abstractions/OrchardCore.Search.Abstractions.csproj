@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <RootNamespace>OrchardCore.Lucene</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Navigation\OrchardCore.Navigation.csproj" />
+    <ProjectReference Include="..\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
+  </ItemGroup>
+</Project>
