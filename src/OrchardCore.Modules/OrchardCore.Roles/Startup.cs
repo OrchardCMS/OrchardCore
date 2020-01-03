@@ -36,6 +36,7 @@ namespace OrchardCore.Roles
         public override void ConfigureServices(IServiceCollection services)
         {
             services.TryAddScoped<RoleManager<IRole>>();
+            services.AddSingleton<ILookupNormalizer, NullLookupNormalizer>();
             services.TryAddScoped<IRoleStore<IRole>, RoleStore>();
             services.TryAddScoped<IRoleService, RoleService>();
             services.TryAddScoped<IRoleClaimStore<IRole>, RoleStore>();
