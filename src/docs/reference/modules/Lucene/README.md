@@ -17,27 +17,7 @@ Here is a sample step:
         "IndexLatest": false,
         "IndexedContentTypes": [
           "Article",
-          "Blockquote",
-          "Blog",
-          "BlogPost",
-          "Button",
-          "Container",
-          "Form",
-          "ImageWidget",
-          "Image",
-          "Input",
-          "Label",
-          "LinkMenuItem",
-          "LiquidWidget",
-          "LiquidPage",
-          "Menu",
-          "Page",
-          "Paragraph",
-          "RawHtml",
-          "Select",
-          "TextArea",
-          "Validation",
-          "ValidationSummary"
+          "BlogPost"
         ]
       }
     }
