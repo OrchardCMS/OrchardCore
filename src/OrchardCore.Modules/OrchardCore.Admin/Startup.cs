@@ -36,6 +36,8 @@ namespace OrchardCore.Admin
 
                 // Ordered to be called before any global filter.
                 options.Filters.Add(typeof(AdminZoneFilter), -1000);
+
+                options.Conventions.Add(new AdminActionModelConvention());
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();

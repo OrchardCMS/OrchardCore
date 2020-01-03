@@ -27,6 +27,7 @@ namespace OrchardCore.Roles.Services
         private readonly ISessionHelper _sessionHelper;
         private readonly IMemoryCache _memoryCache;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStringLocalizer<RoleStore> S;
 
         public RoleStore(
             ISignal signal,
@@ -42,13 +43,11 @@ namespace OrchardCore.Roles.Services
             _sessionHelper = sessionHelper;
             _memoryCache = memoryCache;
             _serviceProvider = serviceProvider;
-            T = stringLocalizer;
+            S = stringLocalizer;
             Logger = logger;
         }
 
         public ILogger Logger { get; }
-
-        public IStringLocalizer T { get; }
 
         public void Dispose()
         {
@@ -122,7 +121,7 @@ namespace OrchardCore.Roles.Services
             if (String.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") ||
                 String.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))
             {
-                return IdentityResult.Failed(new IdentityError { Description = T["Can't delete system roles."] });
+                return IdentityResult.Failed(new IdentityError { Description = S["Can't delete system roles."] });
             }
 
             var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
