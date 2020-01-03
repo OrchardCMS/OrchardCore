@@ -7,7 +7,9 @@ using GraphQL.Conversion;
 using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.ValidationRules;
@@ -102,7 +104,20 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
         {
             var services = new ServiceCollection();
 
-            services.AddAuthorization();
+            // This call is replaced in order to register the services as Scoped instead of Transient in order to minimize the allocations
+            // services.AddAuthorization();
+
+            #region services.AddAuthorization()
+
+            services.TryAdd(ServiceDescriptor.Scoped<IAuthorizationService, DefaultAuthorizationService>());
+            services.TryAdd(ServiceDescriptor.Scoped<IAuthorizationPolicyProvider, DefaultAuthorizationPolicyProvider>());
+            services.TryAdd(ServiceDescriptor.Scoped<IAuthorizationHandlerProvider, DefaultAuthorizationHandlerProvider>());
+            services.TryAdd(ServiceDescriptor.Scoped<IAuthorizationEvaluator, DefaultAuthorizationEvaluator>());
+            services.TryAdd(ServiceDescriptor.Scoped<IAuthorizationHandlerContextFactory, DefaultAuthorizationHandlerContextFactory>());
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IAuthorizationHandler, PassThroughAuthorizationHandler>());
+
+            #endregion
+
             services.AddLogging();
             services.AddOptions();
 
