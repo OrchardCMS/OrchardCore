@@ -41,7 +41,9 @@ namespace OrchardCore.Markdown.GraphQL
                 ContentItem = ctx.Source.ContentItem
             };
 
-            var markdown = await liquidTemplateManager.RenderAsync(ctx.Source.Markdown, htmlEncoder, model);
+            var markdown = await liquidTemplateManager.RenderAsync(ctx.Source.Markdown, htmlEncoder, model,
+                scope => scope.SetValue("ContentItem", model.ContentItem));
+
             return Markdig.Markdown.ToHtml(markdown);
         }
     }
