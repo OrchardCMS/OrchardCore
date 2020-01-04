@@ -28,32 +28,32 @@ namespace OrchardCore.Contents.Controllers
 
         private static ConcurrentDictionary<string, ContentItem> _cache = new ConcurrentDictionary<string, ContentItem>();
 
-        public IActionResult Display(string contentItemId)
+        public async Task<IActionResult> Display(string contentItemId)
         {
-            return Content("Hello");
+            if (!_cache.TryGetValue(contentItemId, out var contentItem))
+            {
+                contentItem = await _contentManager.GetAsync(contentItemId);
 
-            //if (!_cache.TryGetValue(contentItemId, out var contentItem))
-            //{
-            //    contentItem = await _contentManager.GetAsync(contentItemId);
+                if (contentItem == null)
+                {
+                    return NotFound();
+                }
 
-            //    if (contentItem == null)
-            //    {
-            //        return NotFound();
-            //    }
+                _cache.TryAdd(contentItemId, contentItem);
+            }
 
-            //    _cache.TryAdd(contentItemId, contentItem);
-            //}
-
-            //if (contentItem == null)
-            //{
-            //    return NotFound();
-            //}
+            if (contentItem == null)
+            {
+                return NotFound();
+            }
 
             //if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             //{
             //    return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
             //}
 
+
+            return Content(contentItem.DisplayText);
 
             //var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
 
