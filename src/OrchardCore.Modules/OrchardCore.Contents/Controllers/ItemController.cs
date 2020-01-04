@@ -52,9 +52,12 @@ namespace OrchardCore.Contents.Controllers
                 return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
 
-            return View(model);
+            return Content(contentItem.DisplayText);
+
+            //var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
+
+            //return View(model);
         }
 
         public async Task<IActionResult> Preview(string contentItemId)
