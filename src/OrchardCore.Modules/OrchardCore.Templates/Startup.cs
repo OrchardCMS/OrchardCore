@@ -47,6 +47,9 @@ namespace OrchardCore.Templates
             services.AddTransient<IDeploymentSource, AllTemplatesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllTemplatesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllTemplatesDeploymentStepDriver>();
+
+            services.AddScoped<AdminTemplatesManager>();
+            services.AddScoped<IPermissionProvider, AdminTemplatesPermissions>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -96,9 +99,6 @@ namespace OrchardCore.Templates
             services.AddTransient<IDeploymentSource, AllAdminTemplatesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllAdminTemplatesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllAdminTemplatesDeploymentStepDriver>();
-            
-            services.AddScoped<AdminTemplatesManager>();
-            services.AddScoped<IPermissionProvider, AdminTemplatesPermissions>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
