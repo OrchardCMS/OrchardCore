@@ -1,14 +1,9 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using static OpenIddict.Abstractions.OpenIddictConstants;
-using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
 namespace OrchardCore.OpenId.Recipes
 {
