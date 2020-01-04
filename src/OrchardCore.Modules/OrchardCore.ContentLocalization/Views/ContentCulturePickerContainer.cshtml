@@ -2,15 +2,25 @@
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
         <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-            @foreach (var culture in Model.SupportedCultures)
-            {
-                if (culture.Name != Model.CurrentCulture.Name)
+            @{
+                var routeData = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var culture in Model.SupportedCultures)
                 {
-                    <a asp-route="RedirectToLocalizedContent"
-                       asp-route-area="OrchardCore.ContentLocalization"
-                       asp-route-targetculture="@culture.Name"
-                       asp-route-contentItemUrl="@Context.Request.Path.Value"
-                       class="dropdown-item">@culture.DisplayName</a>
+                    if (culture.Name != Model.CurrentCulture.Name)
+                    {
+                        routeData.Clear();
+                        routeData.Add("area", "OrchardCore.ContentLocalization");
+                        routeData.Add("targetCulture", culture.Name);
+                        routeData.Add("contentItemUrl", Context.Request.Path.Value);
+
+                        foreach (var kv in Context.Request.Query)
+                        {
+                            routeData.TryAdd(kv.Key, kv.Value.ToString());
+                        }
+
+                        <a asp-route="RedirectToLocalizedContent" asp-all-route-data=@routeData class="dropdown-item">@culture.DisplayName</a>
+                    }
                 }
             }
         </div>

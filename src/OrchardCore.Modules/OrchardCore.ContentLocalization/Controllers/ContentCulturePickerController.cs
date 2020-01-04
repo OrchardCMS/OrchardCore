@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using OrchardCore.Entities;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace OrchardCore.ContentLocalization.Controllers
 {
@@ -47,12 +49,23 @@ namespace OrchardCore.ContentLocalization.Controllers
                 contentItemUrl = "/";
             }
 
+            var routeData = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var kv in HttpContext.Request.Query)
+            {
+                routeData.TryAdd(kv.Key, kv.Value.ToString());
+            }
+
+            routeData.Remove("targetCulture");
+            routeData.Remove("contentItemUrl");
+
             var supportedCultures = await _locationService.GetSupportedCulturesAsync();
 
             if (!supportedCultures.Any(t => t == targetCulture))
             {
-                return LocalRedirect('~' + contentItemUrl);
+                return LocalRedirect('~' + QueryHelpers.AddQueryString(contentItemUrl, routeData));
             }
+
             var settings = (await _siteService.GetSiteSettingsAsync()).As<ContentCulturePickerSettings>();
 
             if (settings.SetCookie)
@@ -73,7 +86,10 @@ namespace OrchardCore.ContentLocalization.Controllers
 
                 if (localization != null)
                 {
-                    return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }));
+                    routeData.TryAdd("area", "OrchardCore.Contents");
+                    routeData.TryAdd("contentItemId", localization.ContentItemId);
+
+                    return LocalRedirect(Url.Action("Display", "Item", routeData));
                 }
             }
 
@@ -87,13 +103,16 @@ namespace OrchardCore.ContentLocalization.Controllers
 
                     if (localization != null)
                     {
-                        return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }));
+                        routeData.TryAdd("area", "OrchardCore.Contents");
+                        routeData.TryAdd("contentItemId", localization.ContentItemId);
+
+                        return LocalRedirect(Url.Action("Display", "Item", routeData));
                     }
                 }
             }
 
             // Redirect to the same page by default
-            return LocalRedirect('~' + contentItemUrl);
+            return LocalRedirect('~' + QueryHelpers.AddQueryString(contentItemUrl, routeData));
         }
     }
 }
