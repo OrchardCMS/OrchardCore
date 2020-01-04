@@ -18,7 +18,7 @@ https://github.com/microsoft/terminal
 
 ## 2 - Build/Publish Orchard Core
 
-You can build Orchard Core inside your Windows 10 Powershell or CMD to make things faster. You could also build it inside your installed linux repo by installing dotnet core latest sdk in it alternatively. But for making things faster we will build OC inside Windows 10 as we can access the files within the Linux distro later on by using a mounted drive. All the current drives that you have in Windows are available by doing `cd /mnt/your-drive-letter`.
+We can build Orchard Core inside your Windows 10 Powershell or CMD to make things faster. We could also build it inside your installed linux repo by installing dotnet core latest sdk alternatively. But for making things faster we will build OC inside Windows 10 as we can access the files within the Linux distro later on by using a mounted drive. All the current drives that you have in Windows are available by doing `cd /mnt/your-drive-letter` in your Linux terminal.
 
 So let's open up Windows Terminal on a cmd shell and build/publish OC with these commands : 
 
