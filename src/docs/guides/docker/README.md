@@ -1,20 +1,22 @@
 # Create custom Docker image using WSL 2
 
-WSL 2 is (Windows Subsystem for Linux) can now run Docker natively without requiring an Hyper-V Ubuntu virtual machine. That means that you can now create docker images/containers directly inside the WSL linux OS's that you install in WSL. More than that you can now use Powershell and/or CMD shell on the Windows 10 host to make `docker` commands.
+WSL 2 is (Windows Subsystem for Linux) can now be used with to run Docker natively without requiring an Hyper-V Ubuntu virtual machine. That means than that you can now use Powershell and/or CMD shell on the Windows 10 host to make `docker` commands.
 
 To have WSL 2 installed you will require to have at least Windows 10 Insider Preview build 19018 or higher. For those who don't know yet, it means that as of now 2020/01/03 you will require to at least opt-in the Windows 10 slow ring insiders preview. Also you will require to install Docker Desktop Edge 2.1.6.0 or a later release.
 
+## 1 - Install pre-requisite
+
+https://insider.windows.com/en-us/getting-started/
 https://docs.microsoft.com/en-us/windows/wsl/wsl2-install
 https://docs.docker.com/docker-for-windows/wsl-tech-preview/
 
-Now that we have installed WSL 2 and a Linux distro in it I strongly suggest that you get the new Windows Terminal to work with it. You will be able to open a powershell, cmd or even a command shell to the linux distro you installed.
+Please follow the instructions in those 3 pages to have the pre-requisite to make this work.
+
+Now for the rest I will assume that we have installed WSL 2 and a Linux distro in it. I also strongly suggest that you get the new Windows Terminal as it will allow you open a powershell, cmd or even a command shell to the linux distro you installed.
 
 https://github.com/microsoft/terminal
 
-
-Now that all the tools are installed here are the steps to make it work :
-
-## 1 - Build/Publish Orchard Core
+## 2 - Build/Publish Orchard Core
 
 You can build Orchard Core inside your Windows 10 Powershell or CMD to make things faster. You could also build it inside your installed linux repo by installing dotnet core latest sdk in it alternatively. But for making things faster we will build OC inside Windows 10 as we can access the files within the Linux distro later on by using a mounted drive. All the current drives that you have in Windows are available by doing `cd /mnt/your-drive-letter`.
 
@@ -30,9 +32,9 @@ Now you will be able to find the published version of OC in `C:\YourRepositories
 or alternatively in your Linux shell in
 `/mnt/c/YourRepositoriesPath/OrchardCore/build/release`  
 
-## 2 - Create a Docker image of OC
+## 3 - Set Dockerfile and .dockerignore
 
-First before creating a new Docker image we will require to change the .dockerignore file and Dockerfile that are provided with the source code of Orchard Core. They won't work as they are set to work with the CI mostly. You can find these files in `C:\YourRepositoriesPath\OrchardCore\`
+First before creating a new Docker image we will require to change the .dockerignore file and Dockerfile that are provided with the source code of Orchard Core. They won't work as they are set to work with the CI only. You can find these files in `C:\YourRepositoriesPath\OrchardCore\`
 
 ## .dockerignore
 
@@ -60,6 +62,8 @@ COPY /build/release .
 
 ENTRYPOINT ["dotnet", "OrchardCore.Cms.Web.dll"]
 ```
+
+## 4 - Create a Docker image of OC
 
 Now that we changed these, let's open up a Linux distro command shell with the Windows Terminal by opening a new tab by finding the distro you previously installed.
 
