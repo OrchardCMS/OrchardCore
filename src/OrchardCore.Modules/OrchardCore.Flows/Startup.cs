@@ -61,7 +61,7 @@ namespace OrchardCore.Flows
             routes.MapAreaControllerRoute(
                 name: "Flows.BuildEditor",
                 areaName: "OrchardCore.Flows",
-                pattern: _adminOptions.AdminUrlPrefix + "/BuildEditor",
+                pattern: _adminOptions.AdminUrlPrefix + "/Flows/BuildEditor",
                 defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.BuildEditor) }
             );
         }
