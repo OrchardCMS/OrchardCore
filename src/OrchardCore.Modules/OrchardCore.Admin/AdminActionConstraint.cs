@@ -21,7 +21,7 @@ namespace OrchardCore.Admin
             if (!context.RouteContext.HttpContext.Request.Path.StartsWithSegments(_adminUrlPrefix))
             {
                 var logger = context.RouteContext.HttpContext.RequestServices.GetService<ILogger<AdminActionConstraint>>();
-                logger.LogWarning("An incorrect admin route has been used : {0}", context.RouteContext.HttpContext.Request.Path);
+                logger.LogWarning("An incorrect admin route is used : {0}", context.RouteContext.HttpContext.Request.Path);
             }
 
             return true;
