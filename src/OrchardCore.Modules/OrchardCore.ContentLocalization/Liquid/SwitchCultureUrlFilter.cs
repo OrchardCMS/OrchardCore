@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -25,14 +26,19 @@ namespace OrchardCore.ContentLocalization.Liquid
             var targetCulture = input.ToStringValue();
             var urlHelper = (IUrlHelper)urlHelperObj;
 
-            var url = urlHelper.RouteUrl("RedirectToLocalizedContent",
-                new
-                {
-                    area = "OrchardCore.ContentLocalization",
-                    targetculture = targetCulture,
-                    contentItemUrl = request.Path.Value,
-                });
+            var routeData = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            routeData.Add("area", "OrchardCore.ContentLocalization");
+            routeData.Add("targetCulture", targetCulture);
+            routeData.Add("contentItemUrl", request.Path.Value);
+
+            foreach (var kv in request.Query)
+            {
+                routeData.TryAdd(kv.Key, kv.Value.ToString());
+            }
+
+            var url = urlHelper.RouteUrl("RedirectToLocalizedContent", routeData);
             return new ValueTask<FluidValue>(FluidValue.Create(url));
-         }
+        }
     }
 }
