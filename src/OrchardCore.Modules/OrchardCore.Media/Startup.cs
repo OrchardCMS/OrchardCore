@@ -196,7 +196,7 @@ namespace OrchardCore.Media
             routes.MapAreaControllerRoute(
                 name: "Media.MediaApplication",
                 areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/MediaApplication",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/MediaApplication",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.MediaApplication) }
             );
 
