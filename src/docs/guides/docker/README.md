@@ -6,9 +6,9 @@ To have WSL 2 installed you will require to have at least Windows 10 Insider Pre
 
 ## 1 - Install pre-requisite
 
-https://insider.windows.com/en-us/getting-started/
-https://docs.microsoft.com/en-us/windows/wsl/wsl2-install
-https://docs.docker.com/docker-for-windows/wsl-tech-preview/
+https://insider.windows.com/en-us/getting-started/  
+https://docs.microsoft.com/en-us/windows/wsl/wsl2-install  
+https://docs.docker.com/docker-for-windows/wsl-tech-preview/  
 
 Please follow the instructions in those 3 pages to have the pre-requisite to make this work.
 
