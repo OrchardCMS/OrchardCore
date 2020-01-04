@@ -48,7 +48,9 @@ namespace OrchardCore.ContentPreview.Handlers
                         ContentItem = part.ContentItem
                     };
 
-                    previewAspect.PreviewUrl = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model);
+                    previewAspect.PreviewUrl = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
+                        scope => scope.SetValue("ContentItem", model.ContentItem));
+
                     previewAspect.PreviewUrl = previewAspect.PreviewUrl.Replace("\r", String.Empty).Replace("\n", String.Empty);
                 });
             }
