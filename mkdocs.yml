@@ -56,6 +56,7 @@ nav:
         - Install localization files: docs/guides/install-localization-files/README.md
         - Integrate Facebook plugins: docs/guides/integrate-facebook-plugins/README.md
         - Run code on startup: docs/guides/run-code-on-startup/README.md
+        - Work with Docker: docs/guides/docker/README.md
     - Key Topics: 
         - Manage your Content: docs/topics/content-management/README.md
         - Customize the Display: docs/topics/display/README.md
