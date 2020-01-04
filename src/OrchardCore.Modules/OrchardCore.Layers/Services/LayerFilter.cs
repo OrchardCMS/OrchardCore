@@ -59,7 +59,7 @@ namespace OrchardCore.Layers.Services
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
             // Should only run on the front-end for a full view
-            if (false && (context.Result is ViewResult || context.Result is PageResult) &&
+            if ((context.Result is ViewResult || context.Result is PageResult) &&
                 !AdminAttribute.IsApplied(context.HttpContext))
             {
                 // Even if the Admin attribute is not applied we might be using the admin theme, for instance in Login views.

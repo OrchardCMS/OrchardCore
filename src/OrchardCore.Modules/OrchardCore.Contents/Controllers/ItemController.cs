@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Contents.Controllers
@@ -26,21 +24,9 @@ namespace OrchardCore.Contents.Controllers
             _contentManager = contentManager;
         }
 
-        private static ConcurrentDictionary<string, ContentItem> _cache = new ConcurrentDictionary<string, ContentItem>();
-
         public async Task<IActionResult> Display(string contentItemId)
         {
-            if (!_cache.TryGetValue(contentItemId, out var contentItem))
-            {
-                contentItem = await _contentManager.GetAsync(contentItemId);
-
-                if (contentItem == null)
-                {
-                    return NotFound();
-                }
-
-                _cache.TryAdd(contentItemId, contentItem);
-            }
+            var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
             {
