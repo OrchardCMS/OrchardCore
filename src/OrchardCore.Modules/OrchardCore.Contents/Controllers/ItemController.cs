@@ -46,10 +46,10 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
-            {
-                return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
-            }
+            //if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            //{
+            //    return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
+            //}
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
 
