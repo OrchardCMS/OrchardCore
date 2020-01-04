@@ -138,14 +138,14 @@ namespace OrchardCore.Roles.Services
 
         public async Task<IRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
-            var roles = await LoadRolesAsync();
+            var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.RoleName == roleId);
             return role;
         }
 
         public async Task<IRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            var roles = await LoadRolesAsync();
+            var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.NormalizedRoleName == normalizedRoleName);
             return role;
         }
