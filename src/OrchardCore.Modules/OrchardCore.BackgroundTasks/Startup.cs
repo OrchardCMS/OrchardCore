@@ -44,25 +44,25 @@ namespace OrchardCore.BackgroundTasks
             routes.MapAreaControllerRoute(
                 name: "BackgroundTasksCreate",
                 areaName: "OrchardCore.BackgroundTasks",
-                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Create",
+                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Create/{name}",
                 defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Create) }
             );
             routes.MapAreaControllerRoute(
                 name: "BackgroundTasksEdit",
                 areaName: "OrchardCore.BackgroundTasks",
-                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Edit",
+                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Edit/{name}",
                 defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Edit) }
             );
             routes.MapAreaControllerRoute(
                 name: "BackgroundTasksEnable",
                 areaName: "OrchardCore.BackgroundTasks",
-                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Enable",
+                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Enable/{name}",
                 defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Enable) }
             );
             routes.MapAreaControllerRoute(
                 name: "BackgroundTasksDisable",
                 areaName: "OrchardCore.BackgroundTasks",
-                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Disable",
+                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Disable/{name}",
                 defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Disable) }
             );
         }
