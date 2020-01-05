@@ -16,15 +16,14 @@ namespace OrchardCore.Markdown.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly IStringLocalizer<MarkdownFieldDisplayDriver> S;
 
         public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<MarkdownFieldDisplayDriver> localizer, HtmlEncoder htmlEncoder)
         {
             _liquidTemplateManager = liquidTemplateManager;
-            T = localizer;
             _htmlEncoder = htmlEncoder;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(MarkdownField field, BuildFieldDisplayContext context)
         {
@@ -35,7 +34,9 @@ namespace OrchardCore.Markdown.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
-                model.Markdown = await _liquidTemplateManager.RenderAsync(field.Markdown, _htmlEncoder, model);
+                model.Markdown = await _liquidTemplateManager.RenderAsync(field.Markdown, _htmlEncoder, model,
+                    scope => scope.SetValue("ContentItem", field.ContentItem));
+
                 model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
             })
             .Location("Content")
@@ -62,7 +63,7 @@ namespace OrchardCore.Markdown.Drivers
                 if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
                 {
                     var fieldName = context.PartFieldDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(field.Markdown), T["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+                    context.Updater.ModelState.AddModelError(nameof(field.Markdown), S["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
                 }
                 else
                 {

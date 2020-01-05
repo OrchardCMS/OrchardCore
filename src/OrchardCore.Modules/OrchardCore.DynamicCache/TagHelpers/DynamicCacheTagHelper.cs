@@ -173,14 +173,12 @@ namespace OrchardCore.DynamicCache.TagHelpers
 
                 try
                 {
-                    content = await output.GetChildContentAsync();
+                    content = await ProcessContentAsync(output, cacheContext);
                 }
                 finally
                 {
                     _cacheScopeManager.ExitScope();
                 }
-
-                content = await ProcessContentAsync(output, cacheContext);
             }
             else
             {

@@ -40,7 +40,9 @@ namespace OrchardCore.Markdown.Handlers
                         ContentItem = part.ContentItem
                     };
 
-                    var markdown = await _liquidTemplateManager.RenderAsync(part.Markdown, _htmlEncoder, model);
+                    var markdown = await _liquidTemplateManager.RenderAsync(part.Markdown, _htmlEncoder, model,
+                        scope => scope.SetValue("ContentItem", model.ContentItem));
+
                     var result = Markdig.Markdown.ToHtml(markdown ?? "");
 
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);

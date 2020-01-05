@@ -12,14 +12,14 @@ namespace OrchardCore.Html.GraphQL
 {
     public class HtmlBodyQueryObjectType : ObjectGraphType<HtmlBodyPart>
     {
-        public HtmlBodyQueryObjectType(IStringLocalizer<HtmlBodyQueryObjectType> T)
+        public HtmlBodyQueryObjectType(IStringLocalizer<HtmlBodyQueryObjectType> S)
         {
             Name = "HtmlBodyPart";
-            Description = T["Content stored as HTML."];
+            Description = S["Content stored as HTML."];
 
             Field<StringGraphType>()
                 .Name("html")
-                .Description(T["the HTML content"])
+                .Description(S["the HTML content"])
                 .ResolveLockedAsync(RenderHtml);
         }
 
@@ -36,7 +36,8 @@ namespace OrchardCore.Html.GraphQL
                 ContentItem = ctx.Source.ContentItem
             };
 
-            return await liquidTemplateManager.RenderAsync(ctx.Source.Html, htmlEncoder, model);
+            return await liquidTemplateManager.RenderAsync(ctx.Source.Html, htmlEncoder, model,
+                scope => scope.SetValue("ContentItem", model.ContentItem));
         }
     }
 }
