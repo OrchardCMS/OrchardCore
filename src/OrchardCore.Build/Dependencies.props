@@ -19,6 +19,7 @@
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00006" />
     <PackageManagement Include="MailKit" Version="2.4.1" />
     <PackageManagement Include="Markdig" Version="0.18.0" />
+    <PackageManagement Include="MessagePack" Version="2.0.323" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.1.0" />
     <PackageManagement Include="Moq" Version="4.13.1" />
