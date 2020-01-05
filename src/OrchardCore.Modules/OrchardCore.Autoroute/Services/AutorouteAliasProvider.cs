@@ -1,25 +1,21 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
-using YesSql;
 
 namespace OrchardCore.Autoroute.Services
 {
     public class AutorouteAliasProvider : IContentAliasProvider
     {
         private readonly IAutorouteEntries _autorouteEntries;
-        private readonly ISession _session;
 
-        public AutorouteAliasProvider(IAutorouteEntries autorouteEntries, ISession session)
+        public AutorouteAliasProvider(IAutorouteEntries autorouteEntries)
         {
             _autorouteEntries = autorouteEntries;
-            _session = session;
         }
 
         public int Order => 10;
 
-        public async Task<string> GetContentItemIdAsync(string alias)
+        public Task<string> GetContentItemIdAsync(string alias)
         {
             if (alias.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
             {
@@ -30,18 +26,14 @@ namespace OrchardCore.Autoroute.Services
                     alias = "/" + alias;
                 }
 
-                // This only contains published items.
-                if (_autorouteEntries.TryGetContentItemId(alias, out var contentItemId))
+                string contentItemId;
+                if (_autorouteEntries.TryGetContentItemId(alias, out contentItemId))
                 {
-                    return contentItemId;
-                } else // Not relevant to check against published here as we are only querying for the content item id for the path / alias provided.
-                {
-                    var autoroutePartIndex = await _session.Query<ContentItem, AutoroutePartIndex>(x => x.Path == alias.ToLowerInvariant()).FirstOrDefaultAsync();
-                    return autoroutePartIndex?.ContentItemId;
+                    return Task.FromResult(contentItemId);
                 }
             }
 
-            return null;
+            return Task.FromResult<string>(null);
         }
     }
 }

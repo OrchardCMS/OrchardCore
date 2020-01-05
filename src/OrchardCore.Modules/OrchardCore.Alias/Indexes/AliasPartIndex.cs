@@ -9,6 +9,7 @@ namespace OrchardCore.Alias.Indexes
     {
         public string ContentItemId { get; set; }
         public string Alias { get; set; }
+        public bool Latest { get; set; }
         public bool Published { get; set; }
     }
 
@@ -26,6 +27,8 @@ namespace OrchardCore.Alias.Indexes
                         {
                             Alias = alias.ToLowerInvariant(),
                             ContentItemId = contentItem.ContentItemId,
+                            Latest = contentItem.Latest,
+                            Published = contentItem.Published
                         };
                     }
 

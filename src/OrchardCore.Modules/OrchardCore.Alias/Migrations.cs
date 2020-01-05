@@ -27,7 +27,8 @@ namespace OrchardCore.Alias
             SchemaBuilder.CreateMapIndexTable(nameof(AliasPartIndex), table => table
                 .Column<string>("Alias", col => col.WithLength(AliasPartDisplayDriver.MaxAliasLength))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
-                .Column<bool>("Published")
+                .Column<bool>("Latest", c => c.WithDefault(true))
+                .Column<bool>("Published", c => c.WithDefault(true))
             );
 
             SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
@@ -38,11 +39,15 @@ namespace OrchardCore.Alias
             return 2;
         }
 
-        // This code can be removed in a later version as published is a recent addition.
+        // This code can be removed in a later version as Latest and Published are alterations.
         public int UpdateFrom1()
         {
             SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
-                .AddColumn<bool>("Published")
+                .AddColumn<bool>("Latest", c => c.WithDefault(true))
+            );
+
+            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+                .AddColumn<bool>("Published", c => c.WithDefault(true))
             );
 
             return 2;
