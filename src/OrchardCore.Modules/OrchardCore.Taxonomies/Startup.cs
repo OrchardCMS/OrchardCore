@@ -71,21 +71,21 @@ namespace OrchardCore.Taxonomies
             routes.MapAreaControllerRoute(
                 name: "Taxonomies.Create",
                 areaName: "OrchardCore.Taxonomies",
-                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Create",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Create/{id}",
                 defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Create) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Taxonomies.Edit",
                 areaName: "OrchardCore.Taxonomies",
-                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Edit",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Edit/{taxonomyContentItemId}/{taxonomyItemId}",
                 defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Taxonomies.Delete",
                 areaName: "OrchardCore.Taxonomies",
-                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Delete",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Delete/{taxonomyContentItemId}/{taxonomyItemId}",
                 defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Delete) }
             );
         }
