@@ -33,6 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 // MemoryDistributedCache needs to be registered as a singleton as it owns a MemoryCache instance.
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
 
+                // Provides a distributed cache service that can return existing references in the current scope.
                 services.AddScoped<IScopedDistributedCache, ScopedDistributedCache>();
             });
 

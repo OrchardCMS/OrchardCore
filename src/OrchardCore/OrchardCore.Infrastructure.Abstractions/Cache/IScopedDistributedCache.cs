@@ -40,7 +40,7 @@ namespace OrchardCore.Infrastructure.Cache
 
         public static Task<T> GetOrSetAsync<T>(this IScopedDistributedCache scopedDistributedCache, Func<Task<T>> factory)
         {
-            return scopedDistributedCache.GetOrSetAsync(typeof(T).Name, factory);
+            return scopedDistributedCache.GetOrSetAsync(typeof(T).FullName, factory);
         }
     }
 }

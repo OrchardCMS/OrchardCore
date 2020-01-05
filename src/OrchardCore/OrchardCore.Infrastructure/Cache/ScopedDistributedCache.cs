@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +33,7 @@ namespace OrchardCore.Infrastructure.Cache
                 _scopedCache[key] = value;
             }
 
-            return (T) value;
+            return (T)value;
         }
 
         public async Task SetAsync<T>(string key, T value)
