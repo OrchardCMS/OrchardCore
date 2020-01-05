@@ -25,7 +25,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly IContentManager _contentManager;
 
         public SearchController(
-              IAuthorizationService authorizationService,
+            IAuthorizationService authorizationService,
             ISiteService siteService,
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
@@ -50,7 +50,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneSearch))
             {
-                return NotFound();
+                return Unauthorized();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
