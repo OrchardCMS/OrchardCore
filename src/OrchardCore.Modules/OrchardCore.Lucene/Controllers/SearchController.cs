@@ -82,7 +82,7 @@ namespace OrchardCore.Lucene.Controllers
                 return View(new SearchIndexViewModel
                 {
                     Pager = pager,
-                    IndexName = id,
+                    IndexName = indexName,
                     ContentItems = Enumerable.Empty<ContentItem>()
                 });
             }
@@ -108,7 +108,7 @@ namespace OrchardCore.Lucene.Controllers
                 HasMoreResults = contentItemIds.Count > size,
                 Query = q,
                 Pager = pager,
-                IndexName = id,
+                IndexName = indexName,
                 ContentItems = contentItems
             };
 
