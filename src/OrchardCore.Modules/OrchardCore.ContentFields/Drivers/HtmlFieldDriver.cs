@@ -33,7 +33,8 @@ namespace OrchardCore.ContentFields.Fields
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
-                model.Html = await _liquidTemplateManager.RenderAsync(field.Html, _htmlEncoder, model);
+                model.Html = await _liquidTemplateManager.RenderAsync(field.Html, _htmlEncoder, model,
+                    scope => scope.SetValue("ContentItem", field.ContentItem));
             })
             .Location("Content")
             .Location("SummaryAdmin", "");
