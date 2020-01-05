@@ -59,7 +59,7 @@ namespace OrchardCore.Themes
             routes.MapAreaControllerRoute(
                 name: "Themes.SetCurrentTheme",
                 areaName: "OrchardCore.Themes",
-                pattern: _adminOptions.AdminUrlPrefix + "/Themes/SetCurrentTheme",
+                pattern: _adminOptions.AdminUrlPrefix + "/Themes/SetCurrentTheme/{id}",
                 defaults: new { controller = themeControllerName, action = nameof(AdminController.SetCurrentTheme) }
             );
 
@@ -80,14 +80,14 @@ namespace OrchardCore.Themes
             routes.MapAreaControllerRoute(
                 name: "Themes.Disable",
                 areaName: "OrchardCore.Themes",
-                pattern: _adminOptions.AdminUrlPrefix + "/Themes/Disable",
+                pattern: _adminOptions.AdminUrlPrefix + "/Themes/Disable/{id}",
                 defaults: new { controller = themeControllerName, action = nameof(AdminController.Disable) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Themes.Enable",
                 areaName: "OrchardCore.Themes",
-                pattern: _adminOptions.AdminUrlPrefix + "/Themes/Enable",
+                pattern: _adminOptions.AdminUrlPrefix + "/Themes/Enable/{id}",
                 defaults: new { controller = themeControllerName, action = nameof(AdminController.Enable) }
             );
         }
