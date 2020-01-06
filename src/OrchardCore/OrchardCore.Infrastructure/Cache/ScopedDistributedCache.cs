@@ -9,19 +9,19 @@ namespace OrchardCore.Infrastructure.Cache
 {
     public class ScopedDistributedCache : IScopedDistributedCache
     {
-        private readonly IDistributedCache _ditributedCache;
+        private readonly IDistributedCache _distributedCache;
         private readonly Dictionary<string, object> _scopedCache = new Dictionary<string, object>();
 
-        public ScopedDistributedCache(IDistributedCache ditributedCache)
+        public ScopedDistributedCache(IDistributedCache distributedCache)
         {
-            _ditributedCache = ditributedCache;
+            _distributedCache = distributedCache;
         }
 
         public async Task<T> GetAsync<T>(string key)
         {
             if (!_scopedCache.TryGetValue(key, out var value))
             {
-                var data = await _ditributedCache.GetAsync(key);
+                var data = await _distributedCache.GetAsync(key);
 
                 if (data == null)
                 {
@@ -40,7 +40,7 @@ namespace OrchardCore.Infrastructure.Cache
         {
             var data = Serialize(value);
 
-            await _ditributedCache.SetAsync(key, data);
+            await _distributedCache.SetAsync(key, data);
 
             _scopedCache[key] = value;
         }
