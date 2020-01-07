@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
@@ -11,8 +10,7 @@ namespace OrchardCore.Admin
     {
         public void Apply(ActionModel action)
         {
-            if (action.Controller.ControllerName.StartsWith("Admin", StringComparison.OrdinalIgnoreCase) ||
-                action.Controller.Attributes.OfType<AdminAttribute>().Any())
+            if (action.Controller.ControllerName == "Admin" || action.Controller.Attributes.OfType<AdminAttribute>().Any())
             {
                 var factory = new AdminActionConstraintFactory();
                 foreach (var selector in action.Selectors)

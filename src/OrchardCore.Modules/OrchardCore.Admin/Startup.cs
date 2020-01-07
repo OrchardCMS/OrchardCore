@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Mvc.Routing;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
@@ -39,6 +40,8 @@ namespace OrchardCore.Admin
 
                 options.Conventions.Add(new AdminActionModelConvention());
             });
+
+            services.AddSingleton<IAreaControllerRoutePrefixProvider, AdminAreaControllerRoutePrefixProvider>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();

@@ -1,9 +1,11 @@
 using System;
 using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -17,6 +19,7 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.RazorPages;
+using OrchardCore.Mvc.Routing;
 using OrchardCore.Routing;
 
 namespace OrchardCore.Mvc
@@ -35,8 +38,51 @@ namespace OrchardCore.Mvc
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            // The default route is added to each tenant as a template route.
-            routes.MapControllerRoute("Default", "{area:exists}/{controller}/{action}/{id?}");
+            var descriptors = serviceProvider.GetRequiredService<IActionDescriptorCollectionProvider>()
+                .ActionDescriptors.Items
+                .OfType<ControllerActionDescriptor>()
+                .ToArray()
+                ;
+
+            var providers = serviceProvider.GetServices<IAreaControllerRoutePrefixProvider>();
+
+            foreach (var descriptor in descriptors)
+            {
+                if (descriptor.RouteValues["area"] == null)
+                {
+                    continue;
+                }
+
+                var found = false;
+
+                foreach (var provider in providers)
+                {
+                    if (descriptor.ControllerName == provider.ControllerName || (provider.AttributeType != null &&
+                        descriptor.ControllerTypeInfo.GetCustomAttributes(provider.AttributeType, false).Any()))
+                    {
+                        routes.MapAreaControllerRoute(
+                            name: descriptor.DisplayName,
+                            areaName: descriptor.RouteValues["area"],
+                            pattern: provider.Prefix + "/{area}/{controller}/{action}/{id?}",
+                            defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
+                        );
+
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    routes.MapAreaControllerRoute(
+                        name: descriptor.DisplayName,
+                        areaName: descriptor.RouteValues["area"],
+                        pattern: "/{area}/{controller}/{action}/{id?}",
+                        defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
+                    );
+                }
+            }
+
             routes.MapRazorPages();
         }
 
