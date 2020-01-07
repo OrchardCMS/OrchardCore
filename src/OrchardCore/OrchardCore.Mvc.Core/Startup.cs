@@ -48,7 +48,7 @@ namespace OrchardCore.Mvc
 
             foreach (var descriptor in descriptors)
             {
-                if (descriptor.RouteValues["area"] == null)
+                if (!descriptor.RouteValues.ContainsKey("area"))
                 {
                     continue;
                 }
