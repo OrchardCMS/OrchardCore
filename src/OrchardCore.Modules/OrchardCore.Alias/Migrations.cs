@@ -27,13 +27,30 @@ namespace OrchardCore.Alias
             SchemaBuilder.CreateMapIndexTable(nameof(AliasPartIndex), table => table
                 .Column<string>("Alias", col => col.WithLength(AliasPartDisplayDriver.MaxAliasLength))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
+                .Column<bool>("Latest", c => c.WithDefault(true))
+                .Column<bool>("Published", c => c.WithDefault(true))
             );
 
             SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
                 .CreateIndex("IDX_AliasPartIndex_Alias", "Alias")
             );
 
-            return 1;
+            // Return 2 to shortcut the second migration on new content definition schemas.
+            return 2;
+        }
+
+        // This code can be removed in a later version as Latest and Published are alterations.
+        public int UpdateFrom1()
+        {
+            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+                .AddColumn<bool>("Latest", c => c.WithDefault(true))
+            );
+
+            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+                .AddColumn<bool>("Published", c => c.WithDefault(true))
+            );
+
+            return 2;
         }
     }
 }
