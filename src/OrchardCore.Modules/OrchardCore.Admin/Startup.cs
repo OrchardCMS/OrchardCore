@@ -41,7 +41,7 @@ namespace OrchardCore.Admin
                 options.Conventions.Add(new AdminActionModelConvention());
             });
 
-            services.AddSingleton<IAreaControllerRoutePatternProvider, AdminAreaControllerRoutePatternProvider>();
+            services.AddSingleton<IAreaControllerRouteMapper, AdminAreaControllerRouteMapper>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();

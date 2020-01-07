@@ -44,7 +44,7 @@ namespace OrchardCore.Mvc
                 .ToArray()
                 ;
 
-            var providers = serviceProvider.GetServices<IAreaControllerRoutePatternProvider>();
+            var providers = serviceProvider.GetServices<IAreaControllerRouteMapper>();
 
             foreach (var descriptor in descriptors)
             {
@@ -57,16 +57,8 @@ namespace OrchardCore.Mvc
 
                 foreach (var provider in providers)
                 {
-                    if (descriptor.ControllerName == provider.ControllerName || (provider.AttributeType != null &&
-                        descriptor.ControllerTypeInfo.GetCustomAttributes(provider.AttributeType, false).Any()))
+                    if (provider.TryMapAreaControllerRoute(routes, descriptor))
                     {
-                        routes.MapAreaControllerRoute(
-                            name: descriptor.DisplayName,
-                            areaName: descriptor.RouteValues["area"],
-                            pattern: provider.Pattern,
-                            defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
-                        );
-
                         found = true;
                         break;
                     }
