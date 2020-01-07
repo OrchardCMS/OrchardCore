@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Navigation;
@@ -23,6 +24,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly ISearchQueryService _searchQueryService;
         private readonly IContentManager _contentManager;
+        private readonly dynamic New;
 
         public SearchController(
             IAuthorizationService authorizationService,
@@ -31,6 +33,7 @@ namespace OrchardCore.Lucene.Controllers
             LuceneIndexingService luceneIndexingService,
             ISearchQueryService searchQueryService,
             IContentManager contentManager,
+            IShapeFactory shapeFactory,
             ILogger<SearchController> logger
             )
         {
@@ -40,6 +43,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneIndexingService = luceneIndexingService;
             _searchQueryService = searchQueryService;
             _contentManager = contentManager;
+            New = shapeFactory;
 
             Logger = logger;
         }
@@ -81,7 +85,7 @@ namespace OrchardCore.Lucene.Controllers
             {
                 return View(new SearchIndexViewModel
                 {
-                    Pager = pager,
+                    Pager = (await New.Pager(pager)).TotalItemCount(0),
                     IndexName = indexName,
                     ContentItems = Enumerable.Empty<ContentItem>()
                 });
@@ -102,12 +106,14 @@ namespace OrchardCore.Lucene.Controllers
                     contentItems.Add(contentItem);
                 }
             }
+            var count = contentItems.Count;
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
             var model = new SearchIndexViewModel
             {
                 HasMoreResults = contentItemIds.Count > size,
                 Query = q,
-                Pager = pager,
+                Pager = pagerShape,
                 IndexName = indexName,
                 ContentItems = contentItems
             };
