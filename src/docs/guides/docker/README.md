@@ -80,8 +80,6 @@ docker run --name orchardcore -p 80:80 orchard_core
 
 Now you can start your favorite browser to http://localhost and start testing your build!
 
-Et voilà! 
-
 # References
 
 Inspiration taken from Scott Hansellman.
