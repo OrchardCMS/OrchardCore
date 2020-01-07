@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Navigation;
@@ -24,7 +25,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly IContentManager _contentManager;
 
         public SearchController(
-              IAuthorizationService authorizationService,
+            IAuthorizationService authorizationService,
             ISiteService siteService,
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
@@ -49,7 +50,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneSearch))
             {
-                return NotFound();
+                return Unauthorized();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -81,7 +82,7 @@ namespace OrchardCore.Lucene.Controllers
                 return View(new SearchIndexViewModel
                 {
                     Pager = pager,
-                    IndexName = id,
+                    IndexName = indexName,
                     ContentItems = Enumerable.Empty<ContentItem>()
                 });
             }
@@ -107,7 +108,7 @@ namespace OrchardCore.Lucene.Controllers
                 HasMoreResults = contentItemIds.Count > size,
                 Query = q,
                 Pager = pager,
-                IndexName = id,
+                IndexName = indexName,
                 ContentItems = contentItems
             };
 

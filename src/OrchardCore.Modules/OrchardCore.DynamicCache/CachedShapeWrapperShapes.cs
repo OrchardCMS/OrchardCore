@@ -1,13 +1,8 @@
 using System;
-using System.IO;
-using System.Text;
-using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.DynamicCache
 {

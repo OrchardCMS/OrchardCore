@@ -20,15 +20,15 @@ namespace OrchardCore.DisplayManagement.Shapes
         public ShapeMetadata Metadata { get; } = new ShapeMetadata();
 
         public string Id { get; set; }
-        public IList<string> Classes => _classes = _classes ?? new List<string>();
-        public IDictionary<string, string> Attributes => _attributes = _attributes ?? new Dictionary<string, string>();
-        public IEnumerable<dynamic> Items => _items;
-        public bool HasItems => _items.Count > 0;
-        public string Position
-        {
-            get { return Metadata.Position; }
-            set { Metadata.Position = value; }
-        }
+		public IList<string> Classes => _classes = _classes ?? new List<string>();
+		public IDictionary<string, string> Attributes => _attributes = _attributes ?? new Dictionary<string, string>();
+		public IEnumerable<dynamic> Items => _items;
+		public bool HasItems => _items.Count > 0;
+		public string Position
+		{
+			get { return Metadata.Position; }
+			set { Metadata.Position = value; }
+		}
 
         public virtual Shape Add(object item, string position = null)
         {
@@ -187,7 +187,6 @@ namespace OrchardCore.DisplayManagement.Shapes
             {
                 tagBuilder.Attributes["id"] = id;
             }
-
             return tagBuilder;
         }
 

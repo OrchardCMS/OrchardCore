@@ -269,7 +269,7 @@ This lets us customize the __Content__ shape template for __Project__.
         {{ Model.Content | shape_render }}
 
     <footer>
-        @await DisplayAsync(Model.Footer)
+        {{ Model.Footer | shape_render }}
     </footer>
 </article>
 ```

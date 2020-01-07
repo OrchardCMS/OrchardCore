@@ -18,12 +18,14 @@ namespace OrchardCore.Tenants.Workflows.Activities
         }
 
         public override string Name => nameof(EnableTenantTask);
-        public override LocalizedString Category => T["Tenant"];
-        public override LocalizedString DisplayText => T["Enable Tenant Task"];
+        
+        public override LocalizedString Category => S["Tenant"];
+        
+        public override LocalizedString DisplayText => S["Enable Tenant Task"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Enabled"]);
+            return Outcomes(S["Enabled"]);
         }
     }
 }

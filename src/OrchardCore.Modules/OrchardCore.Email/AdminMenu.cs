@@ -8,11 +8,11 @@ namespace OrchardCore.Email
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer<AdminMenu> T;
+        private readonly IStringLocalizer<AdminMenu> S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
@@ -21,9 +21,9 @@ namespace OrchardCore.Email
                 return Task.CompletedTask;
 
             builder
-                .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Settings"], settings => settings
-                       .Add(T["Smtp"], T["Smtp"], entry => entry
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                       .Add(S["Smtp"], S["Smtp"], entry => entry
                           .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
                           .Permission(Permissions.ManageEmailSettings)
                           .LocalNav()

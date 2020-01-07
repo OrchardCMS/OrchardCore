@@ -6,10 +6,10 @@ namespace OrchardCore.Alias.GraphQL
 {
     public class AliasQueryObjectType : ObjectGraphType<AliasPart>
     {
-        public AliasQueryObjectType(IStringLocalizer<AliasQueryObjectType> T)
+        public AliasQueryObjectType(IStringLocalizer<AliasQueryObjectType> S)
         {
             Name = "AliasPart";
-            Description = T["Alternative path for the content item"];
+            Description = S["Alternative path for the content item"];
 
             Field("alias", x => x.Alias, true);
         }

@@ -13,18 +13,20 @@ namespace OrchardCore.Workflows.Activities
     {
         private readonly INotifier _notifier;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        private readonly IStringLocalizer<NotifyTask> S;
 
-        public NotifyTask(INotifier notifier, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<NotifyTask> t)
+        public NotifyTask(INotifier notifier, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<NotifyTask> localizer)
         {
             _notifier = notifier;
             _expressionEvaluator = expressionvaluator;
-            T = t;
+            S = localizer;
         }
         
-        private IStringLocalizer T { get; set; }
         public override string Name => nameof(NotifyTask);
-        public override LocalizedString DisplayText => T["Notify Task"];
-        public override LocalizedString Category => T["UI"];
+        
+        public override LocalizedString DisplayText => S["Notify Task"];
+        
+        public override LocalizedString Category => S["UI"];
 
         public NotifyType NotificationType
         {
@@ -40,7 +42,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

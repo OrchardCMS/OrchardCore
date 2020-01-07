@@ -9,8 +9,19 @@ Here is a sample step:
 
 ```json
 {
-    "name": "lucene-index",
-    "Indices": "Indices": [ "Search" ]
+  "name": "lucene-index",
+  "Indices": [
+    {
+      "Search": {
+        "AnalyzerName": "standardanalyzer",
+        "IndexLatest": false,
+        "IndexedContentTypes": [
+          "Article",
+          "BlogPost"
+        ]
+      }
+    }
+  ]
 }
 ```
 
