@@ -25,6 +25,8 @@ namespace OrchardCore.Users.Controllers
         private readonly IEnumerable<IAccountActivatedEventHandler> _handlers;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
+        private readonly IStringLocalizer<RegistrationController> S;
+        private readonly IHtmlLocalizer<RegistrationController> H;
 
         public RegistrationController(
             UserManager<IUser> userManager,
@@ -44,15 +46,9 @@ namespace OrchardCore.Users.Controllers
             _handlers = handlers;
 
             _logger = logger;
-            TH = htmlLocalizer;
-            T = stringLocalizer;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
-
-        
-
-        private IHtmlLocalizer TH { get; }
-
-        private IStringLocalizer T { get; }
 
         [HttpGet]
         [AllowAnonymous]
@@ -83,7 +79,7 @@ namespace OrchardCore.Users.Controllers
             ViewData["ReturnUrl"] = returnUrl;
 
             // If we get a user, redirect to returnUrl
-            if (await this.RegisterUser(model, T["Confirm your account"], _logger) != null)
+            if (await this.RegisterUser(model, S["Confirm your account"], _logger) != null)
             {
                 return RedirectToLocal(returnUrl);
             }
@@ -131,9 +127,9 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user != null)
             {
-                await this.SendEmailConfirmationTokenAsync(user, T["Confirm your account"]);
+                await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
 
-                _notifier.Success(TH["Verification email sent."]);
+                _notifier.Success(H["Verification email sent."]);
             }
 
             return RedirectToAction(nameof(AdminController.Index), "Admin");
@@ -144,10 +140,10 @@ namespace OrchardCore.Users.Controllers
         public async Task<IActionResult> ActivateAccount([FromQuery]string email, [FromQuery]string activationToken, string returnUrl = null)
         {
             if (activationToken == null)
-                return BadRequest(T["activationToken is null"]);
+                return BadRequest(S["activationToken is null"]);
 
             if (email == null)
-                return BadRequest(T["email is null"]);
+                return BadRequest(S["email is null"]);
 
             var user = await _userManager.FindByEmailAsync(email) as User;
             if (user == null)
@@ -194,7 +190,7 @@ namespace OrchardCore.Users.Controllers
         {
             var isTokenValid = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.EmailConfirmationTokenProvider, "EmailConfirmation", activationToken);
             if (!isTokenValid)
-                return BadRequest(T["Invalid token"]);
+                return BadRequest(S["Invalid token"]);
 
             user.IsEnabled = true;
             await _userManager.UpdateAsync(user);

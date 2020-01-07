@@ -49,7 +49,7 @@ namespace OrchardCore.Email.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpPost, ActionName(nameof(Index))]
         public async Task<IActionResult> IndexPost(SmtpSettingsViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))

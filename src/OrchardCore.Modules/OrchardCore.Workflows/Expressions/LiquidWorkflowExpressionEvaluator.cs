@@ -52,16 +52,14 @@ namespace OrchardCore.Workflows.Expressions
 
         private TemplateContext CreateTemplateContext(WorkflowExecutionContext workflowContext)
         {
-            var context = new TemplateContext();
+            var context = _liquidTemplateManager.Context;
 
-            // Set WorkflowContext as the model.
             context.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
             context.MemberAccessStrategy.Register<WorkflowExecutionContext>();
             context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Input, name)));
             context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Output, name)));
             context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Properties, name)));
 
-            context.SetValue("Workflow", workflowContext);
             return context;
         }
 

@@ -8,7 +8,7 @@ namespace OrchardCore.Users.Workflows.Activities
 {
     public class AccountActivatedEvent : UserEvent, IEvent
     {
-        public AccountActivatedEvent(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UserLoggedInEvent> localizer) : base(userService, scriptEvaluator, localizer)
+        public AccountActivatedEvent(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<AccountActivatedEvent> localizer) : base(userService, scriptEvaluator, localizer)
         {
         }
 
@@ -20,7 +20,7 @@ namespace OrchardCore.Users.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public override LocalizedString DisplayText => T["Account Activated Event"];
+        public override LocalizedString DisplayText => S["Account Activated Event"];
 
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {

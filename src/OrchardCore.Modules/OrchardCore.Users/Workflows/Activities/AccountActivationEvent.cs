@@ -20,7 +20,7 @@ namespace OrchardCore.Users.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public override LocalizedString DisplayText => T["Account Activation Event"];
+        public override LocalizedString DisplayText => S["Account Activation Event"];
 
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {

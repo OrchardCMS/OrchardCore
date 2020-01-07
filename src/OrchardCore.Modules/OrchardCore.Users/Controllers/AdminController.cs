@@ -45,8 +45,8 @@ namespace OrchardCore.Users.Controllers
         private readonly LinkGenerator _linkGenerator;
 
         private readonly dynamic New;
-        private readonly IHtmlLocalizer TH;
-        private readonly IStringLocalizer TS;
+        private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
@@ -76,8 +76,8 @@ namespace OrchardCore.Users.Controllers
             _linkGenerator = linkGenerator;
 
             New = shapeFactory;
-            TH = htmlLocalizer;
-            TS = stringLocalizer;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
         {
@@ -169,24 +169,24 @@ namespace OrchardCore.Users.Controllers
             };
 
             model.Options.UserFilters = new List<SelectListItem>() {
-                new SelectListItem() { Text = TH["All"].Value, Value = nameof(UsersFilter.All) },
-                //new SelectListItem() { Text = TH["Approved"].Value, Value = nameof(UsersFilter.Approved) },
-                //new SelectListItem() { Text = TH["Email pending"].Value, Value = nameof(UsersFilter.EmailPending) },
-                //new SelectListItem() { Text = TH["Pending"].Value, Value = nameof(UsersFilter.Pending) }
+                new SelectListItem() { Text = H["All"].Value, Value = nameof(UsersFilter.All) },
+                //new SelectListItem() { Text = H["Approved"].Value, Value = nameof(UsersFilter.Approved) },
+                //new SelectListItem() { Text = H["Email pending"].Value, Value = nameof(UsersFilter.EmailPending) },
+                //new SelectListItem() { Text = H["Pending"].Value, Value = nameof(UsersFilter.Pending) }
             };
 
             model.Options.UserSorts = new List<SelectListItem>() {
-                new SelectListItem() { Text = TH["Name"].Value, Value = nameof(UsersOrder.Name) },
-                new SelectListItem() { Text = TH["Email"].Value, Value = nameof(UsersOrder.Email) },
-                //new SelectListItem() { Text = TH["Created date"].Value, Value = nameof(UsersOrder.CreatedUtc) },
-                //new SelectListItem() { Text = TH["Last Login date"].Value, Value = nameof(UsersOrder.LastLoginUtc) }
+                new SelectListItem() { Text = H["Name"].Value, Value = nameof(UsersOrder.Name) },
+                new SelectListItem() { Text = H["Email"].Value, Value = nameof(UsersOrder.Email) },
+                //new SelectListItem() { Text = H["Created date"].Value, Value = nameof(UsersOrder.CreatedUtc) },
+                //new SelectListItem() { Text = H["Last Login date"].Value, Value = nameof(UsersOrder.LastLoginUtc) }
             };
 
             model.Options.UsersBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = TH["Approve"].Value, Value = nameof(UsersBulkAction.Approve) },
-                new SelectListItem() { Text = TH["Enable"].Value, Value = nameof(UsersBulkAction.Enable) },
-                new SelectListItem() { Text = TH["Disable"].Value, Value = nameof(UsersBulkAction.Disable) },
-                new SelectListItem() { Text = TH["Delete"].Value, Value = nameof(UsersBulkAction.Delete) }
+                new SelectListItem() { Text = H["Approve"].Value, Value = nameof(UsersBulkAction.Approve) },
+                new SelectListItem() { Text = H["Enable"].Value, Value = nameof(UsersBulkAction.Enable) },
+                new SelectListItem() { Text = H["Disable"].Value, Value = nameof(UsersBulkAction.Disable) },
+                new SelectListItem() { Text = H["Delete"].Value, Value = nameof(UsersBulkAction.Delete) }
             };
 
             return View(model);
@@ -219,14 +219,14 @@ namespace OrchardCore.Users.Controllers
                         {
                             var token = await _userManager.GenerateEmailConfirmationTokenAsync(item);
                             await _userManager.ConfirmEmailAsync(item, token);
-                            _notifier.Success(TH["User {0} successfully approved.", item.UserName]);
+                            _notifier.Success(H["User {0} successfully approved.", item.UserName]);
                         }
                         break;
                     case UsersBulkAction.Delete:
                         foreach (var item in checkedContentItems)
                         {
                             await _userManager.DeleteAsync(item);
-                            _notifier.Success(TH["User {0} successfully deleted.", item.UserName]);
+                            _notifier.Success(H["User {0} successfully deleted.", item.UserName]);
                         }
                         break;
                     case UsersBulkAction.Disable:
@@ -234,7 +234,7 @@ namespace OrchardCore.Users.Controllers
                         {
                             item.IsEnabled = false;
                             await _userManager.UpdateAsync(item);
-                            _notifier.Success(TH["User {0} successfully disabled.", item.UserName]);
+                            _notifier.Success(H["User {0} successfully disabled.", item.UserName]);
                         }
                         break;
                     case UsersBulkAction.Enable:
@@ -242,11 +242,11 @@ namespace OrchardCore.Users.Controllers
                         {
                             item.IsEnabled = true;
                             await _userManager.UpdateAsync(item);
-                            _notifier.Success(TH["User {0} successfully enabled.", item.UserName]);
+                            _notifier.Success(H["User {0} successfully enabled.", item.UserName]);
                         }
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(TS["UserBulkAction not supported"]);
+                        throw new ArgumentOutOfRangeException(S["UserBulkAction not supported"]);
                 }
             }
 
@@ -284,7 +284,7 @@ namespace OrchardCore.Users.Controllers
 
             await _userService.CreateUserAsync(user, null, ModelState.AddModelError);
             await SendActivationEmail(user);
-            _notifier.Success(TH["User created successfully"]);
+            _notifier.Success(H["User created successfully"]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -308,6 +308,7 @@ namespace OrchardCore.Users.Controllers
 
                 await _handlers.InvokeAsync((handler, context) => handler.AccountActivationEventHandler(context), context, _logger);
             }
+
         }
 
         public async Task<IActionResult> Edit(string id)
@@ -363,8 +364,7 @@ namespace OrchardCore.Users.Controllers
             }
 
             await SendActivationEmail(user);
-
-            _notifier.Success(TH["User updated successfully"]);
+            _notifier.Success(H["User updated successfully"]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -388,17 +388,17 @@ namespace OrchardCore.Users.Controllers
 
             if (result.Succeeded)
             {
-                _notifier.Success(TH["User deleted successfully"]);
+                _notifier.Success(H["User deleted successfully"]);
             }
             else
             {
                 _session.Cancel();
 
-                _notifier.Error(TH["Could not delete the user"]);
+                _notifier.Error(H["Could not delete the user"]);
 
                 foreach (var error in result.Errors)
                 {
-                    _notifier.Error(TH[error.Description]);
+                    _notifier.Error(H[error.Description]);
                 }
             }
 
@@ -445,7 +445,7 @@ namespace OrchardCore.Users.Controllers
 
                 if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
                 {
-                    _notifier.Success(TH["Password updated correctly."]);
+                    _notifier.Success(H["Password updated correctly."]);
 
                     return RedirectToAction(nameof(Index));
                 }

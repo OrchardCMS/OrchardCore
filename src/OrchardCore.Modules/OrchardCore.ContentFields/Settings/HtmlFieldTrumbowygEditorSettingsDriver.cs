@@ -11,12 +11,12 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class HtmlFieldTrumbowygEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
     {
+        private readonly IStringLocalizer<HtmlFieldTrumbowygEditorSettingsDriver> S;
+
         public HtmlFieldTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlFieldTrumbowygEditorSettingsDriver> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
@@ -47,7 +47,7 @@ namespace OrchardCore.ContentFields.Settings
                 }
                 catch
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, T["The options are written in an incorrect format."]);
+                    context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
                     return Edit(partFieldDefinition);
                 }
 
