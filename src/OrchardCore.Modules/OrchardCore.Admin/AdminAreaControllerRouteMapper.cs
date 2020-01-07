@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
@@ -18,7 +19,7 @@ namespace OrchardCore.Admin
 
         public bool TryMapAreaControllerRoute(IEndpointRouteBuilder routes, ControllerActionDescriptor descriptor)
         {
-            if (descriptor.ControllerName == "Admin" || descriptor.ControllerTypeInfo.GetCustomAttributes(typeof(AdminAttribute), false).Any())
+            if (descriptor.ControllerName == "Admin" || descriptor.ControllerTypeInfo.GetCustomAttributes<AdminAttribute>().Any())
             {
                 routes.MapAreaControllerRoute(
                     name: descriptor.DisplayName,

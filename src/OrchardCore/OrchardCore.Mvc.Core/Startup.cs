@@ -44,7 +44,7 @@ namespace OrchardCore.Mvc
                 .ToArray()
                 ;
 
-            var providers = serviceProvider.GetServices<IAreaControllerRouteMapper>();
+            var mappers = serviceProvider.GetServices<IAreaControllerRouteMapper>();
 
             foreach (var descriptor in descriptors)
             {
@@ -55,9 +55,9 @@ namespace OrchardCore.Mvc
 
                 var found = false;
 
-                foreach (var provider in providers)
+                foreach (var mapper in mappers)
                 {
-                    if (provider.TryMapAreaControllerRoute(routes, descriptor))
+                    if (mapper.TryMapAreaControllerRoute(routes, descriptor))
                     {
                         found = true;
                         break;
