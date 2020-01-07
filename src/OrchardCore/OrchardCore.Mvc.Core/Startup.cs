@@ -44,7 +44,7 @@ namespace OrchardCore.Mvc
                 .ToArray()
                 ;
 
-            var providers = serviceProvider.GetServices<IAreaControllerRoutePrefixProvider>();
+            var providers = serviceProvider.GetServices<IAreaControllerRoutePatternProvider>();
 
             foreach (var descriptor in descriptors)
             {
@@ -63,7 +63,7 @@ namespace OrchardCore.Mvc
                         routes.MapAreaControllerRoute(
                             name: descriptor.DisplayName,
                             areaName: descriptor.RouteValues["area"],
-                            pattern: provider.Prefix + "/{area}/{controller}/{action}/{id?}",
+                            pattern: provider.Pattern,
                             defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
                         );
 
