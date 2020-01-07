@@ -1,21 +1,15 @@
 {% zone "Header" %}
-    <!-- Page Header -->
-    <!-- Set your background image for this header on the line below. -->
-    <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/post-bg.jpg" | href }}')">
-        <div class="overlay"></div>
+    <header class="masthead">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-md-10 mx-auto">
-                    <div class="site-heading">
-                        <h1>{{ Model.ContentItem.DisplayText }}</h1>
-                    </div>
-                </div>
-            </div>
+            <div class="intro-text">
+                <div class="intro-lead-in"></div>
+                <div class="intro-heading text-uppercase">{{ "Search" | t}}</div>
+          </div>
         </div>
     </header>
 {% endzone %}
 
-<form action="/OrchardCore.Lucene/Search/Index?id={{ Model.IndexName }}" method="get">
+<form action="OrchardCore.Lucene/Search/Index?id={{ Model.IndexName }}" method="get">
     <div class="input-group mb-3 mt-5">
         <input name="q" type="text" class="form-control form-control-lg" value="{{ Model.Query }}" placeholder="{{ "Enter your search term(s)" | t }}" autofocus />
         <div class="input-group-append">
