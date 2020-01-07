@@ -16,15 +16,11 @@ using OrchardCore.Themes.Services;
 
 namespace OrchardCore.Themes.Controllers
 {
-    [Admin]
     public class AdminController : Controller
     {
         private readonly ISiteThemeService _siteThemeService;
         private readonly IAdminThemeService _adminThemeService;
-        private readonly IThemeService _themeService;
-        private readonly ShellSettings _shellSettings;
         private readonly IExtensionManager _extensionManager;
-        private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
@@ -44,10 +40,7 @@ namespace OrchardCore.Themes.Controllers
         {
             _siteThemeService = siteThemeService;
             _adminThemeService = adminThemeService;
-            _themeService = themeService;
-            _shellSettings = shellSettings;
             _extensionManager = extensionManager;
-            _shellDescriptorManager = shellDescriptorManager;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
             _notifier = notifier;
