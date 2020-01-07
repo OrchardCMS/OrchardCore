@@ -32,7 +32,7 @@
             </li>            
         {% endfor %}
     </ul>
-{% elsif Request.Query["q"] != null %}
+{% elsif Model.Query != null %}
     <p class="alert alert-warning">{{"There are no such results." | t }}</p>
 {% endif %}
 
