@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using OrchardCore.ContentManagement;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.Search.Abstractions.ViewModels
 {

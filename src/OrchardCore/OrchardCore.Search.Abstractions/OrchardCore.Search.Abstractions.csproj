@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
-    <RootNamespace>OrchardCore.Lucene</RootNamespace>
+    <RootNamespace>OrchardCore.Search.Abstractions</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
