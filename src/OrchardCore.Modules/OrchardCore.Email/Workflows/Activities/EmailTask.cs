@@ -76,7 +76,7 @@ namespace OrchardCore.Email.Workflows.Activities
             var sender = await _expressionEvaluator.EvaluateAsync(Sender, workflowContext);
             var recipients = await _expressionEvaluator.EvaluateAsync(Recipients, workflowContext);
             var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext);
-            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder);
+            var body = IsBodyHtml ? await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder) : await _expressionEvaluator.EvaluateAsync(Body, workflowContext);
 
             var message = new MailMessage
             {
