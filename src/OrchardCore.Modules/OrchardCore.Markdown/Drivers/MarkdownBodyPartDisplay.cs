@@ -16,15 +16,14 @@ namespace OrchardCore.Markdown.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly IStringLocalizer<MarkdownBodyPartDisplay> S;
 
         public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<MarkdownBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
         {
             _liquidTemplateManager = liquidTemplateManager;
-            T = localizer;
             _htmlEncoder = htmlEncoder;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(MarkdownBodyPart MarkdownBodyPart, BuildPartDisplayContext context)
         {
@@ -53,7 +52,7 @@ namespace OrchardCore.Markdown.Drivers
                 if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(model.Markdown), T["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    context.Updater.ModelState.AddModelError(nameof(model.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {
@@ -70,7 +69,9 @@ namespace OrchardCore.Markdown.Drivers
             model.MarkdownBodyPart = MarkdownBodyPart;
             model.ContentItem = MarkdownBodyPart.ContentItem;
 
-            model.Markdown = await _liquidTemplateManager.RenderAsync(MarkdownBodyPart.Markdown, _htmlEncoder, model);
+            model.Markdown = await _liquidTemplateManager.RenderAsync(MarkdownBodyPart.Markdown, _htmlEncoder, model,
+                scope => scope.SetValue("ContentItem", model.ContentItem));
+
             model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
         }
     }

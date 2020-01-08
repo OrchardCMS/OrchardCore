@@ -15,15 +15,14 @@ namespace OrchardCore.ContentFields.Fields
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly IStringLocalizer<HtmlFieldDisplayDriver> S;
 
         public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlFieldDisplayDriver> localizer, HtmlEncoder htmlEncoder)
         {
             _liquidTemplateManager = liquidTemplateManager;
-            T = localizer;
+            S = localizer;
             _htmlEncoder = htmlEncoder;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(HtmlField field, BuildFieldDisplayContext context)
         {
@@ -34,7 +33,8 @@ namespace OrchardCore.ContentFields.Fields
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
-                model.Html = await _liquidTemplateManager.RenderAsync(field.Html, _htmlEncoder, model);
+                model.Html = await _liquidTemplateManager.RenderAsync(field.Html, _htmlEncoder, model,
+                    scope => scope.SetValue("ContentItem", field.ContentItem));
             })
             .Location("Content")
             .Location("SummaryAdmin", "");
@@ -60,7 +60,7 @@ namespace OrchardCore.ContentFields.Fields
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var fieldName = context.PartFieldDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(field.Html), T["{0} doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+                    context.Updater.ModelState.AddModelError(nameof(field.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
                 }
                 else
                 {
