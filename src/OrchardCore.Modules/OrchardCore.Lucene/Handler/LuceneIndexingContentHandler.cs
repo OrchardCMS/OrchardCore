@@ -26,6 +26,12 @@ namespace OrchardCore.Lucene.Handlers
 
         private Task AddContextAsync(ContentContextBase context)
         {
+            // Check e.g if previewing.
+            if (context.ContentItem.Id == -1)
+            {
+                return Task.CompletedTask;
+            }
+
             if (_contexts.Count == 0)
             {
                 var contexts = _contexts;
