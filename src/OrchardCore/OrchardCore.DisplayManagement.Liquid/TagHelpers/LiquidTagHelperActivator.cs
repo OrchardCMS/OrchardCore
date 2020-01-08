@@ -81,15 +81,15 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                         {
                             value = Enum.Parse(property.PropertyType, v.ToStringValue());
                         }
-                        else if (property.PropertyType == typeof(String))
+                        else if (property.PropertyType == typeof(string))
                         {
                             value = v.ToStringValue();
                         }
-                        else if (property.PropertyType == typeof(Boolean))
+                        else if (property.PropertyType == typeof(bool))
                         {
                             value = Convert.ToBoolean(v.ToStringValue());
                         }
-                        else if (property.PropertyType == typeof(Nullable<Boolean>))
+                        else if (property.PropertyType == typeof(bool?))
                         {
                             value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue());
                         }
