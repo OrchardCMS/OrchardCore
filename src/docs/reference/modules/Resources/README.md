@@ -30,20 +30,20 @@ Named resources are well-known scripts and stylesheets that are described in a m
 They have a name, a type (script, stylesheet) and optionally a version.  
 The `OrchardCore.Resources` module provides some commonly used ones:
 
-| Name | Type | Versions | Dependencies |
-| ---- | ---- | -------- | ------------ |
-| jQuery | Script | 3.4.1 | - |
-| jQuery.slim | Script | 3.4.1 | - |
-| jQuery-ui | Script | 1.12.1 | jQuery |
-| jQuery-ui-i18n | Script | 1.7.2 | jQuery-ui |
-| popper | Script | 1.16.0 | - |
-| bootstrap | Script | 3.4.0, 4.4.1 | jQuery, Popper |
-| bootstrap | Style | 3.4.0, 4.4.1 | - |
-| codemirror | Script | 5.48.4 | - |
-| codemirror | Style | 5.48.4 | - |
-| font-awesome | Style | 4.7.0, 5.12.0 | - |
-| font-awesome | Script | 5.12.0 | - |
-| font-awesome-v4-shims | Script | 5.12.0 | - |
+| Name                  | Type   | Versions      | Dependencies   |
+| --------------------- | ------ | ------------- | -------------- |
+| jQuery                | Script | 3.4.1         | -              |
+| jQuery.slim           | Script | 3.4.1         | -              |
+| jQuery-ui             | Script | 1.12.1        | jQuery         |
+| jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
+| popper                | Script | 1.16.0        | -              |
+| bootstrap             | Script | 3.4.0, 4.4.1  | jQuery, Popper |
+| bootstrap             | Style  | 3.4.0, 4.4.1  | -              |
+| codemirror            | Script | 5.48.4        | -              |
+| codemirror            | Style  | 5.48.4        | -              |
+| font-awesome          | Style  | 4.7.0, 5.12.0 | -              |
+| font-awesome          | Script | 5.12.0        | -              |
+| font-awesome-v4-shims | Script | 5.12.0        | -              |
 
 ## Usage
 
@@ -196,6 +196,7 @@ You can declare a new resource directly from a view, and it will be injected onl
 
 ``` liquid tab="Liquid"
 {% script src:"/TheTheme/js/foo.min.js", debug_src:"/TheTheme/js/foo.js" %}
+{% script src:"/TheTheme/js/foo.min.js", debug_src:"/TheTheme/js/foo.js", at: "Foot", DependsOn:"jQuery" %}
 ```
 
 ``` html tab="Razor"
@@ -243,10 +244,10 @@ The following example demonstrates how to inject a custom script in the footer s
 
 These properties are available:
 
-| Name | Description |
-| ---- | ---- |
-| `name` (`asp-name` in Razor)| The `name` attribute of the tag |
-| `content` | The `content` attribute of the tag |
-| `httpequiv` | The `http-equiv` attribute of the tag |
-| `charset` | The `charset` attribute of the tag |
-| `separator` | The separator to use when multiple tags are defined for the same name |
+| Name                         | Description                                                           |
+| ---------------------------- | --------------------------------------------------------------------- |
+| `name` (`asp-name` in Razor) | The `name` attribute of the tag                                       |
+| `content`                    | The `content` attribute of the tag                                    |
+| `httpequiv`                  | The `http-equiv` attribute of the tag                                 |
+| `charset`                    | The `charset` attribute of the tag                                    |
+| `separator`                  | The separator to use when multiple tags are defined for the same name |
