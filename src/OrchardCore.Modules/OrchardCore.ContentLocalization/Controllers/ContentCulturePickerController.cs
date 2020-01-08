@@ -34,7 +34,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, string contentItemUrl, string queryString)
+        public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, PathString contentItemUrl, QueryString queryString)
         {
             targetCulture ??= CultureInfo.InvariantCulture.Name;
 
@@ -43,7 +43,7 @@ namespace OrchardCore.ContentLocalization.Controllers
                 contentItemUrl = "/";
             }
 
-            var url = "~" + contentItemUrl + queryString;
+            var url = "~" + contentItemUrl.Add(queryString);
             var supportedCultures = await _locationService.GetSupportedCulturesAsync();
 
             if (supportedCultures.Any(t => t == targetCulture))

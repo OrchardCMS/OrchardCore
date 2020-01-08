@@ -30,8 +30,8 @@ namespace OrchardCore.ContentLocalization.Liquid
                 {
                     area = "OrchardCore.ContentLocalization",
                     targetculture = targetCulture,
-                    contentItemUrl = request.Path.Value,
-                    queryString = request.QueryString.Value
+                    contentItemUrl = request.Path,
+                    queryString = request.QueryString
                 });
             return new ValueTask<FluidValue>(FluidValue.Create(url));
          }
