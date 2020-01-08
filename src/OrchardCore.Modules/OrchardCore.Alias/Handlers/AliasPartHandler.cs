@@ -53,7 +53,9 @@ namespace OrchardCore.Alias.Handlers
                     ContentItem = part.ContentItem
                 };
 
-                part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model);
+                part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
+                    scope => scope.SetValue("ContentItem", model.ContentItem));
+
                 part.Alias = part.Alias.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
                 if (!await IsAliasUniqueAsync(part.Alias, part))

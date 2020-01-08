@@ -67,9 +67,12 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.0.0-rc1-10004" />
+  <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.0.0-rc1-10004" />
 </ItemGroup>
 ```
+
+!!! hint "Nightly builds"
+   If you are using the nightly builds of Orchard Core (MyGet feed) then you should use the package `OrchardCore.Application.Cms.Core.Targets` instead.
 
 This will add the packages from Orchard Core CMS
 
