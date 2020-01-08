@@ -35,11 +35,6 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             foreach (var property in accessibleProperties)
             {
-                var invokeType = typeof(Action<,>).MakeGenericType(type, property.PropertyType);
-                var invokeTypeGet = typeof(Func<,>).MakeGenericType(type, property.PropertyType);                
-                var setterDelegate = Delegate.CreateDelegate(invokeType, property.GetSetMethod());
-                var getterDelegate = Delegate.CreateDelegate(invokeTypeGet, property.GetGetMethod());
-
                 var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { property.Name };
                 var htmlAttribute = property.GetCustomAttribute<HtmlAttributeNameAttribute>();
 
@@ -64,6 +59,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 }
 
                 var setter = MakeFastPropertySetter(type, property);
+                var getter = MakeFastPropertyGetter(type, property);
 
                 foreach (var propertyName in allNames)
                 {
@@ -95,14 +91,14 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                         }
                         else if(property.PropertyType == typeof(IDictionary<string, string>)) 
                         {
-                            IDictionary<string, string> dictValue = (IDictionary<string, string>) getterDelegate.DynamicInvoke(new[] { h }); 
+                            IDictionary<string, string> dictValue = (IDictionary<string, string>) getter(h); 
                             if(!string.IsNullOrWhiteSpace(k))
                                 dictValue[k] = v.ToStringValue();
                             value = dictValue;
                         }
                         else if(property.PropertyType == typeof(IDictionary<string, object>)) 
                         {
-                            IDictionary<string, object> dictValue = (IDictionary<string, object>) getterDelegate.DynamicInvoke(new[] { h });
+                            IDictionary<string, object> dictValue = (IDictionary<string, object>) getter(h);
                             if(!string.IsNullOrWhiteSpace(k)) 
                                 dictValue[k] = v.ToObjectValue();
                             value = dictValue;
@@ -213,12 +209,28 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             var setterDelegate = setterClosedGenericMethod.CreateDelegate(typeof(Action<object, object>), setterAsAction);
 
             return (Action<object, object>)setterDelegate;
-        }
+        }               
 
         private static readonly MethodInfo CallPropertySetterOpenGenericMethod =
             typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertySetter));
 
         private static void CallPropertySetter<TDeclaringType, TValue>(Action<TDeclaringType, TValue> setter, object target, object value)
             => setter((TDeclaringType)target, (TValue)value);
+
+        private static Func<object, object> MakeFastPropertyGetter(Type type, PropertyInfo prop)
+        {
+            // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
+            var getterAsFunc = prop.GetMethod.CreateDelegate(typeof(Func<,>).MakeGenericType(type, prop.PropertyType));
+            var getterClosedGenericMethod = CallPropertyGetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
+            var getterDelegate = getterClosedGenericMethod.CreateDelegate(typeof(Func<object, object>), getterAsFunc);
+
+            return (Func<object, object>)getterDelegate;
+        }
+
+        private static readonly MethodInfo CallPropertyGetterOpenGenericMethod =
+            typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertyGetter));
+
+        private static object CallPropertyGetter<TDeclaringType, TValue>(Func<TDeclaringType, TValue> getter, object target)
+            =>  getter((TDeclaringType)target);
     }
 }
