@@ -51,7 +51,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!supportedCultures.Any(t => t == targetCulture))
             {
-                return LocalRedirect('~' + contentItemUrl);
+                return LocalRedirect('~' + contentItemUrl.Value);
             }
             var settings = (await _siteService.GetSiteSettingsAsync()).As<ContentCulturePickerSettings>();
 
@@ -93,7 +93,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             }
 
             // Redirect to the same page by default
-            return LocalRedirect('~' + contentItemUrl);
+            return LocalRedirect('~' + contentItemUrl.Value);
         }
     }
 }
