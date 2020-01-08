@@ -14,7 +14,7 @@ theme:
 extra:
   social:
     - type: 'leaf'
-      link: 'http://orchardproject.net'
+      link: 'https://orchardcore.net'
     - type: 'github-alt'
       link: 'https://github.com/OrchardCMS/OrchardCore'
     - type: 'twitter'

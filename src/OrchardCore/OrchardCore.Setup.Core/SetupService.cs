@@ -28,7 +28,7 @@ namespace OrchardCore.Setup.Services
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer T;
+        private readonly IStringLocalizer<SetupService> S;
         private readonly IHostApplicationLifetime _applicationLifetime;
         private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
@@ -60,7 +60,7 @@ namespace OrchardCore.Setup.Services
             _shellContextFactory = shellContextFactory;
             _recipeHarvesters = recipeHarvesters;
             _logger = logger;
-            T = stringLocalizer;
+            S = stringLocalizer;
             _applicationLifetime = applicationLifetime;
         }
 
@@ -165,7 +165,7 @@ namespace OrchardCore.Setup.Services
                         // unless the recipe is executing?
 
                         _logger.LogError(e, "An error occurred while initializing the datastore.");
-                        context.Errors.Add("DatabaseProvider", T["An error occurred while initializing the datastore: {0}", e.Message]);
+                        context.Errors.Add("DatabaseProvider", S["An error occurred while initializing the datastore: {0}", e.Message]);
                         return;
                     }
 
