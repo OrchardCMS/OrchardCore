@@ -37,7 +37,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, PathString contentItemUrl)
+        public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, PathString contentItemUrl, string queryString)
         {
             // Invariant culture name is empty so a null value is bound.
             targetCulture = targetCulture ?? "";
@@ -51,8 +51,9 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!supportedCultures.Any(t => t == targetCulture))
             {
-                return LocalRedirect('~' + contentItemUrl.Value);
+                return LocalRedirect('~' + contentItemUrl + queryString);
             }
+
             var settings = (await _siteService.GetSiteSettingsAsync()).As<ContentCulturePickerSettings>();
 
             if (settings.SetCookie)
@@ -73,7 +74,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
                 if (localization != null)
                 {
-                    return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }));
+                    return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }) + queryString);
                 }
             }
 
@@ -87,13 +88,13 @@ namespace OrchardCore.ContentLocalization.Controllers
 
                     if (localization != null)
                     {
-                        return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }));
+                        return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }) + queryString);
                     }
                 }
             }
 
             // Redirect to the same page by default
-            return LocalRedirect('~' + contentItemUrl.Value);
+            return LocalRedirect('~' + contentItemUrl + queryString);
         }
     }
 }
