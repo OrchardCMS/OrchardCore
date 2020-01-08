@@ -71,6 +71,9 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 </ItemGroup>
 ```
 
+!!! hint "Nightly builds"
+   If you are using the nightly builds of Orchard Core (MyGet feed) then you should use the package `OrchardCore.Application.Cms.Core.Targets` instead.
+
 This will add the packages from Orchard Core CMS
 
 - Edit the `Startup.cs` file `ConfigureServices` method like this:
