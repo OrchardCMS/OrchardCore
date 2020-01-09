@@ -34,16 +34,18 @@ namespace OrchardCore.ContentLocalization.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, PathString contentItemUrl, QueryString queryString)
+        public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, PathString contentItemUrl, string queryStringValue)
         {
             targetCulture ??= CultureInfo.InvariantCulture.Name;
 
-            if (String.IsNullOrEmpty(contentItemUrl))
+            if (!contentItemUrl.HasValue)
             {
                 contentItemUrl = "/";
             }
 
-            var url = "~" + contentItemUrl.Add(queryString);
+            var queryString = new QueryString(queryStringValue);
+            var url = HttpContext.Request.PathBase + contentItemUrl + queryString;
+
             var supportedCultures = await _locationService.GetSupportedCulturesAsync();
 
             if (supportedCultures.Any(t => t == targetCulture))
@@ -63,17 +65,15 @@ namespace OrchardCore.ContentLocalization.Controllers
 
                 // Redirect the user to the Content with the same localizationSet as the ContentItem of the current url
                 var localizations = await _culturePickerService.GetLocalizationsFromRouteAsync(contentItemUrl);
-                url = GetLocalizedContentUrl(localizations);
-
-                if (settings.RedirectToHomepage)
+                if (!TryGetLocalizedContentUrl(localizations) && settings.RedirectToHomepage)
                 {
                     // Try to get the Homepage for the current culture
                     var homeLocalizations = await _culturePickerService.GetLocalizationsFromRouteAsync("/");
-                    url = GetLocalizedContentUrl(homeLocalizations);
+                    TryGetLocalizedContentUrl(homeLocalizations);
                 }
             }
 
-            string GetLocalizedContentUrl(IEnumerable<LocalizationEntry> localizationEntries)
+            bool TryGetLocalizedContentUrl(IEnumerable<LocalizationEntry> localizationEntries)
             {
                 if (localizationEntries.Any())
                 {
@@ -82,10 +82,11 @@ namespace OrchardCore.ContentLocalization.Controllers
                     if (localization != null)
                     {
                         url = Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }) + queryString;
+                        return true;
                     }
                 }
 
-                return url;
+                return false;
             }
 
             return LocalRedirect(url);
