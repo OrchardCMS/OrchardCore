@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Routing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
 using OrchardCore.Mvc.ModelBinding;
@@ -44,7 +45,7 @@ namespace OrchardCore.Mvc
                 .ToArray()
                 ;
 
-            var mappers = serviceProvider.GetServices<IAreaControllerRouteMapper>();
+            var mappers = serviceProvider.GetServices<IAreaControllerRouteMapper>().OrderBy(x => x.Order);
 
             foreach (var descriptor in descriptors)
             {
@@ -53,25 +54,12 @@ namespace OrchardCore.Mvc
                     continue;
                 }
 
-                var found = false;
-
                 foreach (var mapper in mappers)
                 {
                     if (mapper.TryMapAreaControllerRoute(routes, descriptor))
                     {
-                        found = true;
                         break;
                     }
-                }
-
-                if (!found)
-                {
-                    routes.MapAreaControllerRoute(
-                        name: descriptor.DisplayName,
-                        areaName: descriptor.RouteValues["area"],
-                        pattern: "/{area}/{controller}/{action}/{id?}",
-                        defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
-                    );
                 }
             }
 
@@ -134,6 +122,10 @@ namespace OrchardCore.Mvc
 
             // Use a custom 'IFileVersionProvider' that also lookup all tenant level 'IStaticFileProvider'.
             services.Replace(ServiceDescriptor.Singleton<IFileVersionProvider, ShellFileVersionProvider>());
+
+            // Register 'ShellRouteOptions' and a DefaultAreaControllerRouteMapper that will run last.
+            services.AddOptions<ShellRouteOptions>();
+            services.AddSingleton<IAreaControllerRouteMapper, DefaultAreaControllerRouteMapper>();
 
             AddMvcModuleCoreServices(services);
         }
