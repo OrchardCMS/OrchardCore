@@ -1,7 +1,7 @@
 using System;
+using System.Web;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -134,7 +134,7 @@ namespace OrchardCore.Users
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.Cookie.Name = "orchauth_" + _tenantName;
+                options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
 
                 // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
                 // set by the pipeline and comming from the request 'PathBase' which already ends with the
