@@ -24,12 +24,22 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
         Task<ShellScope> GetScopeAsync(ShellSettings settings);
-        
+
         /// <summary>
         /// Updates an existing shell configuration.
         /// </summary>
         /// <param name="settings"></param>
         Task UpdateShellSettingsAsync(ShellSettings settings);
+
+        /// <summary>
+        /// Releases a shell to free up resources but it is still served.
+        /// </summary>
+        void ReleaseShellContext(ShellSettings settings);
+
+        /// <summary>
+        /// Releases all shells to free up resources but there are still served.
+        /// </summary>
+        void ReleaseAllShellContexts();
 
         /// <summary>
         /// Reloads a shell.

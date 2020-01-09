@@ -160,7 +160,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             _session.Save(shellDescriptorRecord);
 
             await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptorRecord, _shellSettings) =>
-                handler.Changed(shellDescriptorRecord, !allTenants ? _shellSettings.Name : null), shellDescriptorRecord, _shellSettings, _logger);
+                handler.Changed(shellDescriptorRecord, !allTenants ? _shellSettings : null), shellDescriptorRecord, _shellSettings, _logger);
         }
 
         private class ConfiguredFeatures

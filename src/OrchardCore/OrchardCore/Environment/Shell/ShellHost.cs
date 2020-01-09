@@ -295,13 +295,13 @@ namespace OrchardCore.Environment.Shell
         /// A feature is enabled / disabled, the tenant needs to be restarted.
         /// A null tenant means that all tenant needs to be restarted.
         /// </summary>
-        Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
+        Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, ShellSettings settings)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                if (tenant != null)
+                if (settings != null)
                 {
-                    _logger.LogInformation("A tenant needs to be restarted '{TenantName}'", tenant);
+                    _logger.LogInformation("A tenant needs to be restarted '{TenantName}'", settings.Name);
                 }
                 else
                 {
@@ -309,53 +309,75 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
-            if (_shellContexts == null)
+            if (settings != null)
             {
-                return Task.CompletedTask;
-            }
-
-            if (tenant != null)
-            {
-                if (_shellContexts.TryRemove(tenant, out var context))
-                {
-                    context.Release();
-                }
+                ReleaseShellContext(settings);
             }
             else
             {
-                foreach (var name in _shellContexts.Keys.ToArray())
-                {
-                    if (_shellContexts.TryRemove(name, out var context))
-                    {
-                        context.Release();
-                    }
-                }
+                ReleaseAllShellContexts();
             }
 
             return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Marks the specific tenant as released, such that a new shell is created for subsequent requests,
-        /// while existing requests get flushed.
+        /// Marks the shell as released to free up resources but keeps its settings in the '_runningShellTable',
+        /// so that it is still served but a new shell will only be created and activated on a new request.
         /// </summary>
         /// <param name="settings"></param>
-        public async Task ReloadShellContextAsync(ShellSettings settings)
+        public void ReleaseShellContext(ShellSettings settings)
         {
-            if (settings.State == TenantState.Disabled)
+            if (_shellContexts == null)
             {
-                // If a disabled shell is still in use it will be released and then disposed by its last scope.
-                // Knowing that it is still removed from the running shell table, so that it is no more served.
-                if (_shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
-                {
-                    _runningShellTable.Remove(settings);
-                }
+                return;
             }
 
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
+                // If a disabled shell is still in use it will be released and then disposed by its last scope.
+                if (settings.State != TenantState.Disabled || context.ActiveScopes == 0)
+                {
+                    context.Release();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Marks all shells as released to free up resources but keeps all settings in the '_runningShellTable',
+        /// so that they are still served but new shells will only be created and activated on new requests.
+        /// </summary>
+        public void ReleaseAllShellContexts()
+        {
+            if (_shellContexts == null)
+            {
+                return;
+            }
+
+            var shells = _shellContexts.Values.ToArray();
+
+            foreach (var shell in shells)
+            {
+                ReleaseShellContext(shell.Settings);
+            }
+        }
+
+        /// <summary>
+        /// Marks the shell as released and create a new one that will be activated on subsequent requests,
+        /// while existing requests get flushed. Note: The settings are reloaded before creating a new shell.
+        /// </summary>
+        /// <param name="settings"></param>
+        public async Task ReloadShellContextAsync(ShellSettings settings)
+        {
+            if (_shellContexts.TryRemove(settings.Name, out var context))
+            {
                 _runningShellTable.Remove(settings);
-                context.Release();
+
+                // If a disabled shell is still in use it will be released and then disposed by its last scope.
+                if (settings.State != TenantState.Disabled || context.ActiveScopes == 0)
+                {
+                    context.Release();
+                }
             }
 
             if (settings.State != TenantState.Initializing)

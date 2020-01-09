@@ -26,7 +26,7 @@ namespace OrchardCore.Environment.Shell
 
         public ILogger Logger { get; set; }
 
-        async Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
+        async Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, ShellSettings settings)
         {
             // deduce and apply state changes involved
             var shellState = await _stateManager.GetShellStateAsync();
