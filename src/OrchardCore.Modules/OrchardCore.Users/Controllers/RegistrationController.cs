@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using MimeKit;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -67,6 +68,11 @@ namespace OrchardCore.Users.Controllers
             if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
             {
                 return NotFound();
+            }
+
+            if (!MailboxAddress.TryParse(model.Email, out var emailAddress))
+            {
+                ModelState.AddModelError("Email", S["Invalid email."]);
             }
 
             ViewData["ReturnUrl"] = returnUrl;

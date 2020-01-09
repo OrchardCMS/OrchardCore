@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OpenIdConnect.Primitives" PrivateAssets="All" />
+    <PackageReference Include="MailKit" />
   </ItemGroup>
 
 </Project>
