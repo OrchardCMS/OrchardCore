@@ -41,6 +41,7 @@ namespace OrchardCore.Email.Services
             }
 
             var mimeMessage = FromMailMessage(message);
+
             try
             {
                 switch (_options.DeliveryMethod)
@@ -66,12 +67,13 @@ namespace OrchardCore.Email.Services
 
         private MimeMessage FromMailMessage(MailMessage message)
         {
-            var (name, email) = message.From == null
+            var (name, email) = String.IsNullOrWhiteSpace(message.From)
                 ? GetNameAndEmail(_options.DefaultSender)
                 : GetNameAndEmail(message.From);
+
             var mimeMessage = new MimeMessage
             {
-                Sender = name == String.Empty
+                Sender = String.IsNullOrWhiteSpace(name)
                     ? new MailboxAddress(email)
                     : new MailboxAddress(name, email)
             };
@@ -111,7 +113,9 @@ namespace OrchardCore.Email.Services
             }
 
             mimeMessage.Subject = message.Subject;
+
             var body = new BodyBuilder();
+
             if (message.IsBodyHtml)
             {
                 body.HtmlBody = message.Body;
@@ -120,6 +124,7 @@ namespace OrchardCore.Email.Services
             {
                 body.TextBody = message.Body;
             }
+
             mimeMessage.Body = body.ToMessageBody();
 
             return mimeMessage;
@@ -131,7 +136,7 @@ namespace OrchardCore.Email.Services
             var name = String.Empty;
             var email = emailAddress;
 
-            if(index > -1)
+            if (index > -1)
             {
                 name = emailAddress.Substring(0, index);
                 email = emailAddress.Substring(index + 1, emailAddress.Length - index - 1).TrimStart('<').TrimEnd('>');
