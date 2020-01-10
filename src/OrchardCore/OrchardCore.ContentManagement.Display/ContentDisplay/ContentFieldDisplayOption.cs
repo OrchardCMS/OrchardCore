@@ -17,23 +17,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             DisplayDrivers.Add(option);
         }
 
-        public void WithDisplayDriver(Type displayDriverType, string[] displayModes, string[] editors)
-        {
-            var option = new ContentFieldDisplayDriverOption(displayDriverType);
-
-            if (displayModes != null)
-            {
-                option.DisplayModes = new HashSet<string>(displayModes, StringComparer.OrdinalIgnoreCase);
-            }
-
-            if (editors != null)
-            {
-                option.Editors = new HashSet<string>(editors, StringComparer.OrdinalIgnoreCase);
-            }
-
-            DisplayDrivers.Add(option);
-        }
-
         public void WithDisplayDriver(Type displayDriverType, Action<ContentFieldDisplayDriverOption> action)
         {
             var option = new ContentFieldDisplayDriverOption(displayDriverType);
