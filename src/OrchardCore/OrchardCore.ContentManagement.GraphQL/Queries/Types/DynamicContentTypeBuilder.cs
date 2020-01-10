@@ -89,5 +89,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 }
             }
         }
+
+        public void Clear()
+        {
+            _dynamicPartFields.Clear();
+        }
     }
 }
