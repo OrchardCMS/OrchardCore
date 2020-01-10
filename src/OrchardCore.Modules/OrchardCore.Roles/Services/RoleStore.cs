@@ -5,10 +5,12 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Infrastructure.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
@@ -69,7 +71,14 @@ namespace OrchardCore.Roles.Services
         {
             roles.Serial++;
             _session.Save(roles);
-            return _scopedDistributedCache.SetAsync(roles);
+
+            ShellScope.AddDeferredTask(scope =>
+            {
+                var cache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
+                return cache.RemoveAsync(typeof(RolesDocument).FullName);
+            });
+
+            return Task.CompletedTask;
         }
 
         #region IRoleStore<IRole>
