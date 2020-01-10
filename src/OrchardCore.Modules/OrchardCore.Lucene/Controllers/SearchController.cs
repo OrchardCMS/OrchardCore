@@ -94,8 +94,9 @@ namespace OrchardCore.Lucene.Controllers
             var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
             var query = queryParser.Parse(QueryParser.Escape(q));
 
-            int start = pager.GetStartIndex(), size = pager.PageSize, end = size + 1;// Fetch one more result than PageSize to generate "More" links
+            int start = pager.GetStartIndex(), size = pager.PageSize, end = size * pager.Page + 1;// Fetch one more result than PageSize to generate "More" links
             var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, indexName, start, end);
+            var count = contentItemIds.Count + (pager.Page - 1) * pager.PageSize;
 
             var contentItems = new List<ContentItem>();
             foreach (var contentItemId in contentItemIds.Take(size))
@@ -106,7 +107,7 @@ namespace OrchardCore.Lucene.Controllers
                     contentItems.Add(contentItem);
                 }
             }
-            var count = contentItems.Count;
+            
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
             var model = new SearchIndexViewModel

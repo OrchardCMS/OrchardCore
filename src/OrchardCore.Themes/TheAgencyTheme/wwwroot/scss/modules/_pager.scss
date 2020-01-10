@@ -1,0 +1,12 @@
+ul.pager {
+    @extend .pagination;
+    margin-top: 1rem;
+}
+
+ul.pager li {
+    @extend .page-item;
+}
+
+ul.pager li a {
+    @extend .page-link;
+}

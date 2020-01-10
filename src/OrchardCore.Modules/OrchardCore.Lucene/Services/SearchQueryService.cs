@@ -20,6 +20,7 @@ namespace OrchardCore.Lucene.Services
             _contentManager = contentManager;
 
         }
+
         public async Task<IList<string>> ExecuteQueryAsync(Query query, string indexName, int start, int end)
         {
             var contentItemIds = new List<string>();
