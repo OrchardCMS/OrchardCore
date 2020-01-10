@@ -23,7 +23,7 @@ namespace OrchardCore.Admin
 
             return next(); 
         }
-        
+
         public static void Apply(HttpContext context)
         {
             // The value isn't important, it's just a marker object
