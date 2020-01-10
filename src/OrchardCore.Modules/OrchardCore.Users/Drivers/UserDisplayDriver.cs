@@ -18,7 +18,7 @@ namespace OrchardCore.Users.Drivers
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
         private readonly IUserRoleStore<IUser> _userRoleStore;
-        private readonly IStringLocalizer T;
+        private readonly IStringLocalizer<UserDisplayDriver> S;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
@@ -29,7 +29,7 @@ namespace OrchardCore.Users.Drivers
             _userManager = userManager;
             _roleService = roleService;
             _userRoleStore = userRoleStore;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Display(User user)
@@ -72,12 +72,12 @@ namespace OrchardCore.Users.Drivers
 
             if (string.IsNullOrWhiteSpace(model.UserName))
             {
-                context.Updater.ModelState.AddModelError("UserName", T["A user name is required."]);
+                context.Updater.ModelState.AddModelError("UserName", S["A user name is required."]);
             }
 
             if (string.IsNullOrWhiteSpace(model.Email))
             {
-                context.Updater.ModelState.AddModelError("Email", T["An email is required."]);
+                context.Updater.ModelState.AddModelError("Email", S["An email is required."]);
             }
 
             var userWithSameName = await _userManager.FindByNameAsync(model.UserName);
@@ -86,7 +86,7 @@ namespace OrchardCore.Users.Drivers
                 var userWithSameNameId = await _userManager.GetUserIdAsync(userWithSameName);
                 if (userWithSameNameId != model.Id)
                 {
-                    context.Updater.ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+                    context.Updater.ModelState.AddModelError(string.Empty, S["The user name is already used."]);
                 }
             }
 
@@ -96,7 +96,7 @@ namespace OrchardCore.Users.Drivers
                 var userWithSameEmailId = await _userManager.GetUserIdAsync(userWithSameEmail);
                 if (userWithSameEmailId != model.Id)
                 {
-                    context.Updater.ModelState.AddModelError(string.Empty, T["The email is already used."]);
+                    context.Updater.ModelState.AddModelError(string.Empty, S["The email is already used."]);
                 }
             }
 

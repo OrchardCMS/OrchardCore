@@ -40,6 +40,9 @@ namespace OrchardCore.Markdown
             // Markdown Field
             services.AddContentField<MarkdownField>()
                 .WithDisplayDriver<MarkdownFieldDisplayDriver>();
+
+            services.AddFieldDisplayDriver<MarkdownField, MarkdownFieldDisplayDriver>(new string[] { "*", "standard" });
+
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
 

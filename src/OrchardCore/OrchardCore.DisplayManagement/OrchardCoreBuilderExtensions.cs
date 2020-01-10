@@ -87,7 +87,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddTagHelpers<AddAlternateTagHelper>();
                     services.AddTagHelpers<AddClassTagHelper>();
                     services.AddTagHelpers<AddWrapperTagHelper>();
-                    services.AddTagHelpers<BaseShapeTagHelper>();
                     services.AddTagHelpers<ClearAlternatesTagHelper>();
                     services.AddTagHelpers<ClearClassesTagHelper>();
                     services.AddTagHelpers<ClearWrappersTagHelper>();

@@ -3,15 +3,12 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Modules;
 
 namespace OrchardCore.DynamicCache.TagHelpers
 {
@@ -39,13 +36,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
         /// Gets the <see cref="System.Text.Encodings.Web.HtmlEncoder"/> which encodes the content to be cached.
         /// </summary>
         protected HtmlEncoder HtmlEncoder { get; }
-
-        /// <summary>
-        /// Gets or sets the <see cref="ViewContext"/> for the current executing View.
-        /// </summary>
-        [HtmlAttributeNotBound]
-        [ViewContext]
-        public ViewContext ViewContext { get; set; }
 
         /// <summary>
         /// Gets or sets a <see cref="string" /> identifying this cache entry.
@@ -94,22 +84,19 @@ namespace OrchardCore.DynamicCache.TagHelpers
         /// </summary>
         public static readonly string CacheKeyPrefix = nameof(DynamicCacheTagHelper);
         private const string CachePriorityAttributeName = "priority";
-        private readonly IClock _clock;
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
         private readonly ILogger<DynamicCacheTagHelper> _logger;
         private readonly DynamicCacheTagHelperService _dynamicCacheTagHelperService;
 
         public DynamicCacheTagHelper(
-            IClock clock,
             IDynamicCacheService dynamicCacheService,
             ICacheScopeManager cacheScopeManager,
             ILogger<DynamicCacheTagHelper> logger,
             HtmlEncoder htmlEncoder,
             DynamicCacheTagHelperService dynamicCacheTagHelperService)
-            
+
         {
-            _clock = clock;
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
             _logger = logger;
@@ -186,14 +173,12 @@ namespace OrchardCore.DynamicCache.TagHelpers
 
                 try
                 {
-                    content = await output.GetChildContentAsync();
+                    content = await ProcessContentAsync(output, cacheContext);
                 }
                 finally
                 {
                     _cacheScopeManager.ExitScope();
                 }
-
-                content = await ProcessContentAsync(output, cacheContext);
             }
             else
             {

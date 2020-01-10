@@ -12,7 +12,8 @@ namespace OrchardCore.Email.Workflows.Activities
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        
+        private readonly IStringLocalizer<EmailTask> S;
+
         public EmailTask(
             ISmtpService smtpService,
             IWorkflowExpressionEvaluator expressionEvaluator,
@@ -21,13 +22,12 @@ namespace OrchardCore.Email.Workflows.Activities
         {
             _smtpService = smtpService;
             _expressionEvaluator = expressionEvaluator;           
-            T = localizer;
+            S = localizer;
         }
 
-        private IStringLocalizer T { get; }
         public override string Name => nameof(EmailTask);
-        public override LocalizedString DisplayText => T["Email Task"];
-        public override LocalizedString Category => T["Messaging"];
+        public override LocalizedString DisplayText => S["Email Task"];
+        public override LocalizedString Category => S["Messaging"];
 
         public WorkflowExpression<string> Sender
         {
@@ -62,7 +62,7 @@ namespace OrchardCore.Email.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"], T["Failed"]);
+            return Outcomes(S["Done"], S["Failed"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

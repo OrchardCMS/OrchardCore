@@ -36,6 +36,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         public IReadOnlyList<IContentPartDisplayDriver> GetDriversForEdit(string partName, string editor)
         {
+            // Standard editor is always supplied as null.
+            if (string.IsNullOrEmpty(editor))
+            {
+                editor = "Standard";
+            };
+
             if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
             {
                 var services = new List<IContentPartDisplayDriver>();

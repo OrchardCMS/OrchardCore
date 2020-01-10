@@ -31,7 +31,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             option.WithDisplayDriver(displayDriverType);
         }
 
-        public void WithPartDisplayDriver(Type contentPartType, Type displayDriverType, string editors)
+        public void WithPartDisplayDriver(Type contentPartType, Type displayDriverType, string[] editors)
         {
             var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
             option.WithDisplayDriver(displayDriverType, editors);
@@ -66,7 +66,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             option.WithDisplayDriver(displayDriverType);
         }
 
-        public void WithFieldDisplayDriver(Type contentFieldType, Type displayDriverType, string displayModes, string editors)
+        public void WithFieldDisplayDriver(Type contentFieldType, Type displayDriverType, string[] displayModes, string[] editors)
         {
             var option = _contentFields.FirstOrDefault(x => x.Type == contentFieldType);
             option.WithDisplayDriver(displayDriverType, displayModes, editors);

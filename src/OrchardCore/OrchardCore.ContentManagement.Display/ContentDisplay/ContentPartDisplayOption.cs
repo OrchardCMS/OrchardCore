@@ -16,12 +16,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             DisplayDrivers.Add(option);
         }
 
-        public void WithDisplayDriver(Type displayDriverType, string editors)
+        public void WithDisplayDriver(Type displayDriverType, string[] editors)
         {
-            var option = new ContentPartDisplayDriverOption(displayDriverType)
+            var option = new ContentPartDisplayDriverOption(displayDriverType);
+            if (editors != null)
             {
-                Editors = new HashSet<string>(editors.Split('/'), StringComparer.OrdinalIgnoreCase)
-            };
+                option.Editors = new HashSet<string>(editors, StringComparer.OrdinalIgnoreCase);
+            }
 
             DisplayDrivers.Add(option);
         }

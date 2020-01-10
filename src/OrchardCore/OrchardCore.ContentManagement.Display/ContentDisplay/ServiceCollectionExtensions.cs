@@ -24,12 +24,11 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         /// <summary>
         /// Add a display driver to a pre-registered content part for specific editors.
-        /// Valid options: * display for all editors or display modes, String.Empty display for standard editor, 'editor-name' display for specific editor.
-        /// Options are split by /, e.g. //my-editor : empty string to include standard editor, and 'my-editor'
+        /// Valid options: * display for all editors or display modes, 'standard' display for standard editor, 'editor-name' display for specific editor.
         /// </summary>
         /// <typeparam name="TContentPart"></typeparam>
         /// <typeparam name="TContentPartDisplayDriver"></typeparam>
-        public static ContentPartOptionBuilder AddPartDisplayDriver<TContentPart, TContentPartDisplayDriver>(this IServiceCollection services, string editors)
+        public static ContentPartOptionBuilder AddPartDisplayDriver<TContentPart, TContentPartDisplayDriver>(this IServiceCollection services, string[] editors)
             where TContentPart : ContentPart
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
@@ -76,11 +75,10 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         /// <summary>
         /// Register a display driver for use with a content part for specific editors.
-        /// Valid options: * display for all editors or display modes, String.Empty display for standard editor, 'editor-name' display for specific editor.
-        /// Options are split by /, e.g. //my-editor : empty string to include standard editor, and 'my-editor'
+        /// Valid options: * display for all editors or display modes, 'standard' display for standard editor, 'editor-name' display for specific editor.
         /// </summary>
         /// <typeparam name="TContentPartDisplayDriver"></typeparam>
-        public static ContentPartOptionBuilder WithDisplayDriver<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder, string editors)
+        public static ContentPartOptionBuilder WithDisplayDriver<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder, string[] editors)
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
             builder.Services.AddScoped<TContentPartDisplayDriver>();
@@ -129,12 +127,11 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         /// <summary>
         /// Add a display driver to a pre-registered content field for specific display modes and editors.
-        /// Valid options: * display for all editors or display modes, String.Empty display for standard editor, 'editor-name' display for specific editor.
-        /// Options are split by /, e.g. //my-editor : empty string to include standard editor, and 'my-editor'
+        /// Valid options: * display for all editors or display modes, 'standard display' for standard editor, 'editor-name' display for specific editor.
         /// </summary>
         /// <typeparam name="TContentField"></typeparam>
         /// <typeparam name="TContentFieldDisplayDriver"></typeparam>
-        public static ContentFieldOptionBuilder AddFieldDisplayDriver<TContentField, TContentFieldDisplayDriver>(this IServiceCollection services, string displayModes, string editors)
+        public static ContentFieldOptionBuilder AddFieldDisplayDriver<TContentField, TContentFieldDisplayDriver>(this IServiceCollection services, string[] displayModes, string[] editors = null)
             where TContentField : ContentField
             where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
         {
@@ -181,11 +178,10 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         /// <summary>
         /// Register a display driver for use with a content field for specific display modes and editors.
-        /// Valid options: * display for all editors or display modes, String.Empty display for standard editor, 'editor-name' display for specific editor.
-        /// Options are split by /, e.g. //my-editor : empty string to include standard editor, and 'my-editor'
+        /// Valid options: * display for all editors or display modes, standard display for standard editor, 'editor-name' display for specific editor.
         /// </summary>
         /// <typeparam name="TContentFieldDisplayDriver"></typeparam>
-        public static ContentFieldOptionBuilder WithDisplayDriver<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder, string displayModes, string editors)
+        public static ContentFieldOptionBuilder WithDisplayDriver<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder, string[] displayModes, string[] editors = null)
             where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
         {
             builder.Services.AddScoped<TContentFieldDisplayDriver>();

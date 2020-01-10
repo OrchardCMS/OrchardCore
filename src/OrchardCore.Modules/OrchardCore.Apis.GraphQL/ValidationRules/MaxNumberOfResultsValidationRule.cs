@@ -28,10 +28,22 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                     if ((arg.Name == "first" || arg.Name == "last") && arg.Value != null)
                     {
                         var context = (GraphQLContext)validationContext.UserContext;
+                       
+                        int? value = null;
 
-                        var value = (IntValue)arg.Value;
+                        if (arg.Value is IntValue)
+                        {
+                            value = ((IntValue)arg.Value)?.Value;
+                        }
+                        else
+                        {
+                            if (validationContext.Inputs.TryGetValue(arg.Value.ToString(), out var input))
+                            {
+                                value = (int?)input;
+                            }
+                        }
 
-                        if (value?.Value > _maxNumberOfResults)
+                        if (value.HasValue && value > _maxNumberOfResults)
                         {
                             var localizer = context.ServiceProvider.GetService<IStringLocalizer<MaxNumberOfResultsValidationRule>>();
                             var errorMessage = localizer["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults];

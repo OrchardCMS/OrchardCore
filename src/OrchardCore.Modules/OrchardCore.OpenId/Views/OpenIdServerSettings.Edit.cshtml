@@ -5,7 +5,7 @@
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
-<h3>Endpoints</h3>
+<h3>@T["Endpoints"]</h3>
 <div class="form-group" asp-validation-class-for="EnableTokenEndpoint">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableTokenEndpoint">
@@ -38,7 +38,7 @@
     </div>
 </div>
 
-<h3>Flows</h3>
+<h3>@T["Flows"]</h3>
 
 <div class="form-group collapse" asp-validation-class-for="AllowAuthorizationCodeFlow">
     <div class="custom-control custom-checkbox">
@@ -80,7 +80,7 @@
     </div>
 </div>
 
-<h3>Advanced options</h3>
+<h3>@T["Advanced options"]</h3>
 
 <p class="alert alert-info">@T["These options are all optional and are for advanced users only."]</p>
 
@@ -122,7 +122,6 @@
 <div class="form-group" asp-validation-class-for="CertificateThumbprint">
     @if (Model.AvailableCertificates.Count != 0)
     {
-
         <label asp-for="CertificateThumbprint">@T["Certificate"]</label>
         <select asp-for="CertificateThumbprint" class="form-control">
             <option value="">@T["None"]</option>
