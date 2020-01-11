@@ -1,10 +1,16 @@
 using System;
 using System.Threading.Tasks;
+using YesSql;
 
 namespace OrchardCore.Data
 {
     /// <summary>
-    /// Represents a contract that provides helper methods for <see cref="YesSql.ISession"/>.
+    /// The type of the delegate that will get called if <see cref="ISessionHelper.CommitAsync"/> is successful.
+    /// </summary>
+    public delegate Task AfterCommitSuccessDelegate();
+
+    /// <summary>
+    /// Represents a contract that provides helper methods for <see cref="ISession"/>.
     /// </summary>
     public interface ISessionHelper
     {
@@ -24,5 +30,15 @@ namespace OrchardCore.Data
         /// <param name="factory">A factory method to get or create a document for caching.</param>
         /// <returns></returns>
         Task<T> GetForCachingAsync<T>(Func<T> factory = null) where T : class, new();
+
+        /// <summary>
+        /// Registers an <see cref="AfterCommitSuccessDelegate"/> that will get called if <see cref="CommitAsync"/> is successful.
+        /// </summary>
+        void RegisterAfterCommit(AfterCommitSuccessDelegate afterCommit);
+
+        /// <summary>
+        /// Commits the <see cref="ISession"/> and then if successful calls the registered <see cref="AfterCommitSuccessDelegate"/>.
+        /// </summary>
+        Task CommitAsync();
     }
 }

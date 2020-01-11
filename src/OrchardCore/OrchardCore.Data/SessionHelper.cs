@@ -13,6 +13,7 @@ namespace OrchardCore.Data
         private readonly ISession _session;
 
         private readonly Dictionary<Type, object> _loaded = new Dictionary<Type, object>();
+        private AfterCommitSuccessDelegate _afterCommit;
 
         /// <summary>
         /// Creates a new instance of <see cref="SessionHelper"/>.
@@ -23,7 +24,7 @@ namespace OrchardCore.Data
             _session = session;
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc />
         public async Task<T> LoadForUpdateAsync<T>(Func<T> factory = null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
@@ -38,7 +39,7 @@ namespace OrchardCore.Data
             return document;
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc />
         public async Task<T> GetForCachingAsync<T>(Func<T> factory = null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
@@ -55,6 +56,26 @@ namespace OrchardCore.Data
             }
 
             return factory?.Invoke() ?? new T();
+        }
+
+        /// <inheritdoc />
+        public void RegisterAfterCommit(AfterCommitSuccessDelegate afterCommit) => _afterCommit += afterCommit;
+
+        /// <inheritdoc />
+        public async Task CommitAsync()
+        {
+            try
+            {
+                await _session.CommitAsync();
+
+                if (_afterCommit != null)
+                {
+                    await _afterCommit();
+                }
+            }
+            catch
+            {
+            }
         }
     }
 }

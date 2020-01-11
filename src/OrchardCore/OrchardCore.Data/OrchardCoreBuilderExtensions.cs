@@ -115,7 +115,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     ShellScope.RegisterBeforeDispose(scope =>
                     {
-                        return session.CommitAsync();
+                        var sessionHelper = scope.ServiceProvider.GetService<ISessionHelper>();
+                        return sessionHelper.CommitAsync();
                     });
 
                     return session;

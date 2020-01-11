@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Infrastructure.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
@@ -72,11 +71,7 @@ namespace OrchardCore.Roles.Services
             roles.Serial++;
             _session.Save(roles);
 
-            ShellScope.AddDeferredTask(scope =>
-            {
-                var cache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
-                return cache.RemoveAsync(typeof(RolesDocument).FullName);
-            });
+            _sessionHelper.RegisterAfterCommit(() => _scopedDistributedCache.SetAsync(roles));
 
             return Task.CompletedTask;
         }
