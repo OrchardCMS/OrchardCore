@@ -48,7 +48,9 @@
 
                                         maxPosition = Math.Max(maxPosition, (double)contentItemSummary.ContentItem.Content.LayerMetadata.Position);
                                         <li class="list-group-item">
-                                            @await DisplayAsync(contentItemSummary)
+                                            <div class="properties">
+                                                @await DisplayAsync(contentItemSummary)
+                                            </div>
                                             <input type="hidden"
                                                    class="layer-metadata"
                                                    data-zone="@zone"

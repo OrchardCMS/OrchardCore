@@ -4,41 +4,39 @@
     ContentItem contentItem = Model.ContentItem;
 }
 
-<div class="properties">
-    <div class="row">
-        <div class="col-xl-6 col-sm-12 title">
-            <div class="custom-control custom-checkbox float-left">
-                <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
-                <label class="custom-control-label" for="itemIds-@contentItem.Id">&nbsp;</label>
-            </div>
-            <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> - <small class="text-muted">@T["Widget"]</small>
-            @if (Model.Tags != null)
-            {
-                @await DisplayAsync(Model.Tags)
-            }
-            @if (Model.Header != null)
-            {
-                <div class="header">@await DisplayAsync(Model.Header)</div>
-            }
-
-            @if (Model.Meta != null)
-            {
-                <div class="metadata">@await DisplayAsync(Model.Meta)</div>
-            }
+<div class="row">
+    <div class="col-xl-6 col-sm-12 title">
+        <div class="custom-control custom-checkbox float-left">
+            <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
+            <label class="custom-control-label" for="itemIds-@contentItem.Id">&nbsp;</label>
         </div>
-
-        @if (Model.Actions != null)
+        <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> - <small class="text-muted">@T["Widget"]</small>
+        @if (Model.Tags != null)
         {
-            <div class="col-xl-6 col-sm-12 related">
-                <div class="float-right">
-                    @await DisplayAsync(Model.Actions)
-                </div>
-            </div>
+            @await DisplayAsync(Model.Tags)
+        }
+        @if (Model.Header != null)
+        {
+            <div class="header">@await DisplayAsync(Model.Header)</div>
+        }
+
+        @if (Model.Meta != null)
+        {
+            <div class="metadata">@await DisplayAsync(Model.Meta)</div>
         }
     </div>
 
-    @if (Model.Content != null)
+    @if (Model.Actions != null)
     {
-        <div class="primary">@await DisplayAsync(Model.Content)</div>
+        <div class="col-xl-6 col-sm-12 related">
+            <div class="float-right">
+                @await DisplayAsync(Model.Actions)
+            </div>
+        </div>
     }
 </div>
+
+@if (Model.Content != null)
+{
+    <div class="primary">@await DisplayAsync(Model.Content)</div>
+}
