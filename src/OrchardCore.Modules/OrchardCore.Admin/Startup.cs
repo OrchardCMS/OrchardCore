@@ -31,15 +31,13 @@ namespace OrchardCore.Admin
 
             services.Configure<MvcOptions>((options) =>
             {
+                options.Filters.Add(typeof(AdminZoneFilter));
                 options.Filters.Add(typeof(AdminFilter));
+                options.Filters.Add(typeof(AdminPageFilter));
                 options.Filters.Add(typeof(AdminMenuFilter));
-
-                // Ordered to be called before any global filter.
-                options.Filters.Add(typeof(AdminZoneFilter), -1000);
-
                 options.Conventions.Add(new AdminActionModelConvention());
-            });
-
+            });     
+            
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();
             services.AddScoped<IAdminThemeService, AdminThemeService>();
