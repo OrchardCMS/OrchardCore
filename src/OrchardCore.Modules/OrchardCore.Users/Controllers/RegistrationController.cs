@@ -25,8 +25,8 @@ namespace OrchardCore.Users.Controllers
         private readonly IEnumerable<IAccountActivatedEventHandler> _handlers;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer<RegistrationController> S;
-        private readonly IHtmlLocalizer<RegistrationController> H;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public RegistrationController(
             UserManager<IUser> userManager,
@@ -137,30 +137,35 @@ namespace OrchardCore.Users.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ActivateAccount([FromQuery]string email, [FromQuery]string activationToken, string returnUrl = null)
+        public async Task<IActionResult> ActivateAccount([FromQuery]string email, [FromQuery]string activationToken, [FromQuery]string returnUrl = null)
         {
             if (activationToken == null)
+            {
                 return BadRequest(S["activationToken is null"]);
+            }
 
             if (email == null)
+            {
                 return BadRequest(S["email is null"]);
+            }
 
             var user = await _userManager.FindByEmailAsync(email) as User;
             if (user == null)
+            {
                 // Do not provide too much detail
                 return BadRequest();
-            
+            }
+
             if(await _userManager.HasPasswordAsync(user))
             {
                 return await ActivateUserAccount(user, activationToken, null, returnUrl);
             }
 
-            ViewData["returnUrl"] = returnUrl;
-
             var model = new AccountActivationViewModel
             {
                 Email = email,
-                ActivationToken = activationToken
+                ActivationToken = activationToken,
+                ReturnUrl = returnUrl
             };
 
             return View("Activation", model);
@@ -168,19 +173,22 @@ namespace OrchardCore.Users.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ActivateAccount(AccountActivationViewModel model, string returnUrl = null)
+        public async Task<IActionResult> ActivateAccount(AccountActivationViewModel model)
         {
             if (model == null)
+            {
                 return BadRequest();
+            }
 
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email) as User;
                 if (user == null)
+                {
                     // Do not provide too much detail
                     return BadRequest();
-
-                return await ActivateUserAccount(user, model.ActivationToken, model.Password, returnUrl);
+                }
+                return await ActivateUserAccount(user, model.ActivationToken, model.Password, model.ReturnUrl);
             }
 
             return View("Activation", model);
@@ -188,31 +196,74 @@ namespace OrchardCore.Users.Controllers
 
         private async Task<IActionResult> ActivateUserAccount(User user, string activationToken, string password = null, string returnUrl = null)
         {
-            var isTokenValid = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.EmailConfirmationTokenProvider, "EmailConfirmation", activationToken);
+            var isTokenValid = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.EmailConfirmationTokenProvider, UserManager<IUser>.ConfirmEmailTokenPurpose, activationToken);
             if (!isTokenValid)
+            {
                 return BadRequest(S["Invalid token"]);
-
-            user.IsEnabled = true;
-            await _userManager.UpdateAsync(user);
-            await _userManager.ConfirmEmailAsync(user, activationToken);
-
-            if (password != null)
-            {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                await _userManager.ResetPasswordAsync(user, token, password);
             }
 
-            var context = new AccountActivatedContext(user);
-            await _handlers.InvokeAsync((handler, context) => handler.AccountActivatedAsync(context), context, _logger);
+            var userHasPassword = await _userManager.HasPasswordAsync(user);
+            var isPasswordProvided = !string.IsNullOrWhiteSpace(password);
 
-            if (returnUrl == null)
+            if(!isPasswordProvided && !userHasPassword)
             {
-                return RedirectToLocal("~/");
+                ModelState.AddModelError("password", S["Please provide a valid password"]);
             }
-            else
+
+            if (ModelState.IsValid)
             {
-                return Redirect(returnUrl);
+                if(isPasswordProvided)
+                {
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    var changePasswordResult = await _userManager.ResetPasswordAsync(user, token, password);
+                    if (!changePasswordResult.Succeeded)
+                    {
+                        foreach (var error in changePasswordResult.Errors)
+                        {
+                            ModelState.AddModelError(error.Code, error.Description);
+                        }
+                        userHasPassword = false;
+                    }
+                    else
+                    {
+                        userHasPassword = true;
+                    }   
+                }
+
+                if(userHasPassword)
+                {
+                    var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var confirmEmailResult = await _userManager.ConfirmEmailAsync(user, confirmEmailToken);
+                    foreach (var error in confirmEmailResult.Errors)
+                    {
+                        ModelState.AddModelError(error.Code, error.Description);
+                    }
+                    user.IsEnabled = true;
+                    await _userManager.UpdateAsync(user);
+                }
             }
+
+            if(ModelState.IsValid)
+            {
+                var context = new AccountActivatedContext(user);
+                await _handlers.InvokeAsync((handler, context) => handler.AccountActivatedAsync(context), context, _logger);
+
+                if (returnUrl == null)
+                {
+                    return RedirectToLocal("~/");
+                }
+                else
+                {
+                    return Redirect(returnUrl);
+                }
+            }
+
+            var model = new AccountActivationViewModel
+            {
+                ActivationToken = activationToken,
+                Email = user.Email
+            };
+            return View("Activation", model);
         }
 
 

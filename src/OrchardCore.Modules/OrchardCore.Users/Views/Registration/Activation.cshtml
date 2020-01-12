@@ -9,6 +9,7 @@
         <hr />
         <input type="hidden" asp-for="Email" class="form-control" />
         <input type="hidden" asp-for="ActivationToken" class="form-control" />
+        <input type="hidden" asp-for="ReturnUrl" class="form-control" />
         <div asp-validation-summary="All" class="text-danger"></div>
         <div class="form-group">
             <label asp-for="Password" class="col-md-4 control-label">@T["New password"]</label>

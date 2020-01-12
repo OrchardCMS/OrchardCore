@@ -19,5 +19,7 @@ namespace OrchardCore.Users.ViewModels
         [DataType(DataType.Password)]
         [Compare(nameof(Password))]
         public string PasswordConfirmation { get; set; }
+
+        public string ReturnUrl { get; set; }
     }
 }
