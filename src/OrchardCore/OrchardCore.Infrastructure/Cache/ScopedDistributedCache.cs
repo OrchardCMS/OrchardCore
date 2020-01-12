@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using MessagePack;
+using MessagePack.Resolvers;
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Infrastructure.Cache
 {
@@ -45,20 +44,14 @@ namespace OrchardCore.Infrastructure.Cache
             _scopedCache[key] = value;
         }
 
-        private byte[] Serialize(object value)
+        private byte[] Serialize<T>(T value)
         {
-            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value, Formatting.None));
-
-            // TODO: serialize as binary
-            // return MessagePackSerializer.Typeless.Serialize(value, MessagePack.Resolvers.ContractlessStandardResolver.Options);
+            return MessagePackSerializer.Serialize(value, ContractlessStandardResolver.Options);
         }
 
         private T Deserialize<T>(byte[] data)
         {
-            return JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(data));
-
-            // TODO: serialize as binary
-            // return (T) MessagePackSerializer.Typeless.Deserialize(data, MessagePack.Resolvers.ContractlessStandardResolver.Options);
+            return MessagePackSerializer.Deserialize<T>(data, ContractlessStandardResolver.Options);
         }
     }
 }
