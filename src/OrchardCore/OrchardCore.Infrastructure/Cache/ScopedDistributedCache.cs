@@ -35,11 +35,11 @@ namespace OrchardCore.Infrastructure.Cache
             return (T)value;
         }
 
-        public async Task SetAsync<T>(string key, T value)
+        public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options)
         {
             var data = Serialize(value);
 
-            await _distributedCache.SetAsync(key, data);
+            await _distributedCache.SetAsync(key, data, options);
 
             _scopedCache[key] = value;
         }
