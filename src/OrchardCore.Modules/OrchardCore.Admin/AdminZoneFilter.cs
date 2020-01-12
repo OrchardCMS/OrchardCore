@@ -30,7 +30,7 @@ namespace OrchardCore.Admin
 
         public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
         {
-            if (Path.GetFileName(context.ActionDescriptor.DisplayName).StartsWith("Admin", StringComparison.OrdinalIgnoreCase))
+            if (Path.GetFileName(context.ActionDescriptor.DisplayName).StartsWith("Admin"))
             {
                 AdminAttribute.Apply(context.HttpContext);
             }
