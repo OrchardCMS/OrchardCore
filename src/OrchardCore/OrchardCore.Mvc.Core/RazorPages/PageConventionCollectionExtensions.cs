@@ -17,12 +17,12 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
             {
                 foreach (var selector in model.Selectors.ToArray())
                 {
-                    if (selector.AttributeRouteModel.Template.StartsWith(areaName, StringComparison.Ordinal))
+                    if (selector.AttributeRouteModel.Template.StartsWith(areaName + folderPath, StringComparison.Ordinal))
                     {
                         selector.AttributeRouteModel.SuppressLinkGeneration = true;
 
                         var template = (folderRoute.Trim('/') + '/' + selector.AttributeRouteModel
-                            .Template.Substring(areaName.Length).TrimStart('/')).TrimEnd('/');
+                            .Template.Substring(areaName.Length + folderPath.Length).TrimStart('/')).TrimEnd('/');
 
                         model.Selectors.Add(new SelectorModel
                         {

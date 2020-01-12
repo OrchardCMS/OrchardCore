@@ -1,14 +1,15 @@
 using System;
-using Microsoft.AspNetCore.Mvc;
+using System.IO;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace OrchardCore.Admin
 {
     /// <summary>
-    /// This filter makes an controller that starts with Admin behave as
+    /// This filter makes a controller that starts with Admin behave as
     /// it had the <see cref="AdminAttribute"/>.
     /// </summary>
-    public class AdminZoneFilter : IActionFilter
+    public class AdminZoneFilter : IActionFilter, IPageFilter
     {
         public void OnActionExecuted(ActionExecutedContext context)
         {
@@ -16,14 +17,27 @@ namespace OrchardCore.Admin
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            var controller = context.Controller as Controller;
-            if (controller != null)
+            if (context.ActionDescriptor is ControllerActionDescriptor descriptor &&
+                descriptor.ControllerName == "Admin")
             {
-                if(controller.GetType().Name.StartsWith("Admin", StringComparison.OrdinalIgnoreCase))
-                {
-                    AdminAttribute.Apply(context.HttpContext);
-                }
+                AdminAttribute.Apply(context.HttpContext);
             }
+        }
+
+        public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
+        {
+        }
+
+        public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
+        {
+            if (Path.GetFileNameWithoutExtension(context.ActionDescriptor.RelativePath).StartsWith("Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                AdminAttribute.Apply(context.HttpContext);
+            }
+        }
+
+        public void OnPageHandlerSelected(PageHandlerSelectedContext context)
+        {
         }
     }
 }

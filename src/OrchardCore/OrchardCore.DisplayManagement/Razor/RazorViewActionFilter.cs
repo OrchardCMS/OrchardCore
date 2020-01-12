@@ -12,13 +12,15 @@ namespace OrchardCore.DisplayManagement.Razor
     /// Inject commonly used data through an HttpContext feature <see cref="RazorViewFeature"/> such that
     /// e.g a <see cref="RazorPage"/> can reuse them when it's executed.
     /// </summary>
-    public class RazorViewActionFilter : IAsyncViewActionFilter
+    public class RazorViewActionFilter : IAsyncViewActionFilter, IOrderedFilter
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             await OnActionExecutionAsync(context);
             await next();
         }
+
+        public int Order { get; }
 
         public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {

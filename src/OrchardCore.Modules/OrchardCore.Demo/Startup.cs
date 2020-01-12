@@ -101,9 +101,12 @@ namespace OrchardCore.Demo
             {
                 // Add a custom folder route
                 options.Conventions.AddAreaFolderRoute("OrchardCore.Demo", "/", "Demo");
+                options.Conventions.AddAreaFolderRoute("OrchardCore.Demo", "/Admin", _adminOptions.AdminUrlPrefix + "/Demo");
 
-                // Add a custom page route
+                // Add custom page routes
                 options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/Hello", "Hello");
+                options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/Admin/AdminHello", _adminOptions.AdminUrlPrefix + "/AdminHello");
+                options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/Admin/HelloAdmin", _adminOptions.AdminUrlPrefix + "/HelloAdmin");
 
                 // This declaration would define an home page
                 //options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/Hello", "");

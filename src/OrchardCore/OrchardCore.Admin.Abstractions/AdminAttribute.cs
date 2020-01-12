@@ -8,10 +8,10 @@ namespace OrchardCore.Admin
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     /// <summary>
-    /// When applied to an action or a controller, intercepts any request to check whether it applies to the admin site.
+    /// When applied to an action or a controller or a page action, intercepts any request to check whether it applies to the admin site.
     /// If so it marks the request as such and ensures the user has the right to access it.
     /// </summary>
-    public class AdminAttribute : ActionFilterAttribute
+    public class AdminAttribute : ActionFilterAttribute, IAsyncPageFilter
     {
         public AdminAttribute()
         {
@@ -23,7 +23,19 @@ namespace OrchardCore.Admin
         {
             Apply(context.HttpContext);
 
-            return base.OnActionExecutionAsync(context, next);
+            return next();
+        }
+
+        public Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
+        {
+            Apply(context.HttpContext);
+
+            return next();
+        }
+
+        public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
+        {
+            return Task.CompletedTask;
         }
 
         public static void Apply(HttpContext context)

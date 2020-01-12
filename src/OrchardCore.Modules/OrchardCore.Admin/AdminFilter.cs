@@ -10,7 +10,7 @@ namespace OrchardCore.Admin
     /// Intercepts any request to check whether it applies to the admin site.
     /// If so it marks the request as such and ensures the user as the right to access it.
     /// </summary>
-    public class AdminFilter : ActionFilterAttribute
+    public class AdminFilter : ActionFilterAttribute, IAsyncPageFilter
     {
         private readonly IAuthorizationService _authorizationService;
 
@@ -26,7 +26,7 @@ namespace OrchardCore.Admin
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (AdminAttribute.IsApplied(context.HttpContext) || IsNameAdmin(context))
+            if (AdminAttribute.IsApplied(context.HttpContext))
             {
                 var authorized = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.AccessAdminPanel);
 
@@ -37,12 +37,30 @@ namespace OrchardCore.Admin
                 }
             }
 
-            await base.OnActionExecutionAsync(context, next);
+            await next();
         }
 
-        private bool IsNameAdmin(ActionExecutingContext context)
+        public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
-            return string.Equals(context.Controller.GetType().Name, "Admin", StringComparison.OrdinalIgnoreCase);
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (AdminAttribute.IsApplied(context.HttpContext))
+            {
+                var authorized = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.AccessAdminPanel);
+
+                if (!authorized)
+                {
+                    context.Result = new ChallengeResult();
+                    return;
+                }
+            }
+
+            await next();
         }
+
+        public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context) => Task.CompletedTask;
     }
 }
