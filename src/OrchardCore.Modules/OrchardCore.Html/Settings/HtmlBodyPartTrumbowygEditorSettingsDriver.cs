@@ -51,9 +51,12 @@ namespace OrchardCore.Html.Settings
 
             try
             {
-                settings.Options = model.Options;
-                JObject.Parse(settings.Options);
-                settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
+                if (!string.IsNullOrEmpty(model.Options))
+                {
+                    settings.Options = model.Options;
+                    JObject.Parse(settings.Options);
+                    settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
+                }
             }
             catch
             {
