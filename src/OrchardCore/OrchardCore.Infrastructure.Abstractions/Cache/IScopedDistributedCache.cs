@@ -20,6 +20,11 @@ namespace OrchardCore.Infrastructure.Cache
             return scopedDistributedCache.GetAsync<T>(typeof(T).FullName);
         }
 
+        public static Task SetAsync<T>(this IScopedDistributedCache scopedDistributedCache, string key, T value)
+        {
+            return scopedDistributedCache.SetAsync(key, value, new DistributedCacheEntryOptions());
+        }
+
         public static Task SetAsync<T>(this IScopedDistributedCache scopedDistributedCache, T value)
         {
             return scopedDistributedCache.SetAsync(typeof(T).FullName, value, new DistributedCacheEntryOptions());
@@ -30,14 +35,9 @@ namespace OrchardCore.Infrastructure.Cache
             return scopedDistributedCache.SetAsync(typeof(T).FullName, value, options);
         }
 
-        public static Task<T> GetOrSetAsync<T>(this IScopedDistributedCache scopedDistributedCache, Func<Task<T>> factory)
+        public static Task<T> GetOrSetAsync<T>(this IScopedDistributedCache scopedDistributedCache, string key, Func<Task<T>> factory)
         {
-            return scopedDistributedCache.GetOrSetAsync(typeof(T).FullName, new DistributedCacheEntryOptions(), factory);
-        }
-
-        public static Task<T> GetOrSetAsync<T>(this IScopedDistributedCache scopedDistributedCache, DistributedCacheEntryOptions options, Func<Task<T>> factory)
-        {
-            return scopedDistributedCache.GetOrSetAsync(typeof(T).FullName, options, factory);
+            return scopedDistributedCache.GetOrSetAsync(key, new DistributedCacheEntryOptions(), factory);
         }
 
         public static async Task<T> GetOrSetAsync<T>(this IScopedDistributedCache scopedDistributedCache, string key, DistributedCacheEntryOptions options, Func<Task<T>> factory)
@@ -52,6 +52,16 @@ namespace OrchardCore.Infrastructure.Cache
             }
 
             return value;
+        }
+
+        public static Task<T> GetOrSetAsync<T>(this IScopedDistributedCache scopedDistributedCache, Func<Task<T>> factory)
+        {
+            return scopedDistributedCache.GetOrSetAsync(typeof(T).FullName, new DistributedCacheEntryOptions(), factory);
+        }
+
+        public static Task<T> GetOrSetAsync<T>(this IScopedDistributedCache scopedDistributedCache, DistributedCacheEntryOptions options, Func<Task<T>> factory)
+        {
+            return scopedDistributedCache.GetOrSetAsync(typeof(T).FullName, options, factory);
         }
     }
 }
