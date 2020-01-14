@@ -14,16 +14,16 @@ namespace OrchardCore.Admin
     {
         public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
-            if(context.ActionDescriptor is ControllerActionDescriptor)
+            if(context.ActionDescriptor is ControllerActionDescriptor action )
             {
-                if( ((ControllerActionDescriptor)context.ActionDescriptor).ControllerName.StartsWith("Admin", StringComparison.OrdinalIgnoreCase) )
+                if( action.ControllerName.StartsWith("Admin", StringComparison.OrdinalIgnoreCase) )
                 {
                     AdminAttribute.Apply(context.HttpContext);
                 }
             }
-            else if(context.ActionDescriptor is PageActionDescriptor)
+            else if(context.ActionDescriptor is PageActionDescriptor page)
             {
-                if( ((PageActionDescriptor)context.ActionDescriptor).ViewEnginePath.StartsWith("/Admin", StringComparison.OrdinalIgnoreCase) )
+                if( page.ViewEnginePath.Contains("/Admin/", StringComparison.OrdinalIgnoreCase))
                 {
                     AdminAttribute.Apply(context.HttpContext);
                 }

@@ -17,13 +17,14 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
             {
                 foreach (var selector in model.Selectors.ToArray())
                 {
-                    if (selector.AttributeRouteModel.Template.StartsWith(areaName, StringComparison.Ordinal))
+                    var path = $"{areaName}/{folderPath.Trim('/')}";
+                    if (selector.AttributeRouteModel.Template.Contains( path, StringComparison.Ordinal))
                     {
                         selector.AttributeRouteModel.SuppressLinkGeneration = true;
 
-                        var template = (folderRoute.Trim('/') + '/' + selector.AttributeRouteModel
-                            .Template.Substring(areaName.Length).TrimStart('/')).TrimEnd('/');
-
+                        var templatePart = selector.AttributeRouteModel.Template.Split(path);                        
+                        var template = templatePart[0].TrimEnd('/') + '/' + folderRoute.Trim('/') + '/' + templatePart[1].TrimStart('/');                        
+                        
                         model.Selectors.Add(new SelectorModel
                         {
                             AttributeRouteModel = new AttributeRouteModel
@@ -32,7 +33,7 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
                             }
                         });
                     }
-                }
+                }               
             });
 
             return conventions;
