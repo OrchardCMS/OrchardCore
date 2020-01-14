@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using OrchardCore.ContentManagement;
 using OrchardCore.Scripting;
 
