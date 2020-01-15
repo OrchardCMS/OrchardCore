@@ -38,6 +38,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             // If an instance of OrchardCoreBuilder exists reuse it,
             // so we can call AddOrchardCore several times.
             var builder = services
@@ -64,6 +69,19 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             return builder;
+        }
+
+        /// <summary>
+        /// Adds OrchardCore services to the host service collection and let the app change
+        /// the default behavior and set of features through a configure action.
+        /// </summary>
+        public static IServiceCollection AddOrchardCore(this IServiceCollection services, Action<OrchardCoreBuilder> configure)
+        {
+            var builder = services.AddOrchardCore();
+
+            configure?.Invoke(builder);
+
+            return services;
         }
 
         private static void AddDefaultServices(IServiceCollection services)
