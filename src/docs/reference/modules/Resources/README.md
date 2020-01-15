@@ -87,7 +87,7 @@ We use a name that is unique to `TheBlogTheme` to prevent collisions when multip
 
 We set a url for the minified version, and the unminified version, which will be used in `ResourceDebugMode`.
 For the same reason we define two CDN Url's, which will be preferred over the local urls if the `UseCdn` setting in the site admin is set. 
-We set the Cdn Integrity Hashes and the version to version `3.4.1`
+We set the Cdn Integrity Hashes and the version to `3.4.1`
 
 This script will then be available for the tag helper or API to register by name. 
 
@@ -257,7 +257,7 @@ You can declare a new resource directly from a view, and it will be injected onl
 We define a script named `foo` with a dependency on `jQuery` with the version `1.0`. 
 We then define a script named `bar` which also takes a dependency on version `1.0` of the `foo` script.
 If the version was not set the one with the highest number would be used.
-When rendering the scripts the resource manager will order the output based on the dependencies, regardsless of the order they are written to:
+When rendering the scripts the resource manager will order the output based on the dependencies, regardless of the order they are written to:
 1. `jQuery`
 2. `foo`
 3. `bar`
@@ -277,7 +277,7 @@ You can also do the same for a stylesheet:
 In this example define a style named `bar` with a dependency on the style named `foo` with the version `1.0`
 We then define the style named `foo` with the version of `1.0`
 If the version was not set the one with the highest number will be used.
-When rendering the scripts the resource manager will order the output based on the dependencies, regardsless of the order they are written to:
+When rendering the scripts the resource manager will order the output based on the dependencies, regardless of the order they are written to:
 1. `bootstrap`
 2. `foo`
 3. `bar`
