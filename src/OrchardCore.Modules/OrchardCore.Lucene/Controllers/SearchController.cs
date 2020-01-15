@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,12 +8,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Settings;
+using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Lucene.Controllers
 {
@@ -23,7 +27,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly ISearchQueryService _searchQueryService;
-        private readonly IContentManager _contentManager;
+        private readonly ISession _session;
         private readonly dynamic New;
 
         public SearchController(
@@ -32,7 +36,7 @@ namespace OrchardCore.Lucene.Controllers
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
             ISearchQueryService searchQueryService,
-            IContentManager contentManager,
+            ISession session,
             IShapeFactory shapeFactory,
             ILogger<SearchController> logger
             )
@@ -42,7 +46,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
             _searchQueryService = searchQueryService;
-            _contentManager = contentManager;
+            _session = session;
             New = shapeFactory;
 
             Logger = logger;
@@ -50,7 +54,8 @@ namespace OrchardCore.Lucene.Controllers
 
         ILogger Logger { get; set; }
 
-        public async Task<IActionResult> Index(string id, string q, PagerParameters pagerParameters)
+        [HttpGet]
+        public async Task<IActionResult> Index(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneSearch))
             {
@@ -58,16 +63,8 @@ namespace OrchardCore.Lucene.Controllers
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var indexName = "Search";
-
-            if (!string.IsNullOrWhiteSpace(id))
-            {
-                indexName = id;
-            }
-
-            if (!_luceneIndexProvider.Exists(indexName))
+            if (!_luceneIndexProvider.Exists(viewModel.IndexName))
             {
                 Logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
                 return BadRequest("Search is not configured.");
@@ -81,42 +78,70 @@ namespace OrchardCore.Lucene.Controllers
                 return BadRequest("Search is not configured.");
             }
 
-            if (string.IsNullOrWhiteSpace(q))
+            if (string.IsNullOrWhiteSpace(viewModel.Terms))
             {
                 return View(new SearchIndexViewModel
                 {
-                    Pager = (await New.Pager(pager)).TotalItemCount(0),
-                    IndexName = indexName,
+                    IndexName = viewModel.IndexName,
                     ContentItems = Enumerable.Empty<ContentItem>()
                 });
             }
 
+            var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
+
+            //We Query Lucene index
             var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
-            var query = queryParser.Parse(QueryParser.Escape(q));
+            var query = queryParser.Parse(QueryParser.Escape(viewModel.Terms));
 
-            int start = pager.GetStartIndex(), size = pager.PageSize, end = size * pager.Page + 1;// Fetch one more result than PageSize to generate "More" links
-            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, indexName, start, end);
-            var count = contentItemIds.Count + (pager.Page - 1) * pager.PageSize;
+            // Fetch one more result than PageSize to generate "More" links
+            var start = 0;
+            var end = pager.PageSize + 1;
 
-            var contentItems = new List<ContentItem>();
-            foreach (var contentItemId in contentItemIds.Take(size))
+            if (pagerParameters.Before != null)
             {
-                var contentItem = await _contentManager.GetAsync(contentItemId);
-                if (contentItem != null)
+                start = Int32.Parse(pagerParameters.Before) - pager.PageSize - 1;
+                end = Int32.Parse(pagerParameters.Before);
+            }
+            else if (pagerParameters.After != null)
+            {
+                start = Int32.Parse(pagerParameters.After);
+                end = Int32.Parse(pagerParameters.After) + pager.PageSize + 1;
+            }
+
+            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, viewModel.IndexName, start, end);
+
+            //We Query database to retrieve content items.
+            var queryDb = _session.Query<ContentItem, ContentItemIndex>().Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Published && x.Latest)
+                .Take(pager.PageSize + 1);
+            var containedItems = await queryDb.ListAsync();
+
+            if (pagerParameters.After != null || pagerParameters.Before != null)
+            {
+                if (start + 1 > 1)
                 {
-                    contentItems.Add(contentItem);
+                    pager.Before = (start + 1).ToString();
+                }
+                else
+                {
+                    pager.Before = null;
                 }
             }
-            
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+
+            if (containedItems.Count() == pager.PageSize + 1)
+            {
+                pager.After = (end - 1).ToString();
+            }
+            else
+            {
+                pager.After = null;
+            }
 
             var model = new SearchIndexViewModel
             {
-                HasMoreResults = contentItemIds.Count > size,
-                Query = q,
-                Pager = pagerShape,
-                IndexName = indexName,
-                ContentItems = contentItems
+                Terms = viewModel.Terms,
+                Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, object>() { { "IndexName", viewModel.IndexName }, { "Terms", viewModel.Terms } }),
+                IndexName = viewModel.IndexName,
+                ContentItems = containedItems.Take(pager.PageSize)
             };
 
             return View(model);

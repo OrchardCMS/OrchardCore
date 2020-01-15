@@ -1,9 +1,9 @@
 @model SearchIndexViewModel
 @inject IContentItemDisplayManager DisplayManager
 
-<form action="@Url.Action("Index", "Search", new { area = "OrchardCore.Lucene", id = Model.IndexName })" method="get">
+<form action="@Url.Action("Index", "Search", new { area = "OrchardCore.Lucene" })" method="get">
     <div class="input-group mb-3 mt-5">
-        <input name="q" type="text" class="form-control form-control-lg" value="@Model.Query" autofocus />
+        <input asp-for="Terms" type="text" class="form-control form-control-lg" autofocus />
         <div class="input-group-append">
             <button type="submit" class="btn btn-primary btn-sm">@T["Search"]</button>
         </div>

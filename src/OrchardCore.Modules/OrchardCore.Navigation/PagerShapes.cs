@@ -328,7 +328,8 @@ namespace OrchardCore.Navigation
             object PreviousText,
             object NextText,
             string PreviousClass,
-            string NextClass)
+            string NextClass,
+            Dictionary<string, object> UrlParams)
         {
             Shape.Classes.Add("pager");
             Shape.Metadata.Alternates.Clear();
@@ -338,6 +339,15 @@ namespace OrchardCore.Navigation
             var nextText = NextText ?? S[">"];
 
             var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
+
+            //Allows to pass custom url params to PagerSlim
+            if (UrlParams != null)
+            {
+                foreach (var item in UrlParams)
+                {
+                    routeData.Add(item.Key, item.Value);
+                }
+            }
 
             string after = Shape.After;
             string before = Shape.Before;

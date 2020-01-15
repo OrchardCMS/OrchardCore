@@ -15,9 +15,10 @@
     </header>
 {% endzone %}
 
-<form action="{{ "~/OrchardCore.Lucene/Search/Index?id=" | append: Model.IndexName | href }}" method="get">
+<form action="{{ "~/search" | href }}" method="get">
     <div class="input-group mb-3 mt-5">
-        <input name="q" type="text" class="form-control form-control-lg" value="{{ Model.Query }}" placeholder="{{ "Enter your search term(s)" | t }}" autofocus />
+        <input name="IndexName" type="hidden" value="Search" />
+        <input name="Terms" type="text" class="form-control form-control-lg" value="{{ Model.Terms }}" placeholder="{{ "Enter your search term(s)" | t }}" autofocus />
         <div class="input-group-append">
             <button type="submit" class="btn btn-primary btn-sm">{{ "Search" | t }}</button>
         </div>
