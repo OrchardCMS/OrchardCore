@@ -120,6 +120,11 @@ namespace OrchardCore.Roles.Services
             var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.RoleName == roleId);
 
+            if (role == null)
+            {
+                return null;
+            }
+
             return new Role
             {
                 RoleName = role.RoleName,
@@ -133,6 +138,11 @@ namespace OrchardCore.Roles.Services
         {
             var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.NormalizedRoleName == normalizedRoleName);
+
+            if (role == null)
+            {
+                return null;
+            }
 
             return new Role
             {
