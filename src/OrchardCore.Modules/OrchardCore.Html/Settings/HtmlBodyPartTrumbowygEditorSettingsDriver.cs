@@ -44,27 +44,30 @@ namespace OrchardCore.Html.Settings
                 return null;
             }
 
-            var model = new TrumbowygSettingsViewModel();
-            var settings = new HtmlBodyPartTrumbowygEditorSettings();
-
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-            try
+            if (contentTypePartDefinition.Editor() == "Trumbowyg")
             {
-                if (!string.IsNullOrEmpty(model.Options))
+                var model = new TrumbowygSettingsViewModel();
+                var settings = new HtmlBodyPartTrumbowygEditorSettings();
+
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+                try
                 {
-                    settings.Options = model.Options;
-                    JObject.Parse(settings.Options);
+                    if (!string.IsNullOrEmpty(model.Options))
+                    {
+                        settings.Options = model.Options;
+                        JObject.Parse(settings.Options);
+                    }
                     settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
                 }
-            }
-            catch
-            {
-                context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
-                return Edit(contentTypePartDefinition, context.Updater);
-            }
+                catch
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
+                    return Edit(contentTypePartDefinition, context.Updater);
+                }
 
-            context.Builder.WithSettings(settings);
+                context.Builder.WithSettings(settings);
+            }
 
             return Edit(contentTypePartDefinition, context.Updater);
         }
