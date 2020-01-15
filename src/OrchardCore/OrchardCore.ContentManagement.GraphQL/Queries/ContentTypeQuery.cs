@@ -82,6 +82,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 }
             }
 
+            foreach (var builder in contentTypeBuilders)
+            {
+                builder.Clear();
+            }
+
             return Task.FromResult(changeToken);
         }
     }
