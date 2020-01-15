@@ -26,6 +26,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly ISiteService _siteService;
         private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly ISearchQueryService _searchQueryService;
         private readonly ISession _session;
         private readonly dynamic New;
@@ -35,6 +36,7 @@ namespace OrchardCore.Lucene.Controllers
             ISiteService siteService,
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
+            LuceneIndexSettingsService luceneIndexSettingsService,
             ISearchQueryService searchQueryService,
             ISession session,
             IShapeFactory shapeFactory,
@@ -45,6 +47,7 @@ namespace OrchardCore.Lucene.Controllers
             _siteService = siteService;
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
             _searchQueryService = searchQueryService;
             _session = session;
             New = shapeFactory;
@@ -76,6 +79,14 @@ namespace OrchardCore.Lucene.Controllers
             {
                 Logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
                 return BadRequest("Search is not configured.");
+            }
+
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(viewModel.IndexName);
+
+            if (luceneIndexSettings == null)
+            {
+                Logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({viewModel.IndexName}) index.");
+                return BadRequest($"Search index ({viewModel.IndexName}) is not configured.");
             }
 
             if (string.IsNullOrWhiteSpace(viewModel.Terms))
@@ -111,10 +122,24 @@ namespace OrchardCore.Lucene.Controllers
             var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, viewModel.IndexName, start, end);
 
             //We Query database to retrieve content items.
-            var queryDb = _session.Query<ContentItem, ContentItemIndex>().Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Published && x.Latest)
-                .Take(pager.PageSize + 1);
+            IQuery<ContentItem> queryDb;
+            
+            if (luceneIndexSettings.IndexLatest)
+            {
+                queryDb = _session.Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Latest == true)
+                    .Take(pager.PageSize + 1);
+            }
+            else
+            {
+                queryDb = _session.Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Published == true)
+                    .Take(pager.PageSize + 1);
+            }
+
             var containedItems = await queryDb.ListAsync();
 
+            //We set the PagerSlim before and after links
             if (pagerParameters.After != null || pagerParameters.Before != null)
             {
                 if (start + 1 > 1)
