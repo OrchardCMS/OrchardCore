@@ -19,11 +19,14 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
     /// </summary>
     public class OpenIdTokenStoreResolver : IOpenIddictTokenStoreResolver
     {
-        private readonly ConcurrentDictionary<Type, Type> _cache = new ConcurrentDictionary<Type, Type>();
+        private readonly TypeResolutionCache _cache;
         private readonly IServiceProvider _provider;
 
-        public OpenIdTokenStoreResolver(IServiceProvider provider)
-            => _provider = provider;
+        public OpenIdTokenStoreResolver(TypeResolutionCache cache, IServiceProvider provider)
+        {
+            _cache = cache;
+            _provider = provider;
+        }
 
         /// <summary>
         /// Returns a token store compatible with the specified token type or throws an
@@ -56,5 +59,11 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
 
             return (IOpenIddictTokenStore<TToken>) _provider.GetRequiredService(type);
         }
+
+        // Note: OrchardCore YesSql resolvers are registered as scoped dependencies as their inner
+        // service provider must be able to resolve scoped services (typically, the store they return).
+        // To avoid having to declare a static type resolution cache, a special cache service is used
+        // here and registered as a singleton dependency so that its content persists beyond the scope.
+        public class TypeResolutionCache : ConcurrentDictionary<Type, Type> { }
     }
 }
