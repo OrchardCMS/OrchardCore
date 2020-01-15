@@ -110,13 +110,13 @@ namespace OrchardCore.Lucene.Controllers
 
             if (pagerParameters.Before != null)
             {
-                start = Int32.Parse(pagerParameters.Before) - pager.PageSize - 1;
-                end = Int32.Parse(pagerParameters.Before);
+                start = Convert.ToInt32(pagerParameters.Before) - pager.PageSize - 1;
+                end = Convert.ToInt32(pagerParameters.Before);
             }
             else if (pagerParameters.After != null)
             {
-                start = Int32.Parse(pagerParameters.After);
-                end = Int32.Parse(pagerParameters.After) + pager.PageSize + 1;
+                start = Convert.ToInt32(pagerParameters.After);
+                end = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
             }
 
             var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, viewModel.IndexName, start, end);
