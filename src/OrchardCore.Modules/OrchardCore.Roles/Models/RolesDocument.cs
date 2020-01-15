@@ -7,6 +7,5 @@ namespace OrchardCore.Roles.Models
     {
         public int Id { get; set; }
         public List<Role> Roles { get; set; } = new List<Role>();
-        public int Serial { get; set; }
     }
 }

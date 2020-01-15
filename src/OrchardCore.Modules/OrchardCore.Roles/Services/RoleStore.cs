@@ -60,7 +60,7 @@ namespace OrchardCore.Roles.Services
         /// </summary>
         private async Task<RolesDocument> GetRolesAsync()
         {
-            return await _scopedDistributedCache.GetOrSetAsync(() =>
+            return await _scopedDistributedCache.GetOrCreateAsync(() =>
             {
                 return _sessionHelper.GetForCachingAsync<RolesDocument>();
             });
@@ -68,11 +68,8 @@ namespace OrchardCore.Roles.Services
 
         private Task UpdateRolesAsync(RolesDocument roles)
         {
-            roles.Serial++;
             _session.Save(roles);
-
             _sessionHelper.RegisterAfterCommit(() => _scopedDistributedCache.SetAsync(roles));
-
             return Task.CompletedTask;
         }
 
@@ -122,14 +119,28 @@ namespace OrchardCore.Roles.Services
         {
             var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.RoleName == roleId);
-            return role;
+
+            return new Role
+            {
+                RoleName = role.RoleName,
+                RoleDescription = role.RoleDescription,
+                NormalizedRoleName = role.NormalizedRoleName,
+                RoleClaims = role.RoleClaims.ToList()
+            };
         }
 
         public async Task<IRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.NormalizedRoleName == normalizedRoleName);
-            return role;
+
+            return new Role
+            {
+                RoleName = role.RoleName,
+                RoleDescription = role.RoleDescription,
+                NormalizedRoleName = role.NormalizedRoleName,
+                RoleClaims = role.RoleClaims.ToList()
+            };
         }
 
         public Task<string> GetNormalizedRoleNameAsync(IRole role, CancellationToken cancellationToken)
