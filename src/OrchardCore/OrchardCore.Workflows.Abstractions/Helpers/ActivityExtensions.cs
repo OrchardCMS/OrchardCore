@@ -8,6 +8,8 @@ namespace OrchardCore.Workflows.Helpers
 {
     public static class ActivityExtensions
     {
+        private static IHtmlLocalizer H;
+
         public static bool IsEvent(this IActivity activity)
         {
             return activity is IEvent;
@@ -19,20 +21,22 @@ namespace OrchardCore.Workflows.Helpers
             return !string.IsNullOrEmpty(title) ? new LocalizedHtmlString(title, title) : defaultTitle();
         }
 
-        public static LocalizedHtmlString GetLocalizedStatus(this WorkflowStatus status, IViewLocalizer localizer)
+        public static LocalizedHtmlString GetLocalizedStatus(this WorkflowStatus status, IHtmlLocalizer localizer)
         {
-            // A switch is used to allow string collection for translations.
+            // Field for PoExtractor compatibility
+            H = localizer;
+
             return status switch
             {
-                WorkflowStatus.Aborted => localizer["Aborted"],
-                WorkflowStatus.Executing => localizer["Executing"],
-                WorkflowStatus.Faulted => localizer["Faulted"],
-                WorkflowStatus.Finished => localizer["Finished"],
-                WorkflowStatus.Halted => localizer["Halted"],
-                WorkflowStatus.Idle => localizer["Idle"],
-                WorkflowStatus.Resuming => localizer["Resuming"],
-                WorkflowStatus.Starting => localizer["Starting"],
-                _ => localizer[status.ToString()],
+                WorkflowStatus.Aborted => H["Aborted"],
+                WorkflowStatus.Executing => H["Executing"],
+                WorkflowStatus.Faulted => H["Faulted"],
+                WorkflowStatus.Finished => H["Finished"],
+                WorkflowStatus.Halted => H["Halted"],
+                WorkflowStatus.Idle => H["Idle"],
+                WorkflowStatus.Resuming => H["Resuming"],
+                WorkflowStatus.Starting => H["Starting"],
+                _ => H[status.ToString()],
             };
         }
     }
