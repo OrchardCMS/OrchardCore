@@ -37,7 +37,7 @@ The Empty recipe enables content management features, but does not set a current
 You can use this recipe when starting Orchard Core in Decoupled Mode,
 or when building your own theme.
 
-Alternativaley you can start with another recipe,
+Alternatively you can start with another recipe,
 and change the active theme after setup.
 
 #### Empty Recipe Contents 
@@ -69,7 +69,7 @@ as an API, and Content Management System, with Administrator access to the host.
 The Blog recipe sets up a range of content types, and widgets, the initial content,
 and sets the current theme to the TheBlogTheme.
 
-TheBlogTheme is based of the [Start Bootstrap Clean Blog Theme](https://startbootstrap.com/themes/clean-blog/)
+TheBlogTheme is based on the [Start Bootstrap Clean Blog Theme](https://startbootstrap.com/themes/clean-blog/)
 
 #### Blog Recipe Contents
 
@@ -84,7 +84,7 @@ TheBlogTheme is based of the [Start Bootstrap Clean Blog Theme](https://startboo
 The Agency recipe sets up a range of content types, and widgets, the initial content,
 and sets the current theme to TheAgencyTheme.
 
-TheAgencyTheme is based of the [Start Bootstrap Agency Theme](https://startbootstrap.com/themes/agency/)
+TheAgencyTheme is based on the [Start Bootstrap Agency Theme](https://startbootstrap.com/themes/agency/)
 
 #### Agency Recipe Contents
 
@@ -99,7 +99,7 @@ TheAgencyTheme is based of the [Start Bootstrap Agency Theme](https://startboots
 This recipe sets up a range of Content Types, and Widgets, and the initial content of TheComingSoonTheme.
 It also includes Email, Recaptcha, Forms, Workflows and User Registration Forms.
 
-TheComingSoon theme is based of the [Start Bootstrap Coming Soon Theme](https://startbootstrap.com/themes/coming-soon/)
+TheComingSoon theme is based on the [Start Bootstrap Coming Soon Theme](https://startbootstrap.com/themes/coming-soon/)
 
 #### ComingSoon Recipe Contents
 
