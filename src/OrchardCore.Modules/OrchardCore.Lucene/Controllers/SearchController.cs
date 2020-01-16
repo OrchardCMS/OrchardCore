@@ -27,6 +27,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ISearchQueryService _searchQueryService;
         private readonly ISession _session;
         private readonly dynamic New;
@@ -37,6 +38,7 @@ namespace OrchardCore.Lucene.Controllers
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
             LuceneIndexSettingsService luceneIndexSettingsService,
+            LuceneAnalyzerManager luceneAnalyzerManager,
             ISearchQueryService searchQueryService,
             ISession session,
             IShapeFactory shapeFactory,
@@ -48,6 +50,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
             _luceneIndexSettingsService = luceneIndexSettingsService;
+            _luceneAnalyzerManager = luceneAnalyzerManager;
             _searchQueryService = searchQueryService;
             _session = session;
             New = shapeFactory;
@@ -101,7 +104,8 @@ namespace OrchardCore.Lucene.Controllers
             var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
 
             //We Query Lucene index
-            var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
+            var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(luceneIndexSettings.IndexName));
+            var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, analyzer);
             var query = queryParser.Parse(QueryParser.Escape(viewModel.Terms));
 
             // Fetch one more result than PageSize to generate "More" links
