@@ -123,10 +123,8 @@ function buildAgencyTheme(done){
 }
 
 function buildBlogTheme(done){
-    var cwd = process.cwd();  
-    console.log(cwd)
-    process.chdir('./src/OrchardCore.Themes/TheBlogTheme/wwwroot');
-    console.log( process.cwd());
+    var cwd = process.cwd();      
+    process.chdir('./src/OrchardCore.Themes/TheBlogTheme/wwwroot');    
 	blogtheme.build( ()=> {
         process.chdir(cwd);
         done();
