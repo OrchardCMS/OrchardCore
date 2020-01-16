@@ -15,7 +15,7 @@
 
 <div class="form-group">
     <div class="row">
-        <div class="col-sm-2">
+        <div class="col-sm-3">
             <label asp-for="Value">@name</label>
             <div class="input-group mb-2">
                 @if (settings.Minimum.HasValue)
@@ -32,15 +32,17 @@
                 </div>
                 }
             </div>
-            <div class="input-group mb-2 ml-2">
-                <input id="@(id)-slider" type="text" data-slider-min="@min" data-slider-max="@max" data-slider-step="@step" data-slider-value="@Model.Value" />
+            <div class="input-group px-2">
+                <input id="@(id)_input_slider" type="text" data-slider-min="@min" data-slider-max="@max" data-slider-step="@step" data-slider-value="@Model.Value" />
             </div>
             <span class="hint">@settings.Hint</span>
         </div>
     </div>
 </div>
 <script at="Foot">
-    $('#@(id)-slider').bootstrapSlider({ tooltip: 'always' }).on('slide', function (ev) {
+    $('#@(id)_input_slider').bootstrapSlider({ tooltip: 'always', id: '@(id)_slider' }).on('slide', function (ev) {
         $('#@(id)').val(ev.value);
     });
+
+    $('#@(id)_slider').addClass('w-100');
 </script>
