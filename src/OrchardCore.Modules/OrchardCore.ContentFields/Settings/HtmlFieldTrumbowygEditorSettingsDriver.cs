@@ -39,14 +39,12 @@ namespace OrchardCore.ContentFields.Settings
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+                settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
+
                 try
                 {
-                    if (!string.IsNullOrEmpty(model.Options))
-                    {
-                        settings.Options = model.Options;
-                        JObject.Parse(settings.Options);
-                    }
-                    settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
+                    settings.Options = model.Options;
+                    JObject.Parse(settings.Options);
                 }
                 catch
                 {
