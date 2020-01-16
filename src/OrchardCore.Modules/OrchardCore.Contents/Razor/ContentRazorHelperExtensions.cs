@@ -14,7 +14,7 @@ public static class ContentRazorHelperExtensions
     /// </summary>
     /// <param name="alias">The alias.</param>
     /// <example>GetContentItemIdByAliasAsync("alias:carousel")</example>
-    /// <example>GetContentItemIdByAliasAsync("autoroute:myblog/my-blog-post")</example>
+    /// <example>GetContentItemIdByAliasAsync("slug:myblog/my-blog-post")</example>
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
     public static Task<string> GetContentItemIdByAliasAsync(this IOrchardHelper orchardHelper, string alias)
     {
@@ -28,7 +28,7 @@ public static class ContentRazorHelperExtensions
     /// <param name="alias">The alias to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
     /// <example>GetContentItemByAliasAsync("alias:carousel")</example>
-    /// <example>GetContentItemByAliasAsync("autoroute:myblog/my-blog-post", true)</example>
+    /// <example>GetContentItemByAliasAsync("slug:myblog/my-blog-post", true)</example>
     /// <returns>A content item with the specific alias, or <c>null</c> if it doesn't exist.</returns>
     public static async Task<ContentItem> GetContentItemByAliasAsync(this IOrchardHelper orchardHelper, string alias, bool latest = false)
     {
