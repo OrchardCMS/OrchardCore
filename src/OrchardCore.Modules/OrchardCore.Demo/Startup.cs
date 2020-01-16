@@ -12,6 +12,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.Demo.Commands;
 using OrchardCore.Demo.ContentElementDisplays;
+using OrchardCore.Demo.Controllers;
 using OrchardCore.Demo.Drivers;
 using OrchardCore.Demo.Models;
 using OrchardCore.Demo.Services;
@@ -20,6 +21,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Models;
@@ -38,31 +40,42 @@ namespace OrchardCore.Demo
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
-                name: "Home",
+                name: "Demo.Home.Index",
                 areaName: "OrchardCore.Demo",
                 pattern: "Home/Index",
                 defaults: new { controller = "Home", action = "Index" }
             );
 
             routes.MapAreaControllerRoute(
-                name: "Display",
+                name: "Demo.Home.Display",
                 areaName: "OrchardCore.Demo",
                 pattern: "Home/Display/{contentItemId}",
                 defaults: new { controller = "Home", action = "Display" }
             );
 
             routes.MapAreaControllerRoute(
-                name: "Error",
+                name: "Demo.Home.Error",
                 areaName: "OrchardCore.Demo",
                 pattern: "Home/IndexError",
                 defaults: new { controller = "Home", action = "IndexError" }
             );
 
+            var demoAdminControllerName = typeof(AdminController).ControllerName();
+
             routes.MapAreaControllerRoute(
-                name: "AdminDemo",
+                name: "Demo.Admin",
                 areaName: "OrchardCore.Demo",
-                pattern: _adminOptions.AdminUrlPrefix + "/Demo/Index",
-                defaults: new { controller = "Admin", action = "Index" }
+                pattern: _adminOptions.AdminUrlPrefix + "/Demo/Admin",
+                defaults: new { controller = demoAdminControllerName, action = nameof(AdminController.Index) }
+            );
+
+            var demoContentControllerName = typeof(ContentController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "Demo.Content.Edit",
+                areaName: "OrchardCore.Demo",
+                pattern: _adminOptions.AdminUrlPrefix + "/Demo/Content/Edit",
+                defaults: new { controller = demoContentControllerName, action = nameof(ContentController.Edit) }
             );
 
             builder.UseMiddleware<NonBlockingMiddleware>();

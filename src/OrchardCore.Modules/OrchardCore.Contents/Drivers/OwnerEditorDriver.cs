@@ -21,7 +21,7 @@ namespace OrchardCore.Contents.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userService;
-        private readonly IStringLocalizer T;
+        private readonly IStringLocalizer<OwnerEditorDriver> S;
 
         public OwnerEditorDriver(
             IContentDefinitionManager contentDefinitionManager,
@@ -34,7 +34,7 @@ namespace OrchardCore.Contents.Drivers
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
             _userService = userService;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public override async Task<IDisplayResult> EditAsync(CommonPart part, BuildPartEditorContext context)
@@ -95,7 +95,7 @@ namespace OrchardCore.Contents.Drivers
 
                     if (newOwner == null)
                     {
-                        context.Updater.ModelState.AddModelError("CommonPart.Owner", T["Invalid user name"]);
+                        context.Updater.ModelState.AddModelError("CommonPart.Owner", S["Invalid user name"]);
                     }
                     else
                     {

@@ -16,15 +16,14 @@ namespace OrchardCore.Html.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly IStringLocalizer<HtmlBodyPartDisplay> S;
 
         public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
         {
             _liquidTemplateManager = liquidTemplateManager;
-            T = localizer;
             _htmlEncoder = htmlEncoder;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(HtmlBodyPart HtmlBodyPart, BuildPartDisplayContext context)
         {
@@ -53,7 +52,7 @@ namespace OrchardCore.Html.Drivers
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(model.Html), T["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    context.Updater.ModelState.AddModelError(nameof(model.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {
@@ -70,7 +69,8 @@ namespace OrchardCore.Html.Drivers
             model.HtmlBodyPart = htmlBodyPart;
             model.ContentItem = htmlBodyPart.ContentItem;
 
-            model.Html = await _liquidTemplateManager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, model);
+            model.Html = await _liquidTemplateManager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, model,
+                scope => scope.SetValue("ContentItem", model.ContentItem));
         }
     }
 }
