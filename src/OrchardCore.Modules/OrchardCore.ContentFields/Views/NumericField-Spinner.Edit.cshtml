@@ -22,7 +22,7 @@
                     <div class="input-group-text">@min</div>
                 </div>
                 }
-                <input asp-for="Value" typeof="text" class="form-control content-preview-select" type="number" required="@settings.Required" />
+                <input asp-for="Value" typeof="text" class="form-control content-preview-select" type="number" required="@settings.Required" min="@min" max="@max" step="@step" />
                 @if (settings.Maximum.HasValue)
                 {
                 <div class="input-group-append">
@@ -34,12 +34,3 @@
         </div>
     </div>
 </div>
-<script at="Foot">
-    $(function () {
-        $('#@(id)').spinner({
-            min: @min,
-            max: @max,
-            step: @step
-        });
-    });
-</script>
