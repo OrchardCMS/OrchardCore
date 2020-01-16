@@ -14,9 +14,9 @@
     <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9626" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-1632" />
-    <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00006" />
-    <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00006" />
-    <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00006" />
+    <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00007" />
+    <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00007" />
+    <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00007" />
     <PackageManagement Include="MailKit" Version="2.4.1" />
     <PackageManagement Include="Markdig" Version="0.18.0" />
     <PackageManagement Include="MessagePack" Version="2.0.323" />
