@@ -24,28 +24,28 @@ namespace OrchardCore.Admin
             if (context == null)
             {
                 throw new ArgumentNullException(nameof(context));
-            }                        
+            }
 
-            if ( (await IsAdminAuthorizedAsync(context.HttpContext)) == false )
+            if (!await AuthorizeAsync(context.HttpContext))
             {
-                context.Result = new ChallengeResult();   
-                return;         
-            }     
+                context.Result = new ChallengeResult();
+                return;
+            }
 
             await base.OnActionExecutionAsync(context, next);
-        }        
-        
+        }
+
         public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
             if (context == null)
             {
                 throw new ArgumentNullException(nameof(context));
-            }       
+            }
 
-            if ( (await IsAdminAuthorizedAsync(context.HttpContext)) == false )
+            if (!await AuthorizeAsync(context.HttpContext))
             {
-                context.Result = new ChallengeResult();   
-                return;         
+                context.Result = new ChallengeResult();
+                return;
             }
 
             // Do post work.
@@ -57,11 +57,13 @@ namespace OrchardCore.Admin
             return Task.CompletedTask;
         }
 
-        private async Task<bool?> IsAdminAuthorizedAsync(Microsoft.AspNetCore.Http.HttpContext context)
+        private Task<bool> AuthorizeAsync(Microsoft.AspNetCore.Http.HttpContext context)
         {
             if (AdminAttribute.IsApplied(context))
-                return await _authorizationService.AuthorizeAsync(context.User, Permissions.AccessAdminPanel);
-            return null;            
+            {
+                return _authorizationService.AuthorizeAsync(context.User, Permissions.AccessAdminPanel);
+            }
+            return Task.FromResult(true);
         }
     }
 }

@@ -1,4 +1,4 @@
-@page 
+@page
 @model ListModel
 @using Microsoft.AspNetCore.Mvc.RazorPages
 @using OrchardCore.DisplayManagement;
@@ -11,7 +11,7 @@
 @functions
 {
     public class ListModel : PageModel
-    {      
+    {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentDisplay;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -23,11 +23,11 @@
         [BindProperty]
         public string Text { get; set; }
 
-        public ListModel(IContentManager contentManager,
-        IContentItemDisplayManager contentDisplay,
-        IUpdateModelAccessor updateModelAccessor,
-        ISession session
-        )
+        public ListModel(
+            IContentManager contentManager,
+            IContentItemDisplayManager contentDisplay,
+            IUpdateModelAccessor updateModelAccessor,
+            ISession session)
         {
             _contentManager = contentManager;
             _contentDisplay = contentDisplay;
@@ -37,20 +37,18 @@
 
         public async Task OnGetAsync(string contentItemId)
         {
-
-            var query = _session.Query<ContentItem, ContentItemIndex>();
-                query = query.With<ContentItemIndex>(x => x.ContentType == "Foo");
-             var contentItems = await query.ListAsync();
-
+            var query = _session.Query<ContentItem, ContentItemIndex>()
+                .With<ContentItemIndex>(x => x.ContentType == "Foo" && x.Published );
+            var contentItems = await query.ListAsync();
             var updater = _updateModelAccessor.ModelUpdater;
-            
+
             Items = new List<dynamic>();
             Title = "Foo List";
+
             foreach (var contentItem in contentItems)
             {
                 Items.Add( await _contentDisplay.BuildDisplayAsync(contentItem, updater));
             }
-    
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -59,12 +57,9 @@
 
             // Dynamic syntax
             contentItem.Content.TestContentPartA.Line = Text ;
-
             await _contentManager.CreateAsync(contentItem);
 
             return RedirectToPage();
-
-            //return RedirectToAction("Display", "Home", new { area = "OrchardCore.Demo", contentItemId = contentItem.ContentItemId });
         }
     }
 }
@@ -73,7 +68,7 @@
 <h2>Hello from @ViewContext.RouteData.Values["page"]</h2>
 
 <ul class="list-group">
-    <li class="list-group-item">        
+    <li class="list-group-item">
         <form asp-page="/Foo/List" method="post">
             <input asp-for="Text" />
             <button class="btn btn-sm btn-primary" type="submit">Add</button>
@@ -82,9 +77,8 @@
 @foreach(dynamic item in Model.Items)
 {
     <li class="list-group-item" > @item.ContentItem.Content.TestContentPartA.Line
-        <a  asp-page="/Foo/Admin/Edit" asp-route-id="@item.ContentItem.ContentItemId" class="btn btn-warning btn-sm float-right">Manage</a>
-
-
+        <a  asp-page="/Foo/Admin/Edit" asp-route-id="@item.ContentItem.ContentItemId"
+            class="btn btn-warning btn-sm float-right">Manage</a>
         </li>
 }
 </ul>

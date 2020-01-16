@@ -14,21 +14,22 @@ namespace OrchardCore.Admin
     {
         public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
-            if(context.ActionDescriptor is ControllerActionDescriptor action )
+            if(context.ActionDescriptor is ControllerActionDescriptor action)
             {
-                if( action.ControllerName.StartsWith("Admin", StringComparison.OrdinalIgnoreCase) )
+                if(action.ControllerName == "Admin")
                 {
                     AdminAttribute.Apply(context.HttpContext);
                 }
             }
             else if(context.ActionDescriptor is PageActionDescriptor page)
             {
-                if( page.ViewEnginePath.Contains("/Admin/", StringComparison.OrdinalIgnoreCase))
+                if(page.ViewEnginePath.Contains("/Admin/"))
                 {
                     AdminAttribute.Apply(context.HttpContext);
                 }
-            }            
-            return next(); 
+            }
+            
+            return next();
         }
     }
 }

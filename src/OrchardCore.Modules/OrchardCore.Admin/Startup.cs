@@ -33,15 +33,16 @@ namespace OrchardCore.Admin
             services.Configure<MvcOptions>((options) =>
             {
                 options.Filters.Add(typeof(AdminZoneFilter),-1000);
-                options.Filters.Add(typeof(AdminFilter));                
+                options.Filters.Add(typeof(AdminFilter));
                 options.Filters.Add(typeof(AdminMenuFilter));
                 options.Conventions.Add(new AdminActionModelConvention());
-            });     
+            });
 
-            services.Configure<RazorPagesOptions>( (options) => {
+            services.Configure<RazorPagesOptions>( (options) =>
+            {
                 options.Conventions.Add(new AdminFolderModelConvention(_adminOptions.AdminUrlPrefix));
             });
-            
+
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();
             services.AddScoped<IAdminThemeService, AdminThemeService>();

@@ -18,13 +18,13 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
                 foreach (var selector in model.Selectors.ToArray())
                 {
                     var path = $"{areaName}/{folderPath.Trim('/')}";
-                    if (selector.AttributeRouteModel.Template.Contains( path, StringComparison.Ordinal))
+                    if (selector.AttributeRouteModel.Template.Contains(path))
                     {
                         selector.AttributeRouteModel.SuppressLinkGeneration = true;
 
-                        var templatePart = selector.AttributeRouteModel.Template.Split(path);                        
-                        var template = templatePart[0].TrimEnd('/') + '/' + folderRoute.Trim('/') + '/' + templatePart[1].TrimStart('/');                        
-                        
+                        var templatePart = selector.AttributeRouteModel.Template.Split(path);
+                        var template = $"{templatePart[0].TrimEnd('/')}/{folderRoute.Trim('/')}/{templatePart[1].TrimStart('/')}";
+
                         model.Selectors.Add(new SelectorModel
                         {
                             AttributeRouteModel = new AttributeRouteModel
@@ -33,7 +33,7 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
                             }
                         });
                     }
-                }               
+                }
             });
 
             return conventions;
