@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Lucene.Net.Analysis.Standard;
 using Lucene.Net.QueryParsers.Classic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -127,7 +126,7 @@ namespace OrchardCore.Lucene.Controllers
 
             //We Query database to retrieve content items.
             IQuery<ContentItem> queryDb;
-            
+
             if (luceneIndexSettings.IndexLatest)
             {
                 queryDb = _session.Query<ContentItem, ContentItemIndex>()

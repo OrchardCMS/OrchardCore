@@ -9,25 +9,8 @@
     </header>
 {% endzone %}
 
-<form action="{{ "~/search" | href }}" method="get">
-    <div class="input-group mb-3 mt-5">
-        <input name="Terms" type="text" class="form-control form-control-lg" value="{{ Model.Terms }}" placeholder="{{ "Enter your search term(s)" | t }}" autofocus />
-        <div class="input-group-append">
-            <button type="submit" class="btn btn-primary btn-sm">{{ "Search" | t }}</button>
-        </div>
-    </div>
-</form>
+{{ "SearchForm" | shape_new: terms: Model.Terms | shape_render }}
 
-{% if Model.ContentItems != null and Model.ContentItems.size > 0 %}
-    <ul class="list-group">
-        {% for item in Model.ContentItems %}
-            <li class="list-group-item">
-                {{ item | shape_build_display: "Summary" | shape_render }}
-            </li>            
-        {% endfor %}
-    </ul>
-{% elsif Model.Query != null %}
-    <p class="alert alert-warning">{{"There are no such results." | t }}</p>
-{% endif %}
+{{ "SearchResults" | shape_new: content_items: Model.ContentItems, terms: Model.Terms | shape_render }}
 
 {{ Model.Pager | shape_render }}
