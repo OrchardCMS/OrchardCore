@@ -70,8 +70,6 @@ namespace OrchardCore.Lucene
             services.AddScoped<IQuerySource, LuceneQuerySource>();
             services.AddScoped<LuceneQuerySource>();
             services.AddRecipeExecutionStep<LuceneIndexStep>();
-
-            services.AddScoped<IShapeTableProvider, SearchShapes>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
