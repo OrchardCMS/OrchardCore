@@ -8,96 +8,6 @@
 Bootstrap customization for The Blog theme
 By Orchard Core Team
  */
-.pagination, ul.pager {
-  display: flex;
-  padding-left: 0;
-  list-style: none;
-  border-radius: 0.25rem;
-}
-
-.page-link, ul.pager li a {
-  position: relative;
-  display: block;
-  padding: 0.5rem 0.75rem;
-  margin-left: -1px;
-  line-height: 1.25;
-  color: #007bff;
-  background-color: #fff;
-  border: 1px solid #dee2e6;
-}
-
-.page-link:hover, ul.pager li a:hover {
-  z-index: 2;
-  color: #0056b3;
-  text-decoration: none;
-  background-color: #e9ecef;
-  border-color: #dee2e6;
-}
-
-.page-link:focus, ul.pager li a:focus {
-  z-index: 2;
-  outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.page-item:first-child .page-link, ul.pager li:first-child .page-link, .page-item:first-child ul.pager li a, ul.pager li .page-item:first-child a, ul.pager li:first-child a {
-  margin-left: 0;
-  border-top-left-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
-}
-
-.page-item:last-child .page-link, ul.pager li:last-child .page-link, .page-item:last-child ul.pager li a, ul.pager li .page-item:last-child a, ul.pager li:last-child a {
-  border-top-right-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem;
-}
-
-.page-item.active .page-link, ul.pager li.active .page-link, .page-item.active ul.pager li a, ul.pager li .page-item.active a, ul.pager li.active a {
-  z-index: 1;
-  color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
-}
-
-.page-item.disabled .page-link, ul.pager li.disabled .page-link, .page-item.disabled ul.pager li a, ul.pager li .page-item.disabled a, ul.pager li.disabled a {
-  color: #6c757d;
-  pointer-events: none;
-  cursor: auto;
-  background-color: #fff;
-  border-color: #dee2e6;
-}
-
-.pagination-lg .page-link, .pagination-lg ul.pager li a, ul.pager li .pagination-lg a {
-  padding: 0.75rem 1.5rem;
-  font-size: 1.25rem;
-  line-height: 1.5;
-}
-
-.pagination-lg .page-item:first-child .page-link, .pagination-lg ul.pager li:first-child .page-link, ul.pager .pagination-lg li:first-child .page-link, .pagination-lg .page-item:first-child ul.pager li a, ul.pager li .pagination-lg .page-item:first-child a, .pagination-lg ul.pager li:first-child a, ul.pager .pagination-lg li:first-child a {
-  border-top-left-radius: 0.3rem;
-  border-bottom-left-radius: 0.3rem;
-}
-
-.pagination-lg .page-item:last-child .page-link, .pagination-lg ul.pager li:last-child .page-link, ul.pager .pagination-lg li:last-child .page-link, .pagination-lg .page-item:last-child ul.pager li a, ul.pager li .pagination-lg .page-item:last-child a, .pagination-lg ul.pager li:last-child a, ul.pager .pagination-lg li:last-child a {
-  border-top-right-radius: 0.3rem;
-  border-bottom-right-radius: 0.3rem;
-}
-
-.pagination-sm .page-link, .pagination-sm ul.pager li a, ul.pager li .pagination-sm a {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-  line-height: 1.5;
-}
-
-.pagination-sm .page-item:first-child .page-link, .pagination-sm ul.pager li:first-child .page-link, ul.pager .pagination-sm li:first-child .page-link, .pagination-sm .page-item:first-child ul.pager li a, ul.pager li .pagination-sm .page-item:first-child a, .pagination-sm ul.pager li:first-child a, ul.pager .pagination-sm li:first-child a {
-  border-top-left-radius: 0.2rem;
-  border-bottom-left-radius: 0.2rem;
-}
-
-.pagination-sm .page-item:last-child .page-link, .pagination-sm ul.pager li:last-child .page-link, ul.pager .pagination-sm li:last-child .page-link, .pagination-sm .page-item:last-child ul.pager li a, ul.pager li .pagination-sm .page-item:last-child a, .pagination-sm ul.pager li:last-child a, ul.pager .pagination-sm li:last-child a {
-  border-top-right-radius: 0.2rem;
-  border-bottom-right-radius: 0.2rem;
-}
-
 .flow {
   display: flex;
   flex-wrap: wrap;
@@ -330,6 +240,64 @@ By Orchard Core Team
     flex: 0 0 75%;
     max-width: 75%;
   }
+}
+
+ul.pager {
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+  border-radius: 0.25rem;
+}
+
+ul.pager li a {
+  position: relative;
+  display: block;
+  padding: 0.5rem 0.75rem;
+  margin-left: -1px;
+  line-height: 1.25;
+  color: #007bff;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+}
+
+ul.pager li a:hover {
+  z-index: 2;
+  color: #0056b3;
+  text-decoration: none;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+ul.pager li a:focus {
+  z-index: 2;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+ul.pager li:first-child .page-link {
+  margin-left: 0;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+ul.pager li:last-child .page-link {
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+ul.pager li.active .page-link {
+  z-index: 1;
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+ul.pager li.disabled .page-link {
+  color: #6c757d;
+  pointer-events: none;
+  cursor: auto;
+  background-color: #fff;
+  border-color: #dee2e6;
 }
 
 ul.pager {
