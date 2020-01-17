@@ -32,7 +32,6 @@ namespace OrchardCore.Liquid
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentFieldDefinition>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartDefinition>();
 
-
             // When accessing a property of a JObject instance
             TemplateContext.GlobalMemberAccessStrategy.Register<JObject, object>((obj, name) => obj[name]);
 
