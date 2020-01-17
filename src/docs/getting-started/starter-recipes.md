@@ -121,10 +121,6 @@ using any of the other recipes.
 - Multi-tenancy feature
 - Razor home page and Layout with bootstrap and jQuery
 
-### SafeMode Theme
-
-TODO
-
 ## Creating your own recipe
 
 You can create your own recipes for deployment of your Orchard Core websites.
