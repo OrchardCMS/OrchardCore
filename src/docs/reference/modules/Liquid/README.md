@@ -182,16 +182,16 @@ Example:
 
 ```liquid
 {% capture someCollection %}
-{ "values":[
-    {"key":"key1", "value":"value1"},
-    {"key":"key2", "value":"value2"},
-  ]
-}
+[
+  {"key":"key1", "value":"value1"},
+  {"key":"key2", "value":"value2"},
+]
 {% endcapture %}
+
 {% assign jsonObject = someCollection | jsonparse %}
 
-{%for k in jsonObject["values"]%}
-{{k["key"]}} {{k["value"]}}
+{% for k in jsonObject %}
+  {{k["key"]}} {{k["value"]}}
 {% endfor %}
 ```
 
