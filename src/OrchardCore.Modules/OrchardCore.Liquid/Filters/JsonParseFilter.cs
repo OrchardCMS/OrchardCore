@@ -10,11 +10,6 @@ namespace OrchardCore.Liquid.Filters
     {
         public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            if(input.Type != FluidValues.String)
-            {
-                 throw new ArgumentException("The jsonparse filter accepts string as it's input");
-            }
-
             return new ValueTask<FluidValue>(new ObjectValue(JObject.Parse(input.ToStringValue())));
         }
     }
