@@ -36,7 +36,7 @@ namespace OrchardCore.Workflows.Helpers
                 WorkflowStatus.Idle => H["Idle"],
                 WorkflowStatus.Resuming => H["Resuming"],
                 WorkflowStatus.Starting => H["Starting"],
-                _ => H[status.ToString()],
+                _ => new LocalizedHtmlString(status.ToString(), status.ToString()),
             };
         }
     }
