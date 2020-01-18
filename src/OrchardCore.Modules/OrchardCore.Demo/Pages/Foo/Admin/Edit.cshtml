@@ -3,11 +3,9 @@
 
 @using System.ComponentModel.DataAnnotations;
 @using Microsoft.AspNetCore.Mvc.RazorPages
-@using OrchardCore.DisplayManagement;
 @using OrchardCore.ContentManagement;
 @using OrchardCore.ContentManagement.Display;
 @using OrchardCore.DisplayManagement.ModelBinding;
-@using OrchardCore.ContentManagement.Records;
 @using YesSql;
 
 @functions
@@ -28,10 +26,10 @@
             _contentManager = contentManager;
             _contentDisplay = contentDisplay;
             _updateModelAccessor = updateModelAccessor;
-             _session = session;
+            _session = session;
         }
 
-        [BindProperty(SupportsGet =true)]
+        [BindProperty(SupportsGet = true)]
         public string Id { get; set; }
 
         [Required]
@@ -41,7 +39,7 @@
         public string Title { get; set; }
         public string Submit { get; set; }
 
-        public async Task<ActionResult>  OnGetAsync()
+        public async Task<ActionResult> OnGetAsync()
         {
             var contentItem = await _contentManager.GetAsync(Id);
 
@@ -68,7 +66,6 @@
             return RedirectToPage("/Foo/List");
         }
 
-
         public async Task<IActionResult> OnPostUpdate()
         {
             var contentItem = await _contentManager.GetAsync(Id);
@@ -87,7 +84,7 @@
                 return Page();
             }
 
-            contentItem.Content.TestContentPartA.Line = Text ;
+            contentItem.Content.TestContentPartA.Line = Text;
             _session.Save(contentItem);
 
             return RedirectToPage("/Foo/List");
@@ -98,10 +95,9 @@
 @await Html.PartialAsync("Header", Model)
 
 <h2>Hello from @ViewContext.RouteData.Values["page"]</h2>
-<form  asp-route-id="@Model.Id" method="post">
 
-    <button asp-page-handler="Delete"  class="btn btn-sm btn-danger float-right mx-1">Delete</button>
-
+<form asp-route-id="@Model.Id" method="post">
+    <button asp-page-handler="Delete" class="btn btn-sm btn-danger float-right mx-1">Delete</button>
     <input asp-for="Text" />
     <button asp-page-handler="Update" class="btn btn-sm btn-warning float-right mx-1">Update</button>
 </form>
