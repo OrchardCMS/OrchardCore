@@ -18,6 +18,11 @@ namespace OrchardCore.Admin
         {
             var route = model.Selectors.ElementAt(0).AttributeRouteModel;
 
+            if (!route.Template.StartsWith(model.AreaName))
+            {
+                return;
+            }
+
             if (route.Template.Contains("/Admin/"))
             {
                 var template = route.Template.Replace("/Admin/", "/");
