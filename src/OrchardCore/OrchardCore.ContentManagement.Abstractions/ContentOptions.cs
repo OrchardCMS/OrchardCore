@@ -18,13 +18,13 @@ namespace OrchardCore.ContentManagement
         public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
         public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;
 
-        internal void AddPartHandler(Type contentPartType, Type handlerType)
+        internal void AddHandler(Type contentPartType, Type handlerType)
         {
             var option = GetOrAddContentPart(contentPartType);
             option.AddHandler(handlerType);
         }
 
-        internal void RemovePartHandler(Type contentPartType, Type handlerType)
+        internal void RemoveHandler(Type contentPartType, Type handlerType)
         {
             var option = GetOrAddContentPart(contentPartType);
             option.RemoveHandler(handlerType);

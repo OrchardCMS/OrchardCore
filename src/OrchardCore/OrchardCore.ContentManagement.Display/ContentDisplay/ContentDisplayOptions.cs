@@ -15,16 +15,22 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         private Dictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
         public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions => _contentFieldOptions ??= _contentFields.ToDictionary(k => k.Type.Name);
 
-        internal void ForContentPartDisplay(Type contentFieldType, Type editorDriverType, Func<bool> predicate)
+        internal void ForContentPartDisplay(Type contentPartType, Type editorDriverType, Func<bool> predicate)
         {
-            var option = GetOrAddContentPartDisplayOption(contentFieldType);
+            var option = GetOrAddContentPartDisplayOption(contentPartType);
             option.ForDisplay(editorDriverType, predicate);
         }
 
-        internal void ForContentPartEditor(Type contentFieldType, Type editorDriverType, Func<string, bool> predicate)
+        internal void ForContentPartEditor(Type contentPartType, Type editorDriverType, Func<string, bool> predicate)
         {
-            var option = GetOrAddContentPartDisplayOption(contentFieldType);
+            var option = GetOrAddContentPartDisplayOption(contentPartType);
             option.ForEditor(editorDriverType, predicate);
+        }
+
+        internal void RemoveContentPartDisplayDriver(Type contentPartType, Type driverType)
+        {
+            var option = GetOrAddContentPartDisplayOption(contentPartType);
+            option.RemoveDisplayDriver(driverType);
         }
 
         private ContentPartDisplayOption GetOrAddContentPartDisplayOption(Type contentPartType)
@@ -54,6 +60,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             var option = GetOrAddContentFieldDisplayOption(contentFieldType);
             option.ForEditor(editorDriverType, predicate);
+        }
+
+        internal void RemoveContentFieldDisplayDriver(Type contentPartType, Type driverType)
+        {
+            var option = GetOrAddContentFieldDisplayOption(contentPartType);
+            option.RemoveDisplayDriver(driverType);
         }
 
         private ContentFieldDisplayOption GetOrAddContentFieldDisplayOption(Type contentFieldType)

@@ -26,6 +26,15 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             option.SetEditor(predicate);
         }
 
+        internal void RemoveDisplayDriver(Type displayDriverType)
+        {
+            var displayDriverOption = _displayDrivers.FirstOrDefault(d => d.DisplayDriverType == displayDriverType);
+            if (displayDriverOption != null)
+            {
+                _displayDrivers.Remove(displayDriverOption);
+            }
+        }
+
         private ContentPartDisplayDriverOption GetOrAddContentPartDisplayDriverOption(Type displayDriverType)
         {
             var option = _displayDrivers.FirstOrDefault(o => o.DisplayDriverType == displayDriverType);

@@ -17,8 +17,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
             return builder
-                .ForDisplay(typeof(TContentPartDisplayDriver), () => true)
-                .ForEditor(typeof(TContentPartDisplayDriver), e => true);
+                .ForDisplay(typeof(TContentPartDisplayDriver))
+                .ForEditor(typeof(TContentPartDisplayDriver));
         }
 
         /// <summary>
@@ -33,6 +33,34 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         }
 
         /// <summary>
+        /// Removes a display driver from all editors and display implementations.
+        /// </summary>
+        public static ContentPartOptionBuilder RemoveDisplayDriver<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder)
+            where TContentPartDisplayDriver : class, IContentPartDisplayDriver
+        {
+            return builder.RemoveDisplayDriver(typeof(TContentPartDisplayDriver));
+        }
+
+        /// <summary>
+        /// Removes a display driver from all editors and display implementations.
+        /// </summary>
+        public static ContentPartOptionBuilder RemoveDisplayDriver(this ContentPartOptionBuilder builder, Type partDisplayDriverType)
+        {
+            if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(partDisplayDriverType))
+            {
+                throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
+            }
+
+            builder.Services.RemoveAll(partDisplayDriverType);
+            builder.Services.Configure<ContentDisplayOptions>(o =>
+            {
+                o.RemoveContentPartDisplayDriver(builder.ContentPartType, partDisplayDriverType);
+            });
+
+            return builder;
+        }
+
+        /// <summary>
         /// Registers a display driver for use with all display implementations.
         /// This method will override previous registrations for the driver type,
         /// and can be called multiple times safely, to reconfigure an existing driver.
@@ -40,7 +68,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         public static ContentPartOptionBuilder ForDisplay<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder)
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
-            return builder.ForDisplay<TContentPartDisplayDriver>(() => true);
+            return builder.ForDisplay(typeof(TContentPartDisplayDriver));
         }
 
         public static ContentPartOptionBuilder ForDisplay(this ContentPartOptionBuilder builder, Type partDisplayDriverType)
@@ -66,10 +94,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         /// </summary>
         public static ContentPartOptionBuilder ForDisplay(this ContentPartOptionBuilder builder, Type partDisplayDriverType, Func<bool> predicate)
         {
-
             if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(partDisplayDriverType))
             {
-
                 throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
             }
 
@@ -90,7 +116,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         public static ContentPartOptionBuilder ForEditor<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder)
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
-            return builder.ForEditor<TContentPartDisplayDriver>(e => true);
+            return builder.ForEditor(typeof(TContentPartDisplayDriver));
         }
 
         /// <summary>
@@ -163,6 +189,34 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         }
 
         /// <summary>
+        /// Removes a display driver from all editors and display modes.
+        /// </summary>
+        public static ContentFieldOptionBuilder RemoveDisplayDriver<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder)
+            where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
+        {
+            return builder.RemoveDisplayDriver(typeof(TContentFieldDisplayDriver));
+        }
+
+        /// <summary>
+        /// Removes a display driver from all editors and display modes.
+        /// </summary>
+        public static ContentFieldOptionBuilder RemoveDisplayDriver(this ContentFieldOptionBuilder builder, Type fieldDisplayDriverType)
+        {
+            if (!typeof(IContentFieldDisplayDriver).IsAssignableFrom(fieldDisplayDriverType))
+            {
+                throw new ArgumentException("The type must implement " + nameof(IContentFieldDisplayDriver));
+            }
+
+            builder.Services.RemoveAll(fieldDisplayDriverType);
+            builder.Services.Configure<ContentDisplayOptions>(o =>
+            {
+                o.RemoveContentPartDisplayDriver(builder.ContentFieldType, fieldDisplayDriverType);
+            });
+
+            return builder;
+        }
+
+        /// <summary>
         /// Registers a display driver for use with all display modes.
         /// This method will override previous registrations for the driver type,
         /// and can be called multiple times safely, to reconfigure an existing driver.
@@ -170,7 +224,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         public static ContentFieldOptionBuilder ForDisplayMode<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder)
             where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
         {
-            return builder.ForDisplayMode<TContentFieldDisplayDriver>(d => true);
+            return builder.ForDisplayMode(typeof(TContentFieldDisplayDriver));
         }
 
         public static ContentFieldOptionBuilder ForDisplayMode(this ContentFieldOptionBuilder builder, Type fieldDisplayDriverType)
@@ -220,7 +274,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         public static ContentFieldOptionBuilder ForEditor<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder)
             where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
         {
-            return builder.ForEditor<TContentFieldDisplayDriver>(e => true);
+            return builder.ForEditor(typeof(TContentFieldDisplayDriver));
         }
 
         /// <summary>

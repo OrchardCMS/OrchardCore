@@ -64,7 +64,7 @@ namespace OrchardCore.ContentManagement
         {
             builder.Services.TryAddScoped(handlerType);
             builder.Services.Configure<ContentOptions>(o => {
-                o.AddPartHandler(builder.ContentPartType, handlerType);
+                o.AddHandler(builder.ContentPartType, handlerType);
             });
 
             return builder;
@@ -87,7 +87,7 @@ namespace OrchardCore.ContentManagement
         {
             builder.Services.RemoveAll(handlerType);
             builder.Services.Configure<ContentOptions>(o => {
-                o.RemovePartHandler(builder.ContentPartType, handlerType);
+                o.RemoveHandler(builder.ContentPartType, handlerType);
             });
 
             return builder;
