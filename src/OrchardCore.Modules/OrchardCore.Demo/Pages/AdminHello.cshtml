@@ -13,17 +13,24 @@
 
         public void OnGet()
         {
-            Title = "This is a Admin RazorPage coming from OrchardCore.Demo!";
+            Title = "This is an Admin RazorPage coming from OrchardCore.Demo!";
             Message = $"Date and time on the server: { DateTime.Now.ToString() }";
         }
     }
 }
 
 @await Html.PartialAsync("Header", Model)
+
 <h1>@Model.Title</h1>
 <h2>Hello from @ViewContext.RouteData.Values["page"]</h2>
+
 <p>
-    I am NOT from /Pages/Admin folder but I am Admin Page because I have [Admin] attribute defined  <br />
+    I am not under an '/Admin/' folder but I am a protected Admin Page as my model is decorated with the '[Admin]' attribute.
+</p>
+<p>
+    Being not under an admin folder, if i still want an admin prefix on my default route, my name needs to start with 'Admin'.
+</p>
+<p>
     @T[Model.Message]
 </p>
 <p>
