@@ -7,6 +7,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     public static class ServiceCollectionExtensions
     {
         #region Parts
+        //TODO When parts have a display mode this should take a predicate for both.
 
         /// <summary>
         /// Register a display driver for use with a content part and all editors and display implementations.
@@ -173,8 +174,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         public static ContentFieldOptionBuilder UseDisplayDriver<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder)
             where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
         {
-            return builder.ForDisplayMode<TContentFieldDisplayDriver>()
-                .ForEditor<TContentFieldDisplayDriver>();
+            return builder.UseDisplayDriver(typeof(TContentFieldDisplayDriver));
         }
 
         /// <summary>
@@ -186,6 +186,18 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             return builder.ForDisplayMode(fieldDisplayDriverType)
                 .ForEditor(fieldDisplayDriverType);
+        }
+
+        /// <summary>
+        /// Register a display driver for use with a content field and all display modes and editors.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
+        /// </summary>
+        public static ContentFieldOptionBuilder UseDisplayDriver<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder, Func<string, bool> predicate)
+            where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
+        {
+            return builder.ForDisplayMode(typeof(TContentFieldDisplayDriver), predicate)
+                .ForEditor(typeof(TContentFieldDisplayDriver), predicate);
         }
 
         /// <summary>
