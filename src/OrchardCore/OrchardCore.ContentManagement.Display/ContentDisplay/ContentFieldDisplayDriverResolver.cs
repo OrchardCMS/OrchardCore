@@ -22,8 +22,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         public IEnumerable<IContentFieldDisplayDriver> GetDisplayModeDrivers(string fieldName, string displayMode)
         {
-            displayMode = Normalize(displayMode);
-
             if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
             {
                 var options = contentFieldDisplayOption.DisplayDrivers.Where(x => x.DisplayMode.Invoke(displayMode));
@@ -38,8 +36,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         public IEnumerable<IContentFieldDisplayDriver> GetEditorDrivers(string fieldName, string editor)
         {
-            editor = Normalize(editor);
-
             if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
             {
                 var options = contentFieldDisplayOption.DisplayDrivers.Where(x => x.Editor.Invoke(editor));
@@ -50,17 +46,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             }
 
             return null;
-        }
-
-        private static string Normalize(string mode)
-        {
-            // Standard editor or display mode is always supplied as null.
-            if (string.IsNullOrEmpty(mode))
-            {
-                mode = "Standard";
-            };
-
-            return mode;
         }
     }
 }

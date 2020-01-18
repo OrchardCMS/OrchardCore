@@ -33,8 +33,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         public IEnumerable<IContentPartDisplayDriver> GetEditorDrivers(string partName, string editor)
         {
-            editor = Normalize(editor);
-
             if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
             {
                 var options = contentPartDisplayOption.DisplayDrivers.Where(x => x.Editor.Invoke(editor));
@@ -43,17 +41,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             }
 
             return null;
-        }
-
-        private static string Normalize(string editor)
-        {
-            // Standard editor is always supplied as null.
-            if (string.IsNullOrEmpty(editor))
-            {
-                editor = "Standard";
-            };
-
-            return editor;
         }
     }
 }

@@ -15,9 +15,9 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         public Func<string, bool> Editor { get; private set; }
 
-        internal void SetDisplay(Func<bool> displat)
+        internal void SetDisplay(Func<bool> display)
         {
-            Display = displat;
+            Display = display;
         }
 
         internal void SetEditor(Func<string, bool> editor)
