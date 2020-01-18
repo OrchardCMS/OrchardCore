@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.DisplayManagement.Theming;
@@ -32,15 +33,12 @@ namespace OrchardCore.Admin
 
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(AdminZoneFilter),-1000);
                 options.Filters.Add(typeof(AdminFilter));
                 options.Filters.Add(typeof(AdminMenuFilter));
                 options.Conventions.Add(new AdminActionModelConvention());
-            });
 
-            services.Configure<RazorPagesOptions>( (options) =>
-            {
-                options.Conventions.Add(new AdminFolderModelConvention(_adminOptions.AdminUrlPrefix));
+                // Ordered to be called before any global filter.
+                options.Filters.Add(typeof(AdminZoneFilter), -1000);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -57,6 +55,26 @@ namespace OrchardCore.Admin
                 pattern: _adminOptions.AdminUrlPrefix,
                 defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
             );
+        }
+    }
+
+    public class AdminPagesStartup : StartupBase
+    {
+        private readonly AdminOptions _adminOptions;
+
+        public AdminPagesStartup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
+        public override int Order => 1000;
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<RazorPagesOptions>((options) =>
+            {
+                options.Conventions.Add(new AdminPageRouteModelConvention(_adminOptions.AdminUrlPrefix));
+            });
         }
     }
 }
