@@ -63,6 +63,7 @@ namespace OrchardCore.Admin
             {
                 return _authorizationService.AuthorizeAsync(context.User, Permissions.AccessAdminPanel);
             }
+
             return Task.FromResult(true);
         }
     }
