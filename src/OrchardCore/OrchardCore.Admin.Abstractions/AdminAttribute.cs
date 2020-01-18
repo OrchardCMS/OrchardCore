@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace OrchardCore.Admin
 {
-
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     /// <summary>
     /// When applied to an action or a controller or a page model, intercepts any request to check whether it applies to the admin site.
@@ -21,7 +20,7 @@ namespace OrchardCore.Admin
         {
             Apply(context.HttpContext);
 
-            return next(); 
+            return next();
         }
 
         public static void Apply(HttpContext context)
@@ -32,8 +31,7 @@ namespace OrchardCore.Admin
 
         public static bool IsApplied(HttpContext context)
         {
-            object value;
-            return context.Items.TryGetValue(typeof(AdminAttribute), out value);
+            return context.Items.TryGetValue(typeof(AdminAttribute), out var value);
         }
     }
 }
