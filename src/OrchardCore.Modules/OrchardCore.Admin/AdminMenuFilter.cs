@@ -1,70 +1,85 @@
-using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Admin
 {
     /// <summary>
-    /// Intercepts any request to check whether it applies to the admin site.
-    /// If so it marks the request as such and ensures the user as the right to access it.
+    /// This filter inject a Navigation shape in the Navigation zone of the Layout
+    /// for any ViewResult returned from an Admin controller.
     /// </summary>
-    public class AdminFilter : ActionFilterAttribute, IAsyncPageFilter
+    public class AdminMenuFilter : IAsyncResultFilter
     {
-        private readonly IAuthorizationService _authorizationService;
+        private readonly INavigationManager _navigationManager;
+        private readonly ILayoutAccessor _layoutAccessor;
+        private readonly IShapeFactory _shapeFactory;
 
-        public AdminFilter(IAuthorizationService authorizationService)
+        public AdminMenuFilter(INavigationManager navigationManager,
+            ILayoutAccessor layoutAccessor,
+            IShapeFactory shapeFactory)
         {
-            _authorizationService = authorizationService;
+
+            _navigationManager = navigationManager;
+            _layoutAccessor = layoutAccessor;
+            _shapeFactory = shapeFactory;
         }
 
-        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
         {
-            if (context == null)
+            // Should only run on a full view rendering result
+            if (!(filterContext.Result is ViewResult) && !(filterContext.Result is PageResult))
             {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            if (!await AuthorizeAsync(context.HttpContext))
-            {
-                context.Result = new ChallengeResult();
+                await next();
                 return;
             }
 
-            await base.OnActionExecutionAsync(context, next);
-        }
-
-        public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
-        {
-            if (context == null)
+            // Should only run on the Admin
+            if (!AdminAttribute.IsApplied(filterContext.HttpContext))
             {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            if (!await AuthorizeAsync(context.HttpContext))
-            {
-                context.Result = new ChallengeResult();
+                await next();
                 return;
             }
 
-            // Do post work.
-            await next.Invoke();
-        }
-
-        public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
-        {
-            return Task.CompletedTask;
-        }
-
-        private Task<bool> AuthorizeAsync(Microsoft.AspNetCore.Http.HttpContext context)
-        {
-            if (AdminAttribute.IsApplied(context))
+            // Should only run for authenticated users
+            if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
             {
-                return _authorizationService.AuthorizeAsync(context.User, Permissions.AccessAdminPanel);
+                await next();
+                return;
             }
 
-            return Task.FromResult(true);
+            // Don't create the menu if the status code is 3xx
+            var statusCode = filterContext.HttpContext.Response.StatusCode;
+            if (statusCode >= 300 && statusCode < 400)
+            {
+                await next();
+                return;
+            }
+
+            // Populate main nav
+            var menuShape = await _shapeFactory.CreateAsync("Navigation",
+                Arguments.From(new
+                {
+                    MenuName = "admin",
+                    RouteData = filterContext.RouteData,
+                }));
+
+            dynamic layout = await _layoutAccessor.GetLayoutAsync();
+
+            if (layout.Navigation is ZoneOnDemand zoneOnDemand)
+            {
+                await zoneOnDemand.AddAsync(menuShape);
+            }
+            else
+            {
+                layout.Navigation.Add(menuShape);
+            }
+
+            await next();
         }
     }
 }
