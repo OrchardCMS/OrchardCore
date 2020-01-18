@@ -4,6 +4,6 @@ namespace OrchardCore.Users.Handlers
 {
     public interface IUserCreatedEventHandler
     {
-        Task CreatedAsync(CreateUserContext context);
+        Task CreatedAsync(UserContext context);
     }
 }

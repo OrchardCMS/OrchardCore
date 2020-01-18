@@ -15,7 +15,7 @@ namespace OrchardCore.Users.Workflows.Handlers
             _workflowManager = workflowManager;
         }
 
-        public Task CreatedAsync(CreateUserContext context)
+        public Task CreatedAsync(UserContext context)
         {
             return TriggerWorkflowEventAsync(nameof(UserCreatedEvent), (User)context.User);
         }
