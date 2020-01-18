@@ -17,8 +17,8 @@
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly ISession _session;
 
-        public string Title {get;private set;}
-        public List<dynamic> Items {get; private set;}
+        public string Title { get; private set; }
+        public List<dynamic> Items { get; private set; }
 
         [BindProperty]
         public string Text { get; set; }
@@ -38,7 +38,7 @@
         public async Task OnGetAsync(string contentItemId)
         {
             var query = _session.Query<ContentItem, ContentItemIndex>()
-                .With<ContentItemIndex>(x => x.ContentType == "Foo" && x.Published );
+                .With<ContentItemIndex>(x => x.ContentType == "Foo" && x.Published);
             var contentItems = await query.ListAsync();
             var updater = _updateModelAccessor.ModelUpdater;
 
@@ -47,7 +47,7 @@
 
             foreach (var contentItem in contentItems)
             {
-                Items.Add( await _contentDisplay.BuildDisplayAsync(contentItem, updater));
+                Items.Add(await _contentDisplay.BuildDisplayAsync(contentItem, updater));
             }
         }
 
@@ -56,7 +56,7 @@
             var contentItem = await _contentManager.NewAsync("Foo");
 
             // Dynamic syntax
-            contentItem.Content.TestContentPartA.Line = Text ;
+            contentItem.Content.TestContentPartA.Line = Text;
             await _contentManager.CreateAsync(contentItem);
 
             return RedirectToPage();
@@ -74,11 +74,12 @@
             <button class="btn btn-sm btn-primary" type="submit">Add</button>
         </form>
     </li>
-@foreach(dynamic item in Model.Items)
-{
-    <li class="list-group-item" > @item.ContentItem.Content.TestContentPartA.Line
-        <a  asp-page="/Foo/Admin/Edit" asp-route-id="@item.ContentItem.ContentItemId"
-            class="btn btn-warning btn-sm float-right">Manage</a>
-    </li>
-}
+    @foreach (dynamic item in Model.Items)
+    {
+        <li class="list-group-item">
+            @item.ContentItem.Content.TestContentPartA.Line
+            <a asp-page="/Foo/Admin/Edit" asp-route-id="@item.ContentItem.ContentItemId"
+               class="btn btn-warning btn-sm float-right">Manage</a>
+        </li>
+    }
 </ul>
