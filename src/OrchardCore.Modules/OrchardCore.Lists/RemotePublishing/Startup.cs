@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.XmlRpc;
 using OrchardCore.Lists.Models;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Lists.RemotePublishing
 {
@@ -16,7 +17,8 @@ namespace OrchardCore.Lists.RemotePublishing
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IXmlRpcHandler, MetaWeblogHandler>();
-            services.AddPartDisplayDriver<ListPart, ListMetaWeblogDriver>();
+            services.AddContentPart<ListPart>()
+                .UseDisplayDriver<ListMetaWeblogDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

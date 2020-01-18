@@ -34,31 +34,31 @@ namespace OrchardCore.Forms
             });
 
             services.AddContentPart<FormPart>()
-                    .WithDisplayDriver<FormPartDisplay>();
+                    .UseDisplayDriver<FormPartDisplay>();
 
             services.AddContentPart<FormElementPart>()
-                    .WithDisplayDriver<FormElementPartDisplay>();
+                    .UseDisplayDriver<FormElementPartDisplay>();
 
             services.AddContentPart<FormInputElementPart>()
-                    .WithDisplayDriver<FormInputElementPartDisplay>();
+                    .UseDisplayDriver<FormInputElementPartDisplay>();
 
             services.AddContentPart<LabelPart>()
-                    .WithDisplayDriver<LabelPartDisplay>();
+                    .UseDisplayDriver<LabelPartDisplay>();
 
             services.AddContentPart<ButtonPart>()
-                    .WithDisplayDriver<ButtonPartDisplay>();
+                    .UseDisplayDriver<ButtonPartDisplay>();
 
             services.AddContentPart<InputPart>()
-                    .WithDisplayDriver<InputPartDisplay>();
+                    .UseDisplayDriver<InputPartDisplay>();
 
             services.AddContentPart<TextAreaPart>()
-                    .WithDisplayDriver<TextAreaPartDisplay>();
+                    .UseDisplayDriver<TextAreaPartDisplay>();
 
             services.AddContentPart<ValidationSummaryPart>()
-                    .WithDisplayDriver<ValidationSummaryPartDisplay>();
+                    .UseDisplayDriver<ValidationSummaryPartDisplay>();
 
             services.AddContentPart<ValidationPart>()
-                    .WithDisplayDriver<ValidationPartDisplay>();
+                    .UseDisplayDriver<ValidationPartDisplay>();
 
             services.AddScoped<IDataMigration, Migrations>();
         }

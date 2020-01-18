@@ -38,13 +38,13 @@ namespace OrchardCore.Menu
             // MenuPart
             services.AddScoped<IContentHandler, MenuContentHandler>();
             services.AddContentPart<MenuPart>()
-                .WithDisplayDriver<MenuPartDisplayDriver>();
+                .UseDisplayDriver<MenuPartDisplayDriver>();
 
             services.AddContentPart<MenuItemsListPart>();
 
             // LinkMenuItemPart
             services.AddContentPart<LinkMenuItemPart>()
-                .WithDisplayDriver<LinkMenuItemPartDisplayDriver>();
+                .UseDisplayDriver<LinkMenuItemPartDisplayDriver>();
 
             services.AddTagHelpers<MenuTagHelper>();
         }

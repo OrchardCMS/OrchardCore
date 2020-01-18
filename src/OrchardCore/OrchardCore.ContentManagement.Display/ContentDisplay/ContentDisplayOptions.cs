@@ -9,12 +9,31 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         private readonly List<ContentPartDisplayOption> _contentParts = new List<ContentPartDisplayOption>();
         private readonly List<ContentFieldDisplayOption> _contentFields = new List<ContentFieldDisplayOption>();
 
-        public ContentPartDisplayOption TryAddContentPart(Type contentPartType)
+        private Dictionary<string, ContentPartDisplayOption> _contentPartOptions;
+        public IReadOnlyDictionary<string, ContentPartDisplayOption> ContentPartOptions => _contentPartOptions ??= _contentParts.ToDictionary(k => k.Type.Name);
+
+        private Dictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
+        public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions => _contentFieldOptions ??= _contentFields.ToDictionary(k => k.Type.Name);
+
+        internal void ForContentPartDisplay(Type contentFieldType, Type editorDriverType, Func<bool> predicate)
+        {
+            var option = GetOrAddContentPartDisplayOption(contentFieldType);
+            option.ForDisplay(editorDriverType, predicate);
+        }
+
+        internal void ForContentPartEditor(Type contentFieldType, Type editorDriverType, Func<string, bool> predicate)
+        {
+            var option = GetOrAddContentPartDisplayOption(contentFieldType);
+            option.ForEditor(editorDriverType, predicate);
+        }
+
+        private ContentPartDisplayOption GetOrAddContentPartDisplayOption(Type contentPartType)
         {
             if (!contentPartType.IsSubclassOf(typeof(ContentPart)))
             {
                 throw new ArgumentException("The type must inherit from " + nameof(ContentPart));
             }
+
             var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
             if (option == null)
             {
@@ -25,19 +44,19 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return option;
         }
 
-        public void WithPartDisplayDriver(Type contentPartType, Type displayDriverType)
+        internal void ForContentFieldDisplayMode(Type contentFieldType, Type displayModeDriverType, Func<string, bool> predicate)
         {
-            var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
-            option.WithDisplayDriver(displayDriverType);
+            var option = GetOrAddContentFieldDisplayOption(contentFieldType);
+            option.ForDisplayMode(displayModeDriverType, predicate);
         }
 
-        public void WithPartDisplayDriver(Type contentPartType, Type displayDriverType, Action<ContentPartDisplayDriverOption> action)
+        internal void ForContentFieldEditor(Type contentFieldType, Type editorDriverType, Func<string, bool> predicate)
         {
-            var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
-            option.WithDisplayDriver(displayDriverType, action);
+            var option = GetOrAddContentFieldDisplayOption(contentFieldType);
+            option.ForEditor(editorDriverType, predicate);
         }
 
-        public ContentFieldDisplayOption TryAddContentField(Type contentFieldType)
+        private ContentFieldDisplayOption GetOrAddContentFieldDisplayOption(Type contentFieldType)
         {
             if (!contentFieldType.IsSubclassOf(typeof(ContentField)))
             {
@@ -53,23 +72,5 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             return option;
         }
-
-        public void WithFieldDisplayDriver(Type contentFieldType, Type displayDriverType)
-        {
-            var option = _contentFields.FirstOrDefault(x => x.Type == contentFieldType);
-            option.WithDisplayDriver(displayDriverType);
-        }
-
-        public void WithFieldDisplayDriver(Type contentFieldType, Type displayDriverType, Action<ContentFieldDisplayDriverOption> action)
-        {
-            var option = _contentFields.FirstOrDefault(x => x.Type == contentFieldType);
-            option.WithDisplayDriver(displayDriverType, action);
-        }
-
-        private Dictionary<string, ContentPartDisplayOption> _contentPartOptions;
-        public IReadOnlyDictionary<string, ContentPartDisplayOption> ContentPartOptions => _contentPartOptions ??= _contentParts.ToDictionary(k => k.Type.Name);
-
-        private Dictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
-        public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions => _contentFieldOptions ??= _contentFields.ToDictionary(k => k.Type.Name);
     }
 }

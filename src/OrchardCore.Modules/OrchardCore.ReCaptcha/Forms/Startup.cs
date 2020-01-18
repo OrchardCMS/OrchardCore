@@ -21,7 +21,7 @@ namespace OrchardCore.ReCaptcha.Forms
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddContentPart<ReCaptchaPart>()
-                .WithDisplayDriver<ReCaptchaPartDisplay>();
+                .UseDisplayDriver<ReCaptchaPartDisplay>();
 
             services.AddScoped<IDataMigration, Migrations>();
         }

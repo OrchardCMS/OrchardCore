@@ -11,9 +11,14 @@ namespace OrchardCore.ContentManagement
 
         public IReadOnlyList<Type> Handlers => _handlers;
 
-        public void WithHandler(Type type)
+        internal void AddHandler(Type type)
         {
             _handlers.Add(type);
+        }
+
+        internal void RemoveHandler(Type type)
+        {
+            _handlers.Remove(type);
         }
     }
 }

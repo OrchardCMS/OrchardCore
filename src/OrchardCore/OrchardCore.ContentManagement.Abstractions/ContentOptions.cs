@@ -10,28 +10,27 @@ namespace OrchardCore.ContentManagement
     public class ContentOptions
     {
         private readonly List<ContentPartOption> _contentParts = new List<ContentPartOption>();
-
         private readonly List<ContentFieldOption> _contentFields = new List<ContentFieldOption>();
 
-        public ContentPartOption AddContentPart<T>() where T : ContentPart
+        private IReadOnlyDictionary<string, ContentPartOption> _contentPartOptionsLookup;
+        public IReadOnlyDictionary<string, ContentPartOption> ContentPartOptionsLookup => _contentPartOptionsLookup ??= ContentPartOptions.ToDictionary(k => k.Type.Name);
+
+        public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
+        public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;
+
+        internal void AddPartHandler(Type contentPartType, Type handlerType)
         {
-            return AddContentPart(typeof(T));
+            var option = GetOrAddContentPart(contentPartType);
+            option.AddHandler(handlerType);
         }
 
-        public ContentPartOption AddContentPart(Type contentPartType)
+        internal void RemovePartHandler(Type contentPartType, Type handlerType)
         {
-            if (!contentPartType.IsSubclassOf(typeof(ContentPart)))
-            {
-                throw new ArgumentException("The type must inherit from " + nameof(ContentPart));
-            }
-
-            var option = new ContentPartOption(contentPartType);
-            _contentParts.Add(option);
-
-            return option;
+            var option = GetOrAddContentPart(contentPartType);
+            option.RemoveHandler(handlerType);
         }
 
-        public ContentPartOption TryAddContentPart(Type contentPartType)
+        internal ContentPartOption GetOrAddContentPart(Type contentPartType)
         {
             if (!contentPartType.IsSubclassOf(typeof(ContentPart)))
             {
@@ -48,35 +47,21 @@ namespace OrchardCore.ContentManagement
             return option;
         }
 
-        public void WithPartHandler(Type contentPartType, Type handlerType)
-        {
-            var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
-            option.WithHandler(handlerType);
-        }
-
-        public ContentFieldOption AddContentField<T>() where T : ContentField
-        {
-            return AddContentField(typeof(T));
-        }
-
-        public ContentFieldOption AddContentField(Type contentFieldType)
+        internal ContentFieldOption GetOrAddContentField(Type contentFieldType)
         {
             if (!contentFieldType.IsSubclassOf(typeof(ContentField)))
             {
                 throw new ArgumentException("The type must inherit from " + nameof(ContentField));
             }
 
-            var option = new ContentFieldOption(contentFieldType);
-            _contentFields.Add(option);
+            var option = _contentFields.FirstOrDefault(o => o.Type == contentFieldType);
+            if (option == null)
+            {
+                option = new ContentFieldOption(contentFieldType);
+                _contentFields.Add(option);
+            }
 
             return option;
         }
-
-        private IReadOnlyDictionary<string, ContentPartOption> _contentPartOptionsLookup;
-        public IReadOnlyDictionary<string, ContentPartOption> ContentPartOptionsLookup => _contentPartOptionsLookup ??= ContentPartOptions.ToDictionary(k => k.Type.Name);
-
-        public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
-
-        public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;
     }
 }

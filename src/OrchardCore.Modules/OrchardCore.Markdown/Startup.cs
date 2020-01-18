@@ -30,8 +30,8 @@ namespace OrchardCore.Markdown
         {
             // Markdown Part
             services.AddContentPart<MarkdownBodyPart>()
-                .WithDisplayDriver<MarkdownBodyPartDisplay>()
-                .WithHandler<MarkdownBodyPartHandler>();
+                .UseDisplayDriver<MarkdownBodyPartDisplay>()
+                .AddHandler<MarkdownBodyPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
@@ -39,7 +39,7 @@ namespace OrchardCore.Markdown
 
             // Markdown Field
             services.AddContentField<MarkdownField>()
-                .WithDisplayDriver<MarkdownFieldDisplayDriver>();
+                .UseDisplayDriver<MarkdownFieldDisplayDriver>();
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();

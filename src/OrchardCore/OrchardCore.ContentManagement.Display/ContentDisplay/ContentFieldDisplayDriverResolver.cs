@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
@@ -9,6 +10,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ContentDisplayOptions _contentDisplayOptions;
+
         public ContentFieldDisplayDriverResolver(
             IServiceProvider serviceProvider,
             IOptions<ContentDisplayOptions> contentDisplayOptions
@@ -18,23 +20,15 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             _contentDisplayOptions = contentDisplayOptions.Value;
         }
 
-        public IReadOnlyList<IContentFieldDisplayDriver> GetDriversForDisplay(string fieldName, string displayMode)
+        public IEnumerable<IContentFieldDisplayDriver> GetDisplayModeDrivers(string fieldName, string displayMode)
         {
-            // Standard display mode is always supplied as null.
-            if (string.IsNullOrEmpty(displayMode))
-            {
-                displayMode = "Standard";
-            };
+            displayMode = Normalize(displayMode);
 
             if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
             {
-                var services = new List<IContentFieldDisplayDriver>();
-                var resolvers = contentFieldDisplayOption.DisplayDrivers.Where(x => x.DisplayModes.Contains("*") || x.DisplayModes.Contains(displayMode));
- 
-                foreach (var resolver in resolvers)
-                {
-                    services.Add((IContentFieldDisplayDriver)_serviceProvider.GetService(resolver.DisplayDriverType));
-                }
+                var options = contentFieldDisplayOption.DisplayDrivers.Where(x => x.DisplayMode.Invoke(displayMode));
+
+                var services = options.Select(r => (IContentFieldDisplayDriver)_serviceProvider.GetRequiredService(r.DisplayDriverType));
 
                 return services;
             }
@@ -42,28 +36,31 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return null;
         }
 
-        public IReadOnlyList<IContentFieldDisplayDriver> GetDriversForEdit(string fieldName, string editor)
+        public IEnumerable<IContentFieldDisplayDriver> GetEditorDrivers(string fieldName, string editor)
         {
-            // Standard editor is always supplied as null.
-            if (string.IsNullOrEmpty(editor))
-            {
-                editor = "Standard";
-            };
+            editor = Normalize(editor);
 
             if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
             {
-                var services = new List<IContentFieldDisplayDriver>();
-                var resolvers = contentFieldDisplayOption.DisplayDrivers.Where(x => x.Editors.Contains("*") || x.Editors.Contains(editor));
+                var options = contentFieldDisplayOption.DisplayDrivers.Where(x => x.Editor.Invoke(editor));
 
-                foreach (var resolver in resolvers)
-                {
-                    services.Add((IContentFieldDisplayDriver)_serviceProvider.GetService(resolver.DisplayDriverType));
-                }
+                var services = options.Select(r => (IContentFieldDisplayDriver)_serviceProvider.GetRequiredService(r.DisplayDriverType));
 
                 return services;
             }
 
             return null;
+        }
+
+        private static string Normalize(string mode)
+        {
+            // Standard editor or display mode is always supplied as null.
+            if (string.IsNullOrEmpty(mode))
+            {
+                mode = "Standard";
+            };
+
+            return mode;
         }
     }
 }

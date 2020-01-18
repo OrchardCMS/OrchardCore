@@ -1,37 +1,42 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public class ContentPartDisplayOption : ContentPartOptionBase
     {
+        private readonly List<ContentPartDisplayDriverOption> _displayDrivers = new List<ContentPartDisplayDriverOption>();
+
         public ContentPartDisplayOption(Type contentPartType) : base(contentPartType) { }
 
-        public IList<ContentPartDisplayDriverOption> DisplayDrivers = new List<ContentPartDisplayDriverOption>();
+        public IReadOnlyList<ContentPartDisplayDriverOption> DisplayDrivers => _displayDrivers;
 
-        public void WithDisplayDriver(Type displayDriverType)
+        internal void ForDisplay(Type displayDriverType, Func<bool> predicate)
         {
-            var option = new ContentPartDisplayDriverOption(displayDriverType);
-            option.Editors.Add("*");
-            DisplayDrivers.Add(option);
+            var option = GetOrAddContentPartDisplayDriverOption(displayDriverType);
+
+            option.SetDisplay(predicate);
         }
 
-        public void WithDisplayDriver(Type displayDriverType, string[] editors)
+        internal void ForEditor(Type displayDriverType, Func<string, bool> predicate)
         {
-            var option = new ContentPartDisplayDriverOption(displayDriverType);
-            if (editors != null)
+            var option = GetOrAddContentPartDisplayDriverOption(displayDriverType);
+
+            option.SetEditor(predicate);
+        }
+
+        private ContentPartDisplayDriverOption GetOrAddContentPartDisplayDriverOption(Type displayDriverType)
+        {
+            var option = _displayDrivers.FirstOrDefault(o => o.DisplayDriverType == displayDriverType);
+
+            if (option == null)
             {
-                option.Editors = new HashSet<string>(editors, StringComparer.OrdinalIgnoreCase);
+                option = new ContentPartDisplayDriverOption(displayDriverType);
+                _displayDrivers.Add(option);
             }
 
-            DisplayDrivers.Add(option);
-        }
-
-        public void WithDisplayDriver(Type displayDriverType, Action<ContentPartDisplayDriverOption> action)
-        {
-            var option = new ContentPartDisplayDriverOption(displayDriverType);
-            action.Invoke(option);
-            DisplayDrivers.Add(option);
+            return option;
         }
     }
 }

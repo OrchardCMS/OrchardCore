@@ -1,144 +1,270 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public static class ServiceCollectionExtensions
     {
+        #region Parts
+
         /// <summary>
-        /// Add a display driver to a pre-registered content part.
-        /// By default registers driver for use with all display modes and editors, e.g. *
+        /// Register a display driver for use with a content part and all editors and display implementations.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
         /// </summary>
-        /// <typeparam name="TContentPart"></typeparam>
-        /// <typeparam name="TContentPartDisplayDriver"></typeparam>
-        public static ContentPartOptionBuilder AddPartDisplayDriver<TContentPart, TContentPartDisplayDriver>(this IServiceCollection services)
-            where TContentPart : ContentPart
+        public static ContentPartOptionBuilder UseDisplayDriver<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder)
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
-            var builder = new ContentPartOptionBuilder(services, typeof(TContentPart));
-            builder.Services.Configure<ContentDisplayOptions>(o => o.TryAddContentPart(builder.ContentPartType));
-            builder.WithDisplayDriver<TContentPartDisplayDriver>();
-
-            return builder;
+            return builder
+                .ForDisplay(typeof(TContentPartDisplayDriver), () => true)
+                .ForEditor(typeof(TContentPartDisplayDriver), e => true);
         }
 
         /// <summary>
-        /// Add a display driver to a pre-registered content part and configure.
+        /// Register a display driver for use with a content part and all editors and display implementations.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
         /// </summary>
-        /// <typeparam name="TContentPart"></typeparam>
-        /// <typeparam name="TContentPartDisplayDriver"></typeparam>
-        public static ContentPartOptionBuilder AddPartDisplayDriver<TContentPart, TContentPartDisplayDriver>(this IServiceCollection services, Action<ContentPartDisplayDriverOption> action)
-            where TContentPart : ContentPart
-            where TContentPartDisplayDriver : class, IContentPartDisplayDriver
+        public static ContentPartOptionBuilder UseDisplayDriver(this ContentPartOptionBuilder builder, Type partDisplayDriverType)
         {
-            var builder = new ContentPartOptionBuilder(services, typeof(TContentPart));
-            builder.Services.Configure<ContentDisplayOptions>(o => o.TryAddContentPart(builder.ContentPartType));
-            builder.WithDisplayDriver<TContentPartDisplayDriver>(action);
-
-            return builder;
+            return builder.ForDisplay(partDisplayDriverType)
+                .ForEditor(partDisplayDriverType);
         }
 
         /// <summary>
-        /// Register a display driver for use with a content part.
-        /// By default registers driver for use with all editors, e.g. *
+        /// Registers a display driver for use with all display implementations.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
         /// </summary>
-        /// <typeparam name="TContentPartDisplayDriver"></typeparam>
-        public static ContentPartOptionBuilder WithDisplayDriver<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder)
+        public static ContentPartOptionBuilder ForDisplay<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder)
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
-            builder.Services.AddScoped<TContentPartDisplayDriver>();
+            return builder.ForDisplay<TContentPartDisplayDriver>(() => true);
+        }
+
+        public static ContentPartOptionBuilder ForDisplay(this ContentPartOptionBuilder builder, Type partDisplayDriverType)
+        {
+            return builder.ForDisplay(partDisplayDriverType, () => true);
+        }
+
+        /// <summary>
+        /// Registers a display driver for use with a specific display implementations.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
+        /// </summary>
+        public static ContentPartOptionBuilder ForDisplay<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder, Func<bool> predicate)
+            where TContentPartDisplayDriver : class, IContentPartDisplayDriver
+        {
+            return builder.ForDisplay(typeof(TContentPartDisplayDriver), predicate);
+        }
+
+        /// <summary>
+        /// Registers a display driver for use with a specific display implementations.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
+        /// </summary>
+        public static ContentPartOptionBuilder ForDisplay(this ContentPartOptionBuilder builder, Type partDisplayDriverType, Func<bool> predicate)
+        {
+
+            if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(partDisplayDriverType))
+            {
+
+                throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
+            }
+
+            builder.Services.TryAddScoped(partDisplayDriverType);
             builder.Services.Configure<ContentDisplayOptions>(o =>
             {
-                o.TryAddContentPart(builder.ContentPartType);
-                o.WithPartDisplayDriver(builder.ContentPartType, typeof(TContentPartDisplayDriver));
+                o.ForContentPartDisplay(builder.ContentPartType, partDisplayDriverType, predicate);
             });
 
             return builder;
         }
 
         /// <summary>
-        /// Register a display driver for use with a content part and configure.
+        /// Registers a display driver for use with all editors.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
         /// </summary>
-        /// <typeparam name="TContentPartDisplayDriver"></typeparam>
-        public static ContentPartOptionBuilder WithDisplayDriver<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder, Action<ContentPartDisplayDriverOption> action)
+        public static ContentPartOptionBuilder ForEditor<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder)
             where TContentPartDisplayDriver : class, IContentPartDisplayDriver
         {
-            builder.Services.AddScoped<TContentPartDisplayDriver>();
+            return builder.ForEditor<TContentPartDisplayDriver>(e => true);
+        }
+
+        /// <summary>
+        /// Registers a display driver for use with a specific editor.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
+        /// </summary>
+        public static ContentPartOptionBuilder ForEditor(this ContentPartOptionBuilder builder, Type partDisplayDriverType)
+        {
+            return builder.ForEditor(partDisplayDriverType, d => true);
+        }
+
+        /// <summary>
+        /// Registers a display driver for use with a specific editor.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
+        /// </summary>
+        public static ContentPartOptionBuilder ForEditor<TContentPartDisplayDriver>(this ContentPartOptionBuilder builder, Func<string, bool> predicate)
+            where TContentPartDisplayDriver : class, IContentPartDisplayDriver
+        {
+            return builder.ForEditor(typeof(TContentPartDisplayDriver), predicate);
+        }
+
+        /// <summary>
+        /// Registers a display driver for use with a specific editor.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
+        /// </summary>
+        public static ContentPartOptionBuilder ForEditor(this ContentPartOptionBuilder builder, Type partDisplayDriverType, Func<string, bool> predicate)
+        {
+            if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(partDisplayDriverType))
+            {
+
+                throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
+            }
+
+            builder.Services.TryAddScoped(partDisplayDriverType);
             builder.Services.Configure<ContentDisplayOptions>(o =>
             {
-                o.TryAddContentPart(builder.ContentPartType);
-                o.WithPartDisplayDriver(builder.ContentPartType, typeof(TContentPartDisplayDriver), action);
+                o.ForContentPartEditor(builder.ContentPartType, partDisplayDriverType, predicate);
+            });
+
+            return builder;
+        }
+
+        #endregion
+
+        #region Fields
+        /// <summary>
+        /// Register a display driver for use with a content field and all display modes and editors.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
+        /// </summary>
+        public static ContentFieldOptionBuilder UseDisplayDriver<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder)
+            where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
+        {
+            return builder.ForDisplayMode<TContentFieldDisplayDriver>()
+                .ForEditor<TContentFieldDisplayDriver>();
+        }
+
+        /// <summary>
+        /// Register a display driver for use with a content field and all display modes and editors.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
+        /// </summary>
+        public static ContentFieldOptionBuilder UseDisplayDriver(this ContentFieldOptionBuilder builder, Type fieldDisplayDriverType)
+        {
+            return builder.ForDisplayMode(fieldDisplayDriverType)
+                .ForEditor(fieldDisplayDriverType);
+        }
+
+        /// <summary>
+        /// Registers a display driver for use with all display modes.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
+        /// </summary>
+        public static ContentFieldOptionBuilder ForDisplayMode<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder)
+            where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
+        {
+            return builder.ForDisplayMode<TContentFieldDisplayDriver>(d => true);
+        }
+
+        public static ContentFieldOptionBuilder ForDisplayMode(this ContentFieldOptionBuilder builder, Type fieldDisplayDriverType)
+        {
+            return builder.ForDisplayMode(fieldDisplayDriverType, d => true);
+        }
+
+        /// <summary>
+        /// Registers a display driver for use with a specific display mode.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
+        /// </summary>
+        public static ContentFieldOptionBuilder ForDisplayMode<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder, Func<string, bool> predicate)
+            where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
+        {
+            return builder.ForDisplayMode(typeof(TContentFieldDisplayDriver), predicate);
+        }
+
+        /// <summary>
+        /// Registers a display driver for use with a specific display mode.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
+        /// </summary>
+        public static ContentFieldOptionBuilder ForDisplayMode(this ContentFieldOptionBuilder builder, Type fieldDisplayDriverType, Func<string, bool> predicate)
+        {
+
+            if (!typeof(IContentFieldDisplayDriver).IsAssignableFrom(fieldDisplayDriverType))
+            {
+
+                throw new ArgumentException("The type must implement " + nameof(IContentFieldDisplayDriver));
+            }
+
+            builder.Services.TryAddScoped(fieldDisplayDriverType);
+            builder.Services.Configure<ContentDisplayOptions>(o =>
+            {
+                o.ForContentFieldDisplayMode(builder.ContentFieldType, fieldDisplayDriverType, predicate);
             });
 
             return builder;
         }
 
         /// <summary>
-        /// Add a display driver to a pre-registered content field.
-        /// By default registers driver for use with all display modes and editors, e.g. *
+        /// Registers a display driver for use with all editors.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
         /// </summary>
-        /// <typeparam name="TContentField"></typeparam>
-        /// <typeparam name="TContentFieldDisplayDriver"></typeparam>
-        public static ContentFieldOptionBuilder AddFieldDisplayDriver<TContentField, TContentFieldDisplayDriver>(this IServiceCollection services)
-            where TContentField : ContentField
+        public static ContentFieldOptionBuilder ForEditor<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder)
             where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
         {
-            var builder = new ContentFieldOptionBuilder(services, typeof(TContentField));
-            builder.Services.Configure<ContentDisplayOptions>(o => o.TryAddContentField(builder.ContentFieldType));
-            builder.WithDisplayDriver<TContentFieldDisplayDriver>();
-
-            return builder;
+            return builder.ForEditor<TContentFieldDisplayDriver>(e => true);
         }
 
         /// <summary>
-        /// Add a display driver to a pre-registered content field and configure display modes and editors.
+        /// Registers a display driver for use with a specific editor.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
         /// </summary>
-        /// <typeparam name="TContentField"></typeparam>
-        /// <typeparam name="TContentFieldDisplayDriver"></typeparam>
-        public static ContentFieldOptionBuilder AddFieldDisplayDriver<TContentField, TContentFieldDisplayDriver>(this IServiceCollection services, Action<ContentFieldDisplayDriverOption> action)
-            where TContentField : ContentField
-            where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
+        public static ContentFieldOptionBuilder ForEditor(this ContentFieldOptionBuilder builder, Type fieldDisplayDriverType)
         {
-            var builder = new ContentFieldOptionBuilder(services, typeof(TContentField));
-            builder.Services.Configure<ContentDisplayOptions>(o => o.TryAddContentField(builder.ContentFieldType));
-            builder.WithDisplayDriver<TContentFieldDisplayDriver>(action);
-
-            return builder;
+            return builder.ForEditor(fieldDisplayDriverType, d => true);
         }
 
         /// <summary>
-        /// Register a display driver for use with a content field.
-        /// By default registers driver for use with all display modes and editors, e.g. *
+        /// Registers a display driver for use with a specific editor.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
         /// </summary>
-        /// <typeparam name="TContentFieldDisplayDriver"></typeparam>
-        public static ContentFieldOptionBuilder WithDisplayDriver<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder)
+        public static ContentFieldOptionBuilder ForEditor<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder, Func<string, bool> predicate)
             where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
         {
-            builder.Services.AddScoped<TContentFieldDisplayDriver>();
+            return builder.ForEditor(typeof(TContentFieldDisplayDriver), predicate);
+        }
+
+        /// <summary>
+        /// Registers a display driver for use with a specific editor.
+        /// This method will override previous registrations for the driver type,
+        /// and can be called multiple times safely, to reconfigure an existing driver.
+        /// </summary>
+        public static ContentFieldOptionBuilder ForEditor(this ContentFieldOptionBuilder builder, Type fieldDisplayDriverType, Func<string, bool> predicate)
+        {
+            if (!typeof(IContentFieldDisplayDriver).IsAssignableFrom(fieldDisplayDriverType)){
+
+                throw new ArgumentException("The type must implement " + nameof(IContentFieldDisplayDriver));
+            }
+
+            builder.Services.TryAddScoped(fieldDisplayDriverType);
             builder.Services.Configure<ContentDisplayOptions>(o =>
             {
-                o.TryAddContentField(builder.ContentFieldType);
-                o.WithFieldDisplayDriver(builder.ContentFieldType, typeof(TContentFieldDisplayDriver));
+                o.ForContentFieldEditor(builder.ContentFieldType, fieldDisplayDriverType, predicate);
             });
 
             return builder;
         }
 
-        /// <summary>
-        /// Register a display driver for use with a content field and configure display modes and editors.
-        /// </summary>
-        /// <typeparam name="TContentFieldDisplayDriver"></typeparam>
-        public static ContentFieldOptionBuilder WithDisplayDriver<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder, Action<ContentFieldDisplayDriverOption> action)
-            where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
-        {
-            builder.Services.AddScoped<TContentFieldDisplayDriver>();
-            builder.Services.Configure<ContentDisplayOptions>(o =>
-            {
-                o.TryAddContentField(builder.ContentFieldType);
-                o.WithFieldDisplayDriver(builder.ContentFieldType, typeof(TContentFieldDisplayDriver), action);
-            });
-
-            return builder;
-        }
+        #endregion
     }
 }

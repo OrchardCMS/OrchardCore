@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
@@ -12,21 +11,18 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         public Type DisplayDriverType { get; }
 
-        /// <summary>
-        /// Configures the editors that this display driver will resolve.
-        /// Valid options: * display for all editors, 'standard' for standard editor, 'editor-name' display for specific editor.
-        /// </summary>
-        public HashSet<string> Editors { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-    }
+        public Func<bool> Display { get; private set; }
 
-    public static class ContentPartDisplayDriverOptionExtensions
-    {
-        public static void ForEditors(this ContentPartDisplayDriverOption option, params string[] editors)
+        public Func<string, bool> Editor { get; private set; }
+
+        internal void SetDisplay(Func<bool> displat)
         {
-            foreach (var editor in editors)
-            {
-                option.Editors.Add(editor);
-            }
+            Display = displat;
+        }
+
+        internal void SetEditor(Func<string, bool> editor)
+        {
+            Editor = editor;
         }
     }
 }

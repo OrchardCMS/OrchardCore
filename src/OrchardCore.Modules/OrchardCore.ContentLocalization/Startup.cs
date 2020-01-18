@@ -10,7 +10,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.ContentLocalization.Controllers;
 using OrchardCore.ContentLocalization.Drivers;
-using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Indexing;
 using OrchardCore.ContentLocalization.Liquid;
 using OrchardCore.ContentLocalization.Models;
@@ -18,8 +17,6 @@ using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.Security;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentLocalization.ViewModels;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -52,8 +49,6 @@ namespace OrchardCore.ContentLocalization
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
             services.AddContentLocalization();
 
-            services.AddPartDisplayDriver<LocalizationPart, LocalizationPartDisplayDriver>();
-            services.AddPartHandler<LocalizationPart, LocalizationPartHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
         }

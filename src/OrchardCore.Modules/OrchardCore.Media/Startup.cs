@@ -138,7 +138,7 @@ namespace OrchardCore.Media
 
             // Media Field
             services.AddContentField<MediaField>()
-                .WithDisplayDriver<MediaFieldDisplayDriver>();
+                .UseDisplayDriver<MediaFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
             services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();

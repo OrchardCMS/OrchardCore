@@ -1,4 +1,6 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentManagement.Handlers;
 
 namespace OrchardCore.ContentManagement
@@ -6,51 +8,88 @@ namespace OrchardCore.ContentManagement
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Registers a content part type.
+        /// Registers a content part type. This method may be called multiple times safely,
+        /// to reconfigure an existing part.
         /// </summary>
         public static ContentPartOptionBuilder AddContentPart<TContentPart>(this IServiceCollection services)
             where TContentPart : ContentPart
         {
-            services.Configure<ContentOptions>(o => o.AddContentPart<TContentPart>());
-            return new ContentPartOptionBuilder(services, typeof(TContentPart));
+            return services.AddContentPart(typeof(TContentPart));
         }
 
         /// <summary>
-        /// Registers a content field type.
+        /// Registers a content part type. This method may be called multiple times safely,
+        /// to reconfigure an existing part.
+        /// </summary>
+        public static ContentPartOptionBuilder AddContentPart(this IServiceCollection services, Type contentPartType)
+        {
+            services.Configure<ContentOptions>(o => o.GetOrAddContentPart(contentPartType));
+            return new ContentPartOptionBuilder(services, contentPartType);
+        }
+
+        /// <summary>
+        /// Registers a content field type. This method may be called multiple times safely,
+        /// to reconfigure an existing part. 
         /// </summary>
         public static ContentFieldOptionBuilder AddContentField<TContentField>(this IServiceCollection services)
             where TContentField : ContentField
         {
-            services.Configure<ContentOptions>(o => o.AddContentField<TContentField>());
-            return new ContentFieldOptionBuilder(services, typeof(TContentField));
+            return services.AddContentField(typeof(TContentField));
+        }
+
+        /// <summary>
+        /// Registers a content field type. This method may be called multiple times safely,
+        /// to reconfigure an existing part.
+        /// </summary>
+        public static ContentFieldOptionBuilder AddContentField(this IServiceCollection services, Type contentFieldType)
+        {
+            services.Configure<ContentOptions>(o => o.GetOrAddContentField(contentFieldType));
+            return new ContentFieldOptionBuilder(services, contentFieldType);
         }
 
         /// <summary>
         /// Register a handler for use with a content part.
         /// </summary>
         /// <typeparam name="TContentPartHandler"></typeparam>
-        public static ContentPartOptionBuilder WithHandler<TContentPartHandler>(this ContentPartOptionBuilder builder)
+        public static ContentPartOptionBuilder AddHandler<TContentPartHandler>(this ContentPartOptionBuilder builder)
             where TContentPartHandler : class, IContentPartHandler
         {
-            builder.Services.AddScoped<TContentPartHandler>();
+            return builder.AddHandler(typeof(TContentPartHandler));
+        }
+
+        /// <summary>
+        /// Register a handler for use with a content part.
+        /// </summary>
+        public static ContentPartOptionBuilder AddHandler(this ContentPartOptionBuilder builder, Type handlerType)
+        {
+            builder.Services.TryAddScoped(handlerType);
             builder.Services.Configure<ContentOptions>(o => {
-                o.WithPartHandler(builder.ContentPartType, typeof(TContentPartHandler));
+                o.AddPartHandler(builder.ContentPartType, handlerType);
             });
+
             return builder;
         }
 
         /// <summary>
-        /// Add a handler to a pre-registered content part.
+        /// Remove a handler registration from a content part.
         /// </summary>
-        /// <typeparam name="TContentPart"></typeparam>
         /// <typeparam name="TContentPartHandler"></typeparam>
-        public static ContentPartOptionBuilder AddPartHandler<TContentPart, TContentPartHandler>(this IServiceCollection services)
-            where TContentPart : ContentPart
+        public static ContentPartOptionBuilder RemoveHandler<TContentPartHandler>(this ContentPartOptionBuilder builder)
             where TContentPartHandler : class, IContentPartHandler
         {
-            var builder = new ContentPartOptionBuilder(services, typeof(TContentPart));
-            builder.Services.Configure<ContentOptions>(o => o.TryAddContentPart(builder.ContentPartType));
-            builder.WithHandler<TContentPartHandler>();
+            return builder.RemoveHandler(typeof(TContentPartHandler));
+        }
+
+        /// <summary>
+        /// Remove a handler registration from a content part.
+        /// </summary>
+        public static ContentPartOptionBuilder RemoveHandler(this ContentPartOptionBuilder builder, Type handlerType)
+        {
+            builder.Services.RemoveAll(handlerType);
+            builder.Services.Configure<ContentOptions>(o => {
+                o.RemovePartHandler(builder.ContentPartType, handlerType);
+            });
+
             return builder;
         }
     }

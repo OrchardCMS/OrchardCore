@@ -4,7 +4,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public interface IContentFieldDisplayDriverResolver
     {
-        IReadOnlyList<IContentFieldDisplayDriver> GetDriversForDisplay(string fieldName, string displayMode);
-        IReadOnlyList<IContentFieldDisplayDriver> GetDriversForEdit(string fieldName, string editor);
+        IEnumerable<IContentFieldDisplayDriver> GetDisplayModeDrivers(string fieldName, string displayMode);
+        IEnumerable<IContentFieldDisplayDriver> GetEditorDrivers(string fieldName, string editor);
     }
 }

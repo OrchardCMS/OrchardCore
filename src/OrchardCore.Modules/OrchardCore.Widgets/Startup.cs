@@ -33,7 +33,7 @@ namespace OrchardCore.Widgets
             services.AddScoped<IShapeTableProvider,ContentCardShapes>();
             // Widgets List Part
             services.AddContentPart<WidgetsListPart>()
-                .WithDisplayDriver<WidgetsListPartDisplay>();
+                .UseDisplayDriver<WidgetsListPartDisplay>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
             services.AddContentPart<WidgetMetadata>();

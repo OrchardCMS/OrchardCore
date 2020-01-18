@@ -46,8 +46,8 @@ namespace OrchardCore.Lists
 
             // List Part
             services.AddContentPart<ListPart>()
-                .WithDisplayDriver<ListPartDisplayDriver>()
-                .WithHandler<ListPartHandler>();
+                .UseDisplayDriver<ListPartDisplayDriver>()
+                .AddHandler<ListPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
@@ -56,8 +56,9 @@ namespace OrchardCore.Lists
             // Feeds
             // TODO: Create feature
             services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
-            services.AddPartDisplayDriver<ListPart, ListPartFeedDisplayDriver>();
-            services.AddPartHandler<ListPart, ListPartFeedHandler>();
+            services.AddContentPart<ListPart>()
+                .UseDisplayDriver<ListPartFeedDisplayDriver>()
+                .AddHandler<ListPartFeedHandler>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -89,7 +90,8 @@ namespace OrchardCore.Lists
         {
             services.AddScoped<IContentLocalizationPartHandler, ContainedPartLocalizationHandler>();
             services.AddScoped<IContentLocalizationPartHandler, ListPartLocalizationHandler>();
-            services.AddPartHandler<LocalizationPart, ContainedPartHandler>();
+            services.AddContentPart<LocalizationPart>()
+                .AddHandler<ContainedPartHandler>();
         }
     }
 
