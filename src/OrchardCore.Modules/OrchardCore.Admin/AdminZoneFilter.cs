@@ -1,8 +1,7 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Admin
 {
@@ -14,21 +13,21 @@ namespace OrchardCore.Admin
     {
         public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
-            if(context.ActionDescriptor is ControllerActionDescriptor action)
+            if (context.ActionDescriptor is ControllerActionDescriptor action)
             {
-                if(action.ControllerName == "Admin")
+                if (action.ControllerName == "Admin")
                 {
                     AdminAttribute.Apply(context.HttpContext);
                 }
             }
-            else if(context.ActionDescriptor is PageActionDescriptor page)
+            else if (context.ActionDescriptor is PageActionDescriptor page)
             {
-                if(page.ViewEnginePath.Contains("/Admin/"))
+                if (page.ViewEnginePath.Contains("/Admin/"))
                 {
                     AdminAttribute.Apply(context.HttpContext);
                 }
             }
-            
+
             return next();
         }
     }
