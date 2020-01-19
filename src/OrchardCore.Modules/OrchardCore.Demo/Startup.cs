@@ -99,24 +99,17 @@ namespace OrchardCore.Demo
 
             services.Configure<RazorPagesOptions>(options =>
             {
-                // An admin page is a page whose path contains an '/Admin/' segment or whose model has been decorated
-                // with the [Admin] attribute. An admin page access is protected, the user needs to be authenticated.
-
-                // A path is recognized as an admin path if it contains an '/Admin/' segment or if the file name starts
-                // with 'Admin'. The default path based route of a page having an admin path is automatically prefixed.
-
-                // So an admin page using the [Admin] attribute may not have an admin path, if you still want a default
-                // route that is automatically prefixed, the convention is that the page name has to start with 'Admin'.
-
-                // Add a custom page folder route (only applied to non admin paths)
+                // Add a custom page folder route (only applied to non admin pages)
                 options.Conventions.AddAreaFolderRoute("OrchardCore.Demo", "/", "Demo");
 
-                // Add custom admin page folder routes (only applied to admin paths)
+                // Add a custom admin page folder route (only applied to admin pages) using the current admin prefix
                 options.Conventions.AddAdminAreaFolderRoute("OrchardCore.Demo", "/Admin", _adminOptions.AdminUrlPrefix + "/Demo");
+
+                // Add a custom admin page folder route without using the current admin prefix
                 options.Conventions.AddAdminAreaFolderRoute("OrchardCore.Demo", "/Foo/Admin", "Manage/Foo");
 
-                // Add a custom admin page route
-                options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/AdminHello", _adminOptions.AdminUrlPrefix + "/Hello");
+                // Add a custom admin page route using the current admin prefix
+                options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/OutsideAdmin", _adminOptions.AdminUrlPrefix + "/Outside");
 
                 // Add a custom page route
                 options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/Hello", "Hello");
