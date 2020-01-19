@@ -112,7 +112,6 @@ namespace OrchardCore.Demo
                 options.Conventions.AddAreaFolderRoute("OrchardCore.Demo", "/", "Demo");
 
                 // Add custom admin page folder routes (only applied to admin paths)
-                options.Conventions.AddAdminAreaFolderRoute("OrchardCore.Demo", "/", _adminOptions.AdminUrlPrefix);
                 options.Conventions.AddAdminAreaFolderRoute("OrchardCore.Demo", "/Admin", _adminOptions.AdminUrlPrefix + "/Demo");
                 options.Conventions.AddAdminAreaFolderRoute("OrchardCore.Demo", "/Foo/Admin", "Manage/Foo");
 
