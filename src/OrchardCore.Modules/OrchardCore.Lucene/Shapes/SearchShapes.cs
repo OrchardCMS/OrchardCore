@@ -13,13 +13,13 @@ namespace OrchardCore.Lucene
     {
         public void Discover(ShapeTableBuilder builder)
         {
-            builder.Describe("SearchForm")
+            builder.Describe("Search__Form")
                 .OnDisplaying(context =>
                 {
                     dynamic searchForm = context.Shape;
                 });
 
-            builder.Describe("SearchResults")
+            builder.Describe("Search__Results")
                 .OnDisplaying(context =>
                 {
                     dynamic searchResults = context.Shape;

@@ -10,7 +10,7 @@ namespace OrchardCore.Lucene.TagHelpers
         public SearchResultsTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper) :
             base(shapeFactory, displayHelper)
         {
-            Type = "SearchResults";
+            Type = "Search__Results";
         }
     }
 }

@@ -6,7 +6,7 @@
     var contentItems = (IEnumerable<ContentItem>)Model.ContentItems;
 }
 
-@if (contentItems.Any())
+@if (contentItems != null && contentItems.Any())
 {
     <ul class="list-group">
         @foreach (var contentItem in contentItems)
