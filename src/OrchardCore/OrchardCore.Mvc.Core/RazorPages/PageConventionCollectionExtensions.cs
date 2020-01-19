@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 
 namespace Microsoft.AspNetCore.Mvc.ApplicationModels
@@ -11,7 +10,7 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
         /// These pages can be routed via their names prefixed by folder route in addition to the default
         /// set of path based routes. Links generated for these pages will use the specified folder route.
         /// Note: Applied to all pages whose razor view file path doesn't contain any '/Admin/' segment
-        /// and whose razor view file name doesn't start with 'Admin'.
+        /// and whose route model properties doesn't contains an 'Admin' key.
         /// </summary>
         public static PageConventionCollection AddAreaFolderRoute(this PageConventionCollection conventions,
             string areaName, string folderPath, string folderRoute)
@@ -24,7 +23,7 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
         /// These pages can be routed via their names prefixed by folder route in addition to the default
         /// set of path based routes. Links generated for these pages will use the specified folder route.
         /// Note: Applied to all pages whose razor view file path contains an '/Admin/' segment
-        /// or whose razor view file name starts with 'Admin'.
+        /// or whose route model properties contains an 'Admin' key.
         public static PageConventionCollection AddAdminAreaFolderRoute(this PageConventionCollection conventions,
             string areaName, string folderPath, string folderRoute)
         {
@@ -36,7 +35,7 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
         {
             conventions.AddAreaFolderRouteModelConvention(areaName, folderPath, model =>
             {
-                if (isAdmin != (model.ViewEnginePath.Contains("/Admin/") || Path.GetFileName(model.ViewEnginePath).StartsWith("Admin", StringComparison.Ordinal)))
+                if (isAdmin != (model.ViewEnginePath.Contains("/Admin/") || model.Properties.ContainsKey("Admin")))
                 {
                     return;
                 }
@@ -45,12 +44,14 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
 
                 foreach (var selector in model.Selectors.ToArray())
                 {
-                    if (selector.AttributeRouteModel.Template.StartsWith(areaFolder, StringComparison.Ordinal))
-                    {
-                        selector.AttributeRouteModel.SuppressLinkGeneration = true;
+                    var route = selector.AttributeRouteModel;
 
-                        var template = (folderRoute.Trim('/') + '/' + selector.AttributeRouteModel
-                            .Template.Substring(areaFolder.Length).TrimStart('/')).TrimEnd('/');
+                    if (route.Template.StartsWith(areaFolder, StringComparison.Ordinal))
+                    {
+                        route.SuppressLinkGeneration = true;
+
+                        var cleanSubTemplate = route.Template.Substring(areaFolder.Length).TrimStart('/');
+                        var template = AttributeRouteModel.CombineTemplates(folderRoute, cleanSubTemplate);
 
                         model.Selectors.Add(new SelectorModel
                         {
