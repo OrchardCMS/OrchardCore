@@ -168,22 +168,19 @@ namespace OrchardCore.ContentManagement.Display
                     foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                     {
                         var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDisplayModeDrivers(contentPartFieldDefinition.FieldDefinition.Name, contentPartFieldDefinition.DisplayMode());
-                        if (fieldDisplayDrivers != null)
+                        foreach (var fieldDisplayDriver in fieldDisplayDrivers)
                         {
-                            foreach (var fieldDisplayDriver in fieldDisplayDrivers)
+                            try
                             {
-                                try
+                                var result = await fieldDisplayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
+                                if (result != null)
                                 {
-                                    var result = await fieldDisplayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
-                                    if (result != null)
-                                    {
-                                        await result.ApplyAsync(context);
-                                    }
+                                    await result.ApplyAsync(context);
                                 }
-                                catch (Exception ex)
-                                {
-                                    InvokeExtensions.HandleException(ex, Logger, fieldDisplayDriver.GetType().Name, nameof(BuildDisplayAsync));
-                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                InvokeExtensions.HandleException(ex, Logger, fieldDisplayDriver.GetType().Name, nameof(BuildDisplayAsync));
                             }
                         }
                         // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
@@ -262,17 +259,14 @@ namespace OrchardCore.ContentManagement.Display
                 context.DefaultPosition = partPosition;
 
                 var partDisplayDrivers = _contentPartDisplayDriverResolver.GetEditorDrivers(partTypeName, typePartDefinition.Editor());
-                if (partDisplayDrivers != null)
+                await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
                 {
-                    await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
+                    var result = await driver.BuildEditorAsync(part, typePartDefinition, context);
+                    if (result != null)
                     {
-                        var result = await driver.BuildEditorAsync(part, typePartDefinition, context);
-                        if (result != null)
-                        {
-                            await result.ApplyAsync(context);
-                        }
-                    }, part, typePartDefinition, context, Logger);
-                }
+                        await result.ApplyAsync(context);
+                    }
+                }, part, typePartDefinition, context, Logger);
                 // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                 // Iteratate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
                 await _partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
@@ -291,17 +285,14 @@ namespace OrchardCore.ContentManagement.Display
 
                     context.DefaultZone = $"Parts.{typePartDefinition.Name}:{fieldPosition}";
                     var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetEditorDrivers(partFieldDefinition.FieldDefinition.Name, partFieldDefinition.Editor());
-                    if (fieldDisplayDrivers != null)
+                    await fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                     {
-                        await fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
+                        var result = await driver.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
+                        if (result != null)
                         {
-                            var result = await driver.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
-                            if (result != null)
-                            {
-                                await result.ApplyAsync(context);
-                            }
-                        }, part, partFieldDefinition, typePartDefinition, context, Logger);
-                    }
+                            await result.ApplyAsync(context);
+                        }
+                    }, part, partFieldDefinition, typePartDefinition, context, Logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     // Iteratate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
                     await _fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
@@ -365,17 +356,14 @@ namespace OrchardCore.ContentManagement.Display
 
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}:{partPosition}";
                 var partDisplayDrivers = _contentPartDisplayDriverResolver.GetEditorDrivers(partTypeName, typePartDefinition.Editor());
-                if (partDisplayDrivers != null)
+                await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
                 {
-                    await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
+                    var result = await driver.UpdateEditorAsync(part, typePartDefinition, context);
+                    if (result != null)
                     {
-                        var result = await driver.UpdateEditorAsync(part, typePartDefinition, context);
-                        if (result != null)
-                        {
-                            await result.ApplyAsync(context);
-                        }
-                    }, part, typePartDefinition, context, Logger);
-                }
+                        await result.ApplyAsync(context);
+                    }
+                }, part, typePartDefinition, context, Logger);
                 // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                 // Iteratate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
                 await _partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
@@ -394,17 +382,14 @@ namespace OrchardCore.ContentManagement.Display
 
                     context.DefaultZone = $"Parts.{typePartDefinition.Name}:{fieldPosition}";
                     var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetEditorDrivers(partFieldDefinition.FieldDefinition.Name, partFieldDefinition.Editor());
-                    if (fieldDisplayDrivers != null)
+                    await fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                     {
-                        await fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
+                        var result = await driver.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
+                        if (result != null)
                         {
-                            var result = await driver.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
-                            if (result != null)
-                            {
-                                await result.ApplyAsync(context);
-                            }
-                        }, part, partFieldDefinition, typePartDefinition, context, Logger);
-                    }
+                            await result.ApplyAsync(context);
+                        }
+                    }, part, partFieldDefinition, typePartDefinition, context, Logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     // Iteratate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
                     await _fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>

@@ -4,7 +4,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public interface IContentPartDisplayDriverResolver
     {
-        IEnumerable<IContentPartDisplayDriver> GetDisplayDrivers(string partName);
-        IEnumerable<IContentPartDisplayDriver> GetEditorDrivers(string partName, string editor);
+        IList<IContentPartDisplayDriver> GetDisplayDrivers(string partName);
+        IList<IContentPartDisplayDriver> GetEditorDrivers(string partName, string editor);
     }
 }

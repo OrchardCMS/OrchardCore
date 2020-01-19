@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ContentManagement.Handlers
@@ -8,6 +9,7 @@ namespace OrchardCore.ContentManagement.Handlers
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ContentOptions _contentOptions;
+
         public ContentPartHandlerResolver(
             IServiceProvider serviceProvider,
             IOptions<ContentOptions> contentDisplayOptions
@@ -17,19 +19,18 @@ namespace OrchardCore.ContentManagement.Handlers
             _contentOptions = contentDisplayOptions.Value;
         }
 
-        public IReadOnlyList<IContentPartHandler> GetHandlers(string partName)
+        public IList<IContentPartHandler> GetHandlers(string partName)
         {
+            var services = new List<IContentPartHandler>();
             if (_contentOptions.ContentPartOptionsLookup.TryGetValue(partName, out var contentPartOption))
             {
-                var services = new List<IContentPartHandler>();
-                foreach (var resolver in contentPartOption.Handlers)
+                foreach (var handlerOption in contentPartOption.Handlers)
                 {
-                    services.Add((IContentPartHandler)_serviceProvider.GetService(resolver));
+                    services.Add((IContentPartHandler)_serviceProvider.GetRequiredService(handlerOption));
                 }
-
-                return services;
             }
-            return null;
+
+            return services;
         }
     }
 }

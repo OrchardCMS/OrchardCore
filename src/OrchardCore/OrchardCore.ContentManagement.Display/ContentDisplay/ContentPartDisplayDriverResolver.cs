@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -19,28 +18,40 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             _contentDisplayOptions = contentDisplayOptions.Value;
         }
 
-        public IEnumerable<IContentPartDisplayDriver> GetDisplayDrivers(string partName)
+        public IList<IContentPartDisplayDriver> GetDisplayDrivers(string partName)
         {
+            var services = new List<IContentPartDisplayDriver>();
+
             if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
             {
-                var options = contentPartDisplayOption.DisplayDrivers.Where(x => x.Display.Invoke());
-
-                return options.Select(r => (IContentPartDisplayDriver)_serviceProvider.GetRequiredService(r.DisplayDriverType));
+                foreach (var displayDriverOption in contentPartDisplayOption.DisplayDrivers)
+                {
+                    if (displayDriverOption.Display.Invoke())
+                    {
+                        services.Add((IContentPartDisplayDriver)_serviceProvider.GetRequiredService(displayDriverOption.DisplayDriverType));
+                    }
+                }
             }
 
-            return null;
+            return services;
         }
 
-        public IEnumerable<IContentPartDisplayDriver> GetEditorDrivers(string partName, string editor)
+        public IList<IContentPartDisplayDriver> GetEditorDrivers(string partName, string editor)
         {
+            var services = new List<IContentPartDisplayDriver>();
+
             if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
             {
-                var options = contentPartDisplayOption.DisplayDrivers.Where(x => x.Editor.Invoke(editor));
-
-                return options.Select(r => (IContentPartDisplayDriver)_serviceProvider.GetRequiredService(r.DisplayDriverType));
+                foreach (var editorDriverOption in contentPartDisplayOption.EditorDrivers)
+                {
+                    if (editorDriverOption.Editor.Invoke(editor))
+                    {
+                        services.Add((IContentPartDisplayDriver)_serviceProvider.GetRequiredService(editorDriverOption.DisplayDriverType));
+                    }
+                }
             }
 
-            return null;
+            return services;
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -20,32 +19,40 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             _contentDisplayOptions = contentDisplayOptions.Value;
         }
 
-        public IEnumerable<IContentFieldDisplayDriver> GetDisplayModeDrivers(string fieldName, string displayMode)
+        public IList<IContentFieldDisplayDriver> GetDisplayModeDrivers(string fieldName, string displayMode)
         {
+            var services = new List<IContentFieldDisplayDriver>();
+
             if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
             {
-                var options = contentFieldDisplayOption.DisplayDrivers.Where(x => x.DisplayMode.Invoke(displayMode));
-
-                var services = options.Select(r => (IContentFieldDisplayDriver)_serviceProvider.GetRequiredService(r.DisplayDriverType));
-
-                return services;
+                foreach (var displayModeDriverOption in contentFieldDisplayOption.DisplayModeDrivers)
+                {
+                    if (displayModeDriverOption.DisplayMode.Invoke(displayMode))
+                    {
+                        services.Add((IContentFieldDisplayDriver)_serviceProvider.GetRequiredService(displayModeDriverOption.DisplayDriverType));
+                    }
+                }
             }
 
-            return null;
+            return services;
         }
 
-        public IEnumerable<IContentFieldDisplayDriver> GetEditorDrivers(string fieldName, string editor)
+        public IList<IContentFieldDisplayDriver> GetEditorDrivers(string fieldName, string editor)
         {
+            var services = new List<IContentFieldDisplayDriver>();
+
             if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
             {
-                var options = contentFieldDisplayOption.DisplayDrivers.Where(x => x.Editor.Invoke(editor));
-
-                var services = options.Select(r => (IContentFieldDisplayDriver)_serviceProvider.GetRequiredService(r.DisplayDriverType));
-
-                return services;
+                foreach (var editorDriverOption in contentFieldDisplayOption.EditorDrivers)
+                {
+                    if (editorDriverOption.Editor.Invoke(editor))
+                    {
+                        services.Add((IContentFieldDisplayDriver)_serviceProvider.GetRequiredService(editorDriverOption.DisplayDriverType));
+                    }
+                }
             }
 
-            return null;
+            return services;
         }
     }
 }

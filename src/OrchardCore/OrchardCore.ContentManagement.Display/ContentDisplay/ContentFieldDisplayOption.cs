@@ -6,11 +6,15 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public class ContentFieldDisplayOption : ContentFieldOptionBase
     {
-        private readonly List<ContentFieldDisplayDriverOption> _displayDrivers = new List<ContentFieldDisplayDriverOption>();
+        private readonly List<ContentFieldDisplayDriverOption> _fieldDisplayDrivers = new List<ContentFieldDisplayDriverOption>();
 
         public ContentFieldDisplayOption(Type contentFieldType) : base(contentFieldType) { }
 
-        public IReadOnlyList<ContentFieldDisplayDriverOption> DisplayDrivers => _displayDrivers;
+        private List<ContentFieldDisplayDriverOption> _displayModeDrivers;
+        public IReadOnlyList<ContentFieldDisplayDriverOption> DisplayModeDrivers => _displayModeDrivers ??= _fieldDisplayDrivers.Where(d => d.DisplayMode != null).ToList();
+
+        private List<ContentFieldDisplayDriverOption> _editorDrivers;
+        public IReadOnlyList<ContentFieldDisplayDriverOption> EditorDrivers => _editorDrivers ??= _fieldDisplayDrivers.Where(d => d.Editor != null).ToList();
 
         internal void ForDisplayMode(Type displayDriverType, Func<string, bool> predicate)
         {
@@ -28,21 +32,21 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         internal void RemoveDisplayDriver(Type displayDriverType)
         {
-            var displayDriverOption = _displayDrivers.FirstOrDefault(d => d.DisplayDriverType == displayDriverType);
+            var displayDriverOption = _fieldDisplayDrivers.FirstOrDefault(d => d.DisplayDriverType == displayDriverType);
             if (displayDriverOption != null)
             {
-                _displayDrivers.Remove(displayDriverOption);
+                _fieldDisplayDrivers.Remove(displayDriverOption);
             }
         }
 
         private ContentFieldDisplayDriverOption GetOrAddContentFieldDisplayDriverOption(Type displayDriverType)
         {
-            var option = _displayDrivers.FirstOrDefault(o => o.DisplayDriverType == displayDriverType);
+            var option = _fieldDisplayDrivers.FirstOrDefault(o => o.DisplayDriverType == displayDriverType);
 
             if (option == null)
             {
                 option = new ContentFieldDisplayDriverOption(displayDriverType);
-                _displayDrivers.Add(option);
+                _fieldDisplayDrivers.Add(option);
             }
 
             return option;

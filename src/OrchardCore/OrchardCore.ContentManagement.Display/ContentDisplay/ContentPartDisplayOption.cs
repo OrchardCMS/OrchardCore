@@ -6,11 +6,15 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public class ContentPartDisplayOption : ContentPartOptionBase
     {
-        private readonly List<ContentPartDisplayDriverOption> _displayDrivers = new List<ContentPartDisplayDriverOption>();
+        private readonly List<ContentPartDisplayDriverOption> _partDisplayDrivers = new List<ContentPartDisplayDriverOption>();
 
         public ContentPartDisplayOption(Type contentPartType) : base(contentPartType) { }
 
-        public IReadOnlyList<ContentPartDisplayDriverOption> DisplayDrivers => _displayDrivers;
+        private List<ContentPartDisplayDriverOption> _displayDrivers;
+        public IReadOnlyList<ContentPartDisplayDriverOption> DisplayDrivers => _displayDrivers ??= _partDisplayDrivers.Where(d => d.Display != null).ToList();
+
+        private List<ContentPartDisplayDriverOption> _editorDrivers;
+        public IReadOnlyList<ContentPartDisplayDriverOption> EditorDrivers => _editorDrivers ??= _partDisplayDrivers.Where(d => d.Editor != null).ToList();
 
         internal void ForDisplay(Type displayDriverType, Func<bool> predicate)
         {
@@ -28,21 +32,21 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         internal void RemoveDisplayDriver(Type displayDriverType)
         {
-            var displayDriverOption = _displayDrivers.FirstOrDefault(d => d.DisplayDriverType == displayDriverType);
+            var displayDriverOption = _partDisplayDrivers.FirstOrDefault(d => d.DisplayDriverType == displayDriverType);
             if (displayDriverOption != null)
             {
-                _displayDrivers.Remove(displayDriverOption);
+                _partDisplayDrivers.Remove(displayDriverOption);
             }
         }
 
         private ContentPartDisplayDriverOption GetOrAddContentPartDisplayDriverOption(Type displayDriverType)
         {
-            var option = _displayDrivers.FirstOrDefault(o => o.DisplayDriverType == displayDriverType);
+            var option = _partDisplayDrivers.FirstOrDefault(o => o.DisplayDriverType == displayDriverType);
 
             if (option == null)
             {
                 option = new ContentPartDisplayDriverOption(displayDriverType);
-                _displayDrivers.Add(option);
+                _partDisplayDrivers.Add(option);
             }
 
             return option;

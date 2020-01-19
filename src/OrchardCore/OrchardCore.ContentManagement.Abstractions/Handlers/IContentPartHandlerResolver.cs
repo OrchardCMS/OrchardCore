@@ -4,6 +4,6 @@ namespace OrchardCore.ContentManagement.Handlers
 {
     public interface IContentPartHandlerResolver
     {
-        IReadOnlyList<IContentPartHandler> GetHandlers(string partName);
+        IList<IContentPartHandler> GetHandlers(string partName);
     }
 }
