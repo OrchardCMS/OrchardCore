@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
@@ -23,12 +21,7 @@ namespace OrchardCore.Admin
                 return;
             }
 
-            if (route.Template.Contains("/Admin/"))
-            {
-                var template = route.Template.Replace("/Admin/", "/");
-                route.Template = AttributeRouteModel.CombineTemplates(_adminUrlPrefixTemplate, template);
-            }
-            else if (Path.GetFileName(model.ViewEnginePath).StartsWith("Admin", StringComparison.Ordinal))
+            if (route.Template.Contains("/Admin/") || model.Properties.ContainsKey("Admin"))
             {
                 route.Template = AttributeRouteModel.CombineTemplates(_adminUrlPrefixTemplate, route.Template);
             }
