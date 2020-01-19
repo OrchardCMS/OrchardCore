@@ -13,6 +13,12 @@ namespace OrchardCore.Search.Abstractions.ViewModels
         public string IndexName { get; set; } = "Search";
 
         [BindNever]
+        public dynamic SearchForm { get; set; }
+
+        [BindNever]
+        public dynamic SearchResults { get; set; }
+
+        [BindNever]
         public dynamic Pager { get; set; }
 
         [BindNever]

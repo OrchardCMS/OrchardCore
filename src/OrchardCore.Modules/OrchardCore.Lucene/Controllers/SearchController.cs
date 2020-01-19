@@ -60,7 +60,7 @@ namespace OrchardCore.Lucene.Controllers
         ILogger Logger { get; set; }
 
         [HttpGet]
-        public async Task<IActionResult> Index(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
+        public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneSearch))
             {
@@ -96,7 +96,7 @@ namespace OrchardCore.Lucene.Controllers
                 return View(new SearchIndexViewModel
                 {
                     IndexName = viewModel.IndexName,
-                    ContentItems = Enumerable.Empty<ContentItem>()
+                    SearchForm = (await New.SearchForm(new SearchFormViewModel {})),
                 });
             }
 
@@ -167,9 +167,10 @@ namespace OrchardCore.Lucene.Controllers
             var model = new SearchIndexViewModel
             {
                 Terms = viewModel.Terms,
-                Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, object>() { { "IndexName", viewModel.IndexName }, { "Terms", viewModel.Terms } }),
                 IndexName = viewModel.IndexName,
-                ContentItems = containedItems.Take(pager.PageSize)
+                SearchForm = (await New.SearchForm(new SearchFormViewModel { Terms = viewModel.Terms })),
+                SearchResults = (await New.SearchResults(new SearchResultsViewModel { ContentItems = containedItems.Take(pager.PageSize) })),
+                Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, object>() { { "IndexName", viewModel.IndexName }, { "Terms", viewModel.Terms } })
             };
 
             return View(model);

@@ -1,0 +1,23 @@
+@model dynamic
+@using OrchardCore.ContentManagement;
+@inject IContentItemDisplayManager DisplayManager
+
+@{
+    var contentItems = (IEnumerable<ContentItem>)Model.ContentItems;
+}
+
+@if (contentItems.Any())
+{
+    <ul class="list-group">
+        @foreach (var contentItem in contentItems)
+        {
+            <li class="list-group-item">
+                @await DisplayAsync(await DisplayManager.BuildDisplayAsync(contentItem, null, "Summary"))
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p class="alert alert-warning">@T["There are no such results."]</p>
+}
