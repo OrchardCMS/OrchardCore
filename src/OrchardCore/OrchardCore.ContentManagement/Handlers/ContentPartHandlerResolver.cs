@@ -22,6 +22,7 @@ namespace OrchardCore.ContentManagement.Handlers
         public IList<IContentPartHandler> GetHandlers(string partName)
         {
             var services = new List<IContentPartHandler>();
+
             if (_contentOptions.ContentPartOptionsLookup.TryGetValue(partName, out var contentPartOption))
             {
                 foreach (var handlerOption in contentPartOption.Handlers)

@@ -86,22 +86,19 @@ namespace OrchardCore.ContentManagement.Display
                 if (part != null)
                 {
                     var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayDrivers(partTypeName);
-                    if (partDisplayDrivers != null)
+                    foreach (var partDisplayDriver in partDisplayDrivers)
                     {
-                        foreach (var partDisplayDriver in partDisplayDrivers)
+                        try
                         {
-                            try
+                            var result = await partDisplayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
+                            if (result != null)
                             {
-                                var result = await partDisplayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
-                                if (result != null)
-                                {
-                                    await result.ApplyAsync(context);
-                                }
+                                await result.ApplyAsync(context);
                             }
-                            catch (Exception ex)
-                            {
-                                InvokeExtensions.HandleException(ex, Logger, partDisplayDrivers.GetType().Name, nameof(BuildDisplayAsync));
-                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            InvokeExtensions.HandleException(ex, Logger, partDisplayDrivers.GetType().Name, nameof(BuildDisplayAsync));
                         }
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
