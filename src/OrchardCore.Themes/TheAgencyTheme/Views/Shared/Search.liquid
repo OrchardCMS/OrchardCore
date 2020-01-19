@@ -9,8 +9,8 @@
     </header>
 {% endzone %}
 
-{{ "SearchForm" | shape_new: terms: Model.Terms | shape_render }}
+{{ Model.SearchForm | shape_render }}
 
-{{ "SearchResults" | shape_new: content_items: Model.ContentItems, terms: Model.Terms | shape_render }}
+{{ Model.SearchResults | shape_render }}
 
 {{ Model.Pager | shape_render }}
