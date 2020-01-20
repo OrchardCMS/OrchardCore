@@ -858,6 +858,7 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 Name = typePartDefinition.Name,
                 Editor = typePartDefinition.Editor(),
+                DisplayMode = typePartDefinition.DisplayMode(),
                 DisplayName = typePartDefinition.DisplayName(),
                 Description = typePartDefinition.Description(),
                 TypePartDefinition = typePartDefinition,
