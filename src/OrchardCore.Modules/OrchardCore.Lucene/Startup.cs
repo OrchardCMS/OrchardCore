@@ -73,8 +73,6 @@ namespace OrchardCore.Lucene
             services.AddRecipeExecutionStep<LuceneIndexStep>();
 
             services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
-            services.AddTagHelpers<SearchFormTagHelper>();
-            services.AddTagHelpers<SearchResultsTagHelper>();
             services.AddShapeAttributes<SearchShapes>();
         }
 

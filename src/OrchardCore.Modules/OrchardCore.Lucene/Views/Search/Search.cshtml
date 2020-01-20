@@ -1,7 +1,6 @@
 @model SearchIndexViewModel
 @inject IContentItemDisplayManager DisplayManager
 
-<searchform />
-<searchresults />
-
+@await DisplayAsync(Model.SearchForm)
+@await DisplayAsync(Model.SearchResults)
 @await DisplayAsync(Model.Pager)
