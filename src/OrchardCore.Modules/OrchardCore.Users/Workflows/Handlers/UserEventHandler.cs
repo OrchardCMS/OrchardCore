@@ -6,11 +6,11 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Handlers
 {
-    public class UserHandler : IUserEventHandler
+    public class UserEventHandler : IUserEventHandler
     {
         private readonly IWorkflowManager _workflowManager;
 
-        public UserHandler(IWorkflowManager workflowManager)
+        public UserEventHandler(IWorkflowManager workflowManager)
         {
             _workflowManager = workflowManager;
         }
