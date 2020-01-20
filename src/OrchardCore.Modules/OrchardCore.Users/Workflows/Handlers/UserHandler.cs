@@ -6,11 +6,11 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Handlers
 {
-    public class UserCreatedHandler : IUserCreatedEventHandler
+    public class UserHandler : IUserEventHandler
     {
         private readonly IWorkflowManager _workflowManager;
 
-        public UserCreatedHandler(IWorkflowManager workflowManager)
+        public UserHandler(IWorkflowManager workflowManager)
         {
             _workflowManager = workflowManager;
         }
@@ -18,6 +18,16 @@ namespace OrchardCore.Users.Workflows.Handlers
         public Task CreatedAsync(UserContext context)
         {
             return TriggerWorkflowEventAsync(nameof(UserCreatedEvent), (User)context.User);
+        }
+
+        public Task DisabledAsync(UserContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(UserDisabledEvent), (User)context.User);
+        }
+
+        public Task EnabledAsync(UserContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(UserEnabledEvent), (User)context.User);
         }
 
         private Task TriggerWorkflowEventAsync(string name, User user)
