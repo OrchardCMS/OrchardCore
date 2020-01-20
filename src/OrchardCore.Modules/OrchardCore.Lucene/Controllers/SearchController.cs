@@ -96,7 +96,7 @@ namespace OrchardCore.Lucene.Controllers
                 return View(new SearchIndexViewModel
                 {
                     IndexName = viewModel.IndexName,
-                    SearchForm = (await New.SearchForm(new SearchFormViewModel {})),
+                    SearchForm = (await New.SearchForm(new SearchIndexViewModel { })),
                 });
             }
 
