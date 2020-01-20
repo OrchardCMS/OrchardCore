@@ -32,7 +32,7 @@ namespace OrchardCore.Users.Services
             IRoleService roleService,
             ILookupNormalizer keyNormalizer,
             ILogger<UserStore> logger,
-            IEnumerable<IUserCreatedEventHandler> handlers)
+            IEnumerable<IUserEventHandler> handlers)
         {
             _session = session;
             _roleService = roleService;
@@ -40,7 +40,7 @@ namespace OrchardCore.Users.Services
             _logger = logger;
             Handlers = handlers;
         }
-        public IEnumerable<IUserCreatedEventHandler> Handlers { get; private set; }
+        public IEnumerable<IUserEventHandler> Handlers { get; private set; }
 
         public void Dispose()
         {
