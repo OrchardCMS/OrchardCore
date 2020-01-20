@@ -34,13 +34,8 @@ namespace OrchardCore.Contents.Scripting
                 {
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     var contentItem = contentManager.NewAsync(contentType).GetAwaiter().GetResult();
-                    var props = JObject.FromObject(properties);
-                    var content = (JObject)contentItem.Content;
-
-                    content.Merge(props);
-                    contentItem.Apply(props.ToObject<ContentItem>());
+                    contentItem.Merge(properties);
                     contentManager.CreateAsync(contentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
-
                     return contentItem;
                 })
             };
@@ -51,11 +46,7 @@ namespace OrchardCore.Contents.Scripting
                 Method = serviceProvider => (Action<ContentItem, object>)((contentItem, properties) =>
                 {
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
-                    var props = JObject.FromObject(properties);
-                    var content = (JObject)contentItem.Content;
-
-                    content.Merge(props, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
-                    contentItem.Apply(props.ToObject<ContentItem>());
+                    contentItem.Merge(properties, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
                     contentManager.UpdateAsync(contentItem).GetAwaiter().GetResult();
                 })
             };
