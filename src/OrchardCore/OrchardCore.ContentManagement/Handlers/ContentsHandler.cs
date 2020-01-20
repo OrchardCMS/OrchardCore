@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement.Handlers
             var httpContext = _httpContextAccessor.HttpContext;
             if (context.ContentItem.Owner == null && (httpContext?.User?.Identity?.IsAuthenticated ?? false))
             {
-                context.ContentItem.Owner = httpContext.User.Identity.Name;
+                context.ContentItem.Owner = context.ContentItem.Author = httpContext.User.Identity.Name;
             }
 
             return Task.CompletedTask;
