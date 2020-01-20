@@ -27,7 +27,6 @@ using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Lucene.Model;
-using OrchardCore.Lucene.TagHelpers;
 
 namespace OrchardCore.Lucene
 {
