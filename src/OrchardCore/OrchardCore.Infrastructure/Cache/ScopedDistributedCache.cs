@@ -15,15 +15,13 @@ namespace OrchardCore.Infrastructure.Cache
     {
         private readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
-        private readonly IIdGenerator _idGenerator;
 
         private readonly Dictionary<string, object> _scopedCache = new Dictionary<string, object>();
 
-        public ScopedDistributedCache(IDistributedCache distributedCache, IMemoryCache memoryCache, IIdGenerator idGenerator)
+        public ScopedDistributedCache(IDistributedCache distributedCache, IMemoryCache memoryCache)
         {
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
-            _idGenerator = idGenerator;
         }
 
         public async Task<T> GetAsync<T>(string key) where T : class, IScopedDistributedCacheable
@@ -98,7 +96,7 @@ namespace OrchardCore.Infrastructure.Cache
                 return Task.CompletedTask;
             }
 
-            value.CacheId = _idGenerator.GenerateUniqueId();
+            value.CacheId = Guid.NewGuid().ToString();
             return SetAsyncInternal(key, value, options);
         }
 
@@ -110,7 +108,7 @@ namespace OrchardCore.Infrastructure.Cache
 
         private Task SyncAsync<T>(string key, T value, DistributedCacheEntryOptions options) where T : class, IScopedDistributedCacheable
         {
-            value.CacheId ??= _idGenerator.GenerateUniqueId();
+            value.CacheId ??= Guid.NewGuid().ToString();
             return SetAsyncInternal(key, value, options);
         }
 
