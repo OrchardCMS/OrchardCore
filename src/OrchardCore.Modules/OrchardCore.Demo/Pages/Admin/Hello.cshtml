@@ -1,17 +1,17 @@
 @page
-@model DemoModel
+@model AdminHelloDemoModel
 @using Microsoft.AspNetCore.Mvc.RazorPages
 
 @functions
 {
-    public class DemoModel : PageModel
+    public class AdminHelloDemoModel : PageModel
     {
         public string Title { get; set; }
         public string Message { get; private set; }
 
         public void OnGet()
         {
-            Title = "This is a RazorPage coming from OrchardCore.Demo!";
+            Title = "This is an Admin RazorPage coming from OrchardCore.Demo!";
             Message = $"Date and time on the server: { DateTime.Now.ToString() }";
         }
     }
@@ -19,8 +19,15 @@
 
 @await Html.PartialAsync("Header", Model)
 
+<h1>@Model.Title</h1>
 <h2>Hello from @ViewContext.RouteData.Values["page"]</h2>
 
+<p>
+    My model is not decorated with the '[Admin]' attribute but I am a protected Admin Page as I am under an '/Admin/' folder.
+</p>
+<p>
+    Being an Admin Page my default path based route is automatically prefixed with the current 'AdminOptions.AdminUrlPrefix'.
+</p>
 <p>
     @T[Model.Message]
 </p>
