@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using MessagePack;
 using MessagePack.Resolvers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using OrchardCore.Entities;
 
 namespace OrchardCore.Infrastructure.Cache
 {
@@ -12,88 +15,123 @@ namespace OrchardCore.Infrastructure.Cache
     {
         private readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
+        private readonly IIdGenerator _idGenerator;
 
         private readonly Dictionary<string, object> _scopedCache = new Dictionary<string, object>();
 
-        public ScopedDistributedCache(IDistributedCache distributedCache, IMemoryCache memoryCache)
+        public ScopedDistributedCache(IDistributedCache distributedCache, IMemoryCache memoryCache, IIdGenerator idGenerator)
         {
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
+            _idGenerator = idGenerator;
         }
 
-        public async Task<T> GetAsync<T>(string key) where T : class
+        public async Task<T> GetAsync<T>(string key) where T : class, IScopedDistributedCacheable
         {
             if (_scopedCache.TryGetValue(key, out var scopedValue))
             {
                 return (T)scopedValue;
             }
 
-            var data = await _distributedCache.GetAsync("Version" + key);
+            var cacheIdData = await _distributedCache.GetAsync("ID_" + key);
 
-            if (data == null)
+            if (cacheIdData == null)
             {
                 return null;
             }
 
-            var version = Deserialize<int>(data);
+            var cacheId = Encoding.UTF8.GetString(cacheIdData);
 
-            if (_memoryCache.TryGetValue<CacheEntry<T>>(key, out var entry))
+            if (_memoryCache.TryGetValue<T>(key, out var value))
             {
-                if (entry.Version == version)
+                if (value.CacheId == cacheId)
                 {
-                    _scopedCache[key] = entry.Value;
-                    return entry.Value;
+                    _scopedCache[key] = value;
+                    return value;
                 }
             }
 
-            data = await _distributedCache.GetAsync(key);
+            var data = await _distributedCache.GetAsync(key);
 
             if (data == null)
             {
                 return null;
             }
 
-            entry = Deserialize<CacheEntry<T>>(data);
+            using (var ms = new MemoryStream(data))
+            {
+                value = await DeserializeAsync<T>(ms);
+            }
 
-            if (entry.Version != version)
+            if (value.CacheId != cacheId)
             {
                 return null;
             }
 
-            _memoryCache.Set(key, entry);
-            _scopedCache[key] = entry.Value;
+            _memoryCache.Set(key, value);
+            _scopedCache[key] = value;
 
-            return entry.Value;
+            return value;
         }
 
-        public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options) where T : class
+        public async Task<T> GetOrCreateAsync<T>(string key, DistributedCacheEntryOptions options, Func<Task<T>> factory) where T : class, IScopedDistributedCacheable
         {
-            var versionData = await _distributedCache.GetAsync("Version" + key);
-            var version = versionData != null ? Deserialize<int>(versionData) : new Random().Next();
+            var value = await GetAsync<T>(key);
 
-            versionData = Serialize(++version);
-            var entry = new CacheEntry<T>() { Version = version, Value = value };
-            var data = Serialize(entry);
+            if (value == null)
+            {
+                value = await factory();
 
-            await _distributedCache.SetAsync("Version" + key, versionData, options);
-            await _distributedCache.SetAsync(key, data);
-            _memoryCache.Set(key, entry);
+                await SyncAsync(key, value, options);
+
+                _memoryCache.Set(key, value);
+                _scopedCache[key] = value;
+            }
+
+            return value;
         }
 
-        private byte[] Serialize<T>(T value)
+        public Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options) where T : class, IScopedDistributedCacheable
         {
-            return MessagePackSerializer.Serialize(value, ContractlessStandardResolver.Options);
+            value.CacheId = _idGenerator.GenerateUniqueId();
+            return SetAsyncInternal(key, value, options);
         }
 
-        private T Deserialize<T>(byte[] data)
+        public async Task RemoveAsync(string key)
         {
-            return MessagePackSerializer.Deserialize<T>(data, ContractlessStandardResolver.Options);
+            await _distributedCache.RemoveAsync("ID_" + key);
+            await _distributedCache.RemoveAsync(key);
         }
 
-        public class CacheEntry<T>
+        private Task SyncAsync<T>(string key, T value, DistributedCacheEntryOptions options) where T : class, IScopedDistributedCacheable
         {
-            public int Version { get; set; }
-            public T Value { get; set; }
+            value.CacheId ??= _idGenerator.GenerateUniqueId();
+            return SetAsyncInternal(key, value, options);
         }
+
+        private async Task SetAsyncInternal<T>(string key, T value, DistributedCacheEntryOptions options) where T : class, IScopedDistributedCacheable
+        {
+            if (value.CacheId == null)
+            {
+                throw new ArgumentNullException(nameof(value.CacheId));
+            }
+
+            byte[] data;
+
+            using (var ms = new MemoryStream())
+            {
+                await SerializeAsync(ms, value);
+                data = ms.ToArray();
+            }
+
+            var id = Encoding.UTF8.GetBytes(value.CacheId);
+
+            await _distributedCache.SetAsync(key, data, options);
+            await _distributedCache.SetAsync("ID_" + key, id, options);
+        }
+
+        private Task SerializeAsync<T>(Stream stream, T value) => MessagePackSerializer.SerializeAsync(stream, value, ContractlessStandardResolver.Options);
+
+        private ValueTask<T> DeserializeAsync<T>(Stream stream) => MessagePackSerializer.DeserializeAsync<T>(stream, ContractlessStandardResolver.Options);
     }
 }
