@@ -26,6 +26,8 @@ namespace OrchardCore.Roles.Services
         private readonly IServiceProvider _serviceProvider;
         private readonly IStringLocalizer<RoleStore> S;
 
+        private RolesDocument _roles;
+
         public RoleStore(
             ISession session,
             ISessionHelper sessionHelper,
@@ -40,6 +42,8 @@ namespace OrchardCore.Roles.Services
             _serviceProvider = serviceProvider;
             S = stringLocalizer;
             Logger = logger;
+
+            _sessionHelper.RegisterAfterCommit(() => _scopedDistributedCache.SetAsync(_roles));
         }
 
         public ILogger Logger { get; }
@@ -68,8 +72,8 @@ namespace OrchardCore.Roles.Services
 
         private Task UpdateRolesAsync(RolesDocument roles)
         {
+            _roles = roles;
             _session.Save(roles);
-            _sessionHelper.RegisterAfterCommit(() => _scopedDistributedCache.SetAsync(roles));
             return Task.CompletedTask;
         }
 

@@ -93,6 +93,11 @@ namespace OrchardCore.Infrastructure.Cache
 
         public Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options) where T : class, IScopedDistributedCacheable
         {
+            if (value == null)
+            {
+                return Task.CompletedTask;
+            }
+
             value.CacheId = _idGenerator.GenerateUniqueId();
             return SetAsyncInternal(key, value, options);
         }
