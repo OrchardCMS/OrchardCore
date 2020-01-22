@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -43,6 +42,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+        private readonly IStringLocalizer<AccountController> S;
 
         public AccountController(
             IUserService userService,
@@ -69,10 +69,8 @@ namespace OrchardCore.Users.Controllers
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
             _externalLoginHandlers = externalLoginHandlers;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
-
-        IStringLocalizer T { get; set; }
 
         [HttpGet]
         [AllowAnonymous]
@@ -151,7 +149,7 @@ namespace OrchardCore.Users.Controllers
                 // Require that the users have a confirmed email before they can log on.
                 if (!await _userManager.IsEmailConfirmedAsync(user))
                 {
-                    ModelState.AddModelError(string.Empty, T["You must confirm your email."]);
+                    ModelState.AddModelError(string.Empty, S["You must confirm your email."]);
                     return true;
                 }
             }
@@ -165,7 +163,7 @@ namespace OrchardCore.Users.Controllers
 
             if (localUser == null || !localUser.IsEnabled)
             {
-                ModelState.AddModelError(String.Empty, T["Your account is disabled. Please contact an administrator."]);
+                ModelState.AddModelError(String.Empty, S["Your account is disabled. Please contact an administrator."]);
                 return true;
             }
             
@@ -187,7 +185,7 @@ namespace OrchardCore.Users.Controllers
                 var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
                 if (disableLocalLogin)
                 {
-                    ModelState.AddModelError("", T["Local login is disabled."]);
+                    ModelState.AddModelError("", S["Local login is disabled."]);
                 }
                 else
                 {
@@ -213,7 +211,7 @@ namespace OrchardCore.Users.Controllers
                             }
                         }
                     }
-                    ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
+                    ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
                     await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
                 }
             }
@@ -391,14 +389,13 @@ namespace OrchardCore.Users.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
+                        ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
                     }
                 }
             }
             else
             {
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                            ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email);
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
 
                 if (!string.IsNullOrWhiteSpace(email))
                     user = await _userManager.FindByEmailAsync(email);
@@ -419,7 +416,7 @@ namespace OrchardCore.Users.Controllers
                     // no user could be matched, check if a new user can register
                     if (registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration)
                     {
-                        string message = T["Site does not allow user registration."];
+                        string message = S["Site does not allow user registration."];
                         _logger.LogWarning(message);
                         ModelState.AddModelError("", message);
                     }
@@ -449,7 +446,7 @@ namespace OrchardCore.Users.Controllers
                                 Email = externalLoginViewModel.Email,
                                 Password = null,
                                 ConfirmPassword = null
-                            }, T["Confirm your account"], _logger);
+                            }, S["Confirm your account"], _logger);
 
                             // If the registration was successfull we can link the external provider and redirect the user
                             if (user != null)
@@ -468,7 +465,7 @@ namespace OrchardCore.Users.Controllers
                                     }
                                     else
                                     {
-                                        ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
+                                        ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
                                         return View(nameof(Login));
                                     }
                                 }
@@ -515,8 +512,7 @@ namespace OrchardCore.Users.Controllers
 
             if (model.NoEmail)
             {
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                    ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email);
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
                 model.Email = email;
             }
 
@@ -533,7 +529,7 @@ namespace OrchardCore.Users.Controllers
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {
-                user = await this.RegisterUser(new RegisterViewModel() { UserName = model.UserName, Email = model.Email, Password = model.Password, ConfirmPassword = model.ConfirmPassword }, T["Confirm your account"], _logger);
+                user = await this.RegisterUser(new RegisterViewModel() { UserName = model.UserName, Email = model.Email, Password = model.Password, ConfirmPassword = model.ConfirmPassword }, S["Confirm your account"], _logger);
                 if (user is null)
                 {
                     ModelState.AddModelError(string.Empty, "Registration Failed.");
@@ -567,8 +563,7 @@ namespace OrchardCore.Users.Controllers
             var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
             var info = await _signInManager.GetExternalLoginInfoAsync();
 
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email)
-            ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email);
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
 
             var user = await _userManager.FindByEmailAsync(email);
 
@@ -592,7 +587,7 @@ namespace OrchardCore.Users.Controllers
             if (!signInResult.Succeeded)
             {
                 user = null;
-                ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
+                ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
             }
             else
             {

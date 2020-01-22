@@ -16,10 +16,10 @@ namespace OrchardCore.OpenId.Controllers
     [OpenIdController, SkipStatusCodePages]
     public class UserInfoController : Controller
     {
-        private readonly IStringLocalizer<UserInfoController> T;
+        private readonly IStringLocalizer<UserInfoController> S;
 
         public UserInfoController(IStringLocalizer<UserInfoController> localizer)
-            => T = localizer;
+            => S = localizer;
 
         // GET/POST: /connect/userinfo
         [AcceptVerbs("GET", "POST")]
@@ -49,7 +49,7 @@ namespace OrchardCore.OpenId.Controllers
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIddictConstants.Errors.InvalidRequest,
-                    ErrorDescription = T["The userinfo endpoint can only be used with access tokens representing users."]
+                    ErrorDescription = S["The userinfo endpoint can only be used with access tokens representing users."]
                 });
             }
 

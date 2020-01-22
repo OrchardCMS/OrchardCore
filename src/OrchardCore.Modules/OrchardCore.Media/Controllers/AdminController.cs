@@ -22,7 +22,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer<AdminController> T;
+        private readonly IStringLocalizer<AdminController> S;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
@@ -38,7 +38,7 @@ namespace OrchardCore.Media.Controllers
             _contentTypeProvider = contentTypeProvider;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
             _logger = logger;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public async Task<IActionResult> Index()
@@ -168,7 +168,7 @@ namespace OrchardCore.Media.Controllers
                         name = file.FileName,
                         size = file.Length,
                         folder = path,
-                        error = T["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
+                        error = S["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
                     });
 
                     _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
@@ -217,13 +217,13 @@ namespace OrchardCore.Media.Controllers
 
             if (string.IsNullOrEmpty(path))
             {
-                return StatusCode(StatusCodes.Status403Forbidden, T["Cannot delete root media folder"]);
+                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot delete root media folder"]);
             }
 
             var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(path);
             if (mediaFolder != null && !mediaFolder.IsDirectory)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, T["Cannot delete path because it is not a directory"]);
+                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot delete path because it is not a directory"]);
             }
 
             if (await _mediaFileStore.TryDeleteDirectoryAsync(path) == false)
@@ -273,12 +273,12 @@ namespace OrchardCore.Media.Controllers
 
             if (!_allowedFileExtensions.Contains(Path.GetExtension(newPath), StringComparer.OrdinalIgnoreCase))
             {
-                return StatusCode(StatusCodes.Status403Forbidden, T["This file extension is not allowed: {0}", Path.GetExtension(newPath)]);
+                return StatusCode(StatusCodes.Status403Forbidden, S["This file extension is not allowed: {0}", Path.GetExtension(newPath)]);
             }
 
             if (await _mediaFileStore.GetFileInfoAsync(newPath) != null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, T["Cannot move media because a file already exists with the same name"]);
+                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot move media because a file already exists with the same name"]);
             }
 
             await _mediaFileStore.MoveFileAsync(oldPath, newPath);
@@ -354,7 +354,7 @@ namespace OrchardCore.Media.Controllers
 
             if (filesOnError.Count > 0)
             {
-                return BadRequest(T["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", string.Join(",", filesOnError)].ToString());
+                return BadRequest(S["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", string.Join(",", filesOnError)].ToString());
             }
             else
             {
@@ -383,13 +383,13 @@ namespace OrchardCore.Media.Controllers
             var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
             if (mediaFolder != null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, T["Cannot create folder because a folder already exists with the same name"]);
+                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot create folder because a folder already exists with the same name"]);
             }
 
             var existingFile = await _mediaFileStore.GetFileInfoAsync(newPath);
             if (existingFile != null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, T["Cannot create folder because a file already exists with the same name"]);
+                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot create folder because a file already exists with the same name"]);
             }
 
             await _mediaFileStore.TryCreateDirectoryAsync(newPath);

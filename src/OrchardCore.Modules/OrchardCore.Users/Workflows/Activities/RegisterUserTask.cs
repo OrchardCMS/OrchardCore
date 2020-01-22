@@ -25,7 +25,7 @@ namespace OrchardCore.Users.Workflows.Activities
         private readonly LinkGenerator _linkGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer T;
+        private readonly IStringLocalizer<RegisterUserTask> S;
 
         public RegisterUserTask(
             IUserService userService,
@@ -34,7 +34,7 @@ namespace OrchardCore.Users.Workflows.Activities
             LinkGenerator linkGenerator,
             IHttpContextAccessor httpContextAccessor,
             IUpdateModelAccessor updateModelAccessor,
-            IStringLocalizer<RegisterUserTask> t)
+            IStringLocalizer<RegisterUserTask> localizer)
         {
             _userService = userService;
             _userManager = userManager;
@@ -42,15 +42,16 @@ namespace OrchardCore.Users.Workflows.Activities
             _linkGenerator = linkGenerator;
             _httpContextAccessor = httpContextAccessor;
             _updateModelAccessor = updateModelAccessor;
-            T = t;
+            S = localizer;
         }
 
         // The technical name of the activity. Activities on a workflow definition reference this name.
         public override string Name => nameof(RegisterUserTask);
-        public override LocalizedString DisplayText => T["Register User Task"];
+        
+        public override LocalizedString DisplayText => S["Register User Task"];
 
         // The category to which this activity belongs. The activity picker groups activities by this category.
-        public override LocalizedString Category => T["Content"];
+        public override LocalizedString Category => S["Content"];
 
         // The message to display.
         public bool SendConfirmationEmail
@@ -76,7 +77,7 @@ namespace OrchardCore.Users.Workflows.Activities
         // Returns the possible outcomes of this activity.
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"], T["Valid"], T["Invalid"]);
+            return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
         }
 
         // This is the heart of the activity and actually performs the work to be done.
@@ -109,7 +110,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     {
                         foreach (var item in errors)
                         {
-                            updater.ModelState.TryAddModelError(item.Key, T[item.Value]);
+                            updater.ModelState.TryAddModelError(item.Key, S[item.Value]);
                         }
                     }
                     outcome = "Invalid";
@@ -142,7 +143,7 @@ namespace OrchardCore.Users.Workflows.Activities
                         var updater = _updateModelAccessor.ModelUpdater;
                         if (updater != null)
                         {
-                            updater.ModelState.TryAddModelError("", T["No email service is available"]);
+                            updater.ModelState.TryAddModelError("", S["No email service is available"]);
                         }
                         outcome = "Invalid";
                     }

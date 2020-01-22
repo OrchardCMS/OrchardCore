@@ -38,6 +38,7 @@ namespace OrchardCore.ContentManagement
         {
             services.RemoveAll<IContentDefinitionStore>();
             services.AddSingleton<IContentDefinitionStore, FileContentDefinitionStore>();
+            services.AddScoped<FileContentDefinitionScopedCache>();
 
             return services;
         }
