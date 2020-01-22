@@ -22,8 +22,8 @@ namespace OrchardCore.Users.Workflows.Drivers
         public override IDisplayResult Display(UserDisabledEvent activity)
         {
             return Combine(
-                Shape($"{nameof(UserDisabledEvent)}_Fields_Thumbnail", new UserDisabledEventViewModel(activity)).Location("Thumbnail", "Content"),
-                Factory($"{nameof(UserDisabledEvent)}_Fields_Design", ctx =>
+                Shape("UserDisabledEvent_Fields_Thumbnail", new UserDisabledEventViewModel(activity)).Location("Thumbnail", "Content"),
+                Factory("UserDisabledEvent_Fields_Design", ctx =>
                 {
                     var shape = new UserDisabledEventViewModel();
                     shape.Activity = activity;
