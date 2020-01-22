@@ -1,15 +1,10 @@
-@model dynamic
-@using OrchardCore.ContentManagement;
+@model SearchResultsViewModel
 @inject IContentItemDisplayManager DisplayManager
 
-@{
-    var contentItems = (IEnumerable<ContentItem>)Model.ContentItems;
-}
-
-@if (contentItems != null && contentItems.Any())
+@if (Model.ContentItems != null && Model.ContentItems.Any())
 {
     <ul class="list-group">
-        @foreach (var contentItem in contentItems)
+        @foreach (var contentItem in Model.ContentItems)
         {
             <li class="list-group-item">
                 @await DisplayAsync(await DisplayManager.BuildDisplayAsync(contentItem, null, "Summary"))

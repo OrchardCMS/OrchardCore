@@ -96,7 +96,7 @@ namespace OrchardCore.Lucene.Controllers
                 return View(new SearchIndexViewModel
                 {
                     IndexName = viewModel.IndexName,
-                    SearchForm = (await New.SearchForm(new SearchIndexViewModel { })),
+                    SearchForm = new SearchFormViewModel("Search__Form") { },
                 });
             }
 
@@ -168,8 +168,8 @@ namespace OrchardCore.Lucene.Controllers
             {
                 Terms = viewModel.Terms,
                 IndexName = viewModel.IndexName,
-                SearchForm = (await New.SearchForm(new SearchIndexViewModel { Terms = viewModel.Terms, IndexName = viewModel.IndexName })),
-                SearchResults = (await New.SearchResults(new SearchIndexViewModel { ContentItems = containedItems.Take(pager.PageSize) })),
+                SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms, IndexName = viewModel.IndexName },
+                SearchResults = new SearchResultsViewModel("Search__Results") { ContentItems = containedItems.Take(pager.PageSize) },
                 Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, object>() { { "IndexName", viewModel.IndexName }, { "Terms", viewModel.Terms } })
             };
 
