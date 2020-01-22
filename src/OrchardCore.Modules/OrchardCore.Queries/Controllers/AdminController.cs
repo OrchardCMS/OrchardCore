@@ -18,7 +18,7 @@ using YesSql;
 
 namespace OrchardCore.Queries.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
@@ -100,7 +100,7 @@ namespace OrchardCore.Queries.Controllers
                 model.Queries.Add(new QueryEntry
                 {
                     Query = query,
-                    Shape = await _displayManager.BuildDisplayAsync(query, this, "SummaryAdmin")
+                    Shape = await _displayManager.BuildDisplayAsync(query, (ControllerModelUpdater)this, "SummaryAdmin")
                 });
             }
 
@@ -132,7 +132,7 @@ namespace OrchardCore.Queries.Controllers
 
             var model = new QueriesCreateViewModel
             {
-                Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: true),
+                Editor = await _displayManager.BuildEditorAsync(query, updater: (ControllerModelUpdater)this, isNew: true),
                 SourceName = id
             };
 
@@ -154,7 +154,7 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: this, isNew: true);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: (ControllerModelUpdater)this, isNew: true);
 
             if (ModelState.IsValid)
             {
@@ -189,7 +189,7 @@ namespace OrchardCore.Queries.Controllers
                 SourceName = query.Source,
                 Name = query.Name,
                 Schema = query.Schema,
-                Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: false)
+                Editor = await _displayManager.BuildEditorAsync(query, updater: (ControllerModelUpdater)this, isNew: false)
             };
 
             return View(model);
@@ -210,7 +210,7 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: this, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: (ControllerModelUpdater)this, isNew: false);
 
             if (ModelState.IsValid)
             {
@@ -246,6 +246,12 @@ namespace OrchardCore.Queries.Controllers
             _notifier.Success(H["Query deleted successfully"]);
 
             return RedirectToAction("Index");
+        }
+
+        public static explicit operator ControllerModelUpdater(AdminController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

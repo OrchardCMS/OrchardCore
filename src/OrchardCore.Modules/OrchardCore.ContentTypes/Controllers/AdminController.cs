@@ -22,7 +22,7 @@ using YesSql;
 
 namespace OrchardCore.ContentTypes.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -159,7 +159,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, this);
+            typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, (ControllerModelUpdater)this);
 
             return View(typeViewModel);
         }
@@ -183,7 +183,7 @@ namespace OrchardCore.ContentTypes.Controllers
             viewModel.Settings = contentTypeDefinition.Settings;
             viewModel.TypeDefinition = contentTypeDefinition;
             viewModel.DisplayName = contentTypeDefinition.DisplayName;
-            viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, this);
+            viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, (ControllerModelUpdater)this);
 
             if (!ModelState.IsValid)
             {
@@ -506,7 +506,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             var viewModel = new EditPartViewModel(contentPartDefinition);
-            viewModel.Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, this);
+            viewModel.Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, (ControllerModelUpdater)this);
 
             return View(viewModel);
         }
@@ -528,7 +528,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             var viewModel = new EditPartViewModel(contentPartDefinition);
-            viewModel.Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, this);
+            viewModel.Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, (ControllerModelUpdater)this);
 
             if (!ModelState.IsValid)
             {
@@ -694,7 +694,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 DisplayMode = partFieldDefinition.DisplayMode(),
                 DisplayName = partFieldDefinition.DisplayName(),
                 PartFieldDefinition = partFieldDefinition,
-                Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, this)
+                Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, (ControllerModelUpdater)this)
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -749,7 +749,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 if (!ModelState.IsValid)
                 {
                     // Calls update to build editor shape with the display name validation failures, and other validation errors.
-                    viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
+                    viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, (ControllerModelUpdater)this);
                     _session.Cancel();
 
                     ViewData["ReturnUrl"] = returnUrl;
@@ -764,7 +764,7 @@ namespace OrchardCore.ContentTypes.Controllers
             // Refresh the local field variable in case it has been altered
             field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
 
-            viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
+            viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, (ControllerModelUpdater)this);
 
             if (!ModelState.IsValid)
             {
@@ -861,7 +861,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 DisplayName = typePartDefinition.DisplayName(),
                 Description = typePartDefinition.Description(),
                 TypePartDefinition = typePartDefinition,
-                Shape = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, this)
+                Shape = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, (ControllerModelUpdater)this)
             };
 
             return View(typePartViewModel);
@@ -916,7 +916,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
                     if (!ModelState.IsValid)
                     {
-                        viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, this);
+                        viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, (ControllerModelUpdater)this);
                         _session.Cancel();
                         return View(viewModel);
                     }
@@ -929,7 +929,7 @@ namespace OrchardCore.ContentTypes.Controllers
             // Refresh the local part variable in case it has been altered
             part = _contentDefinitionManager.LoadTypeDefinition(id).Parts.FirstOrDefault(x => x.Name == viewModel.Name);
 
-            viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, this);
+            viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, (ControllerModelUpdater)this);
 
             if (!ModelState.IsValid)
             {
@@ -945,5 +945,12 @@ namespace OrchardCore.ContentTypes.Controllers
         }
 
         #endregion
+
+        public static explicit operator ControllerModelUpdater(AdminController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
+        }
     }
+
 }

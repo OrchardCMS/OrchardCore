@@ -28,7 +28,7 @@ using YesSql.Services;
 namespace OrchardCore.Workflows.Controllers
 {
     [Admin]
-    public class WorkflowController : Controller, IUpdateModel
+    public class WorkflowController : Controller
     {
         private readonly ISiteService _siteService;
         private readonly ISession _session;
@@ -262,13 +262,19 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowTypeId, bool isBlocking, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
+            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, (ControllerModelUpdater)this, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}ReadOnly";
             activityShape.Activity = activityContext.Activity;
             activityShape.ActivityRecord = activityContext.ActivityRecord;
             activityShape.WorkflowTypeId = workflowTypeId;
             activityShape.IsBlocking = isBlocking;
             return activityShape;
+        }
+
+        public static explicit operator ControllerModelUpdater(WorkflowController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

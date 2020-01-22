@@ -13,7 +13,7 @@ using OrchardCore.Email.ViewModels;
 
 namespace OrchardCore.Email.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;

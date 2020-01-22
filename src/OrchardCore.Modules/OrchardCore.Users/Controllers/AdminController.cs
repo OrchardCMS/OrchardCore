@@ -23,7 +23,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Users.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly UserManager<IUser> _userManager;
         private readonly ISession _session;
@@ -136,7 +136,7 @@ namespace OrchardCore.Users.Controllers
                 userEntries.Add(new UserEntry
                     {
                         Id = user.Id,
-                        Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: this, displayType: "SummaryAdmin")
+                        Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: (ControllerModelUpdater)this, displayType: "SummaryAdmin")
                     }
                 );
             }
@@ -239,7 +239,7 @@ namespace OrchardCore.Users.Controllers
                 return Unauthorized();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(new User(), updater: this, isNew: true);
+            var shape = await _userDisplayManager.BuildEditorAsync(new User(), updater: (ControllerModelUpdater)this, isNew: true);
 
             return View(shape);
         }
@@ -255,7 +255,7 @@ namespace OrchardCore.Users.Controllers
 
             var user = new User();
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: this, isNew: true);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: (ControllerModelUpdater)this, isNew: true);
 
             if (!ModelState.IsValid)
             {
@@ -287,7 +287,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: this, isNew: false);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: (ControllerModelUpdater)this, isNew: false);
 
             return View(shape);
         }
@@ -307,7 +307,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: this, isNew: false);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: (ControllerModelUpdater)this, isNew: false);
 
             if (!ModelState.IsValid)
             {
@@ -414,6 +414,12 @@ namespace OrchardCore.Users.Controllers
             }
 
             return View(model);
+        }
+
+        public static explicit operator ControllerModelUpdater(AdminController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

@@ -17,7 +17,7 @@ using YesSql;
 namespace OrchardCore.Workflows.Controllers
 {
     [Admin]
-    public class ActivityController : Controller, IUpdateModel
+    public class ActivityController : Controller
     {
         private readonly ISession _session;
         private readonly IActivityLibrary _activityLibrary;
@@ -67,7 +67,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var activity = _activityLibrary.InstantiateActivity(activityName);
             var activityId = _activityIdGenerator.GenerateUniqueId(new ActivityRecord());
-            var activityEditor = await _activityDisplayManager.BuildEditorAsync(activity, this, isNew: true);
+            var activityEditor = await _activityDisplayManager.BuildEditorAsync(activity, (ControllerModelUpdater)this, isNew: true);
 
             activityEditor.Metadata.Type = "Activity_Edit";
 
@@ -99,7 +99,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowType = await _session.GetAsync<WorkflowType>(model.WorkflowTypeId);
             var activity = _activityLibrary.InstantiateActivity(activityName);
-            var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activity, this, isNew: true);
+            var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activity, (ControllerModelUpdater)this, isNew: true);
 
             if (!ModelState.IsValid)
             {
@@ -133,7 +133,7 @@ namespace OrchardCore.Workflows.Controllers
             var workflowType = await _session.GetAsync<WorkflowType>(workflowTypeId);
             var activityRecord = workflowType.Activities.Single(x => x.ActivityId == activityId);
             var activityContext = await _workflowManager.CreateActivityExecutionContextAsync(activityRecord, activityRecord.Properties);
-            var activityEditor = await _activityDisplayManager.BuildEditorAsync(activityContext.Activity, this, isNew: false);
+            var activityEditor = await _activityDisplayManager.BuildEditorAsync(activityContext.Activity, (ControllerModelUpdater)this, isNew: false);
 
             activityEditor.Metadata.Type = "Activity_Edit";
 
@@ -160,7 +160,7 @@ namespace OrchardCore.Workflows.Controllers
             var workflowType = await _session.GetAsync<WorkflowType>(model.WorkflowTypeId);
             var activityRecord = workflowType.Activities.Single(x => x.ActivityId == model.ActivityId);
             var activityContext = await _workflowManager.CreateActivityExecutionContextAsync(activityRecord, activityRecord.Properties);
-            var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activityContext.Activity, this, isNew: false);
+            var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activityContext.Activity, (ControllerModelUpdater)this, isNew: false);
 
             if (!ModelState.IsValid)
             {
@@ -179,6 +179,12 @@ namespace OrchardCore.Workflows.Controllers
             return Url.IsLocalUrl(model.ReturnUrl)
                 ? (IActionResult)Redirect(model.ReturnUrl)
                 : RedirectToAction("Edit", "WorkflowType", new { id = model.WorkflowTypeId });
+        }
+
+        public static explicit operator ControllerModelUpdater(ActivityController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

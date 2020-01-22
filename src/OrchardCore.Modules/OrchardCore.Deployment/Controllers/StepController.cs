@@ -17,7 +17,7 @@ using YesSql;
 namespace OrchardCore.Deployment.Controllers
 {
     [Admin]
-    public class StepController : Controller, IUpdateModel
+    public class StepController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<DeploymentStep> _displayManager;
@@ -77,7 +77,7 @@ namespace OrchardCore.Deployment.Controllers
                 DeploymentStep = step,
                 DeploymentStepId = step.Id,
                 DeploymentStepType = type,
-                Editor = await _displayManager.BuildEditorAsync(step, updater: this, isNew: true)
+                Editor = await _displayManager.BuildEditorAsync(step, updater: (ControllerModelUpdater)this, isNew: true)
             };
 
             model.Editor.DeploymentStep = step;
@@ -107,7 +107,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(step, updater: this, isNew: true);
+            dynamic editor = await _displayManager.UpdateEditorAsync(step, updater: (ControllerModelUpdater)this, isNew: true);
             editor.DeploymentStep = step;
 
             if (ModelState.IsValid)
@@ -153,7 +153,7 @@ namespace OrchardCore.Deployment.Controllers
                 DeploymentStep = step,
                 DeploymentStepId = step.Id,
                 DeploymentStepType = step.GetType().Name,
-                Editor = await _displayManager.BuildEditorAsync(step, updater: this, isNew: false)
+                Editor = await _displayManager.BuildEditorAsync(step, updater: (ControllerModelUpdater)this, isNew: false)
             };
 
             model.Editor.DeploymentStep = step;
@@ -183,7 +183,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(step, updater: this, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(step, updater: (ControllerModelUpdater)this, isNew: false);
 
             if (ModelState.IsValid)
             {
@@ -228,6 +228,12 @@ namespace OrchardCore.Deployment.Controllers
             _notifier.Success(H["Deployment step deleted successfully"]);
 
             return RedirectToAction("Display", "DeploymentPlan", new { id });
+        }
+
+        public static explicit operator ControllerModelUpdater(StepController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

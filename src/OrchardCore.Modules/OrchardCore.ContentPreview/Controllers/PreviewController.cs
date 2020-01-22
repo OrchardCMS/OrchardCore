@@ -17,7 +17,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentPreview.Controllers
 {
-    public class PreviewController : Controller, IUpdateModel
+    public class PreviewController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentManagerSession _contentManagerSession;
@@ -82,7 +82,7 @@ namespace OrchardCore.ContentPreview.Controllers
             contentItem.Published = true;
 
             // TODO: we should probably get this value from the main editor as it might impact validators
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, (ControllerModelUpdater)this, true);
 
             if (!ModelState.IsValid)
             {
@@ -117,9 +117,15 @@ namespace OrchardCore.ContentPreview.Controllers
                 return Ok();
             }
 
-            model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "Detail");
+            model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, (ControllerModelUpdater)this, "Detail");
 
             return View(model);
+        }
+
+        public static explicit operator ControllerModelUpdater(PreviewController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 

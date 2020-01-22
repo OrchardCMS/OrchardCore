@@ -16,7 +16,7 @@ using OrchardCore.Navigation;
 namespace OrchardCore.AdminMenu.Controllers
 {
     [Admin]
-    public class NodeController : Controller, IUpdateModel
+    public class NodeController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<MenuItem> _displayManager;
@@ -68,7 +68,7 @@ namespace OrchardCore.AdminMenu.Controllers
             foreach (var factory in _factories)
             {
                 var treeNode = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(treeNode, this, "TreeThumbnail");
+                dynamic thumbnail = await _displayManager.BuildDisplayAsync(treeNode, (ControllerModelUpdater)this, "TreeThumbnail");
                 thumbnail.TreeNode = treeNode;
                 thumbnails.Add(factory.Name, thumbnail);
             }
@@ -109,7 +109,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 AdminNode = treeNode,
                 AdminNodeId = treeNode.UniqueId,
                 AdminNodeType = type,
-                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: this, isNew: true)
+                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: (ControllerModelUpdater)this, isNew: true)
             };
 
             return View(model);
@@ -138,7 +138,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(treeNode, updater: this, isNew: true);
+            dynamic editor = await _displayManager.UpdateEditorAsync(treeNode, updater: (ControllerModelUpdater)this, isNew: true);
             editor.TreeNode = treeNode;
 
             if (ModelState.IsValid)
@@ -187,7 +187,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 AdminNodeType = treeNode.GetType().Name,
                 Priority = treeNode.Priority,
                 Position = treeNode.Position,
-                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: this, isNew: false)
+                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: (ControllerModelUpdater)this, isNew: false)
             };
 
             model.Editor.TreeNode = treeNode;
@@ -218,7 +218,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(treeNode, updater: this, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(treeNode, updater: (ControllerModelUpdater)this, isNew: false);
 
             if (ModelState.IsValid)
             {
@@ -344,6 +344,12 @@ namespace OrchardCore.AdminMenu.Controllers
             await _adminMenuService.SaveAsync(adminMenu);
 
             return Ok();
+        }
+
+        public static explicit operator ControllerModelUpdater(NodeController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

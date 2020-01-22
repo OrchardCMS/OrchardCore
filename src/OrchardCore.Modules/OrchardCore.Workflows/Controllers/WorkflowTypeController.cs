@@ -30,7 +30,7 @@ using YesSql.Services;
 namespace OrchardCore.Workflows.Controllers
 {
     [Admin]
-    public class WorkflowTypeController : Controller, IUpdateModel
+    public class WorkflowTypeController : Controller
     {
         private readonly ISiteService _siteService;
         private readonly ISession _session;
@@ -176,7 +176,7 @@ namespace OrchardCore.Workflows.Controllers
             {
                 return Unauthorized();
             }
-            
+
             if (itemIds?.Count() > 0)
             {
                 var checkedEntries = await _session.Query<WorkflowType, WorkflowTypeIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
@@ -479,7 +479,7 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowTypeId, string localId, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activity, this, displayType);
+            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activity, (ControllerModelUpdater)this, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
             activityShape.Activity = activity;
             activityShape.WorkflowTypeId = workflowTypeId;
@@ -490,7 +490,7 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int index, int workflowTypeId, string localId, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
+            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, (ControllerModelUpdater)this, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
             activityShape.Activity = activityContext.Activity;
             activityShape.ActivityRecord = activityContext.ActivityRecord;
@@ -498,6 +498,12 @@ namespace OrchardCore.Workflows.Controllers
             activityShape.Index = index;
             activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowTypeId, localId = localId });
             return activityShape;
+        }
+
+        public static explicit operator ControllerModelUpdater(WorkflowTypeController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

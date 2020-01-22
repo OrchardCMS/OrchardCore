@@ -16,7 +16,7 @@ using OrchardCore.OpenId.Settings;
 namespace OrchardCore.OpenId.Controllers
 {
     [Admin, Feature(OpenIdConstants.Features.Server)]
-    public class ServerConfigurationController : Controller, IUpdateModel
+    public class ServerConfigurationController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
@@ -52,7 +52,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var settings = await _serverService.GetSettingsAsync();
-            var shape = await _serverSettingsDisplayManager.BuildEditorAsync(settings, updater: this, isNew: false);
+            var shape = await _serverSettingsDisplayManager.BuildEditorAsync(settings, updater: (ControllerModelUpdater)this, isNew: false);
 
             return View(shape);
         }
@@ -67,7 +67,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var settings = await _serverService.GetSettingsAsync();
-            var shape = await _serverSettingsDisplayManager.UpdateEditorAsync(settings, updater: this, isNew: false);
+            var shape = await _serverSettingsDisplayManager.UpdateEditorAsync(settings, updater: (ControllerModelUpdater)this, isNew: false);
 
             if (!ModelState.IsValid)
             {
@@ -95,6 +95,12 @@ namespace OrchardCore.OpenId.Controllers
             await _shellHost.ReloadShellContextAsync(_shellSettings);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public static explicit operator ControllerModelUpdater(ServerConfigurationController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

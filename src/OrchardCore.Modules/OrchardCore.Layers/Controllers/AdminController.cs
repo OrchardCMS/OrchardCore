@@ -21,7 +21,7 @@ using YesSql;
 
 namespace OrchardCore.Layers.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -86,7 +86,7 @@ namespace OrchardCore.Layers.Controllers
                     model.Widgets.Add(zone, list = new List<dynamic>());
                 }
 
-                list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, this, "SummaryAdmin"));
+                list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, (ControllerModelUpdater)this, "SummaryAdmin"));
             }
 
             return View(model);
@@ -315,6 +315,12 @@ namespace OrchardCore.Layers.Controllers
             {
                 ModelState.AddModelError(nameof(LayerEditViewModel.Rule), S["The rule is required."]);
             }
+        }
+
+        public static explicit operator ControllerModelUpdater(AdminController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

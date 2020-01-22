@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Contents.Controllers
 {
-    public class ItemController : Controller, IUpdateModel
+    public class ItemController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -38,7 +38,7 @@ namespace OrchardCore.Contents.Controllers
                 return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, (ControllerModelUpdater)this);
 
             return View(model);
         }
@@ -64,9 +64,15 @@ namespace OrchardCore.Contents.Controllers
                 return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, (ControllerModelUpdater)this);
 
             return View(model);
+        }
+
+        public static explicit operator ControllerModelUpdater(ItemController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

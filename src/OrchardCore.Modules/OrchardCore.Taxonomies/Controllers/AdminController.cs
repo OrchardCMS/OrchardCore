@@ -15,7 +15,7 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
@@ -58,7 +58,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, (ControllerModelUpdater)this, true);
 
             model.TaxonomyContentItemId = taxonomyContentItemId;
             model.TaxonomyItemId = taxonomyItemId;
@@ -95,7 +95,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, (ControllerModelUpdater)this, true);
 
             if (!ModelState.IsValid)
             {
@@ -158,7 +158,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentItem = taxonomyItem.ToObject<ContentItem>();
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, (ControllerModelUpdater)this, false);
 
             model.TaxonomyContentItemId = taxonomyContentItemId;
             model.TaxonomyItemId = taxonomyItemId;
@@ -204,7 +204,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentItem = taxonomyItem.ToObject<ContentItem>();
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, (ControllerModelUpdater)this, false);
 
             if (!ModelState.IsValid)
             {
@@ -296,6 +296,12 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             return null;
+        }
+
+        public static explicit operator ControllerModelUpdater(AdminController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

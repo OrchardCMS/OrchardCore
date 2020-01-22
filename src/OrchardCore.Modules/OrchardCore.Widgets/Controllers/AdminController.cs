@@ -12,7 +12,7 @@ using OrchardCore.Widgets.ViewModels;
 
 namespace OrchardCore.Widgets.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -56,7 +56,7 @@ namespace OrchardCore.Widgets.Controllers
                 BuildEditor: true,
                 ParentContentType: parentContentType,
                 CollectionPartName: partName,
-                //WidgetListPart Specific 
+                //WidgetListPart Specific
                 ZoneValue: zone,
                 //Card Specific Properties
                 TargetId: targetId,

@@ -10,7 +10,7 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
         private readonly ISiteService _siteService;
@@ -49,7 +49,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel
             {
                 GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, this, false, groupId)
+                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, (IUpdateModel)this, false, groupId)
             };
 
             return View(viewModel);
@@ -69,7 +69,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel
             {
                 GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, this, false, groupId)
+                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, (IUpdateModel)this, false, groupId)
             };
 
             if (ModelState.IsValid)
@@ -82,6 +82,12 @@ namespace OrchardCore.Settings.Controllers
             }
 
             return View(viewModel);
+        }
+
+        public static explicit operator ControllerModelUpdater(AdminController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

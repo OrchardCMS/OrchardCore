@@ -12,7 +12,7 @@ using OrchardCore.Flows.ViewModels;
 
 namespace OrchardCore.Flows.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;

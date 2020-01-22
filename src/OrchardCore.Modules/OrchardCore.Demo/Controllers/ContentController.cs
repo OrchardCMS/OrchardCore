@@ -8,7 +8,7 @@ using YesSql;
 
 namespace OrchardCore.Demo.Controllers
 {
-    public class ContentController : Controller, IUpdateModel
+    public class ContentController : Controller
     {
         private readonly IContentItemDisplayManager _contentDisplay;
         private readonly IContentManager _contentManager;
@@ -33,7 +33,7 @@ namespace OrchardCore.Demo.Controllers
                 return NotFound();
             }
 
-            var shape = await _contentDisplay.BuildDisplayAsync(contentItem, this);
+            var shape = await _contentDisplay.BuildDisplayAsync(contentItem, (IUpdateModel)this);
             return View(shape);
         }
 
@@ -47,7 +47,7 @@ namespace OrchardCore.Demo.Controllers
                 return NotFound();
             }
 
-            var shape = await _contentDisplay.BuildEditorAsync(contentItem, this, false);
+            var shape = await _contentDisplay.BuildEditorAsync(contentItem, (IUpdateModel)this, false);
             return View(shape);
         }
 
@@ -61,7 +61,7 @@ namespace OrchardCore.Demo.Controllers
                 return NotFound();
             }
 
-            var shape = await _contentDisplay.UpdateEditorAsync(contentItem, this, false);
+            var shape = await _contentDisplay.UpdateEditorAsync(contentItem, (IUpdateModel)this, false);
 
             if (!ModelState.IsValid)
             {
@@ -73,6 +73,12 @@ namespace OrchardCore.Demo.Controllers
             return RedirectToAction("Edit", contentItemId);
 
 
+        }
+
+        public static explicit operator ControllerModelUpdater(ContentController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

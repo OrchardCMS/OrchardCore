@@ -10,7 +10,7 @@ using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Controllers
 {
-    public class PreviewController : Controller, IUpdateModel
+    public class PreviewController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentAliasManager _contentAliasManager;
@@ -84,9 +84,15 @@ namespace OrchardCore.Templates.Controllers
                 return NotFound();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "Detail");
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, (ControllerModelUpdater)this, "Detail");
 
             return View(model);
+        }
+
+        public static explicit operator ControllerModelUpdater(PreviewController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

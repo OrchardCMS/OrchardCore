@@ -9,7 +9,7 @@ using OrchardCore.Feeds.Models;
 
 namespace OrchardCore.Feeds.Controllers
 {
-    public class FeedController : Controller, IUpdateModel
+    public class FeedController : Controller
     {
         private readonly IEnumerable<IFeedBuilderProvider> _feedFormatProviders;
         private readonly IEnumerable<IFeedQueryProvider> _feedQueryProviders;
@@ -34,7 +34,7 @@ namespace OrchardCore.Feeds.Controllers
 
         public async Task<ActionResult> Index(string format)
         {
-            var context = new FeedContext(this, format);
+            var context = new FeedContext((ControllerModelUpdater)this, format);
 
             var bestFormatterMatch = _feedFormatProviders
                 .Select(provider => provider.Match(context))
@@ -86,6 +86,12 @@ namespace OrchardCore.Feeds.Controllers
            });
 
             return Content(document.ToString(), "text/xml");
+        }
+
+        public static explicit operator ControllerModelUpdater(FeedController controller)
+        {
+            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
+            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }
