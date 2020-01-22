@@ -7,7 +7,6 @@ using MessagePack;
 using MessagePack.Resolvers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using OrchardCore.Entities;
 
 namespace OrchardCore.Infrastructure.Cache
 {
@@ -24,7 +23,7 @@ namespace OrchardCore.Infrastructure.Cache
             _memoryCache = memoryCache;
         }
 
-        public async Task<T> GetAsync<T>(string key) where T : class, IScopedDistributedCacheable
+        public async Task<T> GetAsync<T>(string key) where T : ScopedDistributedCacheable
         {
             if (_scopedCache.TryGetValue(key, out var scopedValue))
             {
@@ -72,7 +71,7 @@ namespace OrchardCore.Infrastructure.Cache
             return value;
         }
 
-        public async Task<T> GetOrCreateAsync<T>(string key, DistributedCacheEntryOptions options, Func<Task<T>> factory) where T : class, IScopedDistributedCacheable
+        public async Task<T> GetOrCreateAsync<T>(string key, DistributedCacheEntryOptions options, Func<Task<T>> factory) where T : ScopedDistributedCacheable
         {
             var value = await GetAsync<T>(key);
 
@@ -89,14 +88,15 @@ namespace OrchardCore.Infrastructure.Cache
             return value;
         }
 
-        public Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options) where T : class, IScopedDistributedCacheable
+        public Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options) where T : ScopedDistributedCacheable
         {
-            if (value == null)
-            {
-                return Task.CompletedTask;
-            }
-
             value.CacheId = Guid.NewGuid().ToString();
+            return SetAsyncInternal(key, value, options);
+        }
+
+        private Task SyncAsync<T>(string key, T value, DistributedCacheEntryOptions options) where T : ScopedDistributedCacheable
+        {
+            value.CacheId ??= Guid.NewGuid().ToString();
             return SetAsyncInternal(key, value, options);
         }
 
@@ -106,19 +106,8 @@ namespace OrchardCore.Infrastructure.Cache
             await _distributedCache.RemoveAsync(key);
         }
 
-        private Task SyncAsync<T>(string key, T value, DistributedCacheEntryOptions options) where T : class, IScopedDistributedCacheable
+        private async Task SetAsyncInternal<T>(string key, T value, DistributedCacheEntryOptions options) where T : ScopedDistributedCacheable
         {
-            value.CacheId ??= Guid.NewGuid().ToString();
-            return SetAsyncInternal(key, value, options);
-        }
-
-        private async Task SetAsyncInternal<T>(string key, T value, DistributedCacheEntryOptions options) where T : class, IScopedDistributedCacheable
-        {
-            if (value.CacheId == null)
-            {
-                throw new ArgumentNullException(nameof(value.CacheId));
-            }
-
             byte[] data;
 
             using (var ms = new MemoryStream())
