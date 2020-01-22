@@ -31,7 +31,6 @@ namespace OrchardCore.Liquid
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartFieldDefinition>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentFieldDefinition>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartDefinition>();
-            
 
             // When accessing a property of a JObject instance
             TemplateContext.GlobalMemberAccessStrategy.Register<JObject, object>((obj, name) => obj[name]);
@@ -56,6 +55,7 @@ namespace OrchardCore.Liquid
             services.AddLiquidFilter<AbsoluteUrlFilter>("absolute_url");
             services.AddLiquidFilter<LiquidFilter>("liquid");
             services.AddLiquidFilter<JsonFilter>("json");
+            services.AddLiquidFilter<JsonParseFilter>("jsonparse");
         }
     }
 

@@ -22,7 +22,7 @@ Here is a sample step:
       }
     }
   ]
-}
+},
 ```
 
 ### Queries recipe step

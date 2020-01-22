@@ -16,8 +16,8 @@ namespace OrchardCore.Alias.Drivers
 {
     public class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
     {
-        // Match the AutoRoutePart Length
-        public const int MaxAliasLength = 1024;
+        // Maximum length that MySql can support in an index under utf8 collation.
+        public const int MaxAliasLength = 767;
 
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
