@@ -37,7 +37,6 @@ namespace OrchardCore.Admin
             {
                 options.Filters.Add(typeof(AdminFilter));
                 options.Filters.Add(typeof(AdminMenuFilter));
-                options.Conventions.Add(new AdminActionModelConvention());
 
                 // Ordered to be called before any global filter.
                 options.Filters.Add(typeof(AdminZoneFilter), -1000);
