@@ -1,6 +1,6 @@
 # Glossary
 
-List of terms and concepts that you can find in Orchard Core and a small explanation.
+List of terms and concepts that you can find in Orchard Core.
 
 They are grouped by roles: User, Theme designer, Administrator.
 
@@ -52,7 +52,7 @@ See [List](../reference/modules/List)
 
 ### Taxonomy
 
-A hierarchy of content items that are used as references for other content items. Also called managed vocabularies. And example is a list of colors which can then be attached to products. Also often used for categories of articles for instance.
+A hierarchy of content items that are used as references for other content items. Also called managed vocabularies. An example is a list of colors which can then be attached to products. Also often used for categories of articles for instance.
 See [Taxonomies](../reference/modules/Taxonomies)
 
 ### Admin menu
@@ -62,7 +62,7 @@ See [Admin menu](../reference/modules/AdminMenu)
 
 ### Alias
 
-A part that generates A way to identify an item with a key that you can call to retrieve it, instead of an Id.  
+A part that allows you to specify an alias. A way to identify an item with a key that you can call to retrieve it, instead of an Id.  
 See [Alias](../reference/modules/Alias)
 
 ### Content Preview
