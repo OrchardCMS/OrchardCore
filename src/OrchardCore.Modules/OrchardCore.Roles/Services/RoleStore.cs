@@ -70,13 +70,10 @@ namespace OrchardCore.Roles.Services
 
         private Task UpdateRolesAsync(RolesDocument roles)
         {
-            if (!_updating)
-            {
-                _sessionHelper.RegisterAfterCommit(() => _scopedDistributedCache.SetAsync(roles));
-            }
-
             _updating = true;
             _session.Save(roles);
+
+            _sessionHelper.RegisterAfterCommit<RolesDocument>(() => _scopedDistributedCache.SetAsync(roles));
 
             return Task.CompletedTask;
         }
@@ -125,8 +122,7 @@ namespace OrchardCore.Roles.Services
 
         public async Task<IRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
-            // While we are updating we use the loaded document that is being mutated.
-            // So that if a new role has been added it is then found and not re-added.
+            // While updating find a role from the loaded document being mutated.
             var roles = _updating ? await LoadRolesAsync() : await GetRolesAsync();
 
             var role = roles.Roles.FirstOrDefault(x => x.RoleName == roleId);
@@ -136,20 +132,12 @@ namespace OrchardCore.Roles.Services
                 return null;
             }
 
-            // Prevent the shared cache from being mutated.
-            return _updating ? role : new Role
-            {
-                RoleName = role.RoleName,
-                RoleDescription = role.RoleDescription,
-                NormalizedRoleName = role.NormalizedRoleName,
-                RoleClaims = role.RoleClaims.ToList()
-            };
+            return _updating ? role : role.Clone();
         }
 
         public async Task<IRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            // While we are updating we use the loaded document that is being mutated.
-            // So that if a new role has been added it is then found and not re-added.
+            // While updating find a role from the loaded document being mutated.
             var roles = _updating ? await LoadRolesAsync() : await GetRolesAsync();
 
             var role = roles.Roles.FirstOrDefault(x => x.NormalizedRoleName == normalizedRoleName);
@@ -159,14 +147,7 @@ namespace OrchardCore.Roles.Services
                 return null;
             }
 
-            // Prevent the shared cache from being mutated.
-            return _updating ? role : new Role
-            {
-                RoleName = role.RoleName,
-                RoleDescription = role.RoleDescription,
-                NormalizedRoleName = role.NormalizedRoleName,
-                RoleClaims = role.RoleClaims.ToList()
-            };
+            return _updating ? role : role.Clone();
         }
 
         public Task<string> GetNormalizedRoleNameAsync(IRole role, CancellationToken cancellationToken)

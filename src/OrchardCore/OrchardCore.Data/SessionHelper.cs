@@ -13,6 +13,7 @@ namespace OrchardCore.Data
         private readonly ISession _session;
 
         private readonly Dictionary<Type, object> _loaded = new Dictionary<Type, object>();
+        private readonly List<Type> _afterCommits = new List<Type>();
         private AfterCommitSuccessDelegate _afterCommit;
 
         /// <summary>
@@ -59,7 +60,14 @@ namespace OrchardCore.Data
         }
 
         /// <inheritdoc />
-        public void RegisterAfterCommit(AfterCommitSuccessDelegate afterCommit) => _afterCommit += afterCommit;
+        public void RegisterAfterCommit<T>(AfterCommitSuccessDelegate afterCommit)
+        {
+            if (!_afterCommits.Contains(typeof(T)))
+            {
+                _afterCommits.Add(typeof(T));
+                _afterCommit += afterCommit;
+            }
+        }
 
         /// <inheritdoc />
         public async Task CommitAsync()

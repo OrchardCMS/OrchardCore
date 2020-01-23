@@ -34,7 +34,7 @@ namespace OrchardCore.Data
         /// <summary>
         /// Registers an <see cref="AfterCommitSuccessDelegate"/> that will get called if <see cref="CommitAsync"/> is successful.
         /// </summary>
-        void RegisterAfterCommit(AfterCommitSuccessDelegate afterCommit);
+        void RegisterAfterCommit<T>(AfterCommitSuccessDelegate afterCommit);
 
         /// <summary>
         /// Commits the <see cref="ISession"/> and then if successful calls the registered <see cref="AfterCommitSuccessDelegate"/>.
