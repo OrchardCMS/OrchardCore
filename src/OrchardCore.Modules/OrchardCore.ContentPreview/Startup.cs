@@ -27,8 +27,6 @@ namespace OrchardCore.ContentPreview
             services.AddScoped<IContentPartHandler, PreviewPartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, PreviewStartupFilter>());
-
-            services.ConfigureAreaRouteMap("OrchardCore.ContentPreview", "ContentPreview");
         }
     }
 }

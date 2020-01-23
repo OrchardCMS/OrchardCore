@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OrchardCore.Abstractions.Routing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
 using OrchardCore.Mvc.ModelBinding;
@@ -123,9 +122,8 @@ namespace OrchardCore.Mvc
             // Use a custom 'IFileVersionProvider' that also lookup all tenant level 'IStaticFileProvider'.
             services.Replace(ServiceDescriptor.Singleton<IFileVersionProvider, ShellFileVersionProvider>());
 
-            // Register 'ShellRouteOptions' and a DefaultAreaControllerRouteMapper that will run last.
-            services.AddOptions<ShellRouteOptions>();
-            services.AddSingleton<IAreaControllerRouteMapper, DefaultAreaControllerRouteMapper>();
+            // Register a DefaultAreaControllerRouteMapper that will run last.
+            services.AddTransient<IAreaControllerRouteMapper, DefaultAreaControllerRouteMapper>();
 
             AddMvcModuleCoreServices(services);
         }
