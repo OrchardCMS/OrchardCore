@@ -90,6 +90,11 @@ namespace OrchardCore.ContentManagement
             content.Merge(props, jsonMergeSettings);
             contentItem.Elements.Clear();
 
+            if (props.ContainsKey(nameof(contentItem.DisplayText)))
+            {
+                contentItem.DisplayText = props[nameof(contentItem.DisplayText)].ToString();
+            }
+
             return contentItem;
         }
 
