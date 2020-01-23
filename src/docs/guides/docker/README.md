@@ -82,7 +82,7 @@ Now you can start your favorite browser to http://localhost and start testing yo
 
 # References
 
-Inspiration taken from Scott Hansellman.
+Inspiration taken from Scott Hanselman.
 
 ### Developing on Windows with WSL 2 :  
 
