@@ -46,13 +46,13 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
                 {
                     var route = selector.AttributeRouteModel;
 
-                    if (route.Template.StartsWith(areaFolder, StringComparison.Ordinal) || route.Template == areaName)
+                    if (route.Template.StartsWith(areaFolder, StringComparison.Ordinal) || (route.Template == areaName && folderPath == "/"))
                     {
                         route.SuppressLinkGeneration = true;
 
                         string template;
 
-                        if (route.Template == areaName)
+                        if (route.Template == areaName && folderPath == "/")
                         {
                             template = folderRoute;
                         }
