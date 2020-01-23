@@ -6,7 +6,6 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Search.Abstractions.ViewModels
 {
-    [BindProperties(SupportsGet = true)]
     public class SearchResultsViewModel : ShapeViewModel
     {
         public SearchResultsViewModel(string shapeType) : base(shapeType) { }
