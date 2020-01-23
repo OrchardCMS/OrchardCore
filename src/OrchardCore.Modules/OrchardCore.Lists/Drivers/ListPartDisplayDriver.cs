@@ -43,7 +43,7 @@ namespace OrchardCore.Lists.Drivers
         {
             return
                 Combine(
-                    Initialize<ListPartViewModel>("ListPart", async model =>
+                    Initialize<ListPartViewModel>(GetDisplayShapeType(context), async model =>
                     {
                         var pager = await GetPagerAsync(context.Updater, listPart);
 
