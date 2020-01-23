@@ -20,7 +20,7 @@ Resource Settings are configured through the site admin.
 
 ### AppendVersion
 
-Enabling ``AppendVersion` or Resources cache busting will automatically append a version hash to all local scripts and style sheets.
+Enabling `AppendVersion` or Resources cache busting will automatically append a version hash to all local scripts and style sheets.
 This is turned on by default.
 
 ### UseCdn
@@ -92,8 +92,8 @@ We set the Cdn Integrity Hashes and the version to `3.4.1`
 This script will then be available for the tag helper or API to register by name. 
 
 !!! note "Registration"
-   Make sure to register this `IResourceManifestProvider` in the `Startup` or your theme or module.
-   `serviceCollection.AddScoped<IResourceManifestProvider, ResourceManifest>();`
+    Make sure to register this `IResourceManifestProvider` in the `Startup` or your theme or module.
+    `serviceCollection.AddScoped<IResourceManifestProvider, ResourceManifest>();`
 
 ## Usage
 
@@ -245,8 +245,8 @@ Styles, however, are always injected in the header section of the HTML document.
 You can declare a new resource directly from a view, and it will be injected only once even if the view is called multiple time.
 
 ``` liquid tab="Liquid"
-{% script name:"bar", src:"~/TheTheme/js/bar.min.js", debug_src:"~/TheTheme/js/bar.js", depends_on:"jQuery", version:"1.0" %}
-{% script name:"foo", src:"~/TheTheme/js/foo.min.js", debug_src:"~/TheTheme/js/foo.js", depends_on:"bar:1.0", version:"1.0" %}
+{% script name:"foo", src:"~/TheTheme/js/foo.min.js", debug_src:"~/TheTheme/js/foo.js", depends_on:"jQuery", version:"1.0" %}
+{% script name:"bar", src:"~/TheTheme/js/bar.min.js", debug_src:"~/TheTheme/js/bar.js", depends_on:"foo:1.0", version:"1.0" %}
 ```
 
 ``` html tab="Razor"
@@ -255,9 +255,13 @@ You can declare a new resource directly from a view, and it will be injected onl
 ```
 
 We define a script named `foo` with a dependency on `jQuery` with the version `1.0`. 
+
 We then define a script named `bar` which also takes a dependency on version `1.0` of the `foo` script.
+
 If the version was not set the one with the highest number would be used.
+
 When rendering the scripts the resource manager will order the output based on the dependencies, regardless of the order they are written to:
+
 1. `jQuery`
 2. `foo`
 3. `bar`
@@ -265,19 +269,21 @@ When rendering the scripts the resource manager will order the output based on t
 You can also do the same for a stylesheet:
 
 ``` liquid tab="Liquid"
-{% style name="bar", src:"~/TheTheme/css/bar.min.css", debug_src:"~/TheTheme/css/bar.css", depends_on="foo:1.0" %}
-{% style name="foo", src:"~/TheTheme/css/foo.min.css", debug_src:"~/TheTheme/css/foo.css", depends_on="bootstrap" version="1.0" %}
+{% style name:"bar", src:"~/TheTheme/css/bar.min.css", debug_src:"~/TheTheme/css/bar.css", depends_on:"foo" %}
+{% style name:"foo", src:"~/TheTheme/css/foo.min.css", debug_src:"~/TheTheme/css/foo.css", depends_on:"bootstrap" %}
 ```
 
 ``` html tab="Razor"
-<style asp-name="bar" asp-src="~/TheTheme/css/bar.min.css" debug-src="~/TheTheme/css/bar.css" depends-on="foo:1.0"></style>
-<style asp-name="foo" asp-src="~/TheTheme/css/foo.min.css" debug-src="~/TheTheme/css/foo.css" depends-on="bootstrap" version="1.0"></style>
+<style asp-name="bar" asp-src="~/TheTheme/css/bar.min.css" debug-src="~/TheTheme/css/bar.css" depends-on="foo"></style>
+<style asp-name="foo" asp-src="~/TheTheme/css/foo.min.css" debug-src="~/TheTheme/css/foo.css" depends-on="bootstrap"></style>
 ```
 
-In this example define a style named `bar` with a dependency on the style named `foo` with the version `1.0`
-We then define the style named `foo` with the version of `1.0`
-If the version was not set the one with the highest number will be used.
+In this example define a style named `bar` with a dependency on the style named `foo`
+
+We then define the style named `foo`
+
 When rendering the scripts the resource manager will order the output based on the dependencies, regardless of the order they are written to:
+
 1. `bootstrap`
 2. `foo`
 3. `bar`
@@ -366,7 +372,6 @@ These should be rendered at the bottom of the `<body>` section.
     <resources type="FootScript" />
 </body>
 ```
-{% resources type: "FootScript" %}
 
 ### Logging
 
