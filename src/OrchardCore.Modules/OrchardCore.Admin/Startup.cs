@@ -42,7 +42,7 @@ namespace OrchardCore.Admin
                 options.Filters.Add(typeof(AdminZoneFilter), -1000);
             });
 
-            services.AddSingleton<IAreaControllerRouteMapper, AdminAreaControllerRouteMapper>();
+            services.AddTransient<IAreaControllerRouteMapper, AdminAreaControllerRouteMapper>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();
