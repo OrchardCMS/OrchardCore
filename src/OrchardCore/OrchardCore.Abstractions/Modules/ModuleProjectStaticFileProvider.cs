@@ -91,7 +91,7 @@ namespace OrchardCore.Modules
 
                     if (File.Exists(filePath))
                     {
-                        //Serve the file from the physical file system.
+                        // Serve the file from the physical file system.
                         return new PhysicalFileInfo(new FileInfo(filePath));
                     }
                 }
@@ -124,7 +124,7 @@ namespace OrchardCore.Modules
 
                     if (File.Exists(filePath))
                     {
-                        //Serve the file from the physical file system.
+                        // Watch the file from the physical file system.
                         return new PollingFileChangeToken(new FileInfo(filePath));
                     }
                 }
