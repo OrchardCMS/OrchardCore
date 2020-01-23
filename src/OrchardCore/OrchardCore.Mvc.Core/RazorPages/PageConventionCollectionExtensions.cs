@@ -46,12 +46,21 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
                 {
                     var route = selector.AttributeRouteModel;
 
-                    if (route.Template.StartsWith(areaFolder, StringComparison.Ordinal))
+                    if (route.Template.StartsWith(areaFolder, StringComparison.Ordinal) || route.Template == areaName)
                     {
                         route.SuppressLinkGeneration = true;
 
-                        var cleanSubTemplate = route.Template.Substring(areaFolder.Length).TrimStart('/');
-                        var template = AttributeRouteModel.CombineTemplates(folderRoute, cleanSubTemplate);
+                        string template;
+
+                        if (route.Template == areaName)
+                        {
+                            template = folderRoute;
+                        }
+                        else
+                        {
+                            var cleanSubTemplate = route.Template.Substring(areaFolder.Length).TrimStart('/');
+                            template = AttributeRouteModel.CombineTemplates(folderRoute, cleanSubTemplate);
+                        }
 
                         model.Selectors.Add(new SelectorModel
                         {
