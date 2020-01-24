@@ -13,6 +13,7 @@ using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions.ViewModels;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using YesSql;
 using YesSql.Services;
@@ -29,6 +30,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ISearchQueryService _searchQueryService;
         private readonly ISession _session;
+        private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly dynamic New;
 
         public SearchController(
@@ -40,6 +42,7 @@ namespace OrchardCore.Lucene.Controllers
             LuceneAnalyzerManager luceneAnalyzerManager,
             ISearchQueryService searchQueryService,
             ISession session,
+            IEnumerable<IPermissionProvider> permissionProviders,
             IShapeFactory shapeFactory,
             ILogger<SearchController> logger
             )
@@ -52,6 +55,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _searchQueryService = searchQueryService;
             _session = session;
+            _permissionProviders = permissionProviders;
             New = shapeFactory;
 
             Logger = logger;
@@ -62,9 +66,18 @@ namespace OrchardCore.Lucene.Controllers
         [HttpGet]
         public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneSearch))
+            var permissionsProvider = _permissionProviders.FirstOrDefault(x => x.GetType().FullName == "OrchardCore.Lucene.Permissions");
+            var permissions = await permissionsProvider.GetPermissionsAsync();
+            if (permissions.FirstOrDefault(x => x.Name == "QueryLucene" + viewModel.IndexName + "Index") != null)
             {
-                return Unauthorized();
+                if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + viewModel.IndexName + "Index")))
+                {
+                    return Unauthorized();
+                }
+            }
+            else {
+                Logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
+                return BadRequest("Search is not configured.");
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
