@@ -1,4 +1,4 @@
-# Glossary
+# Glossary - Change
 
 List of terms and concepts that you can find in Orchard Core.
 
