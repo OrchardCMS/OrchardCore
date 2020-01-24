@@ -23,7 +23,7 @@ namespace OrchardCore.Infrastructure.Cache
             _memoryCache = memoryCache;
         }
 
-        public async Task<T> GetAsync<T>(string key) where T : ScopedDistributedCacheable
+        public async Task<T> GetAsync<T>(string key) where T : ScopedDistributedCacheEntry
         {
             if (_scopedCache.TryGetValue(key, out var scopedValue))
             {
@@ -41,10 +41,13 @@ namespace OrchardCore.Infrastructure.Cache
 
             if (_memoryCache.TryGetValue<T>(key, out var value))
             {
-                await _distributedCache.RefreshAsync(key);
-
                 if (value.CacheId == cacheId)
                 {
+                    if (value.HasSliding)
+                    {
+                        await _distributedCache.RefreshAsync(key);
+                    }
+
                     _scopedCache[key] = value;
                     return value;
                 }
@@ -73,7 +76,7 @@ namespace OrchardCore.Infrastructure.Cache
             return value;
         }
 
-        public async Task<T> GetOrCreateAsync<T>(string key, DistributedCacheEntryOptions options, Func<Task<T>> factory) where T : ScopedDistributedCacheable
+        public async Task<T> GetOrCreateAsync<T>(string key, DistributedCacheEntryOptions options, Func<Task<T>> factory) where T : ScopedDistributedCacheEntry
         {
             var value = await GetAsync<T>(key);
 
@@ -81,8 +84,7 @@ namespace OrchardCore.Infrastructure.Cache
             {
                 value = await factory();
 
-                value.CacheId ??= Guid.NewGuid().ToString();
-                await SetAsyncInternal(key, value, options);
+                await SetAsync(key, value, options);
 
                 _memoryCache.Set(key, value);
                 _scopedCache[key] = value;
@@ -91,24 +93,13 @@ namespace OrchardCore.Infrastructure.Cache
             return value;
         }
 
-        public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options) where T : ScopedDistributedCacheable
+        public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options) where T : ScopedDistributedCacheEntry
         {
-            value.CacheId = Guid.NewGuid().ToString();
-            await SetAsyncInternal(key, value, options);
+            if (options.SlidingExpiration.HasValue)
+            {
+                value.HasSliding = true;
+            }
 
-            _memoryCache.Set(key, value);
-        }
-
-        public async Task RemoveAsync(string key)
-        {
-            await _distributedCache.RemoveAsync("ID_" + key);
-            await _distributedCache.RemoveAsync(key);
-
-            _memoryCache.Remove(key);
-        }
-
-        private async Task SetAsyncInternal<T>(string key, T value, DistributedCacheEntryOptions options) where T : ScopedDistributedCacheable
-        {
             byte[] data;
 
             using (var ms = new MemoryStream())
@@ -117,10 +108,18 @@ namespace OrchardCore.Infrastructure.Cache
                 data = ms.ToArray();
             }
 
-            var id = Encoding.UTF8.GetBytes(value.CacheId);
+            var cacheIdData = Encoding.UTF8.GetBytes(value.CacheId);
 
             await _distributedCache.SetAsync(key, data, options);
-            await _distributedCache.SetAsync("ID_" + key, id, options);
+            await _distributedCache.SetAsync("ID_" + key, cacheIdData, options);
+            _memoryCache.Set(key, value);
+        }
+
+        public async Task RemoveAsync(string key)
+        {
+            await _distributedCache.RemoveAsync(key);
+            await _distributedCache.RemoveAsync("ID_" + key);
+            _memoryCache.Remove(key);
         }
 
         private Task SerializeAsync<T>(Stream stream, T value) => MessagePackSerializer.SerializeAsync(stream, value, ContractlessStandardResolver.Options);

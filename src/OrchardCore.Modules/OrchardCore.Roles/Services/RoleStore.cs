@@ -71,9 +71,14 @@ namespace OrchardCore.Roles.Services
         private Task UpdateRolesAsync(RolesDocument roles)
         {
             _updating = true;
+
+            roles.GenerateCacheId();
             _session.Save(roles);
 
-            _sessionHelper.RegisterAfterCommit<RolesDocument>(() => _scopedDistributedCache.SetAsync(roles));
+            _sessionHelper.RegisterAfterCommit<RolesDocument>(() =>
+            {
+                return _scopedDistributedCache.SetAsync(roles);
+            });
 
             return Task.CompletedTask;
         }
