@@ -4,8 +4,8 @@ Many extensions methods are available in Razor with `@Orchard`.
 
 ## Razor extensions
 
-| Method | Namespace | Description 
-| ------ | --------- | ----------- |
+| Method | Module | Description 
+| ------ | ------ | ----------- |
 | `GetContentCultureAsync(ContentItem contentItem)` | OrchardCore.ContentLocalization | Returns the culture for a given ContentItem. |
 | `CultureDir()` | OrchardCore.DisplayManagement | Returns the current culture direction. |
 | `CultureName()` | OrchardCore.DisplayManagement | Returns the current culture name. |
@@ -31,3 +31,27 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `GetTaxonomyTermAsync(string taxonomyContentItemId, string termContentItemId)` | [OrchardCore.Taxonomies](../../Modules/Taxonomies/#orchard-helpers) | Returns a the term from its content item id and taxonomy. |
 | `GetInheritedTermsAsync(string taxonomyContentItemId, string termContentItemId)` | [OrchardCore.Taxonomies](../../Modules/Taxonomies/#orchard-helpers) | Returns the list of terms including their parents. |
 | `QueryCategorizedContentItemsAsync(string taxonomy(Func<IQuery<ContentItem, TaxonomyIndex>, IQuery<ContentItem>> query)` | [OrchardCore.Taxonomies](../../Modules/Taxonomies/#orchard-helpers) | Query content items. |
+
+## How to use
+
+If you want to use an extension method in a view, you can inject an `IOrchardHelper` named `Orchard` at the top of your file:
+
+```csharp
+@inject OrchardCore.IOrchardHelper Orchard
+```
+
+In `OrchardCore.DisplayManagement.Razor`, there is a RazorPage that already has a public property `Orchard` that you can use to call an extension method or the current `HttpContext`.
+
+If you want to use an Orchard helper in a controller, you can inject an instance in the constructor:
+
+```csharp
+private IOrchardHelper _orchard;
+
+public MyClass(IOrchardHelper orchard)
+{
+	_orchard = orchard;
+}
+```
+
+!!! note
+    If the extension method you want to use cannot be found (in a Theme for example), do not forget to reference the corresponding module.
