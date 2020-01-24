@@ -1,0 +1,30 @@
+<footer class="footer footer-default">
+	<div class="container">
+		<nav class="float-left">
+			<ul>
+				<li>
+					<a href="{{ Model.ContentItem.Content.Footer.PrivacyPolicy.Url | href }}">
+						{{ Model.ContentItem.Content.Footer.PrivacyPolicy.Text }}
+					</a>
+				</li>
+				<li>
+					<a href="{{ Model.ContentItem.Content.Footer.UsageTerms.Url | href }}">
+						{{ Model.ContentItem.Content.Footer.UsageTerms.Text }}
+					</a>
+				</li>
+				<li>
+					<a href="{{ Model.ContentItem.Content.Footer.Credits.Url | href }}">
+						{{ Model.ContentItem.Content.Footer.Credits.Text }}
+					</a>
+				</li>
+			</ul>
+		</nav>
+		<div class="copyright float-right">
+			Copyright &copy; {{ Model.ContentItem.Content.Footer.CopyrightStartDate.Value | date: "%Y" }} - 
+			<script>
+				document.write(new Date().getFullYear())
+			</script>&nbsp;
+			{{ Site.SiteName }}
+		</div>
+	</div>
+</footer>

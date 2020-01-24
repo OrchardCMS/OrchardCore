@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="{{ Culture.Name }}">
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+		{% style name:"TheMathesisTheme-Roboto" %}
+		{% style name:"TheMathesisTheme-Roboto-Slab" %}
+		{% style name:"TheMathesisTheme-Material-Icons" %}
+		{% style name:"TheMathesisTheme-Montserrat" %}
+		{% style name:"TheMathesisTheme-Droid-Serif" %}
+		{% style name:"TheMathesisTheme-Font-Awesome" %}
+
+		{% style name:"TheMathesisTheme-Material-Kit" %}
+		{% style name:"TheMathesisTheme-Mathesis-Kit" %}
+
+		{% script name:"TheMathesisTheme-jQuery", at:"Foot" %}
+		{% script name:"TheMathesisTheme-Popper", at:"Foot" %}
+		{% script name:"TheMathesisTheme-Bootstrap-Material", at:"Foot" %}
+		{% script name:"TheMathesisTheme-Material-Kit-Script", at:"Foot" %}
+
+		{% render_section "HeadMeta", required: false %}
+
+		<title>{% page_title Site.SiteName, position: "before", separator: " - " %}</title>
+
+		{% resources type: "HeadScript" %}
+		{% resources type: "HeadLink" %}
+		{% resources type: "Stylesheet" %}
+	</head>
+	<body id="page-top" dir="{{ Culture.Dir }}">
+
+		{% shape "menu", alias: "alias:site-menu", cache_id: "site-menu", cache_tag: "alias:site-menu" %}
+
+		{% render_section "Header", required: false %}
+		{% render_section "Content" %}
+		{% render_section "Footer", required: false %}
+
+		{% resources type: "FootScript" %}
+	</body>
+</html>

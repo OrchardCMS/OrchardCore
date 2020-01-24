@@ -1,0 +1,87 @@
+{% zone "TitleBar" %}
+	<nav class="navbar navbar-color-on-scroll navbar-transparent fixed-top navbar-expand-lg bg-primary" color-on-scroll="100">
+		<div class="container">
+			<div class="navbar-translate">
+				<a class="navbar-brand" href="{{ "home" | haref }}">
+					Mathesis
+				</a>
+
+				<button class="navbar-toggler" type="button" data-toggle="collapse" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="navbar-toggler-icon"></span>
+					<span class="navbar-toggler-icon"></span>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+			</div>
+
+			{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_tag: "alias:main-menu" %}
+		</div>
+	</nav>
+{% endzone %}
+
+{% zone "Header" %}
+	<div class="page-header header-filter" data-parallax="true" style="background-image: url('{{ Model.ContentItem.Content.LandingHeader.BackgroundImage.Paths.first | asset_url }}')">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-10 ml-auto mr-auto">
+					<div class="text-center">
+						<h1 class="mth-brand">{{ Model.ContentItem.Content.LandingHeader.Title.Text }}</h1>
+						<h3 class="mth-brand-payload">{{ Model.ContentItem.Content.LandingHeader.Subtitle.Text }}</h3>
+						<a class="btn btn-primary btn-lg text-uppercase js-scroll-trigger" href="#main">{{ Model.ContentItem.Content.LandingHeader.Button.Text }}</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endzone %}
+
+{% zone "Content" %}
+	<div class="container-fluid p-5">
+		<div class="text-center pt-5">
+			<h2 class="mth-section-title">{{ Model.ContentItem.Content.Steps.SectionsTitle.Text }}</h2>
+		</div>
+		<div class="w-90 mx-auto">
+			<p class="mth-text-base">{{ Model.ContentItem.Content.Steps.SectionsDescription.Text }}</p>
+		</div>
+		<div class="col-md-10 ml-auto mr-auto">
+			<ul class="timeline">
+				{% assign leftImage = true %}
+				{% for step in Model.ContentItem.Content.Steps.ContentItems %}
+					{% if leftImage == true %}
+						{% assign leftImage = false %}
+						<li>
+							<div class="timeline-image">
+								<img class="rounded-circle img-fluid" src="{{step.LandingHistory.StepImage.Paths.first | asset_url }}" alt="">
+							</div>
+							<div class="timeline-panel">
+								<div class="timeline-heading">
+									<h4>1997-2004</h4>
+									<h4 class="subheading">{{ step.TitlePart.Title}}</h4>
+								</div>
+								<div class="timeline-body">
+									<p class="mth-text-base">{{ step.LandingHistory.Description.Text}}</p>
+								</div>
+							</div>
+						</li>
+				{% else %}
+						{% assign leftImage = true %}
+				<li class="timeline-inverted">
+					<div class="timeline-image">
+						<img class="rounded-circle img-fluid" src="{{step.LandingHistory.StepImage.Paths.first | asset_url }}" alt="">
+					</div>
+					<div class="timeline-panel">
+						<div class="timeline-heading">
+							<h4>Settembre 2004</h4>
+							<h4 class="subheading">{{ step.TitlePart.Title}}</h4>
+						</div>
+						<div class="timeline-body">
+							<p class="mth-text-base">{{ step.LandingHistory.Description.Text}}</p>
+						</div>
+					</div>
+				</li>
+					{% endif %}
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+{% endzone %}

@@ -3,8 +3,8 @@ root = true
 [*]
 end_of_line = crlf
 charset = utf-8
-indent_style = space
-indent_size = 4
+indent_style = tab
+indent_size = 2
 
 [*.{json,csproj,props,targets}]
 indent_size = 2

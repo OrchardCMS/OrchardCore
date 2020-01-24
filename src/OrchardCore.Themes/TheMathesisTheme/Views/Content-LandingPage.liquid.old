@@ -1,0 +1,97 @@
+{% zone "TitleBar" %}
+	<nav class="navbar navbar-color-on-scroll navbar-transparent fixed-top navbar-expand-lg bg-primary" color-on-scroll="100">
+		<div class="container">
+			<div class="navbar-translate">
+				<a class="navbar-brand" href="#page-top">
+					Mathesis
+				</a>
+
+				<button class="navbar-toggler" type="button" data-toggle="collapse" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="navbar-toggler-icon"></span>
+					<span class="navbar-toggler-icon"></span>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+			</div>
+
+			{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_tag: "alias:main-menu" %}
+		</div>
+	</nav>
+{% endzone %}
+
+{% zone "Header" %}
+	<div class="page-header header-filter" data-parallax="true" style="background-image: url('{{ Model.ContentItem.Content.LandingHeader.BackgroundImage.Paths.first | asset_url }}')">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-10 ml-auto mr-auto">
+					<div class="text-center">
+						<h1 class="mth-brand">{{ Model.ContentItem.Content.LandingHeader.Title.Text }}</h1>
+						<h3 class="mth-brand-payload">{{ Model.ContentItem.Content.LandingHeader.Subtitle.Text }}</h3>
+						<a class="btn btn-primary btn-lg text-uppercase js-scroll-trigger" href="#main">{{ Model.ContentItem.Content.LandingHeader.Button.Text }}</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endzone %}
+
+{% zone "Content" %}
+	<div class="container-fluid p-5">
+		<div class="text-center pt-5">
+			<h2 class="mth-section-title">{{ Model.ContentItem.Content.Sections.SectionsTitle.Text }}</h2>
+		</div>
+		<div class="w-90 mx-auto">
+			<p class="mth-text-base">{{ Model.ContentItem.Content.Sections.SectionsDescription.Text }}</p>
+		</div>
+		<div class="w-90 mx-auto">
+			{% assign leftImage = true %}
+			{% for section in Model.ContentItem.Content.Sections.ContentItems %}
+				{% if leftImage == true %}
+					{% assign leftImage = false %}
+					<div class="card card-plain">
+						<div class="row">
+							<div class="col-md-4">
+								<div class="card-header card-header-image">
+									<img class="img" src="{{section.LandingHorizontalSection.Image.Paths.first | asset_url }}"/>
+								</div>
+							</div>
+							<div class="col-md-8">
+								<h6 class="card-category text-primary">
+									<i class="material-icons">{{section.LandingHorizontalSection.IconClass.Text}}</i>&nbsp;{{section.LandingHorizontalSection.SectionName.Text}}
+								</h6>
+								<h3 class="card-title">
+									<a href="{{section.LandingHorizontalSection.Url.Text | href}}">{{section.TitlePart.Title}}</a>
+								</h3>
+								<p class="card-description mth-text-base">
+									{{section.LandingHorizontalSection.Description.Text}}
+								</p>
+							</div>
+						</div>
+					</div>
+				{% else %}
+					{% assign leftImage = true %}
+					<div class="card card-plain">
+						<div class="row">
+							<div class="col-md-8">
+								<h6 class="card-category text-primary">
+									<i class="material-icons">{{section.LandingHorizontalSection.IconClass.Text}}</i>&nbsp;{{section.LandingHorizontalSection.SectionName.Text}}
+								</h6>
+								<h3 class="card-title">
+									<a href="{{section.LandingHorizontalSection.Url.Text | href}}">{{section.TitlePart.Title}}</a>
+								</h3>
+								<p class="card-description mth-text-base">
+									{{section.LandingHorizontalSection.Description.Text}}
+								</p>
+							</div>
+							<div class="col-md-4">
+								<div class="card-header card-header-image">
+									<img class="img img-raised" src="{{section.LandingHorizontalSection.Image.Paths.first | asset_url }}"/>
+								</div>
+							</div>
+						</div>
+					</div>
+				{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+{% endzone %}

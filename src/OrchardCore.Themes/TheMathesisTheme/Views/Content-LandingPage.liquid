@@ -1,0 +1,9 @@
+{% if Model.Content.LandingHeader %}
+	{{ Model.Content.LandingHeader | shape_render }}
+{% endif %}
+
+<div class="main main-raised">
+	<div class="container-fluid p-5">
+	{{ Model.Content.MainContent | shape_render }}
+	</div>
+</div>
