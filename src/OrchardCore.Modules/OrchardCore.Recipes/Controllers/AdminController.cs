@@ -18,7 +18,6 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Recipes.Controllers
 {
-    [Admin]
     public class AdminController : Controller
     {
         private readonly ShellSettings _shellSettings;
@@ -28,11 +27,11 @@ namespace OrchardCore.Recipes.Controllers
         private readonly INotifier _notifier;
         private readonly IRecipeExecutor _recipeExecutor;
         private readonly ISiteService _siteService;
+        private readonly IHtmlLocalizer<AdminController> H;
 
         public AdminController(
             ShellSettings shellSettings,
             ISiteService siteService,
-            IAdminThemeService adminThemeService,
             IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
             IAuthorizationService authorizationService,
@@ -47,11 +46,8 @@ namespace OrchardCore.Recipes.Controllers
             _authorizationService = authorizationService;
             _recipeHarvesters = recipeHarvesters;
             _notifier = notifier;
-
-            T = localizer;
+            H = localizer;
         }
-
-        public IHtmlLocalizer T { get; }
 
         public async Task<ActionResult> Index()
         {
@@ -96,7 +92,7 @@ namespace OrchardCore.Recipes.Controllers
 
             if (recipe == null)
             {
-                _notifier.Error(T["Recipe was not found"]);
+                _notifier.Error(H["Recipe was not found"]);
                 return RedirectToAction("Index");
             }
 
@@ -123,7 +119,7 @@ namespace OrchardCore.Recipes.Controllers
                 _shellSettings.State = TenantState.Running;
             }
 
-            _notifier.Success(T["The recipe '{0}' has been run successfully", recipe.Name]);
+            _notifier.Success(H["The recipe '{0}' has been run successfully", recipe.Name]);
             return RedirectToAction("Index");
         }
     }

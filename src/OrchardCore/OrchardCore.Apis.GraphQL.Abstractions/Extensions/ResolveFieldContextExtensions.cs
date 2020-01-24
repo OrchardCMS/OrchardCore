@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Builders;
 using GraphQL.Types;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -32,6 +34,11 @@ namespace OrchardCore.Apis.GraphQL
             var first = context.GetArgument<int>("first");
             var last = context.GetArgument<int>("last");
 
+            if (last == 0 && first == 0)
+            {
+                first = context.ResolveServiceProvider().GetService<IOptions<GraphQLSettings>>().Value.DefaultNumberOfResults;
+            }
+
             if (last > 0)
             {
                 source = source.Skip(Math.Max(0, source.Count() - last));
@@ -50,6 +57,11 @@ namespace OrchardCore.Apis.GraphQL
             }
 
             return source;
+        }
+
+        public static IServiceProvider ResolveServiceProvider<T>(this ResolveFieldContext<T> context)
+        { 
+            return ((GraphQLContext)context.UserContext).ServiceProvider;
         }
     }
 }

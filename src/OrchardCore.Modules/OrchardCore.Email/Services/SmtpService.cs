@@ -66,17 +66,19 @@ namespace OrchardCore.Email.Services
 
         private MimeMessage FromMailMessage(MailMessage message)
         {
-
+            var (name, email) = message.From == null
+                ? GetNameAndEmail(_options.DefaultSender)
+                : GetNameAndEmail(message.From);
             var mimeMessage = new MimeMessage
             {
-                Sender = (message.From == null
-                    ? new MailboxAddress(_options.DefaultSender)
-                    : new MailboxAddress(message.From))
+                Sender = name == String.Empty
+                    ? new MailboxAddress(email)
+                    : new MailboxAddress(name, email)
             };
 
             mimeMessage.From.Add(mimeMessage.Sender);
 
-            if (message.To != null)
+            if (!string.IsNullOrWhiteSpace(message.To))
             {
                 foreach (var address in message.To.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -84,7 +86,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (message.Cc != null)
+            if (!string.IsNullOrWhiteSpace(message.Cc))
             {
                 foreach (var address in message.Cc.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -92,7 +94,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (message.Bcc != null)
+            if (!string.IsNullOrWhiteSpace(message.Bcc))
             {
                 foreach (var address in message.Bcc.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -100,7 +102,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (message.ReplyTo != null)
+            if (!string.IsNullOrWhiteSpace(message.ReplyTo))
             {
                 foreach (var address in message.ReplyTo.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -121,6 +123,21 @@ namespace OrchardCore.Email.Services
             mimeMessage.Body = body.ToMessageBody();
 
             return mimeMessage;
+        }
+
+        private (string name, string email) GetNameAndEmail(string emailAddress)
+        {
+            var index = emailAddress.LastIndexOf(' ');
+            var name = String.Empty;
+            var email = emailAddress;
+
+            if(index > -1)
+            {
+                name = emailAddress.Substring(0, index);
+                email = emailAddress.Substring(index + 1, emailAddress.Length - index - 1).TrimStart('<').TrimEnd('>');
+            }
+
+            return (name, email);
         }
 
         private bool CertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)

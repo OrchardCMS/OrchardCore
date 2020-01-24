@@ -27,17 +27,17 @@ namespace OrchardCore.Media.Processing
             {
                 // Force some parameters to prevent disk filling.
                 // For more advanced resize parameters the usage of profiles will be necessary.
-                // This can be done with a custom IImageWebProcessor implementation that would 
+                // This can be done with a custom IImageWebProcessor implementation that would
                 // accept profile names.
-
-                validation.Commands.Remove(ResizeWebProcessor.Compand);
-                validation.Commands.Remove(ResizeWebProcessor.Sampler);
-                validation.Commands.Remove(ResizeWebProcessor.Xy);
-                validation.Commands.Remove(ResizeWebProcessor.Anchor);
-                validation.Commands.Remove(BackgroundColorWebProcessor.Color);
 
                 if (validation.Commands.Count > 0)
                 {
+                    validation.Commands.Remove(ResizeWebProcessor.Compand);
+                    validation.Commands.Remove(ResizeWebProcessor.Sampler);
+                    validation.Commands.Remove(ResizeWebProcessor.Xy);
+                    validation.Commands.Remove(ResizeWebProcessor.Anchor);
+                    validation.Commands.Remove(BackgroundColorWebProcessor.Color);
+
                     if (!validation.Commands.ContainsKey(ResizeWebProcessor.Mode))
                     {
                         validation.Commands[ResizeWebProcessor.Mode] = "max";

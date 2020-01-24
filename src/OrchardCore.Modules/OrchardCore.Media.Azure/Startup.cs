@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -18,7 +17,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Media.Azure
 {
     [Feature("OrchardCore.Media.Azure.Storage")]
-    public class Startup : StartupBase
+    public class Startup : Modules.StartupBase
     {
         private readonly ILogger<Startup> _logger;
         private readonly IShellConfiguration _configuration;
@@ -33,7 +32,7 @@ namespace OrchardCore.Media.Azure
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<MediaBlobStorageOptions>(_configuration.GetSection("OrchardCore.Media.Azure"));
+            services.AddTransient<IConfigureOptions<MediaBlobStorageOptions>, MediaBlobStorageOptionsConfiguration>();
 
             // Only replace default implementation if options are valid.
             var connectionString = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
@@ -43,7 +42,7 @@ namespace OrchardCore.Media.Azure
                 // Register a media cache file provider.
                 services.AddSingleton<IMediaFileStoreCacheFileProvider>(serviceProvider =>
                 {
-                    var hostingEnvironment = serviceProvider.GetRequiredService<IHostingEnvironment>();
+                    var hostingEnvironment = serviceProvider.GetRequiredService<IWebHostEnvironment>();
 
                     if (String.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
                     {
@@ -93,11 +92,13 @@ namespace OrchardCore.Media.Azure
 
                     if (originalPathBase.HasValue)
                     {
-                        mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
+                        mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                     }
 
                     return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
                 }));
+
+                services.AddScoped<IModularTenantEvents, CreateMediaBlobContainerEvent>();
             }
         }
 
@@ -106,7 +107,7 @@ namespace OrchardCore.Media.Azure
             return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
         }
 
-        private string GetMediaCachePath(IHostingEnvironment hostingEnvironment, string assetsPath, ShellSettings shellSettings)
+        private string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, string assetsPath, ShellSettings shellSettings)
         {
             return PathExtensions.Combine(hostingEnvironment.WebRootPath, assetsPath, shellSettings.Name);
         }
@@ -117,13 +118,13 @@ namespace OrchardCore.Media.Azure
 
             if (String.IsNullOrWhiteSpace(connectionString))
             {
-                logger.LogError("Azure Media Storage is enabled but not active because the {ConnectionString} is missing or empty in application configuration.", nameof(MediaBlobStorageOptions.ConnectionString));
+                logger.LogError("Azure Media Storage is enabled but not active because the 'ConnectionString' is missing or empty in application configuration.");
                 optionsAreValid = false;
             }
 
             if (String.IsNullOrWhiteSpace(containerName))
             {
-                logger.LogError("Azure Media Storage is enabled but not active because the {ContainerName} is missing or empty in application configuration.", nameof(MediaBlobStorageOptions.ContainerName));
+                logger.LogError("Azure Media Storage is enabled but not active because the 'ContainerName' is missing or empty in application configuration.");
                 optionsAreValid = false;
             }
 

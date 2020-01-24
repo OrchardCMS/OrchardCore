@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Navigation;
@@ -24,7 +25,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly IContentManager _contentManager;
 
         public SearchController(
-              IAuthorizationService authorizationService,
+            IAuthorizationService authorizationService,
             ISiteService siteService,
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
@@ -49,7 +50,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneSearch))
             {
-                return NotFound();
+                return Unauthorized();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -64,17 +65,8 @@ namespace OrchardCore.Lucene.Controllers
 
             if (!_luceneIndexProvider.Exists(indexName))
             {
-                return NotFound();
-            }
-
-            if (string.IsNullOrWhiteSpace(q))
-            {
-                return View(new SearchIndexViewModel
-                {
-                    Pager = pager,
-                    IndexName = id,
-                    ContentItems = Enumerable.Empty<ContentItem>()
-                });
+                Logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
+                return BadRequest("Search is not configured.");
             }
 
             var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
@@ -82,13 +74,15 @@ namespace OrchardCore.Lucene.Controllers
             if (luceneSettings == null || luceneSettings?.DefaultSearchFields == null)
             {
                 Logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
+                return BadRequest("Search is not configured.");
+            }
 
+            if (string.IsNullOrWhiteSpace(q))
+            {
                 return View(new SearchIndexViewModel
                 {
-                    HasMoreResults = false,
-                    Query = q,
                     Pager = pager,
-                    IndexName = id,
+                    IndexName = indexName,
                     ContentItems = Enumerable.Empty<ContentItem>()
                 });
             }
@@ -114,7 +108,7 @@ namespace OrchardCore.Lucene.Controllers
                 HasMoreResults = contentItemIds.Count > size,
                 Query = q,
                 Pager = pager,
-                IndexName = id,
+                IndexName = indexName,
                 ContentItems = contentItems
             };
 

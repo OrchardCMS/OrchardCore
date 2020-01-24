@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Modules
 {
@@ -22,7 +22,7 @@ namespace OrchardCore.Modules
         public const string DefaultFeatureName = "Application Default Feature";
         public const string DefaultFeatureDescription = "Adds a default feature to the application's module.";
 
-        public Application(IHostingEnvironment environment, IEnumerable<Module> modules)
+        public Application(IHostEnvironment environment, IEnumerable<Module> modules)
         {
             Name = environment.ApplicationName;
             Path = environment.ContentRootPath;

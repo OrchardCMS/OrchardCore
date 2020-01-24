@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,13 +18,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
     /// </summary>
     public class ShapePlacementParsingStrategy : IShapeTableHarvester
     {
-        private readonly IHostingEnvironment _hostingEnviroment;
+        private readonly IHostEnvironment _hostingEnviroment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly ILogger _logger;
         private readonly IEnumerable<IPlacementNodeFilterProvider> _placementParseMatchProviders;
 
         public ShapePlacementParsingStrategy(
-            IHostingEnvironment hostingEnviroment,
+            IHostEnvironment hostingEnviroment,
             IShellFeaturesManager shellFeaturesManager,
             ILogger<ShapePlacementParsingStrategy> logger,
             IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)

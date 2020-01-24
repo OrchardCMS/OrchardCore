@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -65,12 +64,7 @@ namespace OrchardCore.Settings.Controllers
                 return Unauthorized();
             }
 
-            var cachedSite = await _siteService.GetSiteSettingsAsync();
-
-            // Clone the settings as the driver will update it and as it's a globally cached object
-            // it would stay this way even on validation errors.
-
-            var site = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(cachedSite, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }), cachedSite.GetType()) as ISite;
+            var site = await _siteService.LoadSiteSettingsAsync();
 
             var viewModel = new AdminIndexViewModel
             {

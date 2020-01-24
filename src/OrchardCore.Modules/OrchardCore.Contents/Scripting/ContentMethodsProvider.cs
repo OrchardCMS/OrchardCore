@@ -35,10 +35,11 @@ namespace OrchardCore.Contents.Scripting
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     var contentItem = contentManager.NewAsync(contentType).GetAwaiter().GetResult();
                     var props = JObject.FromObject(properties);
-                    var content = (JObject)contentItem.ContentItem.Content;
+                    var content = (JObject)contentItem.Content;
 
                     content.Merge(props);
-                    contentManager.CreateAsync(contentItem.ContentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
+                    contentItem.Apply(props.ToObject<ContentItem>());
+                    contentManager.CreateAsync(contentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
 
                     return contentItem;
                 })
@@ -47,12 +48,15 @@ namespace OrchardCore.Contents.Scripting
             _updateContentItemMethod = new GlobalMethod
             {
                 Name = "updateContentItem",
-                Method = serviceProvider => (Action<IContent, object>)((contentItem, properties) =>
+                Method = serviceProvider => (Action<ContentItem, object>)((contentItem, properties) =>
                 {
+                    var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     var props = JObject.FromObject(properties);
-                    var content = (JObject)contentItem.ContentItem.Content;
+                    var content = (JObject)contentItem.Content;
 
                     content.Merge(props, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+                    contentItem.Apply(props.ToObject<ContentItem>());
+                    contentManager.UpdateAsync(contentItem).GetAwaiter().GetResult();
                 })
             };
         }

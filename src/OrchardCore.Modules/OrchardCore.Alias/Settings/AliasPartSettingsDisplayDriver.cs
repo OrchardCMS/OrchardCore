@@ -1,30 +1,29 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Alias.Models;
 using OrchardCore.Liquid;
-using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Alias.Settings
 {
     public class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
+        private readonly IStringLocalizer<AliasPartSettingsDisplayDriver> S;
 
         public AliasPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AliasPartSettingsDisplayDriver> localizer)
         {
             _templateManager = templateManager;
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; private set; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(AliasPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(AliasPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -40,7 +39,7 @@ namespace OrchardCore.Alias.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(AliasPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(AliasPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -51,7 +50,7 @@ namespace OrchardCore.Alias.Settings
             {
                 if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
                 {
-                    context.Updater.ModelState.AddModelError(nameof(model.Pattern), T["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
                 }
                 else
                 {

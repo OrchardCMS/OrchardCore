@@ -8,21 +8,22 @@ namespace OrchardCore.Localization
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer<AdminMenu> S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder
-                    .Add(T["Configuration"], configuration => configuration
-                        .Add(T["Settings"], settings => settings
-                            .Add(T["Localization"], T["Localization"], entry => entry
+                    .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, localization => localization
+                    .AddClass("localization").Id("localization")
+                        .Add(S["Settings"], settings => settings
+                            .Add(S["Cultures"], S["Cultures"], entry => entry
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
                                 .Permission(Permissions.ManageCultures)
                                 .LocalNav()

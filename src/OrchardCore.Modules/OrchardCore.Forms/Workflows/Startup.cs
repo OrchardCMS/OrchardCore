@@ -16,7 +16,6 @@ namespace OrchardCore.Forms.Workflows
             services.AddActivity<ValidateFormTask, ValidateFormTaskDisplay>();
             services.AddActivity<ValidateFormFieldTask, ValidateFormFieldTaskDisplay>();
             services.AddActivity<BindModelStateTask, BindModelStateTaskDisplay>();
-            services.AddAntiforgery();
         }
     }
 }

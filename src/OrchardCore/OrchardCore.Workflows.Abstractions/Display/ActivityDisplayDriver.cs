@@ -34,7 +34,7 @@ namespace OrchardCore.Workflows.Display
 
         public override IDisplayResult Edit(TActivity model)
         {
-            return Initialize(EditShapeType, (System.Func<TEditViewModel, Task>)(viewModel =>
+            return Initialize(EditShapeType, (System.Func<TEditViewModel, ValueTask>)(viewModel =>
             {
                 return EditActivityAsync(model, viewModel);
             })).Location("Content");
@@ -54,11 +54,11 @@ namespace OrchardCore.Workflows.Display
         /// <summary>
         /// Edit the view model before it's used in the editor.
         /// </summary>
-        protected virtual Task EditActivityAsync(TActivity activity, TEditViewModel model)
+        protected virtual ValueTask EditActivityAsync(TActivity activity, TEditViewModel model)
         {
             EditActivity(activity, model);
 
-            return Task.CompletedTask;
+            return new ValueTask();
         }
 
         /// <summary>

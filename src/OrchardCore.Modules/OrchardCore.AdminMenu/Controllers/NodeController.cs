@@ -21,34 +21,28 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<MenuItem> _displayManager;
         private readonly IEnumerable<IAdminNodeProviderFactory> _factories;
-        private readonly IAdminMenuService _AdminMenuService;
+        private readonly IAdminMenuService _adminMenuService;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public NodeController(
             IAuthorizationService authorizationService,
             IDisplayManager<MenuItem> displayManager,
             IEnumerable<IAdminNodeProviderFactory> factories,
-            IAdminMenuService AdminMenuService,
+            IAdminMenuService adminMenuService,
             IShapeFactory shapeFactory,
-            IStringLocalizer<NodeController> stringLocalizer,
             IHtmlLocalizer<NodeController> htmlLocalizer,
             INotifier notifier)
         {
             _displayManager = displayManager;
             _factories = factories;
-            _AdminMenuService = AdminMenuService;
+            _adminMenuService = adminMenuService;
             _authorizationService = authorizationService;
-
             New = shapeFactory;
             _notifier = notifier;
-            T = stringLocalizer;
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; set; }
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
-
 
         public async Task<IActionResult> List(string id)
         {
@@ -57,14 +51,15 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuService.GetByIdAsync(id);
+            var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
+            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (tree == null)
+            if (adminMenu == null)
             {
                 return NotFound();
             }
 
-            return View(await BuildDisplayViewModel(tree));
+            return View(await BuildDisplayViewModel(adminMenu));
         }
 
         private async Task<AdminNodeListViewModel> BuildDisplayViewModel(Models.AdminMenu tree)
@@ -93,10 +88,10 @@ namespace OrchardCore.AdminMenu.Controllers
             {
                 return Unauthorized();
             }
+            var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
+            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            var tree = await _AdminMenuService.GetByIdAsync(id);
-
-            if (tree == null)
+            if (adminMenu == null)
             {
                 return NotFound();
             }
@@ -128,9 +123,10 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuService.GetByIdAsync(model.AdminMenuId);
+            var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
+            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, model.AdminMenuId);
 
-            if (tree == null)
+            if (adminMenu == null)
             {
                 return NotFound();
             }
@@ -148,8 +144,8 @@ namespace OrchardCore.AdminMenu.Controllers
             if (ModelState.IsValid)
             {
                 treeNode.UniqueId = model.AdminNodeId;
-                tree.MenuItems.Add(treeNode);
-                await _AdminMenuService.SaveAsync(tree);
+                adminMenu.MenuItems.Add(treeNode);
+                await _adminMenuService.SaveAsync(adminMenu);
 
                 _notifier.Success(H["Admin node added successfully"]);
                 return RedirectToAction("List", new { id = model.AdminMenuId });
@@ -168,14 +164,15 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuService.GetByIdAsync(id);
+            var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
+            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (tree == null)
+            if (adminMenu == null)
             {
                 return NotFound();
             }
 
-            var treeNode = tree.GetMenuItemById(treeNodeId);
+            var treeNode = adminMenu.GetMenuItemById(treeNodeId);
 
             if (treeNode == null)
             {
@@ -206,14 +203,15 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuService.GetByIdAsync(model.AdminMenuId);
+            var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
+            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, model.AdminMenuId);
 
-            if (tree == null)
+            if (adminMenu == null)
             {
                 return NotFound();
             }
 
-            var treeNode = tree.GetMenuItemById(model.AdminNodeId);
+            var treeNode = adminMenu.GetMenuItemById(model.AdminNodeId);
 
             if (treeNode == null)
             {
@@ -227,7 +225,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 treeNode.Priority = model.Priority;
                 treeNode.Position = model.Position;
 
-                await _AdminMenuService.SaveAsync(tree);
+                await _adminMenuService.SaveAsync(adminMenu);
 
                 _notifier.Success(H["Admin node updated successfully"]);
                 return RedirectToAction(nameof(List), new { id = model.AdminMenuId });
@@ -248,26 +246,27 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuService.GetByIdAsync(id);
+            var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
+            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (tree == null)
+            if (adminMenu == null)
             {
                 return NotFound();
             }
 
-            var treeNode = tree.GetMenuItemById(treeNodeId);
+            var treeNode = adminMenu.GetMenuItemById(treeNodeId);
 
             if (treeNode == null)
             {
                 return NotFound();
             }
 
-            if (tree.RemoveMenuItem(treeNode) == false)
+            if (adminMenu.RemoveMenuItem(treeNode) == false)
             {
                 return new StatusCodeResult(500);
             }
 
-            await _AdminMenuService.SaveAsync(tree);
+            await _adminMenuService.SaveAsync(adminMenu);
 
             _notifier.Success(H["Admin node deleted successfully"]);
 
@@ -282,14 +281,15 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuService.GetByIdAsync(id);
+            var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
+            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (tree == null)
+            if (adminMenu == null)
             {
                 return NotFound();
             }
 
-            var treeNode = tree.GetMenuItemById(treeNodeId);
+            var treeNode = adminMenu.GetMenuItemById(treeNodeId);
 
             if (treeNode == null)
             {
@@ -298,13 +298,12 @@ namespace OrchardCore.AdminMenu.Controllers
 
             treeNode.Enabled = !treeNode.Enabled;
 
-            await _AdminMenuService.SaveAsync(tree);
+            await _adminMenuService.SaveAsync(adminMenu);
 
             _notifier.Success(H["Admin node toggled successfully"]);
 
             return RedirectToAction(nameof(List), new { id = id });
         }
-
 
         [HttpPost]
         public async Task<IActionResult> MoveNode(string treeId, string nodeToMoveId,
@@ -315,36 +314,36 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuService.GetByIdAsync(treeId);
+            var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
+            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, treeId);
 
-            if ((tree == null) || (tree.MenuItems == null))
+            if ((adminMenu == null) || (adminMenu.MenuItems == null))
             {
                 return NotFound();
             }
 
 
-            var nodeToMove = tree.GetMenuItemById(nodeToMoveId);
+            var nodeToMove = adminMenu.GetMenuItemById(nodeToMoveId);
             if (nodeToMove == null)
             {
                 return NotFound();
             }
 
-            var destinationNode = tree.GetMenuItemById(destinationNodeId); // don't check for null. When null the item will be moved to the root.
+            var destinationNode = adminMenu.GetMenuItemById(destinationNodeId); // don't check for null. When null the item will be moved to the root.
 
-            if (tree.RemoveMenuItem(nodeToMove) == false)
+            if (adminMenu.RemoveMenuItem(nodeToMove) == false)
             {
                 return StatusCode(500);
             }
 
-            if (tree.InsertMenuItemAt(nodeToMove, destinationNode, position) == false)
+            if (adminMenu.InsertMenuItemAt(nodeToMove, destinationNode, position) == false)
             {
                 return StatusCode(500);
             }
 
-            await _AdminMenuService.SaveAsync(tree);
+            await _adminMenuService.SaveAsync(adminMenu);
 
             return Ok();
         }
     }
 }
-

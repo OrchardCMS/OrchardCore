@@ -1,9 +1,9 @@
 @model OrchardCore.Lucene.Settings.ContentIndexSettingsViewModel
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="ContentIndexSettings.Included" data-toggle="collapse" data-target="#index-settings" checked="@Model.ContentIndexSettings.Included" />
-        <label class="custom-control-label" asp-for="ContentIndexSettings.Included">@T["Include this element index"]</label>
+        <label class="custom-control-label" asp-for="ContentIndexSettings.Included">@T["Include this element in the index"]</label>
         <span class="hint">— @T["Check to include the value of this element in the index."]</span>
     </div>
     <div id="index-settings" class="collapse">
@@ -32,8 +32,8 @@
             <span class="hint">— @T["Check to be able alter the indexed value using tokens."]</span>
         </div>
     </div>
-</fieldset>
-<fieldset class="form-group collapse" id="index-template">
+</div>
+<div class="form-group collapse" id="index-template">
     <input asp-for="ContentIndexSettings.Template" type="text" class="form-control" />
     <span class="hint">@T["Use tokens to customize the value. Use the <code>content</code> helper to reference the current element."]</span>
-</fieldset>
+</div>

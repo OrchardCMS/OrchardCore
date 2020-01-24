@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
 using OrchardCore.Liquid.Ast;
@@ -34,8 +31,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
     public class HelperStatement : TagStatement
     {
-        private const string AspPrefix = "asp-";
-
         private LiquidTagHelperActivator _activator;
         private readonly ArgumentsExpression _arguments;
         private readonly string _helper;
@@ -63,6 +58,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var factory = services.GetRequiredService<LiquidTagHelperFactory>();
 
+            // Each tag is a singleton, as views are
             if (_activator == null)
             {
                 lock (this)
@@ -79,13 +75,17 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 return Completion.Normal;
             }
 
-            var tagHelper = factory.CreateTagHelper(_activator, (ViewContext)viewContext,
+            var tagHelper = factory.CreateTagHelper(_activator, viewContext,
                 arguments, out var contextAttributes, out var outputAttributes);
 
-            var content = new StringWriter();
-            if (Statements?.Any() ?? false)
+            ViewBufferTextWriterContent content = null;
+
+            if (Statements != null && Statements.Count > 0)
             {
-                Completion completion = Completion.Break;
+                content = new ViewBufferTextWriterContent();
+
+                var completion = Completion.Break;
+
                 for (var index = 0; index < Statements.Count; index++)
                 {
                     completion = await Statements[index].WriteToAsync(content, encoder, context);
@@ -97,16 +97,30 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            var tagHelperContext = new TagHelperContext(contextAttributes,
-                new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
+            var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
-            var tagHelperOutput = new TagHelperOutput(helper, outputAttributes, (_, e)
-                => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content.ToString())));
+            TagHelperOutput tagHelperOutput = null;
 
-            tagHelperOutput.Content.AppendHtml(content.ToString());
+            if (content != null)
+            {
+                tagHelperOutput = new TagHelperOutput(
+                    helper,
+                    outputAttributes, (_, e) => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content))
+                );
+
+                tagHelperOutput.Content.AppendHtml(content);
+            }
+            else
+            {
+                tagHelperOutput = new TagHelperOutput(
+                    helper,
+                    outputAttributes, (_, e) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+                );
+            }
+
             await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 
-            tagHelperOutput.WriteTo(writer, HtmlEncoder.Default);
+            tagHelperOutput.WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
         }

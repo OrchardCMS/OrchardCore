@@ -6,17 +6,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Users.Controllers
 {
@@ -31,7 +34,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IUserService _userService;
 
         private readonly dynamic New;
-        private readonly IHtmlLocalizer TH;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
@@ -54,7 +57,7 @@ namespace OrchardCore.Users.Controllers
             _userService = userService;
 
             New = shapeFactory;
-            TH = htmlLocalizer;
+            H = htmlLocalizer;
         }
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
         {
@@ -89,7 +92,10 @@ namespace OrchardCore.Users.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                users = users.Where(u => u.NormalizedUserName.Contains(options.Search) || u.NormalizedEmail.Contains(options.Search));
+                var normalizedSearchUserName = _userManager.NormalizeName(options.Search);
+                var normalizedSearchEMail = _userManager.NormalizeEmail(options.Search);
+
+                users = users.Where(u => u.NormalizedUserName.Contains(normalizedSearchUserName) || u.NormalizedEmail.Contains(normalizedSearchEMail));
             }
 
             switch (options.Order)
@@ -128,9 +134,11 @@ namespace OrchardCore.Users.Controllers
             foreach (var user in results)
             {
                 userEntries.Add(new UserEntry
-                {
-                    Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: this, displayType: "SummaryAdmin")
-                });
+                    {
+                        Id = user.Id,
+                        Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: this, displayType: "SummaryAdmin")
+                    }
+                );
             }
 
             var model = new UsersIndexViewModel
@@ -140,9 +148,90 @@ namespace OrchardCore.Users.Controllers
                 Pager = pagerShape
             };
 
+            model.Options.UserFilters = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["All"].Value, Value = nameof(UsersFilter.All) },
+                //new SelectListItem() { Text = H["Approved"].Value, Value = nameof(UsersFilter.Approved) },
+                //new SelectListItem() { Text = H["Email pending"].Value, Value = nameof(UsersFilter.EmailPending) },
+                //new SelectListItem() { Text = H["Pending"].Value, Value = nameof(UsersFilter.Pending) }
+            };
+
+            model.Options.UserSorts = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["Name"].Value, Value = nameof(UsersOrder.Name) },
+                new SelectListItem() { Text = H["Email"].Value, Value = nameof(UsersOrder.Email) },
+                //new SelectListItem() { Text = H["Created date"].Value, Value = nameof(UsersOrder.CreatedUtc) },
+                //new SelectListItem() { Text = H["Last Login date"].Value, Value = nameof(UsersOrder.LastLoginUtc) }
+            };
+
+            model.Options.UsersBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["Approve"].Value, Value = nameof(UsersBulkAction.Approve) },
+                new SelectListItem() { Text = H["Enable"].Value, Value = nameof(UsersBulkAction.Enable) },
+                new SelectListItem() { Text = H["Disable"].Value, Value = nameof(UsersBulkAction.Disable) },
+                new SelectListItem() { Text = H["Delete"].Value, Value = nameof(UsersBulkAction.Delete) }
+            };
+
             return View(model);
         }
 
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(UsersIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Filter", model.Options.Filter },
+                { "Options.Order", model.Options.Order },
+                { "Options.Search", model.Options.Search }
+            });
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<int> itemIds)
+        {
+            if (itemIds?.Count() > 0)
+            {
+                var checkedContentItems = await _session.Query<User, UserIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
+                switch (options.BulkAction)
+                {
+                    case UsersBulkAction.None:
+                        break;
+                    case UsersBulkAction.Approve:
+                        foreach (var item in checkedContentItems)
+                        {
+                            var token = await _userManager.GenerateEmailConfirmationTokenAsync(item);
+                            await _userManager.ConfirmEmailAsync(item, token);
+                            _notifier.Success(H["User {0} successfully approved.", item.UserName]);
+                        }
+                        break;
+                    case UsersBulkAction.Delete:
+                        foreach (var item in checkedContentItems)
+                        {
+                            await _userManager.DeleteAsync(item);
+                            _notifier.Success(H["User {0} successfully deleted.", item.UserName]);
+                        }
+                        break;
+                    case UsersBulkAction.Disable:
+                        foreach (var item in checkedContentItems)
+                        {
+                            item.IsEnabled = false;
+                            await _userManager.UpdateAsync(item);
+                            _notifier.Success(H["User {0} successfully disabled.", item.UserName]);
+                        }
+                        break;
+                    case UsersBulkAction.Enable:
+                        foreach (var item in checkedContentItems)
+                        {
+                            item.IsEnabled = true;
+                            await _userManager.UpdateAsync(item);
+                            _notifier.Success(H["User {0} successfully enabled.", item.UserName]);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
         public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
@@ -180,7 +269,7 @@ namespace OrchardCore.Users.Controllers
                 return View(shape);
             }
 
-            _notifier.Success(TH["User created successfully"]);
+            _notifier.Success(H["User created successfully"]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -237,7 +326,7 @@ namespace OrchardCore.Users.Controllers
                 return View(shape);
             }
 
-            _notifier.Success(TH["User updated successfully"]);
+            _notifier.Success(H["User updated successfully"]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -261,17 +350,17 @@ namespace OrchardCore.Users.Controllers
 
             if (result.Succeeded)
             {
-                _notifier.Success(TH["User deleted successfully"]);
+                _notifier.Success(H["User deleted successfully"]);
             }
             else
             {
                 _session.Cancel();
 
-                _notifier.Error(TH["Could not delete the user"]);
+                _notifier.Error(H["Could not delete the user"]);
 
                 foreach (var error in result.Errors)
                 {
-                    _notifier.Error(TH[error.Description]);
+                    _notifier.Error(H[error.Description]);
                 }
             }
 
@@ -318,7 +407,7 @@ namespace OrchardCore.Users.Controllers
 
                 if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
                 {
-                    _notifier.Success(TH["Password updated correctly."]);
+                    _notifier.Success(H["Password updated correctly."]);
 
                     return RedirectToAction(nameof(Index));
                 }

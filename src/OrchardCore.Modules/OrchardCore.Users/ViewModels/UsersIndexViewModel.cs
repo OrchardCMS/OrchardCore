@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Users.ViewModels
 {
@@ -12,7 +14,7 @@ namespace OrchardCore.Users.ViewModels
     public class UserEntry
     {
         public dynamic Shape { get; set; }
-        public bool IsChecked { get; set; }
+        public int Id { get; set; }
     }
 
     public class UserIndexOptions
@@ -21,6 +23,15 @@ namespace OrchardCore.Users.ViewModels
         public UsersOrder Order { get; set; }
         public UsersFilter Filter { get; set; }
         public UsersBulkAction BulkAction { get; set; }
+
+        [BindNever]
+        public List<SelectListItem> UserFilters { get; set; }
+
+        [BindNever]
+        public List<SelectListItem> UserSorts { get; set; }
+
+        [BindNever]
+        public List<SelectListItem> UsersBulkAction { get; set; }
     }
 
     public enum UsersOrder
@@ -43,6 +54,7 @@ namespace OrchardCore.Users.ViewModels
     {
         None,
         Delete,
+        Enable,
         Disable,
         Approve,
         ChallengeEmail

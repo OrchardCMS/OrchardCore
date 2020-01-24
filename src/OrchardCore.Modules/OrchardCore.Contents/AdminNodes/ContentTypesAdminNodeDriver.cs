@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
@@ -30,7 +29,7 @@ namespace OrchardCore.Contents.AdminNodes
         public override IDisplayResult Edit(ContentTypesAdminNode treeNode)
         {
             var listable = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Listable)
+                .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Listable)
                 .OrderBy(ctd => ctd.DisplayName).ToList();
 
 

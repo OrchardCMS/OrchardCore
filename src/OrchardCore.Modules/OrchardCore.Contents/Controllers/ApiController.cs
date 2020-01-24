@@ -65,7 +65,7 @@ namespace OrchardCore.Content.Controllers
         public async Task<IActionResult> Post(ContentItem newContentItem, bool draft = false)
         {
             var contentItem = await _contentManager.GetAsync(newContentItem.ContentItemId, VersionOptions.DraftRequired);
-            
+
             if (contentItem == null)
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent))
@@ -84,7 +84,6 @@ namespace OrchardCore.Content.Controllers
                     return Unauthorized();
                 }
             }
-            
 
             if (contentItem != newContentItem)
             {

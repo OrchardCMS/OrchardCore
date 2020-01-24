@@ -4,7 +4,6 @@ using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Handlers;
 using OrchardCore.Autoroute.Indexing;
@@ -25,6 +24,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using YesSql;
 using YesSql.Indexes;
@@ -33,6 +33,8 @@ namespace OrchardCore.Autoroute
 {
     public class Startup : StartupBase
     {
+        public override int ConfigureOrder => -100;
+
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<AutoroutePartViewModel>();
@@ -41,9 +43,9 @@ namespace OrchardCore.Autoroute
         public override void ConfigureServices(IServiceCollection services)
         {
             // Autoroute Part
+            services.AddContentPart<AutoroutePart>();
             services.AddScoped<IContentPartDisplayDriver, AutoroutePartDisplay>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddSingleton<ContentPart, AutoroutePart>();
             services.AddScoped<IContentPartHandler, AutoroutePartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
@@ -63,20 +65,21 @@ namespace OrchardCore.Autoroute
                     partOptions.Collapse = true;
                 });
             });
+
+            services.AddSingleton<AutoRouteTransformer>();
+            services.AddSingleton<IShellRouteValuesAddressScheme, AutoRouteValuesAddressScheme>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var entries = serviceProvider.GetRequiredService<IAutorouteEntries>();
             var session = serviceProvider.GetRequiredService<ISession>();
 
             var autoroutes = session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync().GetAwaiter().GetResult();
-            entries.AddEntries(autoroutes.Select(o => new AutorouteEntry { ContentItemId = o.ContentItemId, Path = o.Path }));
+            entries.AddEntries(autoroutes.Select(x => new AutorouteEntry { ContentItemId = x.ContentItemId, Path = x.Path }));
 
-            var options = serviceProvider.GetRequiredService<IOptions<AutorouteOptions>>().Value;
-            var autorouteRoute = new AutorouteRoute(routes.DefaultHandler, entries, options);
-
-            routes.Routes.Insert(0, autorouteRoute);
+            // The 1st segment prevents the transformer to be executed for the home.
+            routes.MapDynamicControllerRoute<AutoRouteTransformer>("/{any}/{**slug}");
         }
     }
 }

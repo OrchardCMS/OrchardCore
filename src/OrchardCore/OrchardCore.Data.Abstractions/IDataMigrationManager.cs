@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Data.Migration
 {
+    /// <summary>
+    /// Represents a contract to manage database migrations.
+    /// </summary>
     public interface IDataMigrationManager
     {
         /// <summary>
@@ -18,17 +21,19 @@ namespace OrchardCore.Data.Migration
         /// <summary>
         /// Updates the database to the latest version for the specified feature
         /// </summary>
+        /// <param name="feature">The feature to be uninstalled.</param>
         Task UpdateAsync(string feature);
 
         /// <summary>
         /// Updates the database to the latest version for the specified features
         /// </summary>
+        /// <param name="features">The features to be updated.</param>
         Task UpdateAsync(IEnumerable<string> features);
 
         /// <summary>
         /// Execute a script to delete any information relative to the feature
         /// </summary>
-        /// <param name="feature"></param>
+        /// <param name="feature">The feature to be uninstalled.</param>
         Task Uninstall(string feature);
     }
 }

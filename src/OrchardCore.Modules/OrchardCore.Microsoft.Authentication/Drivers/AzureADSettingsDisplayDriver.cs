@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -11,10 +9,8 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
-using OrchardCore.Facebook.ViewModels;
-using OrchardCore.Settings;
 using OrchardCore.Microsoft.Authentication.ViewModels;
-using System;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Drivers
 {
@@ -58,7 +54,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 model.TenantId = settings.TenantId;
                 if (settings.CallbackPath.HasValue)
                 {
-                    model.CallbackPath = settings.CallbackPath;
+                    model.CallbackPath = settings.CallbackPath.Value;
                 }
             }).Location("Content:0").OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
         }

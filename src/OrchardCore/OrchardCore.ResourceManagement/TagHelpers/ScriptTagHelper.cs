@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
-
     [HtmlTargetElement("script", Attributes = NameAttributeName)]
     [HtmlTargetElement("script", Attributes = SrcAttributeName)]
     [HtmlTargetElement("script", Attributes = AtAttributeName)]
@@ -175,6 +174,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (!String.IsNullOrEmpty(Version))
                 {
                     setting.UseVersion(Version);
+                }
+
+                // This allows additions to the pre registered scripts dependencies.
+                if (!String.IsNullOrEmpty(DependsOn))
+                {
+                    setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (At == ResourceLocation.Unspecified)
