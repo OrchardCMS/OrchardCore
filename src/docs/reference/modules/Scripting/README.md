@@ -75,8 +75,9 @@ Here is a list of javascript methods provided by Orchard Modules.
 | `base64(String): String` | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64. |
 | `html(String): String` | Decodes the specified string from HTML encoding. |
 | `gzip(String): String` | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings. |
-| `variables()` | TODO |
-| `parameters()` | TODO |
+| `variables()` | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"` |
+| `parameters()` | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUsername')]"` See the available [Setup Recipe parameters](../Setup/#recipe-parameters) |
+| `configuration()` | Retrieves the specified configuration setting by its name. |
 
 #### Content (`OrchardCore.Contents`)
 
