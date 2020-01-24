@@ -100,7 +100,7 @@ namespace OrchardCore.Demo
             services.Configure<RazorPagesOptions>(options =>
             {
                 // Add a custom page folder route (only applied to non admin pages)
-                options.Conventions.AddAreaFolderRoute("OrchardCore.Demo", "/", "Pages");
+                options.Conventions.AddAreaFolderRoute("OrchardCore.Demo", "/", "Demo");
 
                 // Add a custom admin page folder route (only applied to admin pages) using the current admin prefix
                 options.Conventions.AddAdminAreaFolderRoute("OrchardCore.Demo", "/Admin", _adminOptions.AdminUrlPrefix + "/Demo");
