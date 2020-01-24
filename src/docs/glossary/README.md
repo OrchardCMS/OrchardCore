@@ -1,4 +1,4 @@
-# Glossary - Change
+# Glossary
 
 List of terms and concepts that you can find in Orchard Core.
 
@@ -8,7 +8,7 @@ They are grouped by roles: User, Theme designer, Administrator.
 
 ### Content Item
 
-A single document containing some content of a specific content type, that can be versioned and localized. Examples of content items are pages, blog posts and products. They are often associated with a unique URL (address) on the site.
+The consumable version of a piece of web content that can be published for display via a web browser. In the OrchardCore Admin GUI, it is created from a content type. It can be versioned, localized, and can have its own unique URL (depending on its Content Parts). The display of a Content Item can be restricted by a user’s assigned permissions via a role or otherwise. A few examples are a web page, a blog post, or a product listing.
 
 ### Content Item Version
 
