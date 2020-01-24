@@ -181,7 +181,6 @@ namespace OrchardCore.Metadata.Drivers
                 model.MetadataPart = metadataPart;
                 model.Settings = settings;
 
-                return Task.CompletedTask;
             }).Location("Parts#Metadata:10");
         }
 
