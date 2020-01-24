@@ -23,9 +23,9 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(CreateContentTask);
-        
+
         public override LocalizedString Category => S["Content"];
-        
+
         public override LocalizedString DisplayText => S["Create Content Task"];
 
         public string ContentType
@@ -63,13 +63,11 @@ namespace OrchardCore.Contents.Workflows.Activities
             if (!string.IsNullOrWhiteSpace(ContentProperties.Expression))
             {
                 var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext);
-                var contentItemFromJson = JsonConvert.DeserializeObject<ContentItem>(contentProperties);
-                contentItem.DisplayText = contentItemFromJson.DisplayText;
-                contentItem.Apply(contentItemFromJson);
+                contentItem.Merge(JObject.Parse(contentProperties));
             }
 
             var versionOptions = Publish ? VersionOptions.Published : VersionOptions.Draft;
-            await ContentManager.CreateAsync(contentItem, versionOptions);
+            await ContentManager.CreateAsync(contentItem, versionOptions, true);
 
             workflowContext.LastResult = contentItem;
             workflowContext.CorrelationId = contentItem.ContentItemId;
