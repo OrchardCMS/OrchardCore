@@ -143,8 +143,8 @@ See [Layers](../reference/modules/Layers)
 
 ### Widget
 
-A content displayed in a specific zone and layer.  
-It has the `Widget` stereotype in its content definition.
+A stereotype used to designate a prebuilt Content Item that can be used in a layer. This allows the content item to be displayed on multiple pages at once. Examples are a Menu, Footer, or Header.  
+see [Widgets](../reference/modules/Widgets/)
 
 ### Flow
 
