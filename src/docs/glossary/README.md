@@ -24,7 +24,7 @@ A blueprint from which a content item is created. It defines what features and c
 
 ### Content Part
 
-Content parts are atoms of content that are enough to build a specific coherent behavior and that can be reused across content types. 
+The smallest content building block in OrchardCore. It defines a specific feature or a specific behavior of a content type. A single Content Part can be used across multiple Content Types.
 See [Content Parts](../reference/modules/ContentParts)
 
 ### Content Field
