@@ -38,7 +38,7 @@ A field can have different Editors (Ex: The value of a Numeric Field can be set 
 
 ### Autoroute
 
-A part that dynamically creates and registers a url to access a content item. It can use a Liquid pattern to be automatically generated.
+A Content Part that can be added to a Content Type to provide a dynamic URL feature.  This allows any Content Item built from the resulting Content Type to be directly accessible via a web address. An Autoroute can use a Liquid pattern to automatically generate the desired URL.
 See [Autoroute](../reference/modules/Autoroute)
 
 ### Bag
