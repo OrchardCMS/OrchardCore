@@ -4,6 +4,12 @@ List of terms and concepts that you can find in Orchard Core.
 
 They are grouped by roles: User, Theme designer, Administrator.
 
+If you feel there is a definition missing, or that a definition needs to be revised, updated, or is missing one of the desaired elements please make a submission.  
+Note that each definition should consist of:
+1.	A clear statement of what the item being defined is in an OrchardCore context
+2.	A clear statement of what the item does in an OrchardCore context
+3.	Clear examples of how the item is used in an OrchardCore context 
+
 ## Authenticated users
 
 ### Content Item
