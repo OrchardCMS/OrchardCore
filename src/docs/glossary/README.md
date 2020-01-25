@@ -16,7 +16,7 @@ A single document that represent a specific version of a content item. These can
 
 ### Content Type
 
-Define the list of Content Parts and Content Fields a content item can be made of. An analogy is to compare them to classes, whose instances are the content items.
+A blueprint from which a content item is created. It defines what features and characteristics the content item can have. A Content Type is made up of Content Parts which help to define is features and behavior.
 
 ### Content Part
 
