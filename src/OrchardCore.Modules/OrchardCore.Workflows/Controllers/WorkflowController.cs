@@ -39,6 +39,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly ILogger<WorkflowController> _logger;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHtmlLocalizer<WorkflowController> H;
 
         public WorkflowController(
@@ -52,8 +53,8 @@ namespace OrchardCore.Workflows.Controllers
             IShapeFactory shapeFactory,
             INotifier notifier,
             IHtmlLocalizer<WorkflowController> localizer,
-            ILogger<WorkflowController> logger
-        )
+            ILogger<WorkflowController> logger,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _siteService = siteService;
             _session = session;
@@ -64,6 +65,7 @@ namespace OrchardCore.Workflows.Controllers
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
             _logger = logger;
+            _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
             H = localizer;
         }
@@ -262,19 +264,13 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowTypeId, bool isBlocking, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, (ControllerModelUpdater)this, displayType);
+            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}ReadOnly";
             activityShape.Activity = activityContext.Activity;
             activityShape.ActivityRecord = activityContext.ActivityRecord;
             activityShape.WorkflowTypeId = workflowTypeId;
             activityShape.IsBlocking = isBlocking;
             return activityShape;
-        }
-
-        public static explicit operator ControllerModelUpdater(WorkflowController controller)
-        {
-            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
-            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

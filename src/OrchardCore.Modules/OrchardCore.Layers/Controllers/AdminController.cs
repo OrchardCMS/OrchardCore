@@ -31,6 +31,7 @@ namespace OrchardCore.Layers.Controllers
         private readonly ISession _session;
         private readonly ISignal _signal;
         private readonly INotifier _notifier;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             ISignal signal,
@@ -42,8 +43,8 @@ namespace OrchardCore.Layers.Controllers
             ISiteService siteService,
             IStringLocalizer<AdminController> s,
             IHtmlLocalizer<AdminController> h,
-            INotifier notifier
-            )
+            INotifier notifier,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _signal = signal;
             _authorizationService = authorizationService;
@@ -52,9 +53,10 @@ namespace OrchardCore.Layers.Controllers
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _siteService = siteService;
+            _notifier = notifier;
+            _updateModelAccessor = updateModelAccessor;
             S = s;
             H = h;
-            _notifier = notifier;
         }
 
         public IStringLocalizer S { get; }
@@ -86,7 +88,7 @@ namespace OrchardCore.Layers.Controllers
                     model.Widgets.Add(zone, list = new List<dynamic>());
                 }
 
-                list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, (ControllerModelUpdater)this, "SummaryAdmin"));
+                list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
             }
 
             return View(model);
@@ -315,12 +317,6 @@ namespace OrchardCore.Layers.Controllers
             {
                 ModelState.AddModelError(nameof(LayerEditViewModel.Rule), S["The rule is required."]);
             }
-        }
-
-        public static explicit operator ControllerModelUpdater(AdminController controller)
-        {
-            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
-            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

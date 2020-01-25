@@ -13,15 +13,18 @@ namespace OrchardCore.Demo.Controllers
         private readonly IContentItemDisplayManager _contentDisplay;
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public ContentController(
             IContentManager contentManager,
             IContentItemDisplayManager contentDisplay,
-            ISession session)
+            ISession session,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _contentManager = contentManager;
             _contentDisplay = contentDisplay;
             _session = session;
+            _updateModelAccessor = updateModelAccessor;
         }
 
         public async Task<ActionResult> Display(string contentItemId)
@@ -33,7 +36,7 @@ namespace OrchardCore.Demo.Controllers
                 return NotFound();
             }
 
-            var shape = await _contentDisplay.BuildDisplayAsync(contentItem, (IUpdateModel)this);
+            var shape = await _contentDisplay.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
             return View(shape);
         }
 
@@ -47,7 +50,7 @@ namespace OrchardCore.Demo.Controllers
                 return NotFound();
             }
 
-            var shape = await _contentDisplay.BuildEditorAsync(contentItem, (IUpdateModel)this, false);
+            var shape = await _contentDisplay.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
             return View(shape);
         }
 
@@ -61,7 +64,7 @@ namespace OrchardCore.Demo.Controllers
                 return NotFound();
             }
 
-            var shape = await _contentDisplay.UpdateEditorAsync(contentItem, (IUpdateModel)this, false);
+            var shape = await _contentDisplay.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             if (!ModelState.IsValid)
             {
@@ -72,13 +75,6 @@ namespace OrchardCore.Demo.Controllers
             _session.Save(contentItem);
             return RedirectToAction("Edit", contentItemId);
 
-
-        }
-
-        public static explicit operator ControllerModelUpdater(ContentController controller)
-        {
-            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
-            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

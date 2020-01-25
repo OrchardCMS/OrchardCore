@@ -17,6 +17,7 @@ namespace OrchardCore.Templates.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly string _homeUrl;
 
         public PreviewController(
@@ -25,13 +26,15 @@ namespace OrchardCore.Templates.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IAuthorizationService authorizationService,
             ISiteService siteService,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _contentManager = contentManager;
             _contentAliasManager = contentAliasManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _authorizationService = authorizationService;
             _siteService = siteService;
+            _updateModelAccessor = updateModelAccessor;
             _homeUrl = ('/' + (shellSettings.RequestUrlPrefix ?? string.Empty)).TrimEnd('/') + '/';
         }
 
@@ -84,15 +87,9 @@ namespace OrchardCore.Templates.Controllers
                 return NotFound();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, (ControllerModelUpdater)this, "Detail");
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "Detail");
 
             return View(model);
-        }
-
-        public static explicit operator ControllerModelUpdater(PreviewController controller)
-        {
-            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
-            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

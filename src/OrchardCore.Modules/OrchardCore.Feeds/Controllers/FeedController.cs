@@ -15,18 +15,21 @@ namespace OrchardCore.Feeds.Controllers
         private readonly IEnumerable<IFeedQueryProvider> _feedQueryProviders;
         private readonly IFeedItemBuilder _feedItemBuilder;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public FeedController(
             IEnumerable<IFeedQueryProvider> feedQueryProviders,
             IEnumerable<IFeedBuilderProvider> feedFormatProviders,
             IFeedItemBuilder feedItemBuilder,
             ILogger<FeedController> logger,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _feedQueryProviders = feedQueryProviders;
             _feedFormatProviders = feedFormatProviders;
             _feedItemBuilder = feedItemBuilder;
             _serviceProvider = serviceProvider;
+            _updateModelAccessor = updateModelAccessor;
             Logger = logger;
         }
 
@@ -34,7 +37,7 @@ namespace OrchardCore.Feeds.Controllers
 
         public async Task<ActionResult> Index(string format)
         {
-            var context = new FeedContext((ControllerModelUpdater)this, format);
+            var context = new FeedContext(_updateModelAccessor.ModelUpdater, format);
 
             var bestFormatterMatch = _feedFormatProviders
                 .Select(provider => provider.Match(context))
@@ -86,12 +89,6 @@ namespace OrchardCore.Feeds.Controllers
            });
 
             return Content(document.ToString(), "text/xml");
-        }
-
-        public static explicit operator ControllerModelUpdater(FeedController controller)
-        {
-            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
-            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }

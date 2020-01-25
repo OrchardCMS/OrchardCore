@@ -12,16 +12,18 @@ namespace OrchardCore.Contents.Controllers
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public ItemController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
-            IAuthorizationService authorizationService
-            )
+            IAuthorizationService authorizationService,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _authorizationService = authorizationService;
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
+            _updateModelAccessor = updateModelAccessor;
         }
 
         public async Task<IActionResult> Display(string contentItemId)
@@ -38,7 +40,7 @@ namespace OrchardCore.Contents.Controllers
                 return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, (ControllerModelUpdater)this);
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
 
             return View(model);
         }
@@ -64,15 +66,9 @@ namespace OrchardCore.Contents.Controllers
                 return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, (ControllerModelUpdater)this);
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
 
             return View(model);
-        }
-
-        public static explicit operator ControllerModelUpdater(ItemController controller)
-        {
-            var updater = (IUpdateModelAccessor)controller.HttpContext.RequestServices.GetService(typeof(IUpdateModelAccessor));
-            return (ControllerModelUpdater)updater.ModelUpdater;
         }
     }
 }
