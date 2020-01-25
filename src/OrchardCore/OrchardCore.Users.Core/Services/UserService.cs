@@ -92,6 +92,19 @@ namespace OrchardCore.Users.Services
             return user;
         }
 
+        public async Task<bool> ChangeEmailAsync(IUser user, string newEmail, Action<string, string> reportError)
+        {
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+            var identityResult = await _userManager.ChangeEmailAsync(user, newEmail, token);
+
+            if (!identityResult.Succeeded)
+            {
+                ProcessValidationErrors(identityResult.Errors, (User)user, reportError);
+            }
+
+            return identityResult.Succeeded;
+        }
+
         public async Task<bool> ChangePasswordAsync(IUser user, string currentPassword, string newPassword, Action<string, string> reportError)
         {
             var identityResult = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
