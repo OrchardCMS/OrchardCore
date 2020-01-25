@@ -14,6 +14,10 @@ The consumable version of a piece of web content that can be published for displ
 
 A single document that represent a specific version of a content item. These can be draft, published, or pasts versions
 
+### Content Definition Objects
+
+Objects in OrchardCore that determine the behavior, characteristics and type of content a Content Item can be made of. The Content Definition Objects are Content Part and a Content Type.
+
 ### Content Type
 
 A blueprint from which a content item is created. It defines what features and characteristics the content item can have. A Content Type is made up of Content Parts which help to define is features and behavior.
