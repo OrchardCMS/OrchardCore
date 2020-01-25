@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.Drivers
             {
                 return Initialize<DateEditorViewModel>("CommonPart_Edit__Date", async model =>
                 {
-                    model.LocalDateTime = part.ContentItem.CreatedUtc.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(part.ContentItem.CreatedUtc.Value)).DateTime;
+                    model.LocalDateTime = part.ContentItem.CreatedUtc != null ? (DateTime?) (await _localClock.ConvertToLocalAsync(part.ContentItem.CreatedUtc.Value)).DateTime : null;
                 });
             }
 
