@@ -17,18 +17,20 @@ namespace OrchardCore.Flows.Controllers
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IShapeFactory _shapeFactory;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IShapeFactory shapeFactory,
             ILogger<AdminController> logger,
-            IHtmlLocalizer<AdminController> localizer
-            )
+            IHtmlLocalizer<AdminController> localizer,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
             _shapeFactory = shapeFactory;
+            _updateModelAccessor = updateModelAccessor;
 
             T = localizer;
             Logger = logger;
@@ -66,7 +68,7 @@ namespace OrchardCore.Flows.Controllers
             //Create a Card Shape
             dynamic contentCard = await _shapeFactory.New.ContentCard(
                 //Updater is the controller for AJAX Requests
-                Updater: this,
+                Updater: _updateModelAccessor.ModelUpdater,
                 //Shape Specific
                 CollectionShapeType: cardCollectionType,
                 ContentItem: contentItem,
