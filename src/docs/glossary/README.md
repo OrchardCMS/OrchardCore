@@ -138,7 +138,7 @@ A section in the Layout (ex: Footer) in which you can render items.
 
 ### Layer
 
-A display Rule in which you specify a condition to be rendered (ex: isHomepage()).  
+A display rule that defines the condition when a widget will be displayed. (ex: isHomepage()).  
 See [Layers](../reference/modules/Layers)
 
 ### Widget
