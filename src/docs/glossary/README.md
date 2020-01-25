@@ -124,7 +124,8 @@ See [Resources](../reference/modules/Resources)
 
 ### Shape
 
- [GitHub Discussion](https://github.com/OrchardCMS/OrchardCore/issues/4121#issuecomment-539608731)
+An OrchardCore object used to dynamically render HTML content. A Shape defines the type of content to be rendered and it receives its instructions on how to display the content it will render from a template. This makes the shape able to dynamically adapt the way it displays its content based the templates it receives from any OrchardCore theme.  
+See [GitHub Discussion](https://github.com/OrchardCMS/OrchardCore/issues/4121#issuecomment-539608731)
 
 ### Template
 
