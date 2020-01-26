@@ -37,13 +37,12 @@ namespace OrchardCore.Alias.Drivers
         public override async Task<IDisplayResult> UpdateAsync(AliasPart model, IUpdateModel updater,
             UpdatePartEditorContext context)
         {
-            var settings = context.TypePartDefinition.GetSettings<AliasPartSettings>();
 
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Alias);
 
             await ValidateAsync(model, updater);
 
-            return Edit(model);
+            return Edit(model,context);
         }
 
 
