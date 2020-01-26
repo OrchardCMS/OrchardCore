@@ -53,7 +53,7 @@ namespace OrchardCore.Contents.Drivers
                 }
             }
 
-            return Edit(part);
+             return Edit(part,context);
         }
 
     }
