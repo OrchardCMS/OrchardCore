@@ -56,7 +56,7 @@ The newly created website should be able to run, and look like this:
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>netcoreapp3.0</TargetFramework>
+  <TargetFramework>netcoreapp3.1</TargetFramework>
   <PreserveCompilationReferences>true</PreserveCompilationReferences>
 </PropertyGroup>
 ```
@@ -67,9 +67,12 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.0.0-rc1-10004" />
+  <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.0.0-rc1-10004" />
 </ItemGroup>
 ```
+
+!!! hint "Nightly builds"
+   If you are using the nightly builds of Orchard Core (MyGet feed) then you should use the package `OrchardCore.Application.Cms.Core.Targets` instead.
 
 This will add the packages from Orchard Core CMS
 
@@ -86,7 +89,7 @@ public void ConfigureServices(IServiceCollection services)
     `AddRazorPages` must not be called directly as `services.AddOrchardCms()` already invokes it internally.
 
 - Edit the `Startup.cs` file `Configure`
-- Remove everything after `app.UseStaticFiles();` and replace it by `app.UserOrchardCore();` like this:
+- Remove everything after `app.UseStaticFiles();` and replace it by `app.UseOrchardCore();` like this:
 
 ```cs
    ...

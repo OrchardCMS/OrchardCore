@@ -17,17 +17,17 @@ namespace OrchardCore.Lists.Settings
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;
+	    private readonly IStringLocalizer S;
+
         public ListPartSettingsDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
-            IStringLocalizer<ListPartSettingsDisplayDriver> localizer,
-            IContainerService containerService)
+            IContainerService containerService,
+            IStringLocalizer<ListPartSettingsDisplayDriver> localizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _containerService = containerService;
-            TS = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer TS { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
@@ -65,7 +65,7 @@ namespace OrchardCore.Lists.Settings
 
             if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
             {
-                context.Updater.ModelState.AddModelError(nameof(model.ContainedContentTypes), TS["At least one content type must be selected."]);
+                context.Updater.ModelState.AddModelError(nameof(model.ContainedContentTypes), S["At least one content type must be selected."]);
             }
             else
             {

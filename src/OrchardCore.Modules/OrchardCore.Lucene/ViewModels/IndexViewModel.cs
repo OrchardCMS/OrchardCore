@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System;
 
 namespace OrchardCore.Lucene.ViewModels
 {
     public class IndexViewModel
     {
         public string Name { get; set; }
+        public string AnalyzerName { get; set; }
         public DateTime LastUpdateUtc { get; set; }
-        // public IndexingStatus IndexingStatus { get; set; }
     }
 }

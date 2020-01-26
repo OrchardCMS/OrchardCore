@@ -21,15 +21,15 @@
   },
   {
     "generateRTL": true,
-    "inputs": [ 
-		"node_modules/bootstrap-select/dist/css/bootstrap-select.css" 
-	],
+    "inputs": [
+      "node_modules/bootstrap-select/dist/css/bootstrap-select.css"
+    ],
     "output": "wwwroot/Styles/bootstrap-select.css"
   },
   {
-    "inputs": [ 
-		"node_modules/bootstrap-select/dist/js/bootstrap-select.js" 
-	],
+    "inputs": [
+      "node_modules/bootstrap-select/dist/js/bootstrap-select.js"
+    ],
     "output": "wwwroot/Scripts/bootstrap-select.js"
   },
   {
@@ -108,6 +108,12 @@
   },
   {
     "inputs": [
+      "node_modules/jquery-resizable-dom/dist/jquery-resizable.js"
+    ],
+    "output": "wwwroot/Scripts/jquery-resizable.js"
+  },
+  {
+    "inputs": [
       "node_modules/popper.js/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
@@ -139,5 +145,11 @@
       "Assets/trumbowyg/plugins/*/*.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg-plugins.js"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg/js/resizable-resolveconflict.js"
+    ],
+    "output": "wwwroot/Scripts/resizable-resolveconflict.js"
   }
 ]

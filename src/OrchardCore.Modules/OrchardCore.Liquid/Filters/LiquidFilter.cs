@@ -18,18 +18,7 @@ namespace OrchardCore.Liquid.Filters
 
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            var context = new TemplateContext();
-
-            var model = arguments.At(0);
-
-            if (!model.IsNil())
-            {
-                context.MemberAccessStrategy.Register(model.GetType());
-                context.SetValue("Model", model);
-            }
-
-            var content = await _liquidTemplateManager.RenderAsync(input.ToStringValue(), _htmlEncoder, context);
-
+            var content = await _liquidTemplateManager.RenderAsync(input.ToStringValue(), _htmlEncoder, arguments.At(0));
             return new StringValue(content, false);
         }
     }

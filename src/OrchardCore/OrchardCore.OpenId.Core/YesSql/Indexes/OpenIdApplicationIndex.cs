@@ -28,7 +28,7 @@ namespace OrchardCore.OpenId.YesSql.Indexes
         public int Count { get; set; }
     }
 
-    public class OpenIdAppIndexProvider : IndexProvider<OpenIdApplication>
+    public class OpenIdApplicationIndexProvider : IndexProvider<OpenIdApplication>
     {
         public override void Describe(DescribeContext<OpenIdApplication> context)
         {

@@ -50,16 +50,14 @@ namespace OrchardCore.Apis.GraphQL
             }
             else
             {
-                var principal = context.User;
-
                 var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
 
                 if (authenticateResult.Succeeded)
                 {
-                    principal = authenticateResult.Principal;
+                    context.User = authenticateResult.Principal;
                 }
 
-                var authorized = await authorizationService.AuthorizeAsync(principal, Permissions.ExecuteGraphQL);
+                var authorized = await authorizationService.AuthorizeAsync(context.User, Permissions.ExecuteGraphQL);
 
                 if (authorized)
                 {

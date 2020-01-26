@@ -22,8 +22,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
         }
 
         public override string Name => nameof(CreateTenantTask);
-        public override LocalizedString Category => T["Tenant"];
-        public override LocalizedString DisplayText => T["Create Tenant Task"];
+
+        public override LocalizedString Category => S["Tenant"];
+
+        public override LocalizedString DisplayText => S["Create Tenant Task"];
 
         public string ContentType
         {
@@ -69,7 +71,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

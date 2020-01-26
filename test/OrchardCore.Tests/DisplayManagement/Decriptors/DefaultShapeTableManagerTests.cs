@@ -500,7 +500,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             _serviceProvider.GetService<TestShapeProvider>();
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var table = manager.GetShapeTable("DerivedTheme");
-            Assert.True(table.Bindings.ContainsKey("OverriddenShape"));
+            Assert.True(table.Bindings.TryGetValue("OverriddenShape", out var shapeBinding));
             Assert.Equal("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
         }
 

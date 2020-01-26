@@ -137,5 +137,4 @@ namespace OrchardCore.DisplayManagement.Implementation
             return createdContext.Shape;
         }
     }
-
 }

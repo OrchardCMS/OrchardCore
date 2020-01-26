@@ -102,7 +102,7 @@ namespace OrchardCore.ContentManagement.Display
                     {
                         var shapeType = context.DisplayType != "Detail" ? "ContentPart_" + context.DisplayType : "ContentPart";
 
-                        var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => new ValueTask<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone", Arguments.Empty)))));
+                        var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => new ValueTask<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone")))));
                         shapeResult.Differentiator(partName);
                         shapeResult.Location("Content");
 
