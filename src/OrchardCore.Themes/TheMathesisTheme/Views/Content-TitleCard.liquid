@@ -1,0 +1,17 @@
+<div class="card card-nav-tabs col-4">
+	<div class="card-header {{Model.ContentItem.Content.TitleCard.Category.Text}}">
+		<h4 class="card-title mth-card-title">{{Model.ContentItem.Content.TitlePart.Title}}</h4>
+	</div>
+	<div class="card-body">
+		<p class="card-text mth-text-base">{{Model.ContentItem.Content.TitleCard.Description.Text}}</p>
+	</div>
+	<hr/>
+	<div class="card-footer">
+		<div class="card-stats justify-content-left">
+			<a href="{{Model.ContentItem.Content.TitleCard.DetailPage.Text | href}}" class="btn btn-warning btn-round">{{Model.ContentItem.Content.TitleCard.Button.Text }} ()</a>
+		</div>
+		<div class="stats ml-auto">
+			<i class="material-icons">update</i> 31/12/19
+		</div>
+	</div>
+</div>

@@ -1,0 +1,21 @@
+<div class="card card-blog col-4">
+	<div class="card-header card-header-image">
+		<img class="img" src="{{ Model.ContentItem.Content.ImageCard.HeaderImage.Paths.first | asset_url }}" />
+		<h4 class="card-title" style="font-size: 1.6rem;">{{Model.ContentItem.Content.TitlePart.Title}}</h4>
+		<div class="colored-shadow" style="background-image: url('{{ Model.ContentItem.Content.ImageCard.HeaderImage.Paths.first | asset_url }}'); opacity: 1;">
+		</div>
+	</div>
+	<div class="card-body">
+		<h6 class="card-category text-info">{{ Model.ContentItem.Content.ImageCard.Category.Text }}</h6>
+		<p class="card-description mth-text-base">{{ Model.ContentItem.Content.ImageCard.Description.Text }}</p>
+	</div>
+	<hr />
+	<div class="card-footer">
+		<div class="card-stats justify-content-left">
+			<a href="{{Model.ContentItem.Content.ImageCard.DetailPage.Text | href}}" class="btn btn-warning btn-round">{{Model.ContentItem.Content.ImageCard.Button.Text }}</a>
+		</div>
+		<div class="stats ml-auto">
+			<i class="material-icons">update</i> 31/12/19
+		</div>
+	</div>
+</div>

@@ -1,0 +1,23 @@
+<div class="card card-profile col-4">
+	<div class="card-header card-avatar">
+		<img class="img" src="{{ Model.ContentItem.Content.TeamCard.Image.Paths.first | asset_url }}" />
+	</div>
+	<div class="card-body">
+		<h4 class="card-title mth-card-title">{{Model.ContentItem.Content.TitlePart.Title}}</h4>
+		<h6 class="card-category text-muted">{{Model.ContentItem.Content.TeamCard.Role.Text}}</h6>
+		<p class="card-description mth-text-base">
+			{{Model.ContentItem.Content.TeamCard.Description.Text}}
+		</p>
+	</div>
+	<div class="card-footer justify-content-center">
+		<a href="{{Model.ContentItem.Content.TeamCard.Linkedin.Text }}" class="btn btn-just-icon btn-linkedin btn-round">
+			<i class="fa fa-linkedin"></i>
+		</a>
+		<a href="{{Model.ContentItem.Content.TeamCard.Twitter.Text }}" class="btn btn-just-icon btn-twitter btn-round">
+			<i class="fa fa-twitter"></i>
+		</a>
+		<a href="{{Model.ContentItem.Content.TeamCard.Github.Text }}" class="btn btn-just-icon btn-github btn-round">
+			<i class="fa fa-github"></i>
+		</a>
+	</div>
+</div>

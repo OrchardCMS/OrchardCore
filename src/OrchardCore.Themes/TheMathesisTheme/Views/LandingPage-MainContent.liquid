@@ -1,0 +1,46 @@
+{% assign items = Model.ContentItem.Content.MainContent.ContentItems %}
+{% assign cards-number = items.size - 1 %}
+{% assign righe = cards-number | divided_by:3 %}
+
+{% assign headers = Model.ContentItems | where: "ContentType", "ContentHeader" %}
+{% for header in headers %}
+	{{ header | shape_build_display: "Detail" | shape_render }}
+{% endfor %}
+
+{% assign items = Model.ContentItems | where: "ContentType", "HorizontalContent" %}
+{% for item in items %}
+	{{ item | shape_build_display: "Detail" | shape_render }}
+{% endfor %}
+
+{% assign content-types = "TitleCard, ImageCard, TeamCard, TimelineCard" | split: ", " %}
+
+{% for content-type in content-types %}
+	{% assign items = Model.ContentItems | where: "ContentType", content-type %}
+	{% if items.size > 0 %}
+		{% if content-type == "TimelineCard" %}
+			<div class="col-md-10 ml-auto mr-auto">
+				<ul class="timeline">
+					{% for item in items %}
+						{{ item | shape_build_display: "Detail" | shape_render }}
+					{% endfor %}
+				</ul>
+			</div>
+		{% else %}
+			{% assign rows = items.size | divided_by:3 %}
+			<div class="card-deck py-5">
+				{% for index in (0..rows) %}
+					<div class="d-flex justify-content-around row w-90 mx-auto {% if rows > 0 and index < rows %}pb-5{% endif %}">
+						{% if index < rows %}
+							{% assign maxoffset = 2 %}
+						{% else %}
+							{% assign maxoffset = items.size % 3 %}
+						{% endif %}
+						{% for offset in (0..maxoffset) %}
+							{{ items[index * 3 + offset] | shape_build_display: "Detail" | shape_render }}
+						{% endfor %}
+					</div>
+				{% endfor %}
+			</div>
+		{% endif %}
+	{% endif %}
+{% endfor %}
