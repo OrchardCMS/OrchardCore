@@ -31,13 +31,13 @@ namespace OrchardCore.Title.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater,UpdatePartEditorContext context)
         {
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Title);
 
             model.ContentItem.DisplayText = model.Title;
 
-            return Edit(model);
+            return Edit(model,context);
         }
     }
 }
