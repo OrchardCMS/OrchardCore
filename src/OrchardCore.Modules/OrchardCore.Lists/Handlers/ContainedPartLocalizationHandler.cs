@@ -40,10 +40,10 @@ namespace OrchardCore.Lists.Drivers
         }
     }
 
-    public class ContainedPartHandler : ContentPartHandler<LocalizationPart>
+    public class LocalizationContainedPartHandler : ContentPartHandler<LocalizationPart>
     {
         private readonly ISession _session;
-        public ContainedPartHandler(ISession session)
+        public LocalizationContainedPartHandler(ISession session)
         {
             _session = session;
         }

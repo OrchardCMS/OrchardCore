@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -42,13 +41,13 @@ namespace OrchardCore.Lists.Services
         {
             var index = await _session.QueryIndex<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
                 .OrderByDescending(x => x.Order)
-                .Take(1)
-                .ListAsync();
+                .FirstOrDefaultAsync();
 
-            if (index.Any())
+            if (index != null)
             {
-                return index.FirstOrDefault().Order + 1;
-            } else
+                return index.Order + 1;
+            }
+            else
             {
                 return 0;
             }
@@ -57,12 +56,24 @@ namespace OrchardCore.Lists.Services
         public async Task UpdateContentItemOrdersAsync(IEnumerable<ContentItem> contentItems, int orderOfFirstItem)
         {
             var i = 0;
-            foreach (var item in contentItems)
+            foreach (var contentItem in contentItems)
             {
-                if (item.As<ContainedPart>() != null && item.As<ContainedPart>().Order != orderOfFirstItem + i)
+                var containedPart = contentItem.As<ContainedPart>();
+                if (containedPart != null && containedPart.Order != orderOfFirstItem + i)
                 {
-                    item.Alter<ContainedPart>(x => x.Order = orderOfFirstItem + i);
-                    await _contentManager.UpdateAsync(item);
+                    containedPart.Order = orderOfFirstItem + i;
+                    containedPart.Apply();
+
+                    await _contentManager.UpdateAsync(contentItem);
+
+                    // Keep the published and draft orders the same to avoid confusion in the admin list.
+                    if (!contentItem.IsPublished())
+                    {
+                        var publishedItem = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Published);
+                        publishedItem.Alter<ContainedPart>(x => x.Order = orderOfFirstItem + i);
+
+                        await _contentManager.UpdateAsync(publishedItem);
+                    }
                 }
                 i++;
             }
@@ -77,6 +88,7 @@ namespace OrchardCore.Lists.Services
 
             return await query.ListAsync();
         }
+
         public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, bool publishedOnly)
         {
             IQuery<ContentItem> query = null;

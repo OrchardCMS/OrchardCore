@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +13,7 @@ namespace OrchardCore.Lists.Controllers
     public class OrderController : Controller
     {
         private readonly IContainerService _containerService;
+
         public OrderController(IContainerService listPartQueryService)
         {
             _containerService = listPartQueryService;
@@ -48,7 +48,8 @@ namespace OrchardCore.Lists.Controllers
                 pager.Before = afterValue.ToString();
             }
 
-            var pageOfContentItems = (await _containerService.QueryContainedItemsAsync(containerId, true, pager, true)).ToList();
+            // Include draft items.
+            var pageOfContentItems = (await _containerService.QueryContainedItemsAsync(containerId, true, pager, false)).ToList();
             if (pageOfContentItems == null || !pageOfContentItems.Any())
             {
                 return NotFound();
