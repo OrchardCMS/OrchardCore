@@ -120,6 +120,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
             services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
 
+            // MultiValue Field
+            services.AddContentField<MultiValueField>();
+            services.AddScoped<IContentFieldDisplayDriver, MultiValueFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiValueFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, MultiValueFieldIndexHandler>();
+
             // Migration, can be removed in a future release.
             services.AddScoped<IDataMigration, Migrations>();
         }
@@ -180,6 +186,7 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IScopedIndexProvider, TimeFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
+            //services.AddScoped<IScopedIndexProvider, MultiValueFieldIndexProvider>();
         }
     }
 }
