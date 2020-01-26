@@ -1,0 +1,92 @@
+{% if Model.Content.LandingHeader %}
+{{ Model.Content.LandingHeader | shape_render }}
+{% endif %}
+
+{% assign items = Model.ContentItem.Content.MainContent.ContentItems %}
+{% assign cards-number = items.size - 1 %}
+{% assign righe = cards-number | divided_by:3 %}
+
+<div class="main main-raised" id="main">
+	<div class="container-fluid p-5">
+		<div class="text-center pt-5">
+			<h2 class="mth-section-title">{{ Model.ContentItem.Content.MainContent.ContentItems[0].TitlePart.Title }}</h2>
+		</div>
+		<div class="w-90 mx-auto">
+			<p class="mth-text-base">{{ Model.ContentItem.Content.MainContent.ContentItems[0].ContentHeader.Description.Text }}</p>
+		</div>
+		<div class="card-deck py-5">
+			{% for index in (0..righe) %}
+				<div class="d-flex justify-content-around row w-90 mx-auto {% if righe > 0 and index < righe %}pb-5{% endif %}">
+					{% if index < righe %}
+						{% assign maxoffset = 3 %}
+					{% else %}
+						{% assign maxoffset = cards-number % 3 %}
+					{% endif %}
+					{% for offset in (1..maxoffset) %}
+						{% if items[index * 3 + offset].ContentType == "TitleCard" %}
+							<div class="card card-nav-tabs col-4">
+								<div class="card-header {{items[index * 3 + offset].TitleCard.Category.Text}}">
+									<h4 class="card-title mth-card-title">{{items[index * 3 + offset].TitlePart.Title}}</h4>
+								</div>
+								<div class="card-body">
+									<p class="card-text mth-text-base">{{items[index * 3 + offset].TitleCard.Description.Text}}</p>
+								</div>
+								<hr/>
+								<div class="card-footer">
+									<div class="card-stats justify-content-left">
+										<a href="{{items[index * 3 + offset].TitleCard.DetailPage.Text | href}}" class="btn btn-warning btn-round">{{items[index * 3 + offset].TitleCard.Button.Text }} ({{ index * 3 + offset }})</a>
+									</div>
+									<div class="stats ml-auto">
+										<i class="material-icons">update</i> 31/12/19
+									</div>
+								</div>
+							</div>
+						{% endif %}
+						{% if items[index * 3 + offset].ContentType == "ImageCard" %}
+							<div class="card card-blog col-4">
+								<div class="card-header card-header-image">
+									<img class="img" src="{{ items[index * 3 + offset].ImageCard.HeaderImage.Paths.first | asset_url }}"/>
+									<h4 class="card-title" style="font-size: 1.6rem;">{{items[index * 3 + offset].TitlePart.Title}}</h4>
+									<div class="colored-shadow" style="background-image: url('{{ items[index * 3 + offset].ImageCard.HeaderImage.Paths.first | asset_url }}'); opacity: 1;">
+									</div>
+								</div>
+								<div class="card-body">
+									<h6 class="card-category text-info">{{ items[index * 3 + offset].ImageCard.Category.Text }}</h6>
+									<p class="card-description mth-text-base">{{ items[index * 3 + offset].ImageCard.Description.Text }}</p>
+								</div>
+								<hr/>
+								<div class="card-footer">
+									<div class="card-stats justify-content-left">
+										<a href="{{items[index * 3 + offset].ImageCard.DetailPage.Text | href}}" class="btn btn-warning btn-round">{{items[index * 3 + offset].ImageCard.Button.Text }}</a>
+									</div>
+									<div class="stats ml-auto">
+										<i class="material-icons">update</i> 31/12/19
+									</div>
+								</div>    
+							</div>
+						{% endif %}
+						{% if items[index * 3 + offset].ContentType == "TeamCard" %}
+							<div class="card card-profile col-4">
+								<div class="card-header card-avatar">
+									<img class="img" src="{{ items[index * 3 + offset].TeamCard.Image.Paths.first | asset_url }}" />
+								</div>
+								<div class="card-body">
+									<h4 class="card-title mth-card-title">{{items[index * 3 + offset].TitlePart.Title}}</h4>
+									<h6 class="card-category text-muted">{{items[index * 3 + offset].TeamCard.Role.Text}}</h6>
+									<p class="card-description mth-text-base">
+										{{items[index * 3 + offset].TeamCard.Description.Text}}
+									</p>
+								</div>
+								<div class="card-footer justify-content-center">
+									<a href="{{items[index * 3 + offset].TeamCard.Linkedin.Text }}" class="btn btn-just-icon btn-linkedin btn-round"><i class="fa fa-linkedin"></i></a>
+									<a href="{{items[index * 3 + offset].TeamCard.Twitter.Text }}" class="btn btn-just-icon btn-twitter btn-round"><i class="fa fa-twitter"></i></a>
+									<a href="{{items[index * 3 + offset].TeamCard.Github.Text }}" class="btn btn-just-icon btn-github btn-round"><i class="fa fa-github"></i></a>
+								</div>
+							</div>
+						{% endif %}
+					{% endfor %}
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>
