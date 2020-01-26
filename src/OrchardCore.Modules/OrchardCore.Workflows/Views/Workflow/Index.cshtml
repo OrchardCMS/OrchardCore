@@ -52,9 +52,10 @@
                     </div>
                     <div class="col-3"></div>
                     <div class="form-group col-xl-1 mb-xl-n1 filter">
-                        <div class="float-xl-right">
-                            <select asp-for="Options.Filter" asp-items="Model.Options.WorkflowsStatuses" class="selectpicker show-tick" data-header="@T["Filter by status"]" data-live-search="true" data-selected-text-format="static" data-dropdown-align-right="auto" data-width="fit" title="@T["Status"]">
+                        <div class="btn-group float-right mt-1">
+                            <select asp-for="Options.Filter" asp-items="Model.Options.WorkflowsStatuses" class="selectpicker show-tick mr-2" data-header="@T["Filter by status"]" data-live-search="true" data-selected-text-format="static" data-dropdown-align-right="auto" data-width="fit" title="@T["Status"]" data-style="btn-sm">
                             </select>
+                            <select asp-for="Options.OrderBy" asp-items="@Model.Options.WorkflowsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
                         </div>
                     </div>
                 </div>
@@ -110,7 +111,7 @@
                             </div>
                         </div>
                     </li>
-                } 
+                }
             }
             else
             {
@@ -143,7 +144,7 @@
         $(".filter-options input").on("change", function () {
             $("[name='submit.Filter']").click();
         });
-        
+
         $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
