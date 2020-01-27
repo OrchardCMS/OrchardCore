@@ -13,13 +13,18 @@ namespace OrchardCore.Data
         private readonly ISession _session;
 
         private readonly Dictionary<Type, object> _loaded = new Dictionary<Type, object>();
+
+        private readonly List<Type> _beforeCommits = new List<Type>();
+        private readonly List<Type> _afterCommitsSuccess = new List<Type>();
         private readonly List<Type> _afterCommits = new List<Type>();
-        private AfterCommitSuccessDelegate _afterCommit;
+
+        private CommitDelegate _beforeCommit;
+        private CommitDelegate _afterCommitSuccess;
+        private CommitDelegate _afterCommit;
 
         /// <summary>
         /// Creates a new instance of <see cref="SessionHelper"/>.
         /// </summary>
-        /// <param name="session">The <see cref="ISession"/>.</param>
         public SessionHelper(ISession session)
         {
             _session = session;
@@ -60,7 +65,27 @@ namespace OrchardCore.Data
         }
 
         /// <inheritdoc />
-        public void RegisterAfterCommit<T>(AfterCommitSuccessDelegate afterCommit)
+        public void RegisterBeforeCommit<T>(CommitDelegate beforeCommit)
+        {
+            if (!_beforeCommits.Contains(typeof(T)))
+            {
+                _beforeCommits.Add(typeof(T));
+                _beforeCommit += beforeCommit;
+            }
+        }
+
+        /// <inheritdoc />
+        public void RegisterAfterCommitSuccess<T>(CommitDelegate afterCommit)
+        {
+            if (!_afterCommitsSuccess.Contains(typeof(T)))
+            {
+                _afterCommitsSuccess.Add(typeof(T));
+                _afterCommitSuccess += afterCommit;
+            }
+        }
+
+        /// <inheritdoc />
+        public void RegisterAfterCommit<T>(CommitDelegate afterCommit)
         {
             if (!_afterCommits.Contains(typeof(T)))
             {
@@ -74,15 +99,27 @@ namespace OrchardCore.Data
         {
             try
             {
+                if (_beforeCommit != null)
+                {
+                    await _beforeCommit();
+                }
+
                 await _session.CommitAsync();
 
-                if (_afterCommit != null)
+                if (_afterCommitSuccess != null)
                 {
-                    await _afterCommit();
+                    await _afterCommitSuccess();
                 }
             }
             catch
             {
+            }
+            finally
+            {
+                if (_afterCommit != null)
+                {
+                    await _afterCommit();
+                }
             }
         }
     }

@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -22,7 +21,7 @@ namespace OrchardCore.Roles.Services
     {
         private readonly ISession _session;
         private readonly ISessionHelper _sessionHelper;
-        private readonly IScopedDistributedCache _scopedDistributedCache;
+        private readonly ISessionDistributedCache _sessionDistributedCache;
         private readonly IServiceProvider _serviceProvider;
         private readonly IStringLocalizer<RoleStore> S;
 
@@ -31,14 +30,14 @@ namespace OrchardCore.Roles.Services
         public RoleStore(
             ISession session,
             ISessionHelper sessionHelper,
-            IScopedDistributedCache scopedDistributedCache,
+            ISessionDistributedCache sessionDistributedCache,
             IServiceProvider serviceProvider,
             IStringLocalizer<RoleStore> stringLocalizer,
             ILogger<RoleStore> logger)
         {
             _session = session;
             _sessionHelper = sessionHelper;
-            _scopedDistributedCache = scopedDistributedCache;
+            _sessionDistributedCache = sessionDistributedCache;
             _serviceProvider = serviceProvider;
             S = stringLocalizer;
             Logger = logger;
@@ -46,41 +45,36 @@ namespace OrchardCore.Roles.Services
 
         public ILogger Logger { get; }
 
-        public void Dispose()
-        {
-        }
-
         public IQueryable<IRole> Roles => GetRolesAsync().GetAwaiter().GetResult().Roles.AsQueryable();
 
         /// <summary>
         /// Returns the document from the database to be updated.
         /// </summary>
-        public Task<RolesDocument> LoadRolesAsync() => _sessionHelper.LoadForUpdateAsync<RolesDocument>();
+        private Task<RolesDocument> LoadRolesAsync() => _sessionHelper.LoadForUpdateAsync<RolesDocument>();
 
         /// <summary>
         /// Returns the document from the cache or creates a new one. The result should not be updated.
         /// </summary>
         private Task<RolesDocument> GetRolesAsync()
         {
-            return _scopedDistributedCache.GetOrCreateAsync(() =>
+            return _sessionDistributedCache.GetOrCreateAsync(() =>
             {
                 return _sessionHelper.GetForCachingAsync<RolesDocument>();
             });
         }
 
-        private Task UpdateRolesAsync(RolesDocument roles)
+        private async Task UpdateRolesAsync(RolesDocument roles)
         {
             _updating = true;
 
-            roles.GenerateCacheId();
+            await _sessionDistributedCache.UpdateAsync(roles);
+
             _session.Save(roles);
 
             _sessionHelper.RegisterAfterCommit<RolesDocument>(() =>
             {
-                return _scopedDistributedCache.SetAsync(roles);
+                return _sessionDistributedCache.InvalidateAsync<RolesDocument>();
             });
-
-            return Task.CompletedTask;
         }
 
         #region IRoleStore<IRole>
@@ -274,5 +268,9 @@ namespace OrchardCore.Roles.Services
         }
 
         #endregion
+
+        public void Dispose()
+        {
+        }
     }
 }
