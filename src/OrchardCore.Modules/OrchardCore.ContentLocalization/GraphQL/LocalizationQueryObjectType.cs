@@ -31,7 +31,6 @@ namespace OrchardCore.ContentLocalization.GraphQL
 
                     if (culture != null)
                     {
-                        var contentItems = new List<ContentItem>();
                         var contentItem = await contentLocalizationManager.GetContentItemAsync(ctx.Source.LocalizationSet, culture);
 
                         return contentItem != null ? new[] { contentItem } : Enumerable.Empty<ContentItem>();
