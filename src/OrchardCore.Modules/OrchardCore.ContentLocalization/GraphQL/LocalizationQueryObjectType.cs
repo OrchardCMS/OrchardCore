@@ -22,22 +22,22 @@ namespace OrchardCore.ContentLocalization.GraphQL
             Field<ListGraphType<ContentItemType>, IEnumerable<ContentItem>>()
                 .Name("Localizations")
                 .Description(S["The localizations of the content item."])
-                .Argument<StringGraphType, string>("culture", "the culture of the content item", string.Empty)
-                .Resolve(x =>
+                .Argument<StringGraphType, string>("culture", "the culture of the content item", null)
+                .ResolveAsync( async x =>
                 {
                     var culture = x.GetArgument<string>("culture");
-
                     var context = (GraphQLContext)x.UserContext;
                     var contentLocalizationManager = context.ServiceProvider.GetService<IContentLocalizationManager>();
 
-                    if (!string.IsNullOrWhiteSpace(culture))
+                    if (culture != null)
                     {
                         return new List<ContentItem>
                         {
-                            contentLocalizationManager.GetContentItemAsync(x.Source.LocalizationSet, culture).GetAwaiter().GetResult()
+                            await contentLocalizationManager.GetContentItemAsync(x.Source.LocalizationSet, culture)
                         };
                     }
-                    return contentLocalizationManager.GetItemsForSetAsync(x.Source.LocalizationSet).GetAwaiter().GetResult();
+
+                    return await contentLocalizationManager.GetItemsForSetAsync(x.Source.LocalizationSet);
                 });
         }
     }
