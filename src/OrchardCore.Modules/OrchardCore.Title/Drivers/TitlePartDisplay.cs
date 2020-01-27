@@ -13,12 +13,12 @@ namespace OrchardCore.Title.Drivers
         public override IDisplayResult Display(TitlePart titlePart)
         {
             return Initialize<TitlePartViewModel>("TitlePart", model =>
-                {
-                    model.Title = titlePart.ContentItem.DisplayText;
-                    model.TitlePart = titlePart;
-                })
-                .Location("Detail", "Header:5")
-                .Location("Summary", "Header:5");
+            {
+                model.Title = titlePart.ContentItem.DisplayText;
+                model.TitlePart = titlePart;
+            })
+            .Location("Detail", "Header:5")
+            .Location("Summary", "Header:5");
         }
 
         public override IDisplayResult Edit(TitlePart titlePart, BuildPartEditorContext context)
@@ -31,13 +31,13 @@ namespace OrchardCore.Title.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater,UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Title);
 
             model.ContentItem.DisplayText = model.Title;
 
-            return Edit(model,context);
+            return Edit(model, context);
         }
     }
 }
