@@ -14,7 +14,12 @@ namespace OrchardCore.Admin
 
         public void Apply(PageRouteModel model)
         {
-            var route = model.Selectors.ElementAt(0).AttributeRouteModel;
+            var route = model.Selectors.FirstOrDefault()?.AttributeRouteModel;
+
+            if (route == null)
+            {
+                return;
+            }
 
             if (!route.Template.StartsWith(model.AreaName))
             {
