@@ -8,7 +8,6 @@ namespace OrchardCore.ContentFields.Settings
         public bool Required { get; set; }
         public string Options { get; set; }
         public MultiValueEditorOption Editor { get; set; }
-        public string DefaultValue { get; set; }
     }
     public enum MultiValueEditorOption
     {

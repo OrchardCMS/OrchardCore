@@ -3,20 +3,18 @@
 
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MultiValueFieldSettings>();
-    var listSettings = Model.PartFieldDefinition.GetSettings<MultiValueFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
     var options = new List<SelectListItem>();
-    //var selectedValue = String.IsNullOrEmpty(Model.Text) ? listSettings.DefaultValue : Model.Text;
-    var listOptions = string.IsNullOrWhiteSpace(listSettings.Options) ? new MultiValueListValueOption[0] : JsonConvert.DeserializeObject<MultiValueListValueOption[]>(listSettings.Options);
+    var listOptions = string.IsNullOrWhiteSpace(settings.Options) ? new MultiValueListValueOption[0] : JsonConvert.DeserializeObject<MultiValueListValueOption[]>(settings.Options);
 
     foreach (var option in listOptions)
     {
-        var isSelected = Model.Values.Contains(option.Value);
+        var isSelected = Model.Values.Contains(option.Value); // or isNew and default
 
         options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
     }
 }
-@if (listSettings.Editor == MultiValueEditorOption.Listbox)
+@if (settings.Editor == MultiValueEditorOption.Listbox)
 {
     <label asp-for="Values">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="form-group">
@@ -26,7 +24,7 @@
     </div>
 }
 
-@if (listSettings.Editor == MultiValueEditorOption.Checkboxes)
+@if (settings.Editor == MultiValueEditorOption.Checkboxes)
 {
     var i = 0;
     <label>@Model.PartFieldDefinition.DisplayName()</label>

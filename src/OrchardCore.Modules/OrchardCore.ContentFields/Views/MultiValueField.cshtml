@@ -1,10 +1,11 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayMultiValueFieldViewModel
 @using OrchardCore.Mvc.Utilities
+@using Newtonsoft.Json
 
 @{
-    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    var settings = Model.PartFieldDefinition.GetSettings<MultiValueFieldSettings>();
+    var listOptions = string.IsNullOrWhiteSpace(settings.Options) ? new MultiValueListValueOption[0] : JsonConvert.DeserializeObject<MultiValueListValueOption[]>(settings.Options);
+    var valuesToDisplay = listOptions.Where(o => Model.Values.Contains(o.Value)).Select(o => T[o.Name].Value).ToArray();
 }
-
-<div class="field field-type-textfield field-name-@name">
-   @string.Join(", ", Model.Values)
-</div>
+   
+@string.Join(", ", valuesToDisplay)
