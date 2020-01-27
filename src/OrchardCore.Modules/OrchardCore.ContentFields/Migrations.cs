@@ -40,8 +40,8 @@ namespace OrchardCore.ContentFields
             // Localization set content picker field
             _contentDefinitionManager.MigrateFieldSettings<LocalizationSetContentPickerField, LocalizationSetContentPickerFieldSettings>();
 
-            // Multi Value field
-            _contentDefinitionManager.MigrateFieldSettings<MultiValueField, MultiValueFieldSettings>();
+            // MultiSelect field
+            _contentDefinitionManager.MigrateFieldSettings<MultiSelectField, MultiSelectFieldSettings>();
 
             // Numeric field
             _contentDefinitionManager.MigrateFieldSettings<NumericField, NumericFieldSettings>();

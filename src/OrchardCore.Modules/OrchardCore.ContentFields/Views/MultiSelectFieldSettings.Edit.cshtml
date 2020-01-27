@@ -1,4 +1,4 @@
-@model OrchardCore.ContentFields.Settings.MultiValueFieldSettings
+@model OrchardCore.ContentFields.Settings.MultiSelectFieldSettings
 
 <div class="form-group">
     <div class="custom-control custom-checkbox">
@@ -23,7 +23,7 @@
 <script asp-src="https://cdn.jsdelivr.net/npm/vuedraggable@2.23.0/dist/vuedraggable.umd.min.js" debug-src="https://cdn.jsdelivr.net/npm/vuedraggable@2.23.0/dist/vuedraggable.umd.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
 
 <script at="Foot">
-    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue', document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
+    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '', document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
 </script>
 
 <script type="text/x-template" id="options-table">
@@ -44,8 +44,8 @@
                     <input type="text" class="form-control courrier" v-model="option.value" placeholder="Enter a value" />
                 </td>
                 <td class="text-center align-middle">
-                    <div class="custom-control custom-radio ml-2">
-                        <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" v-bind:value="option.value" v-model="data.selected" v-on:click="uncheck(index)">
+                    <div class="custom-control custom-checkbox ml-2">
+                        <input type="checkbox" class="custom-control-input" :id="'customRadio_' + index" v-model="option.default">
                         <label class="custom-control-label" title="@T["Set as default"]" v-bind:for="'customRadio_' + index"></label>
                     </div>
                 </td>
@@ -100,16 +100,6 @@
 </script>
 
 <div id="@Html.IdFor(m => m)">
-    <div class="row">
-        <div class="form-group col-sm-6">
-            <label asp-for="Editor">@T["What type of list editor should be used?"]</label>
-            <select asp-for="Editor" class="form-control">
-                <option value="@nameof(MultiValueEditorOption.Listbox)">@T["Listbox"]</option>
-                <option value="@nameof(MultiValueEditorOption.Checkboxes)">@T["Checkbox"]</option>
-            </select>
-        </div>
-    </div>
-
     <div class="row">
         <div class="col-sm-6">
             <label asp-for="Options">@T["Options"]</label>

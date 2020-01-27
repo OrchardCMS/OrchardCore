@@ -4,9 +4,9 @@ using OrchardCore.Indexing;
 
 namespace OrchardCore.ContentFields.Indexing
 {
-    public class MultiValueFieldIndexHandler : ContentFieldIndexHandler<MultiValueField>
+    public class MultiSelectFieldIndexHandler : ContentFieldIndexHandler<MultiSelectField>
     {
-        public override Task BuildIndexAsync(MultiValueField field, BuildFieldIndexContext context)
+        public override Task BuildIndexAsync(MultiSelectField field, BuildFieldIndexContext context)
         {
             var options = context.Settings.ToOptions();
 

@@ -9,34 +9,32 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class MultiValueFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MultiValueField>
+    public class MultiSelectFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MultiSelectField>
     {
         private readonly IStringLocalizer S;
 
-        public MultiValueFieldSettingsDriver(IStringLocalizer<MultiValueFieldSettingsDriver> localizer)
+        public MultiSelectFieldSettingsDriver(IStringLocalizer<MultiSelectFieldSettingsDriver> localizer)
         {
             S = localizer;
         }
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<MultiValueFieldSettings>("MultiValueFieldSettings_Edit", model =>
+            return Initialize<MultiSelectFieldSettings>("MultiSelectFieldSettings_Edit", model =>
             {
-                var settings = partFieldDefinition.GetSettings<MultiValueFieldSettings>();
+                var settings = partFieldDefinition.GetSettings<MultiSelectFieldSettings>();
 
                 model.Required = settings.Required;
                 model.Hint = settings.Hint;
-                model.DefaultValue = settings.DefaultValue;
-                model.Editor = settings.Editor;
-                model.Options = settings.Options ?? JsonConvert.SerializeObject(new MultiValueListValueOption[0], Formatting.Indented);
+                model.Options = settings.Options ?? JsonConvert.SerializeObject(new MultiSelectListValueOption[0], Formatting.Indented);
             })
             .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
-                var model = new MultiValueSettingsViewModel();
-                var settings = new MultiValueFieldSettings();
+                var model = new MultiSelectSettingsViewModel();
+                var settings = new MultiSelectFieldSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
@@ -44,8 +42,6 @@ namespace OrchardCore.ContentFields.Settings
                 {
                     settings.Required = model.Required;
                     settings.Hint = model.Hint;
-                    settings.DefaultValue = model.DefaultValue;
-                    settings.Editor = model.Editor;
                     settings.Options = model.Options; // string.IsNullOrWhiteSpace(model.Options)
                         //? new MultiValueListValueOption[0]
                         //: JsonConvert.DeserializeObject<MultiValueListValueOption[]>(model.Options);

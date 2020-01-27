@@ -1,31 +1,20 @@
-@model OrchardCore.ContentFields.ViewModels.EditMultiValueFieldViewModel
+@model OrchardCore.ContentFields.ViewModels.EditMultiSelectFieldViewModel
 @using Newtonsoft.Json
 
 @{
-    var settings = Model.PartFieldDefinition.GetSettings<MultiValueFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<MultiSelectFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
     var options = new List<SelectListItem>();
-    var listOptions = string.IsNullOrWhiteSpace(settings.Options) ? new MultiValueListValueOption[0] : JsonConvert.DeserializeObject<MultiValueListValueOption[]>(settings.Options);
+    var listOptions = string.IsNullOrWhiteSpace(settings.Options) ? new MultiSelectListValueOption[0] : JsonConvert.DeserializeObject<MultiSelectListValueOption[]>(settings.Options);
 
     foreach (var option in listOptions)
     {
-        var isSelected = Model.Values.Contains(option.Value); // or isNew and default
+        bool isSelected = Model.Values?.Contains(option.Value) ?? false;
 
         options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
     }
 }
-@if (settings.Editor == MultiValueEditorOption.Listbox)
-{
-    <label asp-for="Values">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="form-group">
-        <div class="row col-md-6 col-lg-4">
-            <select class="form-control content-preview-select" asp-for="Values" asp-items="options" multiple></select>
-        </div>
-    </div>
-}
-
-@if (settings.Editor == MultiValueEditorOption.Checkboxes)
-{
+@{     
     var i = 0;
     <label>@Model.PartFieldDefinition.DisplayName()</label>
     <div class="form-group">
