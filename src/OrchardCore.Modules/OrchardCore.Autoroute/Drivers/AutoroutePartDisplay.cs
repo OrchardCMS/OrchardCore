@@ -67,8 +67,7 @@ namespace OrchardCore.Autoroute.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AutoroutePart model, IUpdateModel updater,
-            UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(AutoroutePart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
             var viewModel = new AutoroutePartViewModel();
 
@@ -89,8 +88,7 @@ namespace OrchardCore.Autoroute.Drivers
 
             var httpContext = _httpContextAccessor.HttpContext;
 
-            if (httpContext != null &&
-                await _authorizationService.AuthorizeAsync(httpContext.User, Permissions.SetHomepage))
+            if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, Permissions.SetHomepage))
             {
                 await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
             }
@@ -104,29 +102,23 @@ namespace OrchardCore.Autoroute.Drivers
         {
             if (autoroute.Path == "/")
             {
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path),
-                    S["Your permalink can't be set to the homepage, please use the homepage option instead."]);
+                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink can't be set to the homepage, please use the homepage option instead."]);
             }
 
             if (autoroute.Path?.IndexOfAny(InvalidCharactersForPath) > -1 || autoroute.Path?.IndexOf(' ') > -1)
             {
                 var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path),
-                    S["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
+                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
             }
 
             if (autoroute.Path?.Length > MaxPathLength)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path),
-                    S["Your permalink is too long. The permalink can only be up to {0} characters.", MaxPathLength]);
+                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is too long. The permalink can only be up to {0} characters.", MaxPathLength]);
             }
 
-            if (autoroute.Path != null && (await _session.QueryIndex<AutoroutePartIndex>(o =>
-                    o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).CountAsync()) >
-                0)
+            if (autoroute.Path != null && (await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).CountAsync()) > 0)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path),
-                    S["Your permalink is already in use."]);
+                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is already in use."]);
             }
         }
     }
