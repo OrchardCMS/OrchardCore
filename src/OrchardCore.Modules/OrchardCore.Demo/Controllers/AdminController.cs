@@ -6,7 +6,7 @@ namespace OrchardCore.Demo.Controllers
     {
         public IActionResult Index()
         {
-            return Content("Demo Admin Index Page.");
+            return View();
         }
     }
 }
