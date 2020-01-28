@@ -6,13 +6,13 @@ namespace OrchardCore.ContentLocalization.GraphQL
 {
     public class LocalizationQueryObjectType : ObjectGraphType<LocalizationPart>
     {
-        public LocalizationQueryObjectType(IStringLocalizer<LocalizationQueryObjectType> T)
+        public LocalizationQueryObjectType(IStringLocalizer<LocalizationQueryObjectType> S)
         {
             Name = "LocalizationPart";
-            Description = T["Localization cultures for your content item."];
+            Description = S["Localization cultures for your content item."];
 
-            Field(x => x.Culture).Description(T["The culture for your content item."]);
-            Field(x => x.LocalizationSet).Description(T["The localization set for your content item."]);
+            Field(x => x.Culture).Description(S["The culture for your content item."]);
+            Field(x => x.LocalizationSet).Description(S["The localization set for your content item."]);
         }
     }
 }

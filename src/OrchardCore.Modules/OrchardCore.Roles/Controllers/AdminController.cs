@@ -24,7 +24,7 @@ namespace OrchardCore.Roles.Controllers
     {
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer T;
+        private readonly IStringLocalizer S;
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
         private readonly RoleManager<IRole> _roleManager;
@@ -32,7 +32,7 @@ namespace OrchardCore.Roles.Controllers
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IRoleService _roleService;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<AdminController> TH;
+        private readonly IHtmlLocalizer<AdminController> H;
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -48,7 +48,7 @@ namespace OrchardCore.Roles.Controllers
             IEnumerable<IPermissionProvider> permissionProviders
             )
         {
-            TH = htmlLocalizer;
+            H = htmlLocalizer;
             _notifier = notifier;
             _roleService = roleService;
             _typeFeatureProvider = typeFeatureProvider;
@@ -56,7 +56,7 @@ namespace OrchardCore.Roles.Controllers
             _roleManager = roleManager;
             _shapeFactory = shapeFactory;
             _siteService = siteService;
-            T = stringLocalizer;
+            S = stringLocalizer;
             _authorizationService = authorizationService;
             _session = session;
         }
@@ -100,12 +100,12 @@ namespace OrchardCore.Roles.Controllers
 
                 if (model.RoleName.Contains('/'))
                 {
-                    ModelState.AddModelError(string.Empty, T["Invalid role name."]);
+                    ModelState.AddModelError(string.Empty, S["Invalid role name."]);
                 }
                 
                 if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
                 {
-                    ModelState.AddModelError(string.Empty, T["The role is already used."]);
+                    ModelState.AddModelError(string.Empty, S["The role is already used."]);
                 }
             }
 
@@ -115,7 +115,7 @@ namespace OrchardCore.Roles.Controllers
                 var result = await _roleManager.CreateAsync(role);
                 if (result.Succeeded)
                 {
-                    _notifier.Success(TH["Role created successfully"]);
+                    _notifier.Success(H["Role created successfully"]);
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -151,17 +151,17 @@ namespace OrchardCore.Roles.Controllers
 
             if (result.Succeeded)
             {
-                _notifier.Success(TH["Role deleted successfully"]);
+                _notifier.Success(H["Role deleted successfully"]);
             }
             else
             {
                 _session.Cancel();
 
-                _notifier.Error(TH["Could not delete this role"]);
+                _notifier.Error(H["Could not delete this role"]);
 
                 foreach (var error in result.Errors)
                 {
-                    _notifier.Error(TH[error.Description]);
+                    _notifier.Error(H[error.Description]);
                 }
             }
 
@@ -229,7 +229,7 @@ namespace OrchardCore.Roles.Controllers
 
             await _roleManager.UpdateAsync(role);
 
-            _notifier.Success(TH["Role updated successfully."]);
+            _notifier.Success(H["Role updated successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -258,7 +258,7 @@ namespace OrchardCore.Roles.Controllers
                 {
                     var category = permission.Category;
 
-                    string title = String.IsNullOrWhiteSpace(category) ? T["{0} Feature", featureName] : category;
+                    string title = String.IsNullOrWhiteSpace(category) ? S["{0} Feature", featureName] : category;
 
                     if (installedPermissions.ContainsKey(title))
                     {

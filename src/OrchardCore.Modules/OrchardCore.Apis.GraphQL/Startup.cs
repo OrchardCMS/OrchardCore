@@ -70,7 +70,7 @@ namespace OrchardCore.Apis.GraphQL
                 c.ExposeExceptions = exposeExceptions;
                 c.MaxDepth = configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 20;
                 c.MaxComplexity = configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxComplexity)}");
-                c.FieldImpact = configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.FieldImpact)}");
+                c.FieldImpact = configuration.GetValue<double?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.FieldImpact)}");
                 c.MaxNumberOfResults = configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxNumberOfResults)}") ?? 1000;
                 c.MaxNumberOfResultsValidationMode = maxNumberOfResultsValidationMode;
                 c.DefaultNumberOfResults = configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.DefaultNumberOfResults)}") ?? 100;

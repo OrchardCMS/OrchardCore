@@ -11,23 +11,27 @@ namespace OrchardCore.Markdown.GraphQL
 {
     public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
     {
-        public MarkdownFieldQueryObjectType(IStringLocalizer<MarkdownFieldQueryObjectType> T)
+        public MarkdownFieldQueryObjectType(IStringLocalizer<MarkdownFieldQueryObjectType> S)
         {
             Name = nameof(MarkdownField);
-            Description = T["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
+            Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
 
             Field("markdown", x => x.Markdown, nullable: true)
-                .Description(T["the markdown value"])
-                .Type(new StringGraphType());
+                .Description(S["the markdown value"]);
 
             Field<StringGraphType>()
                 .Name("html")
-                .Description(T["the HTML representation of the markdown content"])
+                .Description(S["the HTML representation of the markdown content"])
                 .ResolveLockedAsync(ToHtml);
         }
 
         private static async Task<object> ToHtml(ResolveFieldContext<MarkdownField> ctx)
         {
+            if (string.IsNullOrEmpty(ctx.Source.Markdown))
+            {
+                return ctx.Source.Markdown;
+            }
+
             var serviceProvider = ctx.ResolveServiceProvider();
             var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
             var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();

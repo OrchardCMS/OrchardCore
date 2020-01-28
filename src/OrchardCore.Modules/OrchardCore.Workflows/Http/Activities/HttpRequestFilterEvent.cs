@@ -13,20 +13,20 @@ namespace OrchardCore.Workflows.Http.Activities
     public class HttpRequestFilterEvent : EventActivity
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IStringLocalizer<HttpRequestFilterEvent> S;
+        
         public static string EventName => nameof(HttpRequestFilterEvent);
 
         public HttpRequestFilterEvent(IStringLocalizer<HttpRequestFilterEvent> localizer, IHttpContextAccessor httpContextAccessor)
         {
-            T = localizer;
+            S = localizer;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => EventName;
-        public override LocalizedString DisplayText => T["Http Request Filter Event"];
+        public override LocalizedString DisplayText => S["Http Request Filter Event"];
 
-        public override LocalizedString Category => T["HTTP"];
+        public override LocalizedString Category => S["HTTP"];
 
         public string HttpMethod
         {
@@ -79,7 +79,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Matched"]);
+            return Outcomes(S["Matched"]);
         }
 
         public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

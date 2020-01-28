@@ -14,18 +14,17 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         public static string EventName => nameof(SignalEvent);
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-
+        private readonly IStringLocalizer<SignalEvent> S;
+        
         public SignalEvent(IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<SignalEvent> localizer)
         {
             _expressionEvaluator = expressionEvaluator;
-            T = localizer;
+            S = localizer;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => EventName;
-        public override LocalizedString DisplayText => T["Signal Event"];
-        public override LocalizedString Category => T["HTTP"];
+        public override LocalizedString DisplayText => S["Signal Event"];
+        public override LocalizedString Category => S["HTTP"];
 
         public WorkflowExpression<string> SignalName
         {
@@ -41,7 +40,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

@@ -27,6 +27,7 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
         private readonly ILogger<ResetPasswordController> _logger;
+        private readonly IStringLocalizer<ResetPasswordController> S;
 
         public ResetPasswordController(
             IUserService userService,
@@ -42,12 +43,10 @@ namespace OrchardCore.Users.Controllers
             _userManager = userManager;
             _siteService = siteService;
 
-            T = stringLocalizer;
+            S = stringLocalizer;
             _logger = logger;
             _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
         }
-
-        IStringLocalizer T { get; set; }
 
         [HttpGet]
         [AllowAnonymous]
@@ -87,7 +86,7 @@ namespace OrchardCore.Users.Controllers
                 user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
                 var resetPasswordUrl = Url.Action("ResetPassword", "ResetPassword", new { code = user.ResetToken }, HttpContext.Request.Scheme);
                 // send email with callback link
-                await this.SendEmailAsync(user.Email, T["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
+                await this.SendEmailAsync(user.Email, S["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
 
                 await _passwordRecoveryFormEvents.InvokeAsync(i => i.PasswordRecoveredAsync(), _logger);
 

@@ -71,7 +71,9 @@ namespace OrchardCore.Contents.Handlers
 
                 if (settings.IncludeFullTextTemplate && !String.IsNullOrEmpty(settings.FullTextTemplate))
                 {
-                    var result = await _liquidTemplateManager.RenderAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem);
+                    var result = await _liquidTemplateManager.RenderAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
+                        scope => scope.SetValue("ContentItem", context.ContentItem));
+
                     fullTextAspect.Segments.Add(result);
                 }
             });
