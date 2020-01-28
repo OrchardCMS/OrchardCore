@@ -8,7 +8,7 @@
 
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
-    var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
+    var culture = await Orchard.GetContentCultureAsync(Model.ContentItem) ?? CultureInfo.CurrentUICulture;
 }
 
 <script asp-name="trumbowyg" depends-on="admin" version="2" at="Foot"></script>
@@ -32,11 +32,6 @@
 
 <script at="Foot">
     $(function () {
-        @if (culture == null)
-        {
-            culture = CultureInfo.CurrentUICulture;
-        }
-
         jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName = {
             _dir: '@culture.GetLanguageDirection()',
         };
