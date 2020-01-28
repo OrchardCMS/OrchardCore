@@ -251,12 +251,14 @@ namespace OrchardCore.OpenId.Controllers
             var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
             if (roleService != null)
             {
+                var roles = await _applicationManager.GetRolesAsync(application);
+
                 foreach (var role in await roleService.GetRoleNamesAsync())
                 {
                     model.RoleEntries.Add(new EditOpenIdApplicationViewModel.RoleEntry
                     {
                         Name = role,
-                        Selected = await _applicationManager.IsInRoleAsync(application, role)
+                        Selected = roles.Contains(role, StringComparer.OrdinalIgnoreCase)
                     });
                 }
             }
