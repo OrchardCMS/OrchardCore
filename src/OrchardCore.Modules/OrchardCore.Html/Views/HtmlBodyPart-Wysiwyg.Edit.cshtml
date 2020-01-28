@@ -32,11 +32,16 @@
 
 <script at="Foot">
     $(function () {
-        jQuery.trumbowyg.langs.@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName = {
-            _dir: '@CultureInfo.CurrentUICulture.GetLanguageDirection()',
+        @if (culture == null)
+        {
+            culture = CultureInfo.CurrentUICulture;
+        }
+
+        jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName = {
+            _dir: '@culture.GetLanguageDirection()',
         };
 
-        var settings = { lang: '@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName' };
+        var settings = { lang: '@culture.TwoLetterISOLanguageName' };
 
         $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
