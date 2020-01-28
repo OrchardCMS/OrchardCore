@@ -101,6 +101,19 @@ namespace OrchardCore.Workflows.Controllers
                     break;
             }
 
+            switch (model.Options.OrderBy)
+            {
+                case WorkflowOrder.CreatedDesc:
+                    query = query.OrderByDescending(x => x.CreatedUtc);
+                    break;
+                case WorkflowOrder.Created:
+                    query = query.OrderBy(x => x.CreatedUtc);
+                    break;
+                default:
+                    query = query.OrderByDescending(x => x.CreatedUtc);
+                    break;
+            }
+
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             var routeData = new RouteData();
@@ -122,6 +135,11 @@ namespace OrchardCore.Workflows.Controllers
                 ReturnUrl = returnUrl
             };
 
+            model.Options.WorkflowsSorts = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["Recently created"].Value, Value = nameof(WorkflowOrder.CreatedDesc) },
+                new SelectListItem() { Text = H["Least recently created"].Value, Value = nameof(WorkflowOrder.Created) }
+            };
+
             model.Options.WorkflowsStatuses = new List<SelectListItem>() {
                 new SelectListItem() { Text = H["All"].Value, Value = nameof(WorkflowFilter.All) },
                 new SelectListItem() { Text = H["Faulted"].Value, Value = nameof(WorkflowFilter.Faulted) },
@@ -140,7 +158,8 @@ namespace OrchardCore.Workflows.Controllers
         public ActionResult IndexFilterPOST(WorkflowIndexViewModel model)
         {
             return RedirectToAction("Index", new RouteValueDictionary {
-                { "Options.Filter", model.Options.Filter }
+                { "Options.Filter", model.Options.Filter },
+                { "Options.OrderBy", model.Options.OrderBy }
             });
         }
 
