@@ -33,7 +33,7 @@ namespace OrchardCore.Lists.Drivers
                 Combine(
                     Initialize<ListPartViewModel>("ListPart", async model =>
                     {
-                        var pager = await GetPagerAsync(context);
+                        var pager = await GetPagerSlimAsync(context);
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
 
                         model.ListPart = listPart;
@@ -45,7 +45,7 @@ namespace OrchardCore.Lists.Drivers
                     .Location("Detail", "Content:10"),
                     Initialize<ListPartViewModel>("ListPart", async model =>
                     {
-                        var pager = await GetPagerAsync(context);
+                        var pager = await GetPagerSlimAsync(context);
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
 
                         model.ListPart = listPart;
@@ -59,7 +59,7 @@ namespace OrchardCore.Lists.Drivers
                 );
         }
 
-        private async Task<PagerSlim> GetPagerAsync(BuildPartDisplayContext context)
+        private async Task<PagerSlim> GetPagerSlimAsync(BuildPartDisplayContext context)
         {
             var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
             var pagerParameters = new PagerSlimParameters();
