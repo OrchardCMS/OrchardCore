@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -23,7 +22,6 @@ using YesSql;
 
 namespace OrchardCore.ContentTypes.Controllers
 {
-    [Admin]
     public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentDefinitionService _contentDefinitionService;

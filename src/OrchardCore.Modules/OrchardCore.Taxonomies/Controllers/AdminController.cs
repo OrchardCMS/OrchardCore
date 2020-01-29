@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -16,7 +15,6 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Controllers
 {
-    [Admin]
     public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;

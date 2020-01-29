@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -22,7 +21,6 @@ using YesSql;
 
 namespace OrchardCore.Layers.Controllers
 {
-    [Admin]
     public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;

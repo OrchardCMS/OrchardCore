@@ -10,13 +10,11 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Controllers
 {
-    [Admin]
     public class AdminController : Controller
     {
         private readonly HashSet<string> _allowedFileExtensions;

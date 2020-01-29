@@ -21,7 +21,6 @@ using YesSql;
 
 namespace OrchardCore.Roles.Controllers
 {
-    [Admin]
     public class AdminController : Controller
     {
         private readonly ISession _session;

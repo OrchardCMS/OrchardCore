@@ -49,7 +49,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.LocalizeContent, contentItem))
             {
-                return this.ChallengeOrForbid();
+                return this.Forbid();
             }
 
             var checkContentItem = await _contentManager.NewAsync(contentItem.ContentType);

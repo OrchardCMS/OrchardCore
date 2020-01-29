@@ -14,7 +14,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
@@ -28,11 +27,9 @@ using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
 using YesSql;
-using YesSql.Services;
 
 namespace OrchardCore.Lucene.Controllers
 {
-    [Admin]
     public class AdminController : Controller
     {
         private readonly ISession _session;

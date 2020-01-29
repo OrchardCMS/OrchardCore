@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -19,7 +18,6 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Features.Controllers
 {
-    [Admin]
     public class AdminController : Controller
     {
         private readonly IModuleService _moduleService;

@@ -12,11 +12,9 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Menu.Models;
 using YesSql;
-using OrchardCore.Admin;
 
 namespace OrchardCore.Menu.Controllers
 {
-    [Admin]
     public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
