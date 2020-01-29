@@ -69,9 +69,13 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </summary>
         public ShapeResult Dynamic(string shapeType, Func<dynamic, Task> initializeAsync)
         {
-            return Factory(shapeType, ctx =>
-                ctx.ShapeFactory.CreateAsync(shapeType, initializeAsync)
-            );
+            return Factory(shapeType,
+                async ctx =>
+                {
+                    dynamic shape = await ctx.ShapeFactory.CreateAsync(shapeType);
+                    await initializeAsync(shape);
+                    return shape;
+                });
         }
 
         /// <summary>
