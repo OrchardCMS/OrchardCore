@@ -19,6 +19,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Features.Controllers
 {
+    [Admin]
     public class AdminController : Controller
     {
         private readonly IModuleService _moduleService;
@@ -51,7 +52,7 @@ namespace OrchardCore.Features.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
@@ -92,7 +93,7 @@ namespace OrchardCore.Features.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (model.FeatureIds == null || !model.FeatureIds.Any())

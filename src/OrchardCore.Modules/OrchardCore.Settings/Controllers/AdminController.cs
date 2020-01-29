@@ -41,7 +41,7 @@ namespace OrchardCore.Settings.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var site = await _siteService.GetSiteSettingsAsync();
@@ -61,7 +61,7 @@ namespace OrchardCore.Settings.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var site = await _siteService.LoadSiteSettingsAsync();

@@ -48,7 +48,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
@@ -86,7 +86,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
             var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
@@ -120,7 +120,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
@@ -161,7 +161,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
@@ -200,7 +200,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
@@ -243,7 +243,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
@@ -278,7 +278,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
@@ -311,7 +311,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();

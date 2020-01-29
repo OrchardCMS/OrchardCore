@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -22,6 +23,7 @@ using YesSql;
 
 namespace OrchardCore.ContentTypes.Controllers
 {
+    [Admin]
     public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentDefinitionService _contentDefinitionService;
@@ -69,7 +71,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View("List", new ListContentTypesViewModel
@@ -82,7 +84,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View(new CreateTypeViewModel { DisplayName = suggestion, Name = suggestion.ToSafeName() });
@@ -93,7 +95,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
@@ -149,7 +151,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.GetType(id);
@@ -170,7 +172,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(id);
@@ -211,7 +213,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
@@ -232,7 +234,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.GetType(id);
@@ -260,7 +262,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.GetType(id);
@@ -292,7 +294,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
@@ -329,7 +331,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
@@ -398,7 +400,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
@@ -423,7 +425,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View(new ListContentPartsViewModel
@@ -437,7 +439,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View(new CreatePartViewModel { Name = suggestion.ToSafeName() });
@@ -448,7 +450,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             viewModel.Name = viewModel.Name ?? String.Empty;
@@ -495,7 +497,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var contentPartDefinition = _contentDefinitionManager.GetPartDefinition(id);
@@ -517,7 +519,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var contentPartDefinition = _contentDefinitionManager.LoadPartDefinition(id);
@@ -550,7 +552,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -571,7 +573,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -596,7 +598,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -670,7 +672,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var partViewModel = _contentDefinitionService.GetPart(id);
@@ -707,7 +709,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (viewModel == null)
@@ -801,7 +803,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -837,7 +839,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(id);
@@ -873,7 +875,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (viewModel == null)

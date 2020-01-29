@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -29,6 +30,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Contents.Controllers
 {
+    [Admin]
     public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
@@ -259,7 +261,7 @@ namespace OrchardCore.Contents.Controllers
                             {
                                 _notifier.Warning(H["Couldn't publish selected content."]);
                                 _session.Cancel();
-                                return Unauthorized();
+                                return Forbid();
                             }
 
                             await _contentManager.PublishAsync(item);
@@ -273,7 +275,7 @@ namespace OrchardCore.Contents.Controllers
                             {
                                 _notifier.Warning(H["Couldn't unpublish selected content."]);
                                 _session.Cancel();
-                                return Unauthorized();
+                                return Forbid();
                             }
 
                             await _contentManager.UnpublishAsync(item);
@@ -287,7 +289,7 @@ namespace OrchardCore.Contents.Controllers
                             {
                                 _notifier.Warning(H["Couldn't remove selected content."]);
                                 _session.Cancel();
-                                return Unauthorized();
+                                return Forbid();
                             }
 
                             await _contentManager.RemoveAsync(item);
@@ -316,7 +318,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
@@ -354,7 +356,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, dummyContent))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return await CreatePOST(id, returnUrl, stayOnSamePage, async contentItem =>
@@ -378,7 +380,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
@@ -419,7 +421,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "DetailAdmin");
@@ -436,7 +438,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
@@ -476,7 +478,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, content))
             {
-                return Unauthorized();
+                return Forbid();
             }
             return await EditPOST(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
             {
@@ -501,7 +503,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             //string previousRoute = null;
@@ -552,7 +554,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.CloneContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             try
@@ -582,7 +584,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (contentItem != null)
@@ -606,7 +608,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (contentItem != null)
@@ -634,7 +636,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             await _contentManager.PublishAsync(contentItem);
@@ -664,7 +666,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             await _contentManager.UnpublishAsync(contentItem);

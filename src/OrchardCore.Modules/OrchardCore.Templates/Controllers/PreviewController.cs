@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Templates.ViewModels;
 
@@ -45,7 +46,7 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             var name = Request.Form["Name"];

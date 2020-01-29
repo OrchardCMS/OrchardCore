@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -13,6 +14,7 @@ using OrchardCore.Email.ViewModels;
 
 namespace OrchardCore.Email.Controllers
 {
+    [Admin]
     public class AdminController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
@@ -43,7 +45,7 @@ namespace OrchardCore.Email.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View();
@@ -54,7 +56,7 @@ namespace OrchardCore.Email.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)

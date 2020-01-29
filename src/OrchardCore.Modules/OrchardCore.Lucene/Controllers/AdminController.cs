@@ -14,6 +14,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
@@ -31,6 +32,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Lucene.Controllers
 {
+    [Admin]
     public class AdminController : Controller
     {
         private readonly ISession _session;
@@ -122,7 +124,7 @@ namespace OrchardCore.Lucene.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!IsCreate)
@@ -158,7 +160,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ValidateModel(model);
@@ -233,7 +235,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!_luceneIndexManager.Exists(id))
@@ -254,7 +256,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!_luceneIndexManager.Exists(id))
@@ -275,7 +277,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!_luceneIndexManager.Exists(model.IndexName))
@@ -309,7 +311,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
@@ -397,7 +399,7 @@ namespace OrchardCore.Lucene.Controllers
                             {
                                 _notifier.Warning(H["Couldn't remove selected index."]);
                                 _session.Cancel();
-                                return Unauthorized();
+                                return Forbid();
                             }
 
                             await _luceneIndexingService.DeleteIndexAsync(item.IndexName);
@@ -409,7 +411,7 @@ namespace OrchardCore.Lucene.Controllers
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
                             {
-                                return Unauthorized();
+                                return Forbid();
                             }
 
                             if (!_luceneIndexManager.Exists(item.IndexName))
@@ -428,7 +430,7 @@ namespace OrchardCore.Lucene.Controllers
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
                             {
-                                return Unauthorized();
+                                return Forbid();
                             }
 
                             if (!_luceneIndexManager.Exists(item.IndexName))

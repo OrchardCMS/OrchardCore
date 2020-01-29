@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentLocalization.Controllers
 {
@@ -48,7 +49,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.LocalizeContent, contentItem))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             var checkContentItem = await _contentManager.NewAsync(contentItem.ContentType);
@@ -58,7 +59,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, checkContentItem))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             var part = contentItem.As<LocalizationPart>();

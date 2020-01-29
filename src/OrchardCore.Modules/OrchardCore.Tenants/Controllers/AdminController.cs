@@ -252,12 +252,12 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!IsDefaultShell())
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
@@ -287,12 +287,12 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!IsDefaultShell())
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -333,12 +333,12 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!IsDefaultShell())
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var shellSettings = _shellHost.GetAllSettings()
@@ -380,12 +380,12 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!IsDefaultShell())
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -447,12 +447,12 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!IsDefaultShell())
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var shellSettings = _shellHost.GetAllSettings()
@@ -487,12 +487,12 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!IsDefaultShell())
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var shellSettings = _shellHost.GetAllSettings()
@@ -520,12 +520,12 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!IsDefaultShell())
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var shellSettings = _shellHost.GetAllSettings()

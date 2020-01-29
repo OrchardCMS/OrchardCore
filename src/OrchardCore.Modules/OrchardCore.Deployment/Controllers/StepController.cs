@@ -52,7 +52,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
@@ -90,7 +90,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.DeploymentPlanId);
@@ -130,7 +130,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
@@ -166,7 +166,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.DeploymentPlanId);
@@ -205,7 +205,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);

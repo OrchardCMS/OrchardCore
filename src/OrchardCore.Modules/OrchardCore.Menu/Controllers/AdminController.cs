@@ -12,9 +12,11 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Menu.Models;
 using YesSql;
+using OrchardCore.Admin;
 
 namespace OrchardCore.Menu.Controllers
 {
+    [Admin]
     public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
@@ -53,7 +55,7 @@ namespace OrchardCore.Menu.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var contentItem = await _contentManager.NewAsync(id);
@@ -72,7 +74,7 @@ namespace OrchardCore.Menu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem menu;
@@ -146,7 +148,7 @@ namespace OrchardCore.Menu.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu, menu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             // Look for the target menu item in the hierarchy
@@ -174,7 +176,7 @@ namespace OrchardCore.Menu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem menu;
@@ -229,7 +231,7 @@ namespace OrchardCore.Menu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem menu;

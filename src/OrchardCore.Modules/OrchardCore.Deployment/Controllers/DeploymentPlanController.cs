@@ -58,12 +58,12 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -109,7 +109,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
@@ -150,7 +150,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new CreateDeploymentPlanViewModel();
@@ -163,7 +163,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -191,7 +191,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
@@ -215,7 +215,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.Id);
@@ -253,7 +253,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);

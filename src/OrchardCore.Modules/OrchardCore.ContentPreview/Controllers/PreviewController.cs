@@ -14,6 +14,7 @@ using OrchardCore.ContentPreview.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentPreview.Controllers
 {
@@ -57,7 +58,7 @@ namespace OrchardCore.ContentPreview.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ContentPreview))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             var contentItemType = Request.Form["ContentItemType"];

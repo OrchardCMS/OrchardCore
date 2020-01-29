@@ -12,6 +12,7 @@ using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Lucene.Controllers
 {
@@ -50,7 +51,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneSearch))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();

@@ -84,7 +84,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -174,7 +174,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
             
             if (itemIds?.Count() > 0)
@@ -209,7 +209,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (id == null)
@@ -241,7 +241,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!ModelState.IsValid)
@@ -285,7 +285,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var workflowType = await _session.GetAsync<WorkflowType>(id);
@@ -310,7 +310,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!ModelState.IsValid)
@@ -338,7 +338,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var newLocalId = string.IsNullOrWhiteSpace(localId) ? Guid.NewGuid().ToString() : localId;
@@ -408,7 +408,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(model.Id);
@@ -461,7 +461,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(id);

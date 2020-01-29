@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -20,6 +21,7 @@ using YesSql;
 
 namespace OrchardCore.Roles.Controllers
 {
+    [Admin]
     public class AdminController : Controller
     {
         private readonly ISession _session;
@@ -65,7 +67,7 @@ namespace OrchardCore.Roles.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var roles = await _roleService.GetRolesAsync();
@@ -83,7 +85,7 @@ namespace OrchardCore.Roles.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new CreateRoleViewModel();
@@ -137,7 +139,7 @@ namespace OrchardCore.Roles.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var currentRole = await _roleManager.FindByIdAsync(id);
@@ -172,7 +174,7 @@ namespace OrchardCore.Roles.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
@@ -201,7 +203,7 @@ namespace OrchardCore.Roles.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));

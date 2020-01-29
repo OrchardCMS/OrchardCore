@@ -54,7 +54,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -90,7 +90,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new BackgroundTaskViewModel() { Name = name };
@@ -115,7 +115,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -148,7 +148,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var document = await _backgroundTaskManager.GetDocumentAsync();
@@ -179,7 +179,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -214,7 +214,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();
@@ -234,7 +234,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();
@@ -258,7 +258,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();

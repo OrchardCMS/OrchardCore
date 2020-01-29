@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -15,6 +16,7 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Controllers
 {
+    [Admin]
     public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
@@ -53,7 +55,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var contentItem = await _contentManager.NewAsync(id);
@@ -72,7 +74,7 @@ namespace OrchardCore.Taxonomies.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem taxonomy;
@@ -144,7 +146,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies, taxonomy))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             // Look for the target taxonomy item in the hierarchy
@@ -172,7 +174,7 @@ namespace OrchardCore.Taxonomies.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem taxonomy;
@@ -230,7 +232,7 @@ namespace OrchardCore.Taxonomies.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem taxonomy;

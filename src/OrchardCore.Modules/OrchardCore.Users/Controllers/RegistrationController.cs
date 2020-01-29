@@ -114,7 +114,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;

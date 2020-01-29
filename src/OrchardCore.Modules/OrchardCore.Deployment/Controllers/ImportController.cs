@@ -38,7 +38,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View();
@@ -49,7 +49,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var tempArchiveName = Path.GetTempFileName() + ".zip";

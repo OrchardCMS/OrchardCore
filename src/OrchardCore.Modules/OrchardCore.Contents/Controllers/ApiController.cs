@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Content.Controllers
 {
@@ -34,7 +35,7 @@ namespace OrchardCore.Content.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             return Ok(contentItem);
@@ -53,7 +54,7 @@ namespace OrchardCore.Content.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             await _contentManager.RemoveAsync(contentItem);
@@ -70,7 +71,7 @@ namespace OrchardCore.Content.Controllers
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent))
                 {
-                    return Unauthorized();
+                    return Forbid();
                 }
 
                 await _contentManager.CreateAsync(newContentItem, VersionOptions.DraftRequired);
@@ -81,7 +82,7 @@ namespace OrchardCore.Content.Controllers
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
                 {
-                    return Unauthorized();
+                    return Forbid();
                 }
             }
 
