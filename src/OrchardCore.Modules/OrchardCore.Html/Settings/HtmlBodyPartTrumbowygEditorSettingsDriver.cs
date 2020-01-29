@@ -13,12 +13,12 @@ namespace OrchardCore.Html.Settings
 {
     public class HtmlBodyPartTrumbowygEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver
     {
+        private readonly IStringLocalizer<HtmlBodyPartTrumbowygEditorSettingsDriver> S;
+
         public HtmlBodyPartTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlBodyPartTrumbowygEditorSettingsDriver> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
@@ -44,24 +44,28 @@ namespace OrchardCore.Html.Settings
                 return null;
             }
 
-            var model = new TrumbowygSettingsViewModel();
-            var settings = new HtmlBodyPartTrumbowygEditorSettings();
-
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-            try
+            if (contentTypePartDefinition.Editor() == "Trumbowyg")
             {
-                settings.Options = model.Options;
-                JObject.Parse(settings.Options);
+                var model = new TrumbowygSettingsViewModel();
+                var settings = new HtmlBodyPartTrumbowygEditorSettings();
+
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
+
                 settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
-            }
-            catch
-            {
-                context.Updater.ModelState.AddModelError(Prefix, T["The options are written in an incorrect format."]);
-                return Edit(contentTypePartDefinition, context.Updater);
-            }
 
-            context.Builder.WithSettings(settings);
+                try
+                {
+                    settings.Options = model.Options;
+                    JObject.Parse(settings.Options);
+                }
+                catch
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
+                    return Edit(contentTypePartDefinition, context.Updater);
+                }
+
+                context.Builder.WithSettings(settings);
+            }
 
             return Edit(contentTypePartDefinition, context.Updater);
         }

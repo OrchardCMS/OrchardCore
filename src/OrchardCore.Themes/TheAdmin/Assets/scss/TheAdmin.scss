@@ -960,7 +960,7 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 }
 
 .field-validation-error {
-    @extend small, .invalid-feedback;
+    @extend small
 }
 
 .input-validation-error {

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
-
     [HtmlTargetElement("meta", Attributes = NameAttributeName)]
     [HtmlTargetElement("meta", Attributes = PropertyAttributeName)]
     public class MetaTagHelper : TagHelper

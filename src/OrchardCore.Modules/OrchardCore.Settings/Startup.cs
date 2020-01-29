@@ -2,6 +2,8 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -23,6 +25,13 @@ namespace OrchardCore.Settings
     /// </summary>
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
@@ -52,7 +61,7 @@ namespace OrchardCore.Settings
             routes.MapAreaControllerRoute(
                 name: "AdminSettings",
                 areaName: "OrchardCore.Settings",
-                pattern: "Admin/Settings/{groupId}",
+                pattern: _adminOptions.AdminUrlPrefix + "/Settings/{groupId}",
                 defaults: new { controller = "Admin", action = "Index" }
             );
         }

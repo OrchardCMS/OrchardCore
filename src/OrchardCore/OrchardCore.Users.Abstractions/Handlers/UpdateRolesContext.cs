@@ -18,8 +18,8 @@ namespace OrchardCore.Users.Handlers
 
         public IEnumerable<string> UserRoles { get; }
 
-        public string[] RolesToAdd { get; } = new string[0];
+        public string[] RolesToAdd { get; set; } = new string[0];
 
-        public string[] RolesToRemove { get; } = new string[0];
+        public string[] RolesToRemove { get; set; } = new string[0];
     }
 }

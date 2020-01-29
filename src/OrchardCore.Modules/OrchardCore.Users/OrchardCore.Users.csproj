@@ -1,7 +1,7 @@
   <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
@@ -22,10 +22,6 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Setup.Abstractions\OrchardCore.Setup.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="AspNet.Security.OpenIdConnect.Primitives" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
