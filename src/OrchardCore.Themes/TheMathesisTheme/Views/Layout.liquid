@@ -30,12 +30,14 @@
 	</head>
 	<body id="page-top" dir="{{ Culture.Dir }}">
 
-		{% shape "menu", alias: "alias:site-menu", cache_id: "site-menu", cache_tag: "alias:site-menu" %}
-
 		{% render_section "Header", required: false %}
 		{% render_section "Content" %}
 		{% render_section "Footer", required: false %}
 
 		{% resources type: "FootScript" %}
+
+		<script type="text/javascript">
+			$('#article').scrollspy({target: '#navbar-toc', offset: 60});
+		</script>
 	</body>
 </html>

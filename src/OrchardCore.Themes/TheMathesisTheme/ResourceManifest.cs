@@ -37,11 +37,27 @@ namespace TheMathesisTheme
 
 			manifest
 			 .DefineStyle("TheMathesisTheme-Mathesis-Kit")
+			 .SetDependencies("TheMathesisTheme-Material-Kit")
 			 .SetUrl("~/TheMathesisTheme/assets/css/mathesis-kit.css");
+
+			manifest
+			 .DefineStyle("TheMathesisTheme-FancyTree-Css")
+			 .SetDependencies("TheMathesisTheme-Mathesis-Kit")
+			 .SetUrl("~/TheMathesisTheme/assets/css/ui.fancytree.css");
+
+			manifest
+			 .DefineStyle("TheMathesisTheme-JqCloud-Css")
+			 .SetDependencies("TheMathesisTheme-FancyTree-Css")
+			 .SetUrl("~/TheMathesisTheme/assets/css/jqcloud.css");
 
 			manifest
 			 .DefineScript("TheMathesisTheme-jQuery")
 			 .SetUrl("~/TheMathesisTheme/assets/js/core/jquery.min.js");
+
+			manifest
+			 .DefineScript("TheMathesisTheme-jQuery-Ui")
+			 .SetDependencies("TheMathesisTheme-jQuery")
+			 .SetUrl("~/TheMathesisTheme/assets/js/core/jquery-ui.min.js");
 
 			manifest
 			 .DefineScript("TheMathesisTheme-Popper")
@@ -51,6 +67,7 @@ namespace TheMathesisTheme
 			manifest
 			 .DefineScript("TheMathesisTheme-Bootstrap-Material")
 			 .SetDependencies("TheMathesisTheme-jQuery")
+			 .SetDependencies("TheMathesisTheme-Popper")
 			 .SetUrl("~/TheMathesisTheme/assets/js/core/bootstrap-material-design.min.js");
 
 			manifest
@@ -90,8 +107,38 @@ namespace TheMathesisTheme
 
 			manifest
 			 .DefineScript("TheMathesisTheme-Material-Kit-Script")
-			 .SetDependencies("TheMathesisTheme-jQuery")
+			 .SetDependencies("TheMathesisTheme-Bootstrap-Material")
 			 .SetUrl("~/TheMathesisTheme/assets/js/material-kit.js?v=2.1.0");
+
+			manifest
+			 .DefineScript("TheMathesisTheme-Mathesis-Script")
+			 .SetDependencies("TheMathesisTheme-FancyTree-Filter")
+			 .SetUrl("~/TheMathesisTheme/assets/js/mathesis.js");
+
+			manifest
+			 .DefineScript("TheMathesisTheme-FancyTree")
+			 .SetDependencies("TheMathesisTheme-Material-Kit-Script")
+			 .SetUrl("~/TheMathesisTheme/assets/js/modules/jquery.fancytree.js");
+
+			manifest
+			 .DefineScript("TheMathesisTheme-FancyTree-Glyph")
+			 .SetDependencies("TheMathesisTheme-FancyTree")
+			 .SetUrl("~/TheMathesisTheme/assets/js/modules/jquery.fancytree.glyph.js");
+
+			manifest
+			 .DefineScript("TheMathesisTheme-FancyTree-Wide")
+			 .SetDependencies("TheMathesisTheme-FancyTree.Gliph")
+			 .SetUrl("~/TheMathesisTheme/assets/js/modules/jquery.fancytree.wide.js");
+
+			manifest
+			 .DefineScript("TheMathesisTheme-FancyTree-Filter")
+			 .SetDependencies("TheMathesisTheme-FancyTree.Wide")
+			 .SetUrl("~/TheMathesisTheme/assets/js/modules/jquery.fancytree.filter.js");
+
+			manifest
+			 .DefineScript("TheMathesisTheme-JqCloud")
+			 .SetDependencies("TheMathesisTheme-Material-Kit-Script")
+			 .SetUrl("~/TheMathesisTheme/assets/js/plugins/jqcloud.js");
 		}
 	}
 }
