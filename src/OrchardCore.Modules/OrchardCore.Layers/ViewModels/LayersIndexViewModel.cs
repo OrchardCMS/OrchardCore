@@ -15,6 +15,6 @@ namespace OrchardCore.Layers.ViewModels
         [BindNever]
         public List<Layer> Layers { get; set; }
 
-        public LayersOptions Options { get; set; } = new LayersOptions();
+        public LayersOptionsViewModel Options { get; set; } = new LayersOptionsViewModel();
     }
 }

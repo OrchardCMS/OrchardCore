@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Layers.ViewModels
 {
-    public class LayersOptions
+    public class LayersOptionsViewModel
     {
         [BindNever]
         public List<SelectListItem> Cultures { get; set; }
