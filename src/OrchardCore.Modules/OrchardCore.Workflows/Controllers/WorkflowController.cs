@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -38,8 +39,8 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
-        private readonly ILogger<WorkflowController> _logger;
         private readonly IHtmlLocalizer<WorkflowController> H;
+        private readonly IStringLocalizer<WorkflowController> S;
 
         public WorkflowController(
             ISiteService siteService,
@@ -51,8 +52,8 @@ namespace OrchardCore.Workflows.Controllers
             IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            IHtmlLocalizer<WorkflowController> localizer,
-            ILogger<WorkflowController> logger
+            IHtmlLocalizer<WorkflowController> htmlLocalizer,
+            IStringLocalizer<WorkflowController> stringLocalizer
         )
         {
             _siteService = siteService;
@@ -63,9 +64,10 @@ namespace OrchardCore.Workflows.Controllers
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
-            _logger = logger;
+
             New = shapeFactory;
-            H = localizer;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
 
         private dynamic New { get; }
@@ -136,18 +138,18 @@ namespace OrchardCore.Workflows.Controllers
             };
 
             model.Options.WorkflowsSorts = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["Recently created"].Value, Value = nameof(WorkflowOrder.CreatedDesc) },
-                new SelectListItem() { Text = H["Least recently created"].Value, Value = nameof(WorkflowOrder.Created) }
+                new SelectListItem() { Text = S["Recently created"], Value = nameof(WorkflowOrder.CreatedDesc) },
+                new SelectListItem() { Text = S["Least recently created"], Value = nameof(WorkflowOrder.Created) }
             };
 
             model.Options.WorkflowsStatuses = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["All"].Value, Value = nameof(WorkflowFilter.All) },
-                new SelectListItem() { Text = H["Faulted"].Value, Value = nameof(WorkflowFilter.Faulted) },
-                new SelectListItem() { Text = H["Finished"].Value, Value = nameof(WorkflowFilter.Finished) }
+                new SelectListItem() { Text = S["All"], Value = nameof(WorkflowFilter.All) },
+                new SelectListItem() { Text = S["Faulted"], Value = nameof(WorkflowFilter.Faulted) },
+                new SelectListItem() { Text = S["Finished"], Value = nameof(WorkflowFilter.Finished) }
             };
 
             viewModel.Options.WorkflowsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["Delete"].Value, Value = nameof(WorkflowBulkAction.Delete) }
+                new SelectListItem() { Text = S["Delete"], Value = nameof(WorkflowBulkAction.Delete) }
             };
 
             return View(viewModel);

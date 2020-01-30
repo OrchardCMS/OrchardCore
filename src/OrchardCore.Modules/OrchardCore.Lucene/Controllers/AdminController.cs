@@ -107,9 +107,9 @@ namespace OrchardCore.Lucene.Controllers
             model.Pager = pagerShape;
 
             model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["Reset"].Value, Value = nameof(ContentsBulkAction.Reset) },
-                new SelectListItem() { Text = H["Rebuild"].Value, Value = nameof(ContentsBulkAction.Rebuild) },
-                new SelectListItem() { Text = H["Delete"].Value, Value = nameof(ContentsBulkAction.Remove) }
+                new SelectListItem() { Text = S["Reset"], Value = nameof(ContentsBulkAction.Reset) },
+                new SelectListItem() { Text = S["Rebuild"], Value = nameof(ContentsBulkAction.Rebuild) },
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
             return View(model);
