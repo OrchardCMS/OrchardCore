@@ -123,6 +123,15 @@ namespace OrchardCore.Contents.Controllers
                 // We display a specific type even if it's not listable so that admin pages
                 // can reuse the Content list page for specific types.
                 query = query.With<ContentItemIndex>(x => x.ContentType == model.Options.SelectedContentType);
+
+                // Allows non creatable types to be created by another admin page.
+                if (model.Options.CanCreateSelectedContentType)
+                {
+                    model.Options.CreatableTypes = new List<SelectListItem>
+                    {
+                        new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name)
+                    };
+                }
             }
             else
             {
@@ -154,16 +163,21 @@ namespace OrchardCore.Contents.Controllers
                     break;
             }
 
-            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
-            var creatableList = new List<SelectListItem>();
-            if (contentTypes.Any())
+            // Allow parameters to define creatable types.
+            if (model.Options.CreatableTypes == null)
             {
-                foreach (var contentTypeDefinition in contentTypes)
+                var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
+                var creatableList = new List<SelectListItem>();
+                if (contentTypes.Any())
                 {
-                    creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
+                    foreach (var contentTypeDefinition in contentTypes)
+                    {
+                        creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
+                    }
                 }
+
+                model.Options.CreatableTypes = creatableList;
             }
-            model.Options.CreatableTypes = creatableList;
 
             // Invoke any service that could alter the query
             await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, this, Logger);
