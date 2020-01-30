@@ -59,3 +59,12 @@ public class AdminController : Controller
     }
 }
 ```
+
+## Credits
+
+### YesSQL
+
+<https://github.com/sebastienros/yessql>
+
+Copyright (c) 2017 Sebastien Ros  
+MIT License

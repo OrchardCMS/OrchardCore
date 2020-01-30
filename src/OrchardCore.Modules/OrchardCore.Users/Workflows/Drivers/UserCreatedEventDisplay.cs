@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.Workflows.Activities;
@@ -24,8 +22,8 @@ namespace OrchardCore.Users.Workflows.Drivers
         public override IDisplayResult Display(UserCreatedEvent activity)
         {
             return Combine(
-                Shape($"{nameof(UserCreatedEvent)}_Fields_Thumbnail", new UserCreatedEventViewModel(activity)).Location("Thumbnail", "Content"),
-                Factory($"{nameof(UserCreatedEvent)}_Fields_Design", ctx =>
+                Shape("UserCreatedEvent_Fields_Thumbnail", new UserCreatedEventViewModel(activity)).Location("Thumbnail", "Content"),
+                Factory("UserCreatedEvent_Fields_Design", ctx =>
                 {
                     var shape = new UserCreatedEventViewModel();
                     shape.Activity = activity;

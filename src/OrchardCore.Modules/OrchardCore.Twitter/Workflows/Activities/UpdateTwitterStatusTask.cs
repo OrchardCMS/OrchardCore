@@ -20,25 +20,25 @@ namespace OrchardCore.Twitter.Workflows.Activities
     {
         private readonly TwitterClient _twitterClient;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer T;
+        private readonly IStringLocalizer<UpdateTwitterStatusTask> S;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
-        public UpdateTwitterStatusTask(TwitterClient twitterClient, IWorkflowExpressionEvaluator expressionEvaluator, IHttpContextAccessor httpContextAccessor, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<UpdateTwitterStatusTask> t)
+        public UpdateTwitterStatusTask(TwitterClient twitterClient, IWorkflowExpressionEvaluator expressionEvaluator, IHttpContextAccessor httpContextAccessor, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<UpdateTwitterStatusTask> localizer)
         {
             _twitterClient = twitterClient;
             _expressionEvaluator = expressionEvaluator;
             _httpContextAccessor = httpContextAccessor;
             _updateModelAccessor = updateModelAccessor;
-            T = t;
+            S = localizer;
         }
 
         // The technical name of the activity. Activities on a workflow definition reference this name.
         public override string Name => nameof(UpdateTwitterStatusTask);
-        public override LocalizedString DisplayText => T["Update Twitter Status Task"];
+        public override LocalizedString DisplayText => S["Update Twitter Status Task"];
 
         // The category to which this activity belongs. The activity picker groups activities by this category.
-        public override LocalizedString Category => T["Social"];
+        public override LocalizedString Category => S["Social"];
 
         // The message to display.
         public WorkflowExpression<string> StatusTemplate
@@ -50,7 +50,7 @@ namespace OrchardCore.Twitter.Workflows.Activities
         // Returns the possible outcomes of this activity.
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"], T["Failed"]);
+            return Outcomes(S["Done"], S["Failed"]);
         }
 
         // This is the heart of the activity and actually performs the work to be done.

@@ -4,7 +4,7 @@
 */
 
 /*!
- * Bootstrap v4.4.0 (https://getbootstrap.com/)
+ * Bootstrap v4.4.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
  * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -1739,7 +1739,8 @@ textarea.form-control {
 
 [dir=rtl] .form-check-input {
   margin-right: -1.25rem; }
-  .form-check-input[disabled] ~ .form-check-label {
+  .form-check-input[disabled] ~ .form-check-label,
+  .form-check-input:disabled ~ .form-check-label {
     color: #6c757d; }
 
 [dir] .form-check-label {
@@ -3205,9 +3206,9 @@ input[type="button"].btn-block {
   [dir] .custom-control-input:not(:disabled):active ~ .custom-control-label::before {
     background-color: #b3d7ff;
     border-color: #b3d7ff; }
-  .custom-control-input[disabled] ~ .custom-control-label {
+  .custom-control-input[disabled] ~ .custom-control-label, .custom-control-input:disabled ~ .custom-control-label {
     color: #6c757d; }
-    [dir] .custom-control-input[disabled] ~ .custom-control-label::before {
+    [dir] .custom-control-input[disabled] ~ .custom-control-label::before, [dir] .custom-control-input:disabled ~ .custom-control-label::before {
       background-color: #e9ecef; }
 
 .custom-control-label {
@@ -3410,7 +3411,7 @@ input[type="button"].btn-block {
   [dir] .custom-file-input:focus ~ .custom-file-label {
     border-color: #80bdff;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
-  [dir] .custom-file-input[disabled] ~ .custom-file-label {
+  [dir] .custom-file-input[disabled] ~ .custom-file-label, [dir] .custom-file-input:disabled ~ .custom-file-label {
     background-color: #e9ecef; }
   .custom-file-input:lang(en) ~ .custom-file-label::after {
     content: "Browse"; }

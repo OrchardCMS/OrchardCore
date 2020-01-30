@@ -39,6 +39,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly ILogger<WorkflowController> _logger;
+        private readonly IHtmlLocalizer<WorkflowController> H;
 
         public WorkflowController(
             ISiteService siteService,
@@ -63,13 +64,11 @@ namespace OrchardCore.Workflows.Controllers
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
             _logger = logger;
-
             New = shapeFactory;
-            T = localizer;
+            H = localizer;
         }
 
         private dynamic New { get; }
-        private IHtmlLocalizer<WorkflowController> T { get; }
 
         public async Task<IActionResult> Index(int workflowTypeId, WorkflowIndexViewModel model, PagerParameters pagerParameters, string returnUrl = null)
         {
@@ -102,6 +101,19 @@ namespace OrchardCore.Workflows.Controllers
                     break;
             }
 
+            switch (model.Options.OrderBy)
+            {
+                case WorkflowOrder.CreatedDesc:
+                    query = query.OrderByDescending(x => x.CreatedUtc);
+                    break;
+                case WorkflowOrder.Created:
+                    query = query.OrderBy(x => x.CreatedUtc);
+                    break;
+                default:
+                    query = query.OrderByDescending(x => x.CreatedUtc);
+                    break;
+            }
+
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             var routeData = new RouteData();
@@ -123,14 +135,19 @@ namespace OrchardCore.Workflows.Controllers
                 ReturnUrl = returnUrl
             };
 
+            model.Options.WorkflowsSorts = new List<SelectListItem>() {
+                new SelectListItem() { Text = H["Recently created"].Value, Value = nameof(WorkflowOrder.CreatedDesc) },
+                new SelectListItem() { Text = H["Least recently created"].Value, Value = nameof(WorkflowOrder.Created) }
+            };
+
             model.Options.WorkflowsStatuses = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["All"].Value, Value = nameof(WorkflowFilter.All) },
-                new SelectListItem() { Text = T["Faulted"].Value, Value = nameof(WorkflowFilter.Faulted) },
-                new SelectListItem() { Text = T["Finished"].Value, Value = nameof(WorkflowFilter.Finished) }
+                new SelectListItem() { Text = H["All"].Value, Value = nameof(WorkflowFilter.All) },
+                new SelectListItem() { Text = H["Faulted"].Value, Value = nameof(WorkflowFilter.Faulted) },
+                new SelectListItem() { Text = H["Finished"].Value, Value = nameof(WorkflowFilter.Finished) }
             };
 
             viewModel.Options.WorkflowsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["Delete"].Value, Value = nameof(WorkflowBulkAction.Delete) }
+                new SelectListItem() { Text = H["Delete"].Value, Value = nameof(WorkflowBulkAction.Delete) }
             };
 
             return View(viewModel);
@@ -141,7 +158,8 @@ namespace OrchardCore.Workflows.Controllers
         public ActionResult IndexFilterPOST(WorkflowIndexViewModel model)
         {
             return RedirectToAction("Index", new RouteValueDictionary {
-                { "Options.Filter", model.Options.Filter }
+                { "Options.Filter", model.Options.Filter },
+                { "Options.OrderBy", model.Options.OrderBy }
             });
         }
 
@@ -220,7 +238,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
             await _workflowStore.DeleteAsync(workflow);
-            _notifier.Success(T["Workflow {0} has been deleted.", id]);
+            _notifier.Success(H["Workflow {0} has been deleted.", id]);
             return RedirectToAction("Index", new { workflowTypeId = workflowType.Id });
         }
 
@@ -249,7 +267,7 @@ namespace OrchardCore.Workflows.Controllers
                             if (workflow != null)
                             {
                                 await _workflowStore.DeleteAsync(workflow);
-                                _notifier.Success(T["Workflow {0} has been deleted.", workflow.Id]);
+                                _notifier.Success(H["Workflow {0} has been deleted.", workflow.Id]);
                             }
                         }
                         break;

@@ -102,7 +102,7 @@ namespace OrchardCore.ContentManagement.Display
                     {
                         var shapeType = context.DisplayType != "Detail" ? "ContentPart_" + context.DisplayType : "ContentPart";
 
-                        var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => new ValueTask<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone", Arguments.Empty)))));
+                        var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => new ValueTask<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone")))));
                         shapeResult.Differentiator(partName);
                         shapeResult.Location("Content");
 
@@ -200,7 +200,7 @@ namespace OrchardCore.ContentManagement.Display
                 part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
-                dynamic typePartShape = await context.ShapeFactory.CreateAsync("ContentPart_Edit", Arguments.Empty);
+                dynamic typePartShape = await context.ShapeFactory.CreateAsync("ContentPart_Edit");
                 typePartShape.ContentPart = part;
                 typePartShape.ContentTypePartDefinition = typePartDefinition;
 
@@ -279,7 +279,7 @@ namespace OrchardCore.ContentManagement.Display
                 part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
-                dynamic typePartShape = await context.ShapeFactory.CreateAsync("ContentPart_Edit", Arguments.Empty);
+                dynamic typePartShape = await context.ShapeFactory.CreateAsync("ContentPart_Edit");
                 typePartShape.ContentPart = part;
                 typePartShape.ContentTypePartDefinition = typePartDefinition;
                 var partPosition = typePartDefinition.GetSettings<ContentTypePartSettings>().Position ?? "before";

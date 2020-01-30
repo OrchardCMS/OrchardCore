@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.Apis.GraphQL.Resolvers;
 
 namespace OrchardCore.Localization.GraphQL
 {
@@ -35,7 +36,7 @@ namespace OrchardCore.Localization.GraphQL
                 Name = "SiteCultures",
                 Description = S["The active cultures configured for the site."],
                 Type = typeof(ListGraphType<CultureQueryObjectType>),
-                Resolver = new AsyncFieldResolver<IEnumerable<SiteCulture>>(ResolveAsync)
+                Resolver = new LockedAsyncFieldResolver<IEnumerable<SiteCulture>>(ResolveAsync)
             };
 
             schema.Query.AddField(field);
@@ -45,8 +46,7 @@ namespace OrchardCore.Localization.GraphQL
 
         private async Task<IEnumerable<SiteCulture>> ResolveAsync(ResolveFieldContext resolveContext)
         {
-            var context = (GraphQLContext)resolveContext.UserContext;
-            var localizationService = context.ServiceProvider.GetService<ILocalizationService>();
+            var localizationService = resolveContext.ResolveServiceProvider().GetService<ILocalizationService>();
 
             var defaultCulture = await localizationService.GetDefaultCultureAsync();
             var supportedCultures = await localizationService.GetSupportedCulturesAsync();

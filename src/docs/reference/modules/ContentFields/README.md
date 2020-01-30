@@ -1,8 +1,6 @@
 # Content Fields (`OrchardCore.ContentFields`)
 
-## Purpose
-
-This modules provides common content fields.
+This module provides common content fields.
 
 ## Available Fields
 
@@ -75,7 +73,7 @@ or, to display the raw content before the tags are converted:
 | --- | --- |
 | `LocalDateTime` | The date time in the time zone of the site. |
 
-#### `DateTime Field Example
+#### DateTime Field Example
 
 ```liquid
 {{ Model.LocalDateTime }}
@@ -98,7 +96,7 @@ or, to display the UTC value before it is converted:
 {% endfor %}
 ```
 
-`` `html tab="Razor"
+```html tab="Razor"
 @foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
 {
     @contentItem.DisplayText
