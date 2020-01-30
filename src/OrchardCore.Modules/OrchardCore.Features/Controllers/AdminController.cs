@@ -19,7 +19,6 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Features.Controllers
 {
-    [Admin]
     public class AdminController : Controller
     {
         private readonly IModuleService _moduleService;
@@ -28,12 +27,12 @@ namespace OrchardCore.Features.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _shellSettings;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer<AdminController> H;
 
         public AdminController(
             IModuleService moduleService,
             IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
-            IShellDescriptorManager shellDescriptorManager,
             IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
             ShellSettings shellSettings,
@@ -45,15 +44,12 @@ namespace OrchardCore.Features.Controllers
             _authorizationService = authorizationService;
             _shellSettings = shellSettings;
             _notifier = notifier;
-
-            T = localizer;
+            H = localizer;
         }
-
-        public IHtmlLocalizer T { get; }
 
         public async Task<ActionResult> Features()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures)) // , T["Not allowed to manage features."]
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
                 return Unauthorized();
             }
@@ -101,7 +97,7 @@ namespace OrchardCore.Features.Controllers
 
             if (model.FeatureIds == null || !model.FeatureIds.Any())
             {
-                ModelState.AddModelError("featureIds", T["Please select one or more features."].ToString());
+                ModelState.AddModelError("featureIds", H["Please select one or more features."].ToString());
             }
 
             if (ModelState.IsValid)
@@ -201,7 +197,7 @@ namespace OrchardCore.Features.Controllers
         {
             foreach (var feature in features)
             {
-                _notifier.Success(T["{0} was {1}", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
+                _notifier.Success(H["{0} was {1}", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
             }
         }
     }

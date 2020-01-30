@@ -9,7 +9,7 @@ namespace OrchardCore.Themes.TheTheme
             var manifest = builder.Add();
 
             manifest
-                .DefineStyle("bootstrap-oc")
+                .DefineStyle("TheTheme-bootstrap-oc")
                 .SetUrl("~/TheTheme/css/bootstrap-oc.min.css", "~/TheTheme/css/bootstrap-oc.css")
                 .SetVersion("1.0.0");
 				

@@ -18,7 +18,7 @@ namespace OrchardCore.Html.Settings
             }
 
             return Initialize<HtmlBodyPartSettings>("HtmlBodyPartSettings_Edit", model => contentTypePartDefinition.PopulateSettings<HtmlBodyPartSettings>(model))
-                .Location("Content");
+                .Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

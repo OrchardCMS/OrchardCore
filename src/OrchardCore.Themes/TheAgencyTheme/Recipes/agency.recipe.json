@@ -113,7 +113,7 @@
               "Settings": {
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
-                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
                   "ShowHomepageOption": true
                 },
                 "ContentTypePartSettings": {
@@ -195,7 +195,7 @@
                 },
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
-                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
                   "ShowHomepageOption": true
                 }
               }
@@ -248,7 +248,7 @@
               "Settings": {
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
-                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
                   "ShowHomepageOption": true
                 },
                 "ContentTypePartSettings": {

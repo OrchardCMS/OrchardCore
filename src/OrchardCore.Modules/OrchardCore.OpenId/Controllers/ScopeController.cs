@@ -24,7 +24,7 @@ namespace OrchardCore.OpenId.Controllers
     public class ScopeController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer<ScopeController> T;
+        private readonly IStringLocalizer<ScopeController> S;
         private readonly IHtmlLocalizer<ScopeController> H;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly ISiteService _siteService;
@@ -32,6 +32,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
+        private readonly dynamic New;
 
         public ScopeController(
             IOpenIdScopeManager scopeManager,
@@ -48,7 +49,7 @@ namespace OrchardCore.OpenId.Controllers
             _scopeManager = scopeManager;
             New = shapeFactory;
             _siteService = siteService;
-            T = stringLocalizer;
+            S = stringLocalizer;
             H = htmlLocalizer;
             _authorizationService = authorizationService;
             _notifier = notifier;
@@ -56,8 +57,6 @@ namespace OrchardCore.OpenId.Controllers
             _shellSettings = shellSettings;
             _shellHost = shellHost;
         }
-
-        public dynamic New { get; }
 
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {
@@ -122,7 +121,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (await _scopeManager.FindByNameAsync(model.Name) != null)
             {
-                ModelState.AddModelError(nameof(model.Name), T["The name is already taken by another scope."]);
+                ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
             }
 
             if (!ModelState.IsValid)
@@ -221,7 +220,7 @@ namespace OrchardCore.OpenId.Controllers
                     await _scopeManager.GetIdAsync(other),
                     await _scopeManager.GetIdAsync(scope)))
                 {
-                    ModelState.AddModelError(nameof(model.Name), T["The name is already taken by another scope."]);
+                    ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
                 }
             }
 

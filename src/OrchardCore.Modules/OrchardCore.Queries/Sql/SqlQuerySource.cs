@@ -39,7 +39,7 @@ namespace OrchardCore.Queries.Sql
             var sqlQuery = query as SqlQuery;
             var sqlQueryResults = new SQLQueryResults();
 
-            var templateContext = new TemplateContext();
+            var templateContext = _liquidTemplateManager.Context;
 
             if (parameters != null)
             {
@@ -49,7 +49,7 @@ namespace OrchardCore.Queries.Sql
                 }
             }
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, NullEncoder.Default, templateContext);
+            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, NullEncoder.Default);
 
             var connection = _dbConnectionAccessor.CreateConnection();
             var dialect = SqlDialectFactory.For(connection);
@@ -71,7 +71,7 @@ namespace OrchardCore.Queries.Sql
 
                     using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
                     {
-                        documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
+                        documentIds = await connection.QueryAsync<int>(rawQuery, parameters, transaction);
                     }
                 }
 
@@ -88,7 +88,7 @@ namespace OrchardCore.Queries.Sql
 
                     using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
                     {
-                        queryResults = await connection.QueryAsync(rawQuery, parameters);
+                        queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
                     }
                 }
 

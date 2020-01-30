@@ -3,6 +3,9 @@ using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
+using OrchardCore.ContentFields.Controllers;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing;
 using OrchardCore.ContentFields.Indexing.SQL;
@@ -16,11 +19,13 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 
 namespace OrchardCore.ContentFields
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
         static Startup()
         {
             // Registering both field types and shape types are necessary as they can 
@@ -44,6 +49,11 @@ namespace OrchardCore.ContentFields
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
         }
 
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             // Boolean Field
@@ -64,6 +74,7 @@ namespace OrchardCore.ContentFields
             services.AddContentField<HtmlField>();
             services.AddScoped<IContentFieldDisplayDriver, HtmlFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldTrumbowygEditorSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, HtmlFieldIndexHandler>();
 
             // Link Field
@@ -118,8 +129,8 @@ namespace OrchardCore.ContentFields
             routes.MapAreaControllerRoute(
                 name: "ContentPicker",
                 areaName: "OrchardCore.ContentFields",
-                pattern: "ContentFields/SearchContentItems",
-                defaults: new { controller = "ContentPickerAdmin", action = "SearchContentItems" }
+                pattern: _adminOptions.AdminUrlPrefix + "/ContentFields/SearchContentItems",
+                defaults: new { controller = typeof(ContentPickerAdminController).ControllerName(), action = nameof(ContentPickerAdminController.SearchContentItems) }
             );
         }
     }
@@ -127,6 +138,13 @@ namespace OrchardCore.ContentFields
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class LocalizationSetContentPickerStartup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public LocalizationSetContentPickerStartup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddContentField<LocalizationSetContentPickerField>();
@@ -140,8 +158,8 @@ namespace OrchardCore.ContentFields
             routes.MapAreaControllerRoute(
                 name: "SearchLocalizationSets",
                 areaName: "OrchardCore.ContentFields",
-                pattern: "ContentFields/SearchLocalizationSets",
-                defaults: new { controller = "LocalizationSetContentPickerAdmin", action = "SearchLocalizationSets" }
+                pattern: _adminOptions.AdminUrlPrefix + "/ContentFields/SearchLocalizationSets",
+                defaults: new { controller = typeof(LocalizationSetContentPickerAdminController).ControllerName(), action = nameof(LocalizationSetContentPickerAdminController.SearchLocalizationSets) }
             );
         }
     }

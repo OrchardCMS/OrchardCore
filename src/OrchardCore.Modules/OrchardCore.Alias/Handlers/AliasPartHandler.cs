@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using OrchardCore.Alias.Drivers;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
@@ -53,13 +54,15 @@ namespace OrchardCore.Alias.Handlers
                     ContentItem = part.ContentItem
                 };
 
-                var templateContext = new TemplateContext();
-                templateContext.SetValue("ContentItem", part.ContentItem);
-                templateContext.MemberAccessStrategy.Register<AliasPartViewModel>();
-                templateContext.SetValue("Model", model);
+                part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
+                    scope => scope.SetValue("ContentItem", model.ContentItem));
 
-                part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
                 part.Alias = part.Alias.Replace("\r", String.Empty).Replace("\n", String.Empty);
+
+                if (part.Alias?.Length > AliasPartDisplayDriver.MaxAliasLength)
+                {
+                    part.Alias = part.Alias.Substring(0, AliasPartDisplayDriver.MaxAliasLength);
+                }
 
                 if (!await IsAliasUniqueAsync(part.Alias, part))
                 {
@@ -88,7 +91,7 @@ namespace OrchardCore.Alias.Handlers
         public override async Task CloningAsync(CloneContentContext context, AliasPart part)
         {
             var clonedPart = context.CloneContentItem.As<AliasPart>();
-            clonedPart.Alias = await GenerateUniqueAliasAsync(clonedPart.Alias, clonedPart);
+            clonedPart.Alias = await GenerateUniqueAliasAsync(part.Alias, clonedPart);
 
             clonedPart.Apply();
         }
@@ -119,6 +122,13 @@ namespace OrchardCore.Alias.Handlers
 
             while (true)
             {
+                // Unversioned length + seperator char + version length.
+                var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - AliasPartDisplayDriver.MaxAliasLength;
+                if (quantityCharactersToTrim > 0)
+                {
+                    unversionedAlias = unversionedAlias.Substring(0, unversionedAlias.Length - quantityCharactersToTrim);
+                }
+
                 var versionedAlias = $"{unversionedAlias}-{version++}";
                 if (await IsAliasUniqueAsync(versionedAlias, context))
                 {

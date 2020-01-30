@@ -17,23 +17,21 @@ namespace OrchardCore.Features.Services
         private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer<ModuleService> H;
 
         public ModuleService(
                 IExtensionManager extensionManager,
                 IShellDescriptorManager shellDescriptorManager,
                 IShellFeaturesManager shellFeaturesManager,
-                IHtmlLocalizer<AdminMenu> htmlLocalizer,
+                IHtmlLocalizer<ModuleService> htmlLocalizer,
                 INotifier notifier)
         {
             _notifier = notifier;
             _extensionManager = extensionManager;
             _shellDescriptorManager = shellDescriptorManager;
             _shellFeaturesManager = shellFeaturesManager;
-
-            T = htmlLocalizer;
+            H = htmlLocalizer;
         }
-
-        public IHtmlLocalizer T { get; set; }
 
         /// <summary>
         /// Retrieves an enumeration of the available features together with its state (enabled / disabled).
@@ -74,7 +72,7 @@ namespace OrchardCore.Features.Services
             var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
             foreach (var enabledFeature in enabledFeatures)
             {
-                _notifier.Success(T["{0} was enabled", enabledFeature.Name]);
+                _notifier.Success(H["{0} was enabled", enabledFeature.Name]);
             }
         }
 
@@ -101,7 +99,7 @@ namespace OrchardCore.Features.Services
             var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);
             foreach (var feature in features)
             {
-                _notifier.Success(T["{0} was disabled", feature.Name]);
+                _notifier.Success(H["{0} was disabled", feature.Name]);
             }
         }
 

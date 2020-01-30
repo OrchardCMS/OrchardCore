@@ -5,9 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Modules;
 using OrchardCore.Security.Services;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
@@ -18,19 +21,26 @@ namespace OrchardCore.Users.Drivers
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
         private readonly IUserRoleStore<IUser> _userRoleStore;
-        private readonly IStringLocalizer T;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer<UserDisplayDriver> S;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
             IRoleService roleService,
             IUserRoleStore<IUser> userRoleStore,
+            ILogger<UserDisplayDriver> logger,
+            IEnumerable<IUserEventHandler> handlers,
             IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
             _roleService = roleService;
             _userRoleStore = userRoleStore;
-            T = stringLocalizer;
+            _logger = logger;
+            Handlers = handlers;
+            S = stringLocalizer;
         }
+
+        public IEnumerable<IUserEventHandler> Handlers { get; private set; }
 
         public override IDisplayResult Display(User user)
         {
@@ -53,6 +63,7 @@ namespace OrchardCore.Users.Drivers
                 model.Email = await _userManager.GetEmailAsync(user);
                 model.Roles = roles;
                 model.EmailConfirmed = user.EmailConfirmed;
+                model.IsEnabled = user.IsEnabled;
             }).Location("Content:1"));
         }
 
@@ -68,14 +79,27 @@ namespace OrchardCore.Users.Drivers
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
 
+            if (!model.IsEnabled && user.IsEnabled)
+            {
+                user.IsEnabled = model.IsEnabled;
+                var userContext = new UserContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
+            }
+            else if (model.IsEnabled && !user.IsEnabled)
+            {
+                user.IsEnabled = model.IsEnabled;
+                var userContext = new UserContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
+            }
+
             if (string.IsNullOrWhiteSpace(model.UserName))
             {
-                context.Updater.ModelState.AddModelError("UserName", T["A user name is required."]);
+                context.Updater.ModelState.AddModelError("UserName", S["A user name is required."]);
             }
 
             if (string.IsNullOrWhiteSpace(model.Email))
             {
-                context.Updater.ModelState.AddModelError("Email", T["An email is required."]);
+                context.Updater.ModelState.AddModelError("Email", S["An email is required."]);
             }
 
             var userWithSameName = await _userManager.FindByNameAsync(model.UserName);
@@ -84,7 +108,7 @@ namespace OrchardCore.Users.Drivers
                 var userWithSameNameId = await _userManager.GetUserIdAsync(userWithSameName);
                 if (userWithSameNameId != model.Id)
                 {
-                    context.Updater.ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+                    context.Updater.ModelState.AddModelError(string.Empty, S["The user name is already used."]);
                 }
             }
 
@@ -94,7 +118,7 @@ namespace OrchardCore.Users.Drivers
                 var userWithSameEmailId = await _userManager.GetUserIdAsync(userWithSameEmail);
                 if (userWithSameEmailId != model.Id)
                 {
-                    context.Updater.ModelState.AddModelError(string.Empty, T["The email is already used."]);
+                    context.Updater.ModelState.AddModelError(string.Empty, S["The email is already used."]);
                 }
             }
 

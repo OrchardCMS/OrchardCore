@@ -56,7 +56,7 @@ The newly created website should be able to run, and look like this:
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>netcoreapp3.0</TargetFramework>
+  <TargetFramework>netcoreapp3.1</TargetFramework>
   <PreserveCompilationReferences>true</PreserveCompilationReferences>
 </PropertyGroup>
 ```
@@ -67,9 +67,12 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.0.0-rc1-10004" />
+  <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.0.0-rc1-10004" />
 </ItemGroup>
 ```
+
+!!! hint "Nightly builds"
+   If you are using the nightly builds of Orchard Core (MyGet feed) then you should use the package `OrchardCore.Application.Cms.Core.Targets` instead.
 
 This will add the packages from Orchard Core CMS
 
@@ -86,7 +89,7 @@ public void ConfigureServices(IServiceCollection services)
     `AddRazorPages` must not be called directly as `services.AddOrchardCms()` already invokes it internally.
 
 - Edit the `Startup.cs` file `Configure`
-- Remove everything after `app.UseStaticFiles();` and replace it by `app.UserOrchardCore();` like this:
+- Remove everything after `app.UseStaticFiles();` and replace it by `app.UseOrchardCore();` like this:
 
 ```cs
    ...
@@ -126,7 +129,7 @@ This part covers the basic content management concepts of Orchard Core CMS, like
 
 ### Content Modeling
 
-In Orchard Core CMS most of the content that is managed is called a __Content Item__. A content item is a versioned document like a page, and article, a blog post, a news item, or anything you need to edit. Each of these documents are based on a __Content Type__ that defines which properties it is made of. For instance any article will have a title and some text. A blog post might also have tags. Orchard Core CMS lets you model the content types the way you want, which is known as _content modeling_.
+In Orchard Core CMS most of the content that is managed is called a __Content Item__. A content item is a versioned document like a page, an article, a blog post, a news item, or anything you need to edit. Each of these documents are based on a __Content Type__ that defines which properties it is made of. For instance any article will have a title and some text. A blog post might also have tags. Orchard Core CMS lets you model the content types the way you want, which is known as _content modeling_.
 
 !!! hint "For developers"
     A Content Type is analogous to a class, where a Content Item can be seen as an instance of a Content Type.

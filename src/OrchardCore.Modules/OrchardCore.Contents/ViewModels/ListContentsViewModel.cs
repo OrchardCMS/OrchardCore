@@ -36,6 +36,8 @@ namespace OrchardCore.Contents.ViewModels
 
         public string SelectedContentType { get; set; }
 
+        public bool CanCreateSelectedContentType { get; set; }
+
         public ContentsOrder OrderBy { get; set; }
 
         public ContentsStatus ContentsStatus { get; set; }

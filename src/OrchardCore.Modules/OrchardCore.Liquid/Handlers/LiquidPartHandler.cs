@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Models;
@@ -12,12 +11,13 @@ namespace OrchardCore.Liquid.Handlers
     public class LiquidPartHandler : ContentPartHandler<LiquidPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-
+        private readonly HtmlEncoder _htmlEncoder;
         private HtmlString _bodyAspect;
 
-        public LiquidPartHandler(ILiquidTemplateManager liquidTemplateManager)
+        public LiquidPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
         {
             _liquidTemplateManager = liquidTemplateManager;
+            _htmlEncoder = htmlEncoder;
         }
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, LiquidPart part)
@@ -38,12 +38,9 @@ namespace OrchardCore.Liquid.Handlers
                         ContentItem = part.ContentItem
                     };
 
-                    var templateContext = new TemplateContext();
-                    templateContext.SetValue("ContentItem", part.ContentItem);
-                    templateContext.MemberAccessStrategy.Register<LiquidPartViewModel>();
-                    templateContext.SetValue("Model", model);
+                    var result = await _liquidTemplateManager.RenderAsync(part.Liquid, _htmlEncoder, model,
+                        scope => scope.SetValue("ContentItem", model.ContentItem));
 
-                    var result = await _liquidTemplateManager.RenderAsync(part.Liquid, HtmlEncoder.Default, templateContext);
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);
                 }
                 catch
