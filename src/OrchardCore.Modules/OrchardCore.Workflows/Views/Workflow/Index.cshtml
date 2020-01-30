@@ -132,7 +132,7 @@
 
 <script at="Foot" type="text/javascript">
     $(function () {
-        $('select').selectpicker();
+        $('.selectpicker').selectpicker();
 
         var actions = $("#actions");
         var items = $("#items");
@@ -144,8 +144,8 @@
         $(".filter-options input").on("change", function () {
             $("[name='submit.Filter']").click();
         });
-
-        $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
 
