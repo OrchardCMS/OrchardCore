@@ -29,7 +29,7 @@ using YesSql.Services;
 namespace OrchardCore.Workflows.Controllers
 {
     [Admin]
-    public class WorkflowController : Controller, IUpdateModel
+    public class WorkflowController : Controller
     {
         private readonly ISiteService _siteService;
         private readonly ISession _session;
@@ -39,6 +39,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHtmlLocalizer<WorkflowController> H;
         private readonly IStringLocalizer<WorkflowController> S;
 
@@ -53,8 +54,8 @@ namespace OrchardCore.Workflows.Controllers
             IShapeFactory shapeFactory,
             INotifier notifier,
             IHtmlLocalizer<WorkflowController> htmlLocalizer,
-            IStringLocalizer<WorkflowController> stringLocalizer
-        )
+            IStringLocalizer<WorkflowController> stringLocalizer,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _siteService = siteService;
             _session = session;
@@ -64,7 +65,7 @@ namespace OrchardCore.Workflows.Controllers
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
-
+            _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -283,7 +284,7 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowTypeId, bool isBlocking, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
+            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}ReadOnly";
             activityShape.Activity = activityContext.Activity;
             activityShape.ActivityRecord = activityContext.ActivityRecord;

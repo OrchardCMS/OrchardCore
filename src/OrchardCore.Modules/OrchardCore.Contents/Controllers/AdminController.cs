@@ -29,7 +29,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Contents.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -41,6 +41,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
         private readonly IHtmlLocalizer<AdminController> H;
         private readonly IStringLocalizer<AdminController> S;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly dynamic New;
 
         public AdminController(
@@ -55,8 +56,8 @@ namespace OrchardCore.Contents.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             IAuthorizationService authorizationService,
-            IEnumerable<IContentAdminFilter> contentAdminFilters
-            )
+            IEnumerable<IContentAdminFilter> contentAdminFilters,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _contentAdminFilters = contentAdminFilters;
             _authorizationService = authorizationService;
@@ -66,6 +67,7 @@ namespace OrchardCore.Contents.Controllers
             _siteService = siteService;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
+            _updateModelAccessor = updateModelAccessor;
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -183,7 +185,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // Invoke any service that could alter the query
-            await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, this, Logger);
+            await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, Logger);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
@@ -200,7 +202,7 @@ namespace OrchardCore.Contents.Controllers
             var contentItemSummaries = new List<dynamic>();
             foreach (var contentItem in pageOfContentItems)
             {
-                contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
+                contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
             }
 
             //We populate the SelectLists
@@ -336,7 +338,7 @@ namespace OrchardCore.Contents.Controllers
                 return Unauthorized();
             }
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             return View(model);
         }
@@ -398,7 +400,7 @@ namespace OrchardCore.Contents.Controllers
                 return Unauthorized();
             }
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
@@ -439,7 +441,7 @@ namespace OrchardCore.Contents.Controllers
                 return Unauthorized();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "DetailAdmin");
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "DetailAdmin");
 
             return View(model);
         }
@@ -456,7 +458,7 @@ namespace OrchardCore.Contents.Controllers
                 return Unauthorized();
             }
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             return View(model);
         }
@@ -532,7 +534,7 @@ namespace OrchardCore.Contents.Controllers
             //    previousRoute = contentItem.As<IAliasAspect>().Path;
             //}
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
@@ -540,7 +542,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // The content item needs to be marked as saved in case the drivers or the handlers have
-            // executed some query which would flush the saved entities inside the above UpdateEditorAsync.            
+            // executed some query which would flush the saved entities inside the above UpdateEditorAsync.
             _session.Save(contentItem);
 
             await conditionallyPublish(contentItem);

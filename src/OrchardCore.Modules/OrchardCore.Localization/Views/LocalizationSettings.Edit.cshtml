@@ -1,5 +1,6 @@
 @model LocalizationSettingsViewModel
 @using Newtonsoft.Json;
+@using System.Globalization;
 
 <p class="alert alert-warning col-xl-6">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
@@ -30,7 +31,8 @@
             <tbody>
                 <tr v-for="(culture, index) in data" :key="index">
                     <td>
-                        <span>{{ culture }}</span>
+                        <span v-if="culture != ''">{{ culture }}</span>
+                        <span v-if="culture == ''">@CultureInfo.InvariantCulture.DisplayName</span>
                         <input type="hidden" class="form-control" v-bind:value="culture" />
                     </td>
                     <td class="text-center align-middle">
