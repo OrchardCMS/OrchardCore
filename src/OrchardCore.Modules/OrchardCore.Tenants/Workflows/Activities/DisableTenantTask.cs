@@ -18,6 +18,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
         {
         }
         public override string Name => nameof(DisableTenantTask);
+
         public override LocalizedString Category => S["Tenant"];
         
         public override LocalizedString DisplayText => S["Disable Tenant Task"];
