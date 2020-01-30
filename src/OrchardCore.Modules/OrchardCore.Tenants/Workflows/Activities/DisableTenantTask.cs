@@ -25,7 +25,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(S["Disabled"], T["Failed"]);
+            return Outcomes(S["Disabled"], S["Failed"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
