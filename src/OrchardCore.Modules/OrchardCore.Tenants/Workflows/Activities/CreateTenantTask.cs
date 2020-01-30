@@ -20,7 +20,9 @@ namespace OrchardCore.Tenants.Workflows.Activities
         }
 
         public override string Name => nameof(CreateTenantTask);
-        public override LocalizedString DisplayText => T["Create Tenant Task"];
+        public override LocalizedString Category => S["Tenant"];
+
+        public override LocalizedString DisplayText => S["Create Tenant Task"];
 
         public string ContentType
         {

@@ -10,13 +10,15 @@ namespace OrchardCore.Tenants.Workflows.Activities
 {
     public abstract class TenantActivity : Activity
     {
+        protected readonly IStringLocalizer S;
+     
         protected TenantActivity(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
         {
             ShellSettingsManager = shellSettingsManager;
             ShellHost = shellHost;
             ExpressionEvaluator = expressionEvaluator;
             ScriptEvaluator = scriptEvaluator;
-            T = localizer;
+            S = localizer;
         }
 
         public WorkflowExpression<string> TenantName
@@ -29,12 +31,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
         protected IShellHost ShellHost { get; }
         protected IWorkflowExpressionEvaluator ExpressionEvaluator { get; }
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
-        protected IStringLocalizer T { get; }
-        public override LocalizedString Category => T["Tenant"];
+
+        public override LocalizedString Category => S["Tenant"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

@@ -1,14 +1,65 @@
+@inject OrchardCore.Settings.ISiteService siteService
+@using OrchardCore.Entities
+@using OrchardCore.Admin.Models
 @{
+    var adminSettings = (await siteService.GetSiteSettingsAsync()).As<AdminSettings>();
     TagBuilder tag = Tag(Model, "ul");
-
+    tag.Attributes["Id"] = "adminMenu";
 
     foreach (var item in Model)
     {
         tag.InnerHtml.AppendHtml(await DisplayAsync(item));
     }
 }
-
+@if (adminSettings.DisplayMenuFilter)
+{
+    <input id="filter" class="form-control" placeholder="@T["Filter"]" type="search" data-toggle="tooltip" data-html="true" title="Ctrl+Shift+F" />
+}
 <nav id="left-nav">
     @tag
 </nav>
+@if (adminSettings.DisplayMenuFilter)
+{
+<script at="Foot">
+    $('[data-toggle="tooltip"]').tooltip();
+    $(document).bind('keydown', function (e) {
+        if (e.ctrlKey && e.shiftKey && e.which == 70) {
+            $('#filter').focus();
+            return false;
+        }
+    });
+    // custom css expression for a case-insensitive contains()
+    jQuery.expr[":"].contains = jQuery.expr.createPseudo(function (arg) {
+        return function (elem) {
+            return jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+        };
+    });
+
+    function hasChild(list) {
+        var filter = $('#filter').val();
+        list.children('li').each(function () {
+            if ($(this).find("span:contains(" + filter + ")").length > 0) {
+                if ($(this).find('ul :first').length > 0) {
+                    $(this).show();
+                    hasChild($(this).find('ul :first').parent());
+                } else {
+                    $(this).show();
+                }
+            } else {
+                $(this).hide();
+            }
+        });
+    };
+    $('#filter').keyup(function () {
+        var list = $('#adminMenu');
+        var filter = $('#filter').val();
+        if (filter) {
+            hasChild(list);
+        } else {
+            list.find("li").show();
+        }
+        return false;
+    });
+</script>
+}
 <!-- Menu rendered on @DateTime.UtcNow.ToString("r") -->

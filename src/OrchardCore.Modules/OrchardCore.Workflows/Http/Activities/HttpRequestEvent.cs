@@ -12,21 +12,20 @@ namespace OrchardCore.Workflows.Http.Activities
         public static string EventName => nameof(HttpRequestEvent);        
 
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IStringLocalizer<HttpRequestEvent> S;
 
         public HttpRequestEvent(
             IStringLocalizer<HttpRequestEvent> localizer,
             IHttpContextAccessor httpContextAccessor
         )
         {
-            T = localizer;
+            S = localizer;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => EventName;
-        public override LocalizedString DisplayText => T["Http Request Event"];
-        public override LocalizedString Category => T["HTTP"];
+        public override LocalizedString DisplayText => S["Http Request Event"];
+        public override LocalizedString Category => S["HTTP"];
 
         public string HttpMethod
         {
@@ -63,7 +62,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

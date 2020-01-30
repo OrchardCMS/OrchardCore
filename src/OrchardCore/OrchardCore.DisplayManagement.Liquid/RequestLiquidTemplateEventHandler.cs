@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     case "QueryString": return new StringValue(request.QueryString.Value);
                     case "ContentType": return new StringValue(request.ContentType);
                     case "ContentLength": return NumberValue.Create(request.ContentLength ?? 0);
-                    case "Cookies": return new ObjectValue(request.Cookies);
+                    case "Cookies": return new ObjectValue(new CookieCollectionWrapper(request.Cookies));
                     case "Headers": return new ObjectValue(new HeaderDictionaryWrapper(request.Headers));
                     case "Query": return new ObjectValue(request.Query);
                     case "Form": return request.HasFormContentType ? (FluidValue)new ObjectValue(request.Form) : NilValue.Instance;
@@ -53,8 +53,8 @@ namespace OrchardCore.DisplayManagement.Liquid
                 return new ArrayValue(forms[name].Select(x => new StringValue(x)).ToArray());
             });
 
-            TemplateContext.GlobalMemberAccessStrategy.Register<IRequestCookieCollection, string>((cookies, name) => cookies[name]);
             TemplateContext.GlobalMemberAccessStrategy.Register<QueryCollection, string[]>((queries, name) => queries[name].ToArray());
+            TemplateContext.GlobalMemberAccessStrategy.Register<CookieCollectionWrapper, string>((cookies, name) => cookies.RequestCookieCollection[name]);
             TemplateContext.GlobalMemberAccessStrategy.Register<HeaderDictionaryWrapper, string[]>((headers, name) => headers.HeaderDictionary[name].ToArray());
         }
 
@@ -74,6 +74,16 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
 
             return Task.CompletedTask;
+        }
+
+        private class CookieCollectionWrapper
+        {
+            public readonly IRequestCookieCollection RequestCookieCollection;
+
+            public CookieCollectionWrapper(IRequestCookieCollection requestCookieCollection)
+            {
+                RequestCookieCollection = requestCookieCollection;
+            }
         }
 
         private class HeaderDictionaryWrapper

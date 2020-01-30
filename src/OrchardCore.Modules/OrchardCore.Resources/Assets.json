@@ -15,21 +15,27 @@
   },
   {
     "inputs": [
+      "node_modules/bootstrap/dist/js/bootstrap.bundle.js"
+    ],
+    "output": "wwwroot/Scripts/bootstrap.bundle.js"
+  },  
+  {
+    "inputs": [
       "node_modules/popper.js/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
   },
   {
     "generateRTL": true,
-    "inputs": [ 
-		"node_modules/bootstrap-select/dist/css/bootstrap-select.css" 
-	],
+    "inputs": [
+      "node_modules/bootstrap-select/dist/css/bootstrap-select.css"
+    ],
     "output": "wwwroot/Styles/bootstrap-select.css"
   },
   {
-    "inputs": [ 
-		"node_modules/bootstrap-select/dist/js/bootstrap-select.js" 
-	],
+    "inputs": [
+      "node_modules/bootstrap-select/dist/js/bootstrap-select.js"
+    ],
     "output": "wwwroot/Scripts/bootstrap-select.js"
   },
   {
@@ -108,6 +114,12 @@
   },
   {
     "inputs": [
+      "node_modules/jquery-resizable-dom/dist/jquery-resizable.js"
+    ],
+    "output": "wwwroot/Scripts/jquery-resizable.js"
+  },
+  {
+    "inputs": [
       "node_modules/popper.js/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
@@ -139,5 +151,82 @@
       "Assets/trumbowyg/plugins/*/*.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg-plugins.js"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg/js/resizable-resolveconflict.js"
+    ],
+    "output": "wwwroot/Scripts/resizable-resolveconflict.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/vue/dist/vue.js"
+    ],
+    "output": "wwwroot/Scripts/vue.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/vue/dist/vue.min.js"
+    ],
+    "output": "wwwroot/Scripts/vue.min.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/vue-multiselect/dist/vue-multiselect.min.js"
+    ],
+    "output": "wwwroot/Scripts/vue-multiselect.min.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/vue-multiselect/dist/vue-multiselect.min.css*"
+    ],
+    "output": "wwwroot/Styles/@"
+  },  
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/sortablejs/Sortable.min.js"
+    ],
+    "output": "wwwroot/Scripts/Sortable.min.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/sortablejs/Sortable.js"
+    ],
+    "output": "wwwroot/Scripts/Sortable.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/vuedraggable/dist/vuedraggable.umd.*"
+    ],
+    "output": "wwwroot/Scripts/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/@fortawesome/fontawesome-free/css/*"
+    ],
+    "output": "wwwroot/Vendor/fontawesome-free/css/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/@fortawesome/fontawesome-free/js/*"
+    ],
+    "output": "wwwroot/Vendor/fontawesome-free/js/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/@fortawesome/fontawesome-free/webfonts/*"
+    ],
+    "output": "wwwroot/Vendor/fontawesome-free/webfonts/@"
   }
+       
 ]
