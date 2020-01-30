@@ -173,6 +173,28 @@ Output
 <h3>Services</h3>
 ```
 
+### `jsonparse`
+
+Converts a json string to a JObject. 
+This can be useful to build collections and iterate over the values in liquid.
+
+Example:
+
+```liquid
+{% capture someCollection %}
+[
+  {"key":"key1", "value":"value1"},
+  {"key":"key2", "value":"value2"},
+]
+{% endcapture %}
+
+{% assign jsonObject = someCollection | jsonparse %}
+
+{% for k in jsonObject %}
+  {{k["key"]}} {{k["value"]}}
+{% endfor %}
+```
+
 ## Properties
 
 By default the liquid templates have access to a common set of objects.
