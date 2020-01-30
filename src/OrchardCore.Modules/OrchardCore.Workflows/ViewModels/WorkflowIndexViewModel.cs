@@ -27,6 +27,11 @@ namespace OrchardCore.Workflows.ViewModels
 
         public WorkflowBulkAction BulkAction { get; set; }
         public WorkflowFilter Filter { get; set; }
+
+        public WorkflowOrder OrderBy { get; set; }
+        [BindNever]
+        public List<SelectListItem> WorkflowsSorts { get; set; }
+
         [BindNever]
         public List<SelectListItem> WorkflowsStatuses { get; set; }
         [BindNever]
@@ -45,6 +50,12 @@ namespace OrchardCore.Workflows.ViewModels
         All,
         Finished,
         Faulted
+    }
+
+    public enum WorkflowOrder
+    {
+        CreatedDesc,
+        Created
     }
 
     public enum WorkflowBulkAction
