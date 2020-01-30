@@ -70,7 +70,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!MailboxAddress.TryParse(model.Email, out var emailAddress))
+            if (!string.IsNullOrEmpty(model.Email) && !MailboxAddress.TryParse(model.Email, out var emailAddress))
             {
                 ModelState.AddModelError("Email", S["Invalid email."]);
             }
