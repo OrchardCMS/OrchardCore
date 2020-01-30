@@ -142,7 +142,7 @@
                 <li class="list-group-item">
                     <div class="custom-control custom-checkbox float-left">
                         <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
-                        <label class="custom-control-label" for="tenantNames-@entry.Name">&nbsp;</label>
+                        <label class="custom-control-label" for="tenantNames-@entry.Name"></label>
                     </div>
                     <div class="properties">
                         <div class="related">
@@ -202,7 +202,7 @@
 
 <script at="Foot" type="text/javascript">
     $(function () {
-        $('select').selectpicker();
+        $('.selectpicker').selectpicker();
 
         var actions = $("#actions");
         var items = $("#items");
@@ -215,7 +215,7 @@
             $("[name='submit.Filter']").click();
         });
 
-        $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
 

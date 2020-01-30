@@ -38,8 +38,8 @@ namespace OrchardCore.Taxonomies.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(TaxonomyField field, BuildFieldEditorContext context)

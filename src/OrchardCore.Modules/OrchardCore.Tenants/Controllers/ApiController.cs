@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using MimeKit;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
@@ -157,6 +158,11 @@ namespace OrchardCore.Tenants.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest();
+            }
+
+            if (!MailboxAddress.TryParse(model.Email, out var emailAddress))
+            {
+                return BadRequest(S["Invalid email."]);
             }
 
             if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))

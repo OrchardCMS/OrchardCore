@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -36,7 +35,7 @@ namespace OrchardCore.Title.Drivers
             {
                 model.Title = titlePart.ContentItem.DisplayText;
                 model.TitlePart = titlePart;
-                model.Settings = GetSettings(titlePart);
+                model.Settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
             });
         }
 
@@ -47,13 +46,6 @@ namespace OrchardCore.Title.Drivers
             model.ContentItem.DisplayText = model.Title;
 
             return Edit(model, context);
-        }
-
-        private TitlePartSettings GetSettings(TitlePart titlePart)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(titlePart.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart)));
-            return contentTypePartDefinition?.GetSettings<TitlePartSettings>();
         }
     }
 }

@@ -39,8 +39,8 @@ namespace OrchardCore.Markdown.Drivers
 
                 model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(MarkdownField field, BuildFieldEditorContext context)

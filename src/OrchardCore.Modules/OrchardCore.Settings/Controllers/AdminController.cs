@@ -10,12 +10,13 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             ISiteService siteService,
@@ -23,13 +24,14 @@ namespace OrchardCore.Settings.Controllers
             IAuthorizationService authorizationService,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h,
-            IStringLocalizer<AdminController> s
-            )
+            IStringLocalizer<AdminController> s,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
             _siteService = siteService;
             _notifier = notifier;
             _authorizationService = authorizationService;
+            _updateModelAccessor = updateModelAccessor;
             H = h;
             S = s;
         }
@@ -49,7 +51,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel
             {
                 GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, this, false, groupId)
+                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId)
             };
 
             return View(viewModel);
@@ -69,7 +71,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel
             {
                 GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, this, false, groupId)
+                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId)
             };
 
             if (ModelState.IsValid)
