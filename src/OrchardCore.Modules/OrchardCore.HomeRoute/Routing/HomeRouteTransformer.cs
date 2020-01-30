@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -17,7 +18,14 @@ namespace OrchardCore.HomeRoute.Routing
 
         public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
         {
-            return new RouteValueDictionary((await _siteService.GetSiteSettingsAsync()).HomeRoute);
+            var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
+            if (homeRoute.Any())
+            {
+                return new RouteValueDictionary(homeRoute);
+            } else
+            {
+                return null;
+            }
         }
     }
 }
