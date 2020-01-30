@@ -51,7 +51,6 @@ namespace OrchardCore.Users.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             IUpdateModelAccessor updateModelAccessor)
-            )
         {
             _userDisplayManager = userDisplayManager;
             _authorizationService = authorizationService;
