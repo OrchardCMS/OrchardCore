@@ -73,7 +73,7 @@ namespace OrchardCore.Email.Services
 
             var mimeMessage = new MimeMessage
             {
-                Sender = new MailboxAddress(senderAddress)
+                Sender = MailboxAddress.Parse(senderAddress)
             };
 
             mimeMessage.From.Add(mimeMessage.Sender);
@@ -82,7 +82,7 @@ namespace OrchardCore.Email.Services
             {
                 foreach (var address in message.To.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.To.Add(new MailboxAddress(address));
+                    mimeMessage.To.Add(MailboxAddress.Parse(address));
                 }
             }
 
@@ -90,7 +90,7 @@ namespace OrchardCore.Email.Services
             {
                 foreach (var address in message.Cc.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.Cc.Add(new MailboxAddress(address));
+                    mimeMessage.Cc.Add(MailboxAddress.Parse(address));
                 }
             }
 
@@ -98,7 +98,7 @@ namespace OrchardCore.Email.Services
             {
                 foreach (var address in message.Bcc.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.Bcc.Add(new MailboxAddress(address));
+                    mimeMessage.Bcc.Add(MailboxAddress.Parse(address));
                 }
             }
 
@@ -106,7 +106,7 @@ namespace OrchardCore.Email.Services
             {
                 foreach (var address in message.ReplyTo.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.ReplyTo.Add(new MailboxAddress(address));
+                    mimeMessage.ReplyTo.Add(MailboxAddress.Parse(address));
                 }
             }
 
