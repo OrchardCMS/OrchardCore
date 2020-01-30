@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
@@ -31,15 +30,7 @@ public static class LiquidRazorHelperExtensions
         var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
         var htmlEncoder = serviceProvider.GetRequiredService<HtmlEncoder>();
 
-        var context = new TemplateContext();
-
-        if (model != null)
-        {
-            context.MemberAccessStrategy.Register(model.GetType());
-            context.SetValue("Model", model);
-        }
-
-        liquid = await liquidTemplateManager.RenderAsync(liquid, htmlEncoder, context);
+        liquid = await liquidTemplateManager.RenderAsync(liquid, htmlEncoder, model);
         return new HtmlString(liquid);
     }
 }

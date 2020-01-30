@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
-
     [HtmlTargetElement("script", Attributes = NameAttributeName)]
     [HtmlTargetElement("script", Attributes = SrcAttributeName)]
     [HtmlTargetElement("script", Attributes = AtAttributeName)]

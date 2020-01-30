@@ -13,19 +13,21 @@ namespace OrchardCore.Workflows.Timers
     {
         public static string EventName => nameof(TimerEvent);
         private readonly IClock _clock;
+        private readonly IStringLocalizer<TimerEvent> S;
 
         public TimerEvent(IClock clock, IStringLocalizer<TimerEvent> localizer)
         {
             _clock = clock;
-            T = localizer;
+            S = localizer;
         }
 
         private IStringLocalizer T { get; }
 
         public override string Name => EventName;
-        public override LocalizedString DisplayText => T["Timer Event"];
+        
+        public override LocalizedString DisplayText => S["Timer Event"];
 
-        public override LocalizedString Category => T["Background"];
+        public override LocalizedString Category => S["Background"];
 
         public string CronExpression
         {
@@ -52,7 +54,7 @@ namespace OrchardCore.Workflows.Timers
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
