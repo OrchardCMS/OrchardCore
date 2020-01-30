@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -36,6 +37,7 @@ namespace OrchardCore.Users.Controllers
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
@@ -47,6 +49,7 @@ namespace OrchardCore.Users.Controllers
             ISiteService siteService,
             IShapeFactory shapeFactory,
             IHtmlLocalizer<AdminController> htmlLocalizer,
+            IStringLocalizer<AdminController> stringLocalizer,
             IUpdateModelAccessor updateModelAccessor)
         {
             _userDisplayManager = userDisplayManager;
@@ -60,7 +63,9 @@ namespace OrchardCore.Users.Controllers
 
             New = shapeFactory;
             H = htmlLocalizer;
+            S = stringLocalizer;
         }
+
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
@@ -151,24 +156,24 @@ namespace OrchardCore.Users.Controllers
             };
 
             model.Options.UserFilters = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["All"].Value, Value = nameof(UsersFilter.All) },
-                //new SelectListItem() { Text = H["Approved"].Value, Value = nameof(UsersFilter.Approved) },
-                //new SelectListItem() { Text = H["Email pending"].Value, Value = nameof(UsersFilter.EmailPending) },
-                //new SelectListItem() { Text = H["Pending"].Value, Value = nameof(UsersFilter.Pending) }
+                new SelectListItem() { Text = S["All"], Value = nameof(UsersFilter.All) },
+                //new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
+                //new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
+                //new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
             };
 
             model.Options.UserSorts = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["Name"].Value, Value = nameof(UsersOrder.Name) },
-                new SelectListItem() { Text = H["Email"].Value, Value = nameof(UsersOrder.Email) },
-                //new SelectListItem() { Text = H["Created date"].Value, Value = nameof(UsersOrder.CreatedUtc) },
-                //new SelectListItem() { Text = H["Last Login date"].Value, Value = nameof(UsersOrder.LastLoginUtc) }
+                new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name) },
+                new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email) },
+                //new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
+                //new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
             };
 
             model.Options.UsersBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["Approve"].Value, Value = nameof(UsersBulkAction.Approve) },
-                new SelectListItem() { Text = H["Enable"].Value, Value = nameof(UsersBulkAction.Enable) },
-                new SelectListItem() { Text = H["Disable"].Value, Value = nameof(UsersBulkAction.Disable) },
-                new SelectListItem() { Text = H["Delete"].Value, Value = nameof(UsersBulkAction.Delete) }
+                new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
+                new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
+                new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
+                new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) }
             };
 
             return View(model);
