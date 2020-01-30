@@ -40,6 +40,10 @@ markdown_extensions:
       permalink: true
 #  - markdown.extensions.nl2br
 
+plugins:
+  - search
+  - git-revision-date-localized
+  
 # Page tree
 nav:
     - About Orchard Core: README.md
