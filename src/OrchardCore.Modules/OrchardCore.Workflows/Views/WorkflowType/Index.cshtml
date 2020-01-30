@@ -70,7 +70,7 @@
 
                         <div class="custom-control custom-checkbox float-left">
                             <input type="checkbox" class="custom-control-input" value="@entry.Id" name="itemIds" id="itemIds-@entry.Id">
-                            <label class="custom-control-label" for="itemIds-@entry.Id">&nbsp;</label>
+                            <label class="custom-control-label" for="itemIds-@entry.Id"></label>
                         </div>
                         <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
 
