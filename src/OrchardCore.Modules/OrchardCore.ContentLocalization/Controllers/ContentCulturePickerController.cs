@@ -17,7 +17,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.ContentLocalization.Controllers
 {
     [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
-    public class ContentCulturePickerController : Controller, IUpdateModel
+    public class ContentCulturePickerController : Controller
     {
         private readonly ISiteService _siteService;
         private readonly ILocalizationService _locationService;
