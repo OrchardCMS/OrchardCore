@@ -78,7 +78,7 @@ Here for this example I used TheBlogTheme recipe to automatically configure ever
 
 ## Seventh step : fine tune full text search
 
-![Search page](images/7.jpg)
+![Content type indexing settings](images/7.jpg)
 
 Here we can see the Blog Post content type definition. We have now a section for every content type to define which part of this content item should be indexed as part of the `FullText`. By default content items will index the "display text" and "body part" but we also added an option for you to customize the values that you would like to index as part of this `FullText` index field. By clicking on the "Use custom full-text" we allow you to set any Liquid script to do so. So as the example states you could add `{{ Model.Content.BloPost.Subtitle.Text }}` if you would like to also find this content item by it's *Subtitle* field. For the remaining, we let you imagine what you could possibly do with this Liquid field : index identifiers, fixed text or numeric values and else!
 
