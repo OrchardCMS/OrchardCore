@@ -270,6 +270,36 @@ namespace OrchardCore.DisplayManagement.Razor
             return zone != null && zone.Items.Count > 0;
         }
 
+        public new void DefineSection(string name, Microsoft.AspNetCore.Mvc.Razor.RenderAsyncDelegate section)
+        {
+            var zone = ThemeLayout.Zones[name];
+            dynamic sectionShape = New.AspSection(SectionContent: SectionDelegate(name,section) ).GetAwaiter().GetResult();
+
+            if (zone is Zones.ZoneOnDemand zoneOnDemand)
+            {
+                sectionShape = zoneOnDemand.AddAsync(sectionShape);
+            }
+            else
+            {
+                sectionShape = zone.Add(sectionShape);
+            }
+        }
+
+        private string SectionDelegate(string name, Microsoft.AspNetCore.Mvc.Razor.RenderAsyncDelegate oldDelegate)
+        {
+            string sectionContent = null;
+            Microsoft.AspNetCore.Mvc.Razor.RenderAsyncDelegate newDelegate = async () =>
+            {
+                var temporaryWriter = new System.IO.StringWriter();
+                PushWriter(temporaryWriter);
+                await oldDelegate();
+                PopWriter();
+                sectionContent = temporaryWriter.ToString();
+            };
+            newDelegate().GetAwaiter().GetResult();
+            return sectionContent;
+        }
+
         /// <summary>
         /// Renders a zone from the layout.
         /// </summary>
