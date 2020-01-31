@@ -55,3 +55,44 @@ Here for this example I used TheBlogTheme recipe to automatically configure ever
 ![Search page](images/7.jpg)
 
 Here we can see the Blog Post content type definition. We have now a section for every content type to define which part of this content item should be indexed as part of the FullText. By default content items will index the "display text" and "body part" but we also added an option for you to customize the values that you would like to index as part of this FullText index field. By clicking on the "Use custom full-text" we allow you to put any Liquid script to do so. So as the example states you could add `{{ Model.Content.BloPost.Subtitle.Text }}` if you would like to also find this content item by it's *Subtitle* field. For the remaining, we let you imagine what you could possibly do with this Liquid field : index identifiers, fixed text or numeric values and else!
+
+## Optional : define a specific search index for Full Text search
+
+By default the search index used on the search page is the index named "Search" which is automatically create by the use of the recipe from TheBlogTheme. But if your index is named differently you can also specify which index to query on. For doing so you will need to override the /Views/SearchForm.liquid or /Views/SearchForm.cshtml in your theme and add an optional hidden input named "IndexName" with a value that correspond to the index you want to use.
+
+``` HTML
+<form action="{{ "~/search" | href }}" method="get">
+    <div class="input-group mb-3 mt-5">
+        <input type="hidden" name="IndexName" value="CustomIndexName" />
+        <input name="Terms" type="text" class="form-control form-control-lg" value="{{ Model.Terms }}" placeholder="{{ "Enter your search term(s)" | t }}" autofocus />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary btn-sm">{{ "Search" | t }}</button>
+        </div>
+    </div>
+</form>
+```
+
+## Optional : Search templates customization
+
+Also, you can customize this views for your specific needs in your theme by overriding these views : 
+
+`/Views/Shared/Search.liquid or .cshtml` (general layout)  
+`/Views/SearchForm.liquid or .cshtml` (form layout)  
+`/Views/SearchResults.liquid or .cshtml` (results layout)   
+
+For example an idea here could be to simply customize the search result template to suit your needs by changing "Summary" to "SearchSummary" and create the corresponding shape templates.
+
+SearchResults.liquid : 
+```html
+{% if Model.ContentItems != null and Model.ContentItems.size > 0 %}
+    <ul class="list-group">
+        {% for item in Model.ContentItems %}
+            <li class="list-group-item">
+                {{ item | shape_build_display: "SearchSummary" | shape_render }}
+            </li>
+        {% endfor %}
+    </ul>
+{% elsif Model.Terms != null %}
+    <p class="alert alert-warning">{{"There are no such results." | t }}</p>
+{% endif %}
+```
