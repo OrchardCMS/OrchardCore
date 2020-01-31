@@ -23,8 +23,8 @@ namespace OrchardCore.Templates.Cms.Module
         {
 #if (AddPart)
             services.AddContentPart<MyTestPart>()
-                .WithDisplayDriver<MyTestPartDisplayDriver>()
-                .WithHandler<MyTestPartHandler>();
+                .UseDisplayDriver<MyTestPartDisplayDriver>()
+                .AddHandler<MyTestPartHandler>();
 
             services.AddScoped<IContentPartDefinitionDisplayDriver, MyTestPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();

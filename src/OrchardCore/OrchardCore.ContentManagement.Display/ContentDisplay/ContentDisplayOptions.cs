@@ -15,10 +15,10 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         private Dictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
         public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions => _contentFieldOptions ??= _contentFields.ToDictionary(k => k.Type.Name);
 
-        internal void ForContentPartDisplay(Type contentPartType, Type editorDriverType, Func<bool> predicate)
+        internal void ForContentPartDisplayMode(Type contentPartType, Type displayDriverType, Func<string, bool> predicate)
         {
             var option = GetOrAddContentPartDisplayOption(contentPartType);
-            option.ForDisplay(editorDriverType, predicate);
+            option.ForDisplayMode(displayDriverType, predicate);
         }
 
         internal void ForContentPartEditor(Type contentPartType, Type editorDriverType, Func<string, bool> predicate)

@@ -11,13 +11,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         public Type DisplayDriverType { get; }
 
-        public Func<bool> Display { get; private set; }
+        public Func<string, bool> DisplayMode { get; private set; }
 
         public Func<string, bool> Editor { get; private set; }
 
-        internal void SetDisplay(Func<bool> display)
+        internal void SetDisplayMode(Func<string, bool> displayMode)
         {
-            Display = display;
+            DisplayMode = displayMode;
         }
 
         internal void SetEditor(Func<string, bool> editor)

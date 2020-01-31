@@ -8,6 +8,7 @@ using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Services;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
@@ -93,7 +94,8 @@ namespace OrchardCore.Lists
         {
             services.AddScoped<IContentLocalizationPartHandler, ContainedPartLocalizationHandler>();
             services.AddScoped<IContentLocalizationPartHandler, ListPartLocalizationHandler>();
-            services.AddScoped<IContentPartHandler, ContainedPartHandler>();
+            services.AddContentPart<LocalizationPart>()
+                .AddHandler<LocalizationContainedPartHandler>();
         }
     }
 

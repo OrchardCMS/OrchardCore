@@ -18,7 +18,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             _contentDisplayOptions = contentDisplayOptions.Value;
         }
 
-        public IList<IContentPartDisplayDriver> GetDisplayDrivers(string partName)
+        public IList<IContentPartDisplayDriver> GetDisplayModeDrivers(string partName, string displayMode)
         {
             var services = new List<IContentPartDisplayDriver>();
 
@@ -26,7 +26,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             {
                 foreach (var displayDriverOption in contentPartDisplayOption.DisplayDrivers)
                 {
-                    if (displayDriverOption.Display.Invoke())
+                    if (displayDriverOption.DisplayMode.Invoke(displayMode))
                     {
                         services.Add((IContentPartDisplayDriver)_serviceProvider.GetRequiredService(displayDriverOption.DisplayDriverType));
                     }

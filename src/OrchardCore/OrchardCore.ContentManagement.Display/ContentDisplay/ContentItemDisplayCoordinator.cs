@@ -84,7 +84,7 @@ namespace OrchardCore.ContentManagement.Display
 
                 if (part != null)
                 {
-                    var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayDrivers(partTypeName);
+                    var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayModeDrivers(partTypeName, contentTypePartDefinition.DisplayMode());
                     foreach (var partDisplayDriver in partDisplayDrivers)
                     {
                         try

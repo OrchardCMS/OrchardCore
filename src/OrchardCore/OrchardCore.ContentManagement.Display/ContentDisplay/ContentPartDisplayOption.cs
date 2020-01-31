@@ -11,16 +11,16 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         public ContentPartDisplayOption(Type contentPartType) : base(contentPartType) { }
 
         private List<ContentPartDisplayDriverOption> _displayDrivers;
-        public IReadOnlyList<ContentPartDisplayDriverOption> DisplayDrivers => _displayDrivers ??= _partDisplayDrivers.Where(d => d.Display != null).ToList();
+        public IReadOnlyList<ContentPartDisplayDriverOption> DisplayDrivers => _displayDrivers ??= _partDisplayDrivers.Where(d => d.DisplayMode != null).ToList();
 
         private List<ContentPartDisplayDriverOption> _editorDrivers;
         public IReadOnlyList<ContentPartDisplayDriverOption> EditorDrivers => _editorDrivers ??= _partDisplayDrivers.Where(d => d.Editor != null).ToList();
 
-        internal void ForDisplay(Type displayDriverType, Func<bool> predicate)
+        internal void ForDisplayMode(Type displayDriverType, Func<string, bool> predicate)
         {
             var option = GetOrAddContentPartDisplayDriverOption(displayDriverType);
 
-            option.SetDisplay(predicate);
+            option.SetDisplayMode(predicate);
         }
 
         internal void ForEditor(Type displayDriverType, Func<string, bool> predicate)
