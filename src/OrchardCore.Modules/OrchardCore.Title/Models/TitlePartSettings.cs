@@ -17,6 +17,11 @@ namespace OrchardCore.Title.Models
         public TitlePartOptions Options { get; set; } = TitlePartOptions.Editable;
 
         /// <summary>
+        /// Gets or sets if value must be required
+        /// </summary>
+        public bool Required { get; set; }
+
+        /// <summary>
         /// The pattern used to build the Title.
         /// </summary>
         public string Pattern { get; set; }

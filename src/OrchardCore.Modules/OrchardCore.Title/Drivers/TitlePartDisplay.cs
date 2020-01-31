@@ -1,4 +1,6 @@
+using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -12,9 +14,10 @@ namespace OrchardCore.Title.Drivers
     public class TitlePartDisplay : ContentPartDisplayDriver<TitlePart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-
-        public TitlePartDisplay(IContentDefinitionManager contentDefinitionManager)
+        private readonly IStringLocalizer S;
+        public TitlePartDisplay(IContentDefinitionManager contentDefinitionManager, IStringLocalizer<TitlePartDisplay> localizer)
         {
+            S = localizer;
             _contentDefinitionManager = contentDefinitionManager;
         }
 
@@ -41,7 +44,14 @@ namespace OrchardCore.Title.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Title);
+            if(await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
+            {
+                var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();;
+                if (settings.Required && String.IsNullOrWhiteSpace(model.Title))
+                {
+                    updater.ModelState.AddModelError(Prefix, S["A value is required for Title."]);
+                }
+            }
 
             model.ContentItem.DisplayText = model.Title;
 
