@@ -64,12 +64,7 @@ namespace OrchardCore.OpenId
             services.TryAddEnumerable(new[]
             {
                 ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
-                ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
-                ServiceDescriptor.Scoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>(),
-
-                ServiceDescriptor.Transient<IDeploymentSource, OpenIdServerDeploymentSource>(),
-
-                ServiceDescriptor.Singleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>(),
+                ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>()
             });
 
         }
@@ -199,6 +194,11 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdApplicationStep>(),
 
                 ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
+
+                // Deployment
+                ServiceDescriptor.Scoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>(),
+                ServiceDescriptor.Transient<IDeploymentSource, OpenIdServerDeploymentSource>(),
+                ServiceDescriptor.Singleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>(),
             });
 
             // Note: the OpenIddict extensions add two authentication options initializers that take care of

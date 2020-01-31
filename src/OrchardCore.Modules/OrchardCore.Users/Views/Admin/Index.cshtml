@@ -70,7 +70,7 @@
                 <li class="list-group-item">                    
                     <div class="custom-control custom-checkbox float-left">
                         <input type="checkbox" class="custom-control-input" value="@entry.Id" name="itemIds" id="itemIds-@entry.Id">
-                        <label class="custom-control-label" for="itemIds-@entry.Id">&nbsp;</label>
+                        <label class="custom-control-label" for="itemIds-@entry.Id"></label>
                     </div>
                     @await DisplayAsync(entry.Shape)
                 </li>
@@ -91,7 +91,7 @@
 
 <script at="Foot" type="text/javascript">
     $(function () {
-        $('select').selectpicker();
+        $('.selectpicker').selectpicker();
 
         var actions = $("#actions");
         var items = $("#items");
@@ -100,7 +100,7 @@
         var selectedItems = $("#selected-items");
         var contentItemsCheckboxes = $(":checkbox[name='itemIds']");
 
-        $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
 

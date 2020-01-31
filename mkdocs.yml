@@ -40,6 +40,10 @@ markdown_extensions:
       permalink: true
 #  - markdown.extensions.nl2br
 
+plugins:
+  - search
+  - git-revision-date-localized
+  
 # Page tree
 nav:
     - About Orchard Core: README.md
@@ -124,6 +128,7 @@ nav:
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
             - Modules: docs/reference/core/Modules/README.md
             - OpenId: docs/reference/modules/OpenId/README.md
+            - Razor Helpers: docs/reference/core/Razor/README.md
             - Recipes: docs/reference/modules/Recipes/README.md
             - Roles: docs/reference/modules/Roles/README.md
             - Scripting: docs/reference/modules/Scripting/README.md

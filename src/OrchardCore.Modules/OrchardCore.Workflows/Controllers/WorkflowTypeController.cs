@@ -30,7 +30,7 @@ using YesSql.Services;
 namespace OrchardCore.Workflows.Controllers
 {
     [Admin]
-    public class WorkflowTypeController : Controller, IUpdateModel
+    public class WorkflowTypeController : Controller
     {
         private readonly ISiteService _siteService;
         private readonly ISession _session;
@@ -42,6 +42,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly ISecurityTokenService _securityTokenService;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         private dynamic New { get; }
         private IStringLocalizer S { get; }
@@ -61,8 +62,8 @@ namespace OrchardCore.Workflows.Controllers
             INotifier notifier,
             ISecurityTokenService securityTokenService,
             IStringLocalizer<WorkflowTypeController> s,
-            IHtmlLocalizer<WorkflowTypeController> h
-        )
+            IHtmlLocalizer<WorkflowTypeController> h,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _siteService = siteService;
             _session = session;
@@ -74,6 +75,7 @@ namespace OrchardCore.Workflows.Controllers
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
             _securityTokenService = securityTokenService;
+            _updateModelAccessor = updateModelAccessor;
 
             New = shapeFactory;
             S = s;
@@ -176,7 +178,7 @@ namespace OrchardCore.Workflows.Controllers
             {
                 return Unauthorized();
             }
-            
+
             if (itemIds?.Count() > 0)
             {
                 var checkedEntries = await _session.Query<WorkflowType, WorkflowTypeIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
@@ -479,7 +481,7 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowTypeId, string localId, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activity, this, displayType);
+            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
             activityShape.Activity = activity;
             activityShape.WorkflowTypeId = workflowTypeId;
@@ -490,7 +492,7 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int index, int workflowTypeId, string localId, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
+            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
             activityShape.Activity = activityContext.Activity;
             activityShape.ActivityRecord = activityContext.ActivityRecord;
