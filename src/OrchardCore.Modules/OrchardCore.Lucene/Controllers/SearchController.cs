@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
+using OrchardCore.Entities;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Navigation;
@@ -68,9 +69,12 @@ namespace OrchardCore.Lucene.Controllers
         {
             var permissionsProvider = _permissionProviders.FirstOrDefault(x => x.GetType().FullName == "OrchardCore.Lucene.Permissions");
             var permissions = await permissionsProvider.GetPermissionsAsync();
-            if (permissions.FirstOrDefault(x => x.Name == "QueryLucene" + viewModel.IndexName + "Index") != null)
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var searchSettings = siteSettings.As<LuceneSettings>();
+
+            if (permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index") != null)
             {
-                if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + viewModel.IndexName + "Index")))
+                if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index")))
                 {
                     return Unauthorized();
                 }
@@ -80,9 +84,7 @@ namespace OrchardCore.Lucene.Controllers
                 return BadRequest("Search is not configured.");
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-            if (!_luceneIndexProvider.Exists(viewModel.IndexName))
+            if (searchSettings.SearchIndex != null && !_luceneIndexProvider.Exists(searchSettings.SearchIndex))
             {
                 Logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
                 return BadRequest("Search is not configured.");
@@ -96,19 +98,18 @@ namespace OrchardCore.Lucene.Controllers
                 return BadRequest("Search is not configured.");
             }
 
-            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(viewModel.IndexName);
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(searchSettings.SearchIndex);
 
             if (luceneIndexSettings == null)
             {
-                Logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({viewModel.IndexName}) index.");
-                return BadRequest($"Search index ({viewModel.IndexName}) is not configured.");
+                Logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({searchSettings.SearchIndex}) index.");
+                return BadRequest($"Search index ({searchSettings.SearchIndex}) is not configured.");
             }
 
             if (string.IsNullOrWhiteSpace(viewModel.Terms))
             {
                 return View(new SearchIndexViewModel
                 {
-                    IndexName = viewModel.IndexName,
                     SearchForm = new SearchFormViewModel("Search__Form") { },
                 });
             }
@@ -135,7 +136,7 @@ namespace OrchardCore.Lucene.Controllers
                 end = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
             }
 
-            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, viewModel.IndexName, start, end);
+            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end);
 
             //We Query database to retrieve content items.
             IQuery<ContentItem> queryDb;
@@ -180,10 +181,9 @@ namespace OrchardCore.Lucene.Controllers
             var model = new SearchIndexViewModel
             {
                 Terms = viewModel.Terms,
-                IndexName = viewModel.IndexName,
-                SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms, IndexName = viewModel.IndexName },
+                SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms },
                 SearchResults = new SearchResultsViewModel("Search__Results") { ContentItems = containedItems.Take(pager.PageSize) },
-                Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, object>() { { "IndexName", viewModel.IndexName }, { "Terms", viewModel.Terms } })
+                Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, object>() { { "Terms", viewModel.Terms } })
             };
 
             return View(model);

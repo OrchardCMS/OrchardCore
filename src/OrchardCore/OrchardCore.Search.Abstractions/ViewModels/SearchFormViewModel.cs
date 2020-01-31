@@ -8,7 +8,5 @@ namespace OrchardCore.Search.Abstractions.ViewModels
         public SearchFormViewModel(string shapeType) : base(shapeType) { }
 
         public string Terms { get; set; }
-
-        public string IndexName { get; set; } = "Search";
     }
 }
