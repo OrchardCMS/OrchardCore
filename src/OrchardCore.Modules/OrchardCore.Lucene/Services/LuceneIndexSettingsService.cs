@@ -87,7 +87,7 @@ namespace OrchardCore.Lucene
             return LuceneSettings.StandardAnalyzer;
         }
 
-        public async Task<string> LoaIndexAnalyzerAsync(string indexName)
+        public async Task<string> LoadIndexAnalyzerAsync(string indexName)
         {
             var document = await LoadDocumentAsync();
 
