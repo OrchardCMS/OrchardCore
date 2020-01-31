@@ -42,16 +42,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         /// </summary>
         public static ContentPartOptionBuilder RemoveDisplayDriver(this ContentPartOptionBuilder builder, Type partDisplayDriverType)
         {
-            if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(partDisplayDriverType))
-            {
-                throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
-            }
-
-            builder.Services.RemoveAll(partDisplayDriverType);
             builder.Services.Configure<ContentDisplayOptions>(o =>
             {
                 o.RemoveContentPartDisplayDriver(builder.ContentPartType, partDisplayDriverType);
             });
+
+            builder.Services.RemoveAll(partDisplayDriverType);
 
             return builder;
         }
@@ -95,16 +91,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         /// </summary>
         public static ContentPartOptionBuilder ForDisplayMode(this ContentPartOptionBuilder builder, Type partDisplayDriverType, Func<string, bool> predicate)
         {
-            if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(partDisplayDriverType))
-            {
-                throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
-            }
-
-            builder.Services.TryAddScoped(partDisplayDriverType);
             builder.Services.Configure<ContentDisplayOptions>(o =>
             {
                 o.ForContentPartDisplayMode(builder.ContentPartType, partDisplayDriverType, predicate);
             });
+
+            builder.Services.TryAddScoped(partDisplayDriverType);
 
             return builder;
         }
@@ -148,16 +140,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         /// </summary>
         public static ContentPartOptionBuilder ForEditor(this ContentPartOptionBuilder builder, Type partDisplayDriverType, Func<string, bool> predicate)
         {
-            if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(partDisplayDriverType))
-            {
-                throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
-            }
-
-            builder.Services.TryAddScoped(partDisplayDriverType);
             builder.Services.Configure<ContentDisplayOptions>(o =>
             {
                 o.ForContentPartEditor(builder.ContentPartType, partDisplayDriverType, predicate);
             });
+
+            builder.Services.TryAddScoped(partDisplayDriverType);
 
             return builder;
         }

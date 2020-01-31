@@ -54,16 +54,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         /// </summary>
         public static ContentFieldOptionBuilder RemoveDisplayDriver(this ContentFieldOptionBuilder builder, Type fieldDisplayDriverType)
         {
-            if (!typeof(IContentFieldDisplayDriver).IsAssignableFrom(fieldDisplayDriverType))
-            {
-                throw new ArgumentException("The type must implement " + nameof(IContentFieldDisplayDriver));
-            }
-
-            builder.Services.RemoveAll(fieldDisplayDriverType);
             builder.Services.Configure<ContentDisplayOptions>(o =>
             {
-                o.RemoveContentPartDisplayDriver(builder.ContentFieldType, fieldDisplayDriverType);
+                o.RemoveContentFieldDisplayDriver(builder.ContentFieldType, fieldDisplayDriverType);
             });
+
+            builder.Services.RemoveAll(fieldDisplayDriverType);
 
             return builder;
         }
@@ -102,16 +98,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         /// </summary>
         public static ContentFieldOptionBuilder ForDisplayMode(this ContentFieldOptionBuilder builder, Type fieldDisplayDriverType, Func<string, bool> predicate)
         {
-            if (!typeof(IContentFieldDisplayDriver).IsAssignableFrom(fieldDisplayDriverType))
-            {
-                throw new ArgumentException("The type must implement " + nameof(IContentFieldDisplayDriver));
-            }
-
-            builder.Services.TryAddScoped(fieldDisplayDriverType);
             builder.Services.Configure<ContentDisplayOptions>(o =>
             {
                 o.ForContentFieldDisplayMode(builder.ContentFieldType, fieldDisplayDriverType, predicate);
             });
+
+            builder.Services.TryAddScoped(fieldDisplayDriverType);
 
             return builder;
         }
@@ -155,16 +147,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         /// </summary>
         public static ContentFieldOptionBuilder ForEditor(this ContentFieldOptionBuilder builder, Type fieldDisplayDriverType, Func<string, bool> predicate)
         {
-            if (!typeof(IContentFieldDisplayDriver).IsAssignableFrom(fieldDisplayDriverType))
-            {
-                throw new ArgumentException("The type must implement " + nameof(IContentFieldDisplayDriver));
-            }
-
-            builder.Services.TryAddScoped(fieldDisplayDriverType);
             builder.Services.Configure<ContentDisplayOptions>(o =>
             {
                 o.ForContentFieldEditor(builder.ContentFieldType, fieldDisplayDriverType, predicate);
             });
+
+            builder.Services.TryAddScoped(fieldDisplayDriverType);
 
             return builder;
         }
