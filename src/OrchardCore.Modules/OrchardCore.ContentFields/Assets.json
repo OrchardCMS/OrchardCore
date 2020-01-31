@@ -2,15 +2,15 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "Assets/scss/contentPicker.scss"
+      "Assets/scss/vue-multiselect-wrapper.scss"
     ],
-    "output": "wwwroot/Styles/contentPicker.css"
+    "output": "wwwroot/Styles/vue-multiselect-wrapper.css"
   },
   {
     "inputs": [
-      "Assets/js/ContentPicker/*.js"
+      "Assets/js/vue-multiselect-wrapper.js"
     ],
-    "output": "wwwroot/Scripts/contentPicker.js"
+    "output": "wwwroot/Scripts/vue-multiselect-wrapper.js"
   },
   {
     "generateSourceMaps": false,
@@ -27,8 +27,14 @@
   },
   {
     "inputs": [
-      "Assets/trumbowyg.media.js"
+      "Assets/trumbowyg.media.tag.js"
     ],
-    "output": "wwwroot/Scripts/trumbowyg.media.js"
+    "output": "wwwroot/Scripts/trumbowyg.media.tag.js"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg.media.url.js"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg.media.url.js"
   }
 ]

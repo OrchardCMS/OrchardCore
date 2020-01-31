@@ -11,12 +11,15 @@ namespace OrchardCore.Modules
         public virtual int Order { get; } = 0;
 
         /// <inheritdoc />
+        public virtual int ConfigureOrder => Order;
+
+        /// <inheritdoc />
         public virtual void ConfigureServices(IServiceCollection services)
         {
         }
 
         /// <inheritdoc />
-        public virtual void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public virtual void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
         }
     }

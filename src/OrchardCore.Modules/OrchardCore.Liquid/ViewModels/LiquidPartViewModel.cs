@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement;
-using OrchardCore.Liquid.Model;
+using OrchardCore.Liquid.Models;
 
 namespace OrchardCore.Liquid.ViewModels
 {

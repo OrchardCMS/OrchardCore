@@ -6,6 +6,8 @@ namespace OrchardCore.ContentManagement.Records
     public class ContentItemIndex : MapIndex
     {
         public const int MaxContentTypeSize = 255;
+        public const int MaxContentPartSize = 255;
+        public const int MaxContentFieldSize = 255;
         public const int MaxOwnerSize = 255;
         public const int MaxAuthorSize = 255;
         public const int MaxDisplayTextSize = 255;
@@ -47,22 +49,22 @@ namespace OrchardCore.ContentManagement.Records
 
                     if (contentItemIndex.ContentType?.Length > ContentItemIndex.MaxContentTypeSize)
                     {
-                        contentItem.ContentType = contentItem.ContentType.Substring(ContentItemIndex.MaxContentTypeSize);
+                        contentItem.ContentType = contentItem.ContentType.Substring(0, ContentItemIndex.MaxContentTypeSize);
                     }
 
                     if (contentItemIndex.Owner?.Length > ContentItemIndex.MaxOwnerSize)
                     {
-                        contentItem.Owner = contentItem.Owner.Substring(ContentItemIndex.MaxOwnerSize);
+                        contentItem.Owner = contentItem.Owner.Substring(0, ContentItemIndex.MaxOwnerSize);
                     }
 
                     if (contentItemIndex.Author?.Length > ContentItemIndex.MaxAuthorSize)
                     {
-                        contentItem.Author = contentItem.Author.Substring(ContentItemIndex.MaxAuthorSize);
+                        contentItem.Author = contentItem.Author.Substring(0, ContentItemIndex.MaxAuthorSize);
                     }
 
                     if (contentItemIndex.DisplayText?.Length > ContentItemIndex.MaxDisplayTextSize)
                     {
-                        contentItem.DisplayText = contentItem.DisplayText.Substring(ContentItemIndex.MaxDisplayTextSize);
+                        contentItem.DisplayText = contentItem.DisplayText.Substring(0, ContentItemIndex.MaxDisplayTextSize);
                     }
 
                     return contentItemIndex;

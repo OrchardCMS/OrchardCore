@@ -1,9 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -201,6 +207,25 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Theory]
+        [InlineData("zh-Hans", "球", 1, new string[] { "球" })]
+        [InlineData("zh-Hans", "球", 2, new string[] { "球" })]
+        public void LocalizerReturnsCorrectTranslationForPluralIfNoPluralFormsSpecified(string culture, string expected, int count, string[] translations)
+        {
+            var currentCulture = CultureInfo.GetCultureInfo(culture);
+            CultureInfo.CurrentUICulture = currentCulture;
+
+            // using DefaultPluralRuleProvider to test it returns correct rule
+            TryGetRuleFromDefaultPluralRuleProvider(currentCulture, out var rule);
+            Assert.NotNull(rule);
+
+            SetupDictionary(culture, new[] { new CultureDictionaryRecord("ball", null, translations), }, rule);
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
+            var translation = localizer.Plural(count, "ball", "{0} balls", count);
+
+            Assert.Equal(expected, translation);
+        }
+
+        [Theory]
         [InlineData("míč", 1)]
         [InlineData("2 míče", 2)]
         [InlineData("5 míčů", 5)]
@@ -284,6 +309,31 @@ namespace OrchardCore.Tests.Localization
             Assert.Equal(expected.Count(), translations.Count());
         }
 
+        [Fact]
+        public async Task PortableObjectStringLocalizerShouldRegisterIStringLocalizerOfT()
+            => await StartupRunner.Run(typeof(PortableObjectLocalizationStartup),"en", "Hello");
+
+        [Theory]
+        [InlineData("ar", 1)]
+        [InlineData("ar-YE", 2)]
+        [InlineData("zh-Hans-CN", 3)]
+        [InlineData("zh-Hant-TW", 3)]
+        public void LocalizerWithContextShouldCallGetDictionaryOncePerCulture(string culture, int expectedCalls)
+        {
+            // Arrange
+            SetupDictionary(culture, Array.Empty<CultureDictionaryRecord>());
+
+            var localizer = new PortableObjectStringLocalizer("context", _localizationManager.Object, true, _logger.Object);
+            CultureInfo.CurrentUICulture = new CultureInfo(culture);
+
+            // Act
+            var translation = localizer["Hello"];
+
+            // Assert
+            _localizationManager.Verify(lm => lm.GetDictionary(It.IsAny<CultureInfo>()), Times.Exactly(expectedCalls));
+            Assert.Equal("Hello", translation);
+        }
+
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
         {
             SetupDictionary(cultureName, records, _csPluralRule);
@@ -295,6 +345,38 @@ namespace OrchardCore.Tests.Localization
             dictionary.MergeTranslations(records);
 
             _localizationManager.Setup(o => o.GetDictionary(It.Is<CultureInfo>(c => c.Name == cultureName))).Returns(dictionary);
+        }
+
+        private bool TryGetRuleFromDefaultPluralRuleProvider(CultureInfo culture, out PluralizationRuleDelegate rule)
+        {
+            return ((IPluralRuleProvider)new DefaultPluralRuleProvider()).TryGetRule(culture, out rule);
+        }
+
+        public class PortableObjectLocalizationStartup
+        {
+            public void ConfigureServices(IServiceCollection services)
+            {
+                services.AddMvc();
+                services.AddPortableObjectLocalization();
+            }
+
+            public void Configure(
+                IApplicationBuilder app,
+                IStringLocalizer<PortableObjectLocalizationStartup> localizer)
+            {
+                var supportedCultures = new[] { "ar", "en" };
+                app.UseRequestLocalization(options =>
+                    options
+                        .AddSupportedCultures(supportedCultures)
+                        .AddSupportedUICultures(supportedCultures)
+                        .SetDefaultCulture("en")
+                );
+
+                app.Run(async (context) =>
+                {
+                    await context.Response.WriteAsync(localizer["Hello"]);
+                });
+            }
         }
     }
 }

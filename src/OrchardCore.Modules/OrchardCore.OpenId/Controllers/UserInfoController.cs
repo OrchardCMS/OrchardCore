@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -17,10 +16,10 @@ namespace OrchardCore.OpenId.Controllers
     [OpenIdController, SkipStatusCodePages]
     public class UserInfoController : Controller
     {
-        private readonly IStringLocalizer<UserInfoController> T;
+        private readonly IStringLocalizer<UserInfoController> S;
 
         public UserInfoController(IStringLocalizer<UserInfoController> localizer)
-            => T = localizer;
+            => S = localizer;
 
         // GET/POST: /connect/userinfo
         [AcceptVerbs("GET", "POST")]
@@ -45,12 +44,12 @@ namespace OrchardCore.OpenId.Controllers
 
             // Ensure the access token represents a user and not an application.
             var type = principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value;
-            if (!string.Equals(type, OpenIdConstants.EntityTypes.User, StringComparison.Ordinal))
+            if (!string.Equals(type, OpenIdConstants.EntityTypes.User))
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIddictConstants.Errors.InvalidRequest,
-                    ErrorDescription = T["The userinfo endpoint can only be used with access tokens representing users."]
+                    ErrorDescription = S["The userinfo endpoint can only be used with access tokens representing users."]
                 });
             }
 

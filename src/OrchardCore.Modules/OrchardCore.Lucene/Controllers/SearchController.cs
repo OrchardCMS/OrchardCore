@@ -3,9 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.QueryParsers.Classic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Navigation;
@@ -15,6 +17,7 @@ namespace OrchardCore.Lucene.Controllers
 {
     public class SearchController : Controller
     {
+        private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
         private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
@@ -22,6 +25,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly IContentManager _contentManager;
 
         public SearchController(
+            IAuthorizationService authorizationService,
             ISiteService siteService,
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
@@ -30,6 +34,7 @@ namespace OrchardCore.Lucene.Controllers
             ILogger<SearchController> logger
             )
         {
+            _authorizationService = authorizationService;
             _siteService = siteService;
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
@@ -43,6 +48,11 @@ namespace OrchardCore.Lucene.Controllers
 
         public async Task<IActionResult> Index(string id, string q, PagerParameters pagerParameters)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneSearch))
+            {
+                return Unauthorized();
+            }
+
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
@@ -55,17 +65,8 @@ namespace OrchardCore.Lucene.Controllers
 
             if (!_luceneIndexProvider.Exists(indexName))
             {
-                return NotFound();
-            }
-
-            if (string.IsNullOrWhiteSpace(q))
-            {
-                return View(new SearchIndexViewModel
-                {
-                    Pager = pager,
-                    IndexName = id,
-                    ContentItems = Enumerable.Empty<ContentItem>()
-                });
+                Logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
+                return BadRequest("Search is not configured.");
             }
 
             var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
@@ -73,13 +74,15 @@ namespace OrchardCore.Lucene.Controllers
             if (luceneSettings == null || luceneSettings?.DefaultSearchFields == null)
             {
                 Logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
+                return BadRequest("Search is not configured.");
+            }
 
+            if (string.IsNullOrWhiteSpace(q))
+            {
                 return View(new SearchIndexViewModel
                 {
-                    HasMoreResults = false,
-                    Query = q,
                     Pager = pager,
-                    IndexName = id,
+                    IndexName = indexName,
                     ContentItems = Enumerable.Empty<ContentItem>()
                 });
             }
@@ -105,7 +108,7 @@ namespace OrchardCore.Lucene.Controllers
                 HasMoreResults = contentItemIds.Count > size,
                 Query = q,
                 Pager = pager,
-                IndexName = id,
+                IndexName = indexName,
                 ContentItems = contentItems
             };
 

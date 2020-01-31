@@ -13,7 +13,7 @@ using OrchardCore.Email.ViewModels;
 
 namespace OrchardCore.Email.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
@@ -39,8 +39,7 @@ namespace OrchardCore.Email.Controllers
         IStringLocalizer T { get; set; }
 
         [HttpGet]
-        [ActionName("Index")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
@@ -50,9 +49,8 @@ namespace OrchardCore.Email.Controllers
             return View();
         }
 
-        [HttpPost]
-        [ActionName("Index")]
-        public async Task<IActionResult> Post(SmtpSettingsViewModel model)
+        [HttpPost, ActionName(nameof(Index))]
+        public async Task<IActionResult> IndexPost(SmtpSettingsViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
@@ -108,16 +106,6 @@ namespace OrchardCore.Email.Controllers
             }
 
             return message;
-        }
-
-        private static bool ValidateEmail(string email)
-        {
-            var regexOptions = RegexOptions.Singleline | RegexOptions.IgnoreCase;
-            // From https://stackoverflow.com/questions/16167983/best-regular-expression-for-email-validation-in-c-sharp
-            // Retrieved 2018-11-16
-            string pattern = @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z";
-
-            return Regex.IsMatch(email, pattern, regexOptions);
         }
     }
 }

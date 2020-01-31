@@ -1,14 +1,17 @@
 @model HtmlBodyPartViewModel
 @using OrchardCore.Html.ViewModels;
 @using OrchardCore.Html.Settings;
+@using OrchardCore.ContentLocalization
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization
 
 @{
-    var settings = Model.TypePartDefinition.Settings.ToObject<HtmlBodyPartSettings>();
+    var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
+    var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
 }
 
-<fieldset class="form-group">
-    <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
-    <textarea asp-for="Source" rows="5" class="form-control content-preview-text"></textarea>
+<div class="form-group">
+    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
+    <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
     <span class="hint">@T["The body of the content item."]</span>
-</fieldset>
+</div>

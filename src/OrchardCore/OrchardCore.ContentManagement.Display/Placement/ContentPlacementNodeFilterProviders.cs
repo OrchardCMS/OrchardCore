@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
@@ -58,11 +56,11 @@ namespace OrchardCore.ContentManagement.Display.Placement
 
             return contentTypes.Any(ct =>
             {
-                if (ct.EndsWith("*"))
+                if (ct.EndsWith('*'))
                 {
                     var prefix = ct.Substring(0, ct.Length - 1);
 
-                    return (contentItem.ContentType ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase)  || (GetStereotype(context) ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
+                    return (contentItem.ContentType ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase) || (GetStereotype(context) ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
                 }
 
                 return contentItem.ContentType == ct || GetStereotype(context) == ct;
@@ -72,7 +70,9 @@ namespace OrchardCore.ContentManagement.Display.Placement
         private string GetStereotype(ShapePlacementContext context)
         {
             var shape = context.ZoneShape as Shape;
-            return shape?.Properties["Stereotype"]?.ToString();
+            object stereotypeVal = null;
+            shape?.Properties?.TryGetValue("Stereotype", out stereotypeVal);
+            return stereotypeVal?.ToString();
         }
     }
 

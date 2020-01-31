@@ -27,22 +27,22 @@ namespace OrchardCore.Recipes.Commands
 
             if (!recipes.Any())
             {
-                await Context.Output.WriteLineAsync(T["No recipes found."]);
+                await Context.Output.WriteLineAsync(S["No recipes found."]);
                 return;
             }
 
-            await Context.Output.WriteLineAsync(T["List of available recipes"]);
-            await Context.Output.WriteLineAsync(T["--------------------------"]);
+            await Context.Output.WriteLineAsync(S["List of available recipes"]);
+            await Context.Output.WriteLineAsync("--------------------------");
             await Context.Output.WriteLineAsync();
 
             foreach (var recipe in recipes)
             {
-                await Context.Output.WriteLineAsync(T["Recipe: {0}", recipe.Name]);
-                await Context.Output.WriteLineAsync(T["  Version:     {0}", recipe.Version]);
-                await Context.Output.WriteLineAsync(T["  Tags:        {0}", string.Join(",", recipe.Tags)]);
-                await Context.Output.WriteLineAsync(T["  Description: {0}", recipe.Description]);
-                await Context.Output.WriteLineAsync(T["  Author:      {0}", recipe.Author]);
-                await Context.Output.WriteLineAsync(T["  Website:     {0}", recipe.WebSite]);
+                await Context.Output.WriteLineAsync(S["Recipe: {0}", recipe.Name]);
+                await Context.Output.WriteLineAsync(S["  Version:     {0}", recipe.Version]);
+                await Context.Output.WriteLineAsync(S["  Tags:        {0}", string.Join(",", recipe.Tags)]);
+                await Context.Output.WriteLineAsync(S["  Description: {0}", recipe.Description]);
+                await Context.Output.WriteLineAsync(S["  Author:      {0}", recipe.Author]);
+                await Context.Output.WriteLineAsync(S["  Website:     {0}", recipe.WebSite]);
             }
         }
     }

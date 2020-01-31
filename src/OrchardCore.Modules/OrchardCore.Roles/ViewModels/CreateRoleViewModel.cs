@@ -6,5 +6,7 @@ namespace OrchardCore.Roles.ViewModels
     {
         [Required]
         public string RoleName { get; set; }
+
+        public string RoleDescription { get; set; }
     }
 }

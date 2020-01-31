@@ -34,7 +34,7 @@ namespace OrchardCore.ContentLocalization.Drivers
         public override IDisplayResult Display(LocalizationPart part, BuildPartDisplayContext context)
         {
             return Combine(
-                Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdmin", model => BuildViewModelAsync(model, part)).Location("SummaryAdmin", "Meta:11"),
+                Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdmin", model => BuildViewModelAsync(model, part)).Location("SummaryAdmin", "Tags:11"),
                 Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdminLinks", model => BuildViewModelAsync(model, part)).Location("SummaryAdmin", "Actions:5")
             );
         }
@@ -48,24 +48,28 @@ namespace OrchardCore.ContentLocalization.Drivers
         {
             var viewModel = new LocalizationPartViewModel();
             await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Culture);
-            model.Culture = viewModel.Culture;
+
+            // Invariant culture name is empty so a null value is bound.
+            model.Culture = viewModel.Culture ?? "";
+
             // Need to do this here to support displaying the message to save before localizing when the item has not been saved yet.
             if (String.IsNullOrEmpty(model.LocalizationSet))
             {
                 model.LocalizationSet = _iidGenerator.GenerateUniqueId();
             }
-            return Edit(model, context);
+            return Edit(model);
         }
 
-        public async Task BuildViewModelAsync(LocalizationPartViewModel model, LocalizationPart localizationPart)
+        public async ValueTask BuildViewModelAsync(LocalizationPartViewModel model, LocalizationPart localizationPart)
         {
-            var alreadyTranslated = await _contentLocalizationManager.GetItemsForSet(localizationPart.LocalizationSet);
+            var alreadyTranslated = await _contentLocalizationManager.GetItemsForSetAsync(localizationPart.LocalizationSet);
 
             model.Culture = localizationPart.Culture;
             model.LocalizationSet = localizationPart.LocalizationSet;
             model.LocalizationPart = localizationPart;
 
-            if (String.IsNullOrEmpty(model.Culture))
+            // Invariant culture name is empty so we only do a null check.
+            if (model.Culture == null)
             {
                 model.Culture = await _localizationService.GetDefaultCultureAsync();
             }

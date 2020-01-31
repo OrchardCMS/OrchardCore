@@ -26,6 +26,11 @@ namespace OrchardCore.DisplayManagement
             return From(dictionary.Values, dictionary.Keys);
         }
 
+        public static INamedEnumerable<string> From(IDictionary<string, string> dictionary)
+        {
+            return new NamedEnumerable<string>(dictionary.Values, dictionary.Keys);
+        }
+
         public static INamedEnumerable<object> From(object propertyObject)
         {
             var propertiesAccessor = _propertiesAccessors.GetOrAdd(propertyObject.GetType(), type =>

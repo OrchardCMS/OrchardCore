@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Twitter
@@ -10,10 +12,14 @@ namespace OrchardCore.Twitter
         public static readonly Permission ManageTwitterSignin
             = new Permission(nameof(ManageTwitterSignin), "Manage Sign in with Twitter settings");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            yield return ManageTwitter;
-            yield return ManageTwitterSignin;
+            return Task.FromResult(new[]
+            {
+                ManageTwitter,
+                ManageTwitterSignin
+            }
+            .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

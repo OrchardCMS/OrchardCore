@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using OrchardCore.Autoroute.Model;
+using OrchardCore.ContentManagement.Routing;
 
 namespace OrchardCore.Autoroute.Services
 {
@@ -17,7 +17,7 @@ namespace OrchardCore.Autoroute.Services
 
         public bool TryGetContentItemId(string path, out string contentItemId)
         {
-            return _contentItemIds.TryGetValue(path, out contentItemId);
+            return _contentItemIds.TryGetValue(path.TrimEnd('/'), out contentItemId);
         }
 
         public bool TryGetPath(string contentItemId, out string path)
@@ -31,7 +31,12 @@ namespace OrchardCore.Autoroute.Services
             {
                 foreach (var entry in entries)
                 {
-                    var requestPath = "/" + entry.Path;
+                    if (_paths.TryGetValue(entry.ContentItemId, out var previousPath))
+                    {
+                        _contentItemIds.Remove(previousPath);
+                    }
+
+                    var requestPath = "/" + entry.Path.Trim('/');
                     _paths[entry.ContentItemId] = requestPath;
                     _contentItemIds[requestPath] = entry.ContentItemId;
                 }

@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.ViewModels
 
         public string SelectedContentType { get; set; }
 
-        public string SelectedCulture { get; set; }
+        public bool CanCreateSelectedContentType { get; set; }
 
         public ContentsOrder OrderBy { get; set; }
 
@@ -60,6 +60,12 @@ namespace OrchardCore.Contents.ViewModels
 
         [BindNever]
         public List<SelectListItem> ContentTypeOptions { get; set; }
+
+        [BindNever]
+        public List<SelectListItem> CreatableTypes { get; set; }
+
+        [BindNever]
+        public List<SelectListItem> Users { get; set; }
 
         #endregion
     }

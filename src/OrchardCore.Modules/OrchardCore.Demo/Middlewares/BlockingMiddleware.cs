@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Demo
@@ -14,7 +14,7 @@ namespace OrchardCore.Demo
 
         public async Task Invoke(HttpContext httpContext)
         {
-            if (httpContext.Request.Path == "/middleware")
+            if (httpContext.Request.Path.Value == "/middleware")
             {
                 await httpContext.Response.WriteAsync("middleware");
             }

@@ -1,30 +1,43 @@
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using GraphQL.Types;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Apis.GraphQL;
+using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
 
 namespace OrchardCore.Markdown.GraphQL
 {
     public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
     {
-        public MarkdownFieldQueryObjectType(IStringLocalizer<MarkdownFieldQueryObjectType> T)
+        public MarkdownFieldQueryObjectType(IStringLocalizer<MarkdownFieldQueryObjectType> S)
         {
             Name = nameof(MarkdownField);
-            Description = T["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
+            Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
 
             Field("markdown", x => x.Markdown, nullable: true)
-                .Description(T["the markdown value"])
-                .Type(new StringGraphType())
-                ;
+                .Description(S["the markdown value"]);
 
-            Field("html", x => ToHtml(x.Markdown), nullable: true)
-                .Description(T["the HTML representation of the markdown content"])
-                .Type(new StringGraphType())
-                ;
+            Field<StringGraphType>()
+                .Name("html")
+                .Description(S["the HTML representation of the markdown content"])
+                .ResolveLockedAsync(ToHtml);
         }
 
-        private static string ToHtml(string markdown)
+        private static async Task<object> ToHtml(ResolveFieldContext<MarkdownField> ctx)
         {
-            return Markdig.Markdown.ToHtml(markdown ?? "");
+            if (string.IsNullOrEmpty(ctx.Source.Markdown))
+            {
+                return ctx.Source.Markdown;
+            }
+
+            var serviceProvider = ctx.ResolveServiceProvider();
+            var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
+            var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
+
+            var markdown = await liquidTemplateManager.RenderAsync(ctx.Source.Markdown, htmlEncoder);
+            return Markdig.Markdown.ToHtml(markdown);
         }
     }
 }

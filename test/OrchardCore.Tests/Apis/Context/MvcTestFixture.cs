@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -24,8 +25,12 @@ namespace OrchardCore.Tests.Apis.Context
         protected override IWebHostBuilder CreateWebHostBuilder()
         {
             return WebHostBuilderFactory.CreateFromAssemblyEntryPoint(
-                typeof(Cms.Web.Startup).Assembly, Array.Empty<string>())
-                .UseStartup<TStartup>();
+                typeof(Cms.Web.Startup).Assembly, Array.Empty<string>());
         }
+
+        protected override IHostBuilder CreateHostBuilder()
+            => Host.CreateDefaultBuilder()
+                .ConfigureWebHostDefaults(webBuilder =>
+                    webBuilder.UseStartup<TStartup>());
     }
 }

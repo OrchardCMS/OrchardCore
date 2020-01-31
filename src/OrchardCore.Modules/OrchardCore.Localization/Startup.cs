@@ -15,10 +15,11 @@ using OrchardCore.Settings;
 namespace OrchardCore.Localization
 {
     /// <summary>
-    /// These services are registered on the tenant service collection
+    /// Represents a localization module entry point.
     /// </summary>
     public class Startup : StartupBase
     {
+        /// <inheritdocs />
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
@@ -27,12 +28,11 @@ namespace OrchardCore.Localization
             services.AddScoped<ILocalizationService, LocalizationService>();
 
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
-
-            // Override the default localization file locations with Orchard specific ones
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        /// <inheritdocs />
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var localizationService = serviceProvider.GetService<ILocalizationService>();
 

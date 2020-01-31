@@ -3,7 +3,7 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<MediaFieldSettings>();
     var mediaFieldId = Html.IdFor(m => m);
 }
 
@@ -21,7 +21,7 @@
 
 <div class="mediafield-editor" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
     <div class="media-field">
-        <fieldset class="form-group">
+        <div class="form-group">
             <label asp-for="Paths">@Model.PartFieldDefinition.DisplayName()</label>
             @if (!string.IsNullOrWhiteSpace(settings.Hint))
             {
@@ -36,7 +36,7 @@
                         <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>
                         <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-expand"></i></span>
                     </button>
-                    <label class="btn btn-sm btn-secondary fileinput-button">
+                    <label v-show="canAddMedia" class="btn btn-sm btn-secondary fileinput-button">
                         <input id="@mediaFieldId-field-file-upload" type="file" name="files" multiple="multiple">
                         <i class="fa fa-upload"></i>
                     </label>
@@ -47,14 +47,14 @@
                 </div>
             </nav>
 
-        </fieldset>
+        </div>
         <upload-list id-of-upload-input-field="@mediaFieldId"></upload-list>
-        <fieldset class="form-group">
+        <div class="form-group">
             <media-field-thumbs-container :media-items="mediaItems"
                                           :thumb-size="thumbSize"
                                           :selected-media="selectedMedia">
             </media-field-thumbs-container>
-        </fieldset>
+        </div>
     </div>
 </div>
 

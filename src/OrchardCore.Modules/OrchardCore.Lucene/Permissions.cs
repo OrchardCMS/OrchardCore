@@ -1,5 +1,7 @@
-using OrchardCore.Security.Permissions;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Lucene
 {
@@ -7,14 +9,17 @@ namespace OrchardCore.Lucene
     {
         public static readonly Permission ManageIndexes = new Permission("ManageIndexes", "Manage Indexes");
         public static readonly Permission QueryLuceneApi = new Permission("QueryLuceneApi", "Query Lucene Api", new[] { ManageIndexes });
+        public static readonly Permission QueryLuceneSearch = new Permission("QueryLuceneSearch", "Query Lucene Search", new[] { ManageIndexes });
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] 
+            return Task.FromResult(new[]
             {
                 ManageIndexes,
-                QueryLuceneApi
-            };
+                QueryLuceneApi,
+                QueryLuceneSearch
+            }
+            .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

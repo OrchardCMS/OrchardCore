@@ -42,7 +42,7 @@ namespace OrchardCore.Twitter.Signin.Services
             {
                 throw new ArgumentNullException(nameof(settings));
             }
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<TwitterSigninSettings>(nameof(TwitterSigninSettings), aspect =>
             {
                 aspect.CallbackPath = settings.CallbackPath;
