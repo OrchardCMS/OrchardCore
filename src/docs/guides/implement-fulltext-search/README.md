@@ -76,7 +76,7 @@ By default each indexes are permission protected so that no one can query them i
 
 Here for this example I used TheBlogTheme recipe to automatically configure everything. So the above screenshot is an example of a search page result from that theme.
 
-## Seventh step : fine tune FullText search
+## Seventh step : fine tune full text search
 
 ![Search page](images/7.jpg)
 
