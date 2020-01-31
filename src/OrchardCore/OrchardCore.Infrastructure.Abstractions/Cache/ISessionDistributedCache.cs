@@ -10,9 +10,11 @@ namespace OrchardCore.Infrastructure.Cache
     /// </summary>
     public interface ISessionDistributedCache
     {
-        Task<T> GetOrCreateAsync<T>(Func<Task<T>> factory, DistributedCacheEntryOptions options) where T : SessionDistributedCacheEntry;
-        Task UpdateAsync<T>(T value) where T : SessionDistributedCacheEntry;
-        Task InvalidateAsync<T>() where T : SessionDistributedCacheEntry;
-        Task RemoveAsync<T>() where T : SessionDistributedCacheEntry;
+        Task<T> GetOrCreateAsync<T>(Func<Task<T>> factory, DistributedCacheEntryOptions options) where T : DistributedCacheData;
+        Task SetAsync<T>(T value, DistributedCacheEntryOptions options) where T : DistributedCacheData;
+        Task<bool> HasChangedAsync<T>(T value) where T : DistributedCacheData;
+        Task<bool> TryUpdateAsync<T>(T value) where T : DistributedCacheData;
+        Task InvalidateAsync<T>() where T : DistributedCacheData;
+        Task RemoveAsync<T>() where T : DistributedCacheData;
     }
 }

@@ -57,9 +57,16 @@ namespace OrchardCore.Roles.Services
         /// </summary>
         private Task<RolesDocument> GetRolesAsync()
         {
-            return _sessionDistributedCache.GetOrCreateAsync(() =>
+            return _sessionDistributedCache.GetOrCreateAsync(async () =>
             {
-                return _sessionHelper.GetForCachingAsync<RolesDocument>();
+                var document = await _sessionHelper.GetForCachingAsync<RolesDocument>();
+
+                foreach (var role in document.Roles)
+                {
+                    role.IsReadonly = true;
+                }
+
+                return document;
             });
         }
 
@@ -67,13 +74,16 @@ namespace OrchardCore.Roles.Services
         {
             _updating = true;
 
-            await _sessionDistributedCache.UpdateAsync(roles);
+            if (!await _sessionDistributedCache.TryUpdateAsync(roles))
+            {
+                throw new ArgumentException("The object is read-only");
+            }
 
             _session.Save(roles);
 
-            _sessionHelper.RegisterAfterCommit<RolesDocument>(() =>
+            _sessionHelper.RegisterAfterCommitSuccess<RolesDocument>(() =>
             {
-                return _sessionDistributedCache.InvalidateAsync<RolesDocument>();
+                return _sessionDistributedCache.SetAsync(roles);
             });
         }
 
@@ -100,6 +110,11 @@ namespace OrchardCore.Roles.Services
             }
 
             var roleToRemove = (Role)role;
+
+            if (roleToRemove.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
 
             if (String.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") ||
                 String.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))
@@ -186,6 +201,11 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
+            if (((Role)role).IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
+
             ((Role)role).NormalizedRoleName = normalizedName;
 
             return Task.CompletedTask;
@@ -198,6 +218,11 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
+            if (((Role)role).IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
+
             ((Role)role).RoleName = roleName;
 
             return Task.CompletedTask;
@@ -208,6 +233,11 @@ namespace OrchardCore.Roles.Services
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
+            }
+
+            if (((Role)role).IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
             }
 
             var roles = await LoadRolesAsync();
@@ -235,6 +265,11 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(claim));
             }
 
+            if (((Role)role).IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
+
             ((Role)role).RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
 
             return Task.CompletedTask;
@@ -260,6 +295,11 @@ namespace OrchardCore.Roles.Services
             if (claim == null)
             {
                 throw new ArgumentNullException(nameof(claim));
+            }
+
+            if (((Role)role).IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
             }
 
             ((Role)role).RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);

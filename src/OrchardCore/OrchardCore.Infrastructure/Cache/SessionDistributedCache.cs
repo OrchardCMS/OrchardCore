@@ -30,68 +30,42 @@ namespace OrchardCore.Infrastructure.Cache
             _memoryCache = memoryCache;
         }
 
-        public async Task<T> GetOrCreateAsync<T>(Func<Task<T>> factory, DistributedCacheEntryOptions options) where T : SessionDistributedCacheEntry
+        public async Task<T> GetOrCreateAsync<T>(Func<Task<T>> factory, DistributedCacheEntryOptions options) where T : DistributedCacheData
         {
-            var key = typeof(T).FullName;
-
-            var value = await GetAsync<T>(key, options);
+            var value = await GetAsync<T>(options);
 
             if (value == null)
             {
                 value = await factory();
-
-                await SetAsync(key, value, options);
-
-                _memoryCache.Set(key, value);
-                _scopedCache[key] = value;
+                await SetAsync(value, options);
             }
 
             return value;
         }
 
-        public Task UpdateAsync<T>(T value) where T : SessionDistributedCacheEntry
-        {
-            if (_memoryCache.TryGetValue<T>(typeof(T).FullName, out var cached) && cached == value)
-            {
-                throw new ArgumentException("Invalid update on a cached object");
-            }
-
-            value.CacheId = _idGenerator.GenerateUniqueId();
-
-            return Task.CompletedTask;
-        }
-
-        public Task InvalidateAsync<T>() where T : SessionDistributedCacheEntry => _distributedCache.RemoveAsync("ID_" + typeof(T).FullName);
-
-        public async Task RemoveAsync<T>() where T : SessionDistributedCacheEntry
+        private async Task<T> GetAsync<T>(DistributedCacheEntryOptions options) where T : DistributedCacheData
         {
             var key = typeof(T).FullName;
-            await _distributedCache.RemoveAsync(key);
-            await _distributedCache.RemoveAsync("ID_" + key);
-            _memoryCache.Remove(key);
-        }
 
-        private async Task<T> GetAsync<T>(string key, DistributedCacheEntryOptions options) where T : SessionDistributedCacheEntry
-        {
             if (_scopedCache.TryGetValue(key, out var scopedValue))
             {
                 return (T)scopedValue;
             }
 
-            var cacheIdData = await _distributedCache.GetAsync("ID_" + key);
+            var idData = await _distributedCache.GetAsync("ID_" + key);
 
-            if (cacheIdData == null)
+            if (idData == null)
             {
                 return null;
             }
 
-            var cacheId = Encoding.UTF8.GetString(cacheIdData);
+            var id = Encoding.UTF8.GetString(idData);
 
             if (_memoryCache.TryGetValue<T>(key, out var value))
             {
-                if (value.CacheId == cacheId)
+                if (value.Identifier == id)
                 {
-                    if (options.SlidingExpiration.HasValue)
+                    if (value.HasSlidingExpiration)
                     {
                         await _distributedCache.RefreshAsync(key);
                     }
@@ -114,22 +88,33 @@ namespace OrchardCore.Infrastructure.Cache
                 value = await DeserializeAsync<T>(ms);
             }
 
-            if (value.CacheId != cacheId)
+            if (value.Identifier != id)
             {
                 return null;
             }
 
-            _memoryCache.Set(key, value);
+            _memoryCache.Set(key, value, new MemoryCacheEntryOptions()
+            {
+                AbsoluteExpiration = options.AbsoluteExpiration,
+                AbsoluteExpirationRelativeToNow = options.AbsoluteExpirationRelativeToNow,
+                SlidingExpiration = options.SlidingExpiration
+            });
+
             _scopedCache[key] = value;
 
             return value;
         }
 
-        private async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options) where T : SessionDistributedCacheEntry
+        public async Task SetAsync<T>(T value, DistributedCacheEntryOptions options) where T : DistributedCacheData
         {
-            byte[] data;
+            value.Identifier ??= _idGenerator.GenerateUniqueId();
 
-            value.CacheId ??= _idGenerator.GenerateUniqueId();
+            if (options.SlidingExpiration.HasValue)
+            {
+                value.HasSlidingExpiration = true;
+            }
+
+            byte[] data;
 
             using (var ms = new MemoryStream())
             {
@@ -137,10 +122,59 @@ namespace OrchardCore.Infrastructure.Cache
                 data = ms.ToArray();
             }
 
-            var cacheIdData = Encoding.UTF8.GetBytes(value.CacheId);
+            var idData = Encoding.UTF8.GetBytes(value.Identifier);
+
+            var key = typeof(T).FullName;
 
             await _distributedCache.SetAsync(key, data, options);
-            await _distributedCache.SetAsync("ID_" + key, cacheIdData, options);
+            await _distributedCache.SetAsync("ID_" + key, idData, options);
+
+            _memoryCache.Set(key, value, new MemoryCacheEntryOptions()
+            {
+                AbsoluteExpiration = options.AbsoluteExpiration,
+                AbsoluteExpirationRelativeToNow = options.AbsoluteExpirationRelativeToNow,
+                SlidingExpiration = options.SlidingExpiration
+            });
+
+            _scopedCache[key] = value;
+        }
+
+        public async Task<bool> HasChangedAsync<T>(T value) where T : DistributedCacheData
+        {
+            var key = typeof(T).FullName;
+
+            var idData = await _distributedCache.GetAsync("ID_" + key);
+
+            if (idData == null)
+            {
+                return true;
+            }
+
+            var id = Encoding.UTF8.GetString(idData);
+
+            return value.Identifier != id;
+        }
+
+        public Task<bool> TryUpdateAsync<T>(T value) where T : DistributedCacheData
+        {
+            if (_memoryCache.TryGetValue<T>(typeof(T).FullName, out var cached) && value == cached)
+            {
+                return Task.FromResult(false);
+            }
+
+            value.Identifier = _idGenerator.GenerateUniqueId();
+
+            return Task.FromResult(true);
+        }
+
+        public Task InvalidateAsync<T>() where T : DistributedCacheData => _distributedCache.RemoveAsync("ID_" + typeof(T).FullName);
+
+        public async Task RemoveAsync<T>() where T : DistributedCacheData
+        {
+            var key = typeof(T).FullName;
+            await _distributedCache.RemoveAsync(key);
+            await _distributedCache.RemoveAsync("ID_" + key);
+            _memoryCache.Remove(key);
         }
 
         private static Task SerializeAsync<T>(Stream stream, T value) => MessagePackSerializer.SerializeAsync(stream, value, ContractlessStandardResolver.Options);
