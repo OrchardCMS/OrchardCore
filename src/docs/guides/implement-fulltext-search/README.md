@@ -58,7 +58,7 @@ Here we can see the Blog Post content type definition. We have now a section for
 
 ## Optional : define a specific search index for Full Text search
 
-By default the search index used on the search page is the index named "Search" which is automatically create by the use of the recipe from TheBlogTheme. But if your index is named differently you can also specify which index to query on. For doing so you will need to override the /Views/SearchForm.liquid or /Views/SearchForm.cshtml in your theme and add an optional hidden input named "IndexName" with a value that correspond to the index you want to use.
+By default the search index used on the search page is the index named "Search" which is automatically created by the use of the recipe from TheBlogTheme. But if your index is named differently you can also specify which index to query on. For doing so you will need to override the /Views/SearchForm.liquid or /Views/SearchForm.cshtml in your theme and add an optional hidden input named "IndexName" with a value that correspond to the index you want to use.
 
 ``` HTML
 <form action="{{ "~/search" | href }}" method="get">
@@ -74,7 +74,7 @@ By default the search index used on the search page is the index named "Search" 
 
 ## Optional : Search templates customization
 
-Also, you can customize this views for your specific needs in your theme by overriding these views : 
+Also, you can customize these templates for your specific needs in your theme by overriding these : 
 
 `/Views/Shared/Search.liquid or .cshtml` (general layout)  
 `/Views/SearchForm.liquid or .cshtml` (form layout)  
