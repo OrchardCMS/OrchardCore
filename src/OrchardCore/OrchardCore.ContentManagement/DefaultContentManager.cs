@@ -442,7 +442,7 @@ namespace OrchardCore.ContentManagement
 
             if (activeVersions.Any())
             {
-                throw new InvalidOperationException("Trying to delete a content item that is already soft deleted or not found.");
+                throw new InvalidOperationException("Trying to delete a content item that is already soft deleted or nonexistent.");
             }
 
             var context = new RemoveContentContext(contentItem, true);
