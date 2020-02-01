@@ -66,8 +66,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem.Merge(JObject.Parse(contentProperties));
             }
 
-            var versionOptions = Publish ? VersionOptions.Published : VersionOptions.Draft;
-            await ContentManager.CreateAsync(contentItem, versionOptions, true);
+            await ContentManager.CreateAsync(contentItem, Publish ? VersionOptions.Published : VersionOptions.Draft, true);
 
             workflowContext.LastResult = contentItem;
             workflowContext.CorrelationId = contentItem.ContentItemId;
