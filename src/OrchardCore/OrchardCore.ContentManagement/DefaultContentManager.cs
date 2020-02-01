@@ -442,19 +442,21 @@ namespace OrchardCore.ContentManagement
 
             if (activeVersions.Any())
             {
-                var context = new RemoveContentContext(contentItem, true);
-
-                await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), context, _logger);
-
-                foreach (var version in activeVersions)
-                {
-                    version.Published = false;
-                    version.Latest = false;
-                    _session.Save(version);
-                }
-
-                await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), context, _logger);
+                throw new InvalidOperationException("Trying to delete a content item that is already soft deleted or not found.");
             }
+
+            var context = new RemoveContentContext(contentItem, true);
+
+            await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), context, _logger);
+
+            foreach (var version in activeVersions)
+            {
+                version.Published = false;
+                version.Latest = false;
+                _session.Save(version);
+            }
+
+            await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), context, _logger);
         }
 
         public async Task DiscardDraftAsync(ContentItem contentItem)
