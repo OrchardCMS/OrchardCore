@@ -1,4 +1,8 @@
+using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
+using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Theming
 {
@@ -24,8 +28,38 @@ namespace OrchardCore.DisplayManagement.Theming
                 // Then is added to the Content zone of the Layout shape
                 ThemeLayout.Content.Add(body);
 
-                // Finally we render the Shape's HTML to the page's output
-                Write(await DisplayAsync(ThemeLayout));
+                //Render Shapes in Content 
+                var htmlContent = await DisplayAsync(ThemeLayout.Content);
+
+                var content = ((Shape)ThemeLayout.Content);
+
+                foreach (var item in content.Items.ToArray())
+                {
+                    content.Remove(((IShape)item).Metadata.Name);
+                }
+
+                content.Add(htmlContent);
+
+                var zoneKeys = ((Zones.ZoneHolding)ThemeLayout).Properties.Keys.ToArray();
+                if(zoneKeys != null && zoneKeys.Count() > 0)
+                {
+                    foreach (var key in zoneKeys)
+                    {
+                        //Render each layout zone
+                        var zone = ThemeLayout[key];
+                        var htmlZone= DisplayAsync(zone);
+
+                        foreach (var item in zone.Items.ToArray())
+                        {
+                            zone.Remove(((IShape)item).Metadata.Name);
+                        }
+
+                        zone.Add(htmlZone);
+                    }
+                }                
+                // Finally we render the Layout Shape's HTML to the page's output
+                var layout = await DisplayAsync(ThemeLayout);                
+                Write(layout);
             }
             else
             {
