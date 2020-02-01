@@ -340,7 +340,7 @@ namespace OrchardCore.Navigation
 
             var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
 
-            //Allows to pass custom url params to PagerSlim
+            // Allows to pass custom url params to PagerSlim
             if (UrlParams != null)
             {
                 foreach (var item in UrlParams)

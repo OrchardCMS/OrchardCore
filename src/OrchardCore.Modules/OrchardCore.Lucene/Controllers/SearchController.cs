@@ -116,7 +116,7 @@ namespace OrchardCore.Lucene.Controllers
 
             var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
 
-            //We Query Lucene index
+            // We Query Lucene index
             var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(luceneIndexSettings.IndexName));
             var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, analyzer);
             var query = queryParser.Parse(QueryParser.Escape(viewModel.Terms));
@@ -138,7 +138,7 @@ namespace OrchardCore.Lucene.Controllers
 
             var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end);
 
-            //We Query database to retrieve content items.
+            // We Query database to retrieve content items.
             IQuery<ContentItem> queryDb;
 
             if (luceneIndexSettings.IndexLatest)
@@ -156,7 +156,7 @@ namespace OrchardCore.Lucene.Controllers
 
             var containedItems = await queryDb.ListAsync();
 
-            //We set the PagerSlim before and after links
+            // We set the PagerSlim before and after links
             if (pagerParameters.After != null || pagerParameters.Before != null)
             {
                 if (start + 1 > 1)
