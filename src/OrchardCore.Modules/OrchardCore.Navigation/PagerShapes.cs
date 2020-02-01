@@ -348,11 +348,11 @@ namespace OrchardCore.Navigation
             Shape.Classes.Add("pager");
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "List";
+            Shape.Id = Id;
             Shape.Tag = Tag;
             Shape.ItemTag = ItemTag;
             Shape.Attributes = Attributes;
             Shape.ItemAttributes = ItemAttributes;
-            Shape.Id = Id;
 
             var previousText = PreviousText ?? S["<"];
             var nextText = NextText ?? S[">"];
