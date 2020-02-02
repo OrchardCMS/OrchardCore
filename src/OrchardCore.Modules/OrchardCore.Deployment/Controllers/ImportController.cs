@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
@@ -19,14 +18,12 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
-        private ILogger<ImportController> _logger;
 
         public ImportController(
             IDeploymentManager deploymentManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IHtmlLocalizer<ImportController> h,
-            ILogger<ImportController> logger
+            IHtmlLocalizer<ImportController> h
         )
         {
             _deploymentManager = deploymentManager;
@@ -34,7 +31,6 @@ namespace OrchardCore.Deployment.Controllers
             _notifier = notifier;
 
             H = h;
-            _logger = logger;
         }
         public IHtmlLocalizer H { get; }
 
