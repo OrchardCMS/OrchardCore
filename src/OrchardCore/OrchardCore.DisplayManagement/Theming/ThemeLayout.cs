@@ -57,7 +57,7 @@ namespace OrchardCore.DisplayManagement.Theming
                     }
                 }
                 // Finally we render the Layout Shape's HTML to the page's output
-                Write(await DisplayAsync(ThemeLayout);
+                Write(await DisplayAsync(ThemeLayout));
             }
             else
             {
