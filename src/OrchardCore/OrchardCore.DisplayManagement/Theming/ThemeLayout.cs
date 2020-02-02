@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Theming
 {
@@ -29,33 +29,26 @@ namespace OrchardCore.DisplayManagement.Theming
                 ThemeLayout.Content.Add(body);
 
                 // Render Shapes in Content
-                var htmlContent = await DisplayAsync(ThemeLayout.Content);
-                var content = ((Shape)ThemeLayout.Content);
-
-                foreach (var item in content.Items.ToArray())
+                if(ThemeLayout.Content is Shape content)
                 {
-                    content.Remove(((IShape)item).Metadata.Name);
+                    var htmlContent = await DisplayAsync(content);
+                    ThemeLayout.Content = htmlContent;
                 }
 
-                content.Add(htmlContent);
-                var zoneKeys = ((Zones.ZoneHolding)ThemeLayout).Properties.Keys.ToArray();
-
-                if(zoneKeys != null && zoneKeys.Count() > 0)
+                if (ThemeLayout is ZoneHolding layout)
                 {
-                    foreach (var key in zoneKeys)
+                    foreach (var zone in layout.Properties.ToArray())
                     {
-                        // Render each layout zone
-                        var zone = ThemeLayout[key];
-                        var htmlZone = await DisplayAsync(zone);
-
-                        foreach (var item in zone.Items.ToArray())
+                        if((zone.Value is Shape shape) &&
+                        !string.Equals(zone.Key,"Content", StringComparison.OrdinalIgnoreCase))
                         {
-                            zone.Remove(((IShape)item).Metadata.Name);
+                            // Render each layout zone
+                            var htmlZone = await DisplayAsync(shape);
+                            layout.Properties[zone.Key] = htmlZone;
                         }
-
-                        zone.Add(htmlZone);
                     }
                 }
+
                 // Finally we render the Layout Shape's HTML to the page's output
                 Write(await DisplayAsync(ThemeLayout));
             }
