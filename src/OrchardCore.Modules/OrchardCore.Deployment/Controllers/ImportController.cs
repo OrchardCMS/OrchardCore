@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
@@ -18,12 +19,14 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
+        private ILogger<ImportController> _logger;
 
         public ImportController(
             IDeploymentManager deploymentManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IHtmlLocalizer<ImportController> h
+            IHtmlLocalizer<ImportController> h,
+            ILogger<ImportController> logger
         )
         {
             _deploymentManager = deploymentManager;
@@ -31,6 +34,7 @@ namespace OrchardCore.Deployment.Controllers
             _notifier = notifier;
 
             H = h;
+            _logger = logger;
         }
         public IHtmlLocalizer H { get; }
 
@@ -52,7 +56,7 @@ namespace OrchardCore.Deployment.Controllers
                 return Unauthorized();
             }
 
-            var tempArchiveName = Path.GetTempFileName() + ".zip";
+            var tempArchiveName = Path.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
             var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
             try
@@ -62,7 +66,18 @@ namespace OrchardCore.Deployment.Controllers
                     await importedPackage.CopyToAsync(stream);
                 }
 
-                ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
+                if (importedPackage.FileName.EndsWith(".zip"))
+                {
+                    ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
+                }
+
+                if (importedPackage.FileName.EndsWith(".json"))
+                {
+                    string recipeFileName = tempArchiveName.Replace(Path.GetFileNameWithoutExtension(tempArchiveName), "Recipe");
+                    Directory.CreateDirectory(tempArchiveFolder);
+                    System.IO.File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, Path.GetFileName(recipeFileName)));
+                    tempArchiveName = recipeFileName;
+                }
 
                 await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
 
