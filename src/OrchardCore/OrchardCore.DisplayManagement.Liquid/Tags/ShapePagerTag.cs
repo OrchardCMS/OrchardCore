@@ -17,7 +17,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         private static readonly HashSet<string> _properties = new HashSet<string>
         {
-            "PreviousText", "NextText", "PreviousClass", "NextClass"
+            "Id", "PreviousText", "NextText", "PreviousClass", "NextClass", "Tag", "ItemTag", "Attributes", "ItemAttributes"
         };
 
         public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
