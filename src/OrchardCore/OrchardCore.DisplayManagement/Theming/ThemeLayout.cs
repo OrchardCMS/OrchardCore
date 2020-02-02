@@ -7,9 +7,9 @@ using OrchardCore.DisplayManagement.Shapes;
 namespace OrchardCore.DisplayManagement.Theming
 {
     /// <summary>
-    /// This class represents a precompiled _Layout.cshtml view that renders a 
+    /// This class represents a precompiled _Layout.cshtml view that renders a
     /// Layout shape and the View's body in its Content zone.
-    /// 
+    ///
     /// 1- Views look for any _ViewStart.cshtml
     /// 2- <see cref="ThemingViewsFeatureProvider"/> has registered <see cref="ThemeViewStart"/> as the top one
     /// 3- <see cref="ThemeViewStart"/> then set a special Layout filename as the default View's Layout.
@@ -20,7 +20,7 @@ namespace OrchardCore.DisplayManagement.Theming
     {
         public override async Task ExecuteAsync()
         {
-            // The View's body is rendered 
+            // The View's body is rendered
             var body = RenderLayoutBody();
 
             if (ThemeLayout != null)
@@ -28,9 +28,8 @@ namespace OrchardCore.DisplayManagement.Theming
                 // Then is added to the Content zone of the Layout shape
                 ThemeLayout.Content.Add(body);
 
-                //Render Shapes in Content 
+                //Render Shapes in Content
                 var htmlContent = await DisplayAsync(ThemeLayout.Content);
-
                 var content = ((Shape)ThemeLayout.Content);
 
                 foreach (var item in content.Items.ToArray())
@@ -39,8 +38,8 @@ namespace OrchardCore.DisplayManagement.Theming
                 }
 
                 content.Add(htmlContent);
-
                 var zoneKeys = ((Zones.ZoneHolding)ThemeLayout).Properties.Keys.ToArray();
+
                 if(zoneKeys != null && zoneKeys.Count() > 0)
                 {
                     foreach (var key in zoneKeys)
@@ -56,10 +55,9 @@ namespace OrchardCore.DisplayManagement.Theming
 
                         zone.Add(htmlZone);
                     }
-                }                
+                }
                 // Finally we render the Layout Shape's HTML to the page's output
-                var layout = await DisplayAsync(ThemeLayout);                
-                Write(layout);
+                Write(await DisplayAsync(ThemeLayout);
             }
             else
             {
