@@ -8,6 +8,7 @@
 {% script name:"TheMathesisTheme-FancyTree-Filter", at:"Foot" %}
 {% script name:"TheMathesisTheme-Mathesis-Script", at:"Foot" %}
 {% script name:"TheMathesisTheme-JqCloud", at:"Foot" %}
+{% script name:"TheMathesisTheme-Moment", at:"Head" %}
 
 {% shape "menu", alias: "alias:site-menu", cache_id: "site-menu-sticky", cache_tag: "alias:site-menu", alternate: "Menu__Sticky" %}
 
@@ -27,11 +28,14 @@
 							<li id="{{current-year}}" class="folder">
 								{{current-year}}
 								{% assign article-months = Queries.ArticlesMonthsByYear | query: year: current-year %}
-								{% for month in article-months %}
-									{% assign current-month = month.Month %}
-									<ul>
+								<ul>
+									{% for month in article-months %}
+										{% assign current-month = month.Month %}
 										<li id="{{current-year}}.{{current-month}}" class="folder">
-											{{current-month}}
+											<span id="side-{{current-year}}-{{current-month}}"></span>
+											<script type="text/javascript">
+												document.getElementById("side-{{current-year}}-{{current-month}}").innerHTML = moment("{{current-year}}-{{current-month}}-01", "YYYY-M-D").format("MMM");
+											</script>
 											<ul>
 												{% assign articles-days = Queries.ArticlesByYearAndMonth | query: year:  current-year, month: current-month %}
 												{% for article in articles-days %}
@@ -43,7 +47,7 @@
 														{% assign node-class = "" %}
 													{% endif %}
 													<li id="{{current-year}}.{{current-month}}.{{ article.Day | raw }}" class="{{node-class}}">
-														<a href="{{ article-url }}" target = "_blank" >
+														<a href="{{ article-url }}" target = "_top" >
 															{{article.Day}} - {{ article-content.Content.TitlePart.Title }}
 														</a>
 													</li>
