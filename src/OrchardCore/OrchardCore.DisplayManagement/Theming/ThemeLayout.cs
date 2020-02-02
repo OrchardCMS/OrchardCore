@@ -28,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Theming
                 // Then is added to the Content zone of the Layout shape
                 ThemeLayout.Content.Add(body);
 
-                //Render Shapes in Content
+                // Render Shapes in Content
                 var htmlContent = await DisplayAsync(ThemeLayout.Content);
                 var content = ((Shape)ThemeLayout.Content);
 
@@ -44,9 +44,9 @@ namespace OrchardCore.DisplayManagement.Theming
                 {
                     foreach (var key in zoneKeys)
                     {
-                        //Render each layout zone
+                        // Render each layout zone
                         var zone = ThemeLayout[key];
-                        var htmlZone= DisplayAsync(zone);
+                        var htmlZone = await DisplayAsync(zone);
 
                         foreach (var item in zone.Items.ToArray())
                         {
