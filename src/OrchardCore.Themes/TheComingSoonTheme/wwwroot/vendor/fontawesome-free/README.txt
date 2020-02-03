@@ -1,2 +1,0 @@
-Font Awesome is not included in the Orchard Theme as it contains too many files and is potentially a licensing issue.
-A custom module could redefine the font-awesome resource and point to local files if necessary.
