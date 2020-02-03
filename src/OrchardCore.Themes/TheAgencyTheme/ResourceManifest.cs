@@ -60,7 +60,7 @@ namespace OrchardCore.Themes.TheAgencyTheme
 				
             manifest
                 .DefineStyle("TheAgencyTheme-vendor-font-awesome")
-                .SetUrl("~/TheAgencyTheme/node_modules/@fortawesome/fontawesome-free/css/all.min.css", "~/TheAgencyTheme/node_modules/@fortawesome/fontawesome-free/css/all.css")
+                .SetUrl("~/TheAgencyTheme/vendor/fontawesome-free/css/all.min.css", "~/TheAgencyTheme/vendor/fontawesome-free/css/all.css")
                 .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.10.2/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.10.2/css/all.css")
                 .SetCdnIntegrity("sha384-rtJEYb85SiYWgfpCr0jn174XgJTn4rptSOQsMroFBPQSGLdOC5IbubP6lJ35qoM9", "sha384-Ex0vLvgbKZTFlqEetkjk2iUgM+H5udpQKFKjBoGFwPaHRGhiWyVI6jLz/3fBm5ht")
                 .SetVersion("5.10.2");
