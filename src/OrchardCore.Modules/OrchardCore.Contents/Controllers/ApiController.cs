@@ -71,7 +71,7 @@ namespace OrchardCore.Content.Controllers
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent))
                 {
-                    return Forbid();
+                    return this.ChallengeOrForbid();
                 }
 
                 await _contentManager.CreateAsync(newContentItem, VersionOptions.DraftRequired);
@@ -82,7 +82,7 @@ namespace OrchardCore.Content.Controllers
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
                 {
-                    return Forbid();
+                    return this.ChallengeOrForbid();
                 }
             }
 
