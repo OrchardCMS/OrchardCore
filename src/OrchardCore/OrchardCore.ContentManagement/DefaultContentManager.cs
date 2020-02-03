@@ -388,7 +388,7 @@ namespace OrchardCore.ContentManagement
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
 
-            await UpdateAsync(contentItem);
+            _session.Save(contentItem);
             _contentManagerSession.Store(contentItem);
 
             if (options.IsPublished)
