@@ -1036,6 +1036,7 @@ select[multiple] {
 ul.pager {
     @extend .pagination;
     margin-top: 1rem;
+    justify-content: center;
 }
 
 ul.pager li {
