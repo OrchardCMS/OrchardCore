@@ -18,7 +18,7 @@ using OrchardCore.Templates.ViewModels;
 namespace OrchardCore.Templates.Controllers
 {
     [Admin]
-    public class TemplateController : Controller, IUpdateModel
+    public class TemplateController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly TemplatesManager _templatesManager;
@@ -28,7 +28,7 @@ namespace OrchardCore.Templates.Controllers
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
-        
+
         public TemplateController(
             IAuthorizationService authorizationService,
             TemplatesManager templatesManager,
@@ -254,7 +254,7 @@ namespace OrchardCore.Templates.Controllers
                 if (submit != "SaveAndContinue")
                 {
                     return RedirectToReturnUrlOrIndex(returnUrl);
-                }                
+                }
             }
 
             // If we got this far, something failed, redisplay form
@@ -291,7 +291,7 @@ namespace OrchardCore.Templates.Controllers
                     );
 
             _notifier.Success(H["Template deleted successfully"]);
-            
+
             return RedirectToReturnUrlOrIndex(returnUrl);
         }
 

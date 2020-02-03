@@ -18,6 +18,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Lists.AdminNodes;
 using OrchardCore.Lists.Drivers;
 using OrchardCore.Lists.Feeds;
+using OrchardCore.Lists.Handlers;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Liquid;
 using OrchardCore.Lists.Models;
@@ -41,6 +42,7 @@ namespace OrchardCore.Lists
         {
             services.AddSingleton<IIndexProvider, ContainedPartIndexProvider>();
             services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
+            services.AddScoped<IContentHandler, ContainedPartHandler>();
             services.AddContentPart<ContainedPart>();
             services.AddTransient<IContentAdminFilter, ListPartContentAdminFilter>();
 
@@ -51,6 +53,7 @@ namespace OrchardCore.Lists
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
+            services.AddScoped<IContainerService, ContainerService>();
 
             // Feeds
             // TODO: Create feature
@@ -70,7 +73,6 @@ namespace OrchardCore.Lists
         }
     }
 
-
     [RequireFeatures("OrchardCore.AdminMenu")]
     public class AdminMenuStartup : StartupBase
     {
@@ -81,6 +83,7 @@ namespace OrchardCore.Lists
             services.AddScoped<IDisplayDriver<MenuItem>, ListsAdminNodeDriver>();
         }
     }
+
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class ContentLocalizationStartup : StartupBase
     {
@@ -88,7 +91,7 @@ namespace OrchardCore.Lists
         {
             services.AddScoped<IContentLocalizationPartHandler, ContainedPartLocalizationHandler>();
             services.AddScoped<IContentLocalizationPartHandler, ListPartLocalizationHandler>();
-            services.AddScoped<IContentPartHandler, ContainedPartHandler>();
+            services.AddScoped<IContentPartHandler, LocalizationContainedPartHandler>();
         }
     }
 

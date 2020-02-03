@@ -13,5 +13,6 @@ namespace OrchardCore.Lists.ViewModels
         public IEnumerable<ContentTypeDefinition> ContainedContentTypeDefinitions { get; set; }
         public BuildPartDisplayContext Context { get; set; }
         public dynamic Pager { get; set; }
+        public bool EnableOrdering { get; set; }
     }
 }

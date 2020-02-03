@@ -12,7 +12,7 @@ namespace OrchardCore.ContentTypes.Deployment
             Name = "ContentDefinition";
         }
 
-        public bool IncludeAll { get; set; } = true;
+        public bool IncludeAll { get; set; }
 
         public string[] ContentTypes { get; set; }
 

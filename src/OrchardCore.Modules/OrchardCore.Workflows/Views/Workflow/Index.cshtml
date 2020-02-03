@@ -52,9 +52,10 @@
                     </div>
                     <div class="col-3"></div>
                     <div class="form-group col-xl-1 mb-xl-n1 filter">
-                        <div class="float-xl-right">
-                            <select asp-for="Options.Filter" asp-items="Model.Options.WorkflowsStatuses" class="selectpicker show-tick" data-header="@T["Filter by status"]" data-live-search="true" data-selected-text-format="static" data-dropdown-align-right="auto" data-width="fit" title="@T["Status"]">
+                        <div class="btn-group float-right mt-1">
+                            <select asp-for="Options.Filter" asp-items="Model.Options.WorkflowsStatuses" class="selectpicker show-tick mr-2" data-header="@T["Filter by status"]" data-live-search="true" data-selected-text-format="static" data-dropdown-align-right="auto" data-width="fit" title="@T["Status"]" data-style="btn-sm">
                             </select>
+                            <select asp-for="Options.OrderBy" asp-items="@Model.Options.WorkflowsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
                         </div>
                     </div>
                 </div>
@@ -97,49 +98,20 @@
 
                             <div class="custom-control custom-checkbox float-left">
                                 <input type="checkbox" class="custom-control-input" value="@entry.Workflow.Id" name="itemIds" id="itemIds-@entry.Workflow.Id">
-                                <label class="custom-control-label" for="itemIds-@entry.Workflow.Id">&nbsp;</label>
+                                <label class="custom-control-label" for="itemIds-@entry.Workflow.Id"></label>
                             </div>
                             <a asp-action="Details" asp-route-id="@entry.Workflow.Id">@entry.Workflow.WorkflowId</a>
                             <div>
                                 <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.Workflow.CreatedUtc)))]</span>
                                 <div class="info">
                                     <span class="badge badge-@statusCss">
-                                        @switch (entry.Workflow.Status)
-                                        {
-                                            case WorkflowStatus.Idle:
-                                                @T["Idle"]
-                                                break;
-                                            case WorkflowStatus.Starting:
-                                                @T["Starting"]
-                                                break;
-                                            case WorkflowStatus.Resuming:
-                                                @T["Resuming"]
-                                                break;
-                                            case WorkflowStatus.Executing:
-                                                @T["Executing"]
-                                                break;
-                                            case WorkflowStatus.Halted:
-                                                @T["Halted"]
-                                                break;
-                                            case WorkflowStatus.Finished:
-                                                @T["Finished"]
-                                                break;
-                                            case WorkflowStatus.Faulted:
-                                                @T["Faulted"]
-                                                break;
-                                            case WorkflowStatus.Aborted:
-                                                @T["Aborted"]
-                                                break;
-                                            default:
-                                                @entry.Workflow.Status
-                                                break;
-                                        }
+                                        @entry.Workflow.Status.GetLocalizedStatus(T)
                                     </span>
                                 </div>
                             </div>
                         </div>
                     </li>
-                } 
+                }
             }
             else
             {
@@ -160,7 +132,7 @@
 
 <script at="Foot" type="text/javascript">
     $(function () {
-        $('select').selectpicker();
+        $('.selectpicker').selectpicker();
 
         var actions = $("#actions");
         var items = $("#items");
@@ -173,7 +145,7 @@
             $("[name='submit.Filter']").click();
         });
         
-        $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
 

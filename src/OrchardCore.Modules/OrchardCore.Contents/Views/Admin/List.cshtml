@@ -124,7 +124,7 @@
 @* This is because ContentTypesAdminNode requires the ContenType to be available as part of the url *@
 <script at="Foot" type="text/javascript">
     $(function () {
-        $('select').selectpicker();
+        $('.selectpicker').selectpicker();
 
         var actions = $("#actions");
         var items = $("#items");
@@ -140,7 +140,7 @@
             $("#items-form").attr("action", newAction);
         });
 
-        $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
 

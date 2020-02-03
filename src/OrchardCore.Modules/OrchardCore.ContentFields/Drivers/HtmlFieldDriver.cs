@@ -36,8 +36,8 @@ namespace OrchardCore.ContentFields.Fields
                 model.Html = await _liquidTemplateManager.RenderAsync(field.Html, _htmlEncoder, model,
                     scope => scope.SetValue("ContentItem", field.ContentItem));
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(HtmlField field, BuildFieldEditorContext context)
