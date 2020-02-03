@@ -396,6 +396,7 @@ namespace OrchardCore.ContentManagement
             {
                 await UpdateAsync(contentItem);
             }
+            
             _contentManagerSession.Store(contentItem);
 
             if (options.IsPublished)
@@ -442,7 +443,7 @@ namespace OrchardCore.ContentManagement
 
             if (!activeVersions.Any())
             {
-                throw new InvalidOperationException("Trying to delete a content item that is already soft deleted or nonexistent.");
+                return;
             }
 
             var context = new RemoveContentContext(contentItem, true);
