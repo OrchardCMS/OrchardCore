@@ -67,12 +67,7 @@ namespace OrchardCore.Lucene.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
-            {
-                return this.ChallengeOrForbid();
-            }
-            
+        {   
             var permissionsProvider = _permissionProviders.FirstOrDefault(x => x.GetType().FullName == "OrchardCore.Lucene.Permissions");
             var permissions = await permissionsProvider.GetPermissionsAsync();
 
@@ -83,10 +78,11 @@ namespace OrchardCore.Lucene.Controllers
             {
                 if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index")))
                 {
-                    return Unauthorized();
+                    return this.ChallengeOrForbid();
                 }
             }
-            else {
+            else
+            {
                 Logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
                 return BadRequest("Search is not configured.");
             }
