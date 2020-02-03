@@ -19,7 +19,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.BackgroundTasks.Controllers
 {
     [Admin]
-    public class BackgroundTaskController : Controller, IUpdateModel
+    public class BackgroundTaskController : Controller
     {
         private readonly string _tenant;
         private readonly IAuthorizationService _authorizationService;
@@ -29,7 +29,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
         private readonly dynamic New;
-        
+
         public BackgroundTaskController(
             ShellSettings shellSettings,
             IAuthorizationService authorizationService,

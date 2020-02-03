@@ -18,13 +18,14 @@ using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentPreview.Controllers
 {
-    public class PreviewController : Controller, IUpdateModel
+    public class PreviewController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentManagerSession _contentManagerSession;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IClock _clock;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly dynamic New;
 
         public PreviewController(
@@ -34,14 +35,15 @@ namespace OrchardCore.ContentPreview.Controllers
             IShapeFactory shapeFactory,
             ILogger<PreviewController> logger,
             IAuthorizationService authorizationService,
-            IClock clock
-            )
+            IClock clock,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _authorizationService = authorizationService;
             _clock = clock;
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
             _contentManagerSession = contentManagerSession;
+            _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
             Logger = logger;
         }
@@ -83,7 +85,7 @@ namespace OrchardCore.ContentPreview.Controllers
             contentItem.Published = true;
 
             // TODO: we should probably get this value from the main editor as it might impact validators
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
@@ -118,7 +120,7 @@ namespace OrchardCore.ContentPreview.Controllers
                 return Ok();
             }
 
-            model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "Detail");
+            model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "Detail");
 
             return View(model);
         }

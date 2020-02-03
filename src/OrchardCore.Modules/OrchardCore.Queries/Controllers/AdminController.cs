@@ -17,7 +17,7 @@ using YesSql;
 
 namespace OrchardCore.Queries.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
@@ -26,6 +26,7 @@ namespace OrchardCore.Queries.Controllers
         private readonly IEnumerable<IQuerySource> _querySources;
         private readonly IDisplayManager<Query> _displayManager;
         private readonly ISession _session;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
 
@@ -38,7 +39,8 @@ namespace OrchardCore.Queries.Controllers
             INotifier notifier,
             IQueryManager queryManager,
             IEnumerable<IQuerySource> querySources,
-            ISession session)
+            ISession session,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _session = session;
             _displayManager = displayManager;
@@ -46,6 +48,7 @@ namespace OrchardCore.Queries.Controllers
             _siteService = siteService;
             _queryManager = queryManager;
             _querySources = querySources;
+            _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
             _notifier = notifier;
             H = htmlLocalizer;
@@ -99,7 +102,7 @@ namespace OrchardCore.Queries.Controllers
                 model.Queries.Add(new QueryEntry
                 {
                     Query = query,
-                    Shape = await _displayManager.BuildDisplayAsync(query, this, "SummaryAdmin")
+                    Shape = await _displayManager.BuildDisplayAsync(query, _updateModelAccessor.ModelUpdater, "SummaryAdmin")
                 });
             }
 
@@ -131,7 +134,7 @@ namespace OrchardCore.Queries.Controllers
 
             var model = new QueriesCreateViewModel
             {
-                Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: true),
+                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true),
                 SourceName = id
             };
 
@@ -153,7 +156,7 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: this, isNew: true);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true);
 
             if (ModelState.IsValid)
             {
@@ -188,7 +191,7 @@ namespace OrchardCore.Queries.Controllers
                 SourceName = query.Source,
                 Name = query.Name,
                 Schema = query.Schema,
-                Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: false)
+                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false)
             };
 
             return View(model);
@@ -209,7 +212,7 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: this, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             if (ModelState.IsValid)
             {

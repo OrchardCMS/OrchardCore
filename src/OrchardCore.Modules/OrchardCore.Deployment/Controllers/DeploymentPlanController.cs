@@ -20,7 +20,7 @@ using YesSql;
 namespace OrchardCore.Deployment.Controllers
 {
     [Admin]
-    public class DeploymentPlanController : Controller, IUpdateModel
+    public class DeploymentPlanController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<DeploymentStep> _displayManager;
@@ -28,10 +28,11 @@ namespace OrchardCore.Deployment.Controllers
         private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
-        
+
         public DeploymentPlanController(
             IAuthorizationService authorizationService,
             IDisplayManager<DeploymentStep> displayManager,
@@ -41,15 +42,17 @@ namespace OrchardCore.Deployment.Controllers
             IShapeFactory shapeFactory,
             IStringLocalizer<DeploymentPlanController> stringLocalizer,
             IHtmlLocalizer<DeploymentPlanController> htmlLocalizer,
-            INotifier notifier)
+            INotifier notifier,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _displayManager = displayManager;
             _factories = factories;
             _authorizationService = authorizationService;
             _session = session;
             _siteService = siteService;
-            New = shapeFactory;
             _notifier = notifier;
+            _updateModelAccessor = updateModelAccessor;
+            New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -122,7 +125,7 @@ namespace OrchardCore.Deployment.Controllers
             var items = new List<dynamic>();
             foreach (var step in deploymentPlan.DeploymentSteps)
             {
-                dynamic item = await _displayManager.BuildDisplayAsync(step, this, "Summary");
+                dynamic item = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Summary");
                 item.DeploymentStep = step;
                 items.Add(item);
             }
@@ -131,7 +134,7 @@ namespace OrchardCore.Deployment.Controllers
             foreach (var factory in _factories)
             {
                 var step = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(step, this, "Thumbnail");
+                dynamic thumbnail = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Thumbnail");
                 thumbnail.DeploymentStep = step;
                 thumbnails.Add(factory.Name, thumbnail);
             }
@@ -197,7 +200,7 @@ namespace OrchardCore.Deployment.Controllers
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
 
             if (deploymentPlan == null)
-            { 
+            {
                 return NotFound();
             }
 
@@ -266,7 +269,7 @@ namespace OrchardCore.Deployment.Controllers
             _session.Delete(deploymentPlan);
 
             _notifier.Success(H["Deployment plan deleted successfully"]);
-            
+
             return RedirectToAction(nameof(Index));
         }
     }

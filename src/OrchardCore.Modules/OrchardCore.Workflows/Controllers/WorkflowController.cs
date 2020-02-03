@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -28,7 +29,7 @@ using YesSql.Services;
 namespace OrchardCore.Workflows.Controllers
 {
     [Admin]
-    public class WorkflowController : Controller, IUpdateModel
+    public class WorkflowController : Controller
     {
         private readonly ISiteService _siteService;
         private readonly ISession _session;
@@ -38,8 +39,9 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
-        private readonly ILogger<WorkflowController> _logger;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHtmlLocalizer<WorkflowController> H;
+        private readonly IStringLocalizer<WorkflowController> S;
 
         public WorkflowController(
             ISiteService siteService,
@@ -51,9 +53,9 @@ namespace OrchardCore.Workflows.Controllers
             IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            IHtmlLocalizer<WorkflowController> localizer,
-            ILogger<WorkflowController> logger
-        )
+            IHtmlLocalizer<WorkflowController> htmlLocalizer,
+            IStringLocalizer<WorkflowController> stringLocalizer,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _siteService = siteService;
             _session = session;
@@ -63,9 +65,10 @@ namespace OrchardCore.Workflows.Controllers
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
-            _logger = logger;
+            _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
-            H = localizer;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
 
         private dynamic New { get; }
@@ -136,18 +139,18 @@ namespace OrchardCore.Workflows.Controllers
             };
 
             model.Options.WorkflowsSorts = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["Recently created"].Value, Value = nameof(WorkflowOrder.CreatedDesc) },
-                new SelectListItem() { Text = H["Least recently created"].Value, Value = nameof(WorkflowOrder.Created) }
+                new SelectListItem() { Text = S["Recently created"], Value = nameof(WorkflowOrder.CreatedDesc) },
+                new SelectListItem() { Text = S["Least recently created"], Value = nameof(WorkflowOrder.Created) }
             };
 
             model.Options.WorkflowsStatuses = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["All"].Value, Value = nameof(WorkflowFilter.All) },
-                new SelectListItem() { Text = H["Faulted"].Value, Value = nameof(WorkflowFilter.Faulted) },
-                new SelectListItem() { Text = H["Finished"].Value, Value = nameof(WorkflowFilter.Finished) }
+                new SelectListItem() { Text = S["All"], Value = nameof(WorkflowFilter.All) },
+                new SelectListItem() { Text = S["Faulted"], Value = nameof(WorkflowFilter.Faulted) },
+                new SelectListItem() { Text = S["Finished"], Value = nameof(WorkflowFilter.Finished) }
             };
 
             viewModel.Options.WorkflowsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["Delete"].Value, Value = nameof(WorkflowBulkAction.Delete) }
+                new SelectListItem() { Text = S["Delete"], Value = nameof(WorkflowBulkAction.Delete) }
             };
 
             return View(viewModel);
@@ -281,7 +284,7 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowTypeId, bool isBlocking, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
+            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}ReadOnly";
             activityShape.Activity = activityContext.Activity;
             activityShape.ActivityRecord = activityContext.ActivityRecord;
