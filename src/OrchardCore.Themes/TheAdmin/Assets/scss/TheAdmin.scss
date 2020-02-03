@@ -451,6 +451,11 @@ body:not(.left-sidebar-compact) {
             display: block;
             margin: 0px auto;
         }
+
+        #filter, #filter:focus{
+            border: none;
+            box-shadow: unset;
+        }
     }
 }
 // Layout 4 : ta-left-sidebar when compacted
@@ -872,6 +877,10 @@ body:not(.left-sidebar-compact) {
             background: rgba(0,0,0,.1);
             display: block;
             margin: 0px auto;
+        }
+
+        #filter, #filter:focus{
+            display:none;
         }
     }
 }
