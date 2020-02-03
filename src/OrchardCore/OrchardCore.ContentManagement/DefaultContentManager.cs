@@ -440,7 +440,7 @@ namespace OrchardCore.ContentManagement
                     x.ContentItemId == contentItem.ContentItemId &&
                     (x.Published || x.Latest)).ListAsync();
 
-            if (activeVersions.Any())
+            if (!activeVersions.Any())
             {
                 throw new InvalidOperationException("Trying to delete a content item that is already soft deleted or nonexistent.");
             }
