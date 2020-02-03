@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Scripting
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     var contentItem = contentManager.NewAsync(contentType).GetAwaiter().GetResult();
                     contentItem.Merge(properties);
-                    contentManager.CreateAsync(contentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft, true).GetAwaiter().GetResult();
+                    contentManager.CreateAsync(contentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
                     return contentItem;
                 })
             };

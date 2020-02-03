@@ -365,7 +365,7 @@ namespace OrchardCore.ContentManagement
             return context.BuildingContentItem;
         }
 
-        public async Task CreateAsync(ContentItem contentItem, VersionOptions options, bool invokeUpdateCallbacks = false)
+        public async Task CreateAsync(ContentItem contentItem, VersionOptions options)
         {
             if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
             {
@@ -388,15 +388,7 @@ namespace OrchardCore.ContentManagement
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
 
-            if (!invokeUpdateCallbacks)
-            {
-                _session.Save(contentItem);
-            }
-            else
-            {
-                await UpdateAsync(contentItem);
-            }
-            
+            await UpdateAsync(contentItem);
             _contentManagerSession.Store(contentItem);
 
             if (options.IsPublished)

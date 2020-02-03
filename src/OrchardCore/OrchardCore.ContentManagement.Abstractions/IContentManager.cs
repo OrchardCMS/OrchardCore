@@ -29,8 +29,7 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentItem">The content instance filled with all necessary data</param>
         /// <param name="options">The version to create the item with</param>
-        /// <param name="invokeUpdateCallbacks">Invoke Update Handlers after creation</param>
-        Task CreateAsync(ContentItem contentItem, VersionOptions options, bool invokeUpdateCallbacks = false);
+        Task CreateAsync(ContentItem contentItem, VersionOptions options);
 
         /// <summary>
         /// Gets the published content item with the specified id
