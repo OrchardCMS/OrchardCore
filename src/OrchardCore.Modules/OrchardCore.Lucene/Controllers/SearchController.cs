@@ -68,7 +68,7 @@ namespace OrchardCore.Lucene.Controllers
         [HttpGet]
         public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneSearch))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
                 return this.ChallengeOrForbid();
             }
