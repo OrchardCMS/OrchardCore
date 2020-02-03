@@ -29,7 +29,7 @@ namespace OrchardCore.DisplayManagement.Theming
                 ThemeLayout.Content.Add(body);
 
                 // Render Shapes in Content
-                if(ThemeLayout.Content is Shape content)
+                if(ThemeLayout.Content is IShape content)
                 {
                     var htmlContent = await DisplayAsync(content);
                     ThemeLayout.Content = htmlContent;
@@ -39,8 +39,7 @@ namespace OrchardCore.DisplayManagement.Theming
                 {
                     foreach (var zone in layout.Properties.ToArray())
                     {
-                        if((zone.Value is Shape shape) &&
-                        !string.Equals(zone.Key,"Content", StringComparison.OrdinalIgnoreCase))
+                        if(zone.Value is IShape shape)
                         {
                             // Render each layout zone
                             var htmlZone = await DisplayAsync(shape);
