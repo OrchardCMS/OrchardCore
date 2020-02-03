@@ -238,6 +238,9 @@ namespace OrchardCore.Users.Services
                         break;
 
                     // Email
+                    case "DuplicateEmail":
+                        reportError("Email", S["Email '{0}' is already used.", user.Email]);
+                        break;
                     case "InvalidEmail":
                         reportError("Email", S["Email '{0}' is invalid.", user.Email]);
                         break;
