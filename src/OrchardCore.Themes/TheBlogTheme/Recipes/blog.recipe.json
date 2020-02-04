@@ -286,7 +286,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "1"
-				},
+				        },
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
@@ -589,9 +589,11 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Hint": null,
-                "Required": true,
-                "Multiple": false
+                "MediaFieldSettings": {
+                  "Hint": null,
+                  "Required": true,
+                  "Multiple": false
+                }
               }
             }
           ]
@@ -622,9 +624,11 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Hint": null,
-                "Required": true,
-                "Multiple": false
+                "MediaFieldSettings": {
+                  "Hint": null,
+                  "Required": true,
+                  "Multiple": false
+                }
               }
             }
           ]
