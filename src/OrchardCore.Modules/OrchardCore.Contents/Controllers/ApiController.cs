@@ -76,7 +76,7 @@ namespace OrchardCore.Content.Controllers
 
                 // Call ActivatedAsync and InitializedAsync
                 var newContentItem = await _contentManager.NewAsync(model.ContentType);
-                newContentItem.Apply(model);
+                newContentItem.Merge(model);
 
                 // Call UpdatedAsync and UpdatingAsync and CreatedAsync and CreatingAsync
                 // In the same order than we do in the AdminController of OrchardCore.Contents.
@@ -91,14 +91,7 @@ namespace OrchardCore.Content.Controllers
                     return Unauthorized();
                 }
 
-                contentItem.DisplayText = model.DisplayText;
-                contentItem.ModifiedUtc = model.ModifiedUtc;
-                contentItem.PublishedUtc = model.PublishedUtc;
-                contentItem.CreatedUtc = model.CreatedUtc;
-                contentItem.Owner = model.Owner;
-                contentItem.Author = model.Author;
-
-                contentItem.Apply(model);
+                contentItem.Merge(model);
                 await _contentManager.UpdateAsync(contentItem);
 
                 if (!draft)
