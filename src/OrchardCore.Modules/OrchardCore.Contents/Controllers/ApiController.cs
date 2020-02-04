@@ -99,8 +99,12 @@ namespace OrchardCore.Content.Controllers
                 contentItem.Author = model.Author;
 
                 contentItem.Apply(model);
-
                 await _contentManager.UpdateAsync(contentItem);
+
+                if (!draft)
+                {
+                    await _contentManager.PublishAsync(contentItem); 
+                }
             }
 
             return Ok(contentItem);
