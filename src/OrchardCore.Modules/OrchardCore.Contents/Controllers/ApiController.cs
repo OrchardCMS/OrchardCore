@@ -80,7 +80,7 @@ namespace OrchardCore.Content.Controllers
 
                 // Call UpdatedAsync and UpdatingAsync and CreatedAsync and CreatingAsync
                 // In the same order than we do in the AdminController of OrchardCore.Contents.
-                await _contentManager.UpdateAndCreateAsync(model, draft ? VersionOptions.DraftRequired : VersionOptions.Published);
+                await _contentManager.UpdateAndCreateAsync(newContentItem, draft ? VersionOptions.DraftRequired : VersionOptions.Published);
 
                 contentItem = newContentItem;
             }
