@@ -16,12 +16,7 @@ namespace OrchardCore.Lists.Services
         /// Update the orders of the content items.
         /// </summary>
         Task UpdateContentItemOrdersAsync(IEnumerable<ContentItem> contentItems, int orderOfFirstItem);
-
-        /// <summary>
-        /// Get the container content items for the specified content type.
-        /// </summary>
-        Task<IEnumerable<ContentItem>> GetContainerItemsAsync(string contentType);
-
+        
         /// <summary>
         /// Get the next order number.
         /// New or cloned content items are added to the bottom of the list.
@@ -31,6 +26,6 @@ namespace OrchardCore.Lists.Services
         /// <summary>
         /// Update order of the content items when ordering is enabled.
         /// </summary>
-        Task SetInitialOrder(IEnumerable<string> containerContentItemIds);
+        Task SetInitialOrder(string containerContentType);
     }
 }

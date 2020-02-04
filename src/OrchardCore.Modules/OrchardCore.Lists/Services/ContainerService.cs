@@ -27,17 +27,6 @@ namespace OrchardCore.Lists.Services
             _contentManager = contentManager;
         }
 
-        public async Task<IEnumerable<ContentItem>> GetContainerItemsAsync(string contentType)
-        {
-            var query = _session.Query<ContentItem>()
-                .With<ContentItemIndex>(x => x.ContentType == contentType && x.Published);
-
-            var contentItems = await query.ListAsync();
-
-            return contentItems;
-
-        }
-
         public async Task<int> GetNextOrderNumberAsync(string contentItemId)
         {
             var index = await _session.QueryIndex<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
@@ -83,15 +72,27 @@ namespace OrchardCore.Lists.Services
             }
         }
 
-        public async Task SetInitialOrder(IEnumerable<string> containerContentItemIds)
+        public async Task SetInitialOrder(string contentType)
         {
-            var query = _session.Query<ContentItem>()
+            // Set initial order for published and drafts if they have never been published.
+            var contanerContentItemsQuery = _session.QueryIndex<ContentItemIndex>(x => x.ContentType == contentType && (x.Published || x.Latest));
+            var containerContentItems = await contanerContentItemsQuery.ListAsync();
+
+            if (!containerContentItems.Any())
+            {
+                return;
+            }
+
+            // Reduce duplicates to only set order for the published container item and the draft item if it has not been published.
+            var containerContentItemIds = containerContentItems.Select(x => x.ContentItemId).Distinct();
+
+            var containedItemsQuery = _session.Query<ContentItem>()
                 .With<ContainedPartIndex>(x => x.ListContentItemId.IsIn(containerContentItemIds))
-                .With<ContentItemIndex>(ci => ci.Latest == true || ci.Published == true)
+                .With<ContentItemIndex>(ci => ci.Latest || ci.Published)
                 .OrderByDescending(x => x.CreatedUtc);
 
-            var contentItemGroups = (await query.ListAsync()).ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
-             
+            var contentItemGroups = (await containedItemsQuery.ListAsync()).ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
+
             foreach (var contentItemGroup in contentItemGroups)
             {
                 var i = 0;

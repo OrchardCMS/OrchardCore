@@ -80,11 +80,7 @@ namespace OrchardCore.Lists.Settings
                 // Update order of existing content if enable ordering has been turned on
                 if (settings.EnableOrdering != model.EnableOrdering && model.EnableOrdering == true)
                 {
-                    var containerItems = await _containerService.GetContainerItemsAsync(contentTypePartDefinition.ContentTypeDefinition.Name);
-                    if (containerItems.Any())
-                    {
-                        await _containerService.SetInitialOrder(containerItems.Select(items => items.ContentItemId));
-                    }
+                    await _containerService.SetInitialOrder(contentTypePartDefinition.ContentTypeDefinition.Name);
                 }
             }
 
