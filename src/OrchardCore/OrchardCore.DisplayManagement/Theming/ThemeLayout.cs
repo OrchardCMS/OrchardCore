@@ -1,7 +1,5 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Theming
@@ -29,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Theming
                 ThemeLayout.Content.Add(body);
 
                 // Render Shapes in Content
-                if(ThemeLayout.Content is IShape content)
+                if (ThemeLayout.Content is IShape content)
                 {
                     var htmlContent = await DisplayAsync(content);
                     ThemeLayout.Content = htmlContent;
@@ -39,7 +37,7 @@ namespace OrchardCore.DisplayManagement.Theming
                 {
                     foreach (var zone in layout.Properties.ToArray())
                     {
-                        if(zone.Value is IShape shape)
+                        if (zone.Value is IShape shape)
                         {
                             // Render each layout zone
                             var htmlZone = await DisplayAsync(shape);
