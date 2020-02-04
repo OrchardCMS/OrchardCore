@@ -242,7 +242,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "2"
-				}
+				        }
               }
             },
             {
@@ -308,7 +308,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "2"
-				}
+				        }
               }
             },
             {
@@ -317,7 +317,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "3"
-				}
+				        }
               }
             },
             {
@@ -580,7 +580,9 @@
               "FieldName": "MediaField",
               "Name": "Image",
               "Settings": {
-                "DisplayName": "Cover Image",
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Banner Image"
+                },
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
@@ -615,7 +617,9 @@
               "FieldName": "MediaField",
               "Name": "Image",
               "Settings": {
-                "DisplayName": "Cover Image",
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Banner Image"
+                },
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
