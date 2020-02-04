@@ -57,6 +57,7 @@ namespace OrchardCore.Contents.Controllers
                     return NotFound();
                 }
             }
+
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
 
             return View(model);
