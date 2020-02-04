@@ -182,4 +182,4 @@ Result:
 
 ## Shape differenciators
 
-You can find information about shape differenciators in the [Templates documentation](../../OrchardCore.Modules/OrchardCore.Templates/#content-field-differentiator)
+You can find information about shape differenciators in the [Templates documentation](../../modules/Templates/#content-field-differentiator)

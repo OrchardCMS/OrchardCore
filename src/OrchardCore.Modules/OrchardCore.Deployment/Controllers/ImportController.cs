@@ -52,7 +52,7 @@ namespace OrchardCore.Deployment.Controllers
                 return Unauthorized();
             }
 
-            var tempArchiveName = Path.GetTempFileName() + ".zip";
+            var tempArchiveName = Path.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
             var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
             try
@@ -62,7 +62,18 @@ namespace OrchardCore.Deployment.Controllers
                     await importedPackage.CopyToAsync(stream);
                 }
 
-                ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
+                if (importedPackage.FileName.EndsWith(".zip"))
+                {
+                    ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
+                }
+
+                if (importedPackage.FileName.EndsWith(".json"))
+                {
+                    string recipeFileName = tempArchiveName.Replace(Path.GetFileNameWithoutExtension(tempArchiveName), "Recipe");
+                    Directory.CreateDirectory(tempArchiveFolder);
+                    System.IO.File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, Path.GetFileName(recipeFileName)));
+                    tempArchiveName = recipeFileName;
+                }
 
                 await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
 
