@@ -35,7 +35,7 @@ namespace OrchardCore.Roles.Recipes
                 if (string.IsNullOrWhiteSpace(importedRole.Name))
                     continue;
 
-                var role = (Role)await _roleManager.FindByNameAsync(importedRole.Name);
+                var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(importedRole.Name));
                 var isNewRole = role == null;
 
                 if (isNewRole)
