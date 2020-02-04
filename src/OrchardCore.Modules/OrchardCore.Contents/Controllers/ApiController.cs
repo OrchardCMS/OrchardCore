@@ -62,9 +62,10 @@ namespace OrchardCore.Content.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(ContentItem newContentItem, bool draft = false)
+        public async Task<IActionResult> Post(ContentItem model, bool draft = false)
         {
-            var contentItem = await _contentManager.GetAsync(newContentItem.ContentItemId, VersionOptions.DraftRequired);
+            // Call LoadedAsync and LoadingAsync only if ContentItem is found
+            var contentItem = await _contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);
 
             if (contentItem == null)
             {
@@ -73,7 +74,13 @@ namespace OrchardCore.Content.Controllers
                     return Unauthorized();
                 }
 
-                await _contentManager.CreateAsync(newContentItem, VersionOptions.DraftRequired);
+                // Call CreatedAsync and CreatingAsync
+                var newContentItem = await _contentManager.NewAsync(model.ContentType);
+                newContentItem.Apply(model);
+
+                // Call UpdatedAsync and UpdatingAsync and CreatedAsync and CreatingAsync
+                // In the same order than we do in the AdminController of OrchardCore.Contents.
+                await _contentManager.UpdateAndCreateAsync(model, draft ? VersionOptions.DraftRequired : VersionOptions.Published);
 
                 contentItem = newContentItem;
             }
@@ -83,30 +90,17 @@ namespace OrchardCore.Content.Controllers
                 {
                     return Unauthorized();
                 }
-            }
 
-            if (contentItem != newContentItem)
-            {
-                contentItem.DisplayText = newContentItem.DisplayText;
-                contentItem.ModifiedUtc = newContentItem.ModifiedUtc;
-                contentItem.PublishedUtc = newContentItem.PublishedUtc;
-                contentItem.CreatedUtc = newContentItem.CreatedUtc;
-                contentItem.Owner = newContentItem.Owner;
-                contentItem.Author = newContentItem.Author;
+                contentItem.DisplayText = model.DisplayText;
+                contentItem.ModifiedUtc = model.ModifiedUtc;
+                contentItem.PublishedUtc = model.PublishedUtc;
+                contentItem.CreatedUtc = model.CreatedUtc;
+                contentItem.Owner = model.Owner;
+                contentItem.Author = model.Author;
 
-                contentItem.Apply(newContentItem);
+                contentItem.Apply(model);
 
                 await _contentManager.UpdateAsync(contentItem);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (!draft)
-            {
-                await _contentManager.PublishAsync(contentItem);
             }
 
             return Ok(contentItem);
