@@ -61,10 +61,16 @@ namespace OrchardCore.Content.Controllers
             return Ok(contentItem);
         }
 
+        /// <summary>
+        /// It is really important to keep the proper method calls order with the ContentManager so
+        /// that all event handlers gets triggered in the right sequence.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="draft"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Post(ContentItem model, bool draft = false)
         {
-            // Call LoadedAsync and LoadingAsync only if ContentItem is found
             var contentItem = await _contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);
 
             if (contentItem == null)
@@ -74,12 +80,9 @@ namespace OrchardCore.Content.Controllers
                     return Unauthorized();
                 }
 
-                // Call ActivatedAsync and InitializedAsync
                 var newContentItem = await _contentManager.NewAsync(model.ContentType);
                 newContentItem.Merge(model);
 
-                // Call UpdatedAsync and UpdatingAsync and CreatedAsync and CreatingAsync
-                // In the same order than we do in the AdminController of OrchardCore.Contents.
                 await _contentManager.UpdateAndCreateAsync(newContentItem, draft ? VersionOptions.DraftRequired : VersionOptions.Published);
 
                 contentItem = newContentItem;
@@ -92,12 +95,10 @@ namespace OrchardCore.Content.Controllers
                 }
 
                 contentItem.Merge(model);
-                // Call UpdatedAsync and UpdatingAsync
                 await _contentManager.UpdateAsync(contentItem);
 
                 if (!draft)
                 {
-                    // Call PublishedAsync and PublishingAsync
                     await _contentManager.PublishAsync(contentItem); 
                 }
             }
