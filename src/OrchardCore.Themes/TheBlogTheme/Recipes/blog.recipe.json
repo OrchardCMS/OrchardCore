@@ -240,7 +240,9 @@
               "PartName": "BlogPost",
               "Name": "BlogPost",
               "Settings": {
-                "Position": "2"
+                "ContentTypePartSettings": {
+                  "Position": "2"
+				}
               }
             },
             {
@@ -282,7 +284,9 @@
               "PartName": "AutoroutePart",
               "Name": "AutoroutePart",
               "Settings": {
-                "Position": "1",
+                "ContentTypePartSettings": {
+                  "Position": "1"
+				},
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
@@ -302,14 +306,18 @@
               "PartName": "Blog",
               "Name": "Blog",
               "Settings": {
-                "Position": "2"
+                "ContentTypePartSettings": {
+                  "Position": "2"
+				}
               }
             },
             {
               "PartName": "HtmlBodyPart",
               "Name": "HtmlBodyPart",
               "Settings": {
-                "Position": "3"
+                "ContentTypePartSettings": {
+                  "Position": "3"
+				}
               }
             },
             {
