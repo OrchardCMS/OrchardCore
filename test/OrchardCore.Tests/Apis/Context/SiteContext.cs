@@ -75,7 +75,6 @@ namespace OrchardCore.Tests.Apis.Context
         {
             var contentItem = new ContentItem
             {
-                ContentItemId = Guid.NewGuid().ToString(),
                 ContentType = contentType
             };
 
