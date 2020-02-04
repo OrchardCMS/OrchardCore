@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
 
                 // A scoped service allowing to keep in sync a given data store with a distributed cache.
-                services.AddScoped<ISessionDistributedCache, SessionDistributedCache>();
+                services.AddScoped<IScopedDistributedCache, ScopedDistributedCache>();
             });
 
             return builder;

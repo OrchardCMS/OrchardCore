@@ -12,10 +12,10 @@ using OrchardCore.Entities;
 namespace OrchardCore.Infrastructure.Cache
 {
     /// <summary>
-    /// A scoped service allowing to keep in sync a given data store with a multi level cache.
-    /// The cache is composed of a scoped cache, a tenant level cache and a distributed cache.
+    /// A scoped service allowing to keep in sync a given data store with a multi level
+    /// cache composed of a scoped cache, a tenant memory cache and a distributed cache.
     /// </summary>
-    public class SessionDistributedCache : ISessionDistributedCache
+    public class ScopedDistributedCache : IScopedDistributedCache
     {
         private static readonly DefaultIdGenerator _idGenerator = new DefaultIdGenerator();
 
@@ -24,26 +24,52 @@ namespace OrchardCore.Infrastructure.Cache
 
         private readonly Dictionary<string, object> _scopedCache = new Dictionary<string, object>();
 
-        public SessionDistributedCache(IDistributedCache distributedCache, IMemoryCache memoryCache)
+        public ScopedDistributedCache(IDistributedCache distributedCache, IMemoryCache memoryCache)
         {
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
         }
 
-        public async Task<T> GetOrCreateAsync<T>(Func<Task<T>> factory, DistributedCacheEntryOptions options) where T : DistributedCacheData
+        public async Task<T> LoadAsync<T>(Func<Task<T>> loadForUpdate) where T : ScopedDistributedCacheData
+        {
+            var value = await loadForUpdate();
+
+            if (_memoryCache.TryGetValue<T>(typeof(T).FullName, out var cached) && value == cached)
+            {
+                throw new ArgumentException("Can't load for update a cached object");
+            }
+
+            value.Identifier = _idGenerator.GenerateUniqueId();
+
+            return value;
+        }
+
+        public async Task<T> GetAsync<T>(Func<Task<T>> getForCaching, DistributedCacheEntryOptions options) where T : ScopedDistributedCacheData
         {
             var value = await GetAsync<T>(options);
 
             if (value == null)
             {
-                value = await factory();
+                value = await getForCaching();
+
                 await SetAsync(value, options);
+
+                var key = typeof(T).FullName;
+
+                _memoryCache.Set(key, value, new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpiration = options.AbsoluteExpiration,
+                    AbsoluteExpirationRelativeToNow = options.AbsoluteExpirationRelativeToNow,
+                    SlidingExpiration = options.SlidingExpiration
+                });
+
+                _scopedCache[key] = value;
             }
 
             return value;
         }
 
-        private async Task<T> GetAsync<T>(DistributedCacheEntryOptions options) where T : DistributedCacheData
+        private async Task<T> GetAsync<T>(DistributedCacheEntryOptions options) where T : ScopedDistributedCacheData
         {
             var key = typeof(T).FullName;
 
@@ -105,7 +131,17 @@ namespace OrchardCore.Infrastructure.Cache
             return value;
         }
 
-        public async Task SetAsync<T>(T value, DistributedCacheEntryOptions options) where T : DistributedCacheData
+        public Task UpdateAsync<T>(T value, DistributedCacheEntryOptions options) where T : ScopedDistributedCacheData
+        {
+            if (_memoryCache.TryGetValue<T>(typeof(T).FullName, out var cached) && value == cached)
+            {
+                throw new ArgumentException("Can't update a cached object");
+            }
+
+            return SetAsync(value, options);
+        }
+
+        private async Task SetAsync<T>(T value, DistributedCacheEntryOptions options) where T : ScopedDistributedCacheData
         {
             value.Identifier ??= _idGenerator.GenerateUniqueId();
 
@@ -128,18 +164,9 @@ namespace OrchardCore.Infrastructure.Cache
 
             await _distributedCache.SetAsync(key, data, options);
             await _distributedCache.SetAsync("ID_" + key, idData, options);
-
-            _memoryCache.Set(key, value, new MemoryCacheEntryOptions()
-            {
-                AbsoluteExpiration = options.AbsoluteExpiration,
-                AbsoluteExpirationRelativeToNow = options.AbsoluteExpirationRelativeToNow,
-                SlidingExpiration = options.SlidingExpiration
-            });
-
-            _scopedCache[key] = value;
         }
 
-        public async Task<bool> HasChangedAsync<T>(T value) where T : DistributedCacheData
+        public async Task<bool> HasChangedAsync<T>(T value) where T : ScopedDistributedCacheData
         {
             var key = typeof(T).FullName;
 
@@ -155,27 +182,7 @@ namespace OrchardCore.Infrastructure.Cache
             return value.Identifier != id;
         }
 
-        public Task<bool> TryUpdateAsync<T>(T value) where T : DistributedCacheData
-        {
-            if (_memoryCache.TryGetValue<T>(typeof(T).FullName, out var cached) && value == cached)
-            {
-                return Task.FromResult(false);
-            }
-
-            value.Identifier = _idGenerator.GenerateUniqueId();
-
-            return Task.FromResult(true);
-        }
-
-        public Task InvalidateAsync<T>() where T : DistributedCacheData => _distributedCache.RemoveAsync("ID_" + typeof(T).FullName);
-
-        public async Task RemoveAsync<T>() where T : DistributedCacheData
-        {
-            var key = typeof(T).FullName;
-            await _distributedCache.RemoveAsync(key);
-            await _distributedCache.RemoveAsync("ID_" + key);
-            _memoryCache.Remove(key);
-        }
+        public Task InvalidateAsync<T>() where T : ScopedDistributedCacheData => _distributedCache.RemoveAsync("ID_" + typeof(T).FullName);
 
         private static Task SerializeAsync<T>(Stream stream, T value) => MessagePackSerializer.SerializeAsync(stream, value, ContractlessStandardResolver.Options);
 
