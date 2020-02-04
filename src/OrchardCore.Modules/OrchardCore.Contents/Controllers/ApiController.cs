@@ -74,7 +74,7 @@ namespace OrchardCore.Content.Controllers
                     return Unauthorized();
                 }
 
-                // Call CreatedAsync and CreatingAsync
+                // Call ActivatedAsync and InitializedAsync
                 var newContentItem = await _contentManager.NewAsync(model.ContentType);
                 newContentItem.Apply(model);
 
