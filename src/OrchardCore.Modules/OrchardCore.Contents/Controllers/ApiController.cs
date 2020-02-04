@@ -92,10 +92,12 @@ namespace OrchardCore.Content.Controllers
                 }
 
                 contentItem.Merge(model);
+                // Call UpdatedAsync and UpdatingAsync
                 await _contentManager.UpdateAsync(contentItem);
 
                 if (!draft)
                 {
+                    // Call PublishedAsync and PublishingAsync
                     await _contentManager.PublishAsync(contentItem); 
                 }
             }
