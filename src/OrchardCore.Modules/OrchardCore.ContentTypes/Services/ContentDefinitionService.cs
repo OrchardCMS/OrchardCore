@@ -388,6 +388,7 @@ namespace OrchardCore.ContentTypes.Services
                     part.WithDisplayName(typePartViewModel.DisplayName);
                     part.WithDescription(typePartViewModel.Description);
                     part.WithEditor(typePartViewModel.Editor);
+                    part.WithDisplayMode(typePartViewModel.DisplayMode);
                 });
             });
         }

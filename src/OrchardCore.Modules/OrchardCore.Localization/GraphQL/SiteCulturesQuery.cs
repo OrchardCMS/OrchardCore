@@ -12,15 +12,23 @@ using OrchardCore.Apis.GraphQL.Resolvers;
 
 namespace OrchardCore.Localization.GraphQL
 {
+    /// <summary>
+    /// Represents a site cultures for Graph QL.
+    /// </summary>
     public class SiteCulturesQuery : ISchemaBuilder
     {
         private readonly IStringLocalizer S;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="SiteCulturesQuery"/>.
+        /// </summary>
+        /// <param name="localizer">The <see cref="IStringLocalizer"/>.</param>
         public SiteCulturesQuery(IStringLocalizer<SiteCulturesQuery> localizer)
         {
             S = localizer;
         }
 
+        /// <inheritdocs/>
         public Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var field = new FieldType

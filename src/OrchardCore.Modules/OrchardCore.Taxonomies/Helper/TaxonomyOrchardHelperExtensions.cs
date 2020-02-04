@@ -11,7 +11,7 @@ using YesSql;
 public static class TaxonomyOrchardHelperExtensions
 {
     /// <summary>
-    /// Returns a the term from its content item id and taxonomy.
+    /// Returns a term from its content item id and taxonomy.
     /// </summary>
     /// <param name="taxonomyContentItemId">The taxonomy content item id.</param>
     /// <param name="termContentItemId">The term content item id.</param>

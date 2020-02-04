@@ -19,7 +19,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.AdminMenu.Controllers
 {
     [Admin]
-    public class MenuController : Controller, IUpdateModel
+    public class MenuController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IAdminMenuService _adminMenuService;

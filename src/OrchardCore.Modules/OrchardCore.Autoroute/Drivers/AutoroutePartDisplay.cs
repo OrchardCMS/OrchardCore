@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +7,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -25,7 +24,6 @@ namespace OrchardCore.Autoroute.Drivers
         public const int MaxPathLength = 1024;
 
         private readonly AutorouteOptions _options;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -34,16 +32,14 @@ namespace OrchardCore.Autoroute.Drivers
 
         public AutoroutePartDisplay(
             IOptions<AutorouteOptions> options,
-            IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
             IContentRoutingValidationCoordinator contentRoutingValidationCoordinator,
             IStringLocalizer<AutoroutePartDisplay> localizer
-            )
+        )
         {
             _options = options.Value;
-            _contentDefinitionManager = contentDefinitionManager;
             _siteService = siteService;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
@@ -51,7 +47,7 @@ namespace OrchardCore.Autoroute.Drivers
             S = localizer;
         }
 
-        public override IDisplayResult Edit(AutoroutePart autoroutePart)
+        public override IDisplayResult Edit(AutoroutePart autoroutePart, BuildPartEditorContext context)
         {
             return Initialize<AutoroutePartViewModel>("AutoroutePart_Edit", async model =>
             {
@@ -67,24 +63,17 @@ namespace OrchardCore.Autoroute.Drivers
                     model.IsHomepage = true;
                 }
 
-                model.Settings = GetSettings(autoroutePart);
+                model.Settings = context.TypePartDefinition.GetSettings<AutoroutePartSettings>();
             });
         }
 
-        private AutoroutePartSettings GetSettings(AutoroutePart autoroutePart)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(autoroutePart.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AutoroutePart)));
-            return contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(AutoroutePart model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(AutoroutePart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
             var viewModel = new AutoroutePartViewModel();
 
             await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Path, t => t.UpdatePath);
 
-            var settings = GetSettings(model);
+            var settings = context.TypePartDefinition.GetSettings<AutoroutePartSettings>();
 
             if (settings.AllowCustomPath)
             {
@@ -106,7 +95,7 @@ namespace OrchardCore.Autoroute.Drivers
 
             await ValidateAsync(model, updater);
 
-            return Edit(model);
+            return Edit(model, context);
         }
 
         private async Task ValidateAsync(AutoroutePart autoroute, IUpdateModel updater)

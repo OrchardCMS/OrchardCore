@@ -11,7 +11,7 @@ using OrchardCore.DisplayManagement.Notify;
 
 namespace OrchardCore.ContentLocalization.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentLocalizationManager _contentLocalizationManager;

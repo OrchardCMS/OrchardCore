@@ -15,7 +15,7 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
@@ -23,6 +23,7 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly INotifier _notifier;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             ISession session,
@@ -31,7 +32,8 @@ namespace OrchardCore.Taxonomies.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> h)
+            IHtmlLocalizer<AdminController> h,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _contentManager = contentManager;
             _authorizationService = authorizationService;
@@ -39,6 +41,7 @@ namespace OrchardCore.Taxonomies.Controllers
             _contentDefinitionManager = contentDefinitionManager;
             _session = session;
             _notifier = notifier;
+            _updateModelAccessor = updateModelAccessor;
             H = h;
         }
 
@@ -60,7 +63,7 @@ namespace OrchardCore.Taxonomies.Controllers
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             model.TaxonomyContentItemId = taxonomyContentItemId;
             model.TaxonomyItemId = taxonomyItemId;
@@ -99,7 +102,7 @@ namespace OrchardCore.Taxonomies.Controllers
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
@@ -164,7 +167,7 @@ namespace OrchardCore.Taxonomies.Controllers
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             model.TaxonomyContentItemId = taxonomyContentItemId;
             model.TaxonomyItemId = taxonomyItemId;
@@ -212,7 +215,7 @@ namespace OrchardCore.Taxonomies.Controllers
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             if (!ModelState.IsValid)
             {

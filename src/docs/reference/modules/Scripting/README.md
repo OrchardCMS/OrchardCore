@@ -85,6 +85,7 @@ Here is a list of javascript methods provided by Orchard Modules.
 |`newContentItem(contentTypeName: String): IContent`| Creates a new instance of a ContentType (does not persist)|
 |`createContentItem(contentTypeName: String, publish: Boolean, properties: Object): IContent`| Creates and persists a new ContentItem. Conditionally publishes it. |
 |`updateContentItem(contentItem: IContent, properties: Object)`| Updates an existing content item with the properties |
+|`deleteContentItem(contentItem: IContent)`| Deletes an existing content item |
 |`getUrlPrefix(path: String): String `| Prefixes the path with the Tenant prefix (if specified) |
 
 #### Layers (`OrchardCore.Layers`)

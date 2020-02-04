@@ -160,20 +160,20 @@ namespace OrchardCore.Tenants.Controllers
 
             // We populate the SelectLists
             model.Options.TenantsStates = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["All states"].Value, Value = nameof(TenantsFilter.All) },
-                new SelectListItem() { Text = H["Running"].Value, Value = nameof(TenantsFilter.Running) },
-                new SelectListItem() { Text = H["Disabled"].Value, Value = nameof(TenantsFilter.Disabled) },
-                new SelectListItem() { Text = H["Uninitialized"].Value, Value = nameof(TenantsFilter.Uninitialized) }
+                new SelectListItem() { Text = S["All states"], Value = nameof(TenantsFilter.All) },
+                new SelectListItem() { Text = S["Running"], Value = nameof(TenantsFilter.Running) },
+                new SelectListItem() { Text = S["Disabled"], Value = nameof(TenantsFilter.Disabled) },
+                new SelectListItem() { Text = S["Uninitialized"], Value = nameof(TenantsFilter.Uninitialized) }
             };
 
             model.Options.TenantsSorts = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["Name"].Value, Value = nameof(TenantsOrder.Name) },
-                new SelectListItem() { Text = H["State"].Value, Value = nameof(TenantsOrder.State) }
+                new SelectListItem() { Text = S["Name"], Value = nameof(TenantsOrder.Name) },
+                new SelectListItem() { Text = S["State"], Value = nameof(TenantsOrder.State) }
             };
 
             model.Options.TenantsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["Disable"].Value, Value = nameof(TenantsBulkAction.Disable) },
-                new SelectListItem() { Text = H["Enable"].Value, Value = nameof(TenantsBulkAction.Enable) }
+                new SelectListItem() { Text = S["Disable"], Value = nameof(TenantsBulkAction.Disable) },
+                new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) }
             };
 
             return View(model);
