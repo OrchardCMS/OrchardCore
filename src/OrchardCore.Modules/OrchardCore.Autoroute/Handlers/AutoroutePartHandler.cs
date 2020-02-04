@@ -27,7 +27,7 @@ namespace OrchardCore.Autoroute.Handlers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
-        private readonly ISession _session;
+        private readonly IContentRoutingValidationCoordinator _contentRoutingValidationCoordinator;
 
         public AutoroutePartHandler(
             IAutorouteEntries entries,
@@ -36,7 +36,7 @@ namespace OrchardCore.Autoroute.Handlers
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             ITagCache tagCache,
-            ISession session)
+            IContentRoutingValidationCoordinator contentRoutingValidationCoordinator)
         {
             _entries = entries;
             _options = options.Value;
@@ -44,7 +44,7 @@ namespace OrchardCore.Autoroute.Handlers
             _contentDefinitionManager = contentDefinitionManager;
             _siteService = siteService;
             _tagCache = tagCache;
-            _session = session;
+            _contentRoutingValidationCoordinator = contentRoutingValidationCoordinator;
         }
 
         public override async Task PublishedAsync(PublishContentContext context, AutoroutePart part)
@@ -200,7 +200,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         private async Task<bool> IsPathUniqueAsync(string path, AutoroutePart context)
         {
-            return (await _session.QueryIndex<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path == path).CountAsync()) == 0;
+            return await _contentRoutingValidationCoordinator.IsPathUniqueAsync(path, context.ContentItem.ContentItemId);
         }
     }
 }

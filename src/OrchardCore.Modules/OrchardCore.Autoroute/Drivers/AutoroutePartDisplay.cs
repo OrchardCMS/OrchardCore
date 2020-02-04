@@ -29,7 +29,7 @@ namespace OrchardCore.Autoroute.Drivers
         private readonly ISiteService _siteService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly YesSql.ISession _session;
+        private readonly IContentRoutingValidationCoordinator _contentRoutingValidationCoordinator;
         private readonly IStringLocalizer<AutoroutePartDisplay> S;
 
         public AutoroutePartDisplay(
@@ -38,7 +38,7 @@ namespace OrchardCore.Autoroute.Drivers
             ISiteService siteService,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
-            YesSql.ISession session,
+            IContentRoutingValidationCoordinator contentRoutingValidationCoordinator,
             IStringLocalizer<AutoroutePartDisplay> localizer
             )
         {
@@ -47,7 +47,7 @@ namespace OrchardCore.Autoroute.Drivers
             _siteService = siteService;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
-            _session = session;
+            _contentRoutingValidationCoordinator = contentRoutingValidationCoordinator;
             S = localizer;
         }
 
@@ -127,7 +127,7 @@ namespace OrchardCore.Autoroute.Drivers
                 updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is too long. The permalink can only be up to {0} characters.", MaxPathLength]);
             }
 
-            if (autoroute.Path != null && (await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).CountAsync()) > 0)
+            if (autoroute.Path != null && !await _contentRoutingValidationCoordinator.IsPathUniqueAsync(autoroute.Path, autoroute.ContentItem.ContentItemId))
             {
                 updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is already in use."]);
             }

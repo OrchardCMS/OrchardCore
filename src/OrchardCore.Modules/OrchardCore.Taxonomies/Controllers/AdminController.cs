@@ -57,6 +57,8 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             var contentItem = await _contentManager.NewAsync(id);
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
             dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
 
@@ -94,6 +96,8 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             var contentItem = await _contentManager.NewAsync(id);
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
 
@@ -157,6 +161,8 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             var contentItem = taxonomyItem.ToObject<ContentItem>();
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
             dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
 
@@ -203,6 +209,8 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             var contentItem = taxonomyItem.ToObject<ContentItem>();
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
 

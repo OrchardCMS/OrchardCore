@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -21,6 +22,7 @@ using OrchardCore.Contents.Indexing;
 using OrchardCore.Contents.Liquid;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.Recipes;
+using OrchardCore.Contents.Routing;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.Settings;
@@ -105,10 +107,21 @@ namespace OrchardCore.Contents
                     options.ContentItemIdKey = "contentItemId";
                 }
             });
+
+            services.AddSingleton<IContentRoutingCoordinator, ContentRoutingCoordinator>();
+            services.AddSingleton<ContentRoutingTransformer>();
+            services.AddScoped<IContentRoutingValidationCoordinator, ContentRoutingValidationCoordinator>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var contentRouteProviders = serviceProvider.GetServices<IContentRouteProvider>();
+            if (contentRouteProviders.Any())
+            {
+                // The 1st segment prevents the transformer to be executed for the home.
+                routes.MapDynamicControllerRoute<ContentRoutingTransformer>("/{any}/{**slug}");
+            }
+
             var itemControllerName = typeof(ItemController).ControllerName();
 
             routes.MapAreaControllerRoute(

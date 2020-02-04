@@ -19,6 +19,7 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
+        public IStringLocalizer S { get; }
 
         public TaxonomyFieldDisplayDriver(
             IContentManager contentManager,
@@ -27,8 +28,6 @@ namespace OrchardCore.Taxonomies.Drivers
             _contentManager = contentManager;
             S = s;
         }
-
-        public IStringLocalizer S { get; }
 
         public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)
         {

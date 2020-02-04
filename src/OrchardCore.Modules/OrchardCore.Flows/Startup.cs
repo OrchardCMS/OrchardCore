@@ -7,10 +7,12 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Flows.Controllers;
 using OrchardCore.Flows.Drivers;
+using OrchardCore.Flows.Handlers;
 using OrchardCore.Flows.Indexing;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.Settings;
@@ -50,6 +52,8 @@ namespace OrchardCore.Flows
             services.AddContentPart<BagPart>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, BagPartIndexHandler>();
+
+            services.AddScoped<IContentPartHandler, BagPartHandler>();
 
             services.AddContentPart<FlowMetadata>();
 

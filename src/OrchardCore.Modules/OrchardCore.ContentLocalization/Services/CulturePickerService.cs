@@ -10,17 +10,17 @@ namespace OrchardCore.ContentLocalization.Services
 {
     public class ContentCulturePickerService : IContentCulturePickerService
     {
-        private readonly IAutorouteEntries _autorouteEntries;
+        private readonly IContentRoutingCoordinator _contentRoutingCoordinator;
         private readonly ILocalizationEntries _localizationEntries;
         private readonly ISiteService _siteService;
 
 
         public ContentCulturePickerService(
-            IAutorouteEntries autorouteEntries,
+            IContentRoutingCoordinator contentRoutingCoordinator,
             ILocalizationEntries localizationEntries,
             ISiteService siteService)
         {
-            _autorouteEntries = autorouteEntries;
+            _contentRoutingCoordinator = contentRoutingCoordinator;
             _localizationEntries = localizationEntries;
             _siteService = siteService;
         }
@@ -43,8 +43,12 @@ namespace OrchardCore.ContentLocalization.Services
             }
             else
             {
-                // try to get from autorouteEntries
-                _autorouteEntries.TryGetContentItemId(url.Value, out contentItemId);
+                // try to get from content routing coordinator.
+                // This will return the parent content item. When used for localization switching
+                // this means a contained item will switch back to the container item, in the new culture.
+                // We could look at switching to the contained item, but it would be based on order in the BagPart list
+                // and would be easy to switch to an item that is not well related.
+                _contentRoutingCoordinator.TryGetContentItemId(url.Value, out contentItemId);
             }
 
             if (string.IsNullOrEmpty(contentItemId))

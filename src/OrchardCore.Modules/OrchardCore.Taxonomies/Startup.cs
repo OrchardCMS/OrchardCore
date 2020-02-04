@@ -8,6 +8,7 @@ using OrchardCore.Admin;
 using OrchardCore.Apis;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -20,6 +21,7 @@ using OrchardCore.Taxonomies.Controllers;
 using OrchardCore.Taxonomies.Drivers;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.GraphQL;
+using OrchardCore.Taxonomies.Handlers;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Liquid;
 using OrchardCore.Taxonomies.Models;
@@ -53,7 +55,13 @@ namespace OrchardCore.Taxonomies
 
             // Taxonomy Part
             services.AddScoped<IContentPartDisplayDriver, TaxonomyPartDisplayDriver>();
+            services.AddScoped<IContentPartHandler, TaxonomyPartHandler>();
             services.AddContentPart<TaxonomyPart>();
+
+            // Terms
+            services.AddContentPart<TermPart>();
+            services.AddScoped<IContentHandler, TermPartContentHandler>();
+            services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
 
             // Taxonomy Field
             services.AddContentField<TaxonomyField>();

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -17,18 +18,28 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
     {
         private readonly IContentManager _contentManager;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public TaxonomyPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager,
-            IServiceProvider serviceProvider
+            IContentManager contentManager
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _serviceProvider = serviceProvider;
             _contentManager = contentManager;
+        }
+
+
+        public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
+        {
+            var hasItems = part.Terms.Any();
+            return Initialize<TaxonomyPartViewModel>(hasItems ? "TaxonomyPart" : "TaxonomyPart_Empty", m =>
+            {
+                m.Terms = TaxonomyDriverHelper.PopulateTermEntries(part.Terms, context);
+                m.TaxonomyPart = part;
+                m.BuildPartDisplayContext = context;
+            })
+            .Location("Detail", "Content:5");
         }
 
         public override IDisplayResult Edit(TaxonomyPart part)
@@ -76,7 +87,7 @@ namespace OrchardCore.Taxonomies.Drivers
             ContentItem taxonomyItem = null;
 
             // Seek the term represented by the list of indexes
-            foreach(var index in indexes)
+            foreach (var index in indexes)
             {
                 if (taxonomyItems == null || taxonomyItems.Count < index)
                 {
@@ -99,7 +110,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
             return newObj;
         }
-        
+
         private JObject ProcessItem(TaxonomyPart originalItems, JObject item)
         {
             var contentItem = GetTaxonomyItemAt(originalItems.Terms, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());
