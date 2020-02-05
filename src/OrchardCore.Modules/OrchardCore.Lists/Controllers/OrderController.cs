@@ -63,7 +63,7 @@ namespace OrchardCore.Lists.Controllers
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, pagedContentItem))
                 {
-                    return Unauthorized();
+                    return Forbid();
                 }
             }
 
