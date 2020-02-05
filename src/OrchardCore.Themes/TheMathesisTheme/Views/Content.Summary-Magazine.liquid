@@ -1,0 +1,47 @@
+<div class="w-90 mx-auto">
+	{% if Model.RightText %}
+	<div class="card card-plain">
+		<div class="row">
+			<div class="col-md-4">
+				<div class="card-header card-header-image">
+					<img class="img" src="{{Model.ContentItem.Content.LandingHeader.Image.Paths.first | asset_url }}" />
+				</div>
+			</div>
+			<div class="col-md-8">
+				<h6 class="card-category text-primary">
+					<i class="material-icons">{{Model.ContentItem.Content.Magazine.IconClass.Text}}</i>&nbsp;{{Model.ContentItem.Content.TitlePart.Title}}
+				</h6>
+				<h3 class="card-title">
+					<a href="{{Model.ContentItem | display_url}}">{{Model.ContentItem.Content.LandingHeader.Payoff.Text}}</a>
+				</h3>
+				<p class="card-description mth-text-base">
+					{{Model.ContentItem.Content.Magazine.Description.Text | truncate: 450}}
+					<a href="{{Model.ContentItem | display_url }}">&nbsp;{{Model.ContentItem.Content.LandingHeader.Button.Text}}</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	{% else %}
+	<div class="card card-plain">
+		<div class="row">
+			<div class="col-md-8">
+				<h6 class="card-category text-primary">
+					<i class="material-icons">{{Model.ContentItem.Content.Magazine.IconClass.Text}}</i>&nbsp;{{Model.ContentItem.Content.TitlePart.Title}}
+				</h6>
+				<h3 class="card-title">
+					<a href="{{Model.ContentItem | display_url}}">{{Model.ContentItem.Content.LandingHeader.Payoff.Text}}</a>
+				</h3>
+				<p class="card-description mth-text-base">
+					{{Model.ContentItem.Content.Magazine.Description.Text | truncate: 450}}
+					<a href="{{Model.ContentItem | display_url }}">&nbsp;{{Model.ContentItem.Content.LandingHeader.Button.Text}}</a>
+				</p>
+			</div>
+			<div class="col-md-4">
+				<div class="card-header card-header-image">
+					<img class="img img-raised" src="{{Model.ContentItem.Content.LandingHeader.Image.Paths.first | asset_url }}" />
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endif%}
+</div>
