@@ -4,13 +4,22 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
 
-namespace OrchardCore.Lucene
+namespace OrchardCore.Lucene.ContentPicker
 {
-    public class LuceneContentPickerShapeProvider : IShapeAttributeProvider
-    {
-        private readonly IStringLocalizer<LuceneContentPickerShapeProvider> S;
 
-        public LuceneContentPickerShapeProvider(IStringLocalizer<LuceneContentPickerShapeProvider> stringLocalizer)
+    public class LuceneContentPickerShapesTableProvider : IShapeTableProvider
+    {
+        public void Discover(ShapeTableBuilder builder)
+        {
+            builder.Describe("ContentPickerField_Option__Lucene");
+        }
+    }
+
+    public class LuceneContentPickerShape : IShapeAttributeProvider
+    {
+        private readonly IStringLocalizer<LuceneContentPickerShape> S;
+
+        public LuceneContentPickerShape(IStringLocalizer<LuceneContentPickerShape> stringLocalizer)
         {
             S = stringLocalizer;
         }

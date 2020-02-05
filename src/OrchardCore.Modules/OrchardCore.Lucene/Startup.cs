@@ -12,10 +12,12 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Lucene.ContentPicker;
 using OrchardCore.Lucene.Controllers;
 using OrchardCore.Lucene.Deployment;
 using OrchardCore.Lucene.Drivers;
 using OrchardCore.Lucene.Handlers;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Recipes;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.Settings;
@@ -26,7 +28,6 @@ using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Lucene.Model;
 
 namespace OrchardCore.Lucene
 {
@@ -154,7 +155,9 @@ namespace OrchardCore.Lucene
         {
             services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
-            services.AddShapeAttributes<LuceneContentPickerShapeProvider>();
+
+            services.AddScoped<IShapeTableProvider, LuceneContentPickerShapesTableProvider>();
+            services.AddShapeAttributes<LuceneContentPickerShape>();
         }
     }
 }
