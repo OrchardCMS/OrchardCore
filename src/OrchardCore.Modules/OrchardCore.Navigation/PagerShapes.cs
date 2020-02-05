@@ -36,6 +36,7 @@ namespace OrchardCore.Navigation
                     // Intializes the common properties of a Pager shape
                     // such that views can safely add values to them.
                     pager.ItemClasses = new List<string>();
+                    pager.Attributes = new Dictionary<string, string>();
                     pager.ItemAttributes = new Dictionary<string, string>();
                 })
                 .OnDisplaying(displaying =>
@@ -56,6 +57,7 @@ namespace OrchardCore.Navigation
                     // Intializes the common properties of a Pager shape
                     // such that views can safely add values to them.
                     pager.ItemClasses = new List<string>();
+                    pager.Attributes = new Dictionary<string, string>();
                     pager.ItemAttributes = new Dictionary<string, string>();
                 });
 
@@ -161,7 +163,7 @@ namespace OrchardCore.Navigation
         }
 
         [Shape]
-        public async Task<IHtmlContent> Pager_Links(dynamic Shape, dynamic DisplayAsync, dynamic New,
+        public async Task<IHtmlContent> Pager_Links(Shape Shape, dynamic DisplayAsync, dynamic New,
             IHtmlHelper Html,
             DisplayContext DisplayContext,
             int Page,
@@ -183,10 +185,10 @@ namespace OrchardCore.Navigation
             // when an anonymous object is bound to an object shape parameter
             /*object RouteValues*/)
         {
-            Shape.Tag = Tag;
-            Shape.ItemTag = ItemTag;
-            Shape.Attributes = Attributes;
-            Shape.ItemAttributes = ItemAttributes;
+            Shape.Properties["Tag"] = Tag;
+            Shape.Properties["ItemTag"] = ItemTag;
+            Shape.Properties["Attributes"] = Attributes;
+            Shape.Properties["ItemAttributes"] = ItemAttributes;
 
             var currentPage = Page;
             if (currentPage < 1)
