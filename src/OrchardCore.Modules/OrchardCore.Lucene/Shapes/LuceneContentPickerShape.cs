@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Lucene.ContentPicker
+namespace OrchardCore.Lucene
 {
     [Feature("OrchardCore.Lucene.ContentPicker")]
     public class LuceneContentPickerShape : IShapeAttributeProvider
