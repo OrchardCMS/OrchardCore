@@ -185,8 +185,13 @@ namespace OrchardCore.Navigation
         {
             Shape.Properties["Tag"] = Tag;
             Shape.Properties["ItemTag"] = ItemTag;
-            Shape.Properties["Attributes"] = Attributes;
             Shape.Properties["ItemAttributes"] = ItemAttributes;
+
+            var attributes = Shape.Attributes;
+            foreach (var item in Attributes)
+            {
+                attributes.Add(item.Key, item.Value);
+            }
 
             var currentPage = Page;
             if (currentPage < 1)
@@ -350,8 +355,17 @@ namespace OrchardCore.Navigation
             Shape.Id = Id;
             Shape.Tag = Tag;
             Shape.ItemTag = ItemTag;
-            Shape.Attributes = Attributes;
-            Shape.ItemAttributes = ItemAttributes;
+
+            var attributes = Shape.Attributes;
+            foreach (var item in Attributes) {
+                attributes.Add(item.Key, item.Value);
+            }
+
+            var itemAttributes = Shape.ItemAttributes;
+            foreach (var item in ItemAttributes)
+            {
+                itemAttributes.Add(item.Key, item.Value);
+            }
 
             var previousText = PreviousText ?? S["<"];
             var nextText = NextText ?? S[">"];

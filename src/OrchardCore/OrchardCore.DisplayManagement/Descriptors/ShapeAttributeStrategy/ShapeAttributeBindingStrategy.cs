@@ -168,12 +168,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 throw new InvalidOperationException("Output is no more a valid Shape method parameter. Return an IHtmlContent instead.");
             }
 
-            if (parameter.Name == "Attributes")
-            {
-                var shape = (IShape)displayContext.Value;
-                return shape.Properties["Attributes"];
-            }
-
             var getter = _getters.GetOrAdd(parameter.Name, n =>
                 CallSite<Func<CallSite, object, dynamic>>.Create(
                 Microsoft.CSharp.RuntimeBinder.Binder.GetMember(

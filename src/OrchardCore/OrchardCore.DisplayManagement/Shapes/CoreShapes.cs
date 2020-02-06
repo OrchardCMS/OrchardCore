@@ -124,7 +124,6 @@ namespace OrchardCore.DisplayManagement.Shapes
                     // Intializes the common properties of a List shape
                     // such that views can safely add values to them.
                     list.ItemClasses = new List<string>();
-                    list.Attributes = new Dictionary<string, string>();
                     list.ItemAttributes = new Dictionary<string, string>();
                 });
         }
