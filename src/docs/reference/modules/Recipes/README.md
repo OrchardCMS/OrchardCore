@@ -107,7 +107,8 @@ The Content step allows you to import some content types.
 
 ### Lucene Step
 
-The Lucene index step allows you to run the Lucene indexation of content types.
+The Lucene index step allows you to run the Lucene indexation of content types.  
+You can also set the default Lucene Settings.
 
 ```json
     {
@@ -125,6 +126,16 @@ The Lucene index step allows you to run the Lucene indexation of content types.
           }
         }
       ]
+    },
+    {
+      // Create the search settings.
+      "name": "Settings",
+      "LuceneSettings": {
+        "SearchIndex": "Search",
+        "DefaultSearchFields": [
+          "Content.ContentItem.FullText"
+        ]
+      }
     }
 ```
 
