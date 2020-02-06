@@ -8,11 +8,11 @@ using OrchardCore.Modules;
 namespace OrchardCore.Lucene
 {
     [Feature("OrchardCore.Lucene.ContentPicker")]
-    public class LuceneContentPickerShape : IShapeAttributeProvider
+    public class LuceneContentPickerShapeProvider : IShapeAttributeProvider
     {
-        private readonly IStringLocalizer<LuceneContentPickerShape> S;
+        private readonly IStringLocalizer<LuceneContentPickerShapeProvider> S;
 
-        public LuceneContentPickerShape(IStringLocalizer<LuceneContentPickerShape> stringLocalizer)
+        public LuceneContentPickerShapeProvider(IStringLocalizer<LuceneContentPickerShapeProvider> stringLocalizer)
         {
             S = stringLocalizer;
         }
