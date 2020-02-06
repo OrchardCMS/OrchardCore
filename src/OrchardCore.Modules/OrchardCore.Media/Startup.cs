@@ -6,21 +6,24 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
+using OrchardCore.Media.Controllers;
+using OrchardCore.Media.Core;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Fields;
@@ -35,13 +38,14 @@ using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
+using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
 using SixLabors.Memory;
 
@@ -49,78 +53,67 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
-        /// <summary>
-        /// The request path used to route asset files
-        /// </summary>
-        public static readonly PathString AssetsRequestPath = new PathString("/media");
+        private readonly AdminOptions _adminOptions;
 
-        /// <summary>
-        /// The path in the tenant's App_Data folder containing the assets
-        /// </summary>
-        private const string AssetsPath = "Media";
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
 
-        private readonly int _maxBrowserCacheDays;
-        private readonly int _maxCacheDays;
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
         }
 
-        public Startup(IShellConfiguration shellConfiguration)
-        {
-            var configurationSection = shellConfiguration.GetSection("OrchardCore.Media");
-
-            _maxBrowserCacheDays = configurationSection.GetValue("MaxBrowserCacheDays", 30);
-            _maxCacheDays = configurationSection.GetValue("MaxCacheDays", 365);
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
+
             services.AddSingleton<IMediaFileProvider>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+                var options = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
 
-                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
+                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, options.AssetsPath);
 
                 if (!Directory.Exists(mediaPath))
                 {
                     Directory.CreateDirectory(mediaPath);
                 }
-                return new MediaFileProvider(AssetsRequestPath, mediaPath);
+                return new MediaFileProvider(options.AssetsRequestPath, mediaPath);
             });
 
-            services.AddSingleton<IStaticFileProvider>(serviceProvider =>
-            {
-                return serviceProvider.GetRequiredService<IMediaFileProvider>();
-            });
+            services.AddSingleton<IStaticFileProvider, IMediaFileProvider>(serviceProvider =>
+                serviceProvider.GetRequiredService<IMediaFileProvider>()
+            );
 
             services.AddSingleton<IMediaFileStore>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+                var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
 
-                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
+                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsPath);
                 var fileStore = new FileSystemStore(mediaPath);
 
-                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsRequestPath);
+                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
                     .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
 
                 if (originalPathBase.HasValue)
                 {
-                    mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
+                    mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                 }
 
-                return new MediaFileStore(fileStore, mediaUrlBase);
+                return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-
-            services.AddSingleton<ContentPart, ImageMediaPart>();
+            services.AddContentPart<ImageMediaPart>();
             services.AddMedia();
 
             services.AddLiquidFilter<MediaUrlFilter>("asset_url");
@@ -129,54 +122,28 @@ namespace OrchardCore.Media
 
             // ImageSharp
 
-            services.AddImageSharpCore(options =>
-            {
-                options.Configuration = Configuration.Default;
-                options.MaxBrowserCacheDays = _maxBrowserCacheDays;
-                options.MaxCacheDays = _maxCacheDays;
-                options.CachedNameLength = 12;
-                options.OnParseCommands = validation =>
-                {
-                    // Force some parameters to prevent disk filling.
-                    // For more advanced resize parameters the usage of profiles will be necessary.
-                    // This can be done with a custom IImageWebProcessor implementation that would 
-                    // accept profile names.
+            // Add ImageSharp Configuration first, to override ImageSharp defaults.
+            services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
 
-                    validation.Commands.Remove(ResizeWebProcessor.Compand);
-                    validation.Commands.Remove(ResizeWebProcessor.Sampler);
-                    validation.Commands.Remove(ResizeWebProcessor.Xy);
-                    validation.Commands.Remove(ResizeWebProcessor.Anchor);
-                    validation.Commands.Remove(BackgroundColorWebProcessor.Color);
-
-                    if (validation.Commands.Count > 0)
-                    {
-                        if (!validation.Commands.ContainsKey(ResizeWebProcessor.Mode))
-                        {
-                            validation.Commands[ResizeWebProcessor.Mode] = "max";
-                        }
-                    }
-                };
-                options.OnProcessed = _ => { };
-                options.OnPrepareResponse = _ => { };
-            })
-
-            .SetRequestParser<QueryCollectionRequestParser>()
-            .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
-            .SetCache<PhysicalFileSystemCache>()
-            .SetCacheHash<CacheHash>()
-            .AddProvider<MediaResizingFileProvider>()
-            .AddProcessor<ResizeWebProcessor>()
-            .AddProcessor<FormatWebProcessor>()
-            .AddProcessor<ImageVersionProcessor>()
-            .AddProcessor<BackgroundColorWebProcessor>();
+            services.AddImageSharpCore()
+                .SetRequestParser<QueryCollectionRequestParser>()
+                .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
+                .SetCache<PhysicalFileSystemCache>()
+                .SetCacheHash<CacheHash>()
+                .AddProvider<MediaResizingFileProvider>()
+                .AddProcessor<ResizeWebProcessor>()
+                .AddProcessor<FormatWebProcessor>()
+                .AddProcessor<ImageVersionProcessor>()
+                .AddProcessor<BackgroundColorWebProcessor>();
 
             // Media Field
-            services.AddSingleton<ContentField, MediaField>();
+            services.AddContentField<MediaField>();
             services.AddScoped<IContentFieldDisplayDriver, MediaFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
             services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
             services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
+            services.AddScoped<IDataMigration, Migrations>();
 
             services.AddRecipeExecutionStep<MediaStep>();
 
@@ -187,25 +154,152 @@ namespace OrchardCore.Media
             services.AddTagHelpers<ImageResizeTagHelper>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
+            var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
+            var mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
 
-            // ImageSharp before the static file provider
+            // FileStore middleware before ImageSharp, but only if a remote storage module has registered a cache provider.
+            if (mediaFileStoreCache != null)
+            {
+                app.UseMiddleware<MediaFileStoreResolverMiddleware>();
+            }
+
+            // ImageSharp before the static file provider.
             app.UseImageSharp();
+
+            // Use the same cache control header as ImageSharp does for resized images.
+            var cacheControl = "public, must-revalidate, max-age=" + TimeSpan.FromDays(mediaOptions.MaxBrowserCacheDays).TotalSeconds.ToString();
 
             app.UseStaticFiles(new StaticFileOptions
             {
-                // The tenant's prefix is already implied by the infrastructure
-                RequestPath = AssetsRequestPath,
+                // The tenant's prefix is already implied by the infrastructure.
+                RequestPath = mediaOptions.AssetsRequestPath,
                 FileProvider = mediaFileProvider,
                 ServeUnknownFileTypes = true,
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
+                }
             });
+
+            var adminControllerName = typeof(AdminController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "Media.Index",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Media.MediaApplication",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/MediaApplication",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.MediaApplication) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Media.GetFolders",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/GetFolders",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.GetFolders) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Media.GetMediaItems",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/GetMediaItems",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.GetMediaItems) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Media.GetMediaItem",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/GetMediaItem",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.GetMediaItem) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Media.Upload",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/Upload",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Upload) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Media.DeleteFolder",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/DeleteFolder",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.DeleteFolder) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Media.DeleteMedia",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/DeleteMedia",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.DeleteMedia) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Media.MoveMedia",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/MoveMedia",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.MoveMedia) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Media.DeleteMediaList",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/DeleteMediaList",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.DeleteMediaList) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Media.MoveMediaList",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/MoveMediaList",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.MoveMediaList) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Media.CreateFolder",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/CreateFolder",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.CreateFolder) }
+            );
+
+            var mediaCacheControllerName = typeof(MediaCacheController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "MediaCache.Index",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/MediaCache",
+                defaults: new { controller = mediaCacheControllerName, action = nameof(MediaCacheController.Index) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "MediaCache.Purge",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/MediaCache/Purge",
+                defaults: new { controller = mediaCacheControllerName, action = nameof(MediaCacheController.Purge) }
+            );
         }
 
-        private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings)
+        private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
         {
-            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
+            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
+        }
+    }
+
+    [Feature("OrchardCore.Media.Cache")]
+    public class MediaCacheStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IPermissionProvider, MediaCachePermissions>();
+            services.AddScoped<INavigationProvider, MediaCacheAdminMenu>();
         }
     }
 

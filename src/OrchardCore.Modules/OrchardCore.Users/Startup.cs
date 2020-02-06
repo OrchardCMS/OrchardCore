@@ -1,11 +1,13 @@
 using System;
+using System.Web;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -14,12 +16,14 @@ using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
+using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
@@ -35,27 +39,73 @@ namespace OrchardCore.Users
         private const string LoginPath = "Login";
         private const string ChangePasswordPath = "ChangePassword";
 
+        private readonly AdminOptions _adminOptions;
         private readonly string _tenantName;
 
-        public Startup(ShellSettings shellSettings)
+        public Startup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
         {
+            _adminOptions = adminOptions.Value;
             _tenantName = shellSettings.Name;
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            var accountControllerName = typeof(AccountController).ControllerName();
+
+            routes.MapAreaControllerRoute(
                 name: "Login",
                 areaName: "OrchardCore.Users",
-                template: LoginPath,
-                defaults: new { controller = "Account", action = "Login" }
+                pattern: LoginPath,
+                defaults: new { controller = accountControllerName, action = nameof(AccountController.Login) }
             );
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ChangePassword",
                 areaName: "OrchardCore.Users",
-                template: ChangePasswordPath,
-                defaults: new { controller = "Account", action = "ChangePassword" }
+                pattern: ChangePasswordPath,
+                defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePassword) }
             );
+
+            routes.MapAreaControllerRoute(
+                name: "UsersLogOff",
+                areaName: "OrchardCore.Users",
+                pattern: "/Users/LogOff",
+                defaults: new { controller = accountControllerName, action = nameof(AccountController.LogOff) }
+            );
+
+            var adminControllerName = typeof(AdminController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "UsersIndex",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Index",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersCreate",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Create",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersDelete",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Delete/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersEdit",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersEditPassword",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPassword) }
+            );
+
+            builder.UseAuthorization();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -84,19 +134,20 @@ namespace OrchardCore.Users
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.Cookie.Name = "orchauth_" + _tenantName;
+                options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
 
                 // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
                 // set by the pipeline and comming from the request 'PathBase' which already ends with the
                 // tenant prefix but may also start by a path related e.g to a virtual folder.
 
                 options.LoginPath = "/" + LoginPath;
-                options.AccessDeniedPath = options.LoginPath;
+                options.AccessDeniedPath = "/Error/403";
 
                 // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
                 // Note: it has no practical impact on the security of the site since all endpoints are always
                 // protected by antiforgery checks, that are enforced with or without this setting being changed.
-                options.Cookie.SameSite = SameSiteMode.None;
+                // 2019-12-10; Removed, since https://github.com/aspnet/Announcements/issues/390
+                // options.Cookie.SameSite = SameSiteMode.None;
             });
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
@@ -140,6 +191,40 @@ namespace OrchardCore.Users
         }
     }
 
+    [Feature("OrchardCore.Users.ChangeEmail")]
+    public class ChangeEmailStartup : StartupBase
+    {
+        private const string ChangeEmailPath = "ChangeEmail";
+        private const string ChangeEmailConfirmationPath = "ChangeEmailConfirmation";
+
+        static ChangeEmailStartup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<ChangeEmailViewModel>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "ChangeEmail",
+                areaName: "OrchardCore.Users",
+                pattern: ChangeEmailPath,
+                defaults: new { controller = "ChangeEmail", action = "Index" }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "ChangeEmailConfirmation",
+                areaName: "OrchardCore.Users",
+                pattern: ChangeEmailConfirmationPath,
+                defaults: new { controller = "ChangeEmail", action = "ChangeEmailConfirmation" }
+            );
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
+        }
+    }
 
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationStartup : StartupBase
@@ -151,12 +236,12 @@ namespace OrchardCore.Users
             TemplateContext.GlobalMemberAccessStrategy.Register<ConfirmEmailViewModel>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Register",
                 areaName: "OrchardCore.Users",
-                template: RegisterPath,
+                pattern: RegisterPath,
                 defaults: new { controller = "Registration", action = "Register" }
             );
         }
@@ -181,30 +266,30 @@ namespace OrchardCore.Users
             TemplateContext.GlobalMemberAccessStrategy.Register<LostPasswordViewModel>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ForgotPassword",
                 areaName: "OrchardCore.Users",
-                template: ForgotPasswordPath,
+                pattern: ForgotPasswordPath,
                 defaults: new { controller = "ResetPassword", action = "ForgotPassword" }
             );
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ForgotPasswordConfirmation",
                 areaName: "OrchardCore.Users",
-                template: ForgotPasswordConfirmationPath,
+                pattern: ForgotPasswordConfirmationPath,
                 defaults: new { controller = "ResetPassword", action = "ForgotPasswordConfirmation" }
             );
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ResetPassword",
                 areaName: "OrchardCore.Users",
-                template: ResetPasswordPath,
+                pattern: ResetPasswordPath,
                 defaults: new { controller = "ResetPassword", action = "ResetPassword" }
             );
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ResetPasswordConfirmation",
                 areaName: "OrchardCore.Users",
-                template: ResetPasswordConfirmationPath,
+                pattern: ResetPasswordConfirmationPath,
                 defaults: new { controller = "ResetPassword", action = "ResetPasswordConfirmation" }
             );
         }

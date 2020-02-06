@@ -1,8 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\OrchardCore.Localization\ModularPoFileLocationProvider.cs" Link="ModularPoFileLocationProvider.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
@@ -14,10 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.DataProtection" />
-    <PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" />
+    <PackageReference Include="MailKit" />
   </ItemGroup>
 
 </Project>

@@ -6,12 +6,11 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
-
     public class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<ContentPickerFieldSettings>("ContentPickerFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
+            return Initialize<ContentPickerFieldSettings>("ContentPickerFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
                 .Location("Content");
         }
 
@@ -21,8 +20,7 @@ namespace OrchardCore.ContentFields.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            context.Builder.MergeSettings(model);
-            context.Builder.WithSetting(nameof(ContentPickerFieldSettings.DisplayedContentTypes), model.DisplayedContentTypes);
+            context.Builder.WithSettings(model);
 
             return Edit(partFieldDefinition);
         }

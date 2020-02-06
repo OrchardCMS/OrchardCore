@@ -8,7 +8,7 @@
 
 <form asp-action="AddPartsTo">
     @Html.ValidationSummary()
-    <fieldset class="form-group">
+    <div class="form-group">
         <ul class="list-group">
             @foreach (var partSelection in Model.PartSelections)
             {
@@ -24,9 +24,9 @@
                 i++;
             }
         </ul>
-    </fieldset>
-    <fieldset class="form-group">
+    </div>
+    <div class="form-group">
         <button class="btn btn-primary" type="submit">@T["Save"]</button>
         <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary">@T["Cancel"]</a>
-    </fieldset>
+    </div>
 </form>

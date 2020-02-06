@@ -23,7 +23,9 @@ namespace OrchardCore.FileStorage.FileSystem
             var fileInfo = new PhysicalFileInfo(new FileInfo(physicalPath));
 
             if (fileInfo.Exists)
+            {
                 return Task.FromResult<IFileStoreEntry>(new FileSystemStoreEntry(path, fileInfo));
+            }
 
             return Task.FromResult<IFileStoreEntry>(null);
         }
@@ -35,7 +37,9 @@ namespace OrchardCore.FileStorage.FileSystem
             var directoryInfo = new PhysicalDirectoryInfo(new DirectoryInfo(physicalPath));
 
             if (directoryInfo.Exists)
+            {
                 return Task.FromResult<IFileStoreEntry>(new FileSystemStoreEntry(path, directoryInfo));
+            }
 
             return Task.FromResult<IFileStoreEntry>(null);
         }
@@ -82,10 +86,14 @@ namespace OrchardCore.FileStorage.FileSystem
             var physicalPath = GetPhysicalPath(path);
 
             if (File.Exists(physicalPath))
+            {
                 throw new FileStoreException($"Cannot create directory because the path '{path}' already exists and is a file.");
+            }
 
             if (Directory.Exists(physicalPath))
+            {
                 return Task.FromResult(false);
+            }
 
             Directory.CreateDirectory(physicalPath);
 
@@ -97,7 +105,9 @@ namespace OrchardCore.FileStorage.FileSystem
             var physicalPath = GetPhysicalPath(path);
 
             if (!File.Exists(physicalPath))
+            {
                 return Task.FromResult(false);
+            }
 
             File.Delete(physicalPath);
 
@@ -109,7 +119,9 @@ namespace OrchardCore.FileStorage.FileSystem
             var physicalPath = GetPhysicalPath(path);
 
             if (!Directory.Exists(physicalPath))
+            {
                 return Task.FromResult(false);
+            }
 
             Directory.Delete(physicalPath, recursive: true);
 
@@ -121,12 +133,16 @@ namespace OrchardCore.FileStorage.FileSystem
             var physicalOldPath = GetPhysicalPath(oldPath);
 
             if (!File.Exists(physicalOldPath))
+            {
                 throw new FileStoreException($"Cannot move file '{oldPath}' because it does not exist.");
+            }
 
             var physicalNewPath = GetPhysicalPath(newPath);
 
             if (File.Exists(physicalNewPath) || Directory.Exists(physicalNewPath))
+            {
                 throw new FileStoreException($"Cannot move file because the new path '{newPath}' already exists.");
+            }
 
             File.Move(physicalOldPath, physicalNewPath);
 
@@ -138,12 +154,16 @@ namespace OrchardCore.FileStorage.FileSystem
             var physicalSrcPath = GetPhysicalPath(srcPath);
 
             if (!File.Exists(physicalSrcPath))
+            {
                 throw new FileStoreException($"The file '{srcPath}' does not exist.");
+            }
 
             var physicalDstPath = GetPhysicalPath(dstPath);
 
             if (File.Exists(physicalDstPath) || Directory.Exists(physicalDstPath))
+            {
                 throw new FileStoreException($"Cannot copy file because the destination path '{dstPath}' already exists.");
+            }
 
             File.Copy(GetPhysicalPath(srcPath), GetPhysicalPath(dstPath));
 
@@ -155,22 +175,40 @@ namespace OrchardCore.FileStorage.FileSystem
             var physicalPath = GetPhysicalPath(path);
 
             if (!File.Exists(physicalPath))
+            {
                 throw new FileStoreException($"Cannot get file stream because the file '{path}' does not exist.");
+            }
 
             var stream = File.OpenRead(physicalPath);
 
             return Task.FromResult<Stream>(stream);
         }
 
-        public async Task CreateFileFromStream(string path, Stream inputStream, bool overwrite = false)
+        public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
+        {
+            if (!File.Exists(fileStoreEntry.Path))
+            {
+                throw new FileStoreException($"Cannot get file stream because the file '{fileStoreEntry.Path}' does not exist.");
+            }
+
+            var stream = File.OpenRead(fileStoreEntry.Path);
+
+            return Task.FromResult<Stream>(stream);
+        }
+
+        public async Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
             var physicalPath = GetPhysicalPath(path);
 
             if (!overwrite && File.Exists(physicalPath))
+            {
                 throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
+            }
 
             if (Directory.Exists(physicalPath))
+            {
                 throw new FileStoreException($"Cannot create file '{path}' because it already exists as a directory.");
+            }
 
             // Create directory path if it doesn't exist.
             var physicalDirectoryPath = Path.GetDirectoryName(physicalPath);
@@ -194,11 +232,13 @@ namespace OrchardCore.FileStorage.FileSystem
             path = this.NormalizePath(path);
 
             var physicalPath = String.IsNullOrEmpty(path) ? _fileSystemPath : Path.Combine(_fileSystemPath, path);
-            
+
             // Verify that the resulting path is inside the root file system path.
             var pathIsAllowed = Path.GetFullPath(physicalPath).StartsWith(_fileSystemPath, StringComparison.OrdinalIgnoreCase);
             if (!pathIsAllowed)
+            {
                 throw new FileStoreException($"The path '{path}' resolves to a physical path outside the file system store root.");
+            }
 
             return physicalPath;
         }

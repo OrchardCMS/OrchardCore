@@ -62,10 +62,13 @@ namespace OrchardCore.Content.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(ContentItem newContentItem, bool draft = false)
+        public async Task<IActionResult> Post(ContentItem model, bool draft = false)
         {
-            var contentItem = await _contentManager.GetAsync(newContentItem.ContentItemId, VersionOptions.DraftRequired);
+            // It is really important to keep the proper method calls order with the ContentManager
+            // so that all event handlers gets triggered in the right sequence.
             
+            var contentItem = await _contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);
+
             if (contentItem == null)
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent))
@@ -73,7 +76,10 @@ namespace OrchardCore.Content.Controllers
                     return Unauthorized();
                 }
 
-                await _contentManager.CreateAsync(newContentItem, VersionOptions.DraftRequired);
+                var newContentItem = await _contentManager.NewAsync(model.ContentType);
+                newContentItem.Merge(model);
+
+                await _contentManager.UpdateAndCreateAsync(newContentItem, draft ? VersionOptions.DraftRequired : VersionOptions.Published);
 
                 contentItem = newContentItem;
             }
@@ -83,31 +89,14 @@ namespace OrchardCore.Content.Controllers
                 {
                     return Unauthorized();
                 }
-            }
-            
 
-            if (contentItem != newContentItem)
-            {
-                contentItem.DisplayText = newContentItem.DisplayText;
-                contentItem.ModifiedUtc = newContentItem.ModifiedUtc;
-                contentItem.PublishedUtc = newContentItem.PublishedUtc;
-                contentItem.CreatedUtc = newContentItem.CreatedUtc;
-                contentItem.Owner = newContentItem.Owner;
-                contentItem.Author = newContentItem.Author;
-
-                contentItem.Apply(newContentItem);
-
+                contentItem.Merge(model);
                 await _contentManager.UpdateAsync(contentItem);
-            }
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (!draft)
-            {
-                await _contentManager.PublishAsync(contentItem);
+                if (!draft)
+                {
+                    await _contentManager.PublishAsync(contentItem); 
+                }
             }
 
             return Ok(contentItem);

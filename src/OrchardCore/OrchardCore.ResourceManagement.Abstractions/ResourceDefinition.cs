@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
@@ -98,7 +99,7 @@ namespace OrchardCore.ResourceManagement
         {
             if (String.IsNullOrEmpty(url))
             {
-                throw new ArgumentNullException("url");
+                ThrowArgumentNullException(nameof(url));
             }
             Url = url;
             if (urlDebug != null)
@@ -127,7 +128,7 @@ namespace OrchardCore.ResourceManagement
         {
             if (String.IsNullOrEmpty(cdnIntegrity))
             {
-                throw new ArgumentNullException("cdnUrl");
+                ThrowArgumentNullException(nameof(cdnIntegrity));
             }
             CdnIntegrity = cdnIntegrity;
             if (cdnDebugIntegrity != null)
@@ -141,7 +142,7 @@ namespace OrchardCore.ResourceManagement
         {
             if (String.IsNullOrEmpty(cdnUrl))
             {
-                throw new ArgumentNullException("cdnUrl");
+                ThrowArgumentNullException(nameof(cdnUrl));
             }
             UrlCdn = cdnUrl;
             if (cdnUrlDebug != null)
@@ -182,6 +183,18 @@ namespace OrchardCore.ResourceManagement
         }
 
         public ResourceDefinition SetDependencies(params string[] dependencies)
+        {
+            if (Dependencies == null)
+            {
+                Dependencies = new List<string>();
+            }
+
+            Dependencies.AddRange(dependencies);
+
+            return this;
+        }
+
+        public ResourceDefinition SetDependencies(List<string> dependencies)
         {
             if (Dependencies == null)
             {
@@ -327,15 +340,20 @@ namespace OrchardCore.ResourceManagement
             }
 
             var that = (ResourceDefinition)obj;
-            return string.Equals(that.Name, Name, StringComparison.Ordinal) &&
-                string.Equals(that.Type, Type, StringComparison.Ordinal) &&
-                string.Equals(that.Version, Version, StringComparison.Ordinal);
+            return string.Equals(that.Name, Name) &&
+                string.Equals(that.Type, Type) &&
+                string.Equals(that.Version, Version);
         }
 
         public override int GetHashCode()
         {
-            return (Name ?? "").GetHashCode() ^ (Type ?? "").GetHashCode();
+            return HashCode.Combine(Name, Type);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowArgumentNullException(string paramName)
+        {
+            throw new ArgumentNullException(paramName);
+        }
     }
 }

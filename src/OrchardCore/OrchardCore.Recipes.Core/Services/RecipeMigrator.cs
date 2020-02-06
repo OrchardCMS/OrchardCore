@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Extensions;
 
@@ -12,13 +12,13 @@ namespace OrchardCore.Recipes.Services
     {
         private readonly IRecipeReader _recipeReader;
         private readonly IRecipeExecutor _recipeExecutor;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         public RecipeMigrator(
             IRecipeReader recipeReader,
             IRecipeExecutor recipeExecutor,
-            IHostingEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             ITypeFeatureProvider typeFeatureProvider)
         {
             _recipeReader = recipeReader;

@@ -7,25 +7,32 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Contents.Controllers
 {
-    public class ItemController : Controller, IUpdateModel
+    public class ItemController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public ItemController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
-            IAuthorizationService authorizationService
-            )
+            IAuthorizationService authorizationService,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _authorizationService = authorizationService;
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
+            _updateModelAccessor = updateModelAccessor;
         }
 
         public async Task<IActionResult> Display(string contentItemId)
         {
+            if (contentItemId == null)
+            {
+                return NotFound();
+            }
+
             var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
@@ -35,10 +42,10 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return Unauthorized();
+                return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
 
             return View(model);
         }
@@ -61,10 +68,10 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PreviewContent, contentItem))
             {
-                return Unauthorized();
+                return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
 
             return View(model);
         }

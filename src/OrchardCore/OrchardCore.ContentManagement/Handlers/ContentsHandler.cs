@@ -22,12 +22,13 @@ namespace OrchardCore.ContentManagement.Handlers
             {
                 context.ContentItem.CreatedUtc = utcNow;
             }
+
             context.ContentItem.ModifiedUtc = utcNow;
 
             var httpContext = _httpContextAccessor.HttpContext;
             if (context.ContentItem.Owner == null && (httpContext?.User?.Identity?.IsAuthenticated ?? false))
             {
-                context.ContentItem.Owner = httpContext.User.Identity.Name;
+                context.ContentItem.Owner = context.ContentItem.Author = httpContext.User.Identity.Name;
             }
 
             return Task.CompletedTask;
@@ -71,6 +72,7 @@ namespace OrchardCore.ContentManagement.Handlers
             }
 
             context.ContentItem.PublishedUtc = utcNow;
+
             return Task.CompletedTask;
         }
 

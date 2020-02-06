@@ -21,6 +21,11 @@
             font-size: 0.875rem;
             padding: 0;
         }
+
+        // show horizontal-scrollbar to keep it usable even on deeply nested directories        
+        + ol {
+            overflow-x: auto;
+        }
     }
 
     li.selected > div:not(.treeroot) {
@@ -33,7 +38,7 @@
     }
 
     li div {
-        height: 40px;
+        min-height: 40px;
         padding: 0;
         font-size: 0.875rem;
 
@@ -91,7 +96,7 @@
         }
 
         .folder-actions {
-            align-self: flex-end;
+            align-self: stretch;
             display: flex;
             align-items: center;
             font-size: 0.875rem;

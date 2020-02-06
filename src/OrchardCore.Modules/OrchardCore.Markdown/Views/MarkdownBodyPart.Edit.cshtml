@@ -1,14 +1,16 @@
 @model MarkdownBodyPartViewModel
+@using OrchardCore.ContentLocalization
+@using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Markdown.ViewModels;
 @using OrchardCore.Markdown.Settings;
-@using OrchardCore.ContentManagement.Metadata.Models
 
 @{
-    var settings = Model.TypePartDefinition.Settings.ToObject<MarkdownBodyPartSettings>();
+    var settings = Model.TypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+    var culture = await Orchard.GetContentCultureAsync(Model.MarkdownBodyPart.ContentItem);
 }
 
-<fieldset class="form-group">
-    <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
-    <textarea asp-for="Source" rows="5" class="form-control content-preview-text"></textarea>
+<div class="form-group">
+    <label asp-for="Markdown">@Model.TypePartDefinition.DisplayName()</label>
+    <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
     <span class="hint">@T["The body of the content item, in Markdown format."]</span>
-</fieldset>
+</div>

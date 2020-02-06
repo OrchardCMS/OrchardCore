@@ -1,6 +1,6 @@
 /*!
- * Start Bootstrap - Agency v5.0.2 (https://startbootstrap.com/template-overviews/agency)
- * Copyright 2013-2018 Start Bootstrap
+ * Start Bootstrap - Agency v5.2.2 (https://startbootstrap.com/template-overviews/agency)
+ * Copyright 2013-2020 Start Bootstrap
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-agency/blob/master/LICENSE)
  */
 
@@ -35,17 +35,17 @@ h6 {
   font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-section {
+.page-section {
   padding: 100px 0;
 }
 
-section h2.section-heading {
+.page-section h2.section-heading {
   font-size: 40px;
   margin-top: 0;
   margin-bottom: 15px;
 }
 
-section h3.section-subheading {
+.page-section h3.section-subheading {
   font-size: 16px;
   font-weight: 400;
   font-style: italic;
@@ -58,6 +58,28 @@ section h3.section-subheading {
   section {
     padding: 150px 0;
   }
+}
+
+::-moz-selection {
+  background: #fed136;
+  text-shadow: none;
+}
+
+::selection {
+  background: #fed136;
+  text-shadow: none;
+}
+
+img::-moz-selection {
+  background: transparent;
+}
+
+img::selection {
+  background: transparent;
+}
+
+img::-moz-selection {
+  background: transparent;
 }
 
 .btn {
@@ -82,30 +104,7 @@ section h3.section-subheading {
 }
 
 .btn-primary:active, .btn-primary:focus {
-  -webkit-box-shadow: 0 0 0 0.2rem rgba(254, 209, 55, 0.5) !important;
   box-shadow: 0 0 0 0.2rem rgba(254, 209, 55, 0.5) !important;
-}
-
-::-moz-selection {
-  background: #fed136;
-  text-shadow: none;
-}
-
-::selection {
-  background: #fed136;
-  text-shadow: none;
-}
-
-img::-moz-selection {
-  background: transparent;
-}
-
-img::selection {
-  background: transparent;
-}
-
-img::-moz-selection {
-  background: transparent;
 }
 
 #mainNav {
@@ -149,14 +148,12 @@ img::-moz-selection {
   #mainNav {
     padding-top: 25px;
     padding-bottom: 25px;
-    -webkit-transition: padding-top 0.3s, padding-bottom 0.3s;
     transition: padding-top 0.3s, padding-bottom 0.3s;
     border: none;
     background-color: transparent;
   }
   #mainNav .navbar-brand {
     font-size: 1.75em;
-    -webkit-transition: all 0.3s;
     transition: all 0.3s;
   }
   #mainNav .navbar-nav .nav-item .nav-link {
@@ -247,7 +244,6 @@ header.masthead .intro-text .intro-heading {
   position: absolute;
   width: 100%;
   height: 100%;
-  -webkit-transition: all ease 0.5s;
   transition: all ease 0.5s;
   opacity: 0;
   background: rgba(254, 209, 54, 0.9);
@@ -305,10 +301,6 @@ header.masthead .intro-text .intro-heading {
   #portfolio .portfolio-item {
     margin: 0 0 30px;
   }
-}
-
-.portfolio-modal {
-  padding-right: 0px !important;
 }
 
 .portfolio-modal .modal-dialog {
@@ -371,7 +363,6 @@ header.masthead .intro-text .intro-heading {
   height: 75px;
   margin-left: 35px;
   /* IE 9 */
-  -webkit-transform: rotate(45deg);
   transform: rotate(45deg);
   background-color: #212529;
 }
@@ -382,7 +373,6 @@ header.masthead .intro-text .intro-heading {
   width: 1px;
   height: 75px;
   /* IE 9 */
-  -webkit-transform: rotate(90deg);
   transform: rotate(90deg);
   background-color: #212529;
 }
@@ -581,7 +571,7 @@ header.masthead .intro-text .intro-heading {
 .team-member img {
   width: 225px;
   height: 225px;
-  border: 7px solid #fff;
+  border: 7px solid rgba(0, 0, 0, 0.1);
 }
 
 .team-member h4 {
@@ -624,7 +614,6 @@ section#contact .form-group textarea.form-control {
 
 section#contact .form-control:focus {
   border-color: #fed136;
-  -webkit-box-shadow: none;
   box-shadow: none;
 }
 
@@ -652,19 +641,19 @@ section#contact :-ms-input-placeholder {
   font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-footer {
+.footer {
   padding: 25px 0;
   text-align: center;
 }
 
-footer span.copyright {
+.footer span.copyright {
   font-size: 90%;
   line-height: 40px;
   text-transform: none;
   font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-footer ul.quicklinks {
+.footer ul.quicklinks {
   font-size: 90%;
   line-height: 40px;
   margin-bottom: 0;
@@ -682,7 +671,6 @@ ul.social-buttons li a {
   display: block;
   width: 50px;
   height: 50px;
-  -webkit-transition: all 0.3s;
   transition: all 0.3s;
   color: white;
   border-radius: 100%;

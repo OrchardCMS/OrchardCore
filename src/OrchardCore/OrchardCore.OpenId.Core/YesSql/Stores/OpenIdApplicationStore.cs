@@ -2,9 +2,11 @@ using System;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Stores;
 using OrchardCore.OpenId.YesSql.Indexes;
 using OrchardCore.OpenId.YesSql.Models;
@@ -175,8 +177,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return ImmutableArray.CreateRange(
-                await _session.Query<TApplication, OpenIdApplicationByPostLogoutRedirectUriIndex>(
-                    index => index.PostLogoutRedirectUri == address).ListAsync());
+                await _session.Query<TApplication, OpenIdAppByLogoutUriIndex>(
+                    index => index.LogoutRedirectUri == address).ListAsync());
         }
 
         /// <summary>
@@ -198,7 +200,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return ImmutableArray.CreateRange(
-                await _session.Query<TApplication, OpenIdApplicationByRedirectUriIndex>(
+                await _session.Query<TApplication, OpenIdAppByRedirectUriIndex>(
                     index => index.RedirectUri == address).ListAsync());
         }
 
@@ -687,7 +689,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task UpdateAsync(TApplication application, CancellationToken cancellationToken)
+        public virtual async Task UpdateAsync(TApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -696,9 +698,19 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(application);
+            _session.Save(application, checkConcurrency: true);
 
-            return _session.CommitAsync();
+            try
+            {
+                await _session.CommitAsync();
+            }
+            catch (ConcurrencyException exception)
+            {
+                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
+                    .AppendLine("The application was concurrently updated and cannot be persisted in its current state.")
+                    .Append("Reload the application from the database and retry the operation.")
+                    .ToString(), exception);
+            }
         }
 
         public virtual ValueTask<ImmutableArray<string>> GetRolesAsync(TApplication application, CancellationToken cancellationToken)
@@ -718,7 +730,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
             }
 
-            return ImmutableArray.CreateRange(await _session.Query<TApplication, OpenIdApplicationByRoleNameIndex>(index => index.RoleName == role).ListAsync());
+            return ImmutableArray.CreateRange(await _session.Query<TApplication, OpenIdAppByRoleNameIndex>(index => index.RoleName == role).ListAsync());
         }
 
         public virtual Task SetRolesAsync(TApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)

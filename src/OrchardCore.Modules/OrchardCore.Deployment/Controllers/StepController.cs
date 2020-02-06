@@ -17,7 +17,7 @@ using YesSql;
 namespace OrchardCore.Deployment.Controllers
 {
     [Admin]
-    public class StepController : Controller, IUpdateModel
+    public class StepController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<DeploymentStep> _displayManager;
@@ -25,6 +25,9 @@ namespace OrchardCore.Deployment.Controllers
         private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public StepController(
             IAuthorizationService authorizationService,
@@ -33,24 +36,20 @@ namespace OrchardCore.Deployment.Controllers
             ISession session,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            IStringLocalizer<StepController> stringLocalizer,
             IHtmlLocalizer<StepController> htmlLocalizer,
-            INotifier notifier)
+            INotifier notifier,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _displayManager = displayManager;
             _factories = factories;
             _authorizationService = authorizationService;
             _session = session;
             _siteService = siteService;
-            New = shapeFactory;
             _notifier = notifier;
-            T = stringLocalizer;
+            _updateModelAccessor = updateModelAccessor;
+            New = shapeFactory;            
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; set; }
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
 
         public async Task<IActionResult> Create(int id, string type)
         {
@@ -81,7 +80,7 @@ namespace OrchardCore.Deployment.Controllers
                 DeploymentStep = step,
                 DeploymentStepId = step.Id,
                 DeploymentStepType = type,
-                Editor = await _displayManager.BuildEditorAsync(step, updater: this, isNew: true)
+                Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true)
             };
 
             model.Editor.DeploymentStep = step;
@@ -111,7 +110,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(step, updater: this, isNew: true);
+            dynamic editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true);
             editor.DeploymentStep = step;
 
             if (ModelState.IsValid)
@@ -157,7 +156,7 @@ namespace OrchardCore.Deployment.Controllers
                 DeploymentStep = step,
                 DeploymentStepId = step.Id,
                 DeploymentStepType = step.GetType().Name,
-                Editor = await _displayManager.BuildEditorAsync(step, updater: this, isNew: false)
+                Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false)
             };
 
             model.Editor.DeploymentStep = step;
@@ -187,7 +186,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(step, updater: this, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             if (ModelState.IsValid)
             {
