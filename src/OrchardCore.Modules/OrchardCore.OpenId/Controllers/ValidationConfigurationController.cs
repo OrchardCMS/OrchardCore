@@ -51,7 +51,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageValidationSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var settings = await _validationService.GetSettingsAsync();
@@ -66,7 +66,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageValidationSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var settings = await _validationService.GetSettingsAsync();

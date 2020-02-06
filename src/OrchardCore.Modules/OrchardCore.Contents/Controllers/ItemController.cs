@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using System.Threading.Tasks;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Contents.Controllers
 {
@@ -42,7 +43,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
+                return this.ChallengeOrForbid();
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
@@ -68,7 +69,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PreviewContent, contentItem))
             {
-                return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
+                return this.ChallengeOrForbid();
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
