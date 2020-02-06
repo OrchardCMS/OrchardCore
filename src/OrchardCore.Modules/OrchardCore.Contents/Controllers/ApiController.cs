@@ -61,16 +61,12 @@ namespace OrchardCore.Content.Controllers
             return Ok(contentItem);
         }
 
-        /// <summary>
-        /// It is really important to keep the proper method calls order with the ContentManager so
-        /// that all event handlers gets triggered in the right sequence.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="draft"></param>
-        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Post(ContentItem model, bool draft = false)
         {
+            // It is really important to keep the proper method calls order with the ContentManager
+            // so that all event handlers gets triggered in the right sequence.
+            
             var contentItem = await _contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);
 
             if (contentItem == null)
