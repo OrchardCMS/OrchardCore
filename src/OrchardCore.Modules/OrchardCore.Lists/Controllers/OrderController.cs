@@ -1,8 +1,10 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 using OrchardCore.Navigation;
@@ -13,10 +15,12 @@ namespace OrchardCore.Lists.Controllers
     public class OrderController : Controller
     {
         private readonly IContainerService _containerService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public OrderController(IContainerService listPartQueryService)
+        public OrderController(IContainerService containerService, IAuthorizationService authorizationService)
         {
-            _containerService = listPartQueryService;
+            _containerService = containerService;
+            _authorizationService = authorizationService;
         }
 
         [HttpPost]
@@ -55,9 +59,18 @@ namespace OrchardCore.Lists.Controllers
                 return NotFound();
             }
 
+            foreach (var pagedContentItem in pageOfContentItems)
+            {
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, pagedContentItem))
+                {
+                    return Forbid();
+                }
+            }
+
             var currentOrderOfFirstItem = pageOfContentItems.FirstOrDefault().As<ContainedPart>().Order;
 
             var contentItem = pageOfContentItems[oldIndex];
+
             pageOfContentItems.Remove(contentItem);
             pageOfContentItems.Insert(newIndex, contentItem);
 
