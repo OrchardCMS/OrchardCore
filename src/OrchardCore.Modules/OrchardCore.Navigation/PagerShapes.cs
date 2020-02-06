@@ -163,9 +163,7 @@ namespace OrchardCore.Navigation
         }
 
         [Shape]
-        public async Task<IHtmlContent> Pager_Links(Shape Shape, dynamic DisplayAsync, dynamic New,
-            IHtmlHelper Html,
-            DisplayContext DisplayContext,
+        public async Task<IHtmlContent> Pager_Links(Shape Shape, dynamic DisplayAsync, dynamic New, IHtmlHelper Html, DisplayContext DisplayContext,
             int Page,
             int PageSize,
             double TotalItemCount,
@@ -335,7 +333,7 @@ namespace OrchardCore.Navigation
         }
 
         [Shape]
-        public async Task<IHtmlContent> PagerSlim(dynamic Shape, dynamic DisplayAsync, dynamic New, IHtmlHelper Html,
+        public async Task<IHtmlContent> PagerSlim(dynamic Shape, dynamic DisplayAsync, dynamic New, IHtmlHelper Html, DisplayContext DisplayContext,
             string Id,
             object PreviousText,
             object NextText,
@@ -344,8 +342,7 @@ namespace OrchardCore.Navigation
             string Tag,
             string ItemTag,
             IDictionary<string, string> Attributes,
-            IDictionary<string, string> ItemAttributes,
-            Dictionary<string, object> UrlParams)
+            IDictionary<string, string> ItemAttributes)
         {
             Shape.Classes.Add("pager");
             Shape.Metadata.Alternates.Clear();
@@ -359,14 +356,19 @@ namespace OrchardCore.Navigation
             var previousText = PreviousText ?? S["<"];
             var nextText = NextText ?? S[">"];
 
+            var httpContextAccessor = DisplayContext.ServiceProvider.GetService<IHttpContextAccessor>();
+            var httpContext = httpContextAccessor.HttpContext;
             var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
 
-            // Allows to pass custom url params to PagerSlim
-            if (UrlParams != null)
+            if (httpContext != null)
             {
-                foreach (var item in UrlParams)
+                var queryString = httpContext.Request.Query;
+                if (queryString != null)
                 {
-                    routeData.Add(item.Key, item.Value);
+                    foreach (var key in from string key in queryString.Keys where key != null && !routeData.ContainsKey(key) let value = queryString[key] select key)
+                    {
+                        routeData[key] = queryString[key];
+                    }
                 }
             }
 
