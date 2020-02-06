@@ -42,6 +42,9 @@ namespace OrchardCore.Email.Services
 
             try
             {
+                // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submittor (Sender)
+                message.From = _options.DefaultSender;
+
                 var mimeMessage = FromMailMessage(message);
 
                 switch (_options.DeliveryMethod)
@@ -66,16 +69,16 @@ namespace OrchardCore.Email.Services
 
         private MimeMessage FromMailMessage(MailMessage message)
         {
-            var senderAddress = String.IsNullOrWhiteSpace(message.From)
+            var senderAddress = String.IsNullOrWhiteSpace(message.Sender)
                 ? _options.DefaultSender
-                : message.From;
+                : message.Sender;
 
             var mimeMessage = new MimeMessage
             {
                 Sender = MailboxAddress.Parse(senderAddress)
             };
 
-            mimeMessage.From.Add(mimeMessage.Sender);
+            mimeMessage.From.Add(MailboxAddress.Parse(message.From));
 
             if (!string.IsNullOrWhiteSpace(message.To))
             {
