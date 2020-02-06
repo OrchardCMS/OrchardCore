@@ -138,7 +138,7 @@ See [Layers](../reference/modules/Layers)
 
 ### Stereotype
 
-By default Content Items have no stereotype, however certain modules will use a defined StereoType to determine which content items can be used by them.  
+By default Content Items have no stereotype, however certain modules will use a defined StereoType to determine which content types can be used by them.  
 Examples of this include the Menu Stereotype, and the Widget Stereotype.
 
 ### Widget
