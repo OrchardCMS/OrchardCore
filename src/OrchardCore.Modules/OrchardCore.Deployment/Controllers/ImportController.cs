@@ -69,7 +69,7 @@ namespace OrchardCore.Deployment.Controllers
 
                 if (importedPackage.FileName.EndsWith(".json"))
                 {
-                    string recipeFileName = tempArchiveName.Replace(Path.GetFileNameWithoutExtension(tempArchiveName), "Recipe");
+                    string recipeFileName = tempArchiveName.Replace(Path.GetFileName(tempArchiveName), "Recipe.json");
                     Directory.CreateDirectory(tempArchiveFolder);
                     System.IO.File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, Path.GetFileName(recipeFileName)));
                     tempArchiveName = recipeFileName;
