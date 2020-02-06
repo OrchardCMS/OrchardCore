@@ -365,7 +365,7 @@ namespace OrchardCore.ContentManagement
             return context.BuildingContentItem;
         }
 
-        public async Task CreateAsync(ContentItem contentItem, VersionOptions options, bool invokeUpdateCallbacks = false)
+        public async Task CreateAsync(ContentItem contentItem, VersionOptions options)
         {
             if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
             {
@@ -388,14 +388,7 @@ namespace OrchardCore.ContentManagement
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
 
-            if (!invokeUpdateCallbacks)
-            {
-                _session.Save(contentItem);
-            }
-            else
-            {
-                await UpdateAsync(contentItem);
-            }
+            _session.Save(contentItem);
             _contentManagerSession.Store(contentItem);
 
             if (options.IsPublished)
@@ -440,9 +433,9 @@ namespace OrchardCore.ContentManagement
                     x.ContentItemId == contentItem.ContentItemId &&
                     (x.Published || x.Latest)).ListAsync();
 
-            if (activeVersions.Any())
+            if (!activeVersions.Any())
             {
-                throw new InvalidOperationException("Trying to delete a content item that is already soft deleted or nonexistent.");
+                return;
             }
 
             var context = new RemoveContentContext(contentItem, true);

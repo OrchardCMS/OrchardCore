@@ -95,6 +95,16 @@ namespace OrchardCore.ContentManagement
                 contentItem.DisplayText = props[nameof(contentItem.DisplayText)].ToString();
             }
 
+            if (props.ContainsKey(nameof(contentItem.Owner))) {
+                contentItem.Owner = props[nameof(contentItem.Owner)].ToString();
+                contentItem.Author = props[nameof(contentItem.Owner)].ToString();
+            }
+
+            if (props.ContainsKey(nameof(contentItem.Author)))
+            {
+                contentItem.Author = props[nameof(contentItem.Author)].ToString();
+            }
+
             return contentItem;
         }
 
