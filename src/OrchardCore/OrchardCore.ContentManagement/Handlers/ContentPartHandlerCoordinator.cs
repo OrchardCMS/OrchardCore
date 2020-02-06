@@ -32,6 +32,11 @@ namespace OrchardCore.ContentManagement.Handlers
             _partHandlers = partHandlers;
             _contentDefinitionManager = contentDefinitionManager;
 
+            foreach (var element in partHandlers.Select(x => x.GetType()))
+            {
+                logger.LogWarning("The content part handler '{ContentPartHandler}' should not be registerd in DI. Use AddHandler<T> instead.", element);
+            }
+
             Logger = logger;
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -44,6 +45,17 @@ namespace OrchardCore.ContentManagement.Display
             _displayDrivers = displayDrivers;
             _fieldDisplayDrivers = fieldDisplayDrivers;
             _partDisplayDrivers = partDisplayDrivers;
+
+            foreach (var element in partDisplayDrivers.Select(x => x.GetType()))
+            {
+                logger.LogWarning("The content part display driver '{ContentPartDisplayDriver}' should not be registerd in DI. Use UseDisplayDriver<T> instead.", element);
+            }
+
+            foreach (var element in fieldDisplayDrivers.Select(x => x.GetType()))
+            {
+                logger.LogWarning("The content field display driver '{ContentFieldDisplayDriver}' should not be registerd in DI. Use UseDisplayDriver<T> instead.", element);
+            }
+
             Logger = logger;
         }
 
