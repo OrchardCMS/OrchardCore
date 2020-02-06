@@ -20,7 +20,7 @@ Define the list of Content Parts and Content Fields a content item can be made o
 
 ### Content Part
 
-Content parts are atoms of content that are enough to build a specific coherent behavior and that can be reused across content types. 
+Content parts are atoms of content that are enough to build a specific coherent behavior and that can be reused across content types.
 See [Content Parts](../reference/modules/ContentParts)
 
 ### Content Field
@@ -135,6 +135,11 @@ A section in the Layout (ex: Footer) in which you can render items.
 
 A display Rule in which you specify a condition to be rendered (ex: isHomepage()).  
 See [Layers](../reference/modules/Layers)
+
+### Stereotype
+
+By default Content Items have no stereotype, however certain modules will use a defined StereoType to determine which content items can be used by them.  
+Examples of this include the Menu Stereotype, and the Widget Stereotype.
 
 ### Widget
 
