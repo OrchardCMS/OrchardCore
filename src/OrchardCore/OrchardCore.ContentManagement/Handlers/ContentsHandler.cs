@@ -65,8 +65,8 @@ namespace OrchardCore.ContentManagement.Handlers
         {
             var utcNow = _clock.UtcNow;
 
-            // The first time the content is published, reassign the CreateUtc value
-            if (!context.ContentItem.PublishedUtc.HasValue)
+            // The first time the content is published, reassign the CreateUtc value if it has not already been set.
+            if (!context.ContentItem.PublishedUtc.HasValue && !context.ContentItem.CreatedUtc.HasValue)
             {
                 context.ContentItem.CreatedUtc = utcNow;
             }
