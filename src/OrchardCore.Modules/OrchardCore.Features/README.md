@@ -98,19 +98,28 @@ List of features available in Orchard Core:
 | The Agency Theme | Beta |
 | The Blog Theme | Beta 2 |
 | The Coming soon Theme | Beta 3 |
+| Content Localization | RC |
+| RTL admin theme | RC |
+| Localization packages | RC |
+| Resources CDN | RC |
+| Media CDN support | RC |
+| GitHub authentication| RC |
+| Facebook applications RC |
+| .NET Core 3.0 | RC |
+| Azure Media resizing | RC |
+| SQL fields indexing| RC |
+| Full Text aspect| RC |
 
 These features are currently in development or expected for an upcoming version of Orchard Core:
 
 | Name | Available |
 | ------ | ------------ |
-| Content Localization | RC |
-| Seo | RC |
-| Site Map | RC |
-| RTL admin theme | - |
-| Localization packages | - |
+| Seo | - |
+| Site Map | - |
 | Distributed hosting | - |
 | Jobs queue | - |
 | Output caching | - |
 | Entities API | - |
 | Versioning | - |
 | Extensible User Profiles | - |
+| GraphQL mutations | - |
