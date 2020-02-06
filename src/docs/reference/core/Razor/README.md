@@ -4,8 +4,9 @@ Many extensions methods are available in Razor with `@Orchard`.
 
 ## Razor extensions
 
-| Method | Module | Description 
+| Method | Module | Description |
 | ------ | ------ | ----------- |
+| `DisplayAsync(ContentItem content, string displayType = "")` | OrchardCore.ContentManagement.Display | Renders a content item with the corresponding display type. |
 | `GetContentCultureAsync(ContentItem contentItem)` | OrchardCore.ContentLocalization | Returns the culture for a given ContentItem. |
 | `CultureDir()` | OrchardCore.DisplayManagement | Returns the current culture direction. |
 | `CultureName()` | OrchardCore.DisplayManagement | Returns the current culture name. |
