@@ -214,11 +214,11 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "BlogPost",
-              "Name": "BlogPost",
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "2"
+                  "Position": "0"
                 }
               }
             },
@@ -237,21 +237,21 @@
               }
             },
             {
+              "PartName": "BlogPost",
+              "Name": "BlogPost",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+				        }
+              }
+            },
+            {
               "PartName": "MarkdownBodyPart",
               "Name": "MarkdownBodyPart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Editor": "Wysiwyg",
                   "Position": "3"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
                 }
               }
             }
@@ -272,8 +272,8 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "Blog",
-              "Name": "Blog",
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
@@ -285,13 +285,39 @@
               "Name": "AutoroutePart",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "2"
+                  "Position": "1"
+				        },
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
                 },
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
                   "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
                   "ShowHomepageOption": true
                 }
+              }
+            },
+            {
+              "PartName": "Blog",
+              "Name": "Blog",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+				        }
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "3"
+				        }
               }
             },
             {
@@ -306,24 +332,6 @@
                   "ContainedContentTypes": [
                     "BlogPost"
                   ]
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "1"
-                }
-              }
-            },
-            {
-              "PartName": "HtmlBodyPart",
-              "Name": "HtmlBodyPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "3"
                 }
               }
             }
@@ -565,6 +573,34 @@
       ],
       "ContentParts": [
         {
+          "Name": "Blog",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Banner Image"
+                },
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "MediaFieldSettings": {
+                  "Hint": null,
+                  "Required": true,
+                  "Multiple": false
+                }
+              }
+            }
+          ]
+        },
+        {
           "Name": "BlogPost",
           "Settings": {},
           "ContentPartFieldDefinitionRecords": [
@@ -574,6 +610,28 @@
               "Settings": {
                 "ContentPartFieldSettings": {
                   "DisplayName": "Subtitle"
+                }
+              }
+            },
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Banner Image"
+                },
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "MediaFieldSettings": {
+                  "Hint": null,
+                  "Required": true,
+                  "Multiple": false
                 }
               }
             }
@@ -792,7 +850,14 @@
           "AutoroutePart": {
             "Path": "blog"
           },
-          "ListPart": {}
+          "ListPart": {},
+          "Blog": {
+            "Image": {
+              "Paths": [
+                "home-bg.jpg"
+              ]
+            }
+          }
         },
         {
           "ContentType": "BlogPost",
@@ -818,6 +883,11 @@
           "BlogPost": {
             "Subtitle": {
               "Text": "Problems look mighty small from 150 miles up"
+            },
+            "Image": {
+              "Paths": [
+                "post-bg.jpg"
+              ]
             }
           }
         },
@@ -864,6 +934,19 @@
               "Html": "[file:text('Snippets/footer.html')]"
             }
           }
+        }
+      ]
+    },
+    {
+      "name": "media",
+      "Files": [
+        {
+          "TargetPath": "home-bg.jpg",
+          "SourcePath": "../wwwroot/img/home-bg.jpg"
+        },
+        {
+          "TargetPath": "post-bg.jpg",
+          "SourcePath": "../wwwroot/img/post-bg.jpg"
         }
       ]
     },
