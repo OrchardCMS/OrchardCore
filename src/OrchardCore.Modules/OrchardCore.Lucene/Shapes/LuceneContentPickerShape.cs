@@ -8,14 +8,6 @@ using OrchardCore.Modules;
 namespace OrchardCore.Lucene.ContentPicker
 {
     [Feature("OrchardCore.Lucene.ContentPicker")]
-    public class LuceneContentPickerShapesTableProvider : IShapeTableProvider
-    {
-        public void Discover(ShapeTableBuilder builder)
-        {
-            builder.Describe("ContentPickerField_Option__Lucene");
-        }
-    }
-
     public class LuceneContentPickerShape : IShapeAttributeProvider
     {
         private readonly IStringLocalizer<LuceneContentPickerShape> S;

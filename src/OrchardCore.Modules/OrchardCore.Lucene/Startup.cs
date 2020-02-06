@@ -155,8 +155,6 @@ namespace OrchardCore.Lucene
         {
             services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
-
-            services.AddScoped<IShapeTableProvider, LuceneContentPickerShapesTableProvider>();
             services.AddShapeAttributes<LuceneContentPickerShape>();
         }
     }
