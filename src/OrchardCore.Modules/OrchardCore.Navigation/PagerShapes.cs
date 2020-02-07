@@ -164,6 +164,7 @@ namespace OrchardCore.Navigation
 
         [Shape]
         public async Task<IHtmlContent> Pager_Links(Shape Shape, dynamic DisplayAsync, dynamic New, IHtmlHelper Html, DisplayContext DisplayContext,
+            string PagerId,
             int Page,
             int PageSize,
             double TotalItemCount,
@@ -173,7 +174,6 @@ namespace OrchardCore.Navigation
             object NextText,
             object LastText,
             object GapText,
-            string PagerId,
             bool ShowNext,
             string Tag,
             string ItemTag,
@@ -339,7 +339,6 @@ namespace OrchardCore.Navigation
 
         [Shape]
         public async Task<IHtmlContent> PagerSlim(dynamic Shape, dynamic DisplayAsync, dynamic New, IHtmlHelper Html, DisplayContext DisplayContext,
-            string Id,
             object PreviousText,
             object NextText,
             string PreviousClass,
@@ -349,10 +348,6 @@ namespace OrchardCore.Navigation
             IDictionary<string, string> Attributes,
             IDictionary<string, string> ItemAttributes)
         {
-            Shape.Classes.Add("pager");
-            Shape.Metadata.Alternates.Clear();
-            Shape.Metadata.Type = "List";
-            Shape.Id = Id;
             Shape.Tag = Tag;
             Shape.ItemTag = ItemTag;
 
@@ -370,6 +365,10 @@ namespace OrchardCore.Navigation
 
             var previousText = PreviousText ?? S["<"];
             var nextText = NextText ?? S[">"];
+
+            Shape.Classes.Add("pager");
+            Shape.Metadata.Alternates.Clear();
+            Shape.Metadata.Type = "List";
 
             var httpContextAccessor = DisplayContext.ServiceProvider.GetService<IHttpContextAccessor>();
             var httpContext = httpContextAccessor.HttpContext;

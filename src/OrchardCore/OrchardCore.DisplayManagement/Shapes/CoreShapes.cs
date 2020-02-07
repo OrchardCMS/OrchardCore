@@ -20,15 +20,13 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
 
         [Shape]
-        public async Task<IHtmlContent> List(
-            dynamic DisplayAsync,
-            IEnumerable<dynamic> Items,
-            string Tag,
+        public async Task<IHtmlContent> List(dynamic DisplayAsync, IEnumerable<dynamic> Items,
             string Id,
-            IEnumerable<string> Classes,
-            IDictionary<string, string> Attributes,
+            string Tag,
             string ItemTag,
+            IEnumerable<string> Classes,
             IEnumerable<string> ItemClasses,
+            IDictionary<string, string> Attributes,
             IDictionary<string, string> ItemAttributes,
             string FirstClass,
             string LastClass)
@@ -53,7 +51,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             if (Tag != "-")
             {
-                listTagName = string.IsNullOrEmpty(Tag) ? "ul" : Tag;
+                listTagName = String.IsNullOrEmpty(Tag) ? "ul" : Tag;
             }
 
             var listTag = String.IsNullOrEmpty(listTagName) ? null : Shape.GetTagBuilder(listTagName, Id, Classes, Attributes);
@@ -61,7 +59,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             string itemTagName = null;
             if (ItemTag != "-")
             {
-                itemTagName = string.IsNullOrEmpty(ItemTag) ? "li" : ItemTag;
+                itemTagName = String.IsNullOrEmpty(ItemTag) ? "li" : ItemTag;
             }
 
 
