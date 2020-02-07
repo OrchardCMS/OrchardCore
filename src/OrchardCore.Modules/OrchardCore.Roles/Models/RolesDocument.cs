@@ -4,7 +4,7 @@ using OrchardCore.Infrastructure.Cache;
 
 namespace OrchardCore.Roles.Models
 {
-    public class RolesDocument : ScopedDistributedCacheData
+    public class RolesDocument : DistributedCacheData
     {
         public int Id { get; set; }
         public List<Role> Roles { get; set; } = new List<Role>();

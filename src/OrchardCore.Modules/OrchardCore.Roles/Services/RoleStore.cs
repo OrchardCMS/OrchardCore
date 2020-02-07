@@ -21,7 +21,7 @@ namespace OrchardCore.Roles.Services
     {
         private readonly ISession _session;
         private readonly ISessionHelper _sessionHelper;
-        private readonly IScopedDistributedCache _scopedDistributedCache;
+        private readonly IDataStoreDistributedCache<ISessionHelper> _dataStoreDistributedCache;
         private readonly IServiceProvider _serviceProvider;
         private readonly IStringLocalizer<RoleStore> S;
 
@@ -30,14 +30,14 @@ namespace OrchardCore.Roles.Services
         public RoleStore(
             ISession session,
             ISessionHelper sessionHelper,
-            IScopedDistributedCache scopedDistributedCache,
+            IDataStoreDistributedCache<ISessionHelper> dataStoreDistributedCache,
             IServiceProvider serviceProvider,
             IStringLocalizer<RoleStore> stringLocalizer,
             ILogger<RoleStore> logger)
         {
             _session = session;
             _sessionHelper = sessionHelper;
-            _scopedDistributedCache = scopedDistributedCache;
+            _dataStoreDistributedCache = dataStoreDistributedCache;
             _serviceProvider = serviceProvider;
             S = stringLocalizer;
             Logger = logger;
@@ -50,42 +50,24 @@ namespace OrchardCore.Roles.Services
         /// <summary>
         /// Returns the document from the database to be updated.
         /// </summary>
-        private Task<RolesDocument> LoadRolesAsync()
-        {
-            return _scopedDistributedCache.LoadAsync(() =>
-            {
-                return _sessionHelper.LoadForUpdateAsync<RolesDocument>();
-            });
-        }
+        private Task<RolesDocument> LoadRolesAsync() => _dataStoreDistributedCache.LoadAsync<RolesDocument>();
 
         /// <summary>
         /// Returns the document from the cache or creates a new one. The result should not be updated.
         /// </summary>
-        private Task<RolesDocument> GetRolesAsync()
-        {
-            return _scopedDistributedCache.GetAsync(async () =>
-            {
-                var document = await _sessionHelper.GetForCachingAsync<RolesDocument>();
-
-                foreach (var role in document.Roles)
-                {
-                    role.IsReadonly = true;
-                }
-
-                return document;
-            });
-        }
+        private Task<RolesDocument> GetRolesAsync() => _dataStoreDistributedCache.GetAsync<RolesDocument>();
 
         private Task UpdateRolesAsync(RolesDocument roles)
         {
-            _updating = true;
-
-            _session.Save(roles);
+            _session.Save(roles, checkConcurrency: true);
 
             _sessionHelper.RegisterAfterCommitSuccess<RolesDocument>(() =>
             {
-                return _scopedDistributedCache.UpdateAsync(roles);
+                return _dataStoreDistributedCache.UpdateAsync(roles);
             });
+
+            // Specific to 'RoleStore'.
+            _updating = true;
 
             return Task.CompletedTask;
         }
@@ -113,11 +95,6 @@ namespace OrchardCore.Roles.Services
             }
 
             var roleToRemove = (Role)role;
-
-            if (roleToRemove.IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
-            }
 
             if (String.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") ||
                 String.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))
@@ -204,11 +181,6 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
-            if (((Role)role).IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
-            }
-
             ((Role)role).NormalizedRoleName = normalizedName;
 
             return Task.CompletedTask;
@@ -221,11 +193,6 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
-            if (((Role)role).IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
-            }
-
             ((Role)role).RoleName = roleName;
 
             return Task.CompletedTask;
@@ -236,11 +203,6 @@ namespace OrchardCore.Roles.Services
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
-            }
-
-            if (((Role)role).IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
             }
 
             var roles = await LoadRolesAsync();
@@ -268,11 +230,6 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            if (((Role)role).IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
-            }
-
             ((Role)role).RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
 
             return Task.CompletedTask;
@@ -298,11 +255,6 @@ namespace OrchardCore.Roles.Services
             if (claim == null)
             {
                 throw new ArgumentNullException(nameof(claim));
-            }
-
-            if (((Role)role).IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
             }
 
             ((Role)role).RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Cache.CacheContextProviders;
 using OrchardCore.Infrastructure.Cache;
@@ -33,8 +34,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 // MemoryDistributedCache needs to be registered as a singleton as it owns a MemoryCache instance.
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
 
-                // A scoped service allowing to keep in sync a given data store with a distributed cache.
-                services.AddScoped<IScopedDistributedCache, ScopedDistributedCache>();
+                // A generic scoped service to keep in sync a given data store with a distributed cache.
+                services.AddScoped(typeof(IDataStoreDistributedCache<>), typeof(DataStoreDistributedCache<>));
             });
 
             return builder;

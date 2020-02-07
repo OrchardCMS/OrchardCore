@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace OrchardCore.Infrastructure.Cache
 {
-    public class ScopedDistributedCacheData
+    public class DistributedCacheData
     {
         public string Identifier { get; set; }
 
