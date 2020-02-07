@@ -137,8 +137,8 @@ namespace OrchardCore.Media
                 .AddProcessor<BackgroundColorWebProcessor>();
 
             // Media Field
-            services.AddContentField<MediaField>();
-            services.AddScoped<IContentFieldDisplayDriver, MediaFieldDisplayDriver>();
+            services.AddContentField<MediaField>()
+                .UseDisplayDriver<MediaFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
             services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
