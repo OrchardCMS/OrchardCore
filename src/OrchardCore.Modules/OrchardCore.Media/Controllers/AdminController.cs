@@ -45,7 +45,7 @@ namespace OrchardCore.Media.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View();
@@ -55,7 +55,7 @@ namespace OrchardCore.Media.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (string.IsNullOrEmpty(path))
@@ -93,7 +93,7 @@ namespace OrchardCore.Media.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
@@ -119,7 +119,7 @@ namespace OrchardCore.Media.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (string.IsNullOrEmpty(path))
@@ -146,7 +146,7 @@ namespace OrchardCore.Media.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (string.IsNullOrEmpty(path))
@@ -212,7 +212,7 @@ namespace OrchardCore.Media.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (string.IsNullOrEmpty(path))
@@ -238,7 +238,7 @@ namespace OrchardCore.Media.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (string.IsNullOrEmpty(path))
@@ -258,7 +258,7 @@ namespace OrchardCore.Media.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)oldPath))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (string.IsNullOrEmpty(oldPath) || string.IsNullOrEmpty(newPath))
@@ -291,14 +291,14 @@ namespace OrchardCore.Media.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             foreach (var path in paths)
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
                 {
-                    return Unauthorized();
+                    return Forbid();
                 }
             }
 
@@ -323,7 +323,7 @@ namespace OrchardCore.Media.Controllers
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)sourceFolder)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)targetFolder))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if ((mediaNames == null) || (mediaNames.Length < 1)
@@ -377,7 +377,7 @@ namespace OrchardCore.Media.Controllers
             if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
                 || !await authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)newPath))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);

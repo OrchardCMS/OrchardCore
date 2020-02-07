@@ -50,7 +50,7 @@ namespace OrchardCore.Queries.Sql.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSqlQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (String.IsNullOrWhiteSpace(model.DecodedQuery))
