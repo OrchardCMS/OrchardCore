@@ -54,13 +54,13 @@ namespace OrchardCore.Infrastructure.Cache
                 options = new DistributedCacheEntryOptions();
             }
 
-            var value = await GetAsync<T>(options);
+            var value = await GetInternalAsync<T>(options);
 
             if (value == null)
             {
                 value = await _dataStore.GetForCachingAsync(factory);
 
-                await SetAsync(value, options);
+                await SetInternalAsync(value, options);
 
                 var key = typeof(T).FullName;
 
@@ -77,7 +77,7 @@ namespace OrchardCore.Infrastructure.Cache
             return value;
         }
 
-        private async Task<T> GetAsync<T>(DistributedCacheEntryOptions options) where T : DistributedCacheData
+        private async Task<T> GetInternalAsync<T>(DistributedCacheEntryOptions options) where T : DistributedCacheData
         {
             var key = typeof(T).FullName;
 
@@ -151,10 +151,10 @@ namespace OrchardCore.Infrastructure.Cache
                 options = new DistributedCacheEntryOptions();
             }
 
-            return SetAsync(value, options);
+            return SetInternalAsync(value, options);
         }
 
-        private async Task SetAsync<T>(T value, DistributedCacheEntryOptions options) where T : DistributedCacheData, new()
+        private async Task SetInternalAsync<T>(T value, DistributedCacheEntryOptions options) where T : DistributedCacheData, new()
         {
             if (options == null)
             {
@@ -183,8 +183,9 @@ namespace OrchardCore.Infrastructure.Cache
             await _distributedCache.SetAsync(key, data, options);
             await _distributedCache.SetAsync("ID_" + key, idData, options);
 
-            // The unhappy path is when another process updated the store after us and the cache before us,
-            // so we check the first condition meaning that we may have updated the cache with stale data.
+            // The unhappy path is when we were not the last to update the store but the last to update the cache,
+            // so we check if the first condition is true meaning that we may have set the cache with stale data.
+
             if ((await _dataStore.GetForCachingAsync<T>()).Identifier == value.Identifier)
             {
                 await InvalidateAsync<T>();
