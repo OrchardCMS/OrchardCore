@@ -7,24 +7,24 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.FileStorage;
-using OrchardCore.XmlRpc;
-using OrchardCore.XmlRpc.Models;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using OrchardCore.Media;
 using OrchardCore.MetaWeblog;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Services;
+using OrchardCore.XmlRpc;
+using OrchardCore.XmlRpc.Models;
 using YesSql;
 
 namespace OrchardCore.Lists.RemotePublishing
@@ -40,6 +40,7 @@ namespace OrchardCore.Lists.RemotePublishing
         private readonly IMembershipService _membershipService;
         private readonly IEnumerable<IMetaWeblogDriver> _metaWeblogDrivers;
         private readonly ISession _session;
+        private readonly IStringLocalizer<MetaWeblogHandler> S;
 
         public MetaWeblogHandler(IContentManager contentManager,
             IAuthorizationService authorizationService,
@@ -61,11 +62,10 @@ namespace OrchardCore.Lists.RemotePublishing
             _mediaFileStore = mediaFileStore;
             _membershipService = membershipService;
             Logger = logger;
-            T = localizer;
+            S = localizer;
         }
 
         ILogger Logger { get; }
-        IStringLocalizer T { get; }
 
         public void SetCapabilities(XElement options)
         {
@@ -365,7 +365,7 @@ namespace OrchardCore.Lists.RemotePublishing
 
             if (contentItem == null)
             {
-                throw new Exception(T["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
+                throw new Exception(S["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
             }
 
             await CheckAccessAsync(publish ? Permissions.PublishContent : Permissions.EditContent, user, contentItem);
@@ -422,7 +422,7 @@ namespace OrchardCore.Lists.RemotePublishing
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.DeleteContent, contentItem))
             {
-                throw new InvalidOperationException(T["Not authorized to delete this content"].Value);
+                throw new InvalidOperationException(S["Not authorized to delete this content"].Value);
             }
 
             foreach (var driver in drivers)
@@ -438,7 +438,7 @@ namespace OrchardCore.Lists.RemotePublishing
         {
             if (!await _membershipService.CheckPasswordAsync(userName, password))
             {
-                throw new InvalidOperationException(T["The username or e-mail or password provided is incorrect."].Value);
+                throw new InvalidOperationException(S["The username or e-mail or password provided is incorrect."].Value);
             }
 
             var storeUser = await _membershipService.GetUserAsync(userName);
@@ -489,14 +489,14 @@ namespace OrchardCore.Lists.RemotePublishing
         {
             if (!await _authorizationService.AuthorizeAsync(user, permission, contentItem))
             {
-                throw new InvalidOperationException(T["Not authorized to delete this content"].Value);
+                throw new InvalidOperationException(S["Not authorized to delete this content"].Value);
             }
         }
 
         private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentItem contentItem)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart"));
             var settings = contentTypePartDefinition.GetSettings<ListPartSettings>();
             var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
             return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));

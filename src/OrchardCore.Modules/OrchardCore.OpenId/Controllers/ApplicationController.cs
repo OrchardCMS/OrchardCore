@@ -28,12 +28,13 @@ namespace OrchardCore.OpenId.Controllers
     public class ApplicationController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer<ApplicationController> T;
+        private readonly IStringLocalizer<ApplicationController> S;
         private readonly IHtmlLocalizer<ApplicationController> H;
         private readonly ISiteService _siteService;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
+        private readonly dynamic New;
 
         public ApplicationController(
             IShapeFactory shapeFactory,
@@ -47,7 +48,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             New = shapeFactory;
             _siteService = siteService;
-            T = stringLocalizer;
+            S = stringLocalizer;
             H = htmlLocalizer;
             _authorizationService = authorizationService;
             _applicationManager = applicationManager;
@@ -55,13 +56,11 @@ namespace OrchardCore.OpenId.Controllers
             _shellDescriptor = shellDescriptor;
         }
 
-        public dynamic New { get; }
-
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -90,7 +89,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new CreateOpenIdApplicationViewModel();
@@ -121,23 +120,23 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!string.IsNullOrEmpty(model.ClientSecret) &&
                  string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
-                ModelState.AddModelError(nameof(model.ClientSecret), T["No client secret can be set for public applications."]);
+                ModelState.AddModelError(nameof(model.ClientSecret), S["No client secret can be set for public applications."]);
             }
             else if (string.IsNullOrEmpty(model.ClientSecret) &&
                      string.Equals(model.Type, OpenIddictConstants.ClientTypes.Confidential, StringComparison.OrdinalIgnoreCase))
             {
-                ModelState.AddModelError(nameof(model.ClientSecret), T["The client secret is required for confidential applications."]);
+                ModelState.AddModelError(nameof(model.ClientSecret), S["The client secret is required for confidential applications."]);
             }
 
             if (!string.IsNullOrEmpty(model.ClientId) && await _applicationManager.FindByClientIdAsync(model.ClientId) != null)
             {
-                ModelState.AddModelError(nameof(model.ClientId), T["The client identifier is already taken by another application."]);
+                ModelState.AddModelError(nameof(model.ClientId), S["The client identifier is already taken by another application."]);
             }
 
             if (!ModelState.IsValid)
@@ -221,7 +220,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var application = await _applicationManager.FindByPhysicalIdAsync(id);
@@ -252,12 +251,14 @@ namespace OrchardCore.OpenId.Controllers
             var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
             if (roleService != null)
             {
+                var roles = await _applicationManager.GetRolesAsync(application);
+
                 foreach (var role in await roleService.GetRoleNamesAsync())
                 {
                     model.RoleEntries.Add(new EditOpenIdApplicationViewModel.RoleEntry
                     {
                         Name = role,
-                        Selected = await _applicationManager.IsInRoleAsync(application, role)
+                        Selected = roles.Contains(role, StringComparer.OrdinalIgnoreCase)
                     });
                 }
             }
@@ -276,7 +277,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var application = await _applicationManager.FindByPhysicalIdAsync(model.Id);
@@ -290,13 +291,13 @@ namespace OrchardCore.OpenId.Controllers
                !string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase) &&
                 await _applicationManager.IsPublicAsync(application))
             {
-                ModelState.AddModelError(nameof(model.ClientSecret), T["Setting a new client secret is required."]);
+                ModelState.AddModelError(nameof(model.ClientSecret), S["Setting a new client secret is required."]);
             }
 
             if (!string.IsNullOrEmpty(model.ClientSecret) &&
                  string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
-                ModelState.AddModelError(nameof(model.ClientSecret), T["No client secret can be set for public applications."]);
+                ModelState.AddModelError(nameof(model.ClientSecret), S["No client secret can be set for public applications."]);
             }
 
             if (ModelState.IsValid)
@@ -306,7 +307,7 @@ namespace OrchardCore.OpenId.Controllers
                     await _applicationManager.GetIdAsync(other),
                     await _applicationManager.GetIdAsync(application), StringComparison.Ordinal))
                 {
-                    ModelState.AddModelError(nameof(model.ClientId), T["The client identifier is already taken by another application."]);
+                    ModelState.AddModelError(nameof(model.ClientId), S["The client identifier is already taken by another application."]);
                 }
             }
 
@@ -448,7 +449,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var application = await _applicationManager.FindByPhysicalIdAsync(id);

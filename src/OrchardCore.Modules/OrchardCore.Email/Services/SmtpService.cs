@@ -1,15 +1,15 @@
 using System;
 using System.IO;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MailKit.Net.Smtp;
 using MimeKit;
-using MailKit.Security;
-using System.Security.Cryptography.X509Certificates;
-using System.Net.Security;
 
 namespace OrchardCore.Email.Services
 {
@@ -40,9 +40,10 @@ namespace OrchardCore.Email.Services
                 return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
             }
 
-            var mimeMessage = FromMailMessage(message);
             try
             {
+                var mimeMessage = FromMailMessage(message);
+
                 switch (_options.DeliveryMethod)
                 {
                     case SmtpDeliveryMethod.Network:
@@ -66,52 +67,53 @@ namespace OrchardCore.Email.Services
 
         private MimeMessage FromMailMessage(MailMessage message)
         {
-            var (name, email) = message.From == null
-                ? GetNameAndEmail(_options.DefaultSender)
-                : GetNameAndEmail(message.From);
+            var senderAddress = String.IsNullOrWhiteSpace(message.From)
+                ? _options.DefaultSender
+                : message.From;
+
             var mimeMessage = new MimeMessage
             {
-                Sender = name == String.Empty
-                    ? new MailboxAddress(email)
-                    : new MailboxAddress(name, email)
+                Sender = MailboxAddress.Parse(senderAddress)
             };
 
             mimeMessage.From.Add(mimeMessage.Sender);
 
-            if (message.To != null)
+            if (!string.IsNullOrWhiteSpace(message.To))
             {
                 foreach (var address in message.To.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.To.Add(new MailboxAddress(address));
+                    mimeMessage.To.Add(MailboxAddress.Parse(address));
                 }
             }
 
-            if (message.Cc != null)
+            if (!string.IsNullOrWhiteSpace(message.Cc))
             {
                 foreach (var address in message.Cc.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.Cc.Add(new MailboxAddress(address));
+                    mimeMessage.Cc.Add(MailboxAddress.Parse(address));
                 }
             }
 
-            if (message.Bcc != null)
+            if (!string.IsNullOrWhiteSpace(message.Bcc))
             {
                 foreach (var address in message.Bcc.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.Bcc.Add(new MailboxAddress(address));
+                    mimeMessage.Bcc.Add(MailboxAddress.Parse(address));
                 }
             }
 
-            if (message.ReplyTo != null)
+            if (!string.IsNullOrWhiteSpace(message.ReplyTo))
             {
                 foreach (var address in message.ReplyTo.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.ReplyTo.Add(new MailboxAddress(address));
+                    mimeMessage.ReplyTo.Add(MailboxAddress.Parse(address));
                 }
             }
 
             mimeMessage.Subject = message.Subject;
+
             var body = new BodyBuilder();
+
             if (message.IsBodyHtml)
             {
                 body.HtmlBody = message.Body;
@@ -120,24 +122,10 @@ namespace OrchardCore.Email.Services
             {
                 body.TextBody = message.Body;
             }
+
             mimeMessage.Body = body.ToMessageBody();
 
             return mimeMessage;
-        }
-
-        private (string name, string email) GetNameAndEmail(string emailAddress)
-        {
-            var index = emailAddress.LastIndexOf(' ');
-            var name = String.Empty;
-            var email = emailAddress;
-
-            if(index > -1)
-            {
-                name = emailAddress.Substring(0, index);
-                email = emailAddress.Substring(index + 1, emailAddress.Length - index - 1).TrimStart('<').TrimEnd('>');
-            }
-
-            return (name, email);
         }
 
         private bool CertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)

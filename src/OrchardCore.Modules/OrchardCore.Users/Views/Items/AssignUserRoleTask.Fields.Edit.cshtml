@@ -1,16 +1,16 @@
 @using OrchardCore.Users.Workflows.ViewModels;
 @model AssignUserRoleTaskViewModel
 
-<fieldset class="form-group" asp-validation-class-for="UserName">
+<div class="form-group" asp-validation-class-for="UserName">
     <label asp-for="UserName">@T["UserName"]</label>
     <input type="text" asp-for="UserName" class="form-control code" />
     <span asp-validation-for="UserName"></span>
     <span class="hint">@T["The User to assign. With Liquid support."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="RoleName">
+<div class="form-group" asp-validation-class-for="RoleName">
     <label asp-for="RoleName">@T["RoleName"]</label>
     <input type="text" asp-for="RoleName" class="form-control code" />
     <span asp-validation-for="RoleName"></span>
     <span class="hint">@T["The Role to assign. With Liquid support."]</span>
-</fieldset>
+</div>

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,14 +8,25 @@ namespace OrchardCore.DisplayManagement.Shapes
     /// <summary>
     /// An ordered collection optimized for lookups.
     /// </summary>
-    public class AlternatesCollection : IEnumerable<string>
+    public class AlternatesCollection
     {
+        public static AlternatesCollection Empty = new AlternatesCollection();
+
         private KeyedAlternateCollection _collection;
 
         public AlternatesCollection(params string[] alternates)
         {
-            AddRange(alternates);
+            EnsureCollection();
+
+            foreach (var alternate in alternates)
+            {
+                Add(alternate);
+            }
         }
+
+        public string this[int index] => _collection[index];
+
+        public string Last => _collection.LastOrDefault() ?? "";
 
         public void Add(string alternate)
         {
@@ -75,6 +85,11 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public int Count => _collection == null ? 0 : _collection.Count;
 
+        public void AddRange(AlternatesCollection alternates)
+        {
+            AddRange(alternates._collection);
+        }
+
         public void AddRange(IEnumerable<string> alternates)
         {
             if (alternates == null)
@@ -106,16 +121,6 @@ namespace OrchardCore.DisplayManagement.Shapes
             if (_collection == null)
             {
                 return ((IEnumerable<string>)Array.Empty<string>()).GetEnumerator();
-            }
-
-            return _collection.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            if (_collection == null)
-            {
-                return Array.Empty<string>().GetEnumerator();
             }
 
             return _collection.GetEnumerator();

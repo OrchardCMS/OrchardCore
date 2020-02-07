@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
@@ -20,12 +19,12 @@ namespace OrchardCore.Navigation
 {
     public class PagerShapesTableProvider : IShapeTableProvider
     {
+        private readonly IStringLocalizer S;
+
         public PagerShapesTableProvider(IStringLocalizer<PagerShapes> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public void Discover(ShapeTableBuilder builder)
         {
@@ -41,7 +40,7 @@ namespace OrchardCore.Navigation
                 })
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape;
+                    dynamic pager = displaying.Shape;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -64,7 +63,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Gap")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -75,7 +75,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_First")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -86,7 +87,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Previous")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -97,7 +99,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Next")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -108,7 +111,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Last")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -119,7 +123,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_CurrentPage")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape.Pager;
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -130,7 +135,7 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Links")
                 .OnDisplaying(displaying =>
                 {
-                    var pager = displaying.Shape;
+                    dynamic pager = displaying.Shape;
                     string pagerId = pager.PagerId;
                     if (!String.IsNullOrEmpty(pagerId))
                     {
@@ -141,22 +146,22 @@ namespace OrchardCore.Navigation
 
         private string EncodeAlternateElement(string alternateElement)
         {
-            return alternateElement.Replace("-", "__").Replace(".", "_");
+            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
 
     }
 
     public class PagerShapes : IShapeAttributeProvider
     {
+        private readonly IStringLocalizer S;
+
         public PagerShapes(IStringLocalizer<PagerShapes> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
-
         [Shape]
-        public async Task<IHtmlContent> Pager_Links(Shape Shape, dynamic DisplayAsync, dynamic New,
+        public async Task<IHtmlContent> Pager_Links(dynamic Shape, dynamic DisplayAsync, dynamic New,
             IHtmlHelper Html,
             DisplayContext DisplayContext,
             int Page,
@@ -169,11 +174,20 @@ namespace OrchardCore.Navigation
             object LastText,
             object GapText,
             string PagerId,
-            bool ShowNext
+            bool ShowNext,
+            string Tag,
+            string ItemTag,
+            IDictionary<string, string> Attributes,
+            IDictionary<string, string> ItemAttributes
             // parameter omitted to workaround an issue where a NullRef is thrown
             // when an anonymous object is bound to an object shape parameter
             /*object RouteValues*/)
         {
+            Shape.Tag = Tag;
+            Shape.ItemTag = ItemTag;
+            Shape.Attributes = Attributes;
+            Shape.ItemAttributes = ItemAttributes;
+
             var currentPage = Page;
             if (currentPage < 1)
                 currentPage = 1;
@@ -194,11 +208,11 @@ namespace OrchardCore.Navigation
             }
 
 
-            var firstText = FirstText ?? T["<<"];
-            var previousText = PreviousText ?? T["<"];
-            var nextText = NextText ?? T[">"];
-            var lastText = LastText ?? T[">>"];
-            var gapText = GapText ?? T["..."];
+            var firstText = FirstText ?? S["<<"];
+            var previousText = PreviousText ?? S["<"];
+            var nextText = NextText ?? S[">"];
+            var lastText = LastText ?? S[">>"];
+            var gapText = GapText ?? S["..."];
 
             var httpContextAccessor = DisplayContext.ServiceProvider.GetService<IHttpContextAccessor>();
             var httpContext = httpContextAccessor.HttpContext;
@@ -320,19 +334,39 @@ namespace OrchardCore.Navigation
 
         [Shape]
         public async Task<IHtmlContent> PagerSlim(dynamic Shape, dynamic DisplayAsync, dynamic New, IHtmlHelper Html,
+            string Id,
             object PreviousText,
             object NextText,
             string PreviousClass,
-            string NextClass)
+            string NextClass,
+            string Tag,
+            string ItemTag,
+            IDictionary<string, string> Attributes,
+            IDictionary<string, string> ItemAttributes,
+            Dictionary<string, object> UrlParams)
         {
             Shape.Classes.Add("pager");
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "List";
+            Shape.Id = Id;
+            Shape.Tag = Tag;
+            Shape.ItemTag = ItemTag;
+            Shape.Attributes = Attributes;
+            Shape.ItemAttributes = ItemAttributes;
 
-            var previousText = PreviousText ?? T["<"];
-            var nextText = NextText ?? T[">"];
+            var previousText = PreviousText ?? S["<"];
+            var nextText = NextText ?? S[">"];
 
             var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
+
+            // Allows to pass custom url params to PagerSlim
+            if (UrlParams != null)
+            {
+                foreach (var item in UrlParams)
+                {
+                    routeData.Add(item.Key, item.Value);
+                }
+            }
 
             string after = Shape.After;
             string before = Shape.Before;
@@ -446,18 +480,19 @@ namespace OrchardCore.Navigation
             return DisplayAsync(Shape);
         }
 
-        static IHtmlContent CoerceHtmlString(object value)
+        private IHtmlContent CoerceHtmlString(object value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
-            var result = value as IHtmlContent;
-            if (result != null)
+            if (value is IHtmlContent result)
+            {
                 return result;
+            }
 
-            return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
+            return new StringHtmlContent(value.ToString());
         }
-
-
     }
 }

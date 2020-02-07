@@ -17,23 +17,24 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-
+        private readonly IStringLocalizer<HttpRequestTask> S;
+        
         public HttpRequestTask(
             IStringLocalizer<HttpRequestTask> localizer,
             IHttpContextAccessor httpContextAccessor,
             IWorkflowExpressionEvaluator expressionEvaluator
         )
         {
-            T = localizer;
+            S = localizer;
             _httpContextAccessor = httpContextAccessor;
             _expressionEvaluator = expressionEvaluator;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(HttpRequestTask);
-        public override LocalizedString DisplayText => T["Http Request Task"];
-        public override LocalizedString Category => T["HTTP"];
+        
+        public override LocalizedString DisplayText => S["Http Request Task"];
+        
+        public override LocalizedString Category => S["HTTP"];
 
         public WorkflowExpression<string> Url
         {
@@ -140,14 +141,14 @@ namespace OrchardCore.Workflows.Http.Activities
                 { 599 , "Network Connect Timeout Error" }
             };
             var outcomes = !string.IsNullOrWhiteSpace(HttpResponseCodes)
-                ? HttpResponseCodes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x =>
+                ? HttpResponseCodes.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x =>
                 {
                     var status = int.Parse(x.Trim());
                     var description = httpStatusCodeDictionary.ContainsKey(status) ? $"{status} {httpStatusCodeDictionary[status]}" : status.ToString();
-                    return new Outcome(status.ToString(), T[description]);
+                    return new Outcome(status.ToString(), S[description]);
                 }).ToList()
                 : new List<Outcome>();
-            outcomes.Add(new Outcome("UnhandledHttpStatus", T["Unhandled Http Status"]));
+            outcomes.Add(new Outcome("UnhandledHttpStatus", S["Unhandled Http Status"]));
 
             return outcomes;
         }
@@ -162,7 +163,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
                 foreach (var header in headers)
                 {
-                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                    httpClient.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
                 }
 
                 var httpMethod = HttpMethod;
@@ -201,7 +202,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
             return
                 from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
-                let pair = header.Split(new[] { ':' })
+                let pair = header.Split(':', 2)
                 where pair.Length == 2
                 select new KeyValuePair<string, string>(pair[0], pair[1]);
         }
@@ -209,7 +210,7 @@ namespace OrchardCore.Workflows.Http.Activities
         private IEnumerable<int> ParseResponseCodes(string text)
         {
             return
-                from code in text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                from code in text.Split(',', StringSplitOptions.RemoveEmptyEntries)
                 select int.Parse(code);
         }
     }

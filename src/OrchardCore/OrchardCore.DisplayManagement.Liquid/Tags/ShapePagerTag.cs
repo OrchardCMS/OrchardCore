@@ -4,11 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
-
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Liquid.Ast;
 using OrchardCore.Mvc.Utilities;
@@ -19,7 +17,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         private static readonly HashSet<string> _properties = new HashSet<string>
         {
-            "PreviousText", "NextText", "PreviousClass", "NextClass"
+            "Id", "PreviousText", "NextText", "PreviousClass", "NextClass", "Tag", "ItemTag", "Attributes", "ItemAttributes"
         };
 
         public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
@@ -52,7 +50,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                         if (classes.Type == FluidValues.String)
                         {
-                            var values = classes.ToStringValue().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            var values = classes.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                             foreach (var value in values)
                             {

@@ -16,13 +16,16 @@ using OrchardCore.Navigation;
 namespace OrchardCore.AdminMenu.Controllers
 {
     [Admin]
-    public class NodeController : Controller, IUpdateModel
+    public class NodeController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<MenuItem> _displayManager;
         private readonly IEnumerable<IAdminNodeProviderFactory> _factories;
         private readonly IAdminMenuService _adminMenuService;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly dynamic New;
 
         public NodeController(
             IAuthorizationService authorizationService,
@@ -30,31 +33,25 @@ namespace OrchardCore.AdminMenu.Controllers
             IEnumerable<IAdminNodeProviderFactory> factories,
             IAdminMenuService adminMenuService,
             IShapeFactory shapeFactory,
-            IStringLocalizer<NodeController> stringLocalizer,
             IHtmlLocalizer<NodeController> htmlLocalizer,
-            INotifier notifier)
+            INotifier notifier,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _displayManager = displayManager;
             _factories = factories;
             _adminMenuService = adminMenuService;
             _authorizationService = authorizationService;
-
             New = shapeFactory;
             _notifier = notifier;
-            T = stringLocalizer;
+            _updateModelAccessor = updateModelAccessor;
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; set; }
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
-
 
         public async Task<IActionResult> List(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
@@ -74,7 +71,7 @@ namespace OrchardCore.AdminMenu.Controllers
             foreach (var factory in _factories)
             {
                 var treeNode = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(treeNode, this, "TreeThumbnail");
+                dynamic thumbnail = await _displayManager.BuildDisplayAsync(treeNode, _updateModelAccessor.ModelUpdater, "TreeThumbnail");
                 thumbnail.TreeNode = treeNode;
                 thumbnails.Add(factory.Name, thumbnail);
             }
@@ -92,7 +89,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
             var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
@@ -115,7 +112,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 AdminNode = treeNode,
                 AdminNodeId = treeNode.UniqueId,
                 AdminNodeType = type,
-                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: this, isNew: true)
+                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true)
             };
 
             return View(model);
@@ -126,7 +123,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
@@ -144,7 +141,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(treeNode, updater: this, isNew: true);
+            dynamic editor = await _displayManager.UpdateEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true);
             editor.TreeNode = treeNode;
 
             if (ModelState.IsValid)
@@ -167,7 +164,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
@@ -193,7 +190,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 AdminNodeType = treeNode.GetType().Name,
                 Priority = treeNode.Priority,
                 Position = treeNode.Position,
-                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: this, isNew: false)
+                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false)
             };
 
             model.Editor.TreeNode = treeNode;
@@ -206,7 +203,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
@@ -224,7 +221,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(treeNode, updater: this, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             if (ModelState.IsValid)
             {
@@ -249,7 +246,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
@@ -284,7 +281,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
@@ -317,7 +314,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();

@@ -18,14 +18,17 @@ using OrchardCore.Templates.ViewModels;
 namespace OrchardCore.Templates.Controllers
 {
     [Admin]
-    public class TemplateController : Controller, IUpdateModel
+    public class TemplateController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly TemplatesManager _templatesManager;
         private readonly AdminTemplatesManager _adminTemplatesManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
-        
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
+
         public TemplateController(
             IAuthorizationService authorizationService,
             TemplatesManager templatesManager,
@@ -42,14 +45,9 @@ namespace OrchardCore.Templates.Controllers
             New = shapeFactory;
             _siteService = siteService;
             _notifier = notifier;
-            T = stringLocalizer;
+            S = stringLocalizer;
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; set; }
-
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
 
         public Task<IActionResult> Admin(PagerParameters pagerParameters)
         {
@@ -61,12 +59,12 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (adminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -98,12 +96,12 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (adminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -115,12 +113,12 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -129,7 +127,19 @@ namespace OrchardCore.Templates.Controllers
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
+                }
+                else
+                {
+                    var templatesDocument = model.AdminTemplates
+                        ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
+                        : await _templatesManager.GetTemplatesDocumentAsync()
+                        ;
+
+                    if (templatesDocument.Templates.ContainsKey(model.Name))
+                    {
+                        ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
+                    }
                 }
             }
 
@@ -142,7 +152,11 @@ namespace OrchardCore.Templates.Controllers
                     : _templatesManager.UpdateTemplateAsync(model.Name, template)
                     );
 
-                if (submit != "SaveAndContinue")
+                if (submit == "SaveAndContinue")
+                {
+                    RedirectToAction(nameof(Edit), new { name = model.Name, adminTemplates = model.AdminTemplates, returnUrl });
+                }
+                else
                 {
                     return RedirectToReturnUrlOrIndex(returnUrl);
                 }
@@ -156,12 +170,12 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (adminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var templatesDocument = adminTemplates
@@ -193,24 +207,28 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var templatesDocument = model.AdminTemplates
-                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                : await _templatesManager.GetTemplatesDocumentAsync()
+                ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
+                : await _templatesManager.LoadTemplatesDocumentAsync()
                 ;
 
             if (ModelState.IsValid)
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
+                }
+                else if(!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && templatesDocument.Templates.ContainsKey(model.Name))
+                {
+                    ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
                 }
             }
 
@@ -236,7 +254,7 @@ namespace OrchardCore.Templates.Controllers
                 if (submit != "SaveAndContinue")
                 {
                     return RedirectToReturnUrlOrIndex(returnUrl);
-                }                
+                }
             }
 
             // If we got this far, something failed, redisplay form
@@ -249,17 +267,17 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (adminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var templatesDocument = adminTemplates
-                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                : await _templatesManager.GetTemplatesDocumentAsync()
+                ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
+                : await _templatesManager.LoadTemplatesDocumentAsync()
                 ;
 
             if (!templatesDocument.Templates.ContainsKey(name))
@@ -273,7 +291,7 @@ namespace OrchardCore.Templates.Controllers
                     );
 
             _notifier.Success(H["Template deleted successfully"]);
-            
+
             return RedirectToReturnUrlOrIndex(returnUrl);
         }
 

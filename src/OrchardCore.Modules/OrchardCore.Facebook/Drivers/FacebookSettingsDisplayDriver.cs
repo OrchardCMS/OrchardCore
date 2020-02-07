@@ -97,6 +97,7 @@ namespace OrchardCore.Facebook.Drivers
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
+
             return await EditAsync(settings, context);
         }
     }

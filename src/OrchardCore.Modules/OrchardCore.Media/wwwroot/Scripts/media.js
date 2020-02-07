@@ -3,6 +3,12 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var initialized;
 var mediaApp;
 var _root = {
@@ -261,9 +267,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return;
             }
 
-            confirmDialog({
-              title: $("#deleteFolder").data("title"),
-              message: $("#deleteFolder").data("title"),
+            confirmDialog(_objectSpread({}, $("#deleteFolder").data(), {
               callback: function callback(resp) {
                 if (resp) {
                   $.ajax({
@@ -281,7 +285,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                   });
                 }
               }
-            });
+            }));
           },
           createFolder: function createFolder() {
             $('#createFolderModal-errors').empty();
@@ -305,9 +309,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return;
             }
 
-            confirmDialog({
-              title: $("#deleteMedia").data("title"),
-              message: $("#deleteMedia").data("title"),
+            confirmDialog(_objectSpread({}, $("#deleteMedia").data(), {
               callback: function callback(resp) {
                 if (resp) {
                   var paths = [];
@@ -341,7 +343,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                   });
                 }
               }
-            });
+            }));
           },
           deleteMediaItem: function deleteMediaItem(media) {
             var self = this;
@@ -350,9 +352,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return;
             }
 
-            confirmDialog({
-              title: $("#deleteMedia").data("title"),
-              message: $("#deleteMedia").data("title"),
+            confirmDialog(_objectSpread({}, $("#deleteMedia").data(), {
               callback: function callback(resp) {
                 if (resp) {
                   $.ajax({
@@ -376,7 +376,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                   });
                 }
               }
-            });
+            }));
           },
           handleDragStart: function handleDragStart(media, e) {
             // first part of move media to folder:
@@ -544,6 +544,12 @@ $(document).bind('dragover', function (e) {
     }, 100);
   }
 });
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 // <folder> component
 Vue.component('folder', {
   template: '\
@@ -713,27 +719,29 @@ Vue.component('folder', {
         return;
       }
 
-      if (!confirm($('#moveMediaMessage').val())) {
-        return;
-      }
-
-      $.ajax({
-        url: $('#moveMediaListUrl').val(),
-        method: 'POST',
-        data: {
-          __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-          mediaNames: mediaNames,
-          sourceFolder: sourceFolder,
-          targetFolder: targetFolder
-        },
-        success: function success() {
-          bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
-        },
-        error: function error(_error2) {
-          console.error(_error2.responseText);
-          bus.$emit('mediaListMoved', _error2.responseText);
+      confirmDialog(_objectSpread({}, $("#moveMedia").data(), {
+        callback: function callback(resp) {
+          if (resp) {
+            $.ajax({
+              url: $('#moveMediaListUrl').val(),
+              method: 'POST',
+              data: {
+                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                mediaNames: mediaNames,
+                sourceFolder: sourceFolder,
+                targetFolder: targetFolder
+              },
+              success: function success() {
+                bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
+              },
+              error: function error(_error2) {
+                console.error(_error2.responseText);
+                bus.$emit('mediaListMoved', _error2.responseText);
+              }
+            });
+          }
         }
-      });
+      }));
     }
   }
 });
@@ -750,14 +758,15 @@ Vue.component('mediaItemsGrid', {
                     draggable="true" v-on:dragstart="dragStart(media, $event)"> \
                     <div class="thumb-container" :style="{height: thumbSize + \'px\'}"> \
                         <img v-if="media.mime.startsWith(\'image\')" \
-                                :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" \
+                                :src="buildMediaUrl(media.url, thumbSize)" \
                                 :data-mime="media.mime" \
                                 :style="{maxHeight: thumbSize + \'px\', maxWidth: thumbSize + \'px\'}" /> \
                         <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
                     </div> \
                 <div class="media-container-main-item-title card-body"> \
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button edit-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a> \
+                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button edit-button" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a> \
                         <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button" v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash"></i></a> \
+                        <a :href="media.url" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download"></i></a> \
                         <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span> \
                     </div> \
                  </li> \
@@ -786,6 +795,9 @@ Vue.component('mediaItemsGrid', {
         return element.url.toLowerCase() === media.url.toLowerCase();
       });
       return result;
+    },
+    buildMediaUrl: function buildMediaUrl(url, thumbSize) {
+      return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
     },
     toggleSelectionOfMedia: function toggleSelectionOfMedia(media) {
       bus.$emit('mediaToggleRequested', media);
@@ -835,7 +847,7 @@ Vue.component('mediaItemsTable', {
                           :key="media.name"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
-                                    <img v-if="media.mime.startsWith(\'image\')" draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
+                                    <img v-if="media.mime.startsWith(\'image\')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" /> \
                                     <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
                                 </div> \
                             </td> \
@@ -887,6 +899,9 @@ Vue.component('mediaItemsTable', {
         return element.url.toLowerCase() === media.url.toLowerCase();
       });
       return result;
+    },
+    buildMediaUrl: function buildMediaUrl(url, thumbSize) {
+      return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
     },
     changeSort: function changeSort(newSort) {
       bus.$emit('sortChangeRequested', newSort);
@@ -1478,14 +1493,15 @@ Vue.component('mediaFieldThumbsContainer', {
                     <div v-if="media.mediaPath!== \'not-found\'">\
                         <div class="thumb-container" :style="{height: thumbSize + \'px\'}" >\
                             <img v-if="media.mime.startsWith(\'image\')" \
-                            :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" \
+                            :src="buildMediaUrl(media.url, thumbSize)" \
                             :data-mime="media.mime"\
                             :style="{maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\'}"/>\
                             <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i>\
                          </div>\
                          <div class="media-container-main-item-title card-body">\
-                                <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button"\
-                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
+                                <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
+                                    v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
+                                <a :href="media.url" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download"></i></a> \
                                 <span class="media-filename card-text small" :title="media.mediaPath">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\
                          </div>\
                     </div>\
@@ -1496,7 +1512,7 @@ Vue.component('mediaFieldThumbsContainer', {
                             <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>\
                         </div>\
                         <div class="media-container-main-item-title card-body">\
-                            <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button"\
+                            <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
                                 v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
                             <span class="media-filename card-text small text-danger" :title="media.name">{{ media.name }}</span>\
                         </div>\
@@ -1528,6 +1544,9 @@ Vue.component('mediaFieldThumbsContainer', {
     },
     selectMedia: function selectMedia(media) {
       this.$parent.$emit('selectMediaRequested', media);
+    },
+    buildMediaUrl: function buildMediaUrl(url, thumbSize) {
+      return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
     }
   }
 });

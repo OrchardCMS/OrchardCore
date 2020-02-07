@@ -1,0 +1,25 @@
+.mathMlContainer {
+	position: relative;
+	
+	&[inline="false"] {
+		display: block;
+		width: 100%;
+	}
+	
+	&:hover {
+		pointer-events: none;
+
+		&::after {
+			content: '\270E';
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			background-color: rgba(255, 255, 255, 0.83);
+			box-shadow: 0 0 5px 5px rgba(255, 255, 255, 0.83);
+			cursor: pointer;
+			pointer-events: auto;
+		}
+	}
+}

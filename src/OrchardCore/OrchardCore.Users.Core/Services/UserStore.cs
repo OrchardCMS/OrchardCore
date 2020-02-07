@@ -32,7 +32,7 @@ namespace OrchardCore.Users.Services
             IRoleService roleService,
             ILookupNormalizer keyNormalizer,
             ILogger<UserStore> logger,
-            IEnumerable<IUserCreatedEventHandler> handlers)
+            IEnumerable<IUserEventHandler> handlers)
         {
             _session = session;
             _roleService = roleService;
@@ -40,7 +40,7 @@ namespace OrchardCore.Users.Services
             _logger = logger;
             Handlers = handlers;
         }
-        public IEnumerable<IUserCreatedEventHandler> Handlers { get; private set; }
+        public IEnumerable<IUserEventHandler> Handlers { get; private set; }
 
         public void Dispose()
         {
@@ -65,8 +65,8 @@ namespace OrchardCore.Users.Services
             {
                 await _session.CommitAsync();
 
-                var context = new CreateUserContext(user);
-                await Handlers.InvokeAsync(handler => handler.CreatedAsync(context), _logger);
+                var context = new UserContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
             catch
             {
@@ -464,7 +464,7 @@ namespace OrchardCore.Users.Services
 
             foreach (var claim in claims)
             {
-                ((User)user).UserClaims.Add(new UserClaim{ClaimType = claim.Type, ClaimValue = claim.Value});
+                ((User)user).UserClaims.Add(new UserClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
             }
 
             return Task.CompletedTask;
@@ -479,7 +479,7 @@ namespace OrchardCore.Users.Services
             if (newClaim == null)
                 throw new ArgumentNullException(nameof(newClaim));
 
-            foreach (var userClaim in ((User) user).UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type))
+            foreach (var userClaim in ((User)user).UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type))
             {
                 userClaim.ClaimValue = newClaim.Value;
                 userClaim.ClaimType = newClaim.Type;
@@ -508,7 +508,7 @@ namespace OrchardCore.Users.Services
         {
             if (claim == null)
                 throw new ArgumentNullException(nameof(claim));
-            
+
             var users = await _session.Query<User, UserByClaimIndex>(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value).ListAsync();
 
             return users.Cast<IUser>().ToList();

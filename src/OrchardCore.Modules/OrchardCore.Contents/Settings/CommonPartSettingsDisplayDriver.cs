@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.ViewModels;
@@ -12,16 +11,9 @@ namespace OrchardCore.Lists.Settings
 {
     public class CommonPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
-        public CommonPartSettingsDisplayDriver(IStringLocalizer<CommonPartSettingsDisplayDriver> localizer)
-        {
-            TS = localizer;
-        }
-
-        public IStringLocalizer TS { get; set; }
-
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(CommonPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(CommonPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -37,7 +29,7 @@ namespace OrchardCore.Lists.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(CommonPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(CommonPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -46,7 +38,7 @@ namespace OrchardCore.Lists.Settings
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                context.Builder.WithSettings(new CommonPartSettings { DisplayDateEditor = model.DisplayDateEditor, DisplayOwnerEditor = model.DisplayOwnerEditor});
+                context.Builder.WithSettings(new CommonPartSettings { DisplayDateEditor = model.DisplayDateEditor, DisplayOwnerEditor = model.DisplayOwnerEditor });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

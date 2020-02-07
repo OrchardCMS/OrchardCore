@@ -3,7 +3,7 @@
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
 
-<script asp-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js" debug-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-name="vuejs" at="Foot"></script>
 <script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="admin"></script>
 
 <h5>@T["Content Types"]</h5>
@@ -24,7 +24,7 @@
                 @T["Show All Content Types"]
             </div>
             <div class="card-body">
-                <fieldset class="form-group">
+                <div class="form-group">
                     <label asp-for="IconClass">@T["Default Icon"]</label>
 
                     <div class="input-group mb-3">
@@ -53,7 +53,7 @@
                     </div>
 
                     <span class="hint">@T["Select an icon. It will be shared by all menu items."]</span>
-                </fieldset>
+                </div>
             </div>
         </div>
 

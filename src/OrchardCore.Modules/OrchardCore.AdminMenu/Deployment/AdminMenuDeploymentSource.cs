@@ -30,11 +30,11 @@ namespace OrchardCore.AdminMenu.Deployment
             ));
 
             // For each AdminNode, store info about its concrete type: linkAdminNode, contentTypesAdminNode etc...
-            var serializer = new JsonSerializer() {  TypeNameHandling = TypeNameHandling.Auto };
+            var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Auto };
 
             foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
             {
-                var objectData = JObject.FromObject(adminMenu, serializer);                
+                var objectData = JObject.FromObject(adminMenu, serializer);
                 data.Add(objectData);
             }
 

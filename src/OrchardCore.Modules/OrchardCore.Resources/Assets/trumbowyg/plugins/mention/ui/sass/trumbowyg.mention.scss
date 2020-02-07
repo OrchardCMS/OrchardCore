@@ -1,0 +1,18 @@
+.trumbowyg-dropdown-mention {
+    button {
+        position: relative;
+        white-space: nowrap;
+
+        &:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 15%;
+            height: 100%;
+            background-size: 100%;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
+            pointer-events: none;
+        }
+    }
+}

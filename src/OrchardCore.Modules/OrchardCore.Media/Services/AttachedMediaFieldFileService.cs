@@ -142,7 +142,7 @@ namespace OrchardCore.Media.Services
 
         private string GetFileExtension(string path)
         {
-            var lastPoint = path.LastIndexOf(".");
+            var lastPoint = path.LastIndexOf('.');
             return lastPoint > -1 ? path.Substring(lastPoint) : "";
         }
 
