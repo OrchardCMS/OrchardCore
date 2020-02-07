@@ -11,6 +11,7 @@ namespace OrchardCore.Users.Services
     {
         Task<IUser> AuthenticateAsync(string userName, string password, Action<string, string> reportError);
         Task<IUser> CreateUserAsync(IUser user, string password, Action<string, string> reportError);
+        Task<bool> ChangeEmailAsync(IUser user, string newEmail, Action<string, string> reportError);
         Task<bool> ChangePasswordAsync(IUser user, string currentPassword, string newPassword, Action<string, string> reportError);
         Task<IUser> GetAuthenticatedUserAsync(ClaimsPrincipal principal);
         Task<IUser> GetUserAsync(string userName);

@@ -15,7 +15,7 @@ namespace OrchardCore.Mvc.Routing
             routes.MapAreaControllerRoute(
                name: descriptor.DisplayName,
                areaName: descriptor.RouteValues["area"],
-               pattern: _defaultAreaPattern,
+               pattern: _defaultAreaPattern.Replace("{action}", descriptor.ActionName),
                defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
             );
 

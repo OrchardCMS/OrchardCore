@@ -43,7 +43,7 @@ namespace OrchardCore.Email.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View();
@@ -54,7 +54,7 @@ namespace OrchardCore.Email.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
