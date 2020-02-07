@@ -1,6 +1,6 @@
 # Content Management
 
-Orchard Core allows you to define your content types and manage your content items dynamically.
+Orchard Core allows you to define your [content types](../glossary/#Content-Type) and manage your [content items](../glossary/#Content-Item) dynamically.
 
 ## How to Create Contents
 
