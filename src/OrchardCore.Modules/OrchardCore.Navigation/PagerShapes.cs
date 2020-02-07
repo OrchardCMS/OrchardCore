@@ -212,7 +212,6 @@ namespace OrchardCore.Navigation
                 return await DisplayAsync(Shape);
             }
 
-
             var firstText = FirstText ?? S["<<"];
             var previousText = PreviousText ?? S["<"];
             var nextText = NextText ?? S[">"];
@@ -274,6 +273,7 @@ namespace OrchardCore.Navigation
             {
                 routeData.Remove(pageKey); // to keep from having "page=1" in the query string
             }
+
             // first
             Shape.Add(await New.Pager_First(Value: firstText, RouteValues: new RouteValueDictionary(routeData), Pager: Shape, Disabled: Page < 2));
 
@@ -357,7 +357,8 @@ namespace OrchardCore.Navigation
             Shape.ItemTag = ItemTag;
 
             var attributes = Shape.Attributes;
-            foreach (var item in Attributes) {
+            foreach (var item in Attributes)
+            {
                 attributes.Add(item.Key, item.Value);
             }
 
