@@ -139,7 +139,7 @@ namespace OrchardCore.Infrastructure.Cache
             return value;
         }
 
-        public Task UpdateAsync<T>(T value, Func<T> factory = null, DistributedCacheEntryOptions options = null) where T : DistributedCacheData, new()
+        public Task UpdateAsync<T>(T value, DistributedCacheEntryOptions options = null) where T : DistributedCacheData, new()
         {
             if (_memoryCache.TryGetValue<T>(typeof(T).FullName, out var cached) && value == cached)
             {
