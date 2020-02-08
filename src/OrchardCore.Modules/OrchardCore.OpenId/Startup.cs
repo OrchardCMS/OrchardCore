@@ -64,9 +64,8 @@ namespace OrchardCore.OpenId
             services.TryAddEnumerable(new[]
             {
                 ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
-                ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>()
+                ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
             });
-
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -170,65 +169,11 @@ namespace OrchardCore.OpenId
         }
     }
 
-    [Feature(OpenIdConstants.Features.Management)]
-    public class ManagementStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            // Note: only the core OpenIddict services (e.g managers and custom stores) are registered here.
-            // The OpenIddict/JWT/validation handlers are lazily registered as active authentication handlers
-            // depending on the OpenID settings by OpenIdServerConfiguration and OpenIdValidationConfiguration.
-            services.AddOpenIddict()
-                .AddCore(options =>
-                {
-                    options.ReplaceApplicationManager(typeof(OpenIdApplicationManager<>))
-                           .ReplaceAuthorizationManager(typeof(OpenIdAuthorizationManager<>))
-                           .ReplaceScopeManager(typeof(OpenIdScopeManager<>))
-                           .ReplaceTokenManager(typeof(OpenIdTokenManager<>));
-
-                    options.AddApplicationStore(typeof(OpenIdApplicationStore<>))
-                           .AddAuthorizationStore(typeof(OpenIdAuthorizationStore<>))
-                           .AddScopeStore(typeof(OpenIdScopeStore<>))
-                           .AddTokenStore(typeof(OpenIdTokenStore<>));
-
-                    options.SetDefaultApplicationEntity<OpenIdApplication>()
-                           .SetDefaultAuthorizationEntity<OpenIdAuthorization>()
-                           .SetDefaultScopeEntity<OpenIdScope>()
-                           .SetDefaultTokenEntity<OpenIdToken>();
-                });
-
-            services.TryAddScoped(provider => (IOpenIdApplicationManager) provider.GetRequiredService<IOpenIddictApplicationManager>());
-            services.TryAddScoped(provider => (IOpenIdAuthorizationManager) provider.GetRequiredService<IOpenIddictAuthorizationManager>());
-            services.TryAddScoped(provider => (IOpenIdScopeManager) provider.GetRequiredService<IOpenIddictScopeManager>());
-            services.TryAddScoped(provider => (IOpenIdTokenManager) provider.GetRequiredService<IOpenIddictTokenManager>());
-
-            services.AddSingleton<IIndexProvider, OpenIdApplicationIndexProvider>();
-            services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();
-            services.AddSingleton<IIndexProvider, OpenIdScopeIndexProvider>();
-            services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();
-
-            services.AddScoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>();
-
-            services.AddScoped<IDataMigration, OpenIdMigrations>();
-
-            services.AddRecipeExecutionStep<OpenIdApplicationStep>();
-            services.AddRecipeExecutionStep<OpenIdScopeStep>();
-        }
-    }
-
     [Feature(OpenIdConstants.Features.Server)]
     public class ServerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
-            services.TryAddTransient<JwtBearerHandler>();
-            services.AddScoped<IDisplayDriver<OpenIdServerSettings>, OpenIdServerSettingsDisplayDriver>();
-            services.AddScoped<IDisplayManager<OpenIdServerSettings>, DisplayManager<OpenIdServerSettings>>();
-            services.AddSingleton<IBackgroundTask, OpenIdBackgroundTask>();
-
-            services.AddRecipeExecutionStep<OpenIdServerSettingsStep>();
-
             // Note: both the OpenIddict server and validation services are registered for the
             // server feature as token validation may be required for the userinfo endpoint.
             services.AddOpenIddict()
@@ -246,6 +191,7 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Scoped<IDisplayManager<OpenIdServerSettings>, DisplayManager<OpenIdServerSettings>>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdServerSettingsStep>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdApplicationStep>(),
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdScopeStep>(),
 
                 ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
 
@@ -359,6 +305,7 @@ namespace OrchardCore.OpenId
             {
                 ServiceDescriptor.Scoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>(),
                 ServiceDescriptor.Scoped<IDisplayManager<OpenIdValidationSettings>, DisplayManager<OpenIdValidationSettings>>(),
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>()
             });
 
             // Note: the OpenIddict extensions add an authentication options initializer that takes care of
@@ -379,8 +326,6 @@ namespace OrchardCore.OpenId
                 // Built-in initializers (note: the OpenIddict initializers are registered by AddValidation()).
                 ServiceDescriptor.Singleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>()
             });
-
-            services.AddRecipeExecutionStep<OpenIdValidationSettingsStep>();
         }
     }
 
