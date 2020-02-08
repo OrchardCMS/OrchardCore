@@ -16,6 +16,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Mvc.Utilities;
 using YesSql;
 using YesSql.Services;
 
@@ -66,9 +67,10 @@ namespace OrchardCore.Lucene.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
-        {
+        {   
             var permissionsProvider = _permissionProviders.FirstOrDefault(x => x.GetType().FullName == "OrchardCore.Lucene.Permissions");
             var permissions = await permissionsProvider.GetPermissionsAsync();
+
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var searchSettings = siteSettings.As<LuceneSettings>();
 
@@ -76,10 +78,11 @@ namespace OrchardCore.Lucene.Controllers
             {
                 if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index")))
                 {
-                    return Unauthorized();
+                    return this.ChallengeOrForbid();
                 }
             }
-            else {
+            else
+            {
                 Logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
                 return BadRequest("Search is not configured.");
             }

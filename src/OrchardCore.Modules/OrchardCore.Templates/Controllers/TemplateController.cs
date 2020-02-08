@@ -59,12 +59,12 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (adminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -96,12 +96,12 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (adminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -113,12 +113,12 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -170,12 +170,12 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (adminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var templatesDocument = adminTemplates
@@ -207,12 +207,12 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var templatesDocument = model.AdminTemplates
@@ -267,12 +267,12 @@ namespace OrchardCore.Templates.Controllers
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (adminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var templatesDocument = adminTemplates

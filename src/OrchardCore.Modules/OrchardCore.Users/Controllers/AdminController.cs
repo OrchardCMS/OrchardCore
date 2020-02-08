@@ -70,7 +70,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -243,7 +243,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var shape = await _userDisplayManager.BuildEditorAsync(new User(), updater: _updateModelAccessor.ModelUpdater, isNew: true);
@@ -257,7 +257,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = new User();
@@ -285,7 +285,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -305,7 +305,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -343,7 +343,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -378,7 +378,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -398,7 +398,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email) as User;

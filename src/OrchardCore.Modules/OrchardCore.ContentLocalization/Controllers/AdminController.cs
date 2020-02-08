@@ -48,7 +48,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.LocalizeContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var checkContentItem = await _contentManager.NewAsync(contentItem.ContentType);
@@ -58,7 +58,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, checkContentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var part = contentItem.As<LocalizationPart>();

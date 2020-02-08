@@ -22,11 +22,12 @@ namespace OrchardCore.Templates.Cms.Module
         public override void ConfigureServices(IServiceCollection services)
         {
 #if (AddPart)
-            services.AddContentPart<MyTestPart>();
-            services.AddScoped<IContentPartDisplayDriver, MyTestPartDisplayDriver>();
+            services.AddContentPart<MyTestPart>()
+                .UseDisplayDriver<MyTestPartDisplayDriver>()
+                .AddHandler<MyTestPartHandler>();
+
             services.AddScoped<IContentPartDefinitionDisplayDriver, MyTestPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IContentPartHandler, MyTestPartHandler>();
 #endif
         }
 
