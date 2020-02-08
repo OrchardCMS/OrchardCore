@@ -1,5 +1,5 @@
 mkdocs>=1.0
-mkdocs-material>=4.6.0
+mkdocs-material>=4.6.1
 markdown-fenced-code-tabs>=1.0
 mkdocs-git-revision-date-localized-plugin>=0.4.5
 mkdocs-minify-plugin>=0.1.0
