@@ -8,4 +8,4 @@ Orchard Core allows you to define the information to [index](../glossary/#Indexi
 - [SQL](../../reference/modules/SQL/README.md)
 - [Lucene](../../reference/modules/Lucene/README.md)
 - [Queries](../../reference/modules/Queries/README.md)
-- [Full text search implementation ](../../guides/implement-fulltext-search/README.md)
+- [Full text search implementation](../../guides/implement-fulltext-search/README.md)

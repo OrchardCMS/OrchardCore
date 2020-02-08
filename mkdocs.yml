@@ -60,7 +60,7 @@ nav:
         - Create a website: docs/guides/create-cms-application/README.md
         - Create a Decoupled CMS site: docs/guides/decoupled-cms/README.md
         - Add an admin menu: docs/guides/add-admin-menu/README.md
-        - Implement Full Text search: docs/guides/implement-fulltext-search.md/README.md
+        - Implement Full Text search: docs/guides/implement-fulltext-search/README.md
         - Install localization files: docs/guides/install-localization-files/README.md
         - Integrate Facebook plugins: docs/guides/integrate-facebook-plugins/README.md
         - Run code on startup: docs/guides/run-code-on-startup/README.md
