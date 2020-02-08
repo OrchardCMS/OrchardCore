@@ -171,9 +171,6 @@ namespace OrchardCore.Navigation
             // when an anonymous object is bound to an object shape parameter
             /*object RouteValues*/)
         {
-            Attributes = new Dictionary<string, string> { { "Attributes", "value" } };
-            ItemAttributes = new Dictionary<string, string> { { "ItemAttributes", "value" } };
-
             Shape.Properties["ItemTagName"] = ItemTagName;
             Shape.Properties["ItemAttributes"] = ItemAttributes;
 
@@ -335,11 +332,9 @@ namespace OrchardCore.Navigation
             string NextClass,
             string ItemTagName,
             IDictionary<string, string> Attributes,
-            IDictionary<string, string> ItemAttributes)
+            IDictionary<string, string> ItemAttributes,
+            Dictionary<string, string> UrlParams)
         {
-            Attributes = new Dictionary<string, string> { { "Attributes", "value" } };
-            ItemAttributes = new Dictionary<string, string> { { "ItemAttributes", "value" } };
-
             Shape.Properties["ItemTagName"] = ItemTagName;
 
             var attributes = Shape.Attributes;
@@ -357,19 +352,14 @@ namespace OrchardCore.Navigation
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "List";
 
-            var httpContextAccessor = DisplayContext.ServiceProvider.GetService<IHttpContextAccessor>();
-            var httpContext = httpContextAccessor.HttpContext;
             var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
 
-            if (httpContext != null)
+            // Allows to pass custom url params to PagerSlim
+            if (UrlParams != null)
             {
-                var queryString = httpContext.Request.Query;
-                if (queryString != null)
+                foreach (var item in UrlParams)
                 {
-                    foreach (var key in from string key in queryString.Keys where key != null && !routeData.ContainsKey(key) let value = queryString[key] select key)
-                    {
-                        routeData[key] = queryString[key];
-                    }
+                    routeData.Add(item.Key, item.Value);
                 }
             }
 
