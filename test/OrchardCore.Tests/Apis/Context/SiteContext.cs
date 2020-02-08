@@ -73,9 +73,11 @@ namespace OrchardCore.Tests.Apis.Context
 
         public async Task<string> CreateContentItem(string contentType, Action<ContentItem> func, bool draft = false)
         {
+            // Never generate a fake ContentItemId here as it should be created by the ContentManager.NewAsync() method.
+            // Controllers should use the proper sequence so that they call their event handlers.
+            // In that case it would skip calling ActivatingAsync, ActivatedAsync, InitializingAsync, InitializedAsync events
             var contentItem = new ContentItem
             {
-                ContentItemId = Guid.NewGuid().ToString(),
                 ContentType = contentType
             };
 

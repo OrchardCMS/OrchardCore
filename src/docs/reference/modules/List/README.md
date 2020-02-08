@@ -31,6 +31,16 @@ The following properties are available on the `ListPart` class.
 | `Content` | The raw content of the part. |
 | `ContentItem` | The content item containing this part. |
 
+### `ListPartSettings`
+
+The following properties are available on the `ListPartSettings` class.
+
+| Name | Type | Description |
+| -----| ---- |------------ |
+| `PageSize` | The number of content items returned per page. |
+| `EnableOrdering` | Flag to enable drag and drop ordering of content items. |
+| `ContainedContentTypes` | The content types that maybe contained by this part. |
+
 ### Template
 
 The following example is used to render the items of a `ListPart` and customize the pager.  

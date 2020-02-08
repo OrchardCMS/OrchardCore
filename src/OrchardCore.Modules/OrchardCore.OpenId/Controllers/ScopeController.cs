@@ -62,7 +62,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -93,7 +93,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new CreateOpenIdScopeViewModel();
@@ -116,7 +116,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (await _scopeManager.FindByNameAsync(model.Name) != null)
@@ -161,7 +161,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(id);
@@ -204,7 +204,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(model.Id);
@@ -264,7 +264,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(id);

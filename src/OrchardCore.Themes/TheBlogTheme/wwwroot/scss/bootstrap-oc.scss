@@ -1,6 +1,6 @@
 /*
 Bootstrap customization for The Blog theme
-By Orchard Core
+By Orchard Core Team
  */
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
@@ -9,3 +9,4 @@ By Orchard Core
 @import "modules/_flow.scss";
 @import "modules/_messages.scss";
 @import "modules/_widgets.scss";
+@import "modules/_pager.scss";

@@ -20,7 +20,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
     {
         private readonly IHostEnvironment _hostingEnviroment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly ILogger _logger;
         private readonly IEnumerable<IPlacementNodeFilterProvider> _placementParseMatchProviders;
 
         public ShapePlacementParsingStrategy(
@@ -29,7 +28,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             ILogger<ShapePlacementParsingStrategy> logger,
             IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)
         {
-            _logger = logger;
             _hostingEnviroment = hostingEnviroment;
             _shellFeaturesManager = shellFeaturesManager;
             _placementParseMatchProviders = placementParseMatchProviders;
