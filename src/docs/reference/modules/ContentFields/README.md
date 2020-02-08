@@ -217,17 +217,17 @@ This shape type will match a template file named `{FIELDTYPE}-{DISPLAYMODE}.Disp
 
 This template will need to render an `<option>` tag. Here is an example for a Header display mode options on the Text Field:
 
-``` html tab="Razor"
+``` html
 @{
     string currentDisplayMode = Model.DisplayMode;
 }
 <option value="Header" selected="@(currentDisplayMode == "Header")">@T["Header"]</option>
 ```
 
-Then you can create the display mode shape by adding a file named `{FIELDTYPE}_Display__{HEADER}` which is
-represented by a template file named `{FIELDTYPE}-{HEADER}.Display.cshtml`.
+Then, you can create the display mode shape by adding a file named `{FIELDTYPE}_Display__{DISPLAYMODE}` which is
+represented by a template file named `{FIELDTYPE}-{DISPLAYMODE}.Display.cshtml`.
 
-For instance the filename for the Header Display Mode on the Text Field is named `TextField-Header.Display.cshtml`.
+For instance, the filename for the Header Display Mode on the Text Field is named `TextField-Header.Display.cshtml`.
 
 ## Creating Custom Editors
 
