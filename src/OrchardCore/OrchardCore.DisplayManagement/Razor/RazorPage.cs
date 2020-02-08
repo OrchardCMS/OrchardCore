@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -382,7 +381,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             var zone = ThemeLayout[name];
 
-            if (required && zone != null && zone.Items.Count == 0)
+            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
             {
                 throw new InvalidOperationException("Zone not found: " + name);
             }

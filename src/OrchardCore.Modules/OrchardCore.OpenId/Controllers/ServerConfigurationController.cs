@@ -51,7 +51,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageServerSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var settings = await _serverService.GetSettingsAsync();
@@ -66,7 +66,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageServerSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var settings = await _serverService.GetSettingsAsync();

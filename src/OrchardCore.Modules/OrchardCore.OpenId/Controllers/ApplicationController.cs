@@ -60,7 +60,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -89,7 +89,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new CreateOpenIdApplicationViewModel();
@@ -120,7 +120,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!string.IsNullOrEmpty(model.ClientSecret) &&
@@ -220,7 +220,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var application = await _applicationManager.FindByPhysicalIdAsync(id);
@@ -277,7 +277,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var application = await _applicationManager.FindByPhysicalIdAsync(model.Id);
@@ -449,7 +449,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var application = await _applicationManager.FindByPhysicalIdAsync(id);

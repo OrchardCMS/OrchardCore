@@ -16,7 +16,6 @@ using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.GraphQL.Options;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.ContentTypes.Editors;
@@ -43,10 +42,11 @@ namespace OrchardCore.Autoroute
         public override void ConfigureServices(IServiceCollection services)
         {
             // Autoroute Part
-            services.AddContentPart<AutoroutePart>();
-            services.AddScoped<IContentPartDisplayDriver, AutoroutePartDisplay>();
+            services.AddContentPart<AutoroutePart>()
+                .UseDisplayDriver<AutoroutePartDisplay>()
+                .AddHandler<AutoroutePartHandler>();
+
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IContentPartHandler, AutoroutePartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
 

@@ -53,7 +53,7 @@ namespace OrchardCore.Recipes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
@@ -82,7 +82,7 @@ namespace OrchardCore.Recipes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));

@@ -56,7 +56,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var contentItem = await _contentManager.NewAsync(id);
@@ -75,7 +75,7 @@ namespace OrchardCore.Taxonomies.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem taxonomy;
@@ -147,7 +147,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies, taxonomy))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             // Look for the target taxonomy item in the hierarchy
@@ -175,7 +175,7 @@ namespace OrchardCore.Taxonomies.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem taxonomy;
@@ -233,7 +233,7 @@ namespace OrchardCore.Taxonomies.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem taxonomy;

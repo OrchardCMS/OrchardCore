@@ -1,19 +1,24 @@
 using System;
+using System.Collections.Generic;
 
 namespace OrchardCore.ContentManagement
 {
-    public class ContentPartOption
+    public class ContentPartOption : ContentPartOptionBase
     {
-        public ContentPartOption(Type contentPartType)
-        {
-            if (contentPartType == null)
-            {
-                throw new ArgumentNullException(nameof(contentPartType));
-            }
+        private readonly List<Type> _handlers = new List<Type>();
 
-            Type = contentPartType;
+        public ContentPartOption(Type contentPartType) : base(contentPartType) { }
+
+        public IReadOnlyList<Type> Handlers => _handlers;
+
+        internal void AddHandler(Type type)
+        {
+            _handlers.Add(type);
         }
 
-        public Type Type { get; }
+        internal void RemoveHandler(Type type)
+        {
+            _handlers.Remove(type);
+        }
     }
 }

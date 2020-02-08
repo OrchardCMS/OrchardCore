@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
@@ -72,19 +73,14 @@ namespace OrchardCore.Lists.Settings
                 context.Builder.WithSettings(new ListPartSettings
                 {
                     PageSize = model.PageSize,
-		            EnableOrdering = model.EnableOrdering,
+                    EnableOrdering = model.EnableOrdering,
                     ContainedContentTypes = model.ContainedContentTypes
                 });
 
                 // Update order of existing content if enable ordering has been turned on
                 if (settings.EnableOrdering != model.EnableOrdering && model.EnableOrdering == true)
                 {
-                    var containerItems = await _containerService.GetContainerItemsAsync(contentTypePartDefinition.ContentTypeDefinition.Name);
-                    foreach (var containerItem in containerItems)
-                    {
-                        var containedItems = await _containerService.GetContainedItemsAsync(containerItem.ContentItemId);
-                        await _containerService.UpdateContentItemOrdersAsync(containedItems, 0);
-                    }
+                    await _containerService.SetInitialOrder(contentTypePartDefinition.ContentTypeDefinition.Name);
                 }
             }
 

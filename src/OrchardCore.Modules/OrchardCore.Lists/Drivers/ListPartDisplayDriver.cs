@@ -31,7 +31,7 @@ namespace OrchardCore.Lists.Drivers
         {
             return
                 Combine(
-                    Initialize<ListPartViewModel>("ListPart", async model =>
+                    Initialize<ListPartViewModel>(GetDisplayShapeType(context), async model =>
                     {
                         var pager = await GetPagerSlimAsync(context);
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();

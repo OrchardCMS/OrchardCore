@@ -64,7 +64,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var activity = _activityLibrary.InstantiateActivity(activityName);
@@ -96,7 +96,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var workflowType = await _session.GetAsync<WorkflowType>(model.WorkflowTypeId);
@@ -129,7 +129,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var workflowType = await _session.GetAsync<WorkflowType>(workflowTypeId);
@@ -156,7 +156,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var workflowType = await _session.GetAsync<WorkflowType>(model.WorkflowTypeId);
