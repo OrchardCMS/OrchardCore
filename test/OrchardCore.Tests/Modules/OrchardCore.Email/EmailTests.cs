@@ -138,6 +138,51 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         }
 
         [Fact]
+        public async Task SendEmail_UsesCustomAutherAndSender()
+        {
+            var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
+
+            if (Directory.Exists(pickupDirectoryPath))
+            {
+                var directory = new DirectoryInfo(pickupDirectoryPath);
+                directory.GetFiles().ToList().ForEach(f => f.Delete());
+            }
+
+            Directory.CreateDirectory(pickupDirectoryPath);
+
+            var options = new Mock<IOptions<SmtpSettings>>();
+            options.Setup(o => o.Value).Returns(new SmtpSettings
+            {
+                DefaultSender = "Sébastien Ros <sebastienros@gmail.com>",
+                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
+                PickupDirectoryLocation = pickupDirectoryPath
+            });
+            var logger = new Mock<ILogger<SmtpService>>();
+            var localizer = new Mock<IStringLocalizer<SmtpService>>();
+            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var message = new MailMessage
+            {
+                To = "info@oc.com",
+                Subject = "Test",
+                Body = "Test Message",
+                Sender = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
+            };
+
+            var result = await smtp.SendAsync(message);
+
+            Assert.True(result.Succeeded);
+
+            var file = new DirectoryInfo(pickupDirectoryPath).GetFiles().FirstOrDefault();
+
+            Assert.NotNull(file);
+
+            var content = File.ReadAllText(file.FullName);
+
+            Assert.Contains("From: Sébastien Ros <sebastienros@gmail.com>", content);
+            Assert.Contains("Sender: Hisham Bin Ateya <hishamco_2007@hotmail.com>", content);
+        }
+
+        [Fact]
         public async Task SendEmail_UsesReplyTo()
         {
             var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
