@@ -1,10 +1,12 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
@@ -23,6 +25,7 @@ namespace OrchardCore.DisplayManagement.Razor
         private IShapeFactory _shapeFactory;
         private IOrchardDisplayHelper _orchardHelper;
         private ISite _site;
+        private StringWriter _writer;
 
         public override ViewContext ViewContext
         {
@@ -273,31 +276,45 @@ namespace OrchardCore.DisplayManagement.Razor
         public new void DefineSection(string name, Microsoft.AspNetCore.Mvc.Razor.RenderAsyncDelegate section)
         {
             var zone = ThemeLayout.Zones[name];
-            dynamic sectionShape = New.AspSection(SectionContent: SectionDelegate(name,section) ).GetAwaiter().GetResult();
+            dynamic sectionShape = New.AspSection().GetAwaiter().GetResult();
+            sectionShape.RenderAsyncDelegate = SectionDelegate(name, section, sectionShape);
 
             if (zone is Zones.ZoneOnDemand zoneOnDemand)
             {
-                sectionShape = zoneOnDemand.AddAsync(sectionShape);
+                zoneOnDemand.AddAsync(sectionShape).GetAwaiter().GetResult();
             }
             else
             {
-                sectionShape = zone.Add(sectionShape);
+                zone.Add(sectionShape);
             }
         }
 
-        private string SectionDelegate(string name, Microsoft.AspNetCore.Mvc.Razor.RenderAsyncDelegate oldDelegate)
+        private void BeginWriteSectionZone()
         {
-            string sectionContent = null;
-            Microsoft.AspNetCore.Mvc.Razor.RenderAsyncDelegate newDelegate = async () =>
+            if (_writer == null)
             {
-                var temporaryWriter = new System.IO.StringWriter();
-                PushWriter(temporaryWriter);
+                _writer = new StringWriter();
+            }
+        }
+
+        private void EndWriteSectionZone()
+        {
+            _writer.GetStringBuilder().Clear();
+        }
+
+        private RenderAsyncDelegate SectionDelegate(string name, RenderAsyncDelegate oldDelegate, dynamic shape)
+        {
+            RenderAsyncDelegate newDelegate = async () =>
+            {
+                BeginWriteSectionZone();
+                PushWriter(_writer);
                 await oldDelegate();
                 PopWriter();
-                sectionContent = temporaryWriter.ToString();
+                shape.HtmlContent = _writer.ToString();
+                EndWriteSectionZone();
+                shape.RenderAsyncDelegate = null;
             };
-            newDelegate().GetAwaiter().GetResult();
-            return sectionContent;
+            return newDelegate;
         }
 
         /// <summary>
