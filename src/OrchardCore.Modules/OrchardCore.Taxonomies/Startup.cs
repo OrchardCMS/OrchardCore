@@ -53,12 +53,13 @@ namespace OrchardCore.Taxonomies
             services.AddScoped<IPermissionProvider, Permissions>();
 
             // Taxonomy Part
-            services.AddScoped<IContentPartDisplayDriver, TaxonomyPartDisplayDriver>();
-            services.AddContentPart<TaxonomyPart>();
+            services.AddContentPart<TaxonomyPart>()
+                .UseDisplayDriver<TaxonomyPartDisplayDriver>();
 
             // Taxonomy Field
-            services.AddContentField<TaxonomyField>();
-            services.AddScoped<IContentFieldDisplayDriver, TaxonomyFieldDisplayDriver>();
+            services.AddContentField<TaxonomyField>()
+                .UseDisplayDriver<TaxonomyFieldDisplayDriver>();
+
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
 

@@ -328,6 +328,7 @@ namespace OrchardCore.Environment.Shell
                 if (_shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
                 {
                     _runningShellTable.Remove(settings);
+                    return;
                 }
             }
 

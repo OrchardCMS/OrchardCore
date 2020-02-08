@@ -161,7 +161,7 @@ namespace OrchardCore.Navigation
         }
 
         [Shape]
-        public async Task<IHtmlContent> Pager_Links(Shape Shape, dynamic DisplayAsync, dynamic New,
+        public async Task<IHtmlContent> Pager_Links(dynamic Shape, dynamic DisplayAsync, dynamic New,
             IHtmlHelper Html,
             DisplayContext DisplayContext,
             int Page,
@@ -174,11 +174,20 @@ namespace OrchardCore.Navigation
             object LastText,
             object GapText,
             string PagerId,
-            bool ShowNext
+            bool ShowNext,
+            string Tag,
+            string ItemTag,
+            IDictionary<string, string> Attributes,
+            IDictionary<string, string> ItemAttributes
             // parameter omitted to workaround an issue where a NullRef is thrown
             // when an anonymous object is bound to an object shape parameter
             /*object RouteValues*/)
         {
+            Shape.Tag = Tag;
+            Shape.ItemTag = ItemTag;
+            Shape.Attributes = Attributes;
+            Shape.ItemAttributes = ItemAttributes;
+
             var currentPage = Page;
             if (currentPage < 1)
                 currentPage = 1;
@@ -325,19 +334,39 @@ namespace OrchardCore.Navigation
 
         [Shape]
         public async Task<IHtmlContent> PagerSlim(dynamic Shape, dynamic DisplayAsync, dynamic New, IHtmlHelper Html,
+            string Id,
             object PreviousText,
             object NextText,
             string PreviousClass,
-            string NextClass)
+            string NextClass,
+            string Tag,
+            string ItemTag,
+            IDictionary<string, string> Attributes,
+            IDictionary<string, string> ItemAttributes,
+            Dictionary<string, object> UrlParams)
         {
             Shape.Classes.Add("pager");
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "List";
+            Shape.Id = Id;
+            Shape.Tag = Tag;
+            Shape.ItemTag = ItemTag;
+            Shape.Attributes = Attributes;
+            Shape.ItemAttributes = ItemAttributes;
 
             var previousText = PreviousText ?? S["<"];
             var nextText = NextText ?? S[">"];
 
             var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
+
+            // Allows to pass custom url params to PagerSlim
+            if (UrlParams != null)
+            {
+                foreach (var item in UrlParams)
+                {
+                    routeData.Add(item.Key, item.Value);
+                }
+            }
 
             string after = Shape.After;
             string before = Shape.Before;

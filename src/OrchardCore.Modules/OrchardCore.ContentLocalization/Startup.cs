@@ -1,16 +1,15 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Fluid;
 using OrchardCore.Admin;
 using OrchardCore.ContentLocalization.Controllers;
 using OrchardCore.ContentLocalization.Drivers;
-using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Indexing;
 using OrchardCore.ContentLocalization.Liquid;
 using OrchardCore.ContentLocalization.Models;
@@ -18,8 +17,6 @@ using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.Security;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentLocalization.ViewModels;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -48,10 +45,8 @@ namespace OrchardCore.ContentLocalization
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentPartDisplayDriver, LocalizationPartDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
-            services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
             services.AddContentLocalization();
 
             services.AddScoped<IPermissionProvider, Permissions>();

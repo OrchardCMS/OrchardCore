@@ -98,6 +98,7 @@ namespace MyNewWebsite
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
             app.UseOrchardCore();
         }
     }

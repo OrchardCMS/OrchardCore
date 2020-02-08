@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement
 {
@@ -13,7 +14,7 @@ namespace OrchardCore.ContentManagement
         {
             return contentItem.Get<TPart>(typeof(TPart).Name);
         }
-        
+
         /// <summary>
         /// Gets a content part by its type or create a new one.
         /// </summary>
@@ -23,7 +24,7 @@ namespace OrchardCore.ContentManagement
         {
             return contentItem.GetOrCreate<TPart>(typeof(TPart).Name);
         }
-        
+
         /// <summary>
         /// Adds a content part by its type.
         /// </summary>
@@ -75,5 +76,37 @@ namespace OrchardCore.ContentManagement
 
             return contentItem;
         }
+
+        /// <summary>
+        /// Merges properties to the contents of a content item.
+        /// </summary>
+        /// <typeparam name="properties">The object to merge.</typeparam>
+        /// <returns>The modified <see cref="ContentItem"/> instance.</returns>
+        public static ContentItem Merge(this ContentItem contentItem, object properties, JsonMergeSettings jsonMergeSettings = null)
+        {
+            var props = JObject.FromObject(properties);
+            var content = (JObject)contentItem.Content;
+
+            content.Merge(props, jsonMergeSettings);
+            contentItem.Elements.Clear();
+
+            if (props.ContainsKey(nameof(contentItem.DisplayText)))
+            {
+                contentItem.DisplayText = props[nameof(contentItem.DisplayText)].ToString();
+            }
+
+            if (props.ContainsKey(nameof(contentItem.Owner))) {
+                contentItem.Owner = props[nameof(contentItem.Owner)].ToString();
+                contentItem.Author = props[nameof(contentItem.Owner)].ToString();
+            }
+
+            if (props.ContainsKey(nameof(contentItem.Author)))
+            {
+                contentItem.Author = props[nameof(contentItem.Author)].ToString();
+            }
+
+            return contentItem;
+        }
+
     }
 }

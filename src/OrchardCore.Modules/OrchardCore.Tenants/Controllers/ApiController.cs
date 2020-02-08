@@ -11,11 +11,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using MimeKit;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Services;
@@ -77,12 +79,12 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!IsDefaultShell())
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
@@ -146,17 +148,22 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!IsDefaultShell())
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             if (!ModelState.IsValid)
             {
                 return BadRequest();
+            }
+
+            if (!MailboxAddress.TryParse(model.Email, out var emailAddress))
+            {
+                return BadRequest(S["Invalid email."]);
             }
 
             if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))

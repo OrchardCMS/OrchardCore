@@ -1,7 +1,12 @@
 {% zone "Header" %}
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
+    {% assign imagePath = Model.ContentItem.Content.BlogPost.Image.Paths.first %}
+    {% if imagePath == nil %}
     <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/post-bg.jpg" | href }}')">
+    {% else %}
+    <header class="masthead" style="background-image: url('{{ imagePath | asset_url }}')">
+    {% endif %}
         <div class="overlay"></div>
         <div class="container">
             <div class="row">

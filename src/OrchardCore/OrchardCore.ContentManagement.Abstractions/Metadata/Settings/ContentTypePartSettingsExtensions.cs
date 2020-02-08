@@ -19,6 +19,11 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
             return builder.MergeSettings<ContentTypePartSettings>(x => x.Position = position);
         }
 
+        public static ContentTypePartDefinitionBuilder WithDisplayMode(this ContentTypePartDefinitionBuilder builder, string displayMode)
+        {
+            return builder.MergeSettings<ContentTypePartSettings>(x => x.DisplayMode = displayMode);
+        }
+
         public static ContentTypePartDefinitionBuilder WithEditor(this ContentTypePartDefinitionBuilder builder, string editor)
         {
             return builder.MergeSettings<ContentTypePartSettings>(x => x.Editor = editor);

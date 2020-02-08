@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -51,7 +50,7 @@ namespace OrchardCore.Features.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
@@ -92,7 +91,7 @@ namespace OrchardCore.Features.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (model.FeatureIds == null || !model.FeatureIds.Any())

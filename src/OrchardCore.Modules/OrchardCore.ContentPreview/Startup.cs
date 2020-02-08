@@ -22,9 +22,10 @@ namespace OrchardCore.ContentPreview
             services.AddScoped<IPermissionProvider, Permissions>();
 
             // Preview Part
-            services.AddContentPart<PreviewPart>();
-            services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IContentPartHandler, PreviewPartHandler>();
+            services.AddContentPart<PreviewPart>()
+                .AddHandler<PreviewPartHandler>();
+
+            services.AddScoped<IDataMigration, Migrations>();            
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, PreviewStartupFilter>());
         }
