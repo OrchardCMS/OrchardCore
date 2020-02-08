@@ -134,7 +134,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
             var content = File.ReadAllText(file.FullName);
 
             Assert.Contains("From: My Name <youraddress@host.com>", content);
-            Assert.Contains("Sender: My Name <youraddress@host.com>", content);
+            Assert.Contains("Sender: Your Name <youraddress@host.com>", content);
         }
 
         [Fact]
