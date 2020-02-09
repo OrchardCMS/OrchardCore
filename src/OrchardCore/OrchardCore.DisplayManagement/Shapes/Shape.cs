@@ -146,7 +146,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             var tagName = defaultTagName;
 
-            if (shape.Properties.TryGetValue("Tag", out var value) && value is string valueString)
+            if (shape.Properties.TryGetValue("TagName", out var value) && value is string valueString)
             {
                 tagName = valueString;
             }

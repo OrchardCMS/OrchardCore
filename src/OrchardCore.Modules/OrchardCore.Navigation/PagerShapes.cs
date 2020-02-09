@@ -437,8 +437,10 @@ namespace OrchardCore.Navigation
         {
             if (Disabled)
             {
-                var parentLiTag = (TagBuilder)Shape.Properties["Tag"];
-                parentLiTag.AddCssClass("disabled");
+                if (Shape.Properties.TryGetValue("Tag", out var value) && value is TagBuilder tagBuilder)
+                {
+                    tagBuilder.AddCssClass("disabled");
+                }
             }
 
             var RouteValues = (object)((dynamic)Shape).RouteValues;
