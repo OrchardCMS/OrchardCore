@@ -35,7 +35,6 @@ namespace OrchardCore.Title.Settings
 
                 model.Options = settings.Options;
                 model.Pattern = settings.Pattern;
-                model.Required = settings.Required;
                 model.TitlePartSettings = settings;
             }).Location("Content");
         }
@@ -51,8 +50,7 @@ namespace OrchardCore.Title.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,
                 m => m.Pattern,
-                m => m.Options,
-                m => m.Required);
+                m => m.Options);
 
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
@@ -60,7 +58,7 @@ namespace OrchardCore.Title.Settings
             }
             else
             {
-                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options, Required = model.Required });
+                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

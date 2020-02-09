@@ -46,8 +46,8 @@ namespace OrchardCore.Title.Drivers
         {
             if(await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
             {
-                var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();;
-                if (settings.Required && String.IsNullOrWhiteSpace(model.Title))
+                var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
+                if (settings.Options == TitlePartOptions.EditableRequired && String.IsNullOrWhiteSpace(model.Title))
                 {
                     updater.ModelState.AddModelError(Prefix, S["A value is required for Title."]);
                 }

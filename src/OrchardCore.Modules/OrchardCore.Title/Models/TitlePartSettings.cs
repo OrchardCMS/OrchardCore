@@ -7,6 +7,7 @@ namespace OrchardCore.Title.Models
         Editable,
         GeneratedDisabled,
         GeneratedHidden,
+        EditableRequired
     }
     public class TitlePartSettings
     {
@@ -15,11 +16,6 @@ namespace OrchardCore.Title.Models
         /// </summary>
         [DefaultValue(TitlePartOptions.Editable)]
         public TitlePartOptions Options { get; set; } = TitlePartOptions.Editable;
-
-        /// <summary>
-        /// Gets or sets if value must be required
-        /// </summary>
-        public bool Required { get; set; }
 
         /// <summary>
         /// The pattern used to build the Title.
