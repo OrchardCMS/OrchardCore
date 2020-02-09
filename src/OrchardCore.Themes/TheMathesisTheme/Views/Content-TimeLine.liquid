@@ -1,0 +1,17 @@
+{% shape "menu", alias: "alias:site-menu", cache_id: "site-menu", cache_tag: "alias:site-menu" %}
+
+{% if Model.Content.LandingHeader %}
+	{{ Model.Content.LandingHeader | shape_render }}
+{% endif %}
+
+<div class="main main-raised" id="main">
+	<div class="container-fluid p-5">
+		<div class="text-center">
+			<h2 class="mth-section-title">{{ Model.ContentItem.Content.TitlePart.Title }}</h2>
+		</div>
+		<div class="w-90 mx-auto">
+			<p class="mth-text-base">{{ Model.ContentItem.Content.TimeLine.Description.Text }}</p>
+		</div>
+		{{ Model.Content.BagPart | shape_render }}
+	</div>
+</div>

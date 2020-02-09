@@ -1,0 +1,13 @@
+{% assign right-text = true %}
+<div class="col-md-10 ml-auto mr-auto pt-5">
+	<ul class="timeline">
+		{% for item in Model.ContentItems %}
+			{{ item | shape_build_display: "Detail" | shape_properties: RightText: right-text | shape_render }}
+			{% if right-text %}
+				{% assign right-text = false %}
+			{% else %}
+				{% assign right-text = true %}
+			{% endif %}
+		{% endfor %}
+	</ul>
+</div>

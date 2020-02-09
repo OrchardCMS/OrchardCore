@@ -21,13 +21,13 @@
 				</div>
 				<div id="tree" class="bd-tree">
 					{% assign current-url = Model.ContentItem | display_url %}
-					{% assign article-years = Queries.ArticleYears | query %}
+					{% assign article-years = Queries.PostsYears | query %}
 					<ul id="treeData" style="display: none;">
 						{% for year in article-years %}
 							{% assign current-year = year.Year %}
 							<li id="{{current-year}}" class="folder">
 								{{current-year}}
-								{% assign article-months = Queries.ArticlesMonthsByYear | query: year: current-year %}
+								{% assign article-months = Queries.PostsMonthsByYear | query: year: current-year %}
 								<ul>
 									{% for month in article-months %}
 										{% assign current-month = month.Month %}
@@ -37,7 +37,7 @@
 												document.getElementById("side-{{current-year}}-{{current-month}}").innerHTML = moment("{{current-year}}-{{current-month}}-01", "YYYY-M-D").format("MMM");
 											</script>
 											<ul>
-												{% assign articles-days = Queries.ArticlesByYearAndMonth | query: year:  current-year, month: current-month %}
+												{% assign articles-days = Queries.PostsByYearAndMonth | query: year:  current-year, month: current-month %}
 												{% for article in articles-days %}
 													{% assign article-content = article.ContentItemId | content_item_id %}
 													{% assign article-url = article-content | display_url %}
@@ -59,10 +59,6 @@
 							</li>
 						{% endfor %}
 					</ul>
-					{% for item in recentBlogPosts %}
-					{% assign item-content = Content.ContentItemId[item.ContentItemId] %}
-					{{ item-content | display_url}}
-					{% endfor %}
 				</div>
 				<div class="bd-sq-banner">
 					{% render_section "LeftSquareBanner", required: false %}
@@ -73,7 +69,7 @@
 					<b>Publish Date</b> {{ Model.ContentItem.PublishedUtc | date: "%d %b %Y" }}
 					<div class="blog-tags">
 						<b>Tags</b>
-						{% assign tags = Model.ContentItem.Content.Article.Tags.Text | split: "," %}
+						{% assign tags = Model.ContentItem.Content.Post.Tags.Text | split: "," %}
 						{% for tag in tags %}
 							<span class="badge badge-primary badge-pill">{{tag}}</span>
 						{% endfor %}
@@ -83,11 +79,11 @@
 					<div class="pt-2">
 						<nav id="navbar-toc" class="navbar mth-toc-nav">
 							<nav class="nav flex-column">
-								{% for header in Model.ContentItem.Content.MainContent.ContentItems %}
+								{% for header in Model.ContentItem.Content.BagPart.ContentItems %}
 									{% case header.ContentType %}
-										{% when "ArticleParagraph" %}
+										{% when "Paragraph" %}
 											{% assign indent = "pl-4" %}
-										{% when "ArticleSubParagraph" %}
+										{% when "SubParagraph" %}
 											{% assign indent = "pl-5" %}
 									{% endcase %}
 									<a class="mth-toc-link nav-link {{indent}}" href="#{{header.TitlePart.Title | slugify}}">{{header.TitlePart.Title}}</a>
@@ -101,7 +97,7 @@
 				</div>
 			</div>
 			<div class="col-md-9 col-xl-8 pl-md-5 bd-content py-2" style="position: relative;">
-				{{ Model.Content.MainContent | shape_render }}
+				{{ Model.Content.BagPart | shape_render }}
 			</div>
 		</div>
 	</div>

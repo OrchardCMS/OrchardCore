@@ -1,7 +1,7 @@
 <script type="text/javascript">
 	var tags = [
 	{% for item in Model.ContentItems %}
-		{% assign tags = item.Content.Post.Tags.Text | remove: " " | split: "," %}
+		{% assign tags = item.Content.Article.Tags.Text | remove: " " | split: "," %}
 		{% for tag in tags %}
 			"{{ tag }}",
 		{% endfor %}
@@ -61,11 +61,11 @@
 		{% endif %}
 	{% endfor %}
 {% else %}
-	{% for post in Model.ContentItems %}
-		{% assign tags = post.Content.Post.Tags.Text | remove: " " | split: "," %}
+	{% for article in Model.ContentItems %}
+		{% assign tags = article.Content.Article.Tags.Text | remove: " " | split: "," %}
 		{% for tag in tags %}
 			{% if tag == Request.Query.tag %}
-				{{post | shape_build_display: "Summary" | shape_properties: RightText: right-text | shape_render }}
+				{{article | shape_build_display: "Summary" | shape_properties: RightText: right-text | shape_render }}
 				{% if right-text %}
 					{% assign right-text = false %}
 				{% else %}

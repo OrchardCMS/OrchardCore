@@ -3,7 +3,7 @@
 	<div class="row">
 		<div class="col-md-4">
 			<div class="card-header card-header-image">
-				<img class="img" src="{{Model.ContentItem.Content.Article.Image.Paths.first | asset_url }}">
+				<img class="img" src="{{Model.ContentItem.Content.Post.Image.Paths.first | asset_url }}">
 			</div>
 		</div>
 		<div class="col-md-8">
@@ -11,9 +11,9 @@
 				<a href="{{Model.ContentItem | display_url }}">{{Model.ContentItem.Content.TitlePart.Title }}</a>
 			</h3>
 			<p>
-				{% assign tags = Model.ContentItem.Content.Article.Tags.Text | split: "," %}
+				{% assign tags = Model.ContentItem.Content.Post.Tags.Text | split: "," %}
 				{% for tag in tags %}
-				<span class="badge badge-primary badge-pill">{{tag}}</span>
+					<span class="badge badge-primary badge-pill">{{tag}}</span>
 				{% endfor %}
 			</p>
 			<p class="card-description mth-text-base">
@@ -39,7 +39,7 @@
 				<a href="{{Model.ContentItem | display_url }}">{{Model.ContentItem.Content.TitlePart.Title }}</a>
 			</h3>
 			<p>
-				{% assign tags = Model.ContentItem.Content.Article.Tags.Text | split: "," %}
+				{% assign tags = Model.ContentItem.Content.Post.Tags.Text | split: "," %}
 				{% for tag in tags %}
 				<span class="badge badge-primary badge-pill">{{tag}}</span>
 				{% endfor %}
@@ -59,7 +59,7 @@
 		</div>
 		<div class="col-md-4">
 			<div class="card-header card-header-image">
-				<img class="img" src="{{Model.ContentItem.Content.Article.Image.Paths.first | asset_url }}">
+				<img class="img" src="{{Model.ContentItem.Content.Post.Image.Paths.first | asset_url }}">
 			</div>
 		</div>
 	</div>

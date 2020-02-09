@@ -25,8 +25,15 @@ $(function () {
 			var node = data.node,
 				orgEvent = data.originalEvent;
 
-			if (node.data.href) {
-				window.open(node.data.href, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
+			if (node.folder) {
+				if (node.expanded && node.data.href) {
+					window.open(node.data.href, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
+				}
+			}
+			else {
+				if (node.data.href) {
+					window.open(node.data.href, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
+				}
 			}
 		}	});
 

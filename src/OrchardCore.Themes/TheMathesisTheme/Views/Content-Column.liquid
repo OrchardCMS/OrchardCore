@@ -21,48 +21,42 @@
 				</div>
 				<div id="tree" class="bd-tree">
 					{% assign current-url = Model.ContentItem | display_url %}
-					{% assign article-years = Queries.ArticleYears | query %}
+					{% assign magazine = Content.ContentItemId[Model.ContentItem.Content.ContainedPart.ListContentItemId] | shape_build_display %}
+					{% assign magazineTitle = magazine.ContentItem.Content.TitlePart.Title %}
 					<ul id="treeData" style="display: none;">
-						{% for year in article-years %}
-							{% assign current-year = year.Year %}
-							<li id="{{current-year}}" class="folder">
-								{{current-year}}
-								{% assign article-months = Queries.ArticlesMonthsByYear | query: year: current-year %}
-								<ul>
-									{% for month in article-months %}
-										{% assign current-month = month.Month %}
-											<li id="{{current-year}}.{{current-month}}" class="folder">
-												<span id="side-{{current-year}}-{{current-month}}"></span>
-												<script type="text/javascript">
-													document.getElementById("side-{{current-year}}-{{current-month}}").innerHTML = moment("{{current-year}}-{{current-month}}-01", "YYYY-M-D").format("MMM");
-												</script>
-												<ul>
-													{% assign articles-days = Queries.ArticlesByYearAndMonth | query: year:  current-year, month: current-month %}
-													{% for article in articles-days %}
-														{% assign article-content = article.ContentItemId | content_item_id %}
-														{% assign article-url = article-content | display_url %}
-														{% if current-url == article-url %}
-															{% assign node-class = "active focus" %}
-														{% else %}
-															{% assign node-class = "" %}
-														{% endif %}
-														<li id="{{current-year}}.{{current-month}}.{{ article.Day | raw }}" class="{{node-class}}">
-															<a href="{{ article-url }}" target = "_top" >
-																{{article.Day}} - {{ article-content.Content.TitlePart.Title }}
-															</a>
-														</li>
-													{% endfor %}
-												</ul>
-											</li>
-									{% endfor %}
-								</ul>
-							</li>
-						{% endfor %}
+						<li id="{{magazineTitle}}" class="folder expanded">
+							{{magazineTitle}}
+							{% assign magazine-columns = magazine.Content.ListPart%}
+							<ul>
+								{% for columnContentItem in magazine-columns.ContentItems %}
+									{% assign column = columnContentItem | shape_build_display %}
+									{% assign columnUrl = columnContentItem | display_url %}
+									{% assign column-title = columnContentItem.Content.TitlePart.Title%}
+									{% if current-url == columnUrl %}
+										{% assign node-class = "folder expanded" %}
+									{% else %}
+										{% assign node-class = "folder" %}
+									{% endif %}
+									<li id="{{magazineTitle}}.{{column-title}}" class="{{node-class}}">
+										<a href="{{columnUrl}}" target ="_top">
+											{{column-title}}
+										</a>
+										<ul>
+											{% for article in column.Content.ListPart.ContentItems %}
+												{% assign article-content = article.ContentItemId | content_item_id %}
+												{% assign article-url = article-content | display_url %}
+												<li id="{{magazineTitle}}.{{column-title}}.{{ article-content.Content.TitlePart.Title }}">
+													<a href="{{ article-url }}" target = "_top" >
+														{{ article-content.Content.TitlePart.Title }}
+													</a>
+												</li>
+											{% endfor %}
+										</ul>
+									</li>
+								{% endfor%}
+							</ul>
+						</li>
 					</ul>
-					{% for item in recentBlogPosts %}
-					{% assign item-content = Content.ContentItemId[item.ContentItemId] %}
-					{{ item-content | display_url}}
-					{% endfor %}
 				</div>
 				<div class="bd-sq-banner">
 					{% render_section "LeftSquareBanner", required: false %}
