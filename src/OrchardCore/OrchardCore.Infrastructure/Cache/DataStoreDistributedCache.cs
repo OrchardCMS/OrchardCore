@@ -183,10 +183,10 @@ namespace OrchardCore.Infrastructure.Cache
             await _distributedCache.SetAsync(key, data, options);
             await _distributedCache.SetAsync("ID_" + key, idData, options);
 
-            // The unhappy path is when we were not the last to update the store but the last to update the cache,
-            // so we check if the first condition is true meaning that we may have set the cache with stale data.
+            // In case we were the last to update the cache, it may be out of sync
+            // if we didn't update it with the last stored value.
 
-            if ((await _dataStore.GetForCachingAsync<T>()).Identifier == value.Identifier)
+            if ((await _dataStore.GetForCachingAsync<T>()).Identifier != value.Identifier)
             {
                 await InvalidateAsync<T>();
             }

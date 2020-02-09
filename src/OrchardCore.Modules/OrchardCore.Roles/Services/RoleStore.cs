@@ -66,7 +66,6 @@ namespace OrchardCore.Roles.Services
                 return _dataStoreDistributedCache.UpdateAsync(roles);
             });
 
-            // Specific to 'RoleStore'.
             _updating = true;
 
             return Task.CompletedTask;
