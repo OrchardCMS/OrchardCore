@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -17,10 +18,14 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
+        private readonly IStringLocalizer<TaxonomyFieldDisplayDriver> S;
 
-        public TaxonomyFieldTagsDisplayDriver(IContentManager contentManager)
+        public TaxonomyFieldTagsDisplayDriver(
+            IContentManager contentManager,
+            IStringLocalizer<TaxonomyFieldDisplayDriver> s)
         {
             _contentManager = contentManager;
+            S = s;
         }
 
         public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)
@@ -65,6 +70,13 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
                 field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
+
+                if (settings.Required && field.TermContentItemIds.Length == 0)
+                {
+                    updater.ModelState.AddModelError(
+                        nameof(EditTaxonomyFieldViewModel.TermEntries),
+                        S["A value is required for '{0}'", context.PartFieldDefinition.Name]);
+                }
 
                 // Update display text for tags.
                 var taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
