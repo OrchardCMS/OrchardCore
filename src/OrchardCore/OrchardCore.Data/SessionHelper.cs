@@ -6,7 +6,7 @@ using YesSql;
 namespace OrchardCore.Data
 {
     /// <summary>
-    /// Represents a class that provides helper methods for the <see cref="ISession"/>.
+    /// Provides helper methods for the <see cref="ISession"/>.
     /// </summary>
     public class SessionHelper : ISessionHelper
     {
@@ -64,8 +64,20 @@ namespace OrchardCore.Data
             return factory?.Invoke() ?? new T();
         }
 
+        public Task UpdateAsync<T>(T value, Func<T, Task> updateCache) where T : class, new()
+        {
+            _session.Save(value, checkConcurrency: true);
+
+            AfterCommitSuccess<T>(() =>
+            {
+                return updateCache(value);
+            });
+
+            return Task.CompletedTask;
+        }
+
         /// <inheritdoc />
-        public void RegisterBeforeCommit<T>(CommitDelegate beforeCommit)
+        public void BeforeCommit<T>(CommitDelegate beforeCommit)
         {
             if (!_beforeCommits.Contains(typeof(T)))
             {
@@ -75,7 +87,7 @@ namespace OrchardCore.Data
         }
 
         /// <inheritdoc />
-        public void RegisterAfterCommitSuccess<T>(CommitDelegate afterCommit)
+        public void AfterCommitSuccess<T>(CommitDelegate afterCommit)
         {
             if (!_afterCommitsSuccess.Contains(typeof(T)))
             {
@@ -85,7 +97,7 @@ namespace OrchardCore.Data
         }
 
         /// <inheritdoc />
-        public void RegisterAfterCommit<T>(CommitDelegate afterCommit)
+        public void AfterCommit<T>(CommitDelegate afterCommit)
         {
             if (!_afterCommits.Contains(typeof(T)))
             {

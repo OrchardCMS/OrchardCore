@@ -13,14 +13,11 @@ using OrchardCore.Infrastructure.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
 using OrchardCore.Security;
-using YesSql;
 
 namespace OrchardCore.Roles.Services
 {
     public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
-        private readonly ISession _session;
-        private readonly ISessionHelper _sessionHelper;
         private readonly IDataStoreDistributedCache<ISessionHelper> _dataStoreDistributedCache;
         private readonly IServiceProvider _serviceProvider;
         private readonly IStringLocalizer<RoleStore> S;
@@ -28,15 +25,11 @@ namespace OrchardCore.Roles.Services
         private bool _updating;
 
         public RoleStore(
-            ISession session,
-            ISessionHelper sessionHelper,
             IDataStoreDistributedCache<ISessionHelper> dataStoreDistributedCache,
             IServiceProvider serviceProvider,
             IStringLocalizer<RoleStore> stringLocalizer,
             ILogger<RoleStore> logger)
         {
-            _session = session;
-            _sessionHelper = sessionHelper;
             _dataStoreDistributedCache = dataStoreDistributedCache;
             _serviceProvider = serviceProvider;
             S = stringLocalizer;
@@ -59,16 +52,9 @@ namespace OrchardCore.Roles.Services
 
         private Task UpdateRolesAsync(RolesDocument roles)
         {
-            _session.Save(roles, checkConcurrency: true);
-
-            _sessionHelper.RegisterAfterCommitSuccess<RolesDocument>(() =>
-            {
-                return _dataStoreDistributedCache.UpdateAsync(roles);
-            });
-
             _updating = true;
 
-            return Task.CompletedTask;
+            return _dataStoreDistributedCache.UpdateAsync(roles);
         }
 
         #region IRoleStore<IRole>

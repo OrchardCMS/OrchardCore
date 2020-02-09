@@ -146,7 +146,10 @@ namespace OrchardCore.Infrastructure.Cache
                 throw new ArgumentException("Can't update a cached object");
             }
 
-            return SetInternalAsync(value, options ?? new DistributedCacheEntryOptions());
+            return _dataStore.UpdateAsync(value, updateCache: value =>
+            {
+                return SetInternalAsync(value, options ?? new DistributedCacheEntryOptions());
+            });
         }
 
         private async Task SetInternalAsync<T>(T value, DistributedCacheEntryOptions options) where T : DistributedCacheData, new()

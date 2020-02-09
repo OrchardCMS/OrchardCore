@@ -19,5 +19,10 @@ namespace OrchardCore.Data
         /// For a full isolation, it needs to be used in pair with <see cref="LoadForUpdateAsync"/>.
         /// </summary>
         Task<T> GetForCachingAsync<T>(Func<T> factory = null) where T : class, new();
+
+        /// <summary>
+        /// Updates the store with the provided value and then uses the delegate to update the cache.
+        /// </summary>
+        Task UpdateAsync<T>(T value, Func<T, Task> updateCache) where T : class, new();
     }
 }
