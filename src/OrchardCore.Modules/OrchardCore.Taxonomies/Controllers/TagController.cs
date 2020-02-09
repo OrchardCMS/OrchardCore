@@ -73,7 +73,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return BadRequest();
             }
 
-            // Tag terms are always added to the parent.
+            // Tag terms are always added to the root taxonomy element.
             taxonomy.Alter<TaxonomyPart>(part => part.Terms.Add(contentItem));
 
             // Auto publish draftable taxonomies when creating a new tag term.

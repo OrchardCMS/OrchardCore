@@ -19,8 +19,7 @@
     "explorationTagContentItemId": "[js:uuid()]",
     "spaceTagContentItemId": "[js:uuid()]",
     "categoriesContentItemId": "[js:uuid()]",
-    "categoryTravelContentItemId": "[js:uuid()]",
-    "categoryCookingContentItemId": "[js:uuid()]"
+    "categoryTravelContentItemId": "[js:uuid()]"
     // "now": "[js: new Date().toISOString()]"
   },
 
@@ -251,7 +250,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "2"
-				        }
+                }
               }
             },
             {
@@ -295,7 +294,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "1"
-				        },
+                },
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
@@ -317,7 +316,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "2"
-				        }
+                }
               }
             },
             {
@@ -326,7 +325,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "3"
-				        }
+                }
               }
             },
             {
@@ -634,7 +633,7 @@
               }
             }
           ]
-        }		
+        }
       ],
       "ContentParts": [
         {
@@ -646,7 +645,8 @@
               "Name": "Image",
               "Settings": {
                 "ContentPartFieldSettings": {
-                  "DisplayName": "Banner Image"
+                  "DisplayName": "Banner Image",
+				  "Position": "0"
                 },
                 "ContentIndexSettings": {
                   "Included": false,
@@ -657,7 +657,6 @@
                   "Template": null
                 },
                 "MediaFieldSettings": {
-                  "Hint": null,
                   "Required": true,
                   "Multiple": false
                 }
@@ -674,7 +673,65 @@
               "Name": "Subtitle",
               "Settings": {
                 "ContentPartFieldSettings": {
-                  "DisplayName": "Subtitle"
+                  "DisplayName": "Subtitle",
+                  "Position": "0"
+                }
+              }
+            },
+			{
+			  "FieldName": "MediaField",
+			  "Name": "Image",
+			  "Settings": {
+				"ContentPartFieldSettings": {
+				  "DisplayName": "Banner Image",
+                  "Position": "1"
+				},
+				"ContentIndexSettings": {
+				  "Included": false,
+				  "Stored": false,
+				  "Analyzed": false,
+				  "Sanitized": false,
+				  "Tokenized": false,
+				  "Template": null
+				},
+				"MediaFieldSettings": {
+				  "Required": true,
+				  "Multiple": false
+				}
+			  }  
+			},   			
+            {
+              "FieldName": "TaxonomyField",
+              "Name": "Tags",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Tags",
+                  "Editor": "Tags",
+                  "DisplayMode": "Tags",
+                  "Position": "2"
+                },
+                "ContentIndexSettings": {},
+                "TaxonomyFieldSettings": {
+                  "Required": true,
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
+                },
+                "TaxonomyFieldTagsEditorSettings": {}
+              }
+            },
+            {
+              "FieldName": "TaxonomyField",
+              "Name": "Category",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Category",
+                  "Position": "3"
+                },
+                "ContentIndexSettings": {},
+                "TaxonomyFieldSettings": {
+                  "Required": true,
+                  "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]",
+                  "Unique": true,
+                  "LeavesOnly": true
                 }
               }
             }
@@ -874,7 +931,9 @@
           "Latest": true,
           "Published": true,
           "MenuPart": {},
-          "TitlePart": { "Title": "Main Menu" },
+          "TitlePart": {
+            "Title": "Main Menu"
+          },
           "MenuItemsListPart": {
             "MenuItems": [
               {
@@ -895,7 +954,9 @@
               }
             ]
           },
-          "AliasPart": { "Alias": "main-menu" }
+          "AliasPart": {
+            "Alias": "main-menu"
+          }
         },
         {
           "ContentItemId": "[js: variables('tagsContentItemId')]",
@@ -915,7 +976,6 @@
                 "ContentItemId": "[js: variables('earthTagContentItemId')]",
                 "ContentType": "Tag",
                 "DisplayText": "Earth",
-                "Tag": {},
                 "TitlePart": {
                   "Title": "Earth"
                 }
@@ -924,7 +984,6 @@
                 "ContentItemId": "[js: variables('explorationTagContentItemId')]",
                 "ContentType": "Tag",
                 "DisplayText": "Exploration",
-                "Tag": {},
                 "TitlePart": {
                   "Title": "Exploration"
                 }
@@ -933,7 +992,6 @@
                 "ContentItemId": "[js: variables('spaceTagContentItemId')]",
                 "ContentType": "Tag",
                 "DisplayText": "Space",
-                "Tag": {},
                 "TitlePart": {
                   "Title": "Space"
                 }
@@ -942,7 +1000,6 @@
             "TermContentType": "Tag"
           }
         },
-
         {
           "ContentItemId": "[js: variables('categoriesContentItemId')]",
           "ContentType": "Taxonomy",
@@ -969,24 +1026,11 @@
                 "TitlePart": {
                   "Title": "Travel"
                 }
-              },
-              {
-                "ContentItemId": "[js: variables('categoryCookingContentItemId')]",
-                "ContentType": "Category",
-                "DisplayText": "Cooking",
-                "Category": {
-                  "Icon": {
-                    "Text": "fas fa-utensils"
-                  }
-                },
-                "TitlePart": {
-                  "Title": "Cooking"
-                }
               }
             ],
             "TermContentType": "Category"
           }
-        },		
+        },
         {
           "ContentType": "Blog",
           "ContentItemId": "[js: variables('blogContentItemId')]",
@@ -1050,19 +1094,20 @@
                 "[js: variables('spaceTagContentItemId')]"
               ],
               "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]",
-              "Tags": [
-                "Earth",
-                "Exploration",
-                "Space"
-              ]
+			  "TagElement":{ 
+			    "Tags":[ 
+				  "Earth",
+				  "Exploration",
+				  "Space"
+				]
+			  }
             },
             "Category": {
               "TermContentItemIds": [
                 "[js: variables('categoryTravelContentItemId')]"
               ],
-              "Tags": [],
               "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]"
-            }			
+            }
           }
         },
         {

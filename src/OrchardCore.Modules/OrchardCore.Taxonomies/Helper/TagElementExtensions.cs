@@ -1,8 +1,11 @@
+using System;
+using OrchardCore.ContentManagement;
 using OrchardCore.Taxonomies.Fields;
+using OrchardCore.Taxonomies.Models;
 
 namespace OrchardCore.Taxonomies.Helper
 {
-    public static class TagExtensions
+    public static class TagElementExtensions
     {
         /// <summary>
         /// Tags are a less well known property of a taxonomy field
@@ -10,7 +13,9 @@ namespace OrchardCore.Taxonomies.Helper
         /// </summary>
         public static string[] GetTags(this TaxonomyField taxonomyField)
         {
-            return taxonomyField.Content.Tags.ToObject<string[]>();
+            var tagsElement = taxonomyField.Get<TagElement>(nameof(TagElement));
+
+            return tagsElement != null ? tagsElement.Tags : Array.Empty<string>();
         }
     }
 }

@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Taxonomies.Fields;
@@ -33,72 +31,59 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)
         {
-            if (String.IsNullOrEmpty(context.PartFieldDefinition.DisplayMode()))
+            return Initialize<DisplayTaxonomyFieldViewModel>(GetDisplayShapeType(context), model =>
             {
-                return Initialize<DisplayTaxonomyFieldViewModel>(GetDisplayShapeType(context), model =>
-                {
-                    model.Field = field;
-                    model.Part = context.ContentPart;
-                    model.PartFieldDefinition = context.PartFieldDefinition;
-                })
-                .Location("Detail", "Content")
-                .Location("Summary", "Content");
-            }
-
-            return null;
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
+            })
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(TaxonomyField field, BuildFieldEditorContext context)
         {
-            if (String.IsNullOrEmpty(context.PartFieldDefinition.Editor()))
+            return Initialize<EditTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                return Initialize<EditTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
+                var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+                model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
+
+                if (model.Taxonomy != null)
                 {
-                    var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
-                    model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
+                    var termEntries = new List<TermEntry>();
+                    TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
 
-                    if (model.Taxonomy != null)
-                    {
-                        var termEntries = new List<TermEntry>();
-                        TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
+                    model.TermEntries = termEntries;
+                    model.UniqueValue = termEntries.FirstOrDefault(x => x.Selected)?.ContentItemId;
+                }
 
-                        model.TermEntries = termEntries;
-                        model.UniqueValue = termEntries.FirstOrDefault(x => x.Selected)?.ContentItemId;
-                    }
-
-                    model.Field = field;
-                    model.Part = context.ContentPart;
-                    model.PartFieldDefinition = context.PartFieldDefinition;
-                });
-            }
-
-            return null;
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
+            });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TaxonomyField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            if (String.IsNullOrEmpty(context.PartFieldDefinition.Editor()))
+            var model = new EditTaxonomyFieldViewModel();
+
+            if (await updater.TryUpdateModelAsync(model, Prefix))
             {
-                var model = new EditTaxonomyFieldViewModel();
+                var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
 
-                if (await updater.TryUpdateModelAsync(model, Prefix))
+                field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
+                field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
+
+                if (settings.Unique && !String.IsNullOrEmpty(model.UniqueValue))
                 {
-                    var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+                    field.TermContentItemIds = new[] { model.UniqueValue };
+                }
 
-                    field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
-                    field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
-
-                    if (settings.Unique && !String.IsNullOrEmpty(model.UniqueValue))
-                    {
-                        field.TermContentItemIds = new[] { model.UniqueValue };
-                    }
-
-                    if (settings.Required && field.TermContentItemIds.Length == 0)
-                    {
-                        updater.ModelState.AddModelError(
-                            nameof(EditTaxonomyFieldViewModel.TermEntries),
-                            S["A value is required for '{0}'", context.PartFieldDefinition.Name]);
-                    }
+                if (settings.Required && field.TermContentItemIds.Length == 0)
+                {
+                    updater.ModelState.AddModelError(
+                        nameof(EditTaxonomyFieldViewModel.TermEntries),
+                        S["A value is required for '{0}'", context.PartFieldDefinition.Name]);
                 }
             }
 
