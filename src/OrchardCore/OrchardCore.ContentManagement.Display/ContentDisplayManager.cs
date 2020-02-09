@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
@@ -33,6 +34,7 @@ namespace OrchardCore.ContentManagement.Display
         private readonly IShapeFactory _shapeFactory;
         private readonly IThemeManager _themeManager;
         private readonly ILayoutAccessor _layoutAccessor;
+        private readonly IDisplayHelper _displayHelper;
 
         public ContentItemDisplayManager(
             IEnumerable<IContentDisplayHandler> handlers,
@@ -42,7 +44,8 @@ namespace OrchardCore.ContentManagement.Display
             IShapeFactory shapeFactory,
             IThemeManager themeManager,
             ILogger<ContentItemDisplayManager> logger,
-            ILayoutAccessor layoutAccessor
+            ILayoutAccessor layoutAccessor,
+            IDisplayHelper displayHelper
             ) : base(shapeTableManager, shapeFactory, themeManager)
         {
             _handlers = handlers;
@@ -52,6 +55,7 @@ namespace OrchardCore.ContentManagement.Display
             _shapeFactory = shapeFactory;
             _themeManager = themeManager;
             _layoutAccessor = layoutAccessor;
+            _displayHelper = displayHelper;
 
             Logger = logger;
         }
@@ -175,6 +179,50 @@ namespace OrchardCore.ContentManagement.Display
             await _contentHandlers.Reverse().InvokeAsync((handler, updateContentContext) => handler.UpdatedAsync(updateContentContext), updateContentContext, Logger);
 
             return context.Shape;
+        }
+
+        //Build a Mock editor Shape to register styles and script to document
+        //Shape result does not render.
+        public async Task RegisterEditorResources(ContentItem contentItem)
+        {
+            IUpdateModel updater = new NullModelUpdater();
+            bool isNew = true;
+            string groupId = string.Empty;
+            string htmlFieldPrefix = "MockLayout_" + Guid.NewGuid().ToString("n");
+
+            if (contentItem == null)
+            {
+                throw new ArgumentNullException(nameof(contentItem));
+            }
+
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+            var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
+
+            var actualShapeType = (stereotype ?? "Content") + "_Edit";
+
+            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
+            itemShape.ContentItem = contentItem;
+
+            // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
+            ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
+
+            //mock layout
+            var mockLayout = await _shapeFactory.CreateAsync("MockLayout", () => new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("Zone"))));
+
+            var context = new BuildEditorContext(
+                itemShape,
+                groupId,
+                isNew,
+                htmlFieldPrefix,
+                _shapeFactory,
+                mockLayout,
+                new ModelStateWrapperUpdater(updater)
+            );
+
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildEditorAsync(contentItem, context), contentItem, context, Logger);
+
+            await _displayHelper.ShapeExecuteAsync(context.Shape);
         }
     }
 }
