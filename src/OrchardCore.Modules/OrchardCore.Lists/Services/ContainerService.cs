@@ -9,6 +9,7 @@ using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using OrchardCore.Navigation;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Lists.Services
 {
@@ -24,17 +25,6 @@ namespace OrchardCore.Lists.Services
         {
             _session = session;
             _contentManager = contentManager;
-        }
-
-        public async Task<IEnumerable<ContentItem>> GetContainerItemsAsync(string contentType)
-        {
-            var query = _session.Query<ContentItem>()
-                .With<ContentItemIndex>(x => x.ContentType == contentType && x.Published);
-
-            var contentItems = await query.ListAsync();
-
-            return contentItems;
-
         }
 
         public async Task<int> GetNextOrderNumberAsync(string contentItemId)
@@ -64,29 +54,96 @@ namespace OrchardCore.Lists.Services
                     containedPart.Order = orderOfFirstItem + i;
                     containedPart.Apply();
 
-                    await _contentManager.UpdateAsync(contentItem);
-
                     // Keep the published and draft orders the same to avoid confusion in the admin list.
                     if (!contentItem.IsPublished())
                     {
                         var publishedItem = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Published);
-                        publishedItem.Alter<ContainedPart>(x => x.Order = orderOfFirstItem + i);
-
-                        await _contentManager.UpdateAsync(publishedItem);
+                        if (publishedItem != null)
+                        {
+                            publishedItem.Alter<ContainedPart>(x => x.Order = orderOfFirstItem + i);
+                            await _contentManager.UpdateAsync(publishedItem);
+                        }
                     }
+
+                    await _contentManager.UpdateAsync(contentItem);
                 }
+
                 i++;
             }
         }
 
-        public async Task<IEnumerable<ContentItem>> GetContainedItemsAsync(string contentItemId)
+        public async Task SetInitialOrder(string contentType)
         {
-            var query = _session.Query<ContentItem>()
-                .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
-                .With<ContentItemIndex>(CreateDefaultContentIndexFilter(null, null, false))
+            // Set initial order for published and drafts if they have never been published.
+            var contanerContentItemsQuery = _session.QueryIndex<ContentItemIndex>(x => x.ContentType == contentType && (x.Published || x.Latest));
+            var containerContentItems = await contanerContentItemsQuery.ListAsync();
+
+            if (!containerContentItems.Any())
+            {
+                return;
+            }
+
+            // Reduce duplicates to only set order for the published container item and the draft item if it has not been published.
+            var containerContentItemIds = containerContentItems.Select(x => x.ContentItemId).Distinct();
+
+            var containedItemsQuery = _session.Query<ContentItem>()
+                .With<ContainedPartIndex>(x => x.ListContentItemId.IsIn(containerContentItemIds))
+                .With<ContentItemIndex>(ci => ci.Latest || ci.Published)
                 .OrderByDescending(x => x.CreatedUtc);
 
-            return await query.ListAsync();
+            var contentItemGroups = (await containedItemsQuery.ListAsync()).ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
+
+            foreach (var contentItemGroup in contentItemGroups)
+            {
+                var i = 0;
+                foreach (var contentItem in contentItemGroup)
+                {
+                    var containedPart = contentItem.As<ContainedPart>();
+                    if (containedPart != null)
+                    {
+                        if (contentItem.Published && contentItem.Latest)
+                        {
+                            containedPart.Order = i;
+                            containedPart.Apply();
+                        }
+                        else if (contentItem.Latest && !contentItem.Published)
+                        {
+                            // Update the latest order.
+                            containedPart.Order = i;
+                            containedPart.Apply();
+
+                            // If a published version exists, find it, and set it to the same order as the draft.
+                            var publishedItem = contentItemGroup.FirstOrDefault(p => p.Published == true && p.ContentItemId == contentItem.ContentItemId);
+                            var publishedContainedPart = publishedItem?.As<ContainedPart>();
+                            if (publishedContainedPart != null)
+                            {
+                                publishedContainedPart.Order = i;
+                                publishedContainedPart.Apply();
+                            }
+                        }
+                        else if (contentItem.Published && !contentItem.Latest)
+                        {
+                            // If a latest version exists, it will handle updating the order.
+                            var latestItem = contentItemGroup.FirstOrDefault(l => l.Latest == true && l.ContentItemId == contentItem.ContentItemId);
+                            if (latestItem == null)
+                            {
+                                // Apply order to the published item.
+                                containedPart.Order = i;
+                                containedPart.Apply();
+                            }
+                            else
+                            {
+                                // Order of this item will be updated when latest is iterated.
+                                continue;
+                            }
+                        }
+
+                        _session.Save(contentItem);
+                    }
+
+                    i++;
+                }
+            }
         }
 
         public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, bool publishedOnly)

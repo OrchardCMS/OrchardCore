@@ -38,7 +38,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View();
@@ -49,7 +49,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var tempArchiveName = Path.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
@@ -69,10 +69,8 @@ namespace OrchardCore.Deployment.Controllers
 
                 if (importedPackage.FileName.EndsWith(".json"))
                 {
-                    string recipeFileName = tempArchiveName.Replace(Path.GetFileNameWithoutExtension(tempArchiveName), "Recipe");
                     Directory.CreateDirectory(tempArchiveFolder);
-                    System.IO.File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, Path.GetFileName(recipeFileName)));
-                    tempArchiveName = recipeFileName;
+                    System.IO.File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
                 }
 
                 await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));

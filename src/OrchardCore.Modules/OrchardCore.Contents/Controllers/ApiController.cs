@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Content.Controllers
 {
@@ -34,7 +35,7 @@ namespace OrchardCore.Content.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             return Ok(contentItem);
@@ -53,7 +54,7 @@ namespace OrchardCore.Content.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             await _contentManager.RemoveAsync(contentItem);
@@ -61,23 +62,19 @@ namespace OrchardCore.Content.Controllers
             return Ok(contentItem);
         }
 
-        /// <summary>
-        /// It is really important to keep the proper method calls order with the ContentManager so
-        /// that all event handlers gets triggered in the right sequence.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="draft"></param>
-        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Post(ContentItem model, bool draft = false)
         {
+            // It is really important to keep the proper method calls order with the ContentManager
+            // so that all event handlers gets triggered in the right sequence.
+            
             var contentItem = await _contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);
 
             if (contentItem == null)
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent))
                 {
-                    return Unauthorized();
+                    return this.ChallengeOrForbid();
                 }
 
                 var newContentItem = await _contentManager.NewAsync(model.ContentType);
@@ -91,7 +88,7 @@ namespace OrchardCore.Content.Controllers
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
                 {
-                    return Unauthorized();
+                    return this.ChallengeOrForbid();
                 }
 
                 contentItem.Merge(model);

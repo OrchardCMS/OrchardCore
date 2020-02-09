@@ -75,11 +75,11 @@ namespace OrchardCore.Contents
             services.AddScoped<IDataMigration, Migrations>();
 
             // Common Part
-            services.AddContentPart<CommonPart>();
+            services.AddContentPart<CommonPart>()
+                .UseDisplayDriver<DateEditorDriver>()
+                .UseDisplayDriver<OwnerEditorDriver>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, CommonPartSettingsDisplayDriver>();
-            services.AddScoped<IContentPartDisplayDriver, DateEditorDriver>();
-            services.AddScoped<IContentPartDisplayDriver, OwnerEditorDriver>();
 
             // FullTextAspect
             services.AddScoped<IContentTypeDefinitionDisplayDriver, FullTextAspectSettingsDisplayDriver>();

@@ -45,6 +45,7 @@ Properties inherited from the `List` shape:
 | `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
 | `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
 | `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
+| `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
 | `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
 
 Properties inherited from the base Shape class:
@@ -92,6 +93,7 @@ Properties inherited from the `List` shape:
 | `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
 | `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
 | `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
+| `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
 | `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
 
 Properties inherited from the base Shape class:

@@ -66,7 +66,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.GetLayersAsync();
@@ -99,7 +99,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return RedirectToAction("Index");
@@ -109,7 +109,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View();
@@ -120,7 +120,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.LoadLayersAsync();
@@ -148,7 +148,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.GetLayersAsync();
@@ -175,7 +175,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.LoadLayersAsync();
@@ -208,7 +208,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.LoadLayersAsync();

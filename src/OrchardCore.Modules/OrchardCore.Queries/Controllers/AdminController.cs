@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -59,7 +58,7 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -123,7 +122,7 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var query = _querySources.FirstOrDefault(x => x.Name == id)?.Create();
@@ -147,7 +146,7 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var query = _querySources.FirstOrDefault(x => x.Name == model.SourceName)?.Create();
@@ -177,7 +176,7 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var query = await _queryManager.GetQueryAsync(id);
@@ -203,7 +202,7 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var query = (await _queryManager.LoadQueryAsync(model.Name));
@@ -234,7 +233,7 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var query = await _queryManager.LoadQueryAsync(id);
