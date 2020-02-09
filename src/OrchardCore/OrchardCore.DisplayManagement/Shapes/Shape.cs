@@ -152,6 +152,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 tagName = tagValueString;
             }
 
+            // This is what should be used moving forward
             if (shape.Properties.TryGetValue("TagName", out var value) && value is string valueString)
             {
                 tagName = valueString;
