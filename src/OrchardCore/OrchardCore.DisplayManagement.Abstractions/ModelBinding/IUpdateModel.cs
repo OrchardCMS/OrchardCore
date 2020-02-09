@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -13,5 +13,6 @@ namespace OrchardCore.DisplayManagement.ModelBinding
         bool TryValidateModel(object model);
         bool TryValidateModel(object model, string prefix);
         ModelStateDictionary ModelState { get; }
+        public bool IsContentUpdater { get; }
     }
 }

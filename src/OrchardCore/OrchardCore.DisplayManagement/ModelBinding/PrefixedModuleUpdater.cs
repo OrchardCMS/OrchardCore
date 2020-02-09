@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -37,5 +37,7 @@ namespace OrchardCore.DisplayManagement.ModelBinding
 
         public bool TryValidateModel(object model, string prefix)
             => _updateModel.TryValidateModel(model, Prefix(prefix));
+
+        public bool IsContentUpdater => _updateModel.IsContentUpdater;
     }
 }

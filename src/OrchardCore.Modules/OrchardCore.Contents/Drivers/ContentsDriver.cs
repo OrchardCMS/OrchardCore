@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
@@ -55,11 +57,16 @@ namespace OrchardCore.Contents.Drivers
             );
         }
 
-        public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(ContentItem contentItem, BuildEditorContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             if (contentTypeDefinition == null)
+            {
+                return null;
+            }
+
+            if (!context.Updater.IsContentUpdater)
             {
                 return null;
             }
@@ -74,7 +81,7 @@ namespace OrchardCore.Contents.Drivers
                 results.Add(Dynamic("Content_SaveDraftButton").Location("Actions:20"));
             }
 
-            return Combine(results.ToArray());
+            return Task.FromResult((IDisplayResult)Combine(results.ToArray()));
         }
     }
 }

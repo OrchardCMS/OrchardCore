@@ -1,16 +1,22 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentPreview.Drivers
 {
     public class ContentPreviewDriver : ContentDisplayDriver
     {
-        public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
         {
-            return Shape("ContentPreview_Button", new ContentItemViewModel(contentItem)).Location("Actions:after");
+            if (!context.Updater.IsContentUpdater)
+            {
+                return null;
+            }
+
+            return Task.FromResult((IDisplayResult)Shape("ContentPreview_Button", new ContentItemViewModel(model)).Location("Actions:after"));
         }
     }
 }
