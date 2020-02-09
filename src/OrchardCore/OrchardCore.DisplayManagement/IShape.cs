@@ -17,6 +17,7 @@ namespace OrchardCore.DisplayManagement
     {
         ShapeMetadata Metadata { get; }
         string Id { get; set; }
+        string TagName { get; set; }
         IList<string> Classes { get; }
         IDictionary<string, string> Attributes { get; }
         IDictionary<string, object> Properties { get; }

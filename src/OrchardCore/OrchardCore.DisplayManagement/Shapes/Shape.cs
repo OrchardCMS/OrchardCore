@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,15 +21,17 @@ namespace OrchardCore.DisplayManagement.Shapes
         public ShapeMetadata Metadata { get; } = new ShapeMetadata();
 
         public string Id { get; set; }
-		public IList<string> Classes => _classes = _classes ?? new List<string>();
-		public IDictionary<string, string> Attributes => _attributes = _attributes ?? new Dictionary<string, string>();
-		public IEnumerable<dynamic> Items => _items;
-		public bool HasItems => _items.Count > 0;
-		public string Position
-		{
-			get { return Metadata.Position; }
-			set { Metadata.Position = value; }
-		}
+        public string TagName { get; set; }
+        public IList<string> Classes => _classes = _classes ?? new List<string>();
+        public IDictionary<string, string> Attributes => _attributes = _attributes ?? new Dictionary<string, string>();
+        public IEnumerable<dynamic> Items => _items;
+        public bool HasItems => _items.Count > 0;
+
+        public string Position
+        {
+            get { return Metadata.Position; }
+            set { Metadata.Position = value; }
+        }
 
         public virtual Shape Add(object item, string position = null)
         {
@@ -152,14 +155,13 @@ namespace OrchardCore.DisplayManagement.Shapes
             return base.TryConvert(binder, out result);
         }
 
-        public static TagBuilder GetTagBuilder(dynamic shape, string defaultTag = "span")
+        public static TagBuilder GetTagBuilder(Shape shape, string defaultTagName = "span")
         {
-            string tagName = shape.Tag;
+            var tagName = defaultTagName;
 
-            // Dont replace by ?? as shape.Tag is dynamic
-            if (tagName == null)
+            if (shape.Properties.TryGetValue("Tag", out var value) && value is string valueString)
             {
-                tagName = defaultTag;
+                tagName = valueString;
             }
 
             string id = shape.Id;
