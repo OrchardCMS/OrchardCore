@@ -646,7 +646,7 @@
               "Settings": {
                 "ContentPartFieldSettings": {
                   "DisplayName": "Banner Image",
-				  "Position": "0"
+                  "Position": "0"
                 },
                 "ContentIndexSettings": {
                   "Included": false,
@@ -678,28 +678,28 @@
                 }
               }
             },
-			{
-			  "FieldName": "MediaField",
-			  "Name": "Image",
-			  "Settings": {
-				"ContentPartFieldSettings": {
-				  "DisplayName": "Banner Image",
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Banner Image",
                   "Position": "1"
-				},
-				"ContentIndexSettings": {
-				  "Included": false,
-				  "Stored": false,
-				  "Analyzed": false,
-				  "Sanitized": false,
-				  "Tokenized": false,
-				  "Template": null
-				},
-				"MediaFieldSettings": {
-				  "Required": true,
-				  "Multiple": false
-				}
-			  }  
-			},   			
+                },
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "MediaFieldSettings": {
+                  "Required": true,
+                  "Multiple": false
+                }
+              }  
+            },   			
             {
               "FieldName": "TaxonomyField",
               "Name": "Tags",
@@ -1094,13 +1094,13 @@
                 "[js: variables('spaceTagContentItemId')]"
               ],
               "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]",
-			  "TagElement":{ 
-			    "Tags":[ 
-				  "Earth",
-				  "Exploration",
-				  "Space"
-				]
-			  }
+              "TagElement":{ 
+                "Tags":[ 
+                  "Earth",
+                  "Exploration",
+                  "Space"
+                ]
+              }
             },
             "Category": {
               "TermContentItemIds": [
