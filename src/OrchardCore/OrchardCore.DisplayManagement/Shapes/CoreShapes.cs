@@ -45,17 +45,18 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             var listTagName = "ul";
 
-            if (Shape.Properties.TryGetValue("TagName", out var value))
+            if (Shape.Properties.TryGetValue("TagName", out var value) && value is string valueString)
             {
-                if (!String.IsNullOrEmpty(value.ToString()) && value.ToString() != "-")
+                if (!String.IsNullOrEmpty(valueString) && valueString != "-")
                 {
-                    listTagName = value.ToString();
+                    listTagName = valueString;
                 }
             }
 
             string id = null;
-            if (Shape.Properties.TryGetValue("Id", out var IdValue)) {
-                id = IdValue as string;
+            if (Shape.Properties.TryGetValue("Id", out var idValue) && idValue is string idValueString)
+            {
+                id = idValueString;
             }
 
             var listTagBuilder = String.IsNullOrEmpty(listTagName) ? null : Shape.GetTagBuilder(listTagName, id, Classes, Shape.Attributes);
