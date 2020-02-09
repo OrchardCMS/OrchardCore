@@ -186,7 +186,7 @@ namespace OrchardCore.Lucene.Controllers
                 Terms = viewModel.Terms,
                 SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms },
                 SearchResults = new SearchResultsViewModel("Search__Results") { ContentItems = containedItems.Take(pager.PageSize) },
-                Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, object>() { { "Terms", viewModel.Terms } })
+                Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, string>() { { "Terms", viewModel.Terms } })
             };
 
             return View(model);
