@@ -41,14 +41,19 @@ Properties inherited from the `List` shape:
 
 | Parameter | Type | Description |
 | --------- | ---- |------------ |
-| `Id` | `string` | The HTML id used for the pager, default: _none_. |
-| `Tag` | `string` | The HTML tag used for the pager, default: `ul`. |
-| `ItemTag` | `string` | The HTML tag used for the pages, default: `li`. |
+| `ItemTagName` | `string` | The HTML tag used for the pages, default: `li`. |
 | `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
 | `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
 | `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
-| `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
 | `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
+
+Properties inherited from the base Shape class:
+
+| Parameter | Type | Description |
+| --------- | ---- |------------ |
+| `Id` | `string` | The HTML id used for the pager, default: _none_. |
+| `TagName` | `string` | The HTML tag used for the pager, default: `ul`. |
+| `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
 
 The `PagerId` property is used to create templates for specific instances. For instance, assigning
 the value `MainBlog` to `PagerId` and then rendering the pager will look for a template named 
@@ -83,14 +88,19 @@ Properties inherited from the `List` shape:
 
 | Parameter | Type | Description |
 | --------- | ---- |------------ |
-| `Id` | `string` | The HTML id used for the pager, default: _none_. |
-| `Tag` | `string` | The HTML tag used for the pager, default: `ul`. |
-| `ItemTag` | `string` | The HTML tag used for the pages, default: `li`. |
+| `ItemTagName` | `string` | The HTML tag used for the pages, default: `li`. |
 | `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
 | `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
 | `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
-| `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
 | `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
+
+Properties inherited from the base Shape class:
+
+| Parameter | Type | Description |
+| --------- | ---- |------------ |
+| `Id` | `string` | The HTML id used for the pager, default: _none_. |
+| `TagName` | `string` | The HTML tag used for the pager, default: `ul`. |
+| `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
 
 A slim pager can be further customized by defining templates for the following shapes:
 
