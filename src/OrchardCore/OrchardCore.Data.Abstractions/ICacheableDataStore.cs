@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace OrchardCore.Data
 {
     /// <summary>
-    /// Represents a contract that allows a given data store to be cached />.
+    /// Allows to update the data of a given data store while being able to retrieve them through a shared cached />.
     /// </summary>
     public interface ICacheableDataStore
     {

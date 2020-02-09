@@ -99,7 +99,7 @@ namespace OrchardCore.Infrastructure.Cache
             {
                 if (value.Identifier == id)
                 {
-                    if (value.HasSlidingExpiration)
+                    if (options.SlidingExpiration.HasValue)
                     {
                         await _distributedCache.RefreshAsync(key);
                     }
@@ -146,27 +146,12 @@ namespace OrchardCore.Infrastructure.Cache
                 throw new ArgumentException("Can't update a cached object");
             }
 
-            if (options == null)
-            {
-                options = new DistributedCacheEntryOptions();
-            }
-
-            return SetInternalAsync(value, options);
+            return SetInternalAsync(value, options ?? new DistributedCacheEntryOptions());
         }
 
         private async Task SetInternalAsync<T>(T value, DistributedCacheEntryOptions options) where T : DistributedCacheData, new()
         {
-            if (options == null)
-            {
-                options = new DistributedCacheEntryOptions();
-            }
-
             value.Identifier ??= _idGenerator.GenerateUniqueId();
-
-            if (options.SlidingExpiration.HasValue)
-            {
-                value.HasSlidingExpiration = true;
-            }
 
             byte[] data;
 

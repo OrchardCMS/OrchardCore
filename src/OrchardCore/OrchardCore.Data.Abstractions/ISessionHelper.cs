@@ -4,7 +4,7 @@ using YesSql;
 namespace OrchardCore.Data
 {
     /// <summary>
-    /// Represents a contract that provides helper methods for <see cref="ISession"/>.
+    /// Provides helper methods for <see cref="ISession"/>.
     /// </summary>
     public interface ISessionHelper : ICacheableDataStore
     {
