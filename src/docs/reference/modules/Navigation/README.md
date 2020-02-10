@@ -174,7 +174,7 @@ At this time, the Admin Menu is the only navigation with code dynamically adding
 {% assign nextClass = "next" | t %}
 
 {% shape_pager Model.Pager previous_text: previousText, next_text: nextText,
-    previous_class: previousClass, next_class: nextClass, item_tag_name: "div" %}
+    previous_class: previousClass, next_class: nextClass, tag_name: "div", item_tag_name: "div", attributes: "{\"key1\": \"value1\",\"key2\":\"value2\"}", item_attributes: "{\"key1\": \"value1\",\"key2\":\"value2\"}", classes: "class1 class2", item_classes: "itemclass1 itemclass2" %}
 
 {{ Model.Pager | shape_render }}
 ```
@@ -190,7 +190,7 @@ public async Task<IActionResult> List(MyViewModel viewModel, PagerParameters pag
     if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
         pager.PageSize = maxPagedCount;
                 
-    var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).ItemTagName("div").TagName("div").Id("myid");
+    var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData).TagName("div").ItemTagName("div").Classes("class1 class2").ItemClasses(new List<string>(){ "itemclass1", "itemclass2" }).Attributes(new Dictionary<string, string>() { { "attribute", "value" } }).ItemAttributes(new Dictionary<string, string>() { { "itemattribute", "value" } });
 
     // Or you can also set the Shape base properties this way too :
     pagerShape.Id = "myid";
