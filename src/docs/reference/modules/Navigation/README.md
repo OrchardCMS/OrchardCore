@@ -42,11 +42,10 @@ Properties inherited from the `List` shape:
 | Parameter | Type | Description |
 | --------- | ---- |------------ |
 | `ItemTagName` | `string` | The HTML tag used for the pages, default: `li`. |
+| `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
+| `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
 | `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
 | `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
-| `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
-| `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
-| `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
 
 Properties inherited from the base Shape class:
 
@@ -90,11 +89,10 @@ Properties inherited from the `List` shape:
 | Parameter | Type | Description |
 | --------- | ---- |------------ |
 | `ItemTagName` | `string` | The HTML tag used for the pages, default: `li`. |
+| `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
+| `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
 | `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
 | `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
-| `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
-| `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
-| `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
 
 Properties inherited from the base Shape class:
 
@@ -119,7 +117,7 @@ Examples of Liquid alternates or templates for `Pager_Next` and `Pager_Previous`
 ```
 
 Each of these shapes are ultimately morphed into `Pager_Link`.
-Alternates for each of these shapes are created using the `PagerId` like `Pager`Previous``[PagerId]` which
+Alternates for each of these shapes are created using the `PagerId` like `Pager_Previous` `[PagerId]` which
 would in turn look for the template `Pager-MainBlog.Previous.cshtml`.
 
 ## Extending Navigation
@@ -164,3 +162,36 @@ Examples of extending the admin navigation can be found in various OrchardCore m
 - `OrchardCore.Modules/OrchardCore.Media/AdminMenu.cs`
 
 At this time, the Admin Menu is the only navigation with code dynamically adding items in the OrchardCore git repository. However, as the example above shows, the pattern can be used to control any named navigation.
+
+## Pager Code examples
+
+``` liquid tab="Liquid"
+{% assign previousText = "← Newer Posts" | t %}
+{% assign nextText = "Older Posts →" | t %}
+{% assign previousClass = "previous" | t %}
+{% assign nextClass = "next" | t %}
+
+{% shape_pager Model.Pager previous_text: previousText, next_text: nextText,
+    previous_class: previousClass, next_class: nextClass, item_tag_name: "div" %}
+
+{{ Model.Pager | shape_render }}
+```
+
+``` html tab="C#"
+public async Task<IActionResult> List(MyViewModel viewModel, PagerParameters pagerParameters)
+{
+    var siteSettings = await _siteService.GetSiteSettingsAsync();
+    var pager = new Pager(pagerParameters, siteSettings.PageSize);
+
+    var pagerShape = (await New.Pager(pager)).TotalItemCount(100).ItemTagName("div");
+    pagerShape.Id = "myid";
+    pagerShape.TagName = "div";
+    pagerShape.Attributes.Add("myattribute", "value");
+    pagerShape.Classes.Add("myclassname");
+
+    model.Pager = pagerShape;
+    return View(viewModel);
+}
+```
+
+Here, the rule is to assign the Shape property directly when they are properties of the base Shape class. Else you need to assign the `Shape.Properties` dictionnary.
