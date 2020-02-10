@@ -198,7 +198,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         protected override bool TrySetMemberImpl(string name, object value)
         {
-            // We set the Shape real properties
+            // We set the Shape real properties for Liquid
             if (name == "Id")
             {
                 Id = value as string;

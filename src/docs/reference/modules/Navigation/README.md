@@ -190,9 +190,11 @@ public async Task<IActionResult> List(MyViewModel viewModel, PagerParameters pag
     if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
         pager.PageSize = maxPagedCount;
                 
-    var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).ItemTagName("div");
+    var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).ItemTagName("div").TagName("div").Id("myid");
+
+    // Or you can also set the Shape base properties this way too :
     pagerShape.Id = "myid";
-    pagerShape.TagName = "div";
+    pagerShape.TagName = "span";
     pagerShape.Attributes.Add("myattribute", "value");
     pagerShape.Classes.Add("myclassname");
 
@@ -200,5 +202,3 @@ public async Task<IActionResult> List(MyViewModel viewModel, PagerParameters pag
     return View(viewModel);
 }
 ```
-
-Here, the rule is to assign the Shape property directly when they are properties of the base Shape class. Else you need to assign the `Shape.Properties` dictionnary.
