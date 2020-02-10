@@ -192,12 +192,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 return DateTime.Parse((string)result);
             }
 
-            // Specific implementation for IDictionary<string,string>
-            if (result.GetType() == typeof(string) && (parameter.ParameterType == typeof(IDictionary<string, string>)))
-            {
-                return JsonConvert.DeserializeObject<Dictionary<string, string>>((string)result);
-            }
-
             return Convert.ChangeType(result, parameter.ParameterType);
         }
 

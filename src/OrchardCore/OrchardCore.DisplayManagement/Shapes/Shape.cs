@@ -247,7 +247,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
                 if (value is string stringValue)
                 {
-                    var values = stringValue.Split(' ');
+                    var values = stringValue.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                     foreach (var item in values)
                     {
                         Classes.Add(item);
