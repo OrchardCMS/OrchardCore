@@ -26,7 +26,7 @@ namespace OrchardCore.Users
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var settings = scope.ServiceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync().Result;
-                var baseUrl = settings.BaseUrl.TrimEnd('/');
+                var baseUrl = settings.BaseUrl?.TrimEnd('/');
                 options.LoginPath = baseUrl + "/" + nameof(AccountController.Login);
                 options.AccessDeniedPath = baseUrl + "/Error/403";
                 options.LogoutPath = baseUrl + "/" + nameof(AccountController.LogOff);
