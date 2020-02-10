@@ -20,7 +20,7 @@ namespace OrchardCore.Templates.Settings
         {
             return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
             {
-                var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
+                var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
 
                 if (string.IsNullOrWhiteSpace(stereotype))
                 {

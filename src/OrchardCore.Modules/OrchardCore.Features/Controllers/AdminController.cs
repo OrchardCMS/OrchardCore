@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -15,11 +14,10 @@ using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Features.Models;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
-using OrchardCore.Mvc.ActionConstraints;
+using OrchardCore.Routing;
 
 namespace OrchardCore.Features.Controllers
 {
-    [Admin]
     public class AdminController : Controller
     {
         private readonly IModuleService _moduleService;
@@ -28,12 +26,12 @@ namespace OrchardCore.Features.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _shellSettings;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer<AdminController> H;
 
         public AdminController(
             IModuleService moduleService,
             IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
-            IShellDescriptorManager shellDescriptorManager,
             IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
             ShellSettings shellSettings,
@@ -45,17 +43,14 @@ namespace OrchardCore.Features.Controllers
             _authorizationService = authorizationService;
             _shellSettings = shellSettings;
             _notifier = notifier;
-
-            T = localizer;
+            H = localizer;
         }
-
-        public IHtmlLocalizer T { get; }
 
         public async Task<ActionResult> Features()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures)) // , T["Not allowed to manage features."]
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
@@ -90,70 +85,29 @@ namespace OrchardCore.Features.Controllers
             });
         }
 
-        [HttpPost, ActionName("Features")]
-        public async Task<ActionResult> FeaturesPOST(BulkActionViewModel model, bool? force)
+        [HttpPost]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> Features(BulkActionViewModel model, bool? force)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (model.FeatureIds == null || !model.FeatureIds.Any())
             {
-                ModelState.AddModelError("featureIds", T["Please select one or more features."].ToString());
+                ModelState.AddModelError("featureIds", H["Please select one or more features."].ToString());
             }
 
             if (ModelState.IsValid)
             {
-                var availableFeatures = _extensionManager.GetFeatures();
-                var features = availableFeatures.Where(feature => FeatureIsAllowed(feature)).ToList();
-                var selectedFeatures = features.Where(x => model.FeatureIds.Contains(x.Id)).ToList();
-                var allEnabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync(); //features.Where(x => x.IsEnabled && featureIds.Contains(x.Id)).Select(x => x.Descriptor.Id).ToList();
-                var idFeaturesEnabled = allEnabledFeatures.Where(x => model.FeatureIds.Contains(x.Id)).ToList();
-                var allDisabledFeatures = await _shellFeaturesManager.GetDisabledFeaturesAsync(); // DisabledFeaturesAsync //features.Where(x => !x.IsEnabled && featureIds.Contains(x.Id)).Select(x => x.Descriptor.Id).ToList();
-                var idFeaturesDisabled = allDisabledFeatures.Where(x => model.FeatureIds.Contains(x.Id)).ToList();
+                var features = _extensionManager.GetFeatures().Where(f => FeatureIsAllowed(f)).ToList();
+                var selectedFeatures = features.Where(f => model.FeatureIds.Contains(f.Id)).ToList();
 
-                switch (model.BulkAction)
-                {
-                    case FeaturesBulkAction.None:
-                        break;
-                    case FeaturesBulkAction.Enable:
-                        var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(idFeaturesDisabled, force == true);
-                        foreach (var feature in enabledFeatures.ToList())
-                        {
-                            var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
-                            _notifier.Success(T["{0} was enabled", featureName]);
-                        }
-                        break;
-                    case FeaturesBulkAction.Disable:
-                        var disabledFeatures = await _shellFeaturesManager.DisableFeaturesAsync(idFeaturesEnabled, force == true);
-                        foreach (var feature in disabledFeatures.ToList())
-                        {
-                            var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
-                            _notifier.Success(T["{0} was disabled", featureName]);
-                        }
-                        break;
-                    case FeaturesBulkAction.Toggle:
-                        var enabledFeaturesToggle = await _shellFeaturesManager.EnableFeaturesAsync(idFeaturesDisabled, force == true);
-                        foreach (var feature in enabledFeaturesToggle.ToList())
-                        {
-                            var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
-                            _notifier.Success(T["{0} was enabled", featureName]);
-                        }
-
-                        var disabledFeaturesToggle = await _shellFeaturesManager.DisableFeaturesAsync(idFeaturesEnabled, force == true);
-                        foreach (var feature in disabledFeaturesToggle.ToList())
-                        {
-                            var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
-                            _notifier.Success(T["{0} was disabled", featureName]);
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                await EnableOrDisableFeaturesAsync(selectedFeatures, model.BulkAction, force);
             }
 
-            return RedirectToAction("Features");
+            return RedirectToAction(nameof(Features));
         }
 
         [HttpPost]
@@ -172,9 +126,7 @@ namespace OrchardCore.Features.Controllers
 
             var nextUrl = Url.Action(nameof(Features));
 
-            await _shellFeaturesManager.DisableFeaturesAsync(new[] { feature }, force: true);
-
-            _notifier.Success(T["{0} was disabled", feature.Name ?? feature.Id]);
+            await EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, force: true);
 
             return Redirect(nextUrl);
         }
@@ -195,9 +147,7 @@ namespace OrchardCore.Features.Controllers
 
             var nextUrl = Url.Action(nameof(Features));
 
-            await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
-
-            _notifier.Success(T["{0} was enabled", feature.Name ?? feature.Id]);
+            await EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Enable, force: true);
 
             return Redirect(nextUrl);
         }
@@ -211,6 +161,43 @@ namespace OrchardCore.Features.Controllers
 
             // Checks if the feature is only allowed on the Default tenant
             return _shellSettings.Name == ShellHelper.DefaultShellName || !feature.DefaultTenantOnly;
+        }
+
+        private async Task EnableOrDisableFeaturesAsync(IEnumerable<IFeatureInfo> features, FeaturesBulkAction action, bool? force)
+        {
+            switch (action)
+            {
+                case FeaturesBulkAction.None:
+                    break;
+                case FeaturesBulkAction.Enable:
+                    await _shellFeaturesManager.EnableFeaturesAsync(features, force == true);
+                    Notify(features);
+                    break;
+                case FeaturesBulkAction.Disable:
+                    await _shellFeaturesManager.DisableFeaturesAsync(features, force == true);
+                    Notify(features, enabled: false);
+                    break;
+                case FeaturesBulkAction.Toggle:
+                    var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+                    var disabledFeatures = await _shellFeaturesManager.GetDisabledFeaturesAsync();
+                    var featuresToEnable = disabledFeatures.Intersect(features);
+                    var featuresToDisable = enabledFeatures.Intersect(features);
+
+                    await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, force == true);
+                    Notify(featuresToEnable);
+                    Notify(featuresToDisable, enabled: false);
+                    return;
+                default:
+                    break;
+            }
+        }
+
+        private void Notify(IEnumerable<IFeatureInfo> features, bool enabled = true)
+        {
+            foreach (var feature in features)
+            {
+                _notifier.Success(H["{0} was {1}", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
+            }
         }
     }
 }

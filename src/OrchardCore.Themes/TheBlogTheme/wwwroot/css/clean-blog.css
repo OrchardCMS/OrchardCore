@@ -1,6 +1,6 @@
 /*!
- * Start Bootstrap - Clean Blog v5.0.1 (https://startbootstrap.com/template-overviews/clean-blog)
- * Copyright 2013-2018 Start Bootstrap
+ * Start Bootstrap - Clean Blog v5.0.8 (https://startbootstrap.com/template-overviews/clean-blog)
+ * Copyright 2013-2020 Start Bootstrap
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-clean-blog/blob/master/LICENSE)
  */
 
@@ -31,7 +31,6 @@ h6 {
 
 a {
   color: #212529;
-  -webkit-transition: all 0.2s;
   transition: all 0.2s;
 }
 
@@ -138,10 +137,8 @@ img::-moz-selection {
 
 @media only screen and (min-width: 992px) {
   #mainNav {
-    -webkit-transition: background-color 0.2s;
     transition: background-color 0.2s;
     /* Force Hardware Acceleration in WebKit */
-    -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden;
   }
@@ -149,10 +146,7 @@ img::-moz-selection {
     /* when the user scrolls down, we hide the header right above the viewport */
     position: fixed;
     top: -67px;
-    -webkit-transition: -webkit-transform 0.2s;
-    transition: -webkit-transform 0.2s;
     transition: transform 0.2s;
-    transition: transform 0.2s, -webkit-transform 0.2s;
     border-bottom: 1px solid white;
     background-color: rgba(255, 255, 255, 0.9);
   }
@@ -170,7 +164,6 @@ img::-moz-selection {
   }
   #mainNav.is-visible {
     /* if the user changes the scrolling direction, we show the header */
-    -webkit-transform: translate3d(0, 100%, 0);
     transform: translate3d(0, 100%, 0);
   }
 }
@@ -335,7 +328,6 @@ header.masthead .post-heading .meta a {
   border: none;
   border-radius: 0;
   background: none;
-  -webkit-box-shadow: none !important;
   box-shadow: none !important;
   font-family: 'Lora', 'Times New Roman', serif;
 }
@@ -354,7 +346,6 @@ header.masthead .post-heading .meta a {
   top: 2em;
   display: block;
   margin: 0;
-  -webkit-transition: top 0.3s ease, opacity 0.3s ease;
   transition: top 0.3s ease, opacity 0.3s ease;
   vertical-align: middle;
   vertical-align: baseline;
@@ -396,7 +387,6 @@ footer .copyright {
 .btn {
   font-size: 14px;
   font-weight: 800;
-  padding: 15px 25px;
   letter-spacing: 1px;
   text-transform: uppercase;
   border-radius: 0;

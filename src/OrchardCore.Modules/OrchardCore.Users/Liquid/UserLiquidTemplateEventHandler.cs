@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Liquid;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Liquid
 {
@@ -19,9 +20,10 @@ namespace OrchardCore.Users.Liquid
         {
             var user = _httpContextAccessor.HttpContext.User;
 
+            context.MemberAccessStrategy.Register<User>();
             context.MemberAccessStrategy.Register<ClaimsPrincipal>();
             context.MemberAccessStrategy.Register<ClaimsIdentity>();
-            context.LocalScope.SetValue("User", user);
+            context.SetValue("User", user);
 
             return Task.CompletedTask;
         }

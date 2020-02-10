@@ -1,0 +1,16 @@
+{% zone "Header" %}
+    <header class="masthead">
+        <div class="container">
+            <div class="intro-text">
+                <div class="intro-lead-in"></div>
+                <div class="intro-heading text-uppercase">{{ "Search" | t}}</div>
+          </div>
+        </div>
+    </header>
+{% endzone %}
+
+{{ Model.SearchForm | shape_render }}
+
+{{ Model.SearchResults | shape_render }}
+
+{{ Model.Pager | shape_render }}

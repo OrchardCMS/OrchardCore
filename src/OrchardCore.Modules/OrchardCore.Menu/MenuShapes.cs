@@ -60,7 +60,7 @@ namespace OrchardCore.Menu
                         return;
                     }
 
-                    string differentiator = FormatName((string) menu.MenuName);
+                    string differentiator = FormatName((string)menu.MenuName);
 
                     if (!String.IsNullOrEmpty(differentiator))
                     {
@@ -182,7 +182,7 @@ namespace OrchardCore.Menu
         /// <returns></returns>
         private string EncodeAlternateElement(string alternateElement)
         {
-            return alternateElement.Replace("-", "__").Replace(".", "_");
+            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
 
         /// <summary>

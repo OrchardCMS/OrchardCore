@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
@@ -18,7 +20,7 @@ namespace OrchardCore.ReCaptcha.Forms
 
         public override IDisplayResult Display(ReCaptchaPart part, BuildPartDisplayContext context)
         {
-            return Initialize("ReCaptchaPart", (System.Func<ReCaptchaPartViewModel, System.Threading.Tasks.Task>)(async m =>
+            return Initialize("ReCaptchaPart", (Func<ReCaptchaPartViewModel, ValueTask>)(async m =>
             {
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
                 var settings = siteSettings.As<ReCaptchaSettings>();

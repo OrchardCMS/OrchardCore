@@ -67,7 +67,7 @@ namespace OrchardCore.ContentManagement.Display
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-            var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
+            var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
             var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
             var actualShapeType = stereotype ?? "Content";
 
@@ -98,7 +98,7 @@ namespace OrchardCore.ContentManagement.Display
 
             await BindPlacementAsync(context);
 
-            await _handlers.InvokeAsync(handler => handler.BuildDisplayAsync(contentItem, context), Logger);
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildDisplayAsync(contentItem, context), contentItem, context, Logger);
 
             return context.Shape;
         }
@@ -112,7 +112,7 @@ namespace OrchardCore.ContentManagement.Display
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-            var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
+            var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
 
             var actualShapeType = (stereotype ?? "Content") + "_Edit";
 
@@ -134,7 +134,7 @@ namespace OrchardCore.ContentManagement.Display
 
             await BindPlacementAsync(context);
 
-            await _handlers.InvokeAsync(handler => handler.BuildEditorAsync(contentItem, context), Logger);
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildEditorAsync(contentItem, context), contentItem, context, Logger);
 
             return context.Shape;
         }
@@ -146,8 +146,8 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
+            var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
+            var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
             var actualShapeType = (stereotype ?? "Content") + "_Edit";
 
             dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
@@ -170,9 +170,9 @@ namespace OrchardCore.ContentManagement.Display
 
             var updateContentContext = new UpdateContentContext(contentItem);
 
-            await _contentHandlers.InvokeAsync(handler => handler.UpdatingAsync(updateContentContext), Logger);
-            await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(contentItem, context), Logger);
-            await _contentHandlers.Reverse().InvokeAsync(handler => handler.UpdatedAsync(updateContentContext), Logger);
+            await _contentHandlers.InvokeAsync((handler, updateContentContext) => handler.UpdatingAsync(updateContentContext), updateContentContext, Logger);
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.UpdateEditorAsync(contentItem, context), contentItem, context, Logger);
+            await _contentHandlers.Reverse().InvokeAsync((handler, updateContentContext) => handler.UpdatedAsync(updateContentContext), updateContentContext, Logger);
 
             return context.Shape;
         }

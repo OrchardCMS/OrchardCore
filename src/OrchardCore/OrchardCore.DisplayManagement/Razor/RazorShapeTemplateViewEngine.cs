@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -17,8 +18,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
@@ -85,42 +84,46 @@ namespace OrchardCore.DisplayManagement.Razor
                     typeof(IViewEngine).FullName));
             }
 
-            var viewEngine = viewEngines[0] as IRazorViewEngine;
+            var viewEngine = viewEngines[0];
 
             var result = await RenderViewToStringAsync(viewName, displayContext.Value, viewEngine);
 
             return new HtmlString(result);
         }
 
-        public async Task<string> RenderViewToStringAsync(string viewName, object model, IRazorViewEngine viewEngine)
+        public async Task<string> RenderViewToStringAsync(string viewName, object model, IViewEngine viewEngine)
         {
-            var actionContext = GetActionContext();
+            var actionContext = await GetActionContextAsync();
             var view = FindView(actionContext, viewName, viewEngine);
 
-            using (var output = new StringWriter())
+            using (var sb = StringBuilderPool.GetInstance())
             {
-                var viewContext = new ViewContext(
-                    actionContext,
-                    view,
-                    new ViewDataDictionary(
-                        metadataProvider: new EmptyModelMetadataProvider(),
-                        modelState: new ModelStateDictionary())
-                    {
-                        Model = model
-                    },
-                    new TempDataDictionary(
-                        actionContext.HttpContext,
-                        _tempDataProvider),
-                    output,
-                    new HtmlHelperOptions());
+                using (var output = new StringWriter(sb.Builder))
+                {
+                    var viewContext = new ViewContext(
+                        actionContext,
+                        view,
+                        new ViewDataDictionary(
+                            metadataProvider: new EmptyModelMetadataProvider(),
+                            modelState: new ModelStateDictionary())
+                        {
+                            Model = model
+                        },
+                        new TempDataDictionary(
+                            actionContext.HttpContext,
+                            _tempDataProvider),
+                        output,
+                        new HtmlHelperOptions());
 
-                await view.RenderAsync(viewContext);
+                    await view.RenderAsync(viewContext);
+                    await output.FlushAsync();
+                }
 
-                return output.ToString();
+                return sb.Builder.ToString();
             }
         }
 
-        private IView FindView(ActionContext actionContext, string viewName, IRazorViewEngine viewEngine)
+        private IView FindView(ActionContext actionContext, string viewName, IViewEngine viewEngine)
         {
             var getViewResult = viewEngine.GetView(executingFilePath: null, viewPath: viewName, isMainPage: true);
             if (getViewResult.Success)
@@ -142,16 +145,28 @@ namespace OrchardCore.DisplayManagement.Razor
             throw new InvalidOperationException(errorMessage);
         }
 
-        private ActionContext GetActionContext()
+        private async Task<ActionContext> GetActionContextAsync()
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var shellContext = httpContext.Features.Get<ShellContextFeature>()?.ShellContext;
+            var actionContext = httpContext.RequestServices.GetService<IActionContextAccessor>()?.ActionContext;
+
+            if (actionContext != null)
+            {
+                return actionContext;
+            }
 
             var routeData = new RouteData();
-            var pipeline = shellContext?.Pipeline as ShellRequestPipeline;
-            routeData.Routers.Add(pipeline?.Router ?? new RouteCollection());
+            routeData.Routers.Add(new RouteCollection());
 
-            return new ActionContext(httpContext, routeData, new ActionDescriptor());
+            actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
+
+            foreach (var filter in filters)
+            {
+                await filter.OnActionExecutionAsync(actionContext);
+            }
+
+            return actionContext;
         }
 
         private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)

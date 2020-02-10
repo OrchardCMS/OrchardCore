@@ -1,46 +1,68 @@
 @model TemplateIndexViewModel
 
-<h1>@RenderTitleSegments(T["Templates"])</h1>
+@{
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.Templates.Count - 1;
+}
 
-<nav class="admin-toolbar">
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <a asp-route-action="Create" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary" role="button">@T["Add Template"]</a>
+<form asp-action="Index">
+    @* the form is necessary to generate and antiforgery token for the delete action *@
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            @if (Model.AdminTemplates)
+            {
+                <h1>@RenderTitleSegments(T["Admin Templates"])</h1>
+            }
+            else
+            {
+                <h1>@RenderTitleSegments(T["Templates"])</h1>
+            }
+        </div>
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                <a asp-route-action="Create" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary" role="button">@T["Add Template"]</a>
+            </div>
+        </div>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item bg-light">
+            <div class="row">
+                <div class="form-group col-xl-4 mb-xl-n1">
+                    <label id="items" for="select-all">@T.Plural(Model.Templates.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                    <label id="selected-items" class="text-muted" for="select-all"></label>
+                </div>
+            </div>
         </li>
-    </ul>
-</nav>
-
-<form asp-action="Index"> @* the form is necessary to generate and antiforgery token for the delete action *@
-
-    @if (Model.Templates.Any())
-    {
-        <ul class="list-group">
+        @if (Model.Templates.Any())
+        {
             @foreach (var entry in Model.Templates)
             {
                 <li class="list-group-item">
                     <div class="properties">
                         <div class="related">
-                            <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="Delete" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.AdminTemplates" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
-                        <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
+                        <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
                         @if (!String.IsNullOrWhiteSpace(entry.Template.Description))
                         {
-                        <span class="hint">
-                            — @entry.Template.Description
-                        </span>
+                            <span class="hint">
+                                — @entry.Template.Description
+                            </span>
                         }
                     </div>
                 </li>
             }
-        </ul>
-    }
-    else
-    {
-        <div class="alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> There are no templates for the moment."]
-        </div>
-    }
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info" role="alert">
+                    @T["<strong>Nothing here!</strong> There are no templates for the moment."]
+                </div>
+            </li>
+        }
+    </ul>
 </form>
 
 @await DisplayAsync(Model.Pager)

@@ -1,6 +1,7 @@
-﻿using OrchardCore.Autoroute.Drivers;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Autoroute.Drivers;
+using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 
@@ -31,7 +32,31 @@ namespace OrchardCore.Autoroute
                 .CreateIndex("IDX_AutoroutePartIndex_ContentItemId", "ContentItemId")
             );
 
-            return 1;
+            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+                .CreateIndex("IDX_AutoroutePartIndex_Published", "Published")
+            );
+
+            // Return 3 to shortcut the second migration on new content definition schemas.
+            return 3;
+        }
+
+        // Migrate PartSettings. This only needs to run on old content definition schemas.
+        // This code can be removed in a later version.
+        public int UpdateFrom1()
+        {
+            _contentDefinitionManager.MigratePartSettings<AutoroutePart, AutoroutePartSettings>();
+
+            return 2;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom2()
+        {
+            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+                .CreateIndex("IDX_AutoroutePartIndex_Published", "Published")
+            );
+
+            return 3;
         }
     }
 }
