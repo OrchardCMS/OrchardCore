@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
-using Fluid;
-using Microsoft.AspNetCore.Html;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
@@ -13,29 +12,32 @@ namespace OrchardCore.Templates.Services
 {
     public class TemplatesShapeBindingResolver : IShapeBindingResolver
     {
-        private readonly TemplatesDocument _templatesDocument;
+        private TemplatesDocument _templatesDocument;
+        private readonly TemplatesManager _templatesManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly PreviewTemplatesProvider _previewTemplatesProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly HtmlEncoder _htmlEncoder;
 
         public TemplatesShapeBindingResolver(
             TemplatesManager templatesManager,
             ILiquidTemplateManager liquidTemplateManager,
             PreviewTemplatesProvider previewTemplatesProvider,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            HtmlEncoder htmlEncoder)
         {
-            _templatesDocument = templatesManager.GetTemplatesDocumentAsync().GetAwaiter().GetResult();
+            _templatesManager = templatesManager;
             _liquidTemplateManager = liquidTemplateManager;
             _previewTemplatesProvider = previewTemplatesProvider;
             _httpContextAccessor = httpContextAccessor;
+            _htmlEncoder = htmlEncoder;
         }
 
-        public bool TryGetDescriptorBinding(string shapeType, out ShapeBinding shapeBinding)
+        public async Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
         {
             if (AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
             {
-                shapeBinding = null;
-                return false;
+                return null;
             }
 
             var localTemplates = _previewTemplatesProvider.GetTemplates();
@@ -44,21 +46,22 @@ namespace OrchardCore.Templates.Services
             {
                 if (localTemplates.Templates.TryGetValue(shapeType, out var localTemplate))
                 {
-                    shapeBinding = BuildShapeBinding(shapeType, localTemplate);
-                    return true;
+                    return BuildShapeBinding(shapeType, localTemplate);
                 }
+            }
+
+            if (_templatesDocument == null)
+            {
+                _templatesDocument = await _templatesManager.GetTemplatesDocumentAsync();
             }
 
             if (_templatesDocument.Templates.TryGetValue(shapeType, out var template))
             {
-                shapeBinding = BuildShapeBinding(shapeType, template);
-
-                return true;
+                return BuildShapeBinding(shapeType, template);
             }
             else
             {
-                shapeBinding = null;
-                return false;
+                return null;
             }
         }
 
@@ -66,15 +69,13 @@ namespace OrchardCore.Templates.Services
         {
             return new ShapeBinding()
             {
-                ShapeDescriptor = new ShapeDescriptor() { ShapeType = shapeType },
                 BindingName = shapeType,
                 BindingSource = shapeType,
                 BindingAsync = async displayContext =>
                 {
-                    var context = new TemplateContext();
-                    await context.ContextualizeAsync(displayContext);
-                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, HtmlEncoder.Default, context);
-                    return new HtmlString(htmlContent);
+                    var content = new ViewBufferTextWriterContent();
+                    await _liquidTemplateManager.RenderAsync(template.Content, content, _htmlEncoder, displayContext.Value);
+                    return content;
                 }
             };
         }

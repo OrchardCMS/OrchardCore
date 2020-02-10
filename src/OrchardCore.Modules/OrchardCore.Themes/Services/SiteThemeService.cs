@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using OrchardCore.Environment.Extensions;
-using OrchardCore.Settings;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Themes.Services
 {
@@ -10,16 +10,14 @@ namespace OrchardCore.Themes.Services
     {
         private const string CacheKey = "CurrentThemeName";
 
-        private readonly IExtensionManager _extensionManager;
         private readonly ISiteService _siteService;
-
+        private readonly IExtensionManager _extensionManager;
         private readonly IMemoryCache _memoryCache;
 
         public SiteThemeService(
             ISiteService siteService,
             IExtensionManager extensionManager,
-            IMemoryCache memoryCache
-            )
+            IMemoryCache memoryCache)
         {
             _siteService = siteService;
             _extensionManager = extensionManager;
@@ -39,21 +37,19 @@ namespace OrchardCore.Themes.Services
 
         public async Task SetSiteThemeAsync(string themeName)
         {
-            var site = await _siteService.GetSiteSettingsAsync();
+            var site = await _siteService.LoadSiteSettingsAsync();
             site.Properties["CurrentThemeName"] = themeName;
-            //(site as IContent).ContentItem.Content.CurrentThemeName = themeName;
-            _memoryCache.Set(CacheKey, themeName);
             await _siteService.UpdateSiteSettingsAsync(site);
         }
 
         public async Task<string> GetCurrentThemeNameAsync()
         {
-            string themeName;
-            if (!_memoryCache.TryGetValue(CacheKey, out themeName))
+            if (!_memoryCache.TryGetValue(CacheKey, out string themeName))
             {
+                var changeToken = _siteService.ChangeToken;
                 var site = await _siteService.GetSiteSettingsAsync();
                 themeName = (string)site.Properties["CurrentThemeName"];
-                _memoryCache.Set(CacheKey, themeName);
+                _memoryCache.Set(CacheKey, themeName, changeToken);
             }
 
             return themeName;

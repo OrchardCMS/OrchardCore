@@ -1,21 +1,23 @@
-using Microsoft.AspNetCore;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Logging;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Cms.Web
 {
     public class Program
     {
-        public static void Main(string[] args)
-            => BuildWebHost(args).Run();
+        public static Task Main(string[] args)
+            => BuildHost(args).RunAsync();
 
-        public static IWebHost BuildWebHost(string[] args)
-            => CreateWebHostBuilder(args)
-                .Build();
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder<Startup>(args)
-                .UseNLogWeb();
+        public static IHost BuildHost(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging => logging.ClearProviders())
+                .ConfigureWebHostDefaults(webBuilder => webBuilder
+                    .UseStartup<Startup>()
+                    .UseNLogWeb())
+                .Build()
+            ;
     }
 }

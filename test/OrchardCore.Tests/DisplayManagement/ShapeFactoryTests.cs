@@ -17,7 +17,7 @@ namespace OrchardCore.Tests.DisplayManagement
     public class ShapeFactoryTests
     {
         IServiceProvider _serviceProvider;
-        TestShapeTable _shapeTable;
+        ShapeTable _shapeTable;
 
         public ShapeFactoryTests()
         {
@@ -29,11 +29,11 @@ namespace OrchardCore.Tests.DisplayManagement
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
-            _shapeTable = new TestShapeTable
-            {
-                Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
-                Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
-            };
+            _shapeTable = new ShapeTable
+            (
+                new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
+                new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
+            );
 
             serviceCollection.AddSingleton(_shapeTable);
 
@@ -84,7 +84,7 @@ namespace OrchardCore.Tests.DisplayManagement
             var descriptor = new ShapeDescriptor();
             descriptor.CreatingAsync = new List<Func<ShapeCreatingContext, Task>>()
             {
-                (ctx) => 
+                (ctx) =>
                 {
                     ctx.Create = () => new SubShape();
                     return Task.CompletedTask;
@@ -104,7 +104,7 @@ namespace OrchardCore.Tests.DisplayManagement
             var descriptor = new ShapeDescriptor();
             descriptor.CreatingAsync = new List<Func<ShapeCreatingContext, Task>>()
             {
-                (ctx) => 
+                (ctx) =>
                 {
                     ctx.Create = () => new SubShape();
                     return Task.CompletedTask;
@@ -118,7 +118,6 @@ namespace OrchardCore.Tests.DisplayManagement
             Assert.Equal("Bar", foo.Bar);
             Assert.Equal("Baz", foo.Baz);
         }
-
 
         private class SubShape : Shape
         {

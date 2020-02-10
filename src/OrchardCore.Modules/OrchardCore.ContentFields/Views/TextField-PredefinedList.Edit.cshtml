@@ -1,9 +1,7 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
-@using OrchardCore.ContentFields.Settings
-@using OrchardCore.ContentManagement.Metadata.Models
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
     var listSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
 
     var options = new List<SelectListItem>();
@@ -18,7 +16,7 @@
     }
 }
 
-<fieldset class="form-group">
+<div class="form-group">
 
     @if (listSettings.Editor == EditorOption.Radio)
     {
@@ -45,5 +43,5 @@
         <span class="hint">— @settings.Hint</span>
     }
 
-</fieldset>
+</div>
 

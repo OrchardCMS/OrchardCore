@@ -20,23 +20,16 @@ using OrchardCore.Google.Authentication.Recipes;
 
 namespace OrchardCore.Google
 {
-    public class Startup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IPermissionProvider, Permissions>();
-        }
-    }
-
     [Feature(GoogleConstants.Features.GoogleAuthentication)]
     public class GoogleAuthenticationStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IPermissionProvider, Permissions.GoogleAuthentication>();
             services.AddRecipeExecutionStep<GoogleAuthenticationSettingsStep>();
             services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenuGoogleAuthentication>();
+            services.AddScoped<INavigationProvider, GoogleAuthenticationAdminMenu>();
             // Register the options initializers required by the Google Handler.
             services.TryAddEnumerable(new[]
             {
@@ -55,9 +48,10 @@ namespace OrchardCore.Google
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IPermissionProvider, Permissions.GoogleAnalytics>();
             services.AddRecipeExecutionStep<GoogleAnalyticsSettingsStep>();
             services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenuGoogleAnalytics>();
+            services.AddScoped<INavigationProvider, GoogleAnalyticsAdminMenu>();
             services.Configure<MvcOptions>((options) =>
             {
                 options.Filters.Add(typeof(GoogleAnalyticsFilter));

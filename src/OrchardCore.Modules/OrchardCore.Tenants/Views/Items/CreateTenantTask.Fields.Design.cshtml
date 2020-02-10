@@ -1,0 +1,7 @@
+@model TenantTaskViewModel<CreateTenantTask>
+
+<header>
+    <h4><i class="fa fa-file-text-o"></i>@Model.Activity.GetTitleOrDefault(() => T["Create Tenant"])</h4>
+</header>
+
+<em>@Model.Activity.Name</em>

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.Apis.GraphQL.Resolvers;
+using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Records;
@@ -23,8 +25,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     /// </summary>
     public class ContentItemsFieldType : FieldType
     {
-
         private static readonly List<string> ContentItemProperties;
+        private readonly int _defaultNumberOfItems;
 
         static ContentItemsFieldType()
         {
@@ -36,13 +38,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        public ContentItemsFieldType(string contentItemName, ISchema schema)
+        public ContentItemsFieldType(string contentItemName, ISchema schema, IOptions<GraphQLContentOptions> optionsAccessor, IOptions<GraphQLSettings> settingsAccessor)
         {
             Name = "ContentItems";
 
             Type = typeof(ListGraphType<ContentItemType>);
 
-            var whereInput = new ContentItemWhereInput(contentItemName);
+            var whereInput = new ContentItemWhereInput(contentItemName, optionsAccessor);
             var orderByInput = new ContentItemOrderByInput(contentItemName);
 
             Arguments = new QueryArguments(
@@ -53,11 +55,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", ResolvedType = new PublicationStatusGraphType(), DefaultValue = PublicationStatusEnum.Published }
             );
 
-            Resolver = new AsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
+            Resolver = new LockedAsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
 
             schema.RegisterType(whereInput);
             schema.RegisterType(orderByInput);
             schema.RegisterType<PublicationStatusGraphType>();
+
+            _defaultNumberOfItems = settingsAccessor.Value.DefaultNumberOfResults;
         }
 
         private async Task<IEnumerable<ContentItem>> Resolve(ResolveFieldContext context)
@@ -95,7 +99,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             query = OrderBy(query, context);
 
             var contentItemsQuery = await FilterWhereArguments(query, where, context, session, graphContext);
-            contentItemsQuery = PageQuery(contentItemsQuery, context);
+            contentItemsQuery = PageQuery(contentItemsQuery, context, graphContext);
 
             var contentItems = await contentItemsQuery.ListAsync();
 
@@ -170,14 +174,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentQuery;
         }
 
-        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context)
+        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context, GraphQLContext graphQLContext)
         {
-            if (context.HasPopulatedArgument("first"))
-            {
-                var first = context.GetArgument<int>("first");
+            var first = context.GetArgument<int>("first");
 
-                contentItemsQuery = contentItemsQuery.Take(first);
+            if (first == 0)
+            {
+                first = _defaultNumberOfItems;
             }
+
+            contentItemsQuery = contentItemsQuery.Take(first);
 
             if (context.HasPopulatedArgument("skip"))
             {
@@ -250,7 +256,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             {
                 IPredicate expression = null;
 
-                var values = entry.Name.Split(new[] { '_' }, 2);
+                var values = entry.Name.Split('_', 2);
 
                 // Gets the full path name without the comparison e.g. aliasPart.alias, not aliasPart.alias_contains.
                 var property = values[0];

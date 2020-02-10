@@ -7,12 +7,12 @@ namespace OrchardCore.Alias.GraphQL
 {
     public class AliasInputObjectType : WhereInputObjectGraphType<AliasPart>
     {
-        public AliasInputObjectType(IStringLocalizer<AliasInputObjectType> T)
+        public AliasInputObjectType(IStringLocalizer<AliasInputObjectType> S)
         {
             Name = "AliasPartInput";
-            Description = T["the alias part of the content item"];
+            Description = S["the alias part of the content item"];
 
-            AddScalarFilterFields<StringGraphType>("alias", T["the alias of the content item"]);
+            AddScalarFilterFields<StringGraphType>("alias", S["the alias of the content item"]);
         }
     }
 }

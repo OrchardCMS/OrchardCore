@@ -20,12 +20,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             _settings = new JObject(field.Settings);
         }
 
+        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
         public ContentPartFieldDefinitionBuilder WithSetting(string name, string value)
         {
             _settings[name] = value;
             return this;
         }
 
+        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
         public ContentPartFieldDefinitionBuilder WithSetting(string name, string[] values)
         {
             _settings[name] = new JArray(values);
@@ -38,9 +40,26 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
+        [Obsolete("Use MergeSettings<T>. This will be removed in a future version.")]
         public ContentPartFieldDefinitionBuilder MergeSettings(object model)
         {
             _settings.Merge(JObject.FromObject(model), ContentBuilderSettings.JsonMergeSettings);
+            return this;
+        }
+
+        public ContentPartFieldDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
+        {
+            var existingJObject = _settings[typeof(T).Name] as JObject;
+            // If existing settings do not exist, create.
+            if (existingJObject == null)
+            {
+                existingJObject = JObject.FromObject(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                _settings[typeof(T).Name] = existingJObject;
+            }
+
+            var settingsToMerge = existingJObject.ToObject<T>();
+            setting(settingsToMerge);
+            _settings[typeof(T).Name] = JObject.FromObject(settingsToMerge, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             return this;
         }
 
@@ -51,7 +70,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var jObject = JObject.FromObject(settings);
+            var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;
 
             return this;

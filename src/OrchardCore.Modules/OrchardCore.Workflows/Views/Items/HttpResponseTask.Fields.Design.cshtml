@@ -3,4 +3,4 @@
 <header>
     <h4><i class="fa fa-globe"></i>@Model.Activity.GetTitleOrDefault(() => T["HTTP Response"])</h4>
 </header>
-<span>@T["<em>HTTP {0}</em>", Model.Activity.HttpStatusCode]</span>
+<span><em>@Model.Activity.HttpStatusCode</em></span>

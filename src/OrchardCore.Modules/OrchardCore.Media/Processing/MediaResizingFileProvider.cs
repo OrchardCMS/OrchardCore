@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using OrchardCore.ContentManagement;
-using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Routing;
 using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Commands;
-using SixLabors.ImageSharp.Web.Helpers;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
 using SixLabors.ImageSharp.Web.Providers;
@@ -20,46 +15,39 @@ namespace OrchardCore.Media.Processing
 {
     public class MediaResizingFileProvider : IImageProvider
     {
-        public static int[] DefaultSizes = new[] { 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 };
-
-        private readonly IMediaFileStore _mediaStore;
+        private readonly IMediaFileProvider _mediaFileProvider;
         private readonly FormatUtilities _formatUtilities;
         private readonly int[] _supportedSizes;
+        private readonly PathString _assetsRequestPath;
+
+        /// <summary>
+        /// A match function used by the resolver to identify itself as the correct resolver to use.
+        /// </summary>
+        private Func<HttpContext, bool> _match;
 
         public MediaResizingFileProvider(
-            IMediaFileStore mediaStore,
-            IOptions<ImageSharpMiddlewareOptions> options,
-            IShellConfiguration shellConfiguration
+            IMediaFileProvider mediaFileProvider,
+            IOptions<ImageSharpMiddlewareOptions> imageSharpOptions,
+            IOptions<MediaOptions> mediaOptions
             )
         {
-            _mediaStore = mediaStore;
-            _formatUtilities = new FormatUtilities(options.Value.Configuration);
-
-            var configurationSection = shellConfiguration.GetSection("OrchardCore.Media");
-            _supportedSizes = configurationSection.GetSection("SupportedSizes").Get<int[]>()?.OrderBy(s => s).ToArray() ?? DefaultSizes;
+            _mediaFileProvider = mediaFileProvider;
+            _formatUtilities = new FormatUtilities(imageSharpOptions.Value.Configuration);
+            _supportedSizes = mediaOptions.Value.SupportedSizes;
+            _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
         }
 
         /// <inheritdoc/>
-        public Func<HttpContext, bool> Match { get; set; } = _ => true;
-
-        /// <inheritdoc/>
-        public IDictionary<string, string> Settings { get; set; } = new Dictionary<string, string>();
+        public Func<HttpContext, bool> Match
+        {
+            get => _match ?? IsMatch;
+            set => _match = value;
+        }
 
         /// <inheritdoc/>
         public bool IsValidRequest(HttpContext context)
         {
-            if (!context.Request.Path.StartsWithSegments(Startup.AssetsRequestPath))
-            {
-                return false;
-            }
-
             if (_formatUtilities.GetExtensionFromUri(context.Request.GetDisplayUrl()) == null)
-            {
-                return false;
-            }
-
-            if (!context.Request.Query.ContainsKey(ResizeWebProcessor.Width) &&
-                !context.Request.Query.ContainsKey(ResizeWebProcessor.Height))
             {
                 return false;
             }
@@ -88,19 +76,32 @@ namespace OrchardCore.Media.Processing
         }
 
         /// <inheritdoc/>
-        public async Task<IImageResolver> GetAsync(HttpContext context)
+        public Task<IImageResolver> GetAsync(HttpContext context)
         {
-            // Path has already been correctly parsed before here.
-            var filePath = _mediaStore.MapPublicUrlToPath(context.Request.PathBase + context.Request.Path.Value);
+            // Remove assets request path.
+            var path = context.Request.Path.Value.Substring(_assetsRequestPath.Value.Length);
+
+            var fileInfo = _mediaFileProvider.GetFileInfo(path);
 
             // Check to see if the file exists.
-            var file = await _mediaStore.GetFileInfoAsync(filePath);
-            if (file == null)
+            if (!fileInfo.Exists)
             {
-                return null;
+                return Task.FromResult<IImageResolver>(null);
             }
-            var metadata = new ImageMetaData(file.LastModifiedUtc);
-            return new MediaFileResolver(_mediaStore, filePath, metadata);
+
+            // We don't care about the content type nor cache control max age here.
+            var metadata = new ImageMetadata(fileInfo.LastModified.UtcDateTime);
+            return Task.FromResult<IImageResolver>(new PhysicalFileSystemResolver(fileInfo, metadata));
+        }
+
+        private bool IsMatch(HttpContext context)
+        {
+            if (!context.Request.Path.StartsWithNormalizedSegments(_assetsRequestPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

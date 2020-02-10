@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu
@@ -19,17 +20,16 @@ namespace OrchardCore.AdminMenu
             _adminMenuService = adminMenuService;
         }
 
-
-        public IEnumerable<Permission> GetPermissions()
+        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
             var list = new List<Permission> { ManageAdminMenu, ViewAdminMenuAll };
 
-            foreach (var adminMenu in _adminMenuService.GetAsync().GetAwaiter().GetResult())
+            foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
             {
                 list.Add(CreatePermissionForAdminMenu(adminMenu.Name));
-            }            
+            }
 
-            return list;            
+            return list;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

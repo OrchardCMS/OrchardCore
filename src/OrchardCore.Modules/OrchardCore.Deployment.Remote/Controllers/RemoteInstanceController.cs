@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,14 +38,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
             _service = service;
         }
 
-        public IStringLocalizer S { get; set; }
-        public IHtmlLocalizer H { get; set; }
+        public IStringLocalizer S { get; }
+        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var remoteInstanceList = await _service.GetRemoteInstanceListAsync();
@@ -62,7 +62,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new EditRemoteInstanceViewModel();
@@ -75,7 +75,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -99,7 +99,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var remoteInstance = await _service.GetRemoteInstanceAsync(id);
@@ -126,7 +126,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var remoteInstance = await _service.GetRemoteInstanceAsync(model.Id);
@@ -159,7 +159,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var remoteInstance = await _service.GetRemoteInstanceAsync(id);

@@ -2,12 +2,14 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
@@ -23,6 +25,13 @@ namespace OrchardCore.Settings
     /// </summary>
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
@@ -46,13 +55,13 @@ namespace OrchardCore.Settings
             services.AddScoped<IDisplayDriver<DeploymentStep>, SiteSettingsDeploymentStepDriver>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             // Admin
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "AdminSettings",
                 areaName: "OrchardCore.Settings",
-                template: "Admin/Settings/{groupId}",
+                pattern: _adminOptions.AdminUrlPrefix + "/Settings/{groupId}",
                 defaults: new { controller = "Admin", action = "Index" }
             );
         }

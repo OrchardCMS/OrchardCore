@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
@@ -30,7 +29,7 @@ namespace OrchardCore.Contents.AdminNodes
         public override IDisplayResult Edit(ContentTypesAdminNode treeNode)
         {
             var listable = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Listable)
+                .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Listable)
                 .OrderBy(ctd => ctd.DisplayName).ToList();
 
 
@@ -57,13 +56,14 @@ namespace OrchardCore.Contents.AdminNodes
 
             var model = new ContentTypesAdminNodeViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ShowAll, x => x.IconClass, x => x.ContentTypes)) {
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ShowAll, x => x.IconClass, x => x.ContentTypes))
+            {
 
                 treeNode.ShowAll = model.ShowAll;
                 treeNode.IconClass = model.IconClass;
                 treeNode.ContentTypes = model.ContentTypes
-                    .Where( x => x.IsChecked == true)
-                    .Select(x => new ContentTypeEntry { ContentTypeId = x.ContentTypeId, IconClass = x.IconClass })                    
+                    .Where(x => x.IsChecked == true)
+                    .Select(x => new ContentTypeEntry { ContentTypeId = x.ContentTypeId, IconClass = x.IconClass })
                     .ToArray();
             };
 

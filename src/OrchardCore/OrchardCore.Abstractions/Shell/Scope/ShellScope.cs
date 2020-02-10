@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
@@ -22,7 +23,9 @@ namespace OrchardCore.Environment.Shell.Scope
 
         private readonly IServiceScope _serviceScope;
 
+        private readonly Dictionary<object, object> _items = new Dictionary<object, object>();
         private readonly List<Func<ShellScope, Task>> _beforeDispose = new List<Func<ShellScope, Task>>();
+        private readonly HashSet<string> _deferredSignals = new HashSet<string>();
         private readonly List<Func<ShellScope, Task>> _deferredTasks = new List<Func<ShellScope, Task>>();
 
         private bool _disposeShellContext = false;
@@ -53,25 +56,128 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Retrieve the 'ShellContext' of the current shell scope.
         /// </summary>
-        public static ShellContext Context
-        {
-            get => Current?.ShellContext;
-        }
+        public static ShellContext Context => Current?.ShellContext;
 
         /// <summary>
         /// Retrieve the 'IServiceProvider' of the current shell scope.
         /// </summary>
-        public static IServiceProvider Services
-        {
-            get => Current?.ServiceProvider;
-        }
+        public static IServiceProvider Services => Current?.ServiceProvider;
 
         /// <summary>
         /// Retrieve the current shell scope from the async flow.
         /// </summary>
-        public static ShellScope Current
+        public static ShellScope Current => _current.Value;
+
+        /// <summary>
+        /// Sets a shared item to the current shell scope.
+        /// </summary>
+        public static void Set(object key, object value) => Current._items[key] = value;
+
+        /// <summary>
+        /// Gets a shared item from the current shell scope.
+        /// </summary>
+        public static object Get(object key) => Current._items.TryGetValue(key, out var value) ? value : null;
+
+        /// <summary>
+        /// Gets a shared item of a given type from the current shell scope.
+        /// </summary>
+        public static T Get<T>(object key) => Current._items.TryGetValue(key, out var value) ? value is T item ? item : default : default;
+
+        /// <summary>
+        /// Gets (or creates) a shared item of a given type from the current shell scope.
+        /// </summary>
+        public static T GetOrCreate<T>(object key, Func<T> factory)
         {
-            get => _current.Value;
+            if (!Current._items.TryGetValue(key, out var value) || !(value is T item))
+            {
+                Current._items[key] = item = factory();
+            }
+
+            return item;
+        }
+
+        /// <summary>
+        /// Gets (or creates) a shared item of a given type from the current shell scope.
+        /// </summary>
+        public static T GetOrCreate<T>(object key) where T : class, new()
+        {
+            if (!Current._items.TryGetValue(key, out var value) || !(value is T item))
+            {
+                Current._items[key] = item = new T();
+            }
+
+            return item;
+        }
+
+        /// <summary>
+        /// Sets a shared feature to the current shell scope.
+        /// </summary>
+        public static void SetFeature<T>(T value) => Set(typeof(T), value);
+
+        /// <summary>
+        /// Gets a shared feature from the current shell scope.
+        /// </summary>
+        public static T GetFeature<T>() => Get<T>(typeof(T));
+
+        /// <summary>
+        /// Gets (or creates) a shared feature from the current shell scope.
+        /// </summary>
+        public static T GetOrCreateFeature<T>(Func<T> factory) => GetOrCreate(typeof(T), factory);
+
+        /// <summary>
+        /// Gets (or creates) a shared feature from the current shell scope.
+        /// </summary>
+        public static T GetOrCreateFeature<T>() where T : class, new() => GetOrCreate<T>(typeof(T));
+
+        /// <summary>
+        /// Creates a child scope from the current one.
+        /// </summary>
+        public static Task<ShellScope> CreateChildScopeAsync()
+        {
+            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            return shellHost.GetScopeAsync(ShellScope.Context.Settings);
+        }
+
+        /// <summary>
+        /// Creates a child scope from the current one.
+        /// </summary>
+        public static Task<ShellScope> CreateChildScopeAsync(ShellSettings settings)
+        {
+            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            return shellHost.GetScopeAsync(settings);
+        }
+
+        /// <summary>
+        /// Creates a child scope from the current one.
+        /// </summary>
+        public static Task<ShellScope> CreateChildScopeAsync(string tenant)
+        {
+            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            return shellHost.GetScopeAsync(tenant);
+        }
+
+        /// <summary>
+        /// Execute a delegate using a child scope created from the current one.
+        /// </summary>
+        public static async Task UsingChildScopeAsync(Func<ShellScope, Task> execute)
+        {
+            await (await CreateChildScopeAsync()).UsingAsync(execute);
+        }
+
+        /// <summary>
+        /// Execute a delegate using a child scope created from the current one.
+        /// </summary>
+        public static async Task UsingChildScopeAsync(ShellSettings settings, Func<ShellScope, Task> execute)
+        {
+            await (await CreateChildScopeAsync(settings)).UsingAsync(execute);
+        }
+
+        /// <summary>
+        /// Execute a delegate using a child scope created from the current one.
+        /// </summary>
+        public static async Task UsingChildScopeAsync(string tenant, Func<ShellScope, Task> execute)
+        {
+            await (await CreateChildScopeAsync(tenant)).UsingAsync(execute);
         }
 
         /// <summary>
@@ -174,17 +280,27 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Registers a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
         /// </summary>
-        private void BeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Add(callback);
+        private void BeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Insert(0, callback);
 
         /// <summary>
-        /// Adds a Task to be executed in a new scope at the end of 'BeforeDisposeAsync()'.
+        /// Adds a Signal (if not already present) to be sent just after 'BeforeDisposeAsync()'.
+        /// </summary>
+        private void DeferredSignal(string key) => _deferredSignals.Add(key);
+
+        /// <summary>
+        /// Adds a Task to be executed in a new scope after 'BeforeDisposeAsync()'.
         /// </summary>
         private void DeferredTask(Func<ShellScope, Task> task) => _deferredTasks.Add(task);
 
         /// <summary>
-        /// Registers a delegate to be invoked just before the current shell scope will be disposed.
+        /// Registers a delegate to be invoked before the current shell scope will be disposed.
         /// </summary>
         public static void RegisterBeforeDispose(Func<ShellScope, Task> callback) => Current?.BeforeDispose(callback);
+
+        /// <summary>
+        /// Adds a Signal (if not already present) to be sent just before the current shell scope will be disposed.
+        /// </summary>
+        public static void AddDeferredSignal(string key) => Current?.DeferredSignal(key);
 
         /// <summary>
         /// Adds a Task to be executed in a new scope once the current shell scope has been disposed.
@@ -196,6 +312,16 @@ namespace OrchardCore.Environment.Shell.Scope
             foreach (var callback in _beforeDispose)
             {
                 await callback(this);
+            }
+
+            if (_deferredSignals.Any())
+            {
+                var signal = ShellContext.ServiceProvider.GetRequiredService<ISignal>();
+
+                foreach (var key in _deferredSignals)
+                {
+                    signal.SignalToken(key);
+                }
             }
 
             _disposeShellContext = await TerminateShellAsync();

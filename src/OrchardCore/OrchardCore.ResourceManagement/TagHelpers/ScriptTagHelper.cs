@@ -1,12 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
-
     [HtmlTargetElement("script", Attributes = NameAttributeName)]
     [HtmlTargetElement("script", Attributes = SrcAttributeName)]
     [HtmlTargetElement("script", Attributes = AtAttributeName)]
@@ -57,7 +55,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (String.IsNullOrEmpty(DependsOn))
                 {
                     // Include custom script url
-                    setting = _resourceManager.Include("script", Src, DebugSrc);
+                    setting = _resourceManager.RegisterUrl("script", Src, DebugSrc);
                 }
                 else
                 {
@@ -91,7 +89,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                     if (AppendVersion.HasValue)
                     {
-                        definition.SetAppendVersion(AppendVersion);
+                        definition.ShouldAppendVersion(AppendVersion);
                     }
 
                     if (!String.IsNullOrEmpty(Version))
@@ -124,7 +122,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (AppendVersion.HasValue)
                 {
-                    setting.SetAppendVersion(AppendVersion);
+                    setting.ShouldAppendVersion(AppendVersion);
                 }
 
                 foreach (var attribute in output.Attributes)
@@ -170,12 +168,18 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (AppendVersion.HasValue)
                 {
-                    setting.SetAppendVersion(AppendVersion);
+                    setting.ShouldAppendVersion(AppendVersion);
                 }
 
                 if (!String.IsNullOrEmpty(Version))
                 {
                     setting.UseVersion(Version);
+                }
+
+                // This allows additions to the pre registered scripts dependencies.
+                if (!String.IsNullOrEmpty(DependsOn))
+                {
+                    setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (At == ResourceLocation.Unspecified)
@@ -212,7 +216,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (AppendVersion.HasValue)
                 {
-                    definition.SetAppendVersion(AppendVersion);
+                    definition.ShouldAppendVersion(AppendVersion);
                 }
 
                 if (!String.IsNullOrEmpty(Version))

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -42,8 +41,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         options.Filters.Add(typeof(ModelBinderAccessorFilter));
                         options.Filters.Add(typeof(NotifyFilter));
-                        options.Filters.Add(typeof(SiteViewResultFilter));
+                        options.Filters.Add(typeof(RazorViewActionFilter));
                     });
+
+                    // Used as a service when we create a fake 'ActionContext'.
+                    services.AddScoped<IAsyncViewActionFilter, RazorViewActionFilter>();
 
                     services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
                     services.AddScoped<ViewContextAccessor>();
@@ -68,7 +70,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddShapeAttributes<CoreShapes>();
                     services.AddScoped<IShapeTableProvider, CoreShapesTableProvider>();
                     services.AddShapeAttributes<ZoneShapes>();
-                    services.AddScoped<IShapeTableProvider, LayoutShapes>();
 
                     services.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
                     services.AddScoped<ILayoutAccessor, LayoutAccessor>();
@@ -81,11 +82,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped<INotifier, Notifier>();
 
                     services.AddShapeAttributes<DateTimeShapes>();
+                    services.AddShapeAttributes<PageTitleShapes>();
 
                     services.AddTagHelpers<AddAlternateTagHelper>();
                     services.AddTagHelpers<AddClassTagHelper>();
                     services.AddTagHelpers<AddWrapperTagHelper>();
-                    services.AddTagHelpers<BaseShapeTagHelper>();
                     services.AddTagHelpers<ClearAlternatesTagHelper>();
                     services.AddTagHelpers<ClearClassesTagHelper>();
                     services.AddTagHelpers<ClearWrappersTagHelper>();

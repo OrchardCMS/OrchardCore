@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\OrchardCore.Build\OrchardCore.Commons.props" />
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <IncludeBuildOutput>False</IncludeBuildOutput>
     <IncludeSource>False</IncludeSource>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
@@ -10,10 +10,6 @@
     <PackageType>Template</PackageType>
     <NoWarn>CS8021,CS2008</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Remove="NETStandard.Library" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="content\**" Exclude="**\.template.config.src\**" Pack="true">
