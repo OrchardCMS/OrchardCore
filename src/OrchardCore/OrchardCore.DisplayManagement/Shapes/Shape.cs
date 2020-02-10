@@ -146,16 +146,14 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             var tagName = defaultTagName;
 
-            // We keep this for backward compatibilty for now
-            if (shape.Properties.TryGetValue("Tag", out var tagValue) && tagValue is string tagValueString)
-            {
-                tagName = tagValueString;
-            }
-
-            // This is what should be used moving forward
-            if (shape.Properties.TryGetValue("TagName", out var value) && value is string valueString)
+            if (shape.Properties.TryGetValue("Tag", out var value) && value is string valueString)
             {
                 tagName = valueString;
+            }
+
+            if (shape.Properties.TryGetValue("TagName", out var tagValue) && tagValue is string tagValueString)
+            {
+                tagName = tagValueString;
             }
 
             string id = shape.Id;
@@ -194,6 +192,46 @@ namespace OrchardCore.DisplayManagement.Shapes
                 //Try to get Named shape
                 result = Named(name.Replace("__", "-"));
             }
+            return true;
+        }
+
+        protected override bool TrySetMemberImpl(string name, object value)
+        {
+            if (name == "Id")
+            {
+                Id = value as string;
+
+                return true;
+            }
+
+            if (name == "TagName")
+            {
+                TagName = value as string;
+
+                return true;
+            }
+
+            if (name == "Attributes")
+            {
+                if (value is Dictionary<string, string> attributes)
+                {
+                    foreach (var attribute in attributes)
+                    {
+                        Attributes.TryAdd(attribute.Key, attribute.Value);
+                    }
+                }
+            }
+
+            if (name == "Classes")
+            {
+                if (value is List<string> classes)
+                {
+                    classes.AddRange(classes);
+                }
+            }
+
+            base.TrySetMemberImpl(name, value);
+
             return true;
         }
     }
