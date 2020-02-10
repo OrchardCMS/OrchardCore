@@ -22,7 +22,6 @@ namespace OrchardCore.DisplayManagement.Shapes
         [Shape]
         public async Task<IHtmlContent> List(Shape Shape, dynamic DisplayAsync, IEnumerable<dynamic> Items,
             string ItemTagName,
-            IEnumerable<string> Classes,
             IEnumerable<string> ItemClasses,
             IDictionary<string, string> ItemAttributes,
             string FirstClass,
@@ -43,23 +42,16 @@ namespace OrchardCore.DisplayManagement.Shapes
                 return HtmlString.Empty;
             }
 
-            var listTagName = "ul";
+            string listTagName = null;
 
-            if (Shape.Properties.TryGetValue("TagName", out var value) && value is string valueString)
+            if (Shape.TagName != "-")
             {
-                if (!String.IsNullOrEmpty(valueString) && valueString != "-")
-                {
-                    listTagName = valueString;
-                }
+                listTagName = String.IsNullOrEmpty(Shape.TagName) ? "ul" : Shape.TagName;
             }
 
-            string id = null;
-            if (Shape.Properties.TryGetValue("Id", out var idValue) && idValue is string idValueString)
-            {
-                id = idValueString;
-            }
+            var id = Shape.Id ?? String.Empty;
 
-            var listTagBuilder = String.IsNullOrEmpty(listTagName) ? null : Shape.GetTagBuilder(listTagName, id, Classes, Shape.Attributes);
+            var listTagBuilder = String.IsNullOrEmpty(listTagName) ? null : Shape.GetTagBuilder(listTagName, id, Shape.Classes, Shape.Attributes);
 
             string itemTagName = null;
             if (ItemTagName != "-")
