@@ -236,8 +236,8 @@ namespace OrchardCore.Navigation
                 }
             }
 
-            int firstPage = Math.Max(1, Page - (numberOfPagesToShow / 2));
-            int lastPage = Math.Min(totalPageCount, Page + (int)(numberOfPagesToShow / 2));
+            var firstPage = Math.Max(1, Page - (numberOfPagesToShow / 2));
+            var lastPage = Math.Min(totalPageCount, Page + (int)(numberOfPagesToShow / 2));
 
             var pageKey = String.IsNullOrEmpty(PagerId) ? "page" : PagerId;
 
@@ -347,16 +347,20 @@ namespace OrchardCore.Navigation
 
             if (Shape.Properties.TryGetValue("Before", out var beforeValue) && beforeValue is string before)
             {
-                var beforeRouteData = new RouteValueDictionary(routeData);
-                beforeRouteData["before"] = before;
+                var beforeRouteData = new RouteValueDictionary(routeData)
+                {
+                    ["before"] = before
+                };
                 Shape.Add(await New.Pager_Previous(Value: previousText, RouteValues: beforeRouteData, Pager: Shape));
                 Shape.Properties["FirstClass"] = PreviousClass;
             }
 
             if (Shape.Properties.TryGetValue("After", out var afterValue) && afterValue is string after)
             {
-                var afterRouteData = new RouteValueDictionary(routeData);
-                afterRouteData["after"] = after;
+                var afterRouteData = new RouteValueDictionary(routeData)
+                {
+                    ["after"] = after
+                };
                 Shape.Add(await New.Pager_Next(Value: nextText, RouteValues: afterRouteData, Pager: Shape));
                 Shape.Properties["LastClass"] = NextClass;
             }
@@ -439,7 +443,7 @@ namespace OrchardCore.Navigation
             var action = Url.Action((string)rvd["action"], (string)rvd["controller"], rvd);
 
             IEnumerable<string> classes = Shape.Classes;
-            IDictionary<string, string> attributes = Shape.Attributes;
+            var attributes = Shape.Attributes;
             attributes["href"] = action;
             var tag = Shape.GetTagBuilder("a", null, classes, attributes);
 

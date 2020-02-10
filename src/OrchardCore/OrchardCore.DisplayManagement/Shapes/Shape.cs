@@ -7,7 +7,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.UI;
 
 namespace OrchardCore.DisplayManagement.Shapes
@@ -24,8 +23,8 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public string Id { get; set; }
         public string TagName { get; set; }
-        public IList<string> Classes => _classes = _classes ?? new List<string>();
-        public IDictionary<string, string> Attributes => _attributes = _attributes ?? new Dictionary<string, string>();
+        public IList<string> Classes => _classes ??= new List<string>();
+        public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
         public IEnumerable<dynamic> Items => _items;
         public bool HasItems => _items.Count > 0;
 
@@ -159,9 +158,9 @@ namespace OrchardCore.DisplayManagement.Shapes
                 tagName = tagValueString;
             }
 
-            string id = shape.Id;
+            var id = shape.Id;
             IEnumerable<string> classes = shape.Classes;
-            IDictionary<string, string> attributes = shape.Attributes;
+            var attributes = shape.Attributes;
 
             return GetTagBuilder(tagName, id, classes, attributes);
         }
@@ -180,7 +179,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 tagBuilder.AddCssClass(cssClass);
             }
 
-            if (!string.IsNullOrWhiteSpace(id))
+            if (!String.IsNullOrWhiteSpace(id))
             {
                 tagBuilder.Attributes["id"] = id;
             }
