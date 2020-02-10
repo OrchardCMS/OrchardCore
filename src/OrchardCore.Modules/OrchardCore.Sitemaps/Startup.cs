@@ -124,20 +124,48 @@ namespace OrchardCore.Sitemaps
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
             );
 
+            routes.MapAreaControllerRoute(
+                name: "SitemapsToggle",
+                areaName: "OrchardCore.Sitemaps",
+                pattern: _adminOptions.AdminUrlPrefix + "/Sitemaps/Toggle/{sitemapId}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Toggle) }
+            );
+
             var sitemapIndexController = typeof(SitemapIndexController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                 name: "SitemapsIndexList",
+                 areaName: "OrchardCore.Sitemaps",
+                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapsIndexes/List",
+                 defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.List) }
+            );
+
+            routes.MapAreaControllerRoute(
+                 name: "SitemapsIndexCreate",
+                 areaName: "OrchardCore.Sitemaps",
+                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapsIndexes/Create",
+                 defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Create) }
+            );
 
             routes.MapAreaControllerRoute(
                  name: "SitemapsIndexEdit",
                  areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapsIndex/Edit",
+                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapsIndexes/Edit/{sitemapId}",
                  defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
                  name: "SitemapsIndexDelete",
                  areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapsIndex/Delete/{sitemapId}",
+                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapsIndexes/Delete/{sitemapId}",
                  defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Delete) }
+            );
+
+            routes.MapAreaControllerRoute(
+                 name: "SitemapsIndexToggle",
+                 areaName: "OrchardCore.Sitemaps",
+                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapsIndexes/Toggle/{sitemapId}",
+                 defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Toggle) }
             );
 
             var sourceController = typeof(SourceController).ControllerName();

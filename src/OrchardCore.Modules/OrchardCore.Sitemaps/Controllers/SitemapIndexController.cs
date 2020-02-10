@@ -3,9 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Navigation;
+using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
@@ -14,15 +18,18 @@ using OrchardCore.Sitemaps.ViewModels;
 namespace OrchardCore.Sitemaps.Controllers
 {
     [Admin]
-    public class SitemapIndexController : Controller, IUpdateModel
+    public class SitemapIndexController : Controller
     {
         private readonly ISitemapHelperService _sitemapService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISitemapIdGenerator _sitemapIdGenerator;
         private readonly ISitemapManager _sitemapManager;
         private readonly ISitemapCacheProvider _sitemapCacheProvider;
+        private readonly ISiteService _siteService;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public SitemapIndexController(
             ISitemapHelperService sitemapService,
@@ -30,6 +37,9 @@ namespace OrchardCore.Sitemaps.Controllers
             ISitemapIdGenerator sitemapIdGenerator,
             ISitemapManager sitemapManager,
             ISitemapCacheProvider sitemapCacheProvider,
+            ISiteService siteService,
+            IUpdateModelAccessor updateModelAccessor,
+            IShapeFactory shapeFactory,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier)
         {
@@ -38,11 +48,62 @@ namespace OrchardCore.Sitemaps.Controllers
             _sitemapIdGenerator = sitemapIdGenerator;
             _sitemapManager = sitemapManager;
             _sitemapCacheProvider = sitemapCacheProvider;
+            _siteService = siteService;
+            _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
+            New = shapeFactory;
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Edit()
+        public async Task<IActionResult> List(SitemapIndexListOptions options, PagerParameters pagerParameters)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+            {
+                return Unauthorized();
+            }
+
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+
+            // default options
+            if (options == null)
+            {
+                options = new SitemapIndexListOptions();
+            }
+
+            var sitemaps = (await _sitemapManager.ListSitemapsAsync())
+                .Where(s => s.GetType() == typeof(SitemapIndex))
+                .Cast<SitemapIndex>();
+
+            if (!string.IsNullOrWhiteSpace(options.Search))
+            {
+                sitemaps = sitemaps.Where(smp => smp.Name.Contains(options.Search));
+            }
+
+            var count = sitemaps.Count();
+
+            var results = sitemaps
+                .Skip(pager.GetStartIndex())
+                .Take(pager.PageSize)
+                .ToList();
+
+            // Maintain previous route data when generating page links
+            var routeData = new RouteData();
+            routeData.Values.Add("Options.Search", options.Search);
+
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+
+            var model = new ListSitemapIndexViewModel
+            {
+                SitemapIndexes = results.Select(sm => new SitemapIndexListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToList(),
+                Options = options,
+                Pager = pagerShape
+            };
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
@@ -51,27 +112,87 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemaps = await _sitemapManager.ListSitemapsAsync();
 
-            var sitemap = sitemaps.FirstOrDefault(s => s.GetType() == typeof(SitemapIndex));
-
-            if (sitemap == null)
-            {
-                sitemap = new SitemapIndex
+            var containableSitemaps = sitemaps
+                .Where(s => s.GetType() != typeof(SitemapIndex))
+                .Cast<Sitemap>()
+                .Select(s => new ContainableSitemapEntryViewModel
                 {
-                    SitemapId = _sitemapIdGenerator.GenerateUniqueId()
-                };
+                    SitemapId = s.SitemapId,
+                    Name = s.Name,
+                    IsChecked = false
+                })
+                .OrderBy(s => s.Name)
+                .ToArray();
+
+            var model = new CreateSitemapIndexViewModel
+            {
+                ContainableSitemaps = containableSitemaps
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateSitemapIndexViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+            {
+                return Unauthorized();
             }
+
+            var sitemap = new SitemapIndex
+            {
+                SitemapId = _sitemapIdGenerator.GenerateUniqueId()
+            };
+
+            var indexSource = new SitemapIndexSource
+            {
+                Id = _sitemapIdGenerator.GenerateUniqueId()
+            };
+
+            sitemap.SitemapSources.Add(indexSource);
+
+            if (ModelState.IsValid)
+            {
+                await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater);
+
+            }
+
+            // Path validation may invalidate model state.
+            if (ModelState.IsValid)
+            {
+                sitemap.Name = model.Name;
+                sitemap.Enabled = model.Enabled;
+                sitemap.Path = model.Path;
+
+                indexSource.ContainedSitemapIds = model.ContainableSitemaps
+                    .Where(m => m.IsChecked)
+                    .Select(m => m.SitemapId)
+                    .ToArray();
+
+                await _sitemapManager.SaveSitemapAsync(sitemap.SitemapId, sitemap);
+
+                _notifier.Success(H["Sitemap index created successfully"]);
+
+                return View(model);
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        public async Task<IActionResult> Edit(string sitemapId)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+            {
+                return Unauthorized();
+            }
+
+            var sitemaps = await _sitemapManager.ListSitemapsAsync();
+
+            var sitemap = sitemaps.FirstOrDefault(s => s.SitemapId == sitemapId);
 
             var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;
-            var isNew = false;
-
-            if (indexSource == null)
-            {
-                indexSource = new SitemapIndexSource
-                {
-                    Id = _sitemapIdGenerator.GenerateUniqueId()
-                };
-                isNew = true;
-            }
 
             var containableSitemaps = sitemaps
                 .Where(s => s.GetType() != typeof(SitemapIndex))
@@ -85,10 +206,10 @@ namespace OrchardCore.Sitemaps.Controllers
                 .OrderBy(s => s.Name)
                 .ToArray();
 
-            var model = new EditSitemapIndexSourceViewModel
+            var model = new EditSitemapIndexViewModel
             {
-                IsNew = isNew,
                 SitemapId = sitemap.SitemapId,
+                Name = sitemap.Name,
                 Enabled = sitemap.Enabled,
                 Path = sitemap.Path,
                 SitemapIndexSource = indexSource,
@@ -99,57 +220,35 @@ namespace OrchardCore.Sitemaps.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditSitemapIndexSourceViewModel model)
+        public async Task<IActionResult> Edit(EditSitemapIndexViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
                 return Unauthorized();
             }
 
-            var sitemap = (await _sitemapManager.ListSitemapsAsync())
-                .FirstOrDefault(s => s.GetType() == typeof(SitemapIndex));
+            var sitemap = await _sitemapManager.LoadSitemapAsync(model.SitemapId);
 
             if (sitemap == null)
             {
-                sitemap = new SitemapIndex
-                {
-                    SitemapId = model.SitemapId
-                };
-            }
-            else
-            {
-                sitemap = await _sitemapManager.LoadSitemapAsync(sitemap.SitemapId);
+                return NotFound();
             }
 
-            var isNew = false;
             var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;
-            if (indexSource == null)
-            {
-                indexSource = new SitemapIndexSource
-                {
-                    Id = _sitemapIdGenerator.GenerateUniqueId()
-                };
-                sitemap.SitemapSources.Add(indexSource);
-                isNew = true;
-            }
+
 
             model.SitemapIndexSource = indexSource;
 
             if (ModelState.IsValid)
             {
-                if (isNew)
-                {
-                    await _sitemapService.ValidatePathAsync(model.Path, this);
-                }
-                else
-                {
-                    await _sitemapService.ValidatePathAsync(model.Path, this, sitemap.SitemapId);
-                }
+                await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater, sitemap.SitemapId);
+
             }
 
             // Path validation may invalidate model state.
             if (ModelState.IsValid)
             {
+                sitemap.Name = model.Name;
                 sitemap.Enabled = model.Enabled;
                 sitemap.Path = model.Path;
 
@@ -160,11 +259,8 @@ namespace OrchardCore.Sitemaps.Controllers
 
                 await _sitemapManager.SaveSitemapAsync(sitemap.SitemapId, sitemap);
 
-                if (!isNew)
-                {
-                    // Always clear sitemap index cache when updated.
-                    await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
-                };
+                // Always clear sitemap index cache when updated.
+                await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
 
                 _notifier.Success(H["Sitemap index updated successfully"]);
 
@@ -180,7 +276,7 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
@@ -198,6 +294,33 @@ namespace OrchardCore.Sitemaps.Controllers
             _notifier.Success(H["Sitemap index deleted successfully"]);
 
             return RedirectToAction(nameof(Edit));
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Toggle(string sitemapId)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+            {
+                return Forbid();
+            }
+
+            var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
+
+            if (sitemap == null)
+            {
+                return NotFound();
+            }
+
+            sitemap.Enabled = !sitemap.Enabled;
+
+            await _sitemapManager.SaveSitemapAsync(sitemap.SitemapId, sitemap);
+
+            await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
+
+            _notifier.Success(H["Sitemap index menu toggled successfully"]);
+
+            return RedirectToAction(nameof(List));
         }
     }
 }

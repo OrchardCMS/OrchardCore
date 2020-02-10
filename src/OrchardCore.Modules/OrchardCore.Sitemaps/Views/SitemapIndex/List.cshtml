@@ -1,6 +1,6 @@
-@model ListSitemapViewModel
+@model ListSitemapIndexViewModel
 
-<h1>@RenderTitleSegments(T["Sitemaps"])</h1>
+<h1>@RenderTitleSegments(T["Sitemap Indexes"])</h1>
 
 @if (String.IsNullOrEmpty(Site.BaseUrl))
 {
@@ -10,7 +10,7 @@
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Sitemap"]</a>
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Sitemap Index"]</a>
         </li>
     </ul>
     <form asp-action="Index" method="get" class="form-inline my-2 my-lg-0">
@@ -22,17 +22,17 @@
 <form asp-action="Index">
     @* the form is necessary to generate and antiforgery token for the delete action *@
 
-    @if (Model.Sitemaps.Any())
+    @if (Model.SitemapIndexes.Any())
     {
         <ul class="list-group">
-            @foreach (var entry in Model.Sitemaps)
+            @foreach (var entry in Model.SitemapIndexes)
             {
                 <li class="list-group-item">
                     <div class="properties">
                         <div class="related">
                             @if (entry.Enabled)
                             {
-                                <a href="@Url.Action("Index", "Sitemap", new { area = "OrchardCore.Sitemaps", sitemapId = entry.SitemapId })" class="btn btn-success btn-sm" itemprop="">@T["View"]</a>
+                                <a asp-action="Index" asp-controller="Sitemap" asp-area="OrchardCore.Sitemaps" asp-route-sitemapId="@entry.SitemapId" class="btn btn-success btn-sm" itemprop="">@T["View"]</a>
                             }
                             <a asp-action="Edit" asp-route-sitemapId="@entry.SitemapId" class="btn btn-primary btn-sm">@T["Edit"]</a>
                             <div class="btn-group btn-group-sm">
@@ -49,7 +49,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a class="@(entry.Enabled ? "": "text-muted")" asp-action="Display" asp-route-sitemapId="@entry.SitemapId">@entry.Name</a>
+                        <a class="@(entry.Enabled ? "": "text-muted")" asp-action="Edit" asp-route-sitemapId="@entry.SitemapId">@entry.Name</a>
                     </div>
                 </li>
             }
@@ -58,7 +58,7 @@
     else
     {
         <div class="alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> There are no sitemaps for the moment."]
+            @T["<strong>Nothing here!</strong> There are no sitemaps indexes for the moment."]
         </div>
     }
 </form>

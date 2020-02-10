@@ -21,7 +21,7 @@ using OrchardCore.Sitemaps.ViewModels;
 namespace OrchardCore.Sitemaps.Controllers
 {
     [Admin]
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly ISitemapHelperService _sitemapService;
         private readonly IAuthorizationService _authorizationService;
@@ -31,6 +31,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly ISitemapIdGenerator _sitemapIdGenerator;
         private readonly ISiteService _siteService;
         private readonly ISitemapCacheProvider _sitemapCacheProvider;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
 
         private readonly IStringLocalizer T;
@@ -46,6 +47,7 @@ namespace OrchardCore.Sitemaps.Controllers
             ISitemapIdGenerator sitemapIdGenerator,
             ISiteService siteService,
             ISitemapCacheProvider sitemapCacheProvider,
+            IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
@@ -59,6 +61,7 @@ namespace OrchardCore.Sitemaps.Controllers
             _sitemapIdGenerator = sitemapIdGenerator;
             _siteService = siteService;
             _sitemapCacheProvider = sitemapCacheProvider;
+            _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
             T = stringLocalizer;
             H = htmlLocalizer;
@@ -130,7 +133,7 @@ namespace OrchardCore.Sitemaps.Controllers
             var items = new List<dynamic>();
             foreach (var source in sitemap.SitemapSources)
             {
-                dynamic item = await _displayManager.BuildDisplayAsync(source, this, "SummaryAdmin");
+                dynamic item = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "SummaryAdmin");
                 item.SitemapId = sitemap.SitemapId;
                 item.SitemapSource = source;
                 items.Add(item);
@@ -140,7 +143,7 @@ namespace OrchardCore.Sitemaps.Controllers
             foreach (var factory in _sourceFactories)
             {
                 var source = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(source, this, "Thumbnail");
+                dynamic thumbnail = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "Thumbnail");
                 thumbnail.SitemapSource = source;
                 thumbnail.SitemapSourceType = factory.Name;
                 thumbnail.Sitemap = sitemap;
@@ -184,7 +187,7 @@ namespace OrchardCore.Sitemaps.Controllers
                     model.Path = _sitemapService.GetSitemapSlug(model.Name);
                 }
 
-                await _sitemapService.ValidatePathAsync(model.Path, this);
+                await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater);
             }
 
             if (ModelState.IsValid)
@@ -253,7 +256,7 @@ namespace OrchardCore.Sitemaps.Controllers
                     model.Path = _sitemapService.GetSitemapSlug(model.Name);
                 }
 
-                await _sitemapService.ValidatePathAsync(model.Path, this, model.SitemapId);
+                await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater, model.SitemapId);
             }
 
             if (ModelState.IsValid)
@@ -294,6 +297,32 @@ namespace OrchardCore.Sitemaps.Controllers
             await _sitemapManager.DeleteSitemapAsync(sitemapId);
 
             _notifier.Success(H["Sitemap deleted successfully"]);
+
+            return RedirectToAction(nameof(List));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Toggle(string sitemapId)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+            {
+                return Forbid();
+            }
+
+            var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
+
+            if (sitemap == null)
+            {
+                return NotFound();
+            }
+
+            sitemap.Enabled = !sitemap.Enabled;
+
+            await _sitemapManager.SaveSitemapAsync(sitemap.SitemapId, sitemap);
+
+            await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
+
+            _notifier.Success(H["Sitemap toggled successfully"]);
 
             return RedirectToAction(nameof(List));
         }

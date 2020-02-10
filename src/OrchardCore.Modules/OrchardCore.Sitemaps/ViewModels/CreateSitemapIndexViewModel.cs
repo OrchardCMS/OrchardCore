@@ -1,13 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.ViewModels
 {
-    public class EditSitemapIndexSourceViewModel
+    public class CreateSitemapIndexViewModel
     {
         [Required]
-        public string SitemapId { get; set; }
+        public string Name { get; set; }
 
         [Required]
         public string Path { get; set; }
@@ -16,11 +14,6 @@ namespace OrchardCore.Sitemaps.ViewModels
 
         public ContainableSitemapEntryViewModel[] ContainableSitemaps { get; set; } = new ContainableSitemapEntryViewModel[] { };
 
-        [BindNever]
-        public bool IsNew { get; set; }
-
-        [BindNever]
-        public SitemapIndexSource SitemapIndexSource { get; set; }
     }
 
     public class ContainableSitemapEntryViewModel
@@ -30,3 +23,4 @@ namespace OrchardCore.Sitemaps.ViewModels
         public string Name { get; set; }
     }
 }
+

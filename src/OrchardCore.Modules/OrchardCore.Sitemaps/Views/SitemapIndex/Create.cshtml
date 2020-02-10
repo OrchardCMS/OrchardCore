@@ -1,6 +1,6 @@
-@model EditSitemapIndexViewModel
+@model CreateSitemapIndexViewModel
 
-<h1>@RenderTitleSegments(T["Edit Sitemap Index"])</h1>
+<h1>@RenderTitleSegments(T["Create Sitemap Index"])</h1>
 
 @if (String.IsNullOrEmpty(Site.BaseUrl))
 {
@@ -8,8 +8,7 @@
 }
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="SitemapId" />
+<form asp-action="Create" method="post">
 
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>

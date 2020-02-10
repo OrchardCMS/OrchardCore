@@ -14,6 +14,11 @@ namespace OrchardCore.Sitemaps.Models
         public string SitemapId { get; set; }
 
         /// <summary>
+        /// Name of sitemap.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// When readonly this sitemap cannot be updated.
         /// </summary>
         [JsonIgnore]
