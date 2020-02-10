@@ -146,6 +146,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             var tagName = defaultTagName;
 
+            // We keep this for backward compatibility
             if (shape.Properties.TryGetValue("Tag", out var value) && value is string valueString)
             {
                 tagName = valueString;
@@ -197,6 +198,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         protected override bool TrySetMemberImpl(string name, object value)
         {
+            // We set the Shape real properties
             if (name == "Id")
             {
                 Id = value as string;
