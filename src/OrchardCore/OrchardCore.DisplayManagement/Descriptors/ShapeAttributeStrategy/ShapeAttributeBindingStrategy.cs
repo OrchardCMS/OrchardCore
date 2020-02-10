@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Extensions;
 
