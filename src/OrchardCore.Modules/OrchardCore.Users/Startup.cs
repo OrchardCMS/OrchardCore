@@ -1,6 +1,7 @@
 using System;
 using System.Web;
 using Fluid;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
@@ -149,6 +150,8 @@ namespace OrchardCore.Users
                 // 2019-12-10; Removed, since https://github.com/aspnet/Announcements/issues/390
                 // options.Cookie.SameSite = SameSiteMode.None;
             });
+
+            services.ConfigureOptions<ConfigureCookieAuthenticationOptions>();
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
