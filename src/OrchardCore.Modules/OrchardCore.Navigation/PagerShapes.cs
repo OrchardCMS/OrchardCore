@@ -165,11 +165,21 @@ namespace OrchardCore.Navigation
             object GapText,
             bool ShowNext,
             string ItemTagName,
+            IDictionary<string, string> Attributes,
             IDictionary<string, string> ItemAttributes
             // parameter omitted to workaround an issue where a NullRef is thrown
             // when an anonymous object is bound to an object shape parameter
             /*object RouteValues*/)
         {
+            Shape.Properties["ItemTagName"] = ItemTagName;
+            Shape.Properties["ItemAttributes"] = ItemAttributes;
+
+            var attributes = Shape.Attributes;
+            foreach (var item in Attributes)
+            {
+                attributes.Add(item.Key, item.Value);
+            }
+
             var currentPage = Page;
             if (currentPage < 1)
                 currentPage = 1;
@@ -321,10 +331,18 @@ namespace OrchardCore.Navigation
             string PreviousClass,
             string NextClass,
             string ItemTagName,
+            IDictionary<string, string> Attributes,
             IDictionary<string, string> ItemAttributes,
             Dictionary<string, string> UrlParams)
         {
             Shape.Properties["ItemTagName"] = ItemTagName;
+
+            var attributes = Shape.Attributes;
+            foreach (var item in Attributes)
+            {
+                attributes.Add(item.Key, item.Value);
+            }
+
             Shape.Properties["ItemAttributes"] = ItemAttributes;
 
             var previousText = PreviousText ?? S["<"];
