@@ -93,12 +93,14 @@ namespace OrchardCore.Users.Controllers
                     var provider = schemes.First().Name;
 
                     var dataProtector = _dataProtectionProvider.CreateProtector(nameof(DefaultExternalLogin))
-                                            .ToTimeLimitedDataProtector();
+                       .ToTimeLimitedDataProtector();
 
                     var token = Guid.NewGuid();
                     var expiration = new TimeSpan(0, 0, 5);
                     var protectedToken = dataProtector.Protect(token.ToString(), _clock.UtcNow.Add(expiration));
-                    await _distributedCache.SetAsync(token.ToString(), token.ToByteArray(), new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = expiration });
+                    await _distributedCache.SetAsync(token.ToString(),
+                        token.ToByteArray(),
+                        new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = expiration });
                     return RedirectToAction(nameof(DefaultExternalLogin), new { protectedToken, returnUrl });
                 }
             }
@@ -153,12 +155,12 @@ namespace OrchardCore.Users.Controllers
                     return true;
                 }
             }
-            
+
             return false;
         }
-        
+
         bool AddUserEnabledError(IUser user)
-        {           
+        {
             var localUser = user as User;
 
             if (localUser == null || !localUser.IsEnabled)
@@ -166,7 +168,7 @@ namespace OrchardCore.Users.Controllers
                 ModelState.AddModelError(String.Empty, S["Your account is disabled. Please contact an administrator."]);
                 return true;
             }
-            
+
             return false;
         }
 
