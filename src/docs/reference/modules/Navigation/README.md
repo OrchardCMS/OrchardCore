@@ -54,6 +54,7 @@ Properties inherited from the base Shape class:
 | `Id` | `string` | The HTML id used for the pager, default: _none_. |
 | `TagName` | `string` | The HTML tag used for the pager, default: `ul`. |
 | `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
+| `Classes` | `Dictionary<string, string>` | CSS classes to add to the main Tag element. |
 
 The `PagerId` property is used to create templates for specific instances. For instance, assigning
 the value `MainBlog` to `PagerId` and then rendering the pager will look for a template named 
@@ -101,6 +102,7 @@ Properties inherited from the base Shape class:
 | `Id` | `string` | The HTML id used for the pager, default: _none_. |
 | `TagName` | `string` | The HTML tag used for the pager, default: `ul`. |
 | `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
+| `Classes` | `Dictionary<string, string>` | CSS classes to add to the main Tag element. |
 
 A slim pager can be further customized by defining templates for the following shapes:
 
@@ -182,8 +184,13 @@ public async Task<IActionResult> List(MyViewModel viewModel, PagerParameters pag
 {
     var siteSettings = await _siteService.GetSiteSettingsAsync();
     var pager = new Pager(pagerParameters, siteSettings.PageSize);
-
-    var pagerShape = (await New.Pager(pager)).TotalItemCount(100).ItemTagName("div");
+    var query = _session.Query<ContentItem, ContentItemIndex>();
+    var maxPagedCount = siteSettings.MaxPagedCount;
+    
+    if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
+        pager.PageSize = maxPagedCount;
+                
+    var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).ItemTagName("div");
     pagerShape.Id = "myid";
     pagerShape.TagName = "div";
     pagerShape.Attributes.Add("myattribute", "value");
