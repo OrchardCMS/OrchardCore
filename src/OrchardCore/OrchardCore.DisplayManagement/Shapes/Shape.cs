@@ -6,6 +6,8 @@ using System.Dynamic;
 using System.Linq;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.UI;
 
 namespace OrchardCore.DisplayManagement.Shapes
@@ -222,13 +224,35 @@ namespace OrchardCore.DisplayManagement.Shapes
                         Attributes.TryAdd(attribute.Key, attribute.Value);
                     }
                 }
+
+                if (value is string stringValue)
+                {
+                    attributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
+
+                    foreach (var attribute in attributes)
+                    {
+                        Attributes.TryAdd(attribute.Key, attribute.Value);
+                    }
+                }
             }
 
             if (name == "Classes")
             {
                 if (value is List<string> classes)
                 {
-                    classes.AddRange(classes);
+                    foreach (var item in classes)
+                    {
+                        Classes.Add(item);
+                    }
+                }
+
+                if (value is string stringValue)
+                {
+                    var values = stringValue.Split(' ');
+                    foreach (var item in values)
+                    {
+                        Classes.Add(item);
+                    }
                 }
             }
 

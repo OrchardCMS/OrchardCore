@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Extensions;
 
@@ -189,6 +190,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             if (result.GetType() == typeof(string) && (parameter.ParameterType == typeof(DateTime) || parameter.ParameterType == typeof(DateTime?)))
             {
                 return DateTime.Parse((string)result);
+            }
+
+            // Specific implementation for IDictionary<string,string>
+            if (result.GetType() == typeof(string) && (parameter.ParameterType == typeof(IDictionary<string, string>)))
+            {
+                return JsonConvert.DeserializeObject<Dictionary<string, string>>((string)result);
             }
 
             return Convert.ChangeType(result, parameter.ParameterType);
