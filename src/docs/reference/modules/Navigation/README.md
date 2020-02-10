@@ -172,9 +172,10 @@ At this time, the Admin Menu is the only navigation with code dynamically adding
 {% assign nextText = "Older Posts →" | t %}
 {% assign previousClass = "previous" | t %}
 {% assign nextClass = "next" | t %}
+{% assign itemClasses = "itemclass1 itemclass2" | split: " " %}
 
 {% shape_pager Model.Pager previous_text: previousText, next_text: nextText,
-    previous_class: previousClass, next_class: nextClass, tag_name: "div", item_tag_name: "div", attributes: "{\"key1\": \"value1\",\"key2\":\"value2\"}", item_attributes: "{\"key1\": \"value1\",\"key2\":\"value2\"}", classes: "class1 class2", item_classes: "itemclass1 itemclass2" %}
+    previous_class: previousClass, next_class: nextClass, tag_name: "div", item_tag_name: "div", attributes: "{\"key1\": \"value1\",\"key2\":\"value2\"}", item_attributes: "{\"key1\": \"value1\",\"key2\":\"value2\"}", classes: "class1 class2", item_classes: itemClasses %}
 
 {{ Model.Pager | shape_render }}
 ```
