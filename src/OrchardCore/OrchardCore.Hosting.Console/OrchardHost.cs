@@ -1,11 +1,12 @@
-using OrchardCore.Environment.Commands;
-using OrchardCore.Hosting.HostContext;
-using OrchardCore.Environment.Commands.Parameters;
-using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Commands.Parameters;
+using OrchardCore.Hosting.HostContext;
+
+using System;
 
 namespace OrchardCore.Hosting
 {
@@ -85,7 +86,7 @@ namespace OrchardCore.Hosting
         {
             return context.CommandHost.RunCommandAsync(_input, _output, context.Arguments.Tenant, context.Arguments.Arguments.ToArray(), context.Arguments.Switches);
         }
-        
+
         public async Task<CommandReturnCodes> ExecuteInteractiveAsync(CommandHostContext context)
         {
             await _output.WriteLineAsync("Type \"?\" for help, \"exit\" to exit, \"cls\" to clear screen");

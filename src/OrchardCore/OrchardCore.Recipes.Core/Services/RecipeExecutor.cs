@@ -125,7 +125,6 @@ namespace OrchardCore.Recipes.Services
                                                     var innerExecutionId = Guid.NewGuid().ToString();
                                                     await ExecuteAsync(innerExecutionId, descriptor, environment, cancellationToken);
                                                 }
-
                                             }
                                         }
                                     }

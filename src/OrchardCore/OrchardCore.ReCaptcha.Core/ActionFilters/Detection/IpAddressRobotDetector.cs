@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.ReCaptcha.Configuration;
@@ -55,7 +51,7 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
         public void FlagAsRobot()
         {
             var ipAddressKey = GetIpAddressCacheKey(_httpContext);
-            
+
             // this has race conditions, but it's ok
             var faultyRequestCount = _memoryCache.GetOrCreate<int>(ipAddressKey, fact => 0);
             faultyRequestCount++;

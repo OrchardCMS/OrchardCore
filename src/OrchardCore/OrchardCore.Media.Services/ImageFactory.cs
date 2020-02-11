@@ -8,7 +8,6 @@ using OrchardCore.Media.Models;
 
 namespace OrchardCore.Media
 {
-
     public class ImageFactorySelector : IMediaFactorySelector
     {
         private readonly IContentManager _contentManager;
