@@ -8,6 +8,7 @@ namespace OrchardCore.Sitemaps.Builders
     public class DefaultSitemapModifiedDateProvider : ISitemapModifiedDateProvider
     {
         private readonly IEnumerable<ISitemapSourceModifiedDateProvider> _sitemapSourceModifiedDateProviders;
+
         public DefaultSitemapModifiedDateProvider(IEnumerable<ISitemapSourceModifiedDateProvider> sitemapSourceModifiedDateProviders)
         {
             _sitemapSourceModifiedDateProviders = sitemapSourceModifiedDateProviders;

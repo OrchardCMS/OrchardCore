@@ -4,16 +4,11 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
-using OrchardCore.Sitemaps;
+using OrchardCore.Sitemaps.Aspects;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
-using YesSql;
-using YesSql.Services;
 
 namespace OrchardCore.Contents.Sitemaps
 {
@@ -22,30 +17,24 @@ namespace OrchardCore.Contents.Sitemaps
         private static readonly XNamespace Namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
         private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
-        private readonly ISitemapContentItemMetadataProvider _sitemapContentItemMetadataProvider;
+        private readonly IContentManager _contentManager;
         private readonly IContentItemsQueryProvider _contentItemsQueryProvider;
-        private readonly SitemapsOptions _sitemapsOptions;
         private readonly IEnumerable<ISitemapContentItemValidationProvider> _sitemapContentItemValidationProviders;
         private readonly IEnumerable<ISitemapContentItemExtendedMetadataProvider> _sitemapContentItemExtendedMetadataProviders;
-        private readonly ILogger _logger;
 
         public ContentTypesSitemapSourceBuilder(
             IRouteableContentTypeCoordinator routeableContentTypeCoordinator,
-            ISitemapContentItemMetadataProvider sitemapContentItemMetadataProvider,
+            IContentManager contentManager,
             IContentItemsQueryProvider contentItemsQueryProvider,
-            IOptions<SitemapsOptions> options,
             IEnumerable<ISitemapContentItemValidationProvider> sitemapContentItemValidationProviders,
-            IEnumerable<ISitemapContentItemExtendedMetadataProvider> sitemapContentItemExtendedMetadataProviders,
-            ILogger<ContentTypesSitemapSourceBuilder> logger
+            IEnumerable<ISitemapContentItemExtendedMetadataProvider> sitemapContentItemExtendedMetadataProviders
             )
         {
             _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
-            _sitemapContentItemMetadataProvider = sitemapContentItemMetadataProvider;
+            _contentManager = contentManager;
             _contentItemsQueryProvider = contentItemsQueryProvider;
-            _sitemapsOptions = options.Value;
             _sitemapContentItemValidationProviders = sitemapContentItemValidationProviders;
             _sitemapContentItemExtendedMetadataProviders = sitemapContentItemExtendedMetadataProviders;
-            _logger = logger;
         }
 
         public override async Task BuildSourceAsync(ContentTypesSitemapSource source, SitemapBuilderContext context)
@@ -69,20 +58,14 @@ namespace OrchardCore.Contents.Sitemaps
             }
         }
 
-        private async Task<bool> BuildUrlsetMetadataAsync(
-            ContentTypesSitemapSource source,
-            SitemapBuilderContext context,
-            ContentItemsQueryContext queryContext,
-            ContentItem contentItem,
-            XElement url)
+        private async Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapSource source, SitemapBuilderContext context, ContentItemsQueryContext queryContext, ContentItem contentItem, XElement url)
         {
             if (await BuildUrlAsync(context, contentItem, url))
             {
                 if (await BuildExtendedMetadataAsync(context, queryContext, contentItem, url))
                 {
-
-                    BuildLastMod(contentItem, url);
-                    BuildChangeFrequencyPriority(source, contentItem, url);
+                    PopulateLastMod(contentItem, url);
+                    await PopulateChangeFrequencyPriority(source, contentItem, url);
                     return true;
                 }
 
@@ -126,9 +109,11 @@ namespace OrchardCore.Contents.Sitemaps
             return true;
         }
 
-        private void BuildChangeFrequencyPriority(ContentTypesSitemapSource source, ContentItem contentItem, XElement url)
+        private async Task PopulateChangeFrequencyPriority(ContentTypesSitemapSource source, ContentItem contentItem, XElement url)
         {
-            var changeFrequencyValue = _sitemapContentItemMetadataProvider.GetChangeFrequency(contentItem);
+            var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(contentItem);
+
+            var changeFrequencyValue = sitemapMetadataAspect.ChangeFrequency;
             if (String.IsNullOrEmpty(changeFrequencyValue))
             {
                 if (source.IndexAll)
@@ -148,7 +133,7 @@ namespace OrchardCore.Contents.Sitemaps
                 }
             }
 
-            var priorityIntValue = _sitemapContentItemMetadataProvider.GetPriority(contentItem);
+            var priorityIntValue = sitemapMetadataAspect.Priority;
             if (!priorityIntValue.HasValue)
             {
                 if (source.IndexAll)
@@ -179,7 +164,7 @@ namespace OrchardCore.Contents.Sitemaps
             url.Add(priority);
         }
 
-        private void BuildLastMod(ContentItem contentItem, XElement url)
+        private void PopulateLastMod(ContentItem contentItem, XElement url)
         {
             // Last modified is not required. Do not include if content item has no modified date.
             if (contentItem.ModifiedUtc.HasValue)

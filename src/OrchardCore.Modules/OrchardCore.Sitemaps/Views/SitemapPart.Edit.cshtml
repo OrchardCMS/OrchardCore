@@ -2,27 +2,27 @@
 <div class="row form-group">
     <div class="col-12 col-lg-3">
         <div class="form-group custom-control custom-checkbox">
-            <input asp-for="OverrideSitemapSetConfig" class="custom-control-input" id="SitemapPart_OverrideSitemapSetConfig" />
-            <label asp-for="OverrideSitemapSetConfig" class="custom-control-label">@T["Sitemap"]</label>
-            <span class="hint">@T["Check to override sitemap set configuration."]</span>
+            <input asp-for="OverrideSitemapConfig" class="custom-control-input"/>
+            <label asp-for="OverrideSitemapConfig" class="custom-control-label">@T["Sitemap"]</label>
+            <span class="hint">@T["Check to override sitemap configuration."]</span>
         </div>
     </div>
     <div class="col-12 col-lg-3">
-        <div class="form-group custom-control custom-checkbox sitemap-form-group" style="@(Model.OverrideSitemapSetConfig ? "" : "display: none")">
+        <div class="form-group custom-control custom-checkbox sitemap-form-group" style="@(Model.OverrideSitemapConfig ? "" : "display: none")">
             <input asp-for="Exclude" class="custom-control-input" />
             <label asp-for="Exclude" class="custom-control-label">@T["Exclude"]</label>
             <span class="hint">@T["Check to exclude this content item from the site map."]</span>
         </div>
     </div>
     <div class="col-12 col-lg-3">
-        <div class="form-group sitemap-form-group" asp-validation-class-for="ChangeFrequency" style="@(Model.OverrideSitemapSetConfig ? "" : "display: none")">
+        <div class="form-group sitemap-form-group" asp-validation-class-for="ChangeFrequency" style="@(Model.OverrideSitemapConfig ? "" : "display: none")">
             <label asp-for="ChangeFrequency">@T["Change Frequency"] </label>
             <select asp-for="ChangeFrequency" class="form-control" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
             <span class="hint">@T["The frequency this content item is likely to change."]</span>
         </div>
     </div>
     <div class="col-12 col-lg-3">
-        <div class="form-group sitemap-form-group" asp-validation-class-for="Priority" style="@(Model.OverrideSitemapSetConfig ? "" : "display: none")">
+        <div class="form-group sitemap-form-group" asp-validation-class-for="Priority" style="@(Model.OverrideSitemapConfig ? "" : "display: none")">
             <label asp-for="Priority">@T["Priority"] </label>
             <select asp-for="Priority" class="form-control">
                 <option value="0">@T["0.0"]</option>
@@ -44,7 +44,7 @@
 </div>
 
 <script at="Foot" depends-on="jquery">
-    $('#SitemapPart_OverrideSitemapSetConfig').change(function (e) {
+    $('#@Html.IdFor(i => i.OverrideSitemapConfig)').change(function (e) {
         var checked = $(e.target).prop('checked');
         $('.sitemap-form-group').each(function () {
             checked ? $(this).show() : $(this).hide();

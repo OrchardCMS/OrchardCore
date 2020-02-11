@@ -12,25 +12,34 @@ namespace OrchardCore.Sitemaps.Drivers
         public override IDisplayResult Edit(SitemapPart part)
         {
             return Initialize<SitemapPartViewModel>("SitemapPart_Edit", m => BuildViewModel(m, part))
-                .Location("Parts#Seo:5");
+                .Location("Parts#SEO:5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SitemapPart model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model,
+            var viewModel = new SitemapPartViewModel();
+
+            if (await updater.TryUpdateModelAsync(viewModel,
                 Prefix,
                 t => t.OverrideSitemapConfig,
                 t => t.ChangeFrequency,
                 t => t.Exclude,
                 t => t.Priority
-            );
+                ))
+            {
+                model.OverrideSitemapConfig = viewModel.OverrideSitemapConfig;
+                model.ChangeFrequency = viewModel.ChangeFrequency;
+                model.Exclude = viewModel.Exclude;
+                model.Priority = viewModel.Priority;
+            }
+
             return Edit(model);
         }
 
 
         private void BuildViewModel(SitemapPartViewModel model, SitemapPart part)
         {
-            model.OverrideSitemapSetConfig = part.OverrideSitemapConfig;
+            model.OverrideSitemapConfig = part.OverrideSitemapConfig;
             model.ChangeFrequency = part.ChangeFrequency;
             model.Exclude = part.Exclude;
             model.Priority = part.Priority;
