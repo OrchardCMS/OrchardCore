@@ -10,22 +10,22 @@ namespace OrchardCore.Data
         void Cancel();
 
         /// <summary>
-        /// Registers a <see cref="CommitDelegate"/> that will get called before <see cref="CommitAsync"/>.
+        /// Registers a <see cref="DataStoreCommitDelegate"/> that will get called before <see cref="CommitAsync"/>.
         /// </summary>
-        void BeforeCommit<T>(CommitDelegate beforeCommit);
+        void BeforeCommit<T>(DataStoreCommitDelegate beforeCommit);
 
         /// <summary>
-        /// Registers a <see cref="CommitDelegate"/> that will get called after <see cref="CommitAsync"/> if it is successful.
+        /// Registers a <see cref="DataStoreCommitDelegate"/> that will get called after <see cref="CommitAsync"/> if it is successful.
         /// </summary>
-        void AfterCommitSuccess<T>(CommitDelegate afterCommit);
+        void AfterCommitSuccess<T>(DataStoreCommitDelegate afterCommit);
 
         /// <summary>
-        /// Registers a <see cref="CommitDelegate"/> that will get called after <see cref="CommitAsync"/> even it is not successful
+        /// Registers a <see cref="DataStoreCommitDelegate"/> that will get called after <see cref="CommitAsync"/> even it is not successful
         /// </summary>
-        void AfterCommit<T>(CommitDelegate afterCommit);
+        void AfterCommit<T>(DataStoreCommitDelegate afterCommit);
 
         /// <summary>
-        /// Calls the related <see cref="CommitDelegate"/> before and after committing the data store/>.
+        /// Calls the related <see cref="DataStoreCommitDelegate"/> before and after committing the data store/>.
         /// </summary>
         Task CommitAsync();
     }

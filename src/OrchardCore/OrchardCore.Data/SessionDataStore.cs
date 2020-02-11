@@ -18,9 +18,9 @@ namespace OrchardCore.Data
         private readonly List<Type> _afterCommitsSuccess = new List<Type>();
         private readonly List<Type> _afterCommits = new List<Type>();
 
-        private CommitDelegate _beforeCommit;
-        private CommitDelegate _afterCommitSuccess;
-        private CommitDelegate _afterCommit;
+        private DataStoreCommitDelegate _beforeCommit;
+        private DataStoreCommitDelegate _afterCommitSuccess;
+        private DataStoreCommitDelegate _afterCommit;
 
         /// <summary>
         /// Creates a new instance of <see cref="SessionHelper"/>.
@@ -80,7 +80,7 @@ namespace OrchardCore.Data
         public void Cancel() => _session.Cancel();
 
         /// <inheritdoc />
-        public void BeforeCommit<T>(CommitDelegate beforeCommit)
+        public void BeforeCommit<T>(DataStoreCommitDelegate beforeCommit)
         {
             if (!_beforeCommits.Contains(typeof(T)))
             {
@@ -90,7 +90,7 @@ namespace OrchardCore.Data
         }
 
         /// <inheritdoc />
-        public void AfterCommitSuccess<T>(CommitDelegate afterCommit)
+        public void AfterCommitSuccess<T>(DataStoreCommitDelegate afterCommit)
         {
             if (!_afterCommitsSuccess.Contains(typeof(T)))
             {
@@ -100,7 +100,7 @@ namespace OrchardCore.Data
         }
 
         /// <inheritdoc />
-        public void AfterCommit<T>(CommitDelegate afterCommit)
+        public void AfterCommit<T>(DataStoreCommitDelegate afterCommit)
         {
             if (!_afterCommits.Contains(typeof(T)))
             {
