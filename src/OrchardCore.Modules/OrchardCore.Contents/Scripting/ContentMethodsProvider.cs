@@ -14,7 +14,6 @@ namespace OrchardCore.Contents.Scripting
         private readonly GlobalMethod _updateContentItemMethod;
         private readonly GlobalMethod _deleteContentItemMethod;
 
-
         public ContentMethodsProvider()
         {
             _newContentItemMethod = new GlobalMethod
@@ -62,7 +61,6 @@ namespace OrchardCore.Contents.Scripting
                     contentManager.RemoveAsync(contentItem).GetAwaiter().GetResult();
                 })
             };
-
         }
 
         public IEnumerable<GlobalMethod> GetMethods()

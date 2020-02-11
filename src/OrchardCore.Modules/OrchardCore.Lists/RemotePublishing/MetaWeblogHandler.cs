@@ -65,7 +65,7 @@ namespace OrchardCore.Lists.RemotePublishing
             S = localizer;
         }
 
-        ILogger Logger { get; }
+        private ILogger Logger { get; }
 
         public void SetCapabilities(XElement options)
         {
@@ -324,7 +324,6 @@ namespace OrchardCore.Lists.RemotePublishing
             string password,
             IEnumerable<IXmlRpcDriver> drivers)
         {
-
             var user = await ValidateUserAsync(userName, password);
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
@@ -358,7 +357,6 @@ namespace OrchardCore.Lists.RemotePublishing
             bool publish,
             IEnumerable<IXmlRpcDriver> drivers)
         {
-
             var user = await ValidateUserAsync(userName, password);
 
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
@@ -412,7 +410,6 @@ namespace OrchardCore.Lists.RemotePublishing
             string password,
             IEnumerable<IXmlRpcDriver> drivers)
         {
-
             var user = await ValidateUserAsync(userName, password);
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
             if (contentItem == null)

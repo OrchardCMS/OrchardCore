@@ -19,7 +19,7 @@ namespace OrchardCore.Contents.AdminNodes
 {
     public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     {
-        private readonly AdminOptions _adminOptions;       
+        private readonly AdminOptions _adminOptions;
         private readonly LinkGenerator _linkGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.AdminNodes
             _contentDefinitionManager = contentDefinitionManager;
             _linkGenerator = linkGenerator;
             _httpContextAccessor = httpContextAccessor;
-			
+
             _logger = logger;
         }
 

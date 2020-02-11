@@ -8,6 +8,7 @@ namespace OrchardCore.Title.Models
         GeneratedDisabled,
         GeneratedHidden,
     }
+
     public class TitlePartSettings
     {
         /// <summary>

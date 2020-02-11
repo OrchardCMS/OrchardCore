@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using OrchardCore.Admin;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Admin;
 using OrchardCore.ContentFields.Settings;
+using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentFields.ViewModels;
 
 namespace OrchardCore.ContentFields.Controllers
 {

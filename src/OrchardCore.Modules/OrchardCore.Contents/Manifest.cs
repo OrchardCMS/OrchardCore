@@ -6,7 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
-
 [assembly: Feature(
     Id = "OrchardCore.Contents",
     Name = "Contents",
@@ -19,7 +18,7 @@ using OrchardCore.Modules.Manifest;
     Category = "Content Management"
 )]
 
-[assembly:Feature(
+[assembly: Feature(
     Id = "OrchardCore.Contents.FileContentDefinition",
     Name = "File Content Definition",
     Description = "Stores Content Definition in a local file.",

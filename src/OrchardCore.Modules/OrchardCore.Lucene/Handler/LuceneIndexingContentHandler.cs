@@ -16,7 +16,9 @@ namespace OrchardCore.Lucene.Handlers
     {
         private readonly List<ContentContextBase> _contexts = new List<ContentContextBase>();
 
-        public LuceneIndexingContentHandler() { }
+        public LuceneIndexingContentHandler()
+        {
+        }
 
         public override Task PublishedAsync(PublishContentContext context) => AddContextAsync(context);
         public override Task CreatedAsync(CreateContentContext context) => AddContextAsync(context);

@@ -6,12 +6,11 @@ using OrchardCore.Modules.Manifest;
     Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
-
 [assembly: Feature(
     Id = "OrchardCore.Layers",
     Name = "Layers",
     Description = "Enables users to render Widgets across pages of the site based on conditions.",
-    Dependencies = new []
+    Dependencies = new[]
     {
         "OrchardCore.Widgets",
         "OrchardCore.Scripting"

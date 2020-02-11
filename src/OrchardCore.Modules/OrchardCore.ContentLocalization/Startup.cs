@@ -101,6 +101,7 @@ namespace OrchardCore.ContentLocalization
             }));
         }
     }
+
     [RequireFeatures("OrchardCore.Liquid")]
     public class LiquidStartup : StartupBase
     {

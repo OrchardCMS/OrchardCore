@@ -18,7 +18,6 @@ namespace OrchardCore.AdminMenu.Models
         public bool Enabled { get; set; } = true;
         public List<AdminNode> MenuItems { get; } = new List<AdminNode>();
 
-
         public AdminNode GetMenuItemById(string id)
         {
             foreach (var menuItem in MenuItems)
@@ -80,6 +79,5 @@ namespace OrchardCore.AdminMenu.Models
             }
             return false; // failure
         }
-
     }
 }

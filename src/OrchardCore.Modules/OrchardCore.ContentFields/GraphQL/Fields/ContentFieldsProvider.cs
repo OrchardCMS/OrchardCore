@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.ContentFields.Fields;
@@ -94,7 +93,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 {
                     // Check if part has been collapsed by trying to get the parent part.
                     var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
-                    if(contentPart == null)
+                    if (contentPart == null)
                     {
                         // Part is not collapsed, access field directly.
                         contentPart = context.Source;
@@ -112,7 +111,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             };
         }
 
-        class FieldTypeDescriptor
+        private class FieldTypeDescriptor
         {
             public string Description { get; set; }
             public Type FieldType { get; set; }

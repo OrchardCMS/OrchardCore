@@ -24,7 +24,6 @@ namespace OrchardCore.Title.Handlers
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-
         public override async Task UpdatedAsync(UpdateContentContext context, TitlePart part)
         {
             var settings = GetSettings(part);
