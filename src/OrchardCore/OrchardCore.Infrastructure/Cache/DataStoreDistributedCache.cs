@@ -13,8 +13,8 @@ using OrchardCore.Entities;
 namespace OrchardCore.Infrastructure.Cache
 {
     /// <summary>
-    /// A generic scoped service to keep in sync a given data store with a multi level
-    /// cache composed of a scoped cache, a tenant level cache and a distributed cache.
+    /// A scoped service to keep in sync a given data store with a multi level cache composed of
+    /// a scoped level cache, a tenant level memory cache and a tenant level distributed cache.
     /// </summary>
     public class DataStoreDistributedCache<TDataStore> : IDataStoreDistributedCache<TDataStore> where TDataStore : ICacheableDataStore
     {
@@ -75,6 +75,19 @@ namespace OrchardCore.Infrastructure.Cache
             }
 
             return value;
+        }
+
+        public Task UpdateAsync<T>(T value, DistributedCacheEntryOptions options = null) where T : DistributedCacheData, new()
+        {
+            if (_memoryCache.TryGetValue<T>(typeof(T).FullName, out var cached) && value == cached)
+            {
+                throw new ArgumentException("Can't update a cached object");
+            }
+
+            return _dataStore.UpdateAsync(value, value =>
+            {
+                return SetInternalAsync(value, options);
+            });
         }
 
         private async Task<T> GetInternalAsync<T>(DistributedCacheEntryOptions options) where T : DistributedCacheData
@@ -139,21 +152,13 @@ namespace OrchardCore.Infrastructure.Cache
             return value;
         }
 
-        public Task UpdateAsync<T>(T value, DistributedCacheEntryOptions options = null) where T : DistributedCacheData, new()
+        private async Task SetInternalAsync<T>(T value, DistributedCacheEntryOptions options = null) where T : DistributedCacheData, new()
         {
-            if (_memoryCache.TryGetValue<T>(typeof(T).FullName, out var cached) && value == cached)
+            if (options == null)
             {
-                throw new ArgumentException("Can't update a cached object");
+                options = new DistributedCacheEntryOptions();
             }
 
-            return _dataStore.UpdateAsync(value, updateCache: value =>
-            {
-                return SetInternalAsync(value, options ?? new DistributedCacheEntryOptions());
-            });
-        }
-
-        private async Task SetInternalAsync<T>(T value, DistributedCacheEntryOptions options) where T : DistributedCacheData, new()
-        {
             value.Identifier ??= _idGenerator.GenerateUniqueId();
 
             byte[] data;
@@ -176,30 +181,14 @@ namespace OrchardCore.Infrastructure.Cache
 
             if ((await _dataStore.GetForCachingAsync<T>()).Identifier != value.Identifier)
             {
-                await InvalidateAsync<T>();
+                await _distributedCache.RemoveAsync("ID_" + key);
             }
         }
 
-        public async Task<bool> HasChangedAsync<T>(T value) where T : DistributedCacheData
-        {
-            var key = typeof(T).FullName;
+        private static Task SerializeAsync<T>(Stream stream, T value) =>
+            MessagePackSerializer.SerializeAsync(stream, value, ContractlessStandardResolver.Options);
 
-            var idData = await _distributedCache.GetAsync("ID_" + key);
-
-            if (idData == null)
-            {
-                return true;
-            }
-
-            var id = Encoding.UTF8.GetString(idData);
-
-            return value.Identifier != id;
-        }
-
-        public Task InvalidateAsync<T>() where T : DistributedCacheData => _distributedCache.RemoveAsync("ID_" + typeof(T).FullName);
-
-        private static Task SerializeAsync<T>(Stream stream, T value) => MessagePackSerializer.SerializeAsync(stream, value, ContractlessStandardResolver.Options);
-
-        private static ValueTask<T> DeserializeAsync<T>(Stream stream) => MessagePackSerializer.DeserializeAsync<T>(stream, ContractlessStandardResolver.Options);
+        private static ValueTask<T> DeserializeAsync<T>(Stream stream) =>
+            MessagePackSerializer.DeserializeAsync<T>(stream, ContractlessStandardResolver.Options);
     }
 }

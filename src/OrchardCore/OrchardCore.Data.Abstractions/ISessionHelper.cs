@@ -1,31 +1,24 @@
+using System;
 using System.Threading.Tasks;
-using YesSql;
 
 namespace OrchardCore.Data
 {
     /// <summary>
-    /// Provides helper methods for <see cref="ISession"/>.
+    /// Represents a contract that provides helper methods for <see cref="YesSql.ISession"/>.
+    /// This service is obsolete and will be removed in a future version.
     /// </summary>
-    public interface ISessionHelper : ICacheableDataStore
+    public interface ISessionHelper
     {
         /// <summary>
-        /// Registers a <see cref="CommitDelegate"/> that will get called before <see cref="CommitAsync"/>.
+        /// Loads a single document (or create a new one) for updating and that should not be cached.
+        /// For a full isolation, it needs to be used in pair with <see cref="GetForCachingAsync"/>.
         /// </summary>
-        void BeforeCommit<T>(CommitDelegate beforeCommit);
+        Task<T> LoadForUpdateAsync<T>(Func<T> factory = null) where T : class, new();
 
         /// <summary>
-        /// Registers a <see cref="CommitDelegate"/> that will get called after <see cref="CommitAsync"/> if it is successful.
+        /// Gets a single document (or create a new one) for caching and that should not be updated.
+        /// For a full isolation, it needs to be used in pair with <see cref="LoadForUpdateAsync"/>.
         /// </summary>
-        void AfterCommitSuccess<T>(CommitDelegate afterCommit);
-
-        /// <summary>
-        /// Registers a <see cref="CommitDelegate"/> that will get called after <see cref="CommitAsync"/> even it is not successful
-        /// </summary>
-        void AfterCommit<T>(CommitDelegate afterCommit);
-
-        /// <summary>
-        /// Calls the related <see cref="CommitDelegate"/> before and after committing the <see cref="ISession"/>.
-        /// </summary>
-        Task CommitAsync();
+        Task<T> GetForCachingAsync<T>(Func<T> factory = null) where T : class, new();
     }
 }

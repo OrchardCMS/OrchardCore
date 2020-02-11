@@ -1,4 +1,4 @@
-namespace OrchardCore.Infrastructure.Cache
+namespace OrchardCore.Data
 {
     public class DistributedCacheData
     {

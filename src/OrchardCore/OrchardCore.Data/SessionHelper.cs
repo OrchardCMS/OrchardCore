@@ -6,7 +6,8 @@ using YesSql;
 namespace OrchardCore.Data
 {
     /// <summary>
-    /// Provides helper methods for the <see cref="ISession"/>.
+    /// Represents a class that provides helper methods for the <see cref="ISession"/>.
+    /// This service is obsolete and will be removed in a future version.
     /// </summary>
     public class SessionHelper : ISessionHelper
     {
@@ -14,23 +15,16 @@ namespace OrchardCore.Data
 
         private readonly Dictionary<Type, object> _loaded = new Dictionary<Type, object>();
 
-        private readonly List<Type> _beforeCommits = new List<Type>();
-        private readonly List<Type> _afterCommitsSuccess = new List<Type>();
-        private readonly List<Type> _afterCommits = new List<Type>();
-
-        private CommitDelegate _beforeCommit;
-        private CommitDelegate _afterCommitSuccess;
-        private CommitDelegate _afterCommit;
-
         /// <summary>
         /// Creates a new instance of <see cref="SessionHelper"/>.
         /// </summary>
+        /// <param name="session">The <see cref="ISession"/>.</param>
         public SessionHelper(ISession session)
         {
             _session = session;
         }
 
-        /// <inheritdoc />
+        /// <inheritdocs/>
         public async Task<T> LoadForUpdateAsync<T>(Func<T> factory = null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
@@ -45,7 +39,7 @@ namespace OrchardCore.Data
             return document;
         }
 
-        /// <inheritdoc />
+        /// <inheritdocs/>
         public async Task<T> GetForCachingAsync<T>(Func<T> factory = null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
@@ -62,77 +56,6 @@ namespace OrchardCore.Data
             }
 
             return factory?.Invoke() ?? new T();
-        }
-
-        public Task UpdateAsync<T>(T value, Func<T, Task> updateCache) where T : class, new()
-        {
-            _session.Save(value, checkConcurrency: true);
-
-            AfterCommitSuccess<T>(() =>
-            {
-                return updateCache(value);
-            });
-
-            return Task.CompletedTask;
-        }
-
-        /// <inheritdoc />
-        public void BeforeCommit<T>(CommitDelegate beforeCommit)
-        {
-            if (!_beforeCommits.Contains(typeof(T)))
-            {
-                _beforeCommits.Add(typeof(T));
-                _beforeCommit += beforeCommit;
-            }
-        }
-
-        /// <inheritdoc />
-        public void AfterCommitSuccess<T>(CommitDelegate afterCommit)
-        {
-            if (!_afterCommitsSuccess.Contains(typeof(T)))
-            {
-                _afterCommitsSuccess.Add(typeof(T));
-                _afterCommitSuccess += afterCommit;
-            }
-        }
-
-        /// <inheritdoc />
-        public void AfterCommit<T>(CommitDelegate afterCommit)
-        {
-            if (!_afterCommits.Contains(typeof(T)))
-            {
-                _afterCommits.Add(typeof(T));
-                _afterCommit += afterCommit;
-            }
-        }
-
-        /// <inheritdoc />
-        public async Task CommitAsync()
-        {
-            try
-            {
-                if (_beforeCommit != null)
-                {
-                    await _beforeCommit();
-                }
-
-                await _session.CommitAsync();
-
-                if (_afterCommitSuccess != null)
-                {
-                    await _afterCommitSuccess();
-                }
-            }
-            catch
-            {
-            }
-            finally
-            {
-                if (_afterCommit != null)
-                {
-                    await _afterCommit();
-                }
-            }
         }
     }
 }

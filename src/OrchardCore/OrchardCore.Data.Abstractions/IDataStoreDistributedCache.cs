@@ -1,15 +1,14 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
-using OrchardCore.Data;
 
-namespace OrchardCore.Infrastructure.Cache
+namespace OrchardCore.Data
 {
     /// <summary>
-    /// A generic scoped service to keep in sync a given data store with a multi level
-    /// cache composed of a scoped cache, a tenant level cache and a distributed cache.
+    /// A scoped service to keep in sync a given data store with a multi level cache composed of
+    /// a scoped level cache, a tenant level memory cache and a tenant level distributed cache.
     /// </summary>
-    public interface IDataStoreDistributedCache<TDataStore> where TDataStore : ICacheableDataStore
+    public interface IDataStoreDistributedCache
     {
         /// <summary>
         /// Loads a single document from the store or create a new one by using <see cref="ICacheableDataStore.LoadForUpdateAsync"/>.
@@ -22,18 +21,8 @@ namespace OrchardCore.Infrastructure.Cache
         Task<T> GetAsync<T>(Func<T> factory = null, DistributedCacheEntryOptions options = null) where T : DistributedCacheData, new();
 
         /// <summary>
-        /// Updates the cache, intended to be called after having updated the data store.
+        /// Updates the store with the provided value and then updates the cache.
         /// </summary>
         Task UpdateAsync<T>(T value, DistributedCacheEntryOptions options = null) where T : DistributedCacheData, new();
-
-        /// <summary>
-        /// Checks if the <see cref="DistributedCacheData.Identifier"/> of the cached value has changed.
-        /// </summary>
-        Task<bool> HasChangedAsync<T>(T value) where T : DistributedCacheData;
-
-        /// <summary>
-        /// Invalidates the cache.
-        /// </summary>
-        Task InvalidateAsync<T>() where T : DistributedCacheData;
     }
 }

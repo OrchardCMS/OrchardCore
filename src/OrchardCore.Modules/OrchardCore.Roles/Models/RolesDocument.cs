@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using OrchardCore.Data;
 using OrchardCore.Security;
-using OrchardCore.Infrastructure.Cache;
 
 namespace OrchardCore.Roles.Models
 {

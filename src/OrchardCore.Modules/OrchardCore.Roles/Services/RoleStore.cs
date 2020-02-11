@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data;
-using OrchardCore.Infrastructure.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
 using OrchardCore.Security;
@@ -18,20 +17,20 @@ namespace OrchardCore.Roles.Services
 {
     public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
-        private readonly IDataStoreDistributedCache<ISessionHelper> _dataStoreDistributedCache;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IDataStoreDistributedCache<ISessionDataStore> _dataStoreDistributedCache;
         private readonly IStringLocalizer<RoleStore> S;
 
         private bool _updating;
 
         public RoleStore(
-            IDataStoreDistributedCache<ISessionHelper> dataStoreDistributedCache,
             IServiceProvider serviceProvider,
+            IDataStoreDistributedCache<ISessionDataStore> dataStoreDistributedCache,
             IStringLocalizer<RoleStore> stringLocalizer,
             ILogger<RoleStore> logger)
         {
-            _dataStoreDistributedCache = dataStoreDistributedCache;
             _serviceProvider = serviceProvider;
+            _dataStoreDistributedCache = dataStoreDistributedCache;
             S = stringLocalizer;
             Logger = logger;
         }
