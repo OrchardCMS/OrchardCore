@@ -34,7 +34,6 @@ namespace OrchardCore.DisplayManagement.Shapes
         public AlternatesCollection Alternates { get; set; }
         public bool IsCached => _cacheContext != null;
         public IHtmlContent ChildContent { get; set; }
-        public bool UseDynamicBinding { get; set; }
 
         /// <summary>
         /// Event use for a specific shape instance.
