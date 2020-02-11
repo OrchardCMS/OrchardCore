@@ -54,7 +54,6 @@ namespace OrchardCore.Email.Services
                         break;
                     default:
                         throw new NotSupportedException($"The '{_options.DeliveryMethod}' delivery method is not supported.");
-
                 }
 
                 return SmtpResult.Success;

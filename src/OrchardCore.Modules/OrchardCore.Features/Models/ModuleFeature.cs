@@ -1,17 +1,17 @@
 using System.Collections.Generic;
 using OrchardCore.Environment.Extensions.Features;
 
-namespace OrchardCore.Features.Models 
+namespace OrchardCore.Features.Models
 {
     /// <summary>
     /// Represents a module's feature.
     /// </summary>
-    public class ModuleFeature 
+    public class ModuleFeature
     {
         /// <summary>
         /// The feature descriptor.
         /// </summary>
-        public IFeatureInfo Descriptor  { get; set; }
+        public IFeatureInfo Descriptor { get; set; }
 
         /// <summary>
         /// Boolean value indicating if the feature is enabled.

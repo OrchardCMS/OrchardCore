@@ -141,7 +141,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(Login));
         }
 
-        async Task<bool> AddConfirmEmailError(IUser user)
+        private async Task<bool> AddConfirmEmailError(IUser user)
         {
             var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
             if (registrationSettings.UsersMustValidateEmail == true)
@@ -153,12 +153,12 @@ namespace OrchardCore.Users.Controllers
                     return true;
                 }
             }
-            
+
             return false;
         }
-        
-        bool AddUserEnabledError(IUser user)
-        {           
+
+        private bool AddUserEnabledError(IUser user)
+        {
             var localUser = user as User;
 
             if (localUser == null || !localUser.IsEnabled)
@@ -166,7 +166,7 @@ namespace OrchardCore.Users.Controllers
                 ModelState.AddModelError(String.Empty, S["Your account is disabled. Please contact an administrator."]);
                 return true;
             }
-            
+
             return false;
         }
 
@@ -292,7 +292,6 @@ namespace OrchardCore.Users.Controllers
             }
             return RedirectToLocal(returnUrl);
         }
-
 
         [HttpPost]
         [AllowAnonymous]
@@ -490,7 +489,6 @@ namespace OrchardCore.Users.Controllers
 
             if (info == null)
             {
-
                 _logger.LogWarning("Error loading external login info.");
                 return NotFound();
             }
@@ -572,7 +570,6 @@ namespace OrchardCore.Users.Controllers
                 _logger.LogWarning("Error loading external login info.");
                 return NotFound();
             }
-
 
             if (user == null)
             {
@@ -693,7 +690,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(ExternalLogins));
         }
 
-        async Task<string> GenerateUsername(ExternalLoginInfo info)
+        private async Task<string> GenerateUsername(ExternalLoginInfo info)
         {
             var now = new TimeSpan(_clock.UtcNow.Ticks) - new TimeSpan(DateTime.UnixEpoch.Ticks);
             var ret = string.Concat("u" + Convert.ToInt32(now.TotalSeconds).ToString());

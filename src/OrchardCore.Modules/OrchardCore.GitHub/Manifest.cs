@@ -1,6 +1,8 @@
 using OrchardCore.Modules.Manifest;
 using OrchardCore.GitHub;
 
+using OrchardCore.Modules.Manifest;
+
 [assembly: Module(
     Name = "GitHub",
     Author = "The Orchard Team",
@@ -8,7 +10,6 @@ using OrchardCore.GitHub;
     Version = "2.0.0",
     Category = "GitHub"
 )]
-
 [assembly: Feature(
     Id = GitHubConstants.Features.GitHubAuthentication,
     Name = "GitHub Authentication",

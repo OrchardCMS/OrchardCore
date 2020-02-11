@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.Environment.Extensions;
 
-namespace OrchardCore.Features.Models 
+namespace OrchardCore.Features.Models
 {
     /// <summary>
     /// Represents a module.
     /// </summary>
-    public class ModuleEntry 
+    public class ModuleEntry
     {
         /// <summary>
         /// Default constructor.
         /// </summary>
-        public ModuleEntry() 
+        public ModuleEntry()
         {
             Notifications = new List<string>();
         }

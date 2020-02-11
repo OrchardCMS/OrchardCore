@@ -72,7 +72,6 @@ namespace OrchardCore.Localization.Drivers
                     {
                         model.Cultures[0].IsDefault = true;
                     }
-
                 }).Location("Content:2").OnGroup(GroupId);
         }
 

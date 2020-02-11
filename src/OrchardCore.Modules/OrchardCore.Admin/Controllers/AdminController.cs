@@ -8,7 +8,6 @@ namespace OrchardCore.Admin.Controllers
     {
         public AdminController()
         {
-
         }
 
         public IActionResult Index()

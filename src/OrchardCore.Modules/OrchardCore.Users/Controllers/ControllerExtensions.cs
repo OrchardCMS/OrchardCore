@@ -102,7 +102,5 @@ namespace OrchardCore.Users.Controllers
 
             return callbackUrl;
         }
-
-
     }
 }

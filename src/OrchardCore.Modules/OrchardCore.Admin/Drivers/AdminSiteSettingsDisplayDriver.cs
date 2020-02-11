@@ -2,13 +2,12 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.Admin.Models;
+using OrchardCore.Admin.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
-using OrchardCore.Admin.Models;
-using OrchardCore.Admin.ViewModels;
-using OrchardCore.Admin;
 
 namespace OrchardCore.Admin.Drivers
 {

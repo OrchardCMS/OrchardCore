@@ -41,7 +41,6 @@ namespace OrchardCore.DynamicCache.Models
                 cacheContext.WithExpiryOn(ExpiresOn.Value);
             }
 
-
             if (ExpiresAfter.HasValue)
             {
                 cacheContext.WithExpiryAfter(ExpiresAfter.Value);
