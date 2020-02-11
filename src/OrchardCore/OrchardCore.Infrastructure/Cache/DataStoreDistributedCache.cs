@@ -47,7 +47,7 @@ namespace OrchardCore.Infrastructure.Cache
             return value;
         }
 
-        public async Task<T> GetAsync<T>(Func<T> factory = null, DistributedCacheEntryOptions options = null) where T : DistributedCacheData, new()
+        public async Task<T> GetAsync<T>(Func<T> factory = null, DistributedCacheEntryOptions options = null, bool checkConsistency = true) where T : DistributedCacheData, new()
         {
             if (options == null)
             {
@@ -60,7 +60,7 @@ namespace OrchardCore.Infrastructure.Cache
             {
                 value = await _dataStore.GetForCachingAsync(factory);
 
-                await SetInternalAsync(value, options);
+                await SetInternalAsync(value, options, checkConsistency);
 
                 var key = typeof(T).FullName;
 
@@ -77,17 +77,23 @@ namespace OrchardCore.Infrastructure.Cache
             return value;
         }
 
-        public Task UpdateAsync<T>(T value, DistributedCacheEntryOptions options = null) where T : DistributedCacheData, new()
+        public Task UpdateAsync<T>(T value, DistributedCacheEntryOptions options = null, bool checkConcurrency = true, bool checkConsistency = true) where T : DistributedCacheData, new()
         {
             if (_memoryCache.TryGetValue<T>(typeof(T).FullName, out var cached) && value == cached)
             {
                 throw new ArgumentException("Can't update a cached object");
             }
 
+            if (options == null)
+            {
+                options = new DistributedCacheEntryOptions();
+            }
+
             return _dataStore.UpdateAsync(value, value =>
             {
-                return SetInternalAsync(value, options);
-            });
+                return SetInternalAsync(value, options, checkConsistency);
+            },
+                checkConcurrency);
         }
 
         private async Task<T> GetInternalAsync<T>(DistributedCacheEntryOptions options) where T : DistributedCacheData
@@ -152,13 +158,8 @@ namespace OrchardCore.Infrastructure.Cache
             return value;
         }
 
-        private async Task SetInternalAsync<T>(T value, DistributedCacheEntryOptions options = null) where T : DistributedCacheData, new()
+        private async Task SetInternalAsync<T>(T value, DistributedCacheEntryOptions options, bool checkConsistency) where T : DistributedCacheData, new()
         {
-            if (options == null)
-            {
-                options = new DistributedCacheEntryOptions();
-            }
-
             value.Identifier ??= _idGenerator.GenerateUniqueId();
 
             byte[] data;
@@ -176,10 +177,8 @@ namespace OrchardCore.Infrastructure.Cache
             await _distributedCache.SetAsync(key, data, options);
             await _distributedCache.SetAsync("ID_" + key, idData, options);
 
-            // In case we were the last to update the cache, it may be out of sync
-            // if we didn't update it with the last stored value.
-
-            if ((await _dataStore.GetForCachingAsync<T>()).Identifier != value.Identifier)
+            // In case we were the last to update the cache, check if it was with the last stored value.
+            if (checkConsistency && (await _dataStore.GetForCachingAsync<T>()).Identifier != value.Identifier)
             {
                 await _distributedCache.RemoveAsync("ID_" + key);
             }

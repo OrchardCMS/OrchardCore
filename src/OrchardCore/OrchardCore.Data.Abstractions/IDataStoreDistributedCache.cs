@@ -18,11 +18,11 @@ namespace OrchardCore.Data
         /// <summary>
         /// Gets a single document from the cache or create a new one by using <see cref="ICacheableDataStore.GetForCachingAsync"/>.
         /// </summary>
-        Task<T> GetAsync<T>(Func<T> factory = null, DistributedCacheEntryOptions options = null) where T : DistributedCacheData, new();
+        Task<T> GetAsync<T>(Func<T> factory = null, DistributedCacheEntryOptions options = null, bool checkConsistency = true) where T : DistributedCacheData, new();
 
         /// <summary>
         /// Updates the store with the provided value and then updates the cache.
         /// </summary>
-        Task UpdateAsync<T>(T value, DistributedCacheEntryOptions options = null) where T : DistributedCacheData, new();
+        Task UpdateAsync<T>(T value, DistributedCacheEntryOptions options = null, bool checkConcurrency = true, bool checkConsistency = true) where T : DistributedCacheData, new();
     }
 }

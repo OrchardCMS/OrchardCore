@@ -23,6 +23,6 @@ namespace OrchardCore.Data
         /// <summary>
         /// Updates the store with the provided value and then uses the delegate to update the cache.
         /// </summary>
-        Task UpdateAsync<T>(T value, Func<T, Task> updateCache);
+        Task UpdateAsync<T>(T value, Func<T, Task> updateCache, bool checkConcurrency = false);
     }
 }

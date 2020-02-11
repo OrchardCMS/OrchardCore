@@ -64,9 +64,9 @@ namespace OrchardCore.Data
             return factory?.Invoke() ?? new T();
         }
 
-        public Task UpdateAsync<T>(T value, Func<T, Task> updateCache)
+        public Task UpdateAsync<T>(T value, Func<T, Task> updateCache, bool checkConcurrency = false)
         {
-            _session.Save(value, checkConcurrency: true);
+            _session.Save(value, checkConcurrency);
 
             AfterCommitSuccess<T>(() =>
             {
