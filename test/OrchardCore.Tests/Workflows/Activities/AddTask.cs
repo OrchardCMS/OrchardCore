@@ -20,9 +20,9 @@ namespace OrchardCore.Tests.Workflows.Activities
         }
 
         public override string Name => nameof(AddTask);
-        
+
         public override LocalizedString DisplayText => S["Add Task"];
-        
+
         public override LocalizedString Category => S["Test"];
 
         public WorkflowExpression<double> A

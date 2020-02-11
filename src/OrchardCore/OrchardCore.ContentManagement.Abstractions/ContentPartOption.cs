@@ -7,7 +7,9 @@ namespace OrchardCore.ContentManagement
     {
         private readonly List<Type> _handlers = new List<Type>();
 
-        public ContentPartOption(Type contentPartType) : base(contentPartType) { }
+        public ContentPartOption(Type contentPartType) : base(contentPartType)
+        {
+        }
 
         public IReadOnlyList<Type> Handlers => _handlers;
 

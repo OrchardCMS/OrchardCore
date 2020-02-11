@@ -61,7 +61,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         }
 
         [Theory]
-        [InlineData(OpenIddictConstants.ClientTypes.Public,"ClientSecret", true,false, false)]
+        [InlineData(OpenIddictConstants.ClientTypes.Public, "ClientSecret", true, false, false)]
         [InlineData(OpenIddictConstants.ClientTypes.Public, "", true, false, true)]
         [InlineData(OpenIddictConstants.ClientTypes.Confidential, "ClientSecret", true, false, true)]
         [InlineData(OpenIddictConstants.ClientTypes.Confidential, "", true, false, false)]
@@ -160,7 +160,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         {
             var localizerMock = new Mock<IStringLocalizer<ApplicationController>>();
             localizerMock.Setup(x => x[It.IsAny<string>()]).Returns(new LocalizedString("TextToLocalize", "localizedText"));
-            
+
             return localizerMock;
         }
     }

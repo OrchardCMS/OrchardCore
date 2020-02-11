@@ -152,7 +152,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
     public class Nil : DynamicObject
     {
-        static readonly Nil Singleton = new Nil();
+        private static readonly Nil Singleton = new Nil();
         public static Nil Instance { get { return Singleton; } }
 
         private Nil()
@@ -176,7 +176,6 @@ namespace OrchardCore.DisplayManagement.Shapes
             result = Nil.Instance;
             return true;
         }
-
 
         public override bool TryBinaryOperation(BinaryOperationBinder binder, object arg, out object result)
         {

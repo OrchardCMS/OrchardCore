@@ -122,7 +122,6 @@ namespace OrchardCore.DisplayManagement.Liquid
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model, scopeAction: null);
                 await template.RenderAsync(page.Output, htmlEncoder, context);
             }
-
             finally
             {
                 context.ReleaseScope();
@@ -161,7 +160,9 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     internal class ShapeAccessor : DelegateAccessor
     {
-        public ShapeAccessor() : base(_getter) { }
+        public ShapeAccessor() : base(_getter)
+        {
+        }
 
         private static Func<object, string, object> _getter => (o, n) =>
         {
@@ -203,7 +204,6 @@ namespace OrchardCore.DisplayManagement.Liquid
                 await context.EnterScopeAsync(viewContext, model, scopeAction);
                 return await template.RenderAsync(context, encoder);
             }
-
             finally
             {
                 context.ReleaseScope();
@@ -224,7 +224,6 @@ namespace OrchardCore.DisplayManagement.Liquid
                 await context.EnterScopeAsync(viewContext, model, scopeAction);
                 await template.RenderAsync(writer, encoder, context);
             }
-
             finally
             {
                 context.ReleaseScope();

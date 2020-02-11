@@ -1,14 +1,15 @@
-﻿using OrchardCore.DisplayManagement;
 using System;
 using System.Collections.Generic;
+using OrchardCore.DisplayManagement;
+
+using System;
 
 namespace OrchardCore.UI
 {
     public class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>
     {
-
         public static FlatPositionComparer Instance { get; private set; }
-        
+
         static FlatPositionComparer()
         {
             Instance = new FlatPositionComparer();
@@ -64,7 +65,7 @@ namespace OrchardCore.UI
                 }
 
                 // Non-int after int or greater x pos than y pos (which is an int)
-                if (!xIsInt || (yIsInt && xPos > yPos)) 
+                if (!xIsInt || (yIsInt && xPos > yPos))
                 {
                     return 1;
                 }

@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
+
 using System;
 
 namespace OrchardCore.Apis.GraphQL.Client
@@ -61,7 +63,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             // Field-level argument exists
             else if (queryValues is IDictionary<string, string>)
             {
-                ((IDictionary<string, string>) queryValues)
+                ((IDictionary<string, string>)queryValues)
                     .Add(fieldName.ToGraphQLStringFormat(), fieldValue);
             }
             else

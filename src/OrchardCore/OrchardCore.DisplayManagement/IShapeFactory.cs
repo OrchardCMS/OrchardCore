@@ -83,7 +83,7 @@ namespace OrchardCore.DisplayManagement
             static ValueTask<IShape> ShapeFactory(Func<TModel, ValueTask> init)
             {
                 var shape = CreateShape(typeof(TModel));
-                var task = init((TModel) shape);
+                var task = init((TModel)shape);
                 if (!task.IsCompletedSuccessfully)
                 {
                     return Awaited(task, shape);
@@ -124,7 +124,7 @@ namespace OrchardCore.DisplayManagement
                 var shape = (Shape)createdContext.Shape;
 
                 // If only one non-Type, use it as the source object to copy
-                
+
                 var initializer = parameters.Positional.SingleOrDefault();
 
                 if (initializer != null)
