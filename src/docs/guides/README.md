@@ -17,6 +17,7 @@ These guides are specific to Orchard Core CMS
 - [Adding a Menu Item to the Admin Navigation](add-admin-menu)
 - [Installing Localization Files](install-localization-files)
 - [Integrate facebook plugins](integrate-facebook-plugins)
+- [Implement Full Text search](implement-fulltext-search)
 
 ## Tutorials
 

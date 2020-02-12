@@ -17,6 +17,7 @@ namespace OrchardCore.DisplayManagement
     {
         ShapeMetadata Metadata { get; }
         string Id { get; set; }
+        string TagName { get; set; }
         IList<string> Classes { get; }
         IDictionary<string, string> Attributes { get; }
         IDictionary<string, object> Properties { get; }
@@ -54,17 +55,6 @@ namespace OrchardCore.DisplayManagement
 
             var metadata = JObject.FromObject(shape.Metadata, ShapeSerializer);
 
-            // Remove log wrapper if present.
-            var wrappers = (JArray)metadata["Wrappers"];
-            if (wrappers != null && wrappers.Count > 0)
-            {
-                var logWrappers = wrappers.Where(w => w.Value<string>() == "ShapeConsoleLogWrapper").ToArray();
-                foreach (var logWrapper in logWrappers)
-                {
-                    wrappers.Remove(logWrapper);
-                }
-                metadata["Wrappers"] = wrappers;
-            }
             jObject.Add(nameof(ShapeMetadata), metadata);
 
             if (shape.Classes != null && shape.Classes.Any())
@@ -91,7 +81,6 @@ namespace OrchardCore.DisplayManagement
                 var shapeItems = actualShape.Items.ToArray();
                 foreach (IShape item in shapeItems)
                 {
-                    item.Metadata.Wrappers.Add("ShapeConsoleLogWrapper");
                     // Display item in json so source of item remains clear.
                     var jItem = item.ShapeToJson();
                     jItems.Add(jItem);
@@ -112,7 +101,6 @@ namespace OrchardCore.DisplayManagement
                     var shapeItems = shapeProperty.Items.ToArray();
                     foreach (IShape item in shapeItems)
                     {
-                        item.Metadata.Wrappers.Add("ShapeConsoleLogWrapper");
                         // Recurse for more shapes.
                         FindShapesInProperties(item);
                     }

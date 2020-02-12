@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <AspNetCoreVersion>3.0.0</AspNetCoreVersion>
-    <AspNetCoreTargetFramework>netcoreapp3.0</AspNetCoreTargetFramework>
+    <AspNetCoreVersion>3.1.1</AspNetCoreVersion>
+    <AspNetCoreTargetFramework>netcoreapp3.1</AspNetCoreTargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="$(AspNetCoreVersion)" />

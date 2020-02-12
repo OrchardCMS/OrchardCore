@@ -1,5 +1,10 @@
+using System;
 using Fluid;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Apis;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -9,7 +14,9 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Taxonomies.Controllers;
 using OrchardCore.Taxonomies.Drivers;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.GraphQL;
@@ -23,6 +30,8 @@ namespace OrchardCore.Taxonomies
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
         static Startup()
         {
             // Registering both field types and shape types are necessary as they can 
@@ -32,22 +41,54 @@ namespace OrchardCore.Taxonomies
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTaxonomyFieldViewModel>();
         }
 
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
             // Taxonomy Part
-            services.AddScoped<IContentPartDisplayDriver, TaxonomyPartDisplayDriver>();
-            services.AddContentPart<TaxonomyPart>();
+            services.AddContentPart<TaxonomyPart>()
+                .UseDisplayDriver<TaxonomyPartDisplayDriver>();
 
             // Taxonomy Field
-            services.AddContentField<TaxonomyField>();
-            services.AddScoped<IContentFieldDisplayDriver, TaxonomyFieldDisplayDriver>();
+            services.AddContentField<TaxonomyField>()
+                .UseDisplayDriver<TaxonomyFieldDisplayDriver>();
+
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
 
             services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var taxonomyControllerName = typeof(AdminController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "Taxonomies.Create",
+                areaName: "OrchardCore.Taxonomies",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Create/{id}",
+                defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Create) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Taxonomies.Edit",
+                areaName: "OrchardCore.Taxonomies",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Edit/{taxonomyContentItemId}/{taxonomyItemId}",
+                defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Edit) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Taxonomies.Delete",
+                areaName: "OrchardCore.Taxonomies",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Delete/{taxonomyContentItemId}/{taxonomyItemId}",
+                defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Delete) }
+            );
         }
     }
 

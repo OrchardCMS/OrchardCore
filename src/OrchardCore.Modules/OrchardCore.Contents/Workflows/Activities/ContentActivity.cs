@@ -14,17 +14,20 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public abstract class ContentActivity : Activity
     {
+        protected readonly IStringLocalizer S;
+
         protected ContentActivity(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
         {
             ContentManager = contentManager;
             ScriptEvaluator = scriptEvaluator;
-            T = localizer;
+            S = localizer;
         }
 
         protected IContentManager ContentManager { get; }
+
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
-        protected IStringLocalizer T { get; }
-        public override LocalizedString Category => T["Content"];
+
+        public override LocalizedString Category => S["Content"];
 
         /// <summary>
         /// An expression that evaluates to an <see cref="IContent"/> item.
@@ -37,7 +40,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

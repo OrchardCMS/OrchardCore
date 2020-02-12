@@ -73,7 +73,9 @@ namespace OrchardCore.DisplayManagement.Descriptors
                     var strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
                     if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyFeature.Id))
+                    {
                         continue;
+                    }
 
                     var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
                     bindingStrategy.Discover(builder);
@@ -118,10 +120,10 @@ namespace OrchardCore.DisplayManagement.Descriptors
                     .ToList();
 
                 shapeTable = new ShapeTable
-                {
-                    Descriptors = descriptors.ToDictionary(sd => sd.ShapeType, x => (ShapeDescriptor)x, StringComparer.OrdinalIgnoreCase),
-                    Bindings = descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
-                };
+                (
+                    descriptors: descriptors.ToDictionary(sd => sd.ShapeType, x => (ShapeDescriptor)x, StringComparer.OrdinalIgnoreCase),
+                    bindings: descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
+                );
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration.Records;
 using OrchardCore.Environment.Extensions;
@@ -179,7 +178,8 @@ namespace OrchardCore.Data.Migration
                 var current = 0;
                 if (dataMigrationRecord != null)
                 {
-                    current = dataMigrationRecord.Version.Value;
+                    // This can be null if a failed create migration has occured and the data migration record was saved.
+                    current = dataMigrationRecord.Version.HasValue ? dataMigrationRecord.Version.Value : current;
                 }
                 else
                 {

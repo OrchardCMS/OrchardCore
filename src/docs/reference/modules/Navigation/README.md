@@ -47,6 +47,7 @@ Properties inherited from the `List` shape:
 | `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
 | `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
 | `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
+| `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
 | `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
 
 The `PagerId` property is used to create templates for specific instances. For instance, assigning
@@ -76,6 +77,7 @@ This shape renders a pager that is comprised of two links: _Previous_ and _Next_
 | `NextClass` | `string` | The HTML class used for the _Next_ link, default: _none_. |
 | `PreviousText` | `object` | Text of the "Previous" link, default: `S["<"]`. |
 | `NextText` | `object` | Text of the "Next" link, default: `S[">"]`. |
+| `UrlParams` | `Dictionary<string, string>` | QueryString params to pass to the pager. Parameter name and value in that order |
 
 Properties inherited from the `List` shape:
 
@@ -87,6 +89,7 @@ Properties inherited from the `List` shape:
 | `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
 | `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
 | `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
+| `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
 | `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
 
 A slim pager can be further customized by defining templates for the following shapes:

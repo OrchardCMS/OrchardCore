@@ -42,22 +42,28 @@ namespace OrchardCore.BackgroundTasks
                 defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Index) }
             );
             routes.MapAreaControllerRoute(
-                name: "BackgroundTasksDisable",
+                name: "BackgroundTasksCreate",
                 areaName: "OrchardCore.BackgroundTasks",
-                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Disable/{id}",
-                defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Disable) }
+                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Create/{name}",
+                defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Create) }
             );
             routes.MapAreaControllerRoute(
                 name: "BackgroundTasksEdit",
                 areaName: "OrchardCore.BackgroundTasks",
-                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Edit/{id}",
+                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Edit/{name}",
                 defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Edit) }
             );
             routes.MapAreaControllerRoute(
                 name: "BackgroundTasksEnable",
                 areaName: "OrchardCore.BackgroundTasks",
-                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Enable/{id}",
+                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Enable/{name}",
                 defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Enable) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "BackgroundTasksDisable",
+                areaName: "OrchardCore.BackgroundTasks",
+                pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Disable/{name}",
+                defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Disable) }
             );
         }
     }
