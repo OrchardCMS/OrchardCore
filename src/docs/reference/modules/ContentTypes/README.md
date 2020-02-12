@@ -88,7 +88,7 @@ Each part can also be configured in the context of a type. For instance the `Aut
 
 ```csharp
 _contentDefinitionManager.AlterTypeDefinition("Product", type => type
-    .WithPart("Product", part => part
+    .WithPart("AutoroutePart", part => part
         // sets the position among other parts
         .WithPosition("2")
         // sets all the settings on the AutoroutePart
