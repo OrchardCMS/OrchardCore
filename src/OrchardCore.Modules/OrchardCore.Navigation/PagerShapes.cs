@@ -437,12 +437,8 @@ namespace OrchardCore.Navigation
                 rvd = RouteValues as RouteValueDictionary ?? new RouteValueDictionary(RouteValues);
             }
 
-            var action = Url.Action((string)rvd["action"], (string)rvd["controller"], rvd);
-
-            IEnumerable<string> classes = Shape.Classes;
-            var attributes = Shape.Attributes;
-            attributes["href"] = action;
-            var tag = Shape.GetTagBuilder("a", null, classes, attributes);
+            Shape.Attributes["href"] = Url.Action((string)rvd["action"], (string)rvd["controller"], rvd);
+            var tag = Shape.GetTagBuilder("a", null, Shape.Classes, Shape.Attributes);
 
             tag.InnerHtml.AppendHtml(CoerceHtmlString(Value));
             return tag;
