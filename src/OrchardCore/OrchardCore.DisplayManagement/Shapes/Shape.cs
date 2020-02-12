@@ -153,9 +153,9 @@ namespace OrchardCore.DisplayManagement.Shapes
                 tagName = valueString;
             }
 
-            if (shape.Properties.TryGetValue("TagName", out var tagValue) && tagValue is string tagValueString)
+            if (!String.IsNullOrEmpty(shape.TagName))
             {
-                tagName = tagValueString;
+                tagName = shape.TagName;
             }
 
             var id = shape.Id;
