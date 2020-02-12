@@ -60,17 +60,6 @@ namespace OrchardCore.Infrastructure.Cache
                 document = await _documentStore.GetForCachingAsync(factory);
 
                 await SetInternalAsync(document, options, checkConsistency);
-
-                var key = typeof(T).FullName;
-
-                _memoryCache.Set(key, document, new MemoryCacheEntryOptions()
-                {
-                    AbsoluteExpiration = options.AbsoluteExpiration,
-                    AbsoluteExpirationRelativeToNow = options.AbsoluteExpirationRelativeToNow,
-                    SlidingExpiration = options.SlidingExpiration
-                });
-
-                _scopedCache[key] = document;
             }
 
             return document;
@@ -176,10 +165,24 @@ namespace OrchardCore.Infrastructure.Cache
             await _distributedCache.SetAsync(key, data, options);
             await _distributedCache.SetAsync("ID_" + key, idData, options);
 
-            // In case we were the last to update the cache, check if it was not with the last stored document.
+            // In case we were the last to update the cache, check if we didn't cache the last stored document.
             if (checkConsistency && (await _documentStore.GetForCachingAsync<T>()).Identifier != document.Identifier)
             {
                 await _distributedCache.RemoveAsync("ID_" + key);
+            }
+            else
+            {
+                _memoryCache.Set(key, document, new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpiration = options.AbsoluteExpiration,
+                    AbsoluteExpirationRelativeToNow = options.AbsoluteExpirationRelativeToNow,
+                    SlidingExpiration = options.SlidingExpiration
+                });
+
+                if (!_scopedCache.TryGetValue(key, out var scoped))
+                {
+                    _scopedCache[key] = document;
+                }
             }
         }
 
