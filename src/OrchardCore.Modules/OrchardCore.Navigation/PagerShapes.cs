@@ -324,9 +324,6 @@ namespace OrchardCore.Navigation
             IDictionary<string, string> ItemAttributes,
             Dictionary<string, string> UrlParams)
         {
-            Shape.Properties["ItemTagName"] = ItemTagName;
-            Shape.Properties["ItemAttributes"] = ItemAttributes;
-
             var previousText = PreviousText ?? S["<"];
             var nextText = NextText ?? S[">"];
 
