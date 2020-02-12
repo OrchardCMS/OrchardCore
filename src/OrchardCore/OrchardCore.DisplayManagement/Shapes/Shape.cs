@@ -158,11 +158,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 tagName = shape.TagName;
             }
 
-            var id = shape.Id;
-            IEnumerable<string> classes = shape.Classes;
-            var attributes = shape.Attributes;
-
-            return GetTagBuilder(tagName, id, classes, attributes);
+            return GetTagBuilder(tagName, shape.Id, shape.Classes, shape.Attributes);
         }
 
         public static TagBuilder GetTagBuilder(string tagName, string id, IEnumerable<string> classes, IDictionary<string, string> attributes)
