@@ -115,15 +115,15 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     ShellScope.RegisterBeforeDispose(scope =>
                     {
-                        var dataStore = scope.ServiceProvider.GetRequiredService<ISessionDataStore>();
-
-                        return dataStore.CommitAsync();
+                        return scope.ServiceProvider
+                            .GetRequiredService<ISessionDocumentStore>()
+                            .CommitAsync();
                     });
 
                     return session;
                 });
 
-                services.AddScoped<ISessionDataStore, SessionDataStore>();
+                services.AddScoped<ISessionDocumentStore, SessionDocumentStore>();
 
                 // This service is obsolete and will be removed in a future version.
                 services.AddScoped<ISessionHelper, SessionHelper>();

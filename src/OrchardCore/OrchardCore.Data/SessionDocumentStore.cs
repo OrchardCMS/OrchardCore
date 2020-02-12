@@ -6,9 +6,9 @@ using YesSql;
 namespace OrchardCore.Data
 {
     /// <summary>
-    /// Data store implementation using the <see cref="ISession"/>.
+    /// Document store implementation using the <see cref="ISession"/>.
     /// </summary>
-    public class SessionDataStore : ISessionDataStore
+    public class SessionDocumentStore : ISessionDocumentStore
     {
         private readonly ISession _session;
 
@@ -18,14 +18,11 @@ namespace OrchardCore.Data
         private readonly List<Type> _afterCommitsSuccess = new List<Type>();
         private readonly List<Type> _afterCommits = new List<Type>();
 
-        private DataStoreCommitDelegate _beforeCommit;
-        private DataStoreCommitDelegate _afterCommitSuccess;
-        private DataStoreCommitDelegate _afterCommit;
+        private DocumentStoreCommitDelegate _beforeCommit;
+        private DocumentStoreCommitDelegate _afterCommitSuccess;
+        private DocumentStoreCommitDelegate _afterCommit;
 
-        /// <summary>
-        /// Creates a new instance of <see cref="SessionHelper"/>.
-        /// </summary>
-        public SessionDataStore(ISession session)
+        public SessionDocumentStore(ISession session)
         {
             _session = session;
         }
@@ -64,13 +61,14 @@ namespace OrchardCore.Data
             return factory?.Invoke() ?? new T();
         }
 
-        public Task UpdateAsync<T>(T value, Func<T, Task> updateCache, bool checkConcurrency = false)
+        /// <inheritdoc />
+        public Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false)
         {
-            _session.Save(value, checkConcurrency);
+            _session.Save(document, checkConcurrency);
 
             AfterCommitSuccess<T>(() =>
             {
-                return updateCache(value);
+                return updateCache(document);
             });
 
             return Task.CompletedTask;
@@ -80,7 +78,7 @@ namespace OrchardCore.Data
         public void Cancel() => _session.Cancel();
 
         /// <inheritdoc />
-        public void BeforeCommit<T>(DataStoreCommitDelegate beforeCommit)
+        public void BeforeCommit<T>(DocumentStoreCommitDelegate beforeCommit)
         {
             if (!_beforeCommits.Contains(typeof(T)))
             {
@@ -90,7 +88,7 @@ namespace OrchardCore.Data
         }
 
         /// <inheritdoc />
-        public void AfterCommitSuccess<T>(DataStoreCommitDelegate afterCommit)
+        public void AfterCommitSuccess<T>(DocumentStoreCommitDelegate afterCommit)
         {
             if (!_afterCommitsSuccess.Contains(typeof(T)))
             {
@@ -100,7 +98,7 @@ namespace OrchardCore.Data
         }
 
         /// <inheritdoc />
-        public void AfterCommit<T>(DataStoreCommitDelegate afterCommit)
+        public void AfterCommit<T>(DocumentStoreCommitDelegate afterCommit)
         {
             if (!_afterCommits.Contains(typeof(T)))
             {

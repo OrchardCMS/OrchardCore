@@ -18,19 +18,19 @@ namespace OrchardCore.Roles.Services
     public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IDataStoreDistributedCache<ISessionDataStore> _dataStoreDistributedCache;
+        private readonly IDocumentStoreDistributedCache<ISessionDocumentStore> _documentStoreDistributedCache;
         private readonly IStringLocalizer<RoleStore> S;
 
         private bool _updating;
 
         public RoleStore(
             IServiceProvider serviceProvider,
-            IDataStoreDistributedCache<ISessionDataStore> dataStoreDistributedCache,
+            IDocumentStoreDistributedCache<ISessionDocumentStore> documentStoreDistributedCache,
             IStringLocalizer<RoleStore> stringLocalizer,
             ILogger<RoleStore> logger)
         {
             _serviceProvider = serviceProvider;
-            _dataStoreDistributedCache = dataStoreDistributedCache;
+            _documentStoreDistributedCache = documentStoreDistributedCache;
             S = stringLocalizer;
             Logger = logger;
         }
@@ -40,20 +40,20 @@ namespace OrchardCore.Roles.Services
         public IQueryable<IRole> Roles => GetRolesAsync().GetAwaiter().GetResult().Roles.AsQueryable();
 
         /// <summary>
-        /// Returns the document from the database to be updated.
+        /// Loads the document from the database (or create a new one) for updating and that should not be cached.
         /// </summary>
-        private Task<RolesDocument> LoadRolesAsync() => _dataStoreDistributedCache.LoadAsync<RolesDocument>();
+        private Task<RolesDocument> LoadRolesAsync() => _documentStoreDistributedCache.LoadAsync<RolesDocument>();
 
         /// <summary>
-        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// Gets the document from the cache (or create a new one) for sharing and that should not be updated.
         /// </summary>
-        private Task<RolesDocument> GetRolesAsync() => _dataStoreDistributedCache.GetAsync<RolesDocument>();
+        private Task<RolesDocument> GetRolesAsync() => _documentStoreDistributedCache.GetAsync<RolesDocument>();
 
         private Task UpdateRolesAsync(RolesDocument roles)
         {
             _updating = true;
 
-            return _dataStoreDistributedCache.UpdateAsync(roles);
+            return _documentStoreDistributedCache.UpdateAsync(roles);
         }
 
         #region IRoleStore<IRole>

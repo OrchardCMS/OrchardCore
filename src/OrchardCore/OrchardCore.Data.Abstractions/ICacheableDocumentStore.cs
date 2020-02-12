@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 namespace OrchardCore.Data
 {
     /// <summary>
-    /// Allows to update the data of a given data store while being able to retrieve them through a shared cached />.
+    /// Allows to get documents from a shared cache while being able to update them to the store at the scope level.
     /// </summary>
-    public interface ICacheableDataStore
+    public interface ICacheableDocumentStore
     {
         /// <summary>
         /// Loads a single document (or create a new one) for updating and that should not be cached.
@@ -21,8 +21,8 @@ namespace OrchardCore.Data
         Task<T> GetForCachingAsync<T>(Func<T> factory = null) where T : class, new();
 
         /// <summary>
-        /// Updates the store with the provided value and then uses the delegate to update the cache.
+        /// Updates the store with the provided document and then uses the delegate to update the cache.
         /// </summary>
-        Task UpdateAsync<T>(T value, Func<T, Task> updateCache, bool checkConcurrency = false);
+        Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false);
     }
 }
