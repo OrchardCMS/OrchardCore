@@ -13,9 +13,9 @@ using OrchardCore.Entities;
 namespace OrchardCore.Infrastructure.Cache
 {
     /// <summary>
-    /// Keeps in sync a given document store with a multi level distributed cache.
+    /// A generic service to keep in sync a multi level distributed cache with a given document store.
     /// </summary>
-    public class DocumentStoreDistributedCache<TDocumentStore> : IDocumentStoreDistributedCache<TDocumentStore> where TDocumentStore : ICacheableDocumentStore
+    public class DistributedCache<TDocumentStore> : IDistributedCache<TDocumentStore> where TDocumentStore : ICacheableDocumentStore
     {
         private static readonly DefaultIdGenerator _idGenerator = new DefaultIdGenerator();
 
@@ -25,7 +25,7 @@ namespace OrchardCore.Infrastructure.Cache
 
         private readonly Dictionary<string, object> _scopedCache = new Dictionary<string, object>();
 
-        public DocumentStoreDistributedCache(TDocumentStore documentStore, IDistributedCache distributedCache, IMemoryCache memoryCache)
+        public DistributedCache(TDocumentStore documentStore, IDistributedCache distributedCache, IMemoryCache memoryCache)
         {
             _documentStore = documentStore;
             _distributedCache = distributedCache;
@@ -81,7 +81,7 @@ namespace OrchardCore.Infrastructure.Cache
             {
                 return SetInternalAsync(document, options, checkConsistency);
             },
-                checkConcurrency);
+            checkConcurrency);
         }
 
         private async Task<T> GetInternalAsync<T>(DistributedCacheEntryOptions options) where T : DistributedDocument

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Caching.Distributed;
 namespace OrchardCore.Data
 {
     /// <summary>
-    /// Keeps in sync a given document store with a multi level distributed cache.
+    /// Keeps in sync a multi level distributed cache with a given document store.
     /// </summary>
     public interface IDocumentStoreDistributedCache
     {

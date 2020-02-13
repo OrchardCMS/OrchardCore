@@ -6,9 +6,9 @@ using YesSql;
 namespace OrchardCore.Data
 {
     /// <summary>
-    /// Document store implementation using the <see cref="ISession"/>.
+    /// A cacheable and committable document store using the <see cref="ISession"/>.
     /// </summary>
-    public class SessionDocumentStore : ISessionDocumentStore
+    public class DocumentStore : IDocumentStore
     {
         private readonly ISession _session;
 
@@ -22,7 +22,7 @@ namespace OrchardCore.Data
         private DocumentStoreCommitDelegate _afterCommitSuccess;
         private DocumentStoreCommitDelegate _afterCommit;
 
-        public SessionDocumentStore(ISession session)
+        public DocumentStore(ISession session)
         {
             _session = session;
         }

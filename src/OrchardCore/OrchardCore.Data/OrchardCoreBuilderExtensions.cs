@@ -116,16 +116,16 @@ namespace Microsoft.Extensions.DependencyInjection
                     ShellScope.RegisterBeforeDispose(scope =>
                     {
                         return scope.ServiceProvider
-                            .GetRequiredService<ISessionDocumentStore>()
+                            .GetRequiredService<IDocumentStore>()
                             .CommitAsync();
                     });
 
                     return session;
                 });
 
-                services.AddScoped<ISessionDocumentStore, SessionDocumentStore>();
+                services.AddScoped<IDocumentStore, DocumentStore>();
 
-                // This service is obsolete and will be removed in a future version.
+                // This service will be removed in a future version.
                 services.AddScoped<ISessionHelper, SessionHelper>();
 
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
