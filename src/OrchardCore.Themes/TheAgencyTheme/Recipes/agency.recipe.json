@@ -97,7 +97,7 @@
               "Listable": true
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "LiquidPage",
               "Name": "LiquidPage",
@@ -152,7 +152,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "HtmlWidget",
               "Name": "HtmlWidget",
@@ -176,7 +176,7 @@
               "Securable": true
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Page",
               "Name": "Page",
@@ -232,7 +232,7 @@
               "Securable": true
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "LandingPage",
               "Name": "LandingPage",
@@ -350,7 +350,7 @@
         {
           "Name": "Service",
           "DisplayName": "Service",
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Service",
               "Name": "Service",
@@ -383,7 +383,7 @@
         {
           "Name": "Project",
           "DisplayName": "Project",
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Project",
               "Name": "Project",
@@ -416,7 +416,7 @@
         {
           "Name": "Milestone",
           "DisplayName": "Milestone",
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Milestone",
               "Name": "Milestone",
@@ -449,7 +449,7 @@
         {
           "Name": "TeamMember",
           "DisplayName": "Team Member",
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "TeamMember",
               "Name": "TeamMember",
@@ -473,7 +473,7 @@
         {
           "Name": "Client",
           "DisplayName": "Client",
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Client",
               "Name": "Client",
@@ -505,7 +505,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Container",
               "Name": "Container",
@@ -537,7 +537,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Blockquote",
               "Name": "Blockquote",
@@ -560,7 +560,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Image",
               "Name": "Image",
@@ -583,7 +583,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "LiquidPart",
               "Name": "LiquidPart",
@@ -605,7 +605,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Image",
               "Name": "Image",
@@ -637,7 +637,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Paragraph",
               "Name": "Paragraph",
@@ -654,7 +654,7 @@
         {
           "Name": "HtmlWidget",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "HtmlField",
               "Name": "Content",
@@ -671,7 +671,7 @@
         {
           "Name": "MenuItem",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "TextField",
               "Name": "Link",
@@ -687,7 +687,7 @@
         {
           "Name": "Service",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "TextField",
               "Name": "IconClass",
@@ -706,7 +706,7 @@
         {
           "Name": "Project",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "MediaField",
               "Name": "Image",
@@ -739,7 +739,7 @@
         {
           "Name": "Milestone",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "TextField",
               "Name": "Date",
@@ -769,7 +769,7 @@
         {
           "Name": "TeamMember",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "TextField",
               "Name": "Occupation",
@@ -838,7 +838,7 @@
         {
           "Name": "Client",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "MediaField",
               "Name": "Logo",
@@ -868,7 +868,7 @@
         {
           "Name": "Blockquote",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "TextField",
               "Name": "Quote",
@@ -889,7 +889,7 @@
               "Attachable": true
             }
           },
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "MediaField",
               "Name": "Media",
@@ -922,7 +922,7 @@
         {
           "Name": "Paragraph",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "HtmlField",
               "Name": "Content",

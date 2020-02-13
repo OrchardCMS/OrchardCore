@@ -101,7 +101,7 @@
               "Listable": true
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Article",
               "Name": "Article",
@@ -158,7 +158,7 @@
               "Listable": true
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "LiquidPage",
               "Name": "LiquidPage",
@@ -212,7 +212,7 @@
               "Versionable": true
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "TitlePart",
               "Name": "TitlePart",
@@ -270,7 +270,7 @@
               "Securable": true
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "TitlePart",
               "Name": "TitlePart",
@@ -348,7 +348,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Container",
               "Name": "Container",
@@ -380,7 +380,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Blockquote",
               "Name": "Blockquote",
@@ -403,7 +403,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Image",
               "Name": "Image",
@@ -427,7 +427,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "LiquidPart",
               "Name": "LiquidPart",
@@ -447,7 +447,7 @@
               "Versionable": true
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Image",
               "Name": "Image",
@@ -479,7 +479,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Paragraph",
               "Name": "Paragraph",
@@ -502,7 +502,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "RawHtml",
               "Name": "RawHtml",
@@ -526,7 +526,7 @@
               "Securable": true
             }
           },
-          "ContentTypePartDefinitions": [
+          "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Page",
               "Name": "Page",
@@ -575,7 +575,7 @@
         {
           "Name": "Blog",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "MediaField",
               "Name": "Image",
@@ -603,7 +603,7 @@
         {
           "Name": "BlogPost",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "TextField",
               "Name": "Subtitle",
@@ -640,7 +640,7 @@
         {
           "Name": "Article",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "TextField",
               "Name": "Subtitle",
@@ -655,7 +655,7 @@
         {
           "Name": "Blockquote",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "TextField",
               "Name": "Quote",
@@ -674,7 +674,7 @@
           "Settings": {
             "Attachable": true
           },
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "MediaField",
               "Name": "Media",
@@ -707,7 +707,7 @@
         {
           "Name": "Paragraph",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "HtmlField",
               "Name": "Content",
@@ -724,7 +724,7 @@
         {
           "Name": "RawHtml",
           "Settings": {},
-          "ContentPartFieldDefinitionDocuments": [
+          "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "HtmlField",
               "Name": "Content",
