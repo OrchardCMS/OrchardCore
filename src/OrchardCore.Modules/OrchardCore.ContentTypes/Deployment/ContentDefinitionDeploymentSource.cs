@@ -22,16 +22,16 @@ namespace OrchardCore.ContentTypes.Deployment
                 return;
             }
 
-            var contentTypeDefinitionRecord = await _contentDefinitionStore.LoadContentDefinitionAsync();
+            var contentTypeDefinitionDocument = await _contentDefinitionStore.LoadContentDefinitionAsync();
            
             var contentTypes = contentDefinitionStep.IncludeAll
-                ? contentTypeDefinitionRecord.ContentTypeDefinitions
-                : contentTypeDefinitionRecord.ContentTypeDefinitions
+                ? contentTypeDefinitionDocument.ContentTypeDefinitions
+                : contentTypeDefinitionDocument.ContentTypeDefinitions
                     .Where(x => contentDefinitionStep.ContentTypes.Contains(x.Name));
 
             var contentParts = contentDefinitionStep.IncludeAll
-                ? contentTypeDefinitionRecord.ContentPartDefinitions
-                : contentTypeDefinitionRecord.ContentPartDefinitions
+                ? contentTypeDefinitionDocument.ContentPartDefinitions
+                : contentTypeDefinitionDocument.ContentPartDefinitions
                         .Where(x => contentDefinitionStep.ContentParts.Contains(x.Name));
 
             result.Steps.Add(new JObject(

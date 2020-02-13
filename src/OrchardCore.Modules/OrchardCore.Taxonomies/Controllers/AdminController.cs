@@ -15,7 +15,7 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
@@ -23,6 +23,7 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly INotifier _notifier;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             ISession session,
@@ -31,7 +32,8 @@ namespace OrchardCore.Taxonomies.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> h)
+            IHtmlLocalizer<AdminController> h,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _contentManager = contentManager;
             _authorizationService = authorizationService;
@@ -39,10 +41,11 @@ namespace OrchardCore.Taxonomies.Controllers
             _contentDefinitionManager = contentDefinitionManager;
             _session = session;
             _notifier = notifier;
+            _updateModelAccessor = updateModelAccessor;
             H = h;
         }
 
-        public IHtmlLocalizer H { get; set; }
+        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Create(string id, string taxonomyContentItemId, string taxonomyItemId)
         {
@@ -53,12 +56,12 @@ namespace OrchardCore.Taxonomies.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             model.TaxonomyContentItemId = taxonomyContentItemId;
             model.TaxonomyItemId = taxonomyItemId;
@@ -72,7 +75,7 @@ namespace OrchardCore.Taxonomies.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem taxonomy;
@@ -95,7 +98,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
@@ -144,7 +147,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies, taxonomy))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             // Look for the target taxonomy item in the hierarchy
@@ -158,7 +161,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentItem = taxonomyItem.ToObject<ContentItem>();
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             model.TaxonomyContentItemId = taxonomyContentItemId;
             model.TaxonomyItemId = taxonomyItemId;
@@ -172,7 +175,7 @@ namespace OrchardCore.Taxonomies.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem taxonomy;
@@ -204,7 +207,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentItem = taxonomyItem.ToObject<ContentItem>();
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             if (!ModelState.IsValid)
             {
@@ -230,7 +233,7 @@ namespace OrchardCore.Taxonomies.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem taxonomy;

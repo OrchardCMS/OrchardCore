@@ -7,20 +7,20 @@ namespace OrchardCore.Deployment
 {
     public class FileDownloadDeploymentTargetProvider : IDeploymentTargetProvider
     {
+        private readonly IStringLocalizer<FileDownloadDeploymentTargetProvider> S;
+
         public FileDownloadDeploymentTargetProvider(IStringLocalizer<FileDownloadDeploymentTargetProvider> stringLocalizer)
         {
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync()
         {
             return Task.FromResult<IEnumerable<DeploymentTarget>>(
                 new [] {
                     new DeploymentTarget(
-                        name: T["File Download"],
-                        description: T["Download a deployment plan locally."],
+                        name: S["File Download"],
+                        description: S["Download a deployment plan locally."],
                         route: new RouteValueDictionary(new
                         {
                             area = "OrchardCore.Deployment",

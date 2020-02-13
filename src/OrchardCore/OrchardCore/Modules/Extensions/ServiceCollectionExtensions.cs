@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +38,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             // If an instance of OrchardCoreBuilder exists reuse it,
             // so we can call AddOrchardCore several times.
             var builder = services
@@ -64,6 +71,19 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds OrchardCore services to the host service collection and let the app change
+        /// the default behavior and set of features through a configure action.
+        /// </summary>
+        public static IServiceCollection AddOrchardCore(this IServiceCollection services, Action<OrchardCoreBuilder> configure)
+        {
+            var builder = services.AddOrchardCore();
+
+            configure?.Invoke(builder);
+
+            return services;
+        }
+
         private static void AddDefaultServices(IServiceCollection services)
         {
             services.AddLogging();
@@ -73,7 +93,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddLocalization();
 
             // For performance, prevents the 'ResourceManagerStringLocalizer' from being used.
+            // Also support pluralization.
             services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+            services.AddSingleton<IHtmlLocalizerFactory, NullHtmlLocalizerFactory>();
 
             services.AddWebEncoders();
 
@@ -297,22 +319,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddDataProtection()
                     .PersistKeysToFileSystem(directory)
                     .SetApplicationName(settings.Name)
+                    .AddKeyManagementOptions(o => o.XmlEncryptor = o.XmlEncryptor ?? new NullXmlEncryptor())
                     .Services;
-
-                // Retrieve the implementation type of the newly startup filter registered as a singleton
-                var startupFilterType = collection.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter))?.GetImplementationType();
-
-                if (startupFilterType != null)
-                {
-                    // Remove any previously registered data protection startup filters.
-                    var descriptors = services.Where(s => s.ServiceType == typeof(IStartupFilter) &&
-                        (s.GetImplementationType() == startupFilterType)).ToArray();
-
-                    foreach (var descriptor in descriptors)
-                    {
-                        services.Remove(descriptor);
-                    }
-                }
 
                 // Remove any previously registered options setups.
                 services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();

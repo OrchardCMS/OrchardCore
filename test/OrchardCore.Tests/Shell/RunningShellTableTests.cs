@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Shell;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace OrchardCore.Tests.Shell
         public void NoShellsGiveNoMatch()
         {
             var table = new RunningShellTable();
-            var match = table.Match("localhost", "/yadda");
+            var match = table.Match(new HostString("localhost"), "/yadda");
             Assert.Null(match);
         }
 
@@ -19,7 +20,7 @@ namespace OrchardCore.Tests.Shell
             var table = new RunningShellTable();
             var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
             table.Add(settings);
-            var match = table.Match("localhost", "/yadda");
+            var match = table.Match(new HostString("localhost"), "/yadda");
             Assert.Equal(settings, match);
         }
 
@@ -29,7 +30,7 @@ namespace OrchardCore.Tests.Shell
             var table = new RunningShellTable();
             var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
             table.Add(settings);
-            var match = table.Match("localhost:443", "/yadda");
+            var match = table.Match(new HostString("localhost:443"), "/yadda");
             Assert.Equal(settings, match);
         }
 
@@ -41,7 +42,7 @@ namespace OrchardCore.Tests.Shell
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com" };
             table.Add(settings);
             table.Add(settingsA);
-            var match = table.Match("a.example.com", "/foo/bar");
+            var match = table.Match(new HostString("a.example.com"), "/foo/bar");
             Assert.Equal(settingsA, match);
         }
 
@@ -53,7 +54,7 @@ namespace OrchardCore.Tests.Shell
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com" };
             table.Add(settings);
             table.Add(settingsA);
-            var match = table.Match("b.example.com", "/foo/bar");
+            var match = table.Match(new HostString("b.example.com"), "/foo/bar");
             Assert.Equal(settings, match);
         }
 
@@ -65,7 +66,7 @@ namespace OrchardCore.Tests.Shell
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com" };
             table.Add(settings);
             table.Add(settingsA);
-            var match = table.Match("b.example.com", "/foo/bar");
+            var match = table.Match(new HostString("b.example.com"), "/foo/bar");
             Assert.Null(match);
         }
 
@@ -77,7 +78,7 @@ namespace OrchardCore.Tests.Shell
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com" };
             table.Add(settings);
             table.Add(settingsA);
-            var match = table.Match("www.example.com", "/foo/bar");
+            var match = table.Match(new HostString("www.example.com"), "/foo/bar");
             Assert.Equal(settings, match);
         }
 
@@ -89,7 +90,7 @@ namespace OrchardCore.Tests.Shell
             var settingsA = new ShellSettings { Name = "Alpha" };
             table.Add(settings);
             table.Add(settingsA);
-            var match = table.Match("b.example.com", "/foo/bar");
+            var match = table.Match(new HostString("b.example.com"), "/foo/bar");
             Assert.Equal(settingsA, match);
         }
 
@@ -105,7 +106,7 @@ namespace OrchardCore.Tests.Shell
             table.Add(settingsA);
             table.Add(settingsB);
             table.Add(settingsG);
-            var match = table.Match("a.example.com", "/foo/bar");
+            var match = table.Match(new HostString("a.example.com"), "/foo/bar");
             Assert.Equal(settings, match);
         }
 
@@ -117,7 +118,7 @@ namespace OrchardCore.Tests.Shell
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlPrefix = "foo" };
             table.Add(settings);
             table.Add(settingsA);
-            var match = table.Match("a.example.com", "/foo/bar");
+            var match = table.Match(new HostString("a.example.com"), "/foo/bar");
             Assert.Equal(settingsA, match);
         }
 
@@ -136,21 +137,21 @@ namespace OrchardCore.Tests.Shell
             table.Add(settingsG);
             table.Add(settingsD);
 
-            Assert.Equal(settingsA, table.Match("wiki.example.com", "/foo/bar"));
-            Assert.Equal(settingsB, table.Match("wiki.example.com", "/bar/foo"));
-            Assert.Equal(settingsG, table.Match("wiki.example.com", "/"));
-            Assert.Equal(settingsG, table.Match("wiki.example.com", "/baaz"));
-            Assert.Equal(settings, table.Match("www.example.com", "/foo/bar"));
-            Assert.Equal(settings, table.Match("www.example.com", "/bar/foo"));
-            Assert.Equal(settings, table.Match("www.example.com", "/baaz"));
-            Assert.Null(table.Match("a.example.com", "/foo/bar"));
-                   
-            Assert.Equal(settingsG, table.Match("wiki.example.com", "/quux/quad"));
-            Assert.Equal(settings, table.Match("www.example.com", "/quux/quad"));
-            Assert.Equal(settingsD, table.Match("a.example.com", "/quux/quad"));
-            Assert.Equal(settingsG, table.Match("wiki.example.com", "/yarg"));
-            Assert.Equal(settings, table.Match("www.example.com", "/yarg"));
-            Assert.Null(table.Match("a.example.com", "/yarg"));
+            Assert.Equal(settingsA, table.Match(new HostString("wiki.example.com"), "/foo/bar"));
+            Assert.Equal(settingsB, table.Match(new HostString("wiki.example.com"), "/bar/foo"));
+            Assert.Equal(settingsG, table.Match(new HostString("wiki.example.com"), "/"));
+            Assert.Equal(settingsG, table.Match(new HostString("wiki.example.com"), "/baaz"));
+            Assert.Equal(settings, table.Match(new HostString("www.example.com"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("www.example.com"), "/bar/foo"));
+            Assert.Equal(settings, table.Match(new HostString("www.example.com"), "/baaz"));
+            Assert.Null(table.Match(new HostString("a.example.com"), "/foo/bar"));
+
+            Assert.Equal(settingsG, table.Match(new HostString("wiki.example.com"), "/quux/quad"));
+            Assert.Equal(settings, table.Match(new HostString("www.example.com"), "/quux/quad"));
+            Assert.Equal(settingsD, table.Match(new HostString("a.example.com"), "/quux/quad"));
+            Assert.Equal(settingsG, table.Match(new HostString("wiki.example.com"), "/yarg"));
+            Assert.Equal(settings, table.Match(new HostString("www.example.com"), "/yarg"));
+            Assert.Null(table.Match(new HostString("a.example.com"), "/yarg"));
         }
 
         [Fact]
@@ -164,10 +165,10 @@ namespace OrchardCore.Tests.Shell
             table.Add(settingsB);
             table.Add(settingsG);
 
-            Assert.Equal(settingsB, table.Match("wiki.example.com", "/bar/foo"));
-            Assert.Equal(settingsG, table.Match("wiki.example.com", "/"));
-            Assert.Equal(settingsG, table.Match("wiki.example.com", "/baaz"));
-            Assert.Equal(settingsG, table.Match("wiki.example.com", "/barbaz"));
+            Assert.Equal(settingsB, table.Match(new HostString("wiki.example.com"), "/bar/foo"));
+            Assert.Equal(settingsG, table.Match(new HostString("wiki.example.com"), "/"));
+            Assert.Equal(settingsG, table.Match(new HostString("wiki.example.com"), "/baaz"));
+            Assert.Equal(settingsG, table.Match(new HostString("wiki.example.com"), "/barbaz"));
         }
         [Fact]
         public void PathAloneWillMatch()
@@ -176,8 +177,8 @@ namespace OrchardCore.Tests.Shell
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlPrefix = "foo" };
             table.Add(settingsA);
 
-            Assert.Equal(settingsA, table.Match("wiki.example.com", "/foo/bar"));
-            Assert.Null(table.Match("wiki.example.com", "/bar/foo"));
+            Assert.Equal(settingsA, table.Match(new HostString("wiki.example.com"), "/foo/bar"));
+            Assert.Null(table.Match(new HostString("wiki.example.com"), "/bar/foo"));
         }
 
         [Fact]
@@ -188,10 +189,10 @@ namespace OrchardCore.Tests.Shell
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "example.com" };
             table.Add(settings);
             table.Add(settingsA);
-            Assert.Equal(settings, table.Match("www.example.com", "/foo/bar"));
-            Assert.Equal(settings, table.Match("wiki.example.com", "/foo/bar"));
-            Assert.Equal(settingsA, table.Match("example.com", "/foo/bar"));
-            Assert.Equal(settings, table.Match("localhost", "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("www.example.com"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("wiki.example.com"), "/foo/bar"));
+            Assert.Equal(settingsA, table.Match(new HostString("example.com"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("localhost"), "/foo/bar"));
         }
 
         [Fact]
@@ -202,10 +203,10 @@ namespace OrchardCore.Tests.Shell
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "*.example.com" };
             table.Add(settings);
             table.Add(settingsA);
-            Assert.Equal(settingsA, table.Match("www.example.com", "/foo/bar"));
-            Assert.Equal(settingsA, table.Match("wiki.example.com", "/foo/bar"));
-            Assert.Equal(settingsA, table.Match("example.com", "/foo/bar"));
-            Assert.Equal(settings, table.Match("localhost", "/foo/bar"));
+            Assert.Equal(settingsA, table.Match(new HostString("www.example.com"), "/foo/bar"));
+            Assert.Equal(settingsA, table.Match(new HostString("wiki.example.com"), "/foo/bar"));
+            Assert.Equal(settingsA, table.Match(new HostString("example.com"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("localhost"), "/foo/bar"));
         }
 
         [Fact]
@@ -221,10 +222,10 @@ namespace OrchardCore.Tests.Shell
             table.Add(settingsB);
             table.Add(settingsG);
 
-            Assert.Equal(settingsA, table.Match("www.example.com", "/foo/bar"));
-            Assert.Equal(settingsG, table.Match("wiki.example.com", "/foo/bar"));
-            Assert.Equal(settingsB, table.Match("username.example.com", "/foo/bar"));
-            Assert.Equal(settings, table.Match("localhost", "/foo/bar"));
+            Assert.Equal(settingsA, table.Match(new HostString("www.example.com"), "/foo/bar"));
+            Assert.Equal(settingsG, table.Match(new HostString("wiki.example.com"), "/foo/bar"));
+            Assert.Equal(settingsB, table.Match(new HostString("username.example.com"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("localhost"), "/foo/bar"));
         }
 
         [Fact]
@@ -239,9 +240,9 @@ namespace OrchardCore.Tests.Shell
             table.Remove(settingsA);
             table.Add(settingsB);
 
-            Assert.Equal(settings, table.Match("removed.example.com", "/foo/bar"));
-            Assert.Equal(settingsB, table.Match("added.example.com", "/foo/bar"));
-            Assert.Equal(settings, table.Match("localhost", "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("removed.example.com"), "/foo/bar"));
+            Assert.Equal(settingsB, table.Match(new HostString("added.example.com"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("localhost"), "/foo/bar"));
         }
 
         [Fact]
@@ -253,11 +254,11 @@ namespace OrchardCore.Tests.Shell
             table.Add(settingsAlpha);
             table.Add(settingsBeta);
 
-            Assert.Equal(settingsAlpha, table.Match("a.example.com", "/foo/bar"));
-            Assert.Equal(settingsAlpha, table.Match("b.example.com", "/foo/bar"));
-            Assert.Equal(settingsBeta, table.Match("c.example.com", "/foo/bar"));
-            Assert.Equal(settingsBeta, table.Match("d.example.com", "/foo/bar"));
-            Assert.Equal(settingsBeta, table.Match("e.example.com", "/foo/bar"));
+            Assert.Equal(settingsAlpha, table.Match(new HostString("a.example.com"), "/foo/bar"));
+            Assert.Equal(settingsAlpha, table.Match(new HostString("b.example.com"), "/foo/bar"));
+            Assert.Equal(settingsBeta, table.Match(new HostString("c.example.com"), "/foo/bar"));
+            Assert.Equal(settingsBeta, table.Match(new HostString("d.example.com"), "/foo/bar"));
+            Assert.Equal(settingsBeta, table.Match(new HostString("e.example.com"), "/foo/bar"));
         }
 
         [Fact]
@@ -267,8 +268,8 @@ namespace OrchardCore.Tests.Shell
             var settingsAlpha = new ShellSettings { Name = "Alpha", RequestUrlHost = "   a.example.com,  b.example.com     " };
             table.Add(settingsAlpha);
 
-            Assert.Equal(settingsAlpha, table.Match("a.example.com", "/foo/bar"));
-            Assert.Equal(settingsAlpha, table.Match("b.example.com", "/foo/bar"));
+            Assert.Equal(settingsAlpha, table.Match(new HostString("a.example.com"), "/foo/bar"));
+            Assert.Equal(settingsAlpha, table.Match(new HostString("b.example.com"), "/foo/bar"));
         }
 
         [Fact]
@@ -279,8 +280,8 @@ namespace OrchardCore.Tests.Shell
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com" };
             table.Add(settings);
             table.Add(settingsA);
-            Assert.Equal(settingsA, table.Match("a.example.com:80", "/foo/bar"));
-            Assert.Equal(settings, table.Match("foo.com:80", "/foo/bar"));
+            Assert.Equal(settingsA, table.Match(new HostString("a.example.com:80"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("foo.com:80"), "/foo/bar"));
         }
 
         [Fact]
@@ -291,9 +292,9 @@ namespace OrchardCore.Tests.Shell
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com" };
             table.Add(settings);
             table.Add(settingsA);
-            Assert.Equal(settingsA, table.Match("a.example.com", "/foo/bar"));
-            Assert.Equal(settings, table.Match("foo.com", "/foo/bar"));
-            Assert.Null(table.Match("foo.com", "/foo/bar", false));
+            Assert.Equal(settingsA, table.Match(new HostString("a.example.com"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("foo.com"), "/foo/bar"));
+            Assert.Null(table.Match(new HostString("foo.com"), "/foo/bar", false));
         }
 
         [Fact]
@@ -306,10 +307,39 @@ namespace OrchardCore.Tests.Shell
             table.Add(settings);
             table.Add(settingsA);
             table.Add(settingsB);
-            Assert.Equal(settingsA, table.Match("a.example.com:80", "/foo/bar"));
-            Assert.Equal(settingsB, table.Match("a.example.com:8080", "/foo/bar"));
-            Assert.Equal(settings, table.Match("a.example.com:123", "/foo/bar"));
-            Assert.Null(table.Match("a.example.com:123", "/foo/bar", false));
+            Assert.Equal(settingsA, table.Match(new HostString("a.example.com:80"), "/foo/bar"));
+            Assert.Equal(settingsB, table.Match(new HostString("a.example.com:8080"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("a.example.com:123"), "/foo/bar"));
+            Assert.Null(table.Match(new HostString("a.example.com:123"), "/foo/bar", false));
+        }
+
+        [Fact]
+        public void IPv6AddressesAreSupported()
+        {
+            var table = new RunningShellTable();
+            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "[::abc]" };
+            var settingsB = new ShellSettings { Name = "Beta", RequestUrlHost = "[::1]:123" };
+
+            table.Add(settings);
+            table.Add(settingsA);
+            table.Add(settingsB);
+
+            Assert.Equal(settingsA, table.Match(new HostString("::abc"), "/foo/bar"));
+            Assert.Equal(settingsA, table.Match(new HostString("[::abc]"), "/foo/bar"));
+            Assert.Equal(settingsA, table.Match(new HostString("[::ABC]"), "/foo/bar"));
+            Assert.Equal(settingsA, table.Match(new HostString("[::abc]:"), "/foo/bar"));
+            Assert.Equal(settingsA, table.Match(new HostString("[::abc]:123"), "/foo/bar"));
+
+            Assert.Equal(settingsB, table.Match(new HostString("[::1]:123"), "/foo/bar"));
+
+            Assert.Equal(settings, table.Match(new HostString("[::1]:321"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("[::1]:"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("[::1]"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString("::1"), "/foo/bar"));
+            Assert.Equal(settings, table.Match(new HostString(":"), "/foo/bar"));
+
+            Assert.Null(table.Match(new HostString("::1"), "/foo/bar", false));
         }
     }
 }

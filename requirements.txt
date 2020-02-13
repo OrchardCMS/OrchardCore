@@ -1,2 +1,0 @@
-mkdocs>=1.0
-markdown-fenced-code-tabs>=1.0

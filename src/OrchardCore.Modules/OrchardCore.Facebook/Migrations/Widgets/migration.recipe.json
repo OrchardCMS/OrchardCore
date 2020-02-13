@@ -22,7 +22,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitionRecords": [
+          "ContentTypePartDefinitions": [
             {
               "PartName": "FacebookComments",
               "Name": "FacebookComments",
@@ -56,7 +56,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitionRecords": [
+          "ContentTypePartDefinitions": [
             {
               "PartName": "FacebookShare",
               "Name": "FacebookShare",
@@ -90,7 +90,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitionRecords": [
+          "ContentTypePartDefinitions": [
             {
               "PartName": "FacebookContinueWith",
               "Name": "FacebookContinueWith",
@@ -124,7 +124,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitionRecords": [
+          "ContentTypePartDefinitions": [
             {
               "PartName": "FacebookLike",
               "Name": "FacebookLike",
@@ -158,7 +158,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitionRecords": [
+          "ContentTypePartDefinitions": [
             {
               "PartName": "FacebookQuote",
               "Name": "FacebookQuote",
@@ -192,7 +192,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitionRecords": [
+          "ContentTypePartDefinitions": [
             {
               "PartName": "FacebookSave",
               "Name": "FacebookSave",
@@ -226,7 +226,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitionRecords": [
+          "ContentTypePartDefinitions": [
             {
               "PartName": "FacebookChat",
               "Name": "FacebookChat",

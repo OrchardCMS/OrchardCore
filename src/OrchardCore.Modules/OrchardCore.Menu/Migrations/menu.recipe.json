@@ -13,7 +13,7 @@
               "Versionable": true
             }
           },
-          "ContentTypePartDefinitionRecords": [
+          "ContentTypePartDefinitions": [
             {
               "PartName": "TitlePart",
               "Name": "TitlePart",
@@ -61,7 +61,7 @@
               "Stereotype": "MenuItem"
             }
           },
-          "ContentTypePartDefinitionRecords": [
+          "ContentTypePartDefinitions": [
             {
               "PartName": "LinkMenuItemPart",
               "Name": "LinkMenuItemPart",

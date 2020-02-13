@@ -7,8 +7,8 @@ namespace OrchardCore.Workflows
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageWorkflows = new Permission("ManageWorkflows", "Manage workflows");
-        public static readonly Permission ExecuteWorkflows = new Permission("ExecuteWorkflows", "Execute workflows");
+        public static readonly Permission ManageWorkflows = new Permission("ManageWorkflows", "Manage workflows", isSecurityCritical: true);
+        public static readonly Permission ExecuteWorkflows = new Permission("ExecuteWorkflows", "Execute workflows", isSecurityCritical: true);
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

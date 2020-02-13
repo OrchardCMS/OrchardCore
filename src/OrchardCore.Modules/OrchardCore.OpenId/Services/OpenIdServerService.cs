@@ -30,7 +30,7 @@ namespace OrchardCore.OpenId.Services
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<OpenIdServerService> T;
+        private readonly IStringLocalizer<OpenIdServerService> S;
 
         public OpenIdServerService(
             IDataProtectionProvider dataProtectionProvider,
@@ -47,7 +47,7 @@ namespace OrchardCore.OpenId.Services
             _shellOptions = shellOptions;
             _shellSettings = shellSettings;
             _siteService = siteService;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public async Task<OpenIdServerSettings> GetSettingsAsync()
@@ -78,7 +78,7 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
@@ -94,14 +94,14 @@ namespace OrchardCore.OpenId.Services
 
             if (settings.GrantTypes.Count == 0)
             {
-                results.Add(new ValidationResult(T["At least one OpenID Connect flow must be enabled."]));
+                results.Add(new ValidationResult(S["At least one OpenID Connect flow must be enabled."]));
             }
 
             if (settings.Authority != null)
             {
                 if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
                 {
-                    results.Add(new ValidationResult(T["The authority must be a valid absolute URL."], new[]
+                    results.Add(new ValidationResult(S["The authority must be a valid absolute URL."], new[]
                     {
                         nameof(settings.Authority)
                     }));
@@ -109,7 +109,7 @@ namespace OrchardCore.OpenId.Services
 
                 if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
-                    results.Add(new ValidationResult(T["The authority cannot contain a query string or a fragment."], new[]
+                    results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                     {
                         nameof(settings.Authority)
                     }));
@@ -126,7 +126,7 @@ namespace OrchardCore.OpenId.Services
 
                 if (certificate == null)
                 {
-                    results.Add(new ValidationResult(T["The certificate cannot be found."], new[]
+                    results.Add(new ValidationResult(S["The certificate cannot be found."], new[]
                     {
                         nameof(settings.CertificateThumbprint)
                     }));
@@ -134,7 +134,7 @@ namespace OrchardCore.OpenId.Services
 
                 else if (!certificate.HasPrivateKey)
                 {
-                    results.Add(new ValidationResult(T["The certificate doesn't contain the required private key."], new[]
+                    results.Add(new ValidationResult(S["The certificate doesn't contain the required private key."], new[]
                     {
                         nameof(settings.CertificateThumbprint)
                     }));
@@ -142,7 +142,7 @@ namespace OrchardCore.OpenId.Services
 
                 else if (certificate.Archived)
                 {
-                    results.Add(new ValidationResult(T["The certificate is not valid because it is marked as archived."], new[]
+                    results.Add(new ValidationResult(S["The certificate is not valid because it is marked as archived."], new[]
                     {
                         nameof(settings.CertificateThumbprint)
                     }));
@@ -150,7 +150,7 @@ namespace OrchardCore.OpenId.Services
 
                 else if (certificate.NotBefore > DateTime.Now || certificate.NotAfter < DateTime.Now)
                 {
-                    results.Add(new ValidationResult(T["The certificate is not valid for current date."], new[]
+                    results.Add(new ValidationResult(S["The certificate is not valid for current date."], new[]
                     {
                         nameof(settings.CertificateThumbprint)
                     }));
@@ -159,7 +159,7 @@ namespace OrchardCore.OpenId.Services
 
             if (settings.GrantTypes.Contains(GrantTypes.Password) && !settings.TokenEndpointPath.HasValue)
             {
-                results.Add(new ValidationResult(T["The password flow cannot be enabled when the token endpoint is disabled."], new[]
+                results.Add(new ValidationResult(S["The password flow cannot be enabled when the token endpoint is disabled."], new[]
                 {
                     nameof(settings.GrantTypes)
                 }));
@@ -167,7 +167,7 @@ namespace OrchardCore.OpenId.Services
 
             if (settings.GrantTypes.Contains(GrantTypes.ClientCredentials) && !settings.TokenEndpointPath.HasValue)
             {
-                results.Add(new ValidationResult(T["The client credentials flow cannot be enabled when the token endpoint is disabled."], new[]
+                results.Add(new ValidationResult(S["The client credentials flow cannot be enabled when the token endpoint is disabled."], new[]
                 {
                     nameof(settings.GrantTypes)
                 }));
@@ -176,7 +176,7 @@ namespace OrchardCore.OpenId.Services
             if (settings.GrantTypes.Contains(GrantTypes.AuthorizationCode) &&
                (!settings.AuthorizationEndpointPath.HasValue || !settings.TokenEndpointPath.HasValue))
             {
-                results.Add(new ValidationResult(T["The authorization code flow cannot be enabled when the authorization and token endpoints are disabled."], new[]
+                results.Add(new ValidationResult(S["The authorization code flow cannot be enabled when the authorization and token endpoints are disabled."], new[]
                 {
                     nameof(settings.GrantTypes)
                 }));
@@ -186,7 +186,7 @@ namespace OrchardCore.OpenId.Services
             {
                 if (!settings.TokenEndpointPath.HasValue)
                 {
-                    results.Add(new ValidationResult(T["The refresh token flow cannot be enabled when the token endpoint is disabled."], new[]
+                    results.Add(new ValidationResult(S["The refresh token flow cannot be enabled when the token endpoint is disabled."], new[]
                     {
                         nameof(settings.GrantTypes)
                     }));
@@ -194,7 +194,7 @@ namespace OrchardCore.OpenId.Services
 
                 if (!settings.GrantTypes.Contains(GrantTypes.Password) && !settings.GrantTypes.Contains(GrantTypes.AuthorizationCode))
                 {
-                    results.Add(new ValidationResult(T["The refresh token flow can only be enabled if the password, authorization code or hybrid flows are enabled."], new[]
+                    results.Add(new ValidationResult(S["The refresh token flow can only be enabled if the password, authorization code or hybrid flows are enabled."], new[]
                     {
                         nameof(settings.GrantTypes)
                     }));
@@ -203,7 +203,7 @@ namespace OrchardCore.OpenId.Services
 
             if (settings.GrantTypes.Contains(GrantTypes.Implicit) && !settings.AuthorizationEndpointPath.HasValue)
             {
-                results.Add(new ValidationResult(T["The implicit flow cannot be enabled when the authorization endpoint is disabled."], new[]
+                results.Add(new ValidationResult(S["The implicit flow cannot be enabled when the authorization endpoint is disabled."], new[]
                 {
                     nameof(settings.GrantTypes)
                 }));

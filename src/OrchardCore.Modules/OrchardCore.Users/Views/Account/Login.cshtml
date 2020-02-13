@@ -4,59 +4,62 @@
 @using OrchardCore.Users
 @using OrchardCore.Users.Models
 @model OrchardCore.Users.ViewModels.LoginViewModel
-@inject SignInManager<IUser> _signInManager
-@inject ISiteService _site
-
+@inject SignInManager<IUser> SignInManager
+@inject ISiteService SiteService
+@inject UserManager<IUser> UserManager;
 @{
     ViewLayout = "Layout__Login";
 
-    var userCanRegister = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister;
-    var allowResetPassword = (await _site.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
-    var loginProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+    var userCanRegister = (await SiteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister == UserRegistrationType.AllowRegistration;
+    var allowResetPassword = (await SiteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
+    var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+    var disableLocalLogin = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
 }
 
 <div class="row">
-    <div class="col-md-6 @(loginProviders.Count == 0 ? "offset-md-3" : "")">
-        <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form">
-            <h4>@T["Use a local account to log in."]</h4>
-            <hr />
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UserName">@T["Username"]</label>
-                <input asp-for="UserName" class="form-control" autofocus tabindex="1" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="">
-                    @T["Password"]
-                    @if (allowResetPassword)
-                    {
-                        <a asp-controller="ResetPassword" asp-action="ForgotPassword" class="label-link">@T["Forgot your password?"]</a>
-                    }
-                </label>
-
-                <input asp-for="Password" class="form-control" tabindex="2" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group custom-control custom-checkbox">
-                <input asp-for="RememberMe" class="custom-control-input" tabindex="3">
-                <label asp-for="RememberMe" class="custom-control-label">@T["Remember me"]</label>
-            </div>
-            @await RenderSectionAsync("AfterLogin", required: false)
-            <div></div>
-            <button type="submit" class="btn btn-primary" tabindex="4">@T["Log in"]</button>
-            @if (userCanRegister)
-            {
-                <div class="mt-4">
-                    <a asp-controller="Registration" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user"]</a>
+    @if (!disableLocalLogin)
+    {
+        <div class="col-md-6 @(loginProviders.Count == 0 ? "offset-md-3" : String.Empty)">
+            <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form">
+                <h4>@T["Use a local account to log in."]</h4>
+                <hr />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="UserName">@T["Username"]</label>
+                    <input asp-for="UserName" class="form-control" autofocus tabindex="1" />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
                 </div>
-            }
-        </form>
-    </div>
+                <div class="form-group">
+                    <label asp-for="Password">
+                        @T["Password"]
+                        @if (allowResetPassword)
+                        {
+                            <a asp-controller="ResetPassword" asp-action="ForgotPassword" class="label-link">@T["Forgot your password?"]</a>
+                        }
+                    </label>
 
+                    <input asp-for="Password" class="form-control" tabindex="2" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group custom-control custom-checkbox">
+                    <input asp-for="RememberMe" class="custom-control-input" tabindex="3">
+                    <label asp-for="RememberMe" class="custom-control-label">@T["Remember me"]</label>
+                </div>
+                @await RenderSectionAsync("AfterLogin", required: false)
+                <div></div>
+                <button type="submit" class="btn btn-primary" tabindex="4">@T["Log in"]</button>
+                @if (userCanRegister)
+                {
+                    <div class="mt-4">
+                        <a asp-controller="Registration" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user"]</a>
+                    </div>
+                }
+            </form>
+        </div>
+    }
     @if (loginProviders.Count > 0)
     {
-        <div class="col-md-6">
+        <div class="col-md-6 @(disableLocalLogin ? "offset-md-3" : String.Empty)">
             <section>
                 <h4>@T["Use another service to log in."]</h4>
                 <hr />
@@ -65,7 +68,11 @@
                         <p>
                             @foreach (var provider in loginProviders)
                             {
-                                <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                <button type="submit" class="btn btn-primary @(disableLocalLogin ? "w-100" : String.Empty)" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                @if (disableLocalLogin)
+                                {
+                                    <br />
+                                }
                             }
                         </p>
                     </div>

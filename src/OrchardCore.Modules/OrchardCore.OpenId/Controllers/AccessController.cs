@@ -35,7 +35,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IOpenIdAuthorizationManager _authorizationManager;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer<AccessController> T;
+        private readonly IStringLocalizer<AccessController> S;
 
         public AccessController(
             IOpenIdApplicationManager applicationManager,
@@ -45,7 +45,7 @@ namespace OrchardCore.OpenId.Controllers
             ShellSettings shellSettings,
             IOpenIdServerService serverService)
         {
-            T = localizer;
+            S = localizer;
             _applicationManager = applicationManager;
             _authorizationManager = authorizationManager;
             _scopeManager = scopeManager;
@@ -77,7 +77,7 @@ namespace OrchardCore.OpenId.Controllers
                 return View("Error", new ErrorViewModel
                 {
                     Error = OpenIddictConstants.Errors.InvalidClient,
-                    ErrorDescription = T["The specified 'client_id' parameter is invalid."]
+                    ErrorDescription = S["The specified 'client_id' parameter is invalid."]
                 });
             }
 
@@ -94,7 +94,7 @@ namespace OrchardCore.OpenId.Controllers
                     return RedirectToClient(new OpenIdConnectResponse
                     {
                         Error = OpenIddictConstants.Errors.ConsentRequired,
-                        ErrorDescription = T["The logged in user is not allowed to access this client application."]
+                        ErrorDescription = S["The logged in user is not allowed to access this client application."]
                     });
 
                 case OpenIddictConstants.ConsentTypes.Implicit:
@@ -110,7 +110,7 @@ namespace OrchardCore.OpenId.Controllers
                     return RedirectToClient(new OpenIdConnectResponse
                     {
                         Error = OpenIddictConstants.Errors.ConsentRequired,
-                        ErrorDescription = T["Interactive user consent is required."]
+                        ErrorDescription = S["Interactive user consent is required."]
                     });
 
                 default:
@@ -138,7 +138,7 @@ namespace OrchardCore.OpenId.Controllers
                 return View("Error", new ErrorViewModel
                 {
                     Error = OpenIddictConstants.Errors.InvalidClient,
-                    ErrorDescription = T["The specified 'client_id' parameter is invalid."]
+                    ErrorDescription = S["The specified 'client_id' parameter is invalid."]
                 });
             }
 
@@ -158,7 +158,7 @@ namespace OrchardCore.OpenId.Controllers
                     return RedirectToClient(new OpenIdConnectResponse
                     {
                         Error = OpenIddictConstants.Errors.ConsentRequired,
-                        ErrorDescription = T["The logged in user is not allowed to access this client application."]
+                        ErrorDescription = S["The logged in user is not allowed to access this client application."]
                     });
 
                 default:
@@ -256,7 +256,7 @@ namespace OrchardCore.OpenId.Controllers
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIddictConstants.Errors.InvalidClient,
-                    ErrorDescription = T["The specified 'client_id' parameter is invalid."]
+                    ErrorDescription = S["The specified 'client_id' parameter is invalid."]
                 });
             }
 
@@ -317,7 +317,7 @@ namespace OrchardCore.OpenId.Controllers
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIddictConstants.Errors.InvalidClient,
-                    ErrorDescription = T["The specified 'client_id' parameter is invalid."]
+                    ErrorDescription = S["The specified 'client_id' parameter is invalid."]
                 });
             }
 
@@ -329,7 +329,7 @@ namespace OrchardCore.OpenId.Controllers
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIdConnectConstants.Errors.UnsupportedGrantType,
-                    ErrorDescription = T["The resource owner password credentials grant is not supported."]
+                    ErrorDescription = S["The resource owner password credentials grant is not supported."]
                 });
             }
 
@@ -362,7 +362,7 @@ namespace OrchardCore.OpenId.Controllers
                     return BadRequest(new OpenIdConnectResponse
                     {
                         Error = OpenIddictConstants.Errors.ConsentRequired,
-                        ErrorDescription = T["The logged in user is not allowed to access this client application."]
+                        ErrorDescription = S["The logged in user is not allowed to access this client application."]
                     });
             }
 
@@ -379,7 +379,7 @@ namespace OrchardCore.OpenId.Controllers
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIddictConstants.Errors.InvalidClient,
-                    ErrorDescription = T["The specified 'client_id' parameter is invalid."]
+                    ErrorDescription = S["The specified 'client_id' parameter is invalid."]
                 });
             }
 
@@ -390,12 +390,12 @@ namespace OrchardCore.OpenId.Controllers
             if (request.IsRefreshTokenGrantType())
             {
                 var type = info.Principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value;
-                if (!string.Equals(type, OpenIdConstants.EntityTypes.User, StringComparison.Ordinal))
+                if (!string.Equals(type, OpenIdConstants.EntityTypes.User))
                 {
                     return BadRequest(new OpenIdConnectResponse
                     {
                         Error = OpenIddictConstants.Errors.UnauthorizedClient,
-                        ErrorDescription = T["The refresh token grant type is not allowed for refresh " +
+                        ErrorDescription = S["The refresh token grant type is not allowed for refresh " +
                                              "tokens retrieved using the client credentials flow."]
                     });
                 }
@@ -549,7 +549,7 @@ namespace OrchardCore.OpenId.Controllers
                 return RedirectToClient(new OpenIdConnectResponse
                 {
                     Error = OpenIddictConstants.Errors.LoginRequired,
-                    ErrorDescription = T["The user is not logged in."]
+                    ErrorDescription = S["The user is not logged in."]
                 });
             }
 

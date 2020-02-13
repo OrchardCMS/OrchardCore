@@ -12,6 +12,8 @@ namespace OrchardCore.Contents.Scripting
         private readonly GlobalMethod _newContentItemMethod;
         private readonly GlobalMethod _createContentItemMethod;
         private readonly GlobalMethod _updateContentItemMethod;
+        private readonly GlobalMethod _deleteContentItemMethod;
+
 
         public ContentMethodsProvider()
         {
@@ -34,12 +36,8 @@ namespace OrchardCore.Contents.Scripting
                 {
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     var contentItem = contentManager.NewAsync(contentType).GetAwaiter().GetResult();
-                    var props = JObject.FromObject(properties);
-                    var content = (JObject)contentItem.ContentItem.Content;
-
-                    content.Merge(props);
-                    contentManager.CreateAsync(contentItem.ContentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
-
+                    contentItem.Merge(properties);
+                    contentManager.UpdateAndCreateAsync(contentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
                     return contentItem;
                 })
             };
@@ -47,19 +45,29 @@ namespace OrchardCore.Contents.Scripting
             _updateContentItemMethod = new GlobalMethod
             {
                 Name = "updateContentItem",
-                Method = serviceProvider => (Action<IContent, object>)((contentItem, properties) =>
+                Method = serviceProvider => (Action<ContentItem, object>)((contentItem, properties) =>
                 {
-                    var props = JObject.FromObject(properties);
-                    var content = (JObject)contentItem.ContentItem.Content;
-
-                    content.Merge(props, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+                    var contentManager = serviceProvider.GetRequiredService<IContentManager>();
+                    contentItem.Merge(properties, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+                    contentManager.UpdateAsync(contentItem).GetAwaiter().GetResult();
                 })
             };
+
+            _deleteContentItemMethod = new GlobalMethod
+            {
+                Name = "deleteContentItem",
+                Method = serviceProvider => (Action<ContentItem, object>)((contentItem, properties) =>
+                {
+                    var contentManager = serviceProvider.GetRequiredService<IContentManager>();
+                    contentManager.RemoveAsync(contentItem).GetAwaiter().GetResult();
+                })
+            };
+
         }
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _newContentItemMethod, _createContentItemMethod, _updateContentItemMethod };
+            return new[] { _newContentItemMethod, _createContentItemMethod, _updateContentItemMethod, _deleteContentItemMethod };
         }
     }
 }

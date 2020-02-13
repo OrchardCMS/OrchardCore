@@ -10,6 +10,9 @@ using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Localization
 {
+    /// <summary>
+    /// Represents a localization provider to provide the locations of the modules PO files.
+    /// </summary>
     public class ModularPoFileLocationProvider : ILocalizationFileLocationProvider
     {
         private const string PoFileExtension = ".po";
@@ -21,6 +24,14 @@ namespace OrchardCore.Localization
         private readonly string _applicationDataContainer;
         private readonly string _shellDataContainer;
 
+        /// <summary>
+        /// Creates a new intance of the <see cref="ModularPoFileLocationProvider"/>.
+        /// </summary>
+        /// <param name="extensionsManager">The <see cref="IExtensionManager"/>.</param>
+        /// <param name="hostingEnvironment">The <see cref="IHostEnvironment"/>.</param>
+        /// <param name="shellOptions">The <see cref="IOptions"/> for the <see cref="ShellOptions"/>.</param>
+        /// <param name="localizationOptions">The <see cref="IOptions"/> for the <see cref="LocalizationOptions"/>.</param>
+        /// <param name="shellSettings">The <see cref="ShellSettings"/>.</param>
         public ModularPoFileLocationProvider(
             IExtensionManager extensionsManager,
             IHostEnvironment hostingEnvironment,
@@ -36,6 +47,7 @@ namespace OrchardCore.Localization
             _shellDataContainer = PathExtensions.Combine(_applicationDataContainer, shellOptions.Value.ShellsContainerName, shellSettings.Name);
         }
 
+        /// <inheritdocs />
         public IEnumerable<IFileInfo> GetLocations(string cultureName)
         {
             var poFileName = cultureName + PoFileExtension;
@@ -62,9 +74,13 @@ namespace OrchardCore.Localization
 
                 // \src\OrchardCore.Cms.Web\Localization\OrchardCore.Cms.Web-fr-CA.po
                 yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, extension.Id + CultureDelimiter + poFileName));
+            }
 
-                // \src\OrchardCore.Cms.Web\Localization\fr-CA\OrchardCore.Cms.Web.po
-                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, cultureName, extension.Id + PoFileExtension));
+            // Load all .po files from a culture specific folder
+            // e.g, \src\OrchardCore.Cms.Web\Localization\fr-CA\*.po
+            foreach (var file in _fileProvider.GetDirectoryContents(PathExtensions.Combine(_resourcesContainer, cultureName)))
+            {
+                yield return file;
             }
         }
     }

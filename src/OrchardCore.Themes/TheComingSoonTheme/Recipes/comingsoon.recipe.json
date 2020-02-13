@@ -267,7 +267,7 @@
               "Securable":  true
             }
           },
-          "ContentTypePartDefinitionRecords": [
+          "ContentTypePartDefinitions": [
             {
               "PartName": "ComingSoon",
               "Name": "ComingSoon",
@@ -343,7 +343,7 @@
             "ContentTypeSettings": {
             }
           },
-          "ContentTypePartDefinitionRecords": [
+          "ContentTypePartDefinitions": [
             {
               "PartName": "SocialIcon",
               "Name": "SocialIcon",
@@ -372,7 +372,7 @@
               "Stereotype": "Widget"
             }
           },
-          "ContentTypePartDefinitionRecords": [
+          "ContentTypePartDefinitions": [
             {
               "PartName": "Register",
               "Name": "Register",
@@ -399,7 +399,7 @@
         {
           "Name": "SocialIcon",
           "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
+          "ContentPartFieldDefinitionDocuments": [
             {
               "FieldName": "TextField",
               "Name": "IconClass",
@@ -433,7 +433,7 @@
         {
           "Name": "Register",
           "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
+          "ContentPartFieldDefinitionDocuments": [
             {
               "FieldName": "TextField",
               "Name": "Placeholder",

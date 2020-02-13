@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,11 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-
-    <!-- TODO: Remove this reference once SQLite targets netstandard2.0 -->
-    <!-- c.f., https://github.com/aspnet/EntityFrameworkCore/issues/15969 -->
-    <PackageReference Include="NETStandard.Library" Version ="1.6.1" />
-
     <PackageReference Include="YesSql.Provider.SqlServer" />
     <PackageReference Include="YesSql.Provider.MySql" />
     <PackageReference Include="YesSql.Provider.SqLite" />

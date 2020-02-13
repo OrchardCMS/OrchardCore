@@ -1,10 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
