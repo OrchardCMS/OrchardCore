@@ -1,8 +1,6 @@
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Microsoft.Authentication;
 
-using OrchardCore.Modules.Manifest;
-
 [assembly: Module(
     Name = "Microsoft Authentication",
     Author = "The Orchard Team",

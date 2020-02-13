@@ -5,8 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions.Features;
 
-using System;
-
 namespace OrchardCore.Environment.Cache.CacheContextProviders
 {
     public class FeaturesCacheContextProvider : ICacheContextProvider

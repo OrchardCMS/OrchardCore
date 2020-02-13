@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-using System;
-
 namespace OrchardCore.Themes
 {
     public class AdminMenu : INavigationProvider

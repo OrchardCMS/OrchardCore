@@ -1,9 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-
-using System;
-
 using OrchardCore.Environment.Shell;
 using OrchardCore.Navigation;
 

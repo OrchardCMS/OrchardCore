@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-using System;
-
 namespace OrchardCore.Environment.Cache.CacheContextProviders
 {
     public class QueryCacheContextProvider : ICacheContextProvider

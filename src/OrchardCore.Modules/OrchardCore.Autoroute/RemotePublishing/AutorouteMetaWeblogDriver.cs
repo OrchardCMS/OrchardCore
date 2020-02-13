@@ -4,8 +4,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.MetaWeblog;
 using OrchardCore.XmlRpc;
 
-using System;
-
 using OrchardCore.XmlRpc.Models;
 
 namespace OrchardCore.Autoroute.RemotePublishing

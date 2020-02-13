@@ -2,9 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
-
-using System;
-
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Email

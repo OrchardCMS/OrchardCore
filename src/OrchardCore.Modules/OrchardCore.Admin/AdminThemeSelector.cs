@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Theming;
 
-using System;
-
 namespace OrchardCore.Admin
 {
     /// <summary>

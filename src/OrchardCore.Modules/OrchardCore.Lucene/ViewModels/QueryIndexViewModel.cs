@@ -4,8 +4,6 @@ using System.Linq;
 using Lucene.Net.Documents;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-using System;
-
 namespace OrchardCore.Lucene.ViewModels
 {
     public class QueryIndexViewModel

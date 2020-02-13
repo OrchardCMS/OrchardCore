@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using OrchardCore.DisplayManagement;
 
-using System;
-
 namespace OrchardCore.UI
 {
     public class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>
