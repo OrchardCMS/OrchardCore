@@ -18,11 +18,11 @@ namespace OrchardCore.ContentManagement.Metadata.Documents
         public int Serial { get; set; }
 
         [Obsolete("For compatibility with previous naming convention")]
-        [JsonProperty("ContentTypeDefinitions")]
+        [JsonProperty("ContentTypeDefinitionRecords")]
         private IList<ContentTypeDefinitionDocument> ContentTypeDefinitionDocumentRecords { set { ContentTypeDefinitions = value; } }
 
         [Obsolete("For compatibility with previous naming convention")]
-        [JsonProperty("ContentPartDefinitions")]
+        [JsonProperty("ContentPartDefinitionRecords")]
         private IList<ContentPartDefinitionDocument> ContentPartDefinitionDocumentRecords { set { ContentPartDefinitions = value; } }
     }
 }

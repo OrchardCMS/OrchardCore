@@ -24,7 +24,7 @@ namespace OrchardCore.ContentManagement.Metadata.Documents
         public IList<ContentPartFieldDefinitionDocument> ContentPartFieldDefinitions { get; set; }
 
         [Obsolete("For compatibility with previous naming convention")]
-        [JsonProperty("ContentPartFieldDefinitions")]
+        [JsonProperty("ContentPartFieldDefinitionRecords")]
         private IList<ContentPartFieldDefinitionDocument> ContentPartFieldDefinitionDocumentRecords { set { ContentPartFieldDefinitions = value; } }
     }
 }
