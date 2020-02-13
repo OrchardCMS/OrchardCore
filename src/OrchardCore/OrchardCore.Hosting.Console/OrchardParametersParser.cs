@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Security;
 using OrchardCore.Environment.Commands;
 
-using System;
-
 namespace OrchardCore.Hosting
 {
     public class OrchardParametersParser : IOrchardParametersParser
