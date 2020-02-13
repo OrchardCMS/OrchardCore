@@ -47,7 +47,7 @@ namespace OrchardCore.Alias.Settings
 
             var model = new AliasPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern, m=>m.Options))
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern, m => m.Options))
             {
                 if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
                 {
