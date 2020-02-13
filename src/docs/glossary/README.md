@@ -155,7 +155,7 @@ Examples of this include the Menu Stereotype, and the Widget Stereotype.
 
 ### Widget
 
-A stereotype used to designate a prebuilt Content Item that can be used in a layer. This allows the content item to be displayed on multiple pages at once. Examples are a Menu, Footer, or Header.  
+A widget is used to designate a prebuilt Content Item that can be used in a layer. This allows the content item to be displayed on multiple pages at once. Examples are a Menu, Footer, or Header.  
 see [Widgets](../reference/modules/Widgets/)
 
 ### Flow
