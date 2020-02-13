@@ -6,8 +6,6 @@ using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Commands.Parameters;
 using OrchardCore.Hosting.HostContext;
 
-using System;
-
 namespace OrchardCore.Hosting
 {
     public class OrchardHost

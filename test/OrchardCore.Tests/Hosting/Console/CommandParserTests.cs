@@ -1,6 +1,5 @@
 using System.Linq;
 using OrchardCore.Environment.Commands.Parameters;
-using System;
 using Xunit;
 
 namespace OrchardCore.Tests.Hosting.Console
