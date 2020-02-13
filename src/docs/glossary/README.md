@@ -30,7 +30,8 @@ A blueprint from which a content item is created. It defines what features and c
 
 ### Content Part
 
-The smallest content building block in OrchardCore. It defines a specific feature or a specific behavior of a content type. A single Content Part can be used across multiple Content Types.
+
+A Content Part is smallest content building component in OrchardCore. It defines a specific feature or a specific behavior of a content type. A single Content Part can be used across multiple Content Types.
 See [Content Parts](../reference/modules/ContentParts)
 
 ### Content Field
@@ -146,6 +147,11 @@ A section in the Layout (ex: Footer) in which you can render items.
 
 A display rule that defines the condition when a widget will be displayed. (ex: isHomepage()).  
 See [Layers](../reference/modules/Layers)
+
+### Stereotype
+
+By default Content Items have no stereotype, however certain modules will use a defined StereoType to determine which content types can be used by them.  
+Examples of this include the Menu Stereotype, and the Widget Stereotype.
 
 ### Widget
 
