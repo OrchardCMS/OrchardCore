@@ -613,7 +613,7 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new ExternalLoginsViewModel { CurrentLogins = await _userManager.GetLoginsAsync(user) };

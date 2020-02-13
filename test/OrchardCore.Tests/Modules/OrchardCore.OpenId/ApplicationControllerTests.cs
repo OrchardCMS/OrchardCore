@@ -38,7 +38,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<ShellDescriptor>());
 
             var result = await controller.Create();
-            Assert.IsType<UnauthorizedResult>(result);
+            Assert.IsType<ForbidResult>(result);
         }
 
         [Fact]

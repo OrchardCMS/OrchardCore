@@ -40,6 +40,10 @@ markdown_extensions:
       permalink: true
 #  - markdown.extensions.nl2br
 
+plugins:
+  - search
+  - git-revision-date-localized
+  
 # Page tree
 nav:
     - About Orchard Core: README.md
@@ -54,6 +58,7 @@ nav:
         - Create a website: docs/guides/create-cms-application/README.md
         - Create a Decoupled CMS site: docs/guides/decoupled-cms/README.md
         - Add an admin menu: docs/guides/add-admin-menu/README.md
+        - Implement Full Text search: docs/guides/implement-fulltext-search/README.md
         - Install localization files: docs/guides/install-localization-files/README.md
         - Integrate Facebook plugins: docs/guides/integrate-facebook-plugins/README.md
         - Run code on startup: docs/guides/run-code-on-startup/README.md
@@ -110,6 +115,7 @@ nav:
                 - Google: docs/reference/modules/Google/README.md
         - Core Modules: 
     #        - How to use Core Modules: docs/reference/core/README.md
+            - Features: docs/reference/modules/Features/README.md
             - Contents: docs/reference/modules/Contents/README.md
             - Configuration: docs/reference/core/Configuration/README.md
             - Custom Settings: docs/reference/modules/CustomSettings/README.md
@@ -124,6 +130,7 @@ nav:
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
             - Modules: docs/reference/core/Modules/README.md
             - OpenId: docs/reference/modules/OpenId/README.md
+            - Razor Helpers: docs/reference/core/Razor/README.md
             - Recipes: docs/reference/modules/Recipes/README.md
             - Roles: docs/reference/modules/Roles/README.md
             - Scripting: docs/reference/modules/Scripting/README.md
@@ -131,3 +138,5 @@ nav:
             - Tenants: docs/reference/modules/Tenants/README.md
             - Workflows: docs/reference/modules/Workflows/README.md
             - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
+    - Glossary: docs/glossary/README.md
+    

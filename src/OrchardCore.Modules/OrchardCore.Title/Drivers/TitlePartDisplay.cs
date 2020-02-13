@@ -1,6 +1,6 @@
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -18,9 +18,9 @@ namespace OrchardCore.Title.Drivers
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public override IDisplayResult Display(TitlePart titlePart)
+        public override IDisplayResult Display(TitlePart titlePart, BuildPartDisplayContext context)
         {
-            return Initialize<TitlePartViewModel>("TitlePart", model =>
+            return Initialize<TitlePartViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Title = titlePart.ContentItem.DisplayText;
                 model.TitlePart = titlePart;
@@ -29,30 +29,23 @@ namespace OrchardCore.Title.Drivers
             .Location("Summary", "Header:5");
         }
 
-        public override IDisplayResult Edit(TitlePart titlePart)
+        public override IDisplayResult Edit(TitlePart titlePart, BuildPartEditorContext context)
         {
-            return Initialize<TitlePartViewModel>("TitlePart_Edit", model =>
+            return Initialize<TitlePartViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Title = titlePart.ContentItem.DisplayText;
                 model.TitlePart = titlePart;
-                model.Settings = GetSettings(titlePart);
+                model.Settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Title);
 
             model.ContentItem.DisplayText = model.Title;
 
-            return Edit(model);
-        }
-
-        private TitlePartSettings GetSettings(TitlePart titlePart)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(titlePart.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart)));
-            return contentTypePartDefinition?.GetSettings<TitlePartSettings>();
+            return Edit(model, context);
         }
     }
 }
