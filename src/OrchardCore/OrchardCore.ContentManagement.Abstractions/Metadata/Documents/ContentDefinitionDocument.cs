@@ -19,10 +19,10 @@ namespace OrchardCore.ContentManagement.Metadata.Documents
 
         [Obsolete("For compatibility with previous naming convention")]
         [JsonProperty("ContentTypeDefinitions")]
-        private IList<ContentTypeDefinitionDocument> ContentTypeDefinitionDocuments { set { ContentTypeDefinitions = value; } }
+        private IList<ContentTypeDefinitionDocument> ContentTypeDefinitionDocumentRecords { set { ContentTypeDefinitions = value; } }
 
         [Obsolete("For compatibility with previous naming convention")]
         [JsonProperty("ContentPartDefinitions")]
-        private IList<ContentPartDefinitionDocument> ContentPartDefinitionDocuments { set { ContentPartDefinitions = value; } }
+        private IList<ContentPartDefinitionDocument> ContentPartDefinitionDocumentRecords { set { ContentPartDefinitions = value; } }
     }
 }
