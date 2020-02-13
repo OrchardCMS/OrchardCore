@@ -44,7 +44,7 @@ namespace OrchardCore.Title.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            if(await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
+            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
             {
                 var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
                 if (settings.Options == TitlePartOptions.EditableRequired && String.IsNullOrWhiteSpace(model.Title))
