@@ -39,9 +39,9 @@ namespace OrchardCore.Features.Models
         public bool IsRecentlyInstalled { get; set; }
 
         /// <summary>
-        /// List of features that depend on this feature.
+        /// List of enabled features that depend on this feature.
         /// </summary>
-        public IEnumerable<IFeatureInfo> DependentFeatures { get; set; }
+        public IEnumerable<IFeatureInfo> EnabledDependentFeatures { get; set; }
 
         /// <summary>
         /// List of features that this feature depends on.

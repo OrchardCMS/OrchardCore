@@ -70,7 +70,7 @@ namespace OrchardCore.Features.Controllers
                     IsAlwaysEnabled = alwaysEnabledFeatures.Contains(moduleFeatureInfo),
                     //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
                     //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
-                    DependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id).ToList(),
+                    EnabledDependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id && enabledFeatures.Contains(x)).ToList(),
                     FeatureDependencies = featureDependencies.Where(d => d.Id != moduleFeatureInfo.Id).ToList()
                 };
 
