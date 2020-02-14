@@ -27,6 +27,7 @@ namespace OrchardCore.Tenants.Controllers
     public class AdminController : Controller
     {
         private readonly IShellHost _shellHost;
+        private readonly IRunningShellTable _runningShellTable;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
@@ -41,27 +42,29 @@ namespace OrchardCore.Tenants.Controllers
 
         public AdminController(
             IShellHost shellHost,
-            ShellSettings currentShellSettings,
-            IAuthorizationService authorizationService,
+            IRunningShellTable runningShellTable,
             IShellSettingsManager shellSettingsManager,
             IEnumerable<DatabaseProvider> databaseProviders,
+            IAuthorizationService authorizationService,
+            ShellSettings currentShellSettings,
+            IEnumerable<IRecipeHarvester> recipeHarvesters,
             IDataProtectionProvider dataProtectorProvider,
             IClock clock,
             INotifier notifier,
-            IEnumerable<IRecipeHarvester> recipeHarvesters,
             ISiteService siteService,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
-            _dataProtectorProvider = dataProtectorProvider;
-            _clock = clock;
-            _recipeHarvesters = recipeHarvesters;
             _shellHost = shellHost;
+            _runningShellTable = runningShellTable;
             _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
             _databaseProviders = databaseProviders;
             _currentShellSettings = currentShellSettings;
+            _dataProtectorProvider = dataProtectorProvider;
+            _recipeHarvesters = recipeHarvesters;
+            _clock = clock;
             _notifier = notifier;
             _siteService = siteService;
 
@@ -404,6 +407,11 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
+                if (!String.Equals(shellSettings.RequestUrlPrefix, model.RequestUrlPrefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    _runningShellTable.Remove(shellSettings);
+                }
+
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
 
