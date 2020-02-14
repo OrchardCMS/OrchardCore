@@ -141,7 +141,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror-mode-css")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/mode/css/css.min.js", "~/OrchardCore.Resources/Scripts/codemirror/mode/css/css.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/css/css.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/css/css.js")
-                .SetCdnIntegrity("sha384-JL3CPNoNfm5b6L9dNL99RuMfsLE2DSD1Pbbh++B/2MQTIj+0ZrK0+YxxWlFZ5VVX", "sha384-RN42QX7medq2vyftditoRxJxgTDfVeuWcC6zR9iEiGOMxEYrzukFTBXuZrEmlTUA")
+                .SetCdnIntegrity("sha384-SrOROyP0t9lG4sW9jdpO04/mCGGU/2o02aT088UUixjeJvwyhO1otG9biCdry5Ci", "sha384-RN42QX7medq2vyftditoRxJxgTDfVeuWcC6zR9iEiGOMxEYrzukFTBXuZrEmlTUA")
                 .SetVersion("5.51.0");
 
             manifest
