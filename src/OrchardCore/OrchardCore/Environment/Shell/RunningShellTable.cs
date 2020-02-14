@@ -17,8 +17,6 @@ namespace OrchardCore.Environment.Shell
 
         public void Add(ShellSettings settings)
         {
-            Remove(settings);
-
             if (ShellHelper.DefaultShellName == settings.Name)
             {
                 _default = settings;
@@ -47,12 +45,9 @@ namespace OrchardCore.Environment.Shell
                 .Select(kv => kv.Key)
                 .ToArray();
 
-            if (allHostsAndPrefix.Length > 0)
+            lock (this)
             {
-                lock (this)
-                {
-                    _shellsByHostAndPrefix = _shellsByHostAndPrefix.RemoveRange(allHostsAndPrefix);
-                }
+                _shellsByHostAndPrefix = _shellsByHostAndPrefix.RemoveRange(allHostsAndPrefix);
             }
 
             if (_default == settings)
