@@ -191,6 +191,40 @@ namespace OrchardCore.Users
         }
     }
 
+    [Feature("OrchardCore.Users.ChangeEmail")]
+    public class ChangeEmailStartup : StartupBase
+    {
+        private const string ChangeEmailPath = "ChangeEmail";
+        private const string ChangeEmailConfirmationPath = "ChangeEmailConfirmation";
+
+        static ChangeEmailStartup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<ChangeEmailViewModel>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "ChangeEmail",
+                areaName: "OrchardCore.Users",
+                pattern: ChangeEmailPath,
+                defaults: new { controller = "ChangeEmail", action = "Index" }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "ChangeEmailConfirmation",
+                areaName: "OrchardCore.Users",
+                pattern: ChangeEmailConfirmationPath,
+                defaults: new { controller = "ChangeEmail", action = "ChangeEmailConfirmation" }
+            );
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
+        }
+    }
 
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationStartup : StartupBase

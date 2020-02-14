@@ -293,7 +293,7 @@ namespace OrchardCore.Lucene
         {
             if (!_writers.TryGetValue(indexName, out var writer))
             {
-                var indexAnalyzer = await _luceneIndexSettingsService.GetIndexAnalyzerAsync(indexName);
+                var indexAnalyzer = await _luceneIndexSettingsService.LoadIndexAnalyzerAsync(indexName);
                 lock (this)
                 {
                     if (!_writers.TryGetValue(indexName, out writer))
