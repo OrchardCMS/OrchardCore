@@ -141,7 +141,7 @@ namespace OrchardCore.Environment.Shell
             await ReloadShellContextAsync(settings);
         }
 
-        async Task PreCreateAndRegisterShellsAsync()
+        private async Task PreCreateAndRegisterShellsAsync()
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -292,7 +292,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// A feature is enabled/disabled, the tenant needs to be restarted
+        /// A feature is enabled / disabled, the tenant needs to be restarted
         /// </summary>
         Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
@@ -324,6 +324,7 @@ namespace OrchardCore.Environment.Shell
             if (settings.State == TenantState.Disabled)
             {
                 // If a disabled shell is still in use it will be released and then disposed by its last scope.
+                // So, we keep it in the list and don't create a new one that would have a null service provider.
                 // Knowing that it is still removed from the running shell table, so that it is no more served.
                 if (_shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
                 {
@@ -344,6 +345,52 @@ namespace OrchardCore.Environment.Shell
             }
 
             await GetOrCreateShellContextAsync(settings);
+        }
+
+        /// <summary>
+        /// Marks the shell as released to free up resources but keeps its settings in the '_runningShellTable',
+        /// so that it is still served but a new shell will only be created and activated on a new request.
+        /// </summary>
+        /// <param name="settings"></param>
+        public void ReleaseShellContext(ShellSettings settings)
+        {
+            if (_shellContexts == null)
+            {
+                return;
+            }
+
+            if (settings.State == TenantState.Disabled)
+            {
+                // If a disabled shell is still in use it will be released and then disposed by its last scope.
+                if (_shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
+                {
+                    return;
+                }
+            }
+
+            if (_shellContexts.TryRemove(settings.Name, out var context))
+            {
+                context.Release();
+            }
+        }
+
+        /// <summary>
+        /// Marks all shells as released to free up resources but keeps all settings in the '_runningShellTable',
+        /// so that they are still served but new shells will only be created and activated on new requests.
+        /// </summary>
+        public void ReleaseAllShellContexts()
+        {
+            if (_shellContexts == null)
+            {
+                return;
+            }
+
+            var shells = _shellContexts.Values.ToArray();
+
+            foreach (var shell in shells)
+            {
+                ReleaseShellContext(shell.Settings);
+            }
         }
 
         public IEnumerable<ShellContext> ListShellContexts()

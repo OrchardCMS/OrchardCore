@@ -38,6 +38,16 @@ namespace OrchardCore.Environment.Shell
         Task ReloadShellContextAsync(ShellSettings settings);
 
         /// <summary>
+        /// Releases a shell to free up resources but it is still served.
+        /// </summary>
+        void ReleaseShellContext(ShellSettings settings);
+
+        /// <summary>
+        /// Releases all shells to free up resources but there are still served.
+        /// </summary>
+        void ReleaseAllShellContexts();
+
+        /// <summary>
         /// Creates a new <see cref="ShellContext"/>.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to create.</param>
