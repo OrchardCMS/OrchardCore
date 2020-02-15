@@ -17,6 +17,8 @@
 
 <script asp-name="jQuery-ui" at="Foot"></script>
 
+@if (!IsMockRendering)
+{
 <div class="form-group">
     <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
@@ -69,6 +71,8 @@
             }
         </div>
     </div>
+</div>
+}
 
 
     @* Rendered only once in case multiple BagPart (or FlowPart) are on the page *@
@@ -146,4 +150,3 @@
         });
     }
     </script>
-</div>
