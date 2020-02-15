@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Recipes\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="wwwroot\assets\css\jqcloud.css" />
     <None Include="wwwroot\assets\css\material-dashboard.css" />
     <None Include="wwwroot\assets\css\material-dashboard.css.map" />

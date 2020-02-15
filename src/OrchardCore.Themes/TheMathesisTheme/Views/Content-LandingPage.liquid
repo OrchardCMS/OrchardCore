@@ -1,3 +1,7 @@
+{% zone "HeadMeta" %}
+	<title>{{Site.SiteName}} - {{Model.ContentItem.Content.TitlePart.Title}}</title>
+{% endzone %}
+
 {% shape "menu", alias: "alias:site-menu", cache_id: "site-menu", cache_tag: "alias:site-menu" %}
 
 {% if Model.Content.LandingHeader %}

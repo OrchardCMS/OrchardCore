@@ -4,7 +4,8 @@
 		<meta charset="utf-8" />
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-		<title>{% page_title Site.SiteName, position: "before", separator: " - " %}</title>
+
+		{% render_section "HeadMeta", required: false %}
 
 		{% style name:"TheMathesisTheme-Roboto" %}
 		{% style name:"TheMathesisTheme-Roboto-Slab" %}
@@ -21,7 +22,6 @@
 		{% script name:"TheMathesisTheme-Bootstrap-Material", at:"Foot" %}
 		{% script name:"TheMathesisTheme-Material-Kit-Script", at:"Foot" %}
 
-		{% render_section "HeadMeta", required: false %}
 
 
 		{% resources type: "HeadScript" %}
