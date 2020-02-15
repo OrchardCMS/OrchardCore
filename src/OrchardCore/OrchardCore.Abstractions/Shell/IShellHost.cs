@@ -24,7 +24,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
         Task<ShellScope> GetScopeAsync(ShellSettings settings);
-        
+
         /// <summary>
         /// Updates an existing shell configuration.
         /// </summary>

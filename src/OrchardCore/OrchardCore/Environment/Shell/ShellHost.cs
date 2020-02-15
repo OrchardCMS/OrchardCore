@@ -140,7 +140,7 @@ namespace OrchardCore.Environment.Shell
             await ReloadShellContextAsync(settings);
         }
 
-        async Task PreCreateAndRegisterShellsAsync()
+        private async Task PreCreateAndRegisterShellsAsync()
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -291,7 +291,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// A feature is enabled/disabled, the tenant needs to be restarted
+        /// A feature is enabled / disabled, the tenant needs to be restarted
         /// </summary>
         Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
@@ -318,6 +318,7 @@ namespace OrchardCore.Environment.Shell
             if (settings.State == TenantState.Disabled)
             {
                 // If a disabled shell is still in use it will be released and then disposed by its last scope.
+                // So, we keep it in the list and don't create a new one that would have a null service provider.
                 // Knowing that it is still removed from the running shell table, so that it is no more served.
                 if (_shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
                 {
