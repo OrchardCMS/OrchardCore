@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services
 {
@@ -29,5 +30,7 @@ namespace OrchardCore.Users.Services
         /// <param name="user">The <see cref="IUser"/>.</param>
         /// <returns>A user <see cref="ClaimsPrincipal"/>s.</returns>
         Task<ClaimsPrincipal> CreateClaimsPrincipal(IUser user);
+
+        Task<LoginSettings> GetLoginSettingsAsync();
     }
 }

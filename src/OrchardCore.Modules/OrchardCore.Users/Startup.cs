@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
@@ -24,6 +25,7 @@ using OrchardCore.Settings;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
+using OrchardCore.Users.Deployment;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
@@ -298,6 +300,17 @@ namespace OrchardCore.Users
         {
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, LoginSettingsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LoginSettingsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, LoginSettingsDeploymentStepDriver>();
         }
     }
 }
