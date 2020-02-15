@@ -27,7 +27,6 @@ namespace OrchardCore.Tenants.Controllers
     public class AdminController : Controller
     {
         private readonly IShellHost _shellHost;
-        private readonly IRunningShellTable _runningShellTable;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
@@ -42,7 +41,6 @@ namespace OrchardCore.Tenants.Controllers
 
         public AdminController(
             IShellHost shellHost,
-            IRunningShellTable runningShellTable,
             IShellSettingsManager shellSettingsManager,
             IEnumerable<DatabaseProvider> databaseProviders,
             IAuthorizationService authorizationService,
@@ -57,7 +55,6 @@ namespace OrchardCore.Tenants.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _shellHost = shellHost;
-            _runningShellTable = runningShellTable;
             _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
             _databaseProviders = databaseProviders;
@@ -407,11 +404,6 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                if (!String.Equals(shellSettings.RequestUrlPrefix, model.RequestUrlPrefix, StringComparison.OrdinalIgnoreCase))
-                {
-                    _runningShellTable.Remove(shellSettings);
-                }
-
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
 

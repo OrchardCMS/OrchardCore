@@ -40,7 +40,10 @@ namespace OrchardCore.Environment.Shell
 
         public void Remove(ShellSettings settings)
         {
-            var allHostsAndPrefix = GetAllHostsAndPrefix(settings);
+            var allHostsAndPrefix = _shellsByHostAndPrefix
+                .Where(kv => kv.Value.Name == settings.Name)
+                .Select(kv => kv.Key)
+                .ToArray();
 
             lock (this)
             {
