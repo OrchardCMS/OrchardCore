@@ -29,10 +29,11 @@ namespace OrchardCore.ContentLocalization.Liquid
                 new
                 {
                     area = "OrchardCore.ContentLocalization",
-                    targetculture = targetCulture,
+                    targetCulture = targetCulture,
                     contentItemUrl = request.Path.Value,
+                    queryStringValue = request.QueryString.Value
                 });
             return new ValueTask<FluidValue>(FluidValue.Create(url));
-         }
+        }
     }
 }

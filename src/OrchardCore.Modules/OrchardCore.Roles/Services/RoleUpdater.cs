@@ -100,7 +100,7 @@ namespace OrchardCore.Roles.Services
                             Logger.LogInformation("Defining new role '{RoleName}' for permission stereotype", stereotype.Name);
                         }
 
-                        role = new Role { RoleName = stereotype.Name };
+                        role = new Role { RoleName = stereotype.Name, RoleDescription = stereotype.Name + " role"};
                         await _roleManager.CreateAsync(role);
                     }
 

@@ -15,6 +15,14 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
+    Id = "OrchardCore.Users.ChangeEmail",
+    Name = "Users Change Email",
+    Description = "The Change email feature allows users to change their email address.",
+    Dependencies = new[] { "OrchardCore.Users" },
+    Category = "Security"
+)]
+
+[assembly: Feature(
     Id = "OrchardCore.Users.Registration",
     Name = "Users Registration",
     Description = "The registration feature allows external users to sign up to the site and ask to confirm their email.",

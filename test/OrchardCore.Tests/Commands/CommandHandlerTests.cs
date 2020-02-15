@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Localization;
 using Xunit;
 
 namespace OrchardCore.Tests.Commands
@@ -203,7 +203,7 @@ namespace OrchardCore.Tests.Commands
 
     public class StubCommandHandler : DefaultCommandHandler
     {
-        public StubCommandHandler() : base(new NullStringLocalizer()) { }
+        public StubCommandHandler() : base(new NullStringLocalizerFactory().Create(typeof(object))) { }
 
         [OrchardSwitch]
         public bool Verbose { get; set; }

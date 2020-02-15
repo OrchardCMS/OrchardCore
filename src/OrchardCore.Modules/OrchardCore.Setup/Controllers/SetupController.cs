@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using MimeKit;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -124,6 +125,11 @@ namespace OrchardCore.Setup.Controllers
             else if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
             {
                 ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
+            }
+
+            if (!MailboxAddress.TryParse(model.Email, out var emailAddress))
+            {
+                ModelState.AddModelError(nameof(model.Email), S["Invalid email."]);
             }
 
             if (!ModelState.IsValid)

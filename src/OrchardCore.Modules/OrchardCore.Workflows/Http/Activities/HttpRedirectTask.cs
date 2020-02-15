@@ -13,6 +13,7 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        private readonly IStringLocalizer<HttpRedirectTask> S;
 
         public HttpRedirectTask(
             IStringLocalizer<HttpRedirectTask> localizer,
@@ -20,16 +21,16 @@ namespace OrchardCore.Workflows.Http.Activities
             IWorkflowExpressionEvaluator expressionEvaluator
         )
         {
-            T = localizer;
+            S = localizer;
             _httpContextAccessor = httpContextAccessor;
             _expressionEvaluator = expressionEvaluator;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(HttpRedirectTask);
-        public override LocalizedString DisplayText => T["Http Redirect Task"];
-        public override LocalizedString Category => T["HTTP"];
+        
+        public override LocalizedString DisplayText => S["Http Redirect Task"];
+        
+        public override LocalizedString Category => S["HTTP"];
 
         public WorkflowExpression<string> Location
         {
@@ -45,7 +46,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

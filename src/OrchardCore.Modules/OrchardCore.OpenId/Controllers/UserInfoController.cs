@@ -18,11 +18,11 @@ namespace OrchardCore.OpenId.Controllers
     public class UserInfoController : Controller
     {
         private readonly ILogger<UserInfoController> _logger;
-        private readonly IStringLocalizer<UserInfoController> T;
+        private readonly IStringLocalizer<UserInfoController> S;
 
         public UserInfoController(IStringLocalizer<UserInfoController> localizer, ILogger<UserInfoController> logger)
         {
-            T = localizer;
+            S = localizer;
             _logger = logger;
         }
 
@@ -54,7 +54,7 @@ namespace OrchardCore.OpenId.Controllers
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIddictConstants.Errors.InvalidRequest,
-                    ErrorDescription = T["The userinfo endpoint can only be used with access tokens representing users."]
+                    ErrorDescription = S["The userinfo endpoint can only be used with access tokens representing users."]
                 });
             }
 

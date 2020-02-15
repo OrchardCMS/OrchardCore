@@ -22,18 +22,35 @@ namespace OrchardCore.Alias
                 .Attachable()
                 .WithDescription("Provides a way to define custom aliases for content items."));
 
-            // NOTE: The Alias Length has been upgraded from 64 characters to 1024.
+            // NOTE: The Alias Length has been upgraded from 64 characters to 767.
             // For existing SQL databases update the AliasPartIndex tables Alias column length manually. 
             SchemaBuilder.CreateMapIndexTable(nameof(AliasPartIndex), table => table
                 .Column<string>("Alias", col => col.WithLength(AliasPartDisplayDriver.MaxAliasLength))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
+                .Column<bool>("Latest", c => c.WithDefault(false))
+                .Column<bool>("Published", c => c.WithDefault(true))
             );
 
             SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
-                .CreateIndex("IDX_AliasPartIndex_Alias", "Alias")
+                .CreateIndex("IDX_AliasPartIndex_Alias", "Alias", "Published", "Latest")
             );
 
-            return 1;
+            // Return 2 to shortcut the second migration on new content definition schemas.
+            return 2;
+        }
+
+        // This code can be removed in a later version as Latest and Published are alterations.
+        public int UpdateFrom1()
+        {
+            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+                .AddColumn<bool>("Latest", c => c.WithDefault(false))
+            );
+
+            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+                .AddColumn<bool>("Published", c => c.WithDefault(true))
+            );
+
+            return 2;
         }
     }
 }

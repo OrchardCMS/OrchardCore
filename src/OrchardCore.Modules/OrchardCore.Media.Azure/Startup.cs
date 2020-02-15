@@ -32,7 +32,7 @@ namespace OrchardCore.Media.Azure
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<MediaBlobStorageOptions>(_configuration.GetSection("OrchardCore.Media.Azure"));
+            services.AddTransient<IConfigureOptions<MediaBlobStorageOptions>, MediaBlobStorageOptionsConfiguration>();
 
             // Only replace default implementation if options are valid.
             var connectionString = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
@@ -97,6 +97,8 @@ namespace OrchardCore.Media.Azure
 
                     return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
                 }));
+
+                services.AddScoped<IModularTenantEvents, CreateMediaBlobContainerEvent>();
             }
         }
 

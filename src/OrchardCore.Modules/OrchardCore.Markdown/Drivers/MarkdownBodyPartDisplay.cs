@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -15,21 +14,20 @@ namespace OrchardCore.Markdown.Drivers
 {
     public class MarkdownBodyPartDisplay : ContentPartDisplayDriver<MarkdownBodyPart>
     {
-        private readonly ILiquidTemplateManager _liquidTemplatemanager;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly IStringLocalizer<MarkdownBodyPartDisplay> S;
 
-        public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<MarkdownBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
+        public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<MarkdownBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
         {
-            _liquidTemplatemanager = liquidTemplatemanager;
-            T = localizer;
+            _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(MarkdownBodyPart MarkdownBodyPart, BuildPartDisplayContext context)
         {
-            return Initialize<MarkdownBodyPartViewModel>("MarkdownBodyPart", m => BuildViewModel(m, MarkdownBodyPart))
+            return Initialize<MarkdownBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, MarkdownBodyPart))
                 .Location("Detail", "Content:10")
                 .Location("Summary", "Content:10");
         }
@@ -51,10 +49,10 @@ namespace OrchardCore.Markdown.Drivers
 
             if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Markdown))
             {
-                if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplatemanager.Validate(viewModel.Markdown, out var errors))
+                if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(model.Markdown), T["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    context.Updater.ModelState.AddModelError(nameof(model.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {
@@ -67,16 +65,13 @@ namespace OrchardCore.Markdown.Drivers
 
         private async ValueTask BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart MarkdownBodyPart)
         {
-            var templateContext = new TemplateContext();
-            templateContext.SetValue("ContentItem", MarkdownBodyPart.ContentItem);
-            templateContext.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
-
             model.Markdown = MarkdownBodyPart.Markdown;
             model.MarkdownBodyPart = MarkdownBodyPart;
             model.ContentItem = MarkdownBodyPart.ContentItem;
-            templateContext.SetValue("Model", model);
 
-            model.Markdown = await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, _htmlEncoder, templateContext);
+            model.Markdown = await _liquidTemplateManager.RenderAsync(MarkdownBodyPart.Markdown, _htmlEncoder, model,
+                scope => scope.SetValue("ContentItem", model.ContentItem));
+
             model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
         }
     }
