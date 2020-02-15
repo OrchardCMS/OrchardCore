@@ -23,3 +23,11 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[] { "OrchardCore.ContentLocalization" },
     Category = "Internationalization"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.ContentLocalization.Sitemaps",
+    Name = "Localized Content Item Sitemaps",
+    Description = "Provides support for localized content item sitemaps.",
+    Dependencies = new[] { "OrchardCore.Sitemaps" },
+    Category = "Internationalization"
+)]
