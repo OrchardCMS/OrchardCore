@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Settings;
 
@@ -10,24 +12,24 @@ namespace OrchardCore.Lucene.Drivers
 {
     public class LuceneSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, LuceneSettings>
     {
-        private readonly LuceneIndexManager _luceneIndexProvider;
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
-        public LuceneSiteSettingsDisplayDriver(LuceneIndexManager luceneIndexProvider)
+        public LuceneSiteSettingsDisplayDriver(LuceneIndexSettingsService luceneIndexSettingsService)
         {
-            _luceneIndexProvider = luceneIndexProvider;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
         }
 
         public override IDisplayResult Edit(LuceneSettings section, BuildEditorContext context)
         {
-            return Initialize<LuceneSettingsViewModel>("LuceneSettings_Edit", model =>
+            return Initialize<LuceneSettingsViewModel>("LuceneSettings_Edit", async model =>
                 {
                     model.SearchIndex = section.SearchIndex;
                     model.SearchFields = String.Join(", ", section.DefaultSearchFields ?? new string[0]);
-                    model.SearchIndexes = _luceneIndexProvider.List();
+                    model.SearchIndexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
                 }).Location("Content:2").OnGroup("search");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section,  BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section, BuildEditorContext context)
         {
             if (context.GroupId == "search")
             {

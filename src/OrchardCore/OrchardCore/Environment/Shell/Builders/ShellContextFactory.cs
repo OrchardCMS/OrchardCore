@@ -98,6 +98,5 @@ namespace OrchardCore.Environment.Shell.Builders
                 Parameters = new List<ShellParameter>()
             };
         }
-
     }
 }

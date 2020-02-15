@@ -47,7 +47,7 @@ namespace OrchardCore.Media.Recipes
                 {
                     using (stream)
                     {
-                        await _mediaFileStore.CreateFileFromStream(file.TargetPath, stream, true);
+                        await _mediaFileStore.CreateFileFromStreamAsync(file.TargetPath, stream, true);
                     }
                 }
             }

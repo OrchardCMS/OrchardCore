@@ -7,8 +7,10 @@ namespace OrchardCore.Workflows.Indexes
 {
     public class WorkflowIndex : MapIndex
     {
+        public string DocumentId { get; set; }
         public string WorkflowTypeId { get; set; }
         public string WorkflowId { get; set; }
+        public WorkflowStatus WorkflowStatus { get; set; }
         public DateTime CreatedUtc { get; set; }
     }
 
@@ -32,7 +34,8 @@ namespace OrchardCore.Workflows.Indexes
                     {
                         WorkflowTypeId = workflow.WorkflowTypeId,
                         WorkflowId = workflow.WorkflowId,
-                        CreatedUtc = workflow.CreatedUtc
+                        CreatedUtc = workflow.CreatedUtc,
+                        WorkflowStatus = workflow.Status
                     }
                 );
 

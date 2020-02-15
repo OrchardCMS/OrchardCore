@@ -5,7 +5,7 @@ using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
 
-namespace OrchardCore.Tests.Apis.GraphQL.Queries
+namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class RecentBlogPostsQueryTests
     {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -22,8 +23,8 @@ namespace OrchardCore.Environment.Shell
             };
         }
 
-        public void SaveSettings(ShellSettings shellSettings)
-        {
-        }
+        public Task<ShellSettings> LoadSettingsAsync(string tenant) => Task.FromResult(CreateDefaultSettings());
+
+        public Task SaveSettingsAsync(ShellSettings shellSettings) => Task.CompletedTask;
     }
 }

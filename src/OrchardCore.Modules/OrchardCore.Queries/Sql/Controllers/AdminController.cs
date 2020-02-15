@@ -50,7 +50,7 @@ namespace OrchardCore.Queries.Sql.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSqlQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (String.IsNullOrWhiteSpace(model.DecodedQuery))
@@ -71,13 +71,14 @@ namespace OrchardCore.Queries.Sql.Controllers
 
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
-            var templateContext = new TemplateContext();
-            foreach(var parameter in parameters)
+            var templateContext = _liquidTemplateManager.Context;
+
+            foreach (var parameter in parameters)
             {
                 templateContext.SetValue(parameter.Key, parameter.Value);
             }
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, NullEncoder.Default, templateContext);
+            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, NullEncoder.Default);
 
             model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
 
@@ -90,11 +91,11 @@ namespace OrchardCore.Queries.Sql.Controllers
                 {
                     using (connection)
                     {
-                        connection.Open();
+                        await connection.OpenAsync();
                         model.Documents = await connection.QueryAsync(rawQuery, parameters);
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     ModelState.AddModelError("", _stringLocalizer["An error occurred while executing the SQL query: {0}", e.Message]);
                 }

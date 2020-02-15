@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
+    [Feature(Application.DefaultFeatureId)]
     public class CoreShapes : IShapeAttributeProvider
     {
         [Shape]
@@ -18,20 +20,13 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
 
         [Shape]
-        public async Task<IHtmlContent> List(
-            dynamic DisplayAsync,
-            IEnumerable<dynamic> Items,
-            string Tag,
-            string Id,
-            IEnumerable<string> Classes,
-            IDictionary<string, string> Attributes,
-            string ItemTag,
+        public async Task<IHtmlContent> List(Shape shape, dynamic DisplayAsync, IEnumerable<dynamic> Items,
+            string ItemTagName,
             IEnumerable<string> ItemClasses,
             IDictionary<string, string> ItemAttributes,
             string FirstClass,
             string LastClass)
         {
-
             if (Items == null)
             {
                 return HtmlString.Empty;
@@ -49,19 +44,20 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             string listTagName = null;
 
-            if (Tag != "-")
+            if (shape.TagName != "-")
             {
-                listTagName = string.IsNullOrEmpty(Tag) ? "ul" : Tag;
+                listTagName = String.IsNullOrEmpty(shape.TagName) ? "ul" : shape.TagName;
             }
 
-            var listTag = String.IsNullOrEmpty(listTagName) ? null : Shape.GetTagBuilder(listTagName, Id, Classes, Attributes);
+            var id = shape.Id ?? String.Empty;
+
+            var listTagBuilder = String.IsNullOrEmpty(listTagName) ? null : Shape.GetTagBuilder(listTagName, id, shape.Classes, shape.Attributes);
 
             string itemTagName = null;
-            if (ItemTag != "-")
+            if (ItemTagName != "-")
             {
-                itemTagName = string.IsNullOrEmpty(ItemTag) ? "li" : ItemTag;
+                itemTagName = String.IsNullOrEmpty(ItemTagName) ? "li" : ItemTagName;
             }
-
 
             var index = 0;
             foreach (var item in items)
@@ -88,12 +84,12 @@ namespace OrchardCore.DisplayManagement.Shapes
                 var itemContent = await DisplayAsync(item);
 
                 itemTag.InnerHtml.AppendHtml(itemContent);
-                listTag.InnerHtml.AppendHtml(itemTag);
+                listTagBuilder.InnerHtml.AppendHtml(itemTag);
 
                 ++index;
             }
 
-            return listTag;
+            return listTagBuilder;
         }
 
         [Shape]

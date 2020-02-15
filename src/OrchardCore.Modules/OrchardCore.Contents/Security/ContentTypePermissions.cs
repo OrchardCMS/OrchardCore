@@ -46,7 +46,7 @@ namespace OrchardCore.Contents.Security
         {
             // manage rights only for Securable types
             var securableTypes = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Securable);
+                .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Securable);
 
             var result = new List<Permission>();
 

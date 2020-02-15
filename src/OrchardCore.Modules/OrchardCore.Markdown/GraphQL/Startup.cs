@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
 using OrchardCore.Markdown.Fields;
-using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Markdown.GraphQL

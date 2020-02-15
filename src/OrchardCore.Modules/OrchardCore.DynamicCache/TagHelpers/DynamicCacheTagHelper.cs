@@ -1,18 +1,14 @@
 using System;
 using System.IO;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DynamicCache.Services;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Modules;
 
 namespace OrchardCore.DynamicCache.TagHelpers
 {
@@ -40,13 +36,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
         /// Gets the <see cref="System.Text.Encodings.Web.HtmlEncoder"/> which encodes the content to be cached.
         /// </summary>
         protected HtmlEncoder HtmlEncoder { get; }
-
-        /// <summary>
-        /// Gets or sets the <see cref="ViewContext"/> for the current executing View.
-        /// </summary>
-        [HtmlAttributeNotBound]
-        [ViewContext]
-        public ViewContext ViewContext { get; set; }
 
         /// <summary>
         /// Gets or sets a <see cref="string" /> identifying this cache entry.
@@ -95,22 +84,19 @@ namespace OrchardCore.DynamicCache.TagHelpers
         /// </summary>
         public static readonly string CacheKeyPrefix = nameof(DynamicCacheTagHelper);
         private const string CachePriorityAttributeName = "priority";
-        private readonly IClock _clock;
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
         private readonly ILogger<DynamicCacheTagHelper> _logger;
         private readonly DynamicCacheTagHelperService _dynamicCacheTagHelperService;
 
         public DynamicCacheTagHelper(
-            IClock clock,
             IDynamicCacheService dynamicCacheService,
             ICacheScopeManager cacheScopeManager,
             ILogger<DynamicCacheTagHelper> logger,
             HtmlEncoder htmlEncoder,
             DynamicCacheTagHelperService dynamicCacheTagHelperService)
-            
+
         {
-            _clock = clock;
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
             _logger = logger;
@@ -187,14 +173,12 @@ namespace OrchardCore.DynamicCache.TagHelpers
 
                 try
                 {
-                    content = await output.GetChildContentAsync();
+                    content = await ProcessContentAsync(output, cacheContext);
                 }
                 finally
                 {
                     _cacheScopeManager.ExitScope();
                 }
-
-                content = await ProcessContentAsync(output, cacheContext);
             }
             else
             {
@@ -235,20 +219,27 @@ namespace OrchardCore.DynamicCache.TagHelpers
                             // The value is not cached, we need to render the tag helper output
                             var processedContent = await output.GetChildContentAsync();
 
-                            var stringBuilder = new StringBuilder();
-                            using (var writer = new StringWriter(stringBuilder))
+                            using (var sb = StringBuilderPool.GetInstance())
                             {
-                                processedContent.WriteTo(writer, HtmlEncoder);
+                                using (var writer = new StringWriter(sb.Builder))
+                                {
+                                    processedContent.WriteTo(writer, HtmlEncoder);
+                                    await writer.FlushAsync();
+                                }
+
+                                var html = sb.Builder.ToString();
+
+                                var formattingContext = new DistributedCacheTagHelperFormattingContext
+                                {
+                                    Html = new HtmlString(html)
+                                };
+
+                                await _dynamicCacheService.SetCachedValueAsync(cacheContext, html);
+
+                                content = formattingContext.Html;
                             }
 
-                            var formattingContext = new DistributedCacheTagHelperFormattingContext
-                            {
-                                Html = new HtmlString(stringBuilder.ToString())
-                            };
 
-                            await _dynamicCacheService.SetCachedValueAsync(cacheContext, formattingContext.Html.ToString());
-
-                            content = formattingContext.Html;
                         }
                         else
                         {
