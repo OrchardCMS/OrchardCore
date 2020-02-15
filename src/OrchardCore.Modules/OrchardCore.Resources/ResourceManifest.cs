@@ -138,6 +138,20 @@ namespace OrchardCore.Resources
                 .SetVersion("5.51.0");
 
             manifest
+                .DefineScript("codemirror-mode-css")
+                .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/mode/css/css.min.js", "~/OrchardCore.Resources/Scripts/codemirror/mode/css/css.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/css/css.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/css/css.js")
+                .SetCdnIntegrity("sha384-SrOROyP0t9lG4sW9jdpO04/mCGGU/2o02aT088UUixjeJvwyhO1otG9biCdry5Ci", "sha384-RN42QX7medq2vyftditoRxJxgTDfVeuWcC6zR9iEiGOMxEYrzukFTBXuZrEmlTUA")
+                .SetVersion("5.51.0");
+
+            manifest
+                .DefineScript("codemirror-mode-htmlmixed")
+                .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/mode/htmlmixed/htmlmixed.min.js", "~/OrchardCore.Resources/Scripts/codemirror/mode/htmlmixed/htmlmixed.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/htmlmixed/htmlmixed.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/htmlmixed/htmlmixed.js")
+                .SetCdnIntegrity("sha384-JL3CPNoNfm5b6L9dNL99RuMfsLE2DSD1Pbbh++B/2MQTIj+0ZrK0+YxxWlFZ5VVX", "sha384-fxS517EbIB2hObIbibF9AuQAFnAlwZgIsy2zpeCqpw4yIkJRfNOLSe0JHu7H7ULE")
+                .SetVersion("5.51.0");
+
+            manifest
                 .DefineScript("codemirror-mode-javascript")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/mode/javascript/javascript.min.js", "~/OrchardCore.Resources/Scripts/codemirror/mode/javascript/javascript.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/javascript/javascript.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/javascript/javascript.js")

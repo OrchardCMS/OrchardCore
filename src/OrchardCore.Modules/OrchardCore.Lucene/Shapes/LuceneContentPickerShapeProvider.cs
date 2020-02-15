@@ -18,9 +18,9 @@ namespace OrchardCore.Lucene
         }
 
         [Shape]
-        public IHtmlContent ContentPickerField_Option__Lucene(dynamic Shape)
+        public IHtmlContent ContentPickerField_Option__Lucene(dynamic shape)
         {
-            var selected = Shape.Editor == "Lucene";
+            var selected = shape.Editor == "Lucene";
             if (selected)
             {
                 return new HtmlString($"<option value=\"Lucene\" selected=\"selected\">{S["Lucene"]}</option>");

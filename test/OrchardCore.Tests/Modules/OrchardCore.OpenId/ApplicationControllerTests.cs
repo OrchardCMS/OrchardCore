@@ -119,7 +119,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             model.AllowAuthorizationCodeFlow = true;
             model.RedirectUris = uris;
 
-            foreach (var validation in model.Validate(new ValidationContext(model)))
+            var validationContext = new ValidationContext(model);
+            var localizerMock = new Mock<IStringLocalizer<Startup>>();
+            localizerMock.Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
+                .Returns((string name, object[] args) => new LocalizedString(name, string.Format(name, args)));
+            validationContext.InitializeServiceProvider((t) => localizerMock.Object);
+
+            foreach (var validation in model.Validate(validationContext))
             {
                 controller.ModelState.AddModelError(validation.MemberNames.First(), validation.ErrorMessage);
             }
