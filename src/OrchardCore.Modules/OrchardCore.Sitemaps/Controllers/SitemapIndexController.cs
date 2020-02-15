@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Models;
@@ -59,7 +60,7 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -72,8 +73,7 @@ namespace OrchardCore.Sitemaps.Controllers
             }
 
             var sitemaps = (await _sitemapManager.ListSitemapsAsync())
-                .Where(s => s.GetType() == typeof(SitemapIndex))
-                .Cast<SitemapIndex>();
+                .OfType<SitemapIndex>();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -103,18 +103,26 @@ namespace OrchardCore.Sitemaps.Controllers
             return View(model);
         }
 
+        [HttpPost, ActionName("List")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult ListFilterPOST(ListSitemapIndexViewModel model)
+        {
+            return RedirectToAction("List", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
+        }
+
         public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var sitemaps = await _sitemapManager.ListSitemapsAsync();
 
             var containableSitemaps = sitemaps
                 .Where(s => s.GetType() != typeof(SitemapIndex))
-                .Cast<Sitemap>()
                 .Select(s => new ContainableSitemapEntryViewModel
                 {
                     SitemapId = s.SitemapId,
@@ -137,7 +145,7 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var sitemap = new SitemapIndex
@@ -185,7 +193,7 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var sitemaps = await _sitemapManager.ListSitemapsAsync();
@@ -196,7 +204,6 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var containableSitemaps = sitemaps
                 .Where(s => s.GetType() != typeof(SitemapIndex))
-                .Cast<Sitemap>()
                 .Select(s => new ContainableSitemapEntryViewModel
                 {
                     SitemapId = s.SitemapId,
@@ -224,7 +231,7 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var sitemap = await _sitemapManager.LoadSitemapAsync(model.SitemapId);
@@ -236,13 +243,11 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;
 
-
             model.SitemapIndexSource = indexSource;
 
             if (ModelState.IsValid)
             {
                 await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater, sitemap.SitemapId);
-
             }
 
             // Path validation may invalidate model state.
@@ -295,7 +300,6 @@ namespace OrchardCore.Sitemaps.Controllers
 
             return RedirectToAction(nameof(Edit));
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Toggle(string sitemapId)

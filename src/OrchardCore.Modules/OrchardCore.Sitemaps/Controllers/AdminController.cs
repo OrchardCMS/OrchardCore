@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Models;
@@ -72,7 +73,7 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -85,8 +86,7 @@ namespace OrchardCore.Sitemaps.Controllers
             }
 
             var sitemaps = (await _sitemapManager.ListSitemapsAsync())
-                .Where(s => s.GetType() == typeof(Sitemap))
-                .Cast<Sitemap>();
+                .OfType<Sitemap>();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -116,11 +116,20 @@ namespace OrchardCore.Sitemaps.Controllers
             return View(model);
         }
 
+        [HttpPost, ActionName("List")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult ListFilterPOST(ListSitemapViewModel model)
+        {
+            return RedirectToAction("List", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
+        }
+
         public async Task<IActionResult> Display(string sitemapId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
@@ -164,7 +173,7 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new CreateSitemapViewModel();
@@ -177,7 +186,7 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -213,7 +222,7 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var sitemap = (await _sitemapManager.GetSitemapAsync(sitemapId)) as Sitemap;
@@ -239,7 +248,7 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var sitemap = (await _sitemapManager.LoadSitemapAsync(model.SitemapId)) as Sitemap;
@@ -281,7 +290,7 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);

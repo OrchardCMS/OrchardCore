@@ -7,20 +7,21 @@
     <p class="alert alert-warning">@T["The site settings 'Base url' property is empty, but is required to generate sitemaps."]</p>
 }
 
-<nav class="admin-toolbar">
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Sitemap Index"]</a>
-        </li>
-    </ul>
-    <form asp-action="Index" method="get" class="form-inline my-2 my-lg-0">
-        <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
-        <button type="submit" class="btn btn-secondary">@T["Search"]</button>
-    </form>
-</nav>
-
-<form asp-action="Index">
-    @* the form is necessary to generate and antiforgery token for the delete action *@
+@* the form is necessary to generate the antiforgery token*@
+<form asp-action="List" method="post">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            <div class="input-group input-group-sm filter-options">
+                <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus="autofocus" />
+            </div>
+        </div>
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                <a asp-route-action="Create" class="btn btn-primary float-right" role="button">@T["Add Sitemap Index"]</a>
+            </div>
+        </div>
+    </div>
 
     @if (Model.SitemapIndexes.Any())
     {
@@ -49,7 +50,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a class="@(entry.Enabled ? "": "text-muted")" asp-action="Edit" asp-route-sitemapId="@entry.SitemapId">@entry.Name</a>
+                        <a class="@(entry.Enabled ? "" : "text-muted")" asp-action="Edit" asp-route-sitemapId="@entry.SitemapId">@entry.Name</a>
                     </div>
                 </li>
             }
@@ -64,3 +65,11 @@
 </form>
 
 @await DisplayAsync(Model.Pager)
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        $(".filter-options input").on("change", function () {
+            $("[name='submit.Filter']").click();
+        });
+    });
+</script>

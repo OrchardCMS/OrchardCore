@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -74,6 +76,80 @@ namespace OrchardCore.Sitemaps.Cache
             }
 
             return Task.CompletedTask;
+        }
+
+
+        public Task<bool> PurgeAllAsync()
+        {
+            var hasErrors = false;
+            var folders = _fileProvider.GetDirectoryContents(String.Empty);
+            foreach (var fileInfo in folders)
+            {
+                if (fileInfo.IsDirectory)
+                {
+                    // Sitemap cache only stores files, so any folder has been created by the user and will be ignored.
+                    continue;
+                }
+                else
+                {
+                    try
+                    {
+                        File.Delete(fileInfo.PhysicalPath);
+                    }
+                    catch (IOException ex)
+                    {
+                        _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
+                        hasErrors = true;
+                    }
+                }
+            }
+
+            return Task.FromResult(hasErrors);
+        }
+
+        public Task<IEnumerable<string>> ListAsync()
+        {
+            var results = new List<string>();
+            var folders = _fileProvider.GetDirectoryContents(String.Empty);
+            foreach (var fileInfo in folders)
+            {
+                if (fileInfo.IsDirectory)
+                {
+                    // Sitemap cache only stores files, so any folder has been created by the user and will be ignored.
+                    continue;
+                }
+                else
+                {
+                    results.Add(fileInfo.Name);
+                }
+            }
+
+            return Task.FromResult<IEnumerable<string>>(results);
+        }
+
+        public Task<bool> PurgeAsync(string cacheFileName)
+        {
+            var failed = false;
+            var fileInfo = _fileProvider.GetFileInfo(cacheFileName);
+            if (fileInfo.Exists)
+            {
+                try
+                {
+                    File.Delete(fileInfo.PhysicalPath);
+                }
+                catch (IOException ex)
+                {
+                    _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
+                    failed = true;
+                }
+            }
+            else
+            {
+                _logger.LogError("Cache file {Name} does not exist", cacheFileName);
+                failed = true;
+            }
+
+            return Task.FromResult(failed);
         }
 
         private string GetSitemapCachePath(IWebHostEnvironment webHostEnvironment, string cachePath, ShellSettings shellSettings)

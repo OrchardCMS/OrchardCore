@@ -32,6 +32,10 @@ namespace OrchardCore.Sitemaps
                             .Action("List", "SitemapIndex", new { area = "OrchardCore.Sitemaps" })
                             .LocalNav()
                         )
+                        .Add(S["Sitemaps Cache"], "15", sitemaps => sitemaps
+                            .Action("List", "SitemapCache", new { area = "OrchardCore.Sitemaps" })
+                            .LocalNav()
+                        )
                     ));
 
             return Task.CompletedTask;

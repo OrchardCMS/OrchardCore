@@ -48,7 +48,6 @@ namespace OrchardCore.Sitemaps.Cache
                     }
                     else if (source.LimitItems && String.Equals(source.LimitedContentType.ContentTypeName, contentTypeName))
                     {
-
                         await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemapIndex.Path);
                         return;
                     }
