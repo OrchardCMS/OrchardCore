@@ -21,7 +21,7 @@ using YesSql;
 
 namespace OrchardCore.Layers.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -31,6 +31,7 @@ namespace OrchardCore.Layers.Controllers
         private readonly ISession _session;
         private readonly ISignal _signal;
         private readonly INotifier _notifier;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             ISignal signal,
@@ -42,8 +43,8 @@ namespace OrchardCore.Layers.Controllers
             ISiteService siteService,
             IStringLocalizer<AdminController> s,
             IHtmlLocalizer<AdminController> h,
-            INotifier notifier
-            )
+            INotifier notifier,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _signal = signal;
             _authorizationService = authorizationService;
@@ -52,9 +53,10 @@ namespace OrchardCore.Layers.Controllers
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _siteService = siteService;
+            _notifier = notifier;
+            _updateModelAccessor = updateModelAccessor;
             S = s;
             H = h;
-            _notifier = notifier;
         }
 
         public IStringLocalizer S { get; }
@@ -64,7 +66,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.GetLayersAsync();
@@ -86,7 +88,7 @@ namespace OrchardCore.Layers.Controllers
                     model.Widgets.Add(zone, list = new List<dynamic>());
                 }
 
-                list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, this, "SummaryAdmin"));
+                list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
             }
 
             return View(model);
@@ -97,7 +99,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return RedirectToAction("Index");
@@ -107,7 +109,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View();
@@ -118,7 +120,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.LoadLayersAsync();
@@ -146,7 +148,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.GetLayersAsync();
@@ -173,7 +175,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.LoadLayersAsync();
@@ -206,7 +208,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.LoadLayersAsync();
