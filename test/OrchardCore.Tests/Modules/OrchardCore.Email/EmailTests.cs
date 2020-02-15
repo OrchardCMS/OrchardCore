@@ -8,6 +8,7 @@ using MimeKit;
 using Moq;
 using OrchardCore.Email;
 using OrchardCore.Email.Services;
+using OrchardCore.Settings;
 using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Email
@@ -35,8 +36,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 PickupDirectoryLocation = pickupDirectoryPath
             });
             var logger = new Mock<ILogger<SmtpService>>();
+            var siteService = new Mock<ISiteService>();
             var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var smtp = new SmtpService(options.Object, logger.Object, siteService.Object, localizer.Object);
             var message = new MailMessage
             {
                 To = "info@oc.com",
@@ -70,8 +72,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 PickupDirectoryLocation = pickupDirectoryPath
             });
             var logger = new Mock<ILogger<SmtpService>>();
+            var siteService = new Mock<ISiteService>();
             var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var smtp = new SmtpService(options.Object, logger.Object, siteService.Object, localizer.Object);
             var message = new MailMessage
             {
                 To = "info@oc.com",
@@ -113,8 +116,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 PickupDirectoryLocation = pickupDirectoryPath
             });
             var logger = new Mock<ILogger<SmtpService>>();
+            var siteService = new Mock<ISiteService>();
             var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var smtp = new SmtpService(options.Object, logger.Object, siteService.Object, localizer.Object);
             var message = new MailMessage
             {
                 To = "info@oc.com",
@@ -158,8 +162,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 PickupDirectoryLocation = pickupDirectoryPath
             });
             var logger = new Mock<ILogger<SmtpService>>();
+            var siteService = new Mock<ISiteService>();
             var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var smtp = new SmtpService(options.Object, logger.Object, siteService.Object, localizer.Object);
             var message = new MailMessage
             {
                 To = "info@oc.com",
