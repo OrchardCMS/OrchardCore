@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="{{ Culture.Name }}">
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+		{% render_section "HeadMeta", required: false %}
+
+		{% style name:"TheMathesisTheme-Roboto" %}
+		{% style name:"TheMathesisTheme-Roboto-Slab" %}
+		{% style name:"TheMathesisTheme-Material-Icons" %}
+		{% style name:"TheMathesisTheme-Montserrat" %}
+		{% style name:"TheMathesisTheme-Droid-Serif" %}
+		{% style name:"TheMathesisTheme-Font-Awesome" %}
+
+		{% style name:"TheMathesisTheme-Material-Kit" %}
+		{% style name:"TheMathesisTheme-Mathesis-Kit" %}
+
+		{% script name:"TheMathesisTheme-jQuery", at:"Foot" %}
+		{% script name:"TheMathesisTheme-Popper", at:"Foot" %}
+		{% script name:"TheMathesisTheme-Bootstrap-Material", at:"Foot" %}
+		{% script name:"TheMathesisTheme-Material-Kit-Script", at:"Foot" %}
+
+
+
+		{% resources type: "HeadScript" %}
+		{% resources type: "HeadLink" %}
+		{% resources type: "Stylesheet" %}
+	</head>
+	<body id="page-top" dir="{{ Culture.Dir }}">
+
+		{% render_section "Header", required: false %}
+		{% render_section "Content" %}
+		{% render_section "Footer", required: false %}
+
+		{% resources type: "FootScript" %}
+
+		<script type="text/javascript">
+			$('#article').scrollspy({target: '#navbar-toc', offset: 60});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,108 @@
+{% style name:"TheMathesisTheme-FancyTree-Css" %}
+{% style name:"TheMathesisTheme-JqCloud-Css" %}
+
+{% script name:"TheMathesisTheme-jQuery-Ui", at:"Foot" %}
+{% script name:"TheMathesisTheme-FancyTree", at:"Foot" %}
+{% script name:"TheMathesisTheme-FancyTree-Glyph", at:"Foot" %}
+{% script name:"TheMathesisTheme-FancyTree-Wide", at:"Foot" %}
+{% script name:"TheMathesisTheme-FancyTree-Filter", at:"Foot" %}
+{% script name:"TheMathesisTheme-Mathesis-Script", at:"Foot" %}
+{% script name:"TheMathesisTheme-JqCloud", at:"Foot" %}
+{% script name:"TheMathesisTheme-Moment", at:"Head" %}
+
+{% zone "HeadMeta" %}
+	<title>{{Site.SiteName}} - {{Model.ContentItem.Content.TitlePart.Title}}</title>
+{% endzone %}
+
+{% shape "menu", alias: "alias:site-menu", cache_id: "site-menu-sticky", cache_tag: "alias:site-menu", alternate: "Menu__Sticky" %}
+
+<div class="main main-raised" id="main" style="margin-top: 90px;">
+	<div class="container-fluid">
+		<div class="row flex-xl-nowrap">
+			<div class="col-md-3 col-xl-2 bd-sidebar">
+				<div class="py-2 bd-find">
+					<input type="text" class="form-control" placeholder="Filter..." name="search" autocomplete="off">
+				</div>
+				<div id="tree" class="bd-tree">
+					{% assign current-url = Model.ContentItem | display_url %}
+					{% assign parentColumn = Content.ContentItemId[Model.ContentItem.Content.ContainedPart.ListContentItemId] %}
+					{% assign magazine = Content.ContentItemId[parentColumn.Content.ContainedPart.ListContentItemId] | shape_build_display %}
+					{% assign magazineTitle = magazine.ContentItem.Content.TitlePart.Title %}
+					<ul id="treeData" style="display: none;">
+						<li id="{{magazineTitle}}" class="folder expanded">
+							{{magazineTitle}}
+							{% assign magazine-columns = magazine.Content.ListPart%}
+							<ul>
+								{% for columnContentItem in magazine-columns.ContentItems %}
+									{% assign column = columnContentItem | shape_build_display %}
+									{% assign column-title = columnContentItem.Content.TitlePart.Title%}
+									{% assign column-url = columnContentItem | display_url %}
+									<li id="{{magazineTitle}}.{{column-title}}" class="folder">
+										<a href="{{column-url}}" target ="_top">
+											{{column-title}}
+										</a>
+										<ul>
+											{% for article in column.Content.ListPart.ContentItems %}
+												{% assign article-content = article.ContentItemId | content_item_id %}
+												{% assign article-url = article-content | display_url %}
+												{% if current-url == article-url %}
+													{% assign node-class = "active focus" %}
+												{% else %}
+													{% assign node-class = "" %}
+												{% endif %}
+												<li id="{{magazineTitle}}.{{column-title}}.{{ article-content.Content.TitlePart.Title }}" class="{{node-class}}">
+													<a href="{{ article-url }}" target = "_top" >
+														{{ article-content.Content.TitlePart.Title }}
+													</a>
+												</li>
+											{% endfor %}
+										</ul>
+									</li>
+								{% endfor%}
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<div class="bd-sq-banner">
+					{% render_section "LeftSquareBanner", required: false %}
+				</div>
+			</div>
+			<div class="d-none d-xl-block col-xl-2 bd-toc">
+				<div class="bd-post-info py-2">
+					<b>Created</b>: {{ Model.ContentItem.CreatedUtc | date: "%d %b %Y" }}<br/>
+					<b>Last Updated</b>: {{ Model.ContentItem.PublishedUtc | date: "%d %b %Y" }}
+					<div class="blog-tags">
+						<b>Tags</b>
+						{% assign tags = Model.ContentItem.Content.Article.Tags.Text | split: "," %}
+						{% for tag in tags %}
+							<span class="badge badge-primary badge-pill">{{tag}}</span>
+						{% endfor %}
+					</div>
+				</div>
+				<div class="bd-post-toc">
+					<div class="pt-2">
+						<nav id="navbar-toc" class="navbar mth-toc-nav">
+							<nav class="nav flex-column">
+								{% for header in Model.ContentItem.Content.BagPart.ContentItems %}
+									{% case header.ContentType %}
+										{% when "Paragraph" %}
+											{% assign indent = "pl-4" %}
+										{% when "SubParagraph" %}
+											{% assign indent = "pl-5" %}
+									{% endcase %}
+									<a class="mth-toc-link nav-link {{indent}}" href="#{{header.TitlePart.Title | slugify}}">{{header.TitlePart.Title}}</a>
+								{% endfor %}
+							</nav>
+						</nav>
+					</div>
+				</div>
+				<div class="bd-sq-banner">
+					{% render_section "RightSquareBanner", required: false %}
+				</div>
+			</div>
+			<div class="col-md-9 col-xl-8 pl-md-5 bd-content py-2" style="position: relative;">
+				{{ Model.Content.BagPart | shape_render }}
+			</div>
+		</div>
+	</div>
+</div>

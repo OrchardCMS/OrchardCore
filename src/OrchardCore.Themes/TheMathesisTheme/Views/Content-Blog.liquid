@@ -1,0 +1,99 @@
+{% style name:"TheMathesisTheme-FancyTree-Css" %}
+{% style name:"TheMathesisTheme-JqCloud-Css" %}
+
+{% script name:"TheMathesisTheme-jQuery-Ui", at:"Foot" %}
+{% script name:"TheMathesisTheme-FancyTree", at:"Foot" %}
+{% script name:"TheMathesisTheme-FancyTree-Glyph", at:"Foot" %}
+{% script name:"TheMathesisTheme-FancyTree-Wide", at:"Foot" %}
+{% script name:"TheMathesisTheme-FancyTree-Filter", at:"Foot" %}
+{% script name:"TheMathesisTheme-Mathesis-Script", at:"Foot" %}
+{% script name:"TheMathesisTheme-JqCloud", at:"Foot" %}
+{% script name:"TheMathesisTheme-Moment", at:"Head" %}
+
+{% zone "HeadMeta" %}
+	<title>{{Site.SiteName}} - {{Model.ContentItem.Content.TitlePart.Title}}</title>
+{% endzone %}
+
+{% shape "menu", alias: "alias:site-menu", cache_id: "site-menu-sticky", cache_tag: "alias:site-menu", alternate: "Menu__Sticky" %}
+
+<div class="main main-raised" id="main" style="margin-top: 90px;">
+	<div class="container-fluid">
+		<div class="row flex-xl-nowrap">
+			<div class="col-md-3 col-xl-2 bd-sidebar">
+				<div class="py-2 bd-find">
+					<input type="text" class="form-control" placeholder="Filter..." name="search" autocomplete="off">
+				</div>
+				<div id="tree" class="bd-tree">
+					{% assign current-url = Model.ContentItem | display_url %}
+					{% assign article-years = Queries.PostsYears | query %}
+					<ul id="treeData" style="display: none;">
+						{% for year in article-years %}
+							{% assign current-year = year.Year %}
+							<li id="{{current-year}}" class="folder">
+								{{current-year}}
+								{% assign article-months = Queries.PostsMonthsByYear | query: year: current-year %}
+								<ul>
+									{% for month in article-months %}
+										{% assign current-month = month.Month %}
+											<li id="{{current-year}}.{{current-month}}" class="folder">
+												<span id="side-{{current-year}}-{{current-month}}"></span>
+												<script type="text/javascript">
+													document.getElementById("side-{{current-year}}-{{current-month}}").innerHTML = moment("{{current-year}}-{{current-month}}-01", "YYYY-M-D").format("MMM");
+												</script>
+												<ul>
+													{% assign articles-days = Queries.PostsByYearAndMonth | query: year:  current-year, month: current-month %}
+													{% for article in articles-days %}
+														{% assign article-content = article.ContentItemId | content_item_id %}
+														{% assign article-url = article-content | display_url %}
+														{% if current-url == article-url %}
+															{% assign node-class = "active focus" %}
+														{% else %}
+															{% assign node-class = "" %}
+														{% endif %}
+														<li id="{{current-year}}.{{current-month}}.{{ article.Day | raw }}" class="{{node-class}}">
+															<a href="{{ article-url }}" target = "_top" >
+																{{article.Day}} - {{ article-content.Content.TitlePart.Title }}
+															</a>
+														</li>
+													{% endfor %}
+												</ul>
+											</li>
+									{% endfor %}
+								</ul>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+				<div class="bd-sq-banner">
+					{% render_section "LeftSquareBanner", required: false %}
+				</div>
+			</div>
+			<div class="d-none d-xl-block col-xl-2 bd-toc">
+				<div id="tagcloud" class="bd-cloud" >
+				</div>
+				<div class="bd-sq-banner">
+					{% render_section "RightSquareBanner", required: false %}
+				</div>
+			</div>
+			<div class="col-md-9 col-xl-8 pl-md-5 bd-content py-2">
+				<div class="bd-main">
+					{% if Request.Query.tag != nil %}
+					<div class="text-center pt-5">
+							<h2 class="mth-section-title">Tag: {{Request.Query.tag}}</h2>
+						</div>
+					{% else %}
+						<div class="text-center">
+							<h2 class="mth-section-title">{{ Model.ContentItem.Content.TitlePart.Title }}</h2>
+						</div>
+						<div class="w-90 mx-auto">
+							<p class="mth-text-base">{{ Model.ContentItem.Content.Blog.Description.Text }}</p>
+						</div>
+					{% endif%}
+					<div class="w-90 mx-auto">
+						{{ Model.Content.ListPart | shape_render }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

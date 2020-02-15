@@ -1,0 +1,78 @@
+<script type="text/javascript">
+	var tags = [
+	{% for item in Model.ContentItems %}
+		{% assign tags = item.Content.Post.Tags.Text | remove: " " | split: "," %}
+		{% for tag in tags %}
+			"{{ tag }}",
+		{% endfor %}
+	{% endfor %}
+	];
+
+	var words = new Array();
+	var sizes = [1,2,3,4,5,6.2,8,9.4,10.5,13];
+	var maxCount = 1;
+
+	tags.forEach(buildWordList);
+
+	words.forEach(adjustSize);
+
+	function buildWordList(value, index, array) {
+		var index = findWord(value);
+		if ( index >= 0 ) {
+			words[index].count++;
+			if ( words[index].count > maxCount ) {
+				maxCount++;
+			}
+		}
+		else {
+			var word = { text: value, weight: 0, link: '{{Request.Scheme}}://{{Request.Host}}{{Request.PathBase}}{{Request.Path}}?tag=' + value, count: 1 }
+			words.push( word );
+		}
+	}
+
+	function adjustSize(value, index, wordArray) {
+		var step = maxCount / 10;
+		var wordSize = Math.round( wordArray[index].count / step );
+		var weight = sizes[wordSize - 1];
+		wordArray[index].weight = weight;
+	}
+
+	function findWord(word) {
+		var found = -1;
+		for ( index = 0; index < words.length; index++ ) {
+			if ( words[index].text == word) {
+				found = index;
+				break;
+			}
+		}
+		return found;
+	}
+
+</script>
+
+{% assign right-text = true %}
+{% if Request.Query.tag == nil %}
+	{% for i in ( 0..3) %}
+		{{ Model.ContentItems[i]| shape_build_display: "Summary" | shape_properties: RightText: right-text | shape_render }}
+		{% if right-text %}
+			{% assign right-text = false %}
+		{% else %}
+			{% assign right-text = true %}
+		{% endif %}
+	{% endfor %}
+{% else %}
+	{% for post in Model.ContentItems %}
+		{% assign tags = post.Content.Post.Tags.Text | remove: " " | split: "," %}
+		{% for tag in tags %}
+			{% if tag == Request.Query.tag %}
+				{{post | shape_build_display: "Summary" | shape_properties: RightText: right-text | shape_render }}
+				{% if right-text %}
+					{% assign right-text = false %}
+				{% else %}
+					{% assign right-text = true %}
+				{% endif %}
+				{% break %}
+			{% endif %}
+		{% endfor %}
+	{% endfor %}
+{% endif%}

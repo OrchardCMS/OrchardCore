@@ -1,0 +1,16 @@
+{% assign items = Model.ContentItems %}
+{% assign rows = items.size | divided_by:3 %}
+<div class="card-deck py-5">
+	{% for index in (0..rows) %}
+		<div class="d-flex justify-content-around row w-90 mx-auto {% if rows > 0 and index < rows %}pb-5{% endif %}">
+			{% if index < rows %}
+				{% assign maxoffset = 2 %}
+			{% else %}
+				{% assign maxoffset = items.size % 3 %}
+			{% endif %}
+			{% for offset in (0..maxoffset) %}
+				{{ items[index * 3 + offset] | shape_build_display: "Summary" | shape_render }}
+			{% endfor %}
+		</div>
+	{% endfor %}
+</div>

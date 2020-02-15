@@ -1,0 +1,71 @@
+{% case Model.ContentItem.Content.Column.Layout.Text %}
+	{% when "Image" %}
+		<div class="card card-blog col-4">
+			<div class="card-header card-header-image">
+				<img class="img" src="{{ Model.ContentItem.Content.Column.Image.Paths.first | asset_url }}" />
+				<h4 class="card-title" style="font-size: 1.6rem;">{{Model.ContentItem.Content.TitlePart.Title}}</h4>
+				<div class="colored-shadow" style="background-image: url('{{ Model.ContentItem.Content.Column.Image.Paths.first | asset_url }}'); opacity: 1;">
+				</div>
+			</div>
+			<div class="card-body">
+				<h6 class="card-category text-info">{{ Model.ContentItem.Content.Column.Field.Text }}</h6>
+				<p class="card-description mth-text-base">{{ Model.ContentItem.Content.Column.Description.Text }}</p>
+			</div>
+			<hr />
+			<div class="card-footer">
+				<div class="card-stats justify-content-left">
+					<a href="{{Model.ContentItem | display_url }}" class="btn btn-round {{Model.ContentItem.Content.Column.Category.Text}}">{{Model.ContentItem.Content.Column.Button.Text }}</a>
+				</div>
+				<div class="stats ml-auto">
+					{% if column.Content.ListPart.ContentItems.size > 0 %}
+					<i class="material-icons">update</i>&nbsp;{{ column.Content.ListPart.ContentItems[0].PublishedUtc | date: "%d %b %y" }}
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	{% when "Text" %}
+		<div class="card card-nav-tabs col-4">
+			<div class="card-header {{Model.ContentItem.Content.Column.Category.Text}}">
+				<h4 class="card-title mth-card-title">{{Model.ContentItem.Content.TitlePart.Title}}</h4>
+			</div>
+			<div class="card-body">
+				<p class="card-text mth-text-base">{{Model.ContentItem.Content.Column.Description.Text}}</p>
+			</div>
+			<hr/>
+			<div class="card-footer">
+				<div class="card-stats justify-content-left">
+					{% assign column = Model.ContentItem | shape_build_display %}
+					<a href="{{Model.ContentItem | display_url }}" class="btn btn-round {{Model.ContentItem.Content.Column.Category.Text}}">{{Model.ContentItem.Content.Column.Button.Text }} ({{ column.Content.ListPart.ContentItems | size }})</a>
+				</div>
+				<div class="stats ml-auto">
+					{% if column.Content.ListPart.ContentItems.size > 0 %}
+					<i class="material-icons">update</i>&nbsp;{{ column.Content.ListPart.ContentItems[0].PublishedUtc | date: "%d %b %y" }}
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	{% when "Team" %}
+		<div class="card card-profile col-4">
+			<div class="card-header card-avatar">
+				<img class="img" src="{{ Model.ContentItem.Content.Column.Image.Paths.first | asset_url }}" />
+			</div>
+			<div class="card-body">
+				<h4 class="card-title mth-card-title">{{Model.ContentItem.Content.TitlePart.Title}}</h4>
+				<h6 class="card-category text-muted">{{ Model.ContentItem.Content.Column.Field.Text }}</h6>
+				<p class="card-description mth-text-base">
+					{{Model.ContentItem.Content.Column.Description.Text}}
+				</p>
+			</div>
+			<div class="card-footer justify-content-center">
+				<a href="{{Model.ContentItem.Content.Column.LinkedinUrl.Text }}" class="btn btn-just-icon btn-linkedin btn-round">
+					<i class="fa fa-linkedin"></i>
+				</a>
+				<a href="{{Model.ContentItem.Content.Column.TwitterUrl.Text }}" class="btn btn-just-icon btn-twitter btn-round">
+					<i class="fa fa-twitter"></i>
+				</a>
+				<a href="{{Model.ContentItem.Content.Column.GitHubUrl.Text }}" class="btn btn-just-icon btn-github btn-round">
+					<i class="fa fa-github"></i>
+				</a>
+			</div>
+		</div>
+{% endcase %}

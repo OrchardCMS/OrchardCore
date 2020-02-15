@@ -1,0 +1,29 @@
+<nav class="navbar fixed-top navbar-expand-lg bg-primary">
+	<div class="container">
+		<div class="navbar-translate">
+			<a class="navbar-brand" href="{{ "home" | haref }}">{{ Site.SiteName }}</a>
+
+			<button class="navbar-toggler" type="button" data-toggle="collapse" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="navbar-toggler-icon"></span>
+				<span class="navbar-toggler-icon"></span>
+				<span class="navbar-toggler-icon"></span>
+			</button>
+		</div>
+		<div class="collapse navbar-collapse">
+			<ul class="navbar-nav ml-auto">
+				{% for item in Model.Items %}
+				{{ item | shape_render }}
+				{% endfor %}
+			</ul>
+			<form class="form-inline ml-auto">
+				<div class="form-group no-border">
+					<input type="text" class="form-control" placeholder="Search" />
+				</div>
+				<button type="submit" class="btn btn-white btn-just-icon btn-round">
+					<i class="material-icons">search</i>
+				</button>
+			</form>
+		</div>
+	</div>
+</nav>

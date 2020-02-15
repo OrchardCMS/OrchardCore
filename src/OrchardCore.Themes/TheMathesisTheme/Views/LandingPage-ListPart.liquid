@@ -1,0 +1,9 @@
+{% assign right-text = true %}
+{% for item in Model.ContentItems %}
+	{{ item | shape_build_display: "Summary" | shape_properties: RightText: right-text | shape_render }}
+	{% if right-text %}
+		{% assign right-text = false %}
+	{% else %}
+		{% assign right-text = true %}
+	{% endif %}
+{% endfor %}

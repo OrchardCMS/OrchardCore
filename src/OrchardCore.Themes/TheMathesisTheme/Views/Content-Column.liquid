@@ -1,0 +1,97 @@
+{% style name:"TheMathesisTheme-FancyTree-Css" %}
+{% style name:"TheMathesisTheme-JqCloud-Css" %}
+
+{% script name:"TheMathesisTheme-jQuery-Ui", at:"Foot" %}
+{% script name:"TheMathesisTheme-FancyTree", at:"Foot" %}
+{% script name:"TheMathesisTheme-FancyTree-Glyph", at:"Foot" %}
+{% script name:"TheMathesisTheme-FancyTree-Wide", at:"Foot" %}
+{% script name:"TheMathesisTheme-FancyTree-Filter", at:"Foot" %}
+{% script name:"TheMathesisTheme-Mathesis-Script", at:"Foot" %}
+{% script name:"TheMathesisTheme-JqCloud", at:"Foot" %}
+{% script name:"TheMathesisTheme-Moment", at:"Head" %}
+
+{% zone "HeadMeta" %}
+	<title>{{Site.SiteName}} - {{Model.ContentItem.Content.TitlePart.Title}}</title>
+{% endzone %}
+
+{% shape "menu", alias: "alias:site-menu", cache_id: "site-menu-sticky", cache_tag: "alias:site-menu", alternate: "Menu__Sticky" %}
+
+<div class="main main-raised" id="main" style="margin-top: 90px;">
+	<div class="container-fluid">
+		<div class="row flex-xl-nowrap">
+			<div class="col-md-3 col-xl-2 bd-sidebar">
+				<div class="py-2 bd-find">
+					<input type="text" class="form-control" placeholder="Filter..." name="search" autocomplete="off">
+				</div>
+				<div id="tree" class="bd-tree">
+					{% assign current-url = Model.ContentItem | display_url %}
+					{% assign magazine = Content.ContentItemId[Model.ContentItem.Content.ContainedPart.ListContentItemId] | shape_build_display %}
+					{% assign magazineTitle = magazine.ContentItem.Content.TitlePart.Title %}
+					<ul id="treeData" style="display: none;">
+						<li id="{{magazineTitle}}" class="folder expanded">
+							{{magazineTitle}}
+							{% assign magazine-columns = magazine.Content.ListPart%}
+							<ul>
+								{% for columnContentItem in magazine-columns.ContentItems %}
+									{% assign column = columnContentItem | shape_build_display %}
+									{% assign columnUrl = columnContentItem | display_url %}
+									{% assign column-title = columnContentItem.Content.TitlePart.Title%}
+									{% if current-url == columnUrl %}
+										{% assign node-class = "folder expanded" %}
+									{% else %}
+										{% assign node-class = "folder" %}
+									{% endif %}
+									<li id="{{magazineTitle}}.{{column-title}}" class="{{node-class}}">
+										<a href="{{columnUrl}}" target ="_top">
+											{{column-title}}
+										</a>
+										<ul>
+											{% for article in column.Content.ListPart.ContentItems %}
+												{% assign article-content = article.ContentItemId | content_item_id %}
+												{% assign article-url = article-content | display_url %}
+												<li id="{{magazineTitle}}.{{column-title}}.{{ article-content.Content.TitlePart.Title }}">
+													<a href="{{ article-url }}" target = "_top" >
+														{{ article-content.Content.TitlePart.Title }}
+													</a>
+												</li>
+											{% endfor %}
+										</ul>
+									</li>
+								{% endfor%}
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<div class="bd-sq-banner">
+					{% render_section "LeftSquareBanner", required: false %}
+				</div>
+			</div>
+			<div class="d-none d-xl-block col-xl-2 bd-toc">
+				<div id="tagcloud" class="bd-cloud" >
+				</div>
+				<div class="bd-sq-banner">
+					{% render_section "RightSquareBanner", required: false %}
+				</div>
+			</div>
+			<div class="col-md-9 col-xl-8 pl-md-5 bd-content py-2">
+				<div class="bd-main">
+					{% if Request.Query.tag != nil %}
+					<div class="text-center pt-5">
+							<h2 class="mth-section-title">Tag: {{Request.Query.tag}}</h2>
+						</div>
+					{% else %}
+						<div class="text-center">
+							<h2 class="mth-section-title">{{ Model.ContentItem.Content.TitlePart.Title }}</h2>
+						</div>
+						<div class="w-90 mx-auto">
+							<p class="mth-text-base">{{ Model.ContentItem.Content.Column.Description.Text }}</p>
+						</div>
+					{% endif%}
+					<div class="w-90 mx-auto">
+						{{ Model.Content.ListPart | shape_render }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

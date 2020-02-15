@@ -38,7 +38,7 @@ namespace OrchardCore.Google.AdSense
 
                     if (!string.IsNullOrWhiteSpace(settings?.PublisherID))
                     {
-                        _scriptsCache = new HtmlString($"<script data-ad-client=\"{settings.PublisherID}\" async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js\"></script>");
+                        _scriptsCache = new HtmlString($"\n<script data-ad-client=\"{settings.PublisherID}\" async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js\"></script>");
                     }
                 }
 

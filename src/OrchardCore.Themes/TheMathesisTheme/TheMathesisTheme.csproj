@@ -1,0 +1,82 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\assets\css\jqcloud.css" />
+    <None Include="wwwroot\assets\css\material-dashboard.css" />
+    <None Include="wwwroot\assets\css\material-dashboard.css.map" />
+    <None Include="wwwroot\assets\css\material-kit.css" />
+    <None Include="wwwroot\assets\css\material-kit.css.map" />
+    <None Include="wwwroot\assets\css\mathesis-kit.css" />
+    <None Include="wwwroot\assets\css\mathesis-kit.css.map" />
+    <None Include="wwwroot\assets\css\ui.fancytree.css" />
+    <None Include="wwwroot\assets\img\architecture.jpg" />
+    <None Include="wwwroot\assets\img\begin.jpg" />
+    <None Include="wwwroot\assets\img\card-blog1.jpg" />
+    <None Include="wwwroot\assets\img\card-blog2.jpg" />
+    <None Include="wwwroot\assets\img\card-blog3.jpg" />
+    <None Include="wwwroot\assets\img\card-blog4.jpg" />
+    <None Include="wwwroot\assets\img\core.jpg" />
+    <None Include="wwwroot\assets\img\diffie-th.jpg" />
+    <None Include="wwwroot\assets\img\firstblog.jpg" />
+    <None Include="wwwroot\assets\img\future.jpg" />
+    <None Include="wwwroot\assets\img\home-areas.jpg" />
+    <None Include="wwwroot\assets\img\home-blog.jpg" />
+    <None Include="wwwroot\assets\img\home-header-bg.jpg" />
+    <None Include="wwwroot\assets\img\home-history.jpg" />
+    <None Include="wwwroot\assets\img\home-projects.jpg" />
+    <None Include="wwwroot\assets\img\home-team.jpg" />
+    <None Include="wwwroot\assets\img\message-th.jpg" />
+    <None Include="wwwroot\assets\img\Queue-th.jpg" />
+    <None Include="wwwroot\assets\img\raspberry-th.jpg" />
+    <None Include="wwwroot\assets\img\team1.jpg" />
+    <None Include="wwwroot\assets\js\core\bootstrap-material-design.min.js" />
+    <None Include="wwwroot\assets\js\core\jquery-ui.min.js" />
+    <None Include="wwwroot\assets\js\core\jquery.min.js" />
+    <None Include="wwwroot\assets\js\core\popper.min.js" />
+    <None Include="wwwroot\assets\js\material-kit.js" />
+    <None Include="wwwroot\assets\js\material-kit.js.map" />
+    <None Include="wwwroot\assets\js\material-kit.min.js" />
+    <None Include="wwwroot\assets\js\mathesis.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.ariagrid.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.childcounter.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.clones.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.columnview.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.dnd.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.dnd5.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.edit.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.filter.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.fixed.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.glyph.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.grid.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.gridnav.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.logger.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.menu.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.multi.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.persist.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.table.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.themeroller.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.ui-deps.js" />
+    <None Include="wwwroot\assets\js\modules\jquery.fancytree.wide.js" />
+    <None Include="wwwroot\assets\js\plugins\bootstrap-datetimepicker.js" />
+    <None Include="wwwroot\assets\js\plugins\bootstrap-selectpicker.js" />
+    <None Include="wwwroot\assets\js\plugins\bootstrap-tagsinput.js" />
+    <None Include="wwwroot\assets\js\plugins\jasny-bootstrap.min.js" />
+    <None Include="wwwroot\assets\js\plugins\jqcloud.js" />
+    <None Include="wwwroot\assets\js\plugins\jquery.flexisel.js" />
+    <None Include="wwwroot\assets\js\plugins\jquery.sharrre.js" />
+    <None Include="wwwroot\assets\js\plugins\moment.min.js" />
+    <None Include="wwwroot\assets\js\plugins\nouislider.min.js" />
+  </ItemGroup>
+</Project>

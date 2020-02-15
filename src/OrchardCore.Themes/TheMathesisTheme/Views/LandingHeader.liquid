@@ -1,0 +1,13 @@
+<div class="page-header header-filter" data-parallax="true" style="background-image: url('{{ Model.ContentItem.Content.LandingHeader.Image.Paths.first | asset_url }}')">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-10 ml-auto mr-auto">
+				<div class="text-center">
+					<h1 class="mth-brand">{{ Model.ContentItem.Content.LandingHeader.Header.Text }}</h1>
+					<h3 class="mth-brand-payload">{{ Model.ContentItem.Content.LandingHeader.Payoff.Text }}</h3>
+					<a class="btn btn-primary btn-lg text-uppercase js-scroll-trigger" href="#main">{{ Model.ContentItem.Content.LandingHeader.Button.Text }}</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
