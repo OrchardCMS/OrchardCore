@@ -466,8 +466,10 @@ namespace OrchardCore.Mvc.Utilities
                 nextIsUpper = false;
             }
 
-            if(endsWithDelimiter)
+            if (endsWithDelimiter)
+            {
                 result.Append(upperAfterDelimiter);
+            }
             return result.ToString();
         }
     }

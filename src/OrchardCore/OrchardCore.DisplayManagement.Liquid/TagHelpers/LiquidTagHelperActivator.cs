@@ -46,8 +46,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     {
                         allNames.Add(htmlAttribute.Name.Substring(4).ToPascalCaseDash());
                     }
-                    var dictonaryPrefix =  htmlAttribute.DictionaryAttributePrefix;
-                    if(dictonaryPrefix != null)
+                    var dictonaryPrefix = htmlAttribute.DictionaryAttributePrefix;
+                    if (dictonaryPrefix != null)
                     {
                         allNames.Add(dictonaryPrefix.ToPascalCaseDash());
 
@@ -89,23 +89,27 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                         {
                             value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue());
                         }
-                        else if(property.PropertyType == typeof(IDictionary<string, string>)) 
+                        else if (property.PropertyType == typeof(IDictionary<string, string>))
                         {
-                            IDictionary<string, string> dictValue = (IDictionary<string, string>) getter(h); 
-                            if(!string.IsNullOrWhiteSpace(k))
+                            IDictionary<string, string> dictValue = (IDictionary<string, string>)getter(h);
+                            if (!string.IsNullOrWhiteSpace(k))
+                            {
                                 dictValue[k] = v.ToStringValue();
+                            }
                             value = dictValue;
                         }
-                        else if(property.PropertyType == typeof(IDictionary<string, object>)) 
+                        else if (property.PropertyType == typeof(IDictionary<string, object>))
                         {
-                            IDictionary<string, object> dictValue = (IDictionary<string, object>) getter(h);
-                            if(!string.IsNullOrWhiteSpace(k)) 
+                            IDictionary<string, object> dictValue = (IDictionary<string, object>)getter(h);
+                            if (!string.IsNullOrWhiteSpace(k))
+                            {
                                 dictValue[k] = v.ToObjectValue();
+                            }
                             value = dictValue;
                         }
-                        else if(property.PropertyType == typeof(Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpression))
+                        else if (property.PropertyType == typeof(ModelExpression))
                         {
-                            value = mp.CreateModelExpression<dynamic>(vd,v.ToStringValue() );                            
+                            value = mp.CreateModelExpression<dynamic>(vd, v.ToStringValue());
                         }
                         else
                         {
@@ -152,26 +156,25 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             {
                 tagHelper = _activatorByFactory(factory, context);
             }
-            
-            var dictKeySeperator =new char[] {'-','_'};
-            
-            var expresionProvider = context.HttpContext.RequestServices.GetService(typeof(Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpressionProvider)) as 
-                            Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpressionProvider;
+
+            var dictKeySeperator = new char[] { '-', '_' };
+
+            var expresionProvider = context.HttpContext.RequestServices.GetService(typeof(ModelExpressionProvider)) as ModelExpressionProvider;
 
             var viewData = new ViewDataDictionary<dynamic>(context.ViewData);
 
             foreach (var name in arguments.Names)
             {
                 var propertyName = name.ToPascalCaseUnderscore();
-                var dictPropertyName = propertyName.LastIndexOfAny(dictKeySeperator) > -1 ? propertyName.Substring(0,propertyName.LastIndexOfAny(dictKeySeperator)+1) : String.Empty;
-                var dictPropertyKey = propertyName.LastIndexOfAny(dictKeySeperator) > -1 ? propertyName.Substring(propertyName.LastIndexOfAny(dictKeySeperator)+1) : String.Empty;
+                var dictPropertyName = propertyName.LastIndexOfAny(dictKeySeperator) > -1 ? propertyName.Substring(0, propertyName.LastIndexOfAny(dictKeySeperator) + 1) : String.Empty;
+                var dictPropertyKey = propertyName.LastIndexOfAny(dictKeySeperator) > -1 ? propertyName.Substring(propertyName.LastIndexOfAny(dictKeySeperator) + 1) : String.Empty;
                 var found = false;
 
-                if (_setters.TryGetValue(propertyName, out var setter) || ( !string.IsNullOrWhiteSpace(dictPropertyName) && _setters.TryGetValue(dictPropertyName, out setter) ) )
+                if (_setters.TryGetValue(propertyName, out var setter) || (!string.IsNullOrWhiteSpace(dictPropertyName) && _setters.TryGetValue(dictPropertyName, out setter)))
                 {
                     try
                     {
-                        setter(tagHelper, expresionProvider, viewData, dictPropertyKey, arguments[name] );
+                        setter(tagHelper, expresionProvider, viewData, dictPropertyKey, arguments[name]);
                         found = true;
                     }
                     catch (ArgumentException e)
@@ -209,7 +212,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             var setterDelegate = setterClosedGenericMethod.CreateDelegate(typeof(Action<object, object>), setterAsAction);
 
             return (Action<object, object>)setterDelegate;
-        }               
+        }
 
         private static readonly MethodInfo CallPropertySetterOpenGenericMethod =
             typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertySetter));
@@ -231,6 +234,6 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertyGetter));
 
         private static object CallPropertyGetter<TDeclaringType, TValue>(Func<TDeclaringType, TValue> getter, object target)
-            =>  getter((TDeclaringType)target);
+            => getter((TDeclaringType)target);
     }
 }
