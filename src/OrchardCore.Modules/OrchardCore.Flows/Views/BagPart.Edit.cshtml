@@ -72,33 +72,6 @@
         </div>
     </div>
 </div>
-}
-
-
-    @* Rendered only once in case multiple BagPart (or FlowPart) are on the page *@
-    @if (Context.Items["BagPart.Edit"] == null)
-    {
-        Context.Items["BagPart.Edit"] = new object();
-        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.min.js"
-            debug-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
-        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
-            debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
-        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"
-            debug-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
-    }
-
-    @* Rendered only once per type to initialize the scripts its editor will need *@
-    @foreach (var type in Model.ContainedContentTypeDefinitions)
-    {
-        @if (Context.Items["BagPart.Edit:" + type.Name] == null)
-        {
-            Context.Items["BagPart.Edit:" + type.Name] = new object();
-
-            // Render a mock widget so that its resources are included in the page
-            var contentItem = await ContentManager.NewAsync(type.Name);
-            await ContentItemDisplayManager.RegisterEditorResources(contentItem);
-        }
-    }
 
     <script at="Foot">
     @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
@@ -150,3 +123,30 @@
         });
     }
     </script>
+}
+
+
+    @* Rendered only once in case multiple BagPart (or FlowPart) are on the page *@
+    @if (Context.Items["BagPart.Edit"] == null)
+    {
+        Context.Items["BagPart.Edit"] = new object();
+        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.min.js"
+            debug-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
+            debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"
+            debug-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
+    }
+
+    @* Rendered only once per type to initialize the scripts its editor will need *@
+    @foreach (var type in Model.ContainedContentTypeDefinitions)
+    {
+        @if (Context.Items["BagPart.Edit:" + type.Name] == null)
+        {
+            Context.Items["BagPart.Edit:" + type.Name] = new object();
+
+            // Render a mock widget so that its resources are included in the page
+            var contentItem = await ContentManager.NewAsync(type.Name);
+            await ContentItemDisplayManager.RegisterEditorResources(contentItem);
+        }
+    }
