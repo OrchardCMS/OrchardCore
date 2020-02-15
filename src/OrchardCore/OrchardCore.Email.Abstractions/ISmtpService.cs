@@ -13,5 +13,7 @@ namespace OrchardCore.Email
         /// <param name="message">The message to be sent.</param>
         /// <returns>A <see cref="SmtpResult"/> that holds information about the sent message, for instance if it has sent successfully or if it has failed.</returns>
         Task<SmtpResult> SendAsync(MailMessage message);
+
+        Task<SmtpSettings> GetSmtpSettingsAsync();
     }
 }

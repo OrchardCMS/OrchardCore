@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Email.Controllers;
+using OrchardCore.Email.Deployment;
 using OrchardCore.Email.Drivers;
 using OrchardCore.Email.Services;
 using OrchardCore.Modules;
@@ -45,4 +47,16 @@ namespace OrchardCore.Email
             );
         }
     }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, SmtpSettingsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SmtpSettingsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, SmtpSettingsDeploymentStepDriver>();
+        }
+    }
+
 }

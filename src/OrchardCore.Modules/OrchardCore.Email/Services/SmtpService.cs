@@ -10,6 +10,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using OrchardCore.Entities;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services
 {
@@ -17,16 +19,19 @@ namespace OrchardCore.Email.Services
     {
         private readonly SmtpSettings _options;
         private readonly ILogger<SmtpService> _logger;
+        private readonly ISiteService _siteService;
         private static readonly char[] EmailsSeparator = new char[] { ',', ';', ' ' };
         private const string EmailExtension = ".eml";
 
         public SmtpService(
             IOptions<SmtpSettings> options,
             ILogger<SmtpService> logger,
+            ISiteService siteService,
             IStringLocalizer<SmtpService> S
             )
         {
             _options = options.Value;
+            _siteService = siteService;
             _logger = logger;
             this.S = S;
         }
@@ -197,6 +202,20 @@ namespace OrchardCore.Email.Services
         {
             var mailPath = Path.Combine(pickupDirectory, Guid.NewGuid().ToString() + EmailExtension);
             await message.WriteToAsync(mailPath, CancellationToken.None);
+        }
+
+        public async Task<SmtpSettings> GetSmtpSettingsAsync()
+        {
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+
+            if (siteSettings.Has<SmtpSettings>())
+            {
+                return siteSettings.As<SmtpSettings>();
+            }
+            else
+            {
+                return new SmtpSettings();
+            }
         }
     }
 }
