@@ -23,13 +23,13 @@ namespace OrchardCore.Environment.Shell
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IRunningShellTable _runningShellTable;
+        private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
 
         private bool _initialized;
-        private ConcurrentDictionary<string, ShellContext> _shellContexts;
-        private readonly IExtensionManager _extensionManager;
-        private SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
+        private ConcurrentDictionary<string, ShellContext> _shellContexts = new ConcurrentDictionary<string, ShellContext>();
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
+        private SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
 
         public ShellHost(
             IShellSettingsManager shellSettingsManager,
@@ -38,10 +38,10 @@ namespace OrchardCore.Environment.Shell
             IExtensionManager extensionManager,
             ILogger<ShellHost> logger)
         {
-            _extensionManager = extensionManager;
             _shellSettingsManager = shellSettingsManager;
             _shellContextFactory = shellContextFactory;
             _runningShellTable = runningShellTable;
+            _extensionManager = extensionManager;
             _logger = logger;
         }
 
@@ -56,7 +56,6 @@ namespace OrchardCore.Environment.Shell
 
                     if (!_initialized)
                     {
-                        _shellContexts = new ConcurrentDictionary<string, ShellContext>();
                         await PreCreateAndRegisterShellsAsync();
                     }
                 }
@@ -301,11 +300,6 @@ namespace OrchardCore.Environment.Shell
                 _logger.LogInformation("A tenant needs to be restarted '{TenantName}'", tenant);
             }
 
-            if (_shellContexts == null)
-            {
-                return Task.CompletedTask;
-            }
-
             if (_shellContexts.TryRemove(tenant, out var context))
             {
                 context.Release();
@@ -346,10 +340,7 @@ namespace OrchardCore.Environment.Shell
             await GetOrCreateShellContextAsync(settings);
         }
 
-        public IEnumerable<ShellContext> ListShellContexts()
-        {
-            return _shellContexts?.Values.ToArray() ?? Enumerable.Empty<ShellContext>();
-        }
+        public IEnumerable<ShellContext> ListShellContexts() => _shellContexts.Values.ToArray();
 
         /// <summary>
         /// Tries to retrieve the shell settings associated with the specified tenant.
@@ -357,7 +348,7 @@ namespace OrchardCore.Environment.Shell
         /// <returns><c>true</c> if the settings could be found, <c>false</c> otherwise.</returns>
         public bool TryGetSettings(string name, out ShellSettings settings)
         {
-            if (_shellContexts != null && _shellContexts.TryGetValue(name, out var shell))
+            if (_shellContexts.TryGetValue(name, out var shell))
             {
                 settings = shell.Settings;
                 return true;
@@ -373,9 +364,9 @@ namespace OrchardCore.Environment.Shell
         /// <returns>All shell settings.</returns>
         public IEnumerable<ShellSettings> GetAllSettings()
         {
-            var shells = _shellContexts?.Values.ToArray();
+            var shells = _shellContexts.Values.ToArray();
 
-            if (shells == null || shells.Length == 0)
+            if (shells.Length == 0)
             {
                 return Enumerable.Empty<ShellSettings>();
             }
@@ -408,11 +399,6 @@ namespace OrchardCore.Environment.Shell
 
         public void Dispose()
         {
-            if (_shellContexts == null)
-            {
-                return;
-            }
-
             var shells = _shellContexts.Values.ToArray();
 
             foreach (var shell in shells)
