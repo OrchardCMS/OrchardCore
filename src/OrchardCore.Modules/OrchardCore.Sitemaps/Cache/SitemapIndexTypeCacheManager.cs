@@ -29,8 +29,7 @@ namespace OrchardCore.Sitemaps.Cache
 
             var contentTypeName = contentItem.ContentType;
 
-            var sitemaps = context.Sitemaps
-                .Where(s => s.GetType() == typeof(Sitemap));
+            var sitemaps = context.Sitemaps.OfType<Sitemap>();
 
             foreach (var sitemap in sitemaps)
             {
