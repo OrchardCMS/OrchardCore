@@ -38,12 +38,13 @@ namespace OrchardCore.ContentFields.Settings
                 var settings = new HtmlFieldTrumbowygEditorSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
-                
+
+                settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
+
                 try
                 {
                     settings.Options = model.Options;
                     JObject.Parse(settings.Options);
-                    settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
                 }
                 catch
                 {
@@ -51,7 +52,7 @@ namespace OrchardCore.ContentFields.Settings
                     return Edit(partFieldDefinition);
                 }
 
-                    context.Builder.WithSettings(settings);
+                context.Builder.WithSettings(settings);
             }
 
             return Edit(partFieldDefinition);

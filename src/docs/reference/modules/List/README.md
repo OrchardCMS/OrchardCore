@@ -1,5 +1,7 @@
 # Lists (`OrchardCore.Lists`)
 
+A ListPart allows you to associate content items to a parent container (Ex: A blog contains a list of blog posts).
+
 ## Theming
 
 ### Shapes
@@ -30,6 +32,16 @@ The following properties are available on the `ListPart` class.
 | -----| ---- |------------ |
 | `Content` | The raw content of the part. |
 | `ContentItem` | The content item containing this part. |
+
+### `ListPartSettings`
+
+The following properties are available on the `ListPartSettings` class.
+
+| Name | Type | Description |
+| -----| ---- |------------ |
+| `PageSize` | The number of content items returned per page. |
+| `EnableOrdering` | Flag to enable drag and drop ordering of content items. |
+| `ContainedContentTypes` | The content types that maybe contained by this part. |
 
 ### Template
 

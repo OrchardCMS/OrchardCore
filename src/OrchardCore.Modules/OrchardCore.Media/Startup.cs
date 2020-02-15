@@ -29,7 +29,6 @@ using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
-using OrchardCore.Media.Models;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
 using OrchardCore.Media.Services;
@@ -113,8 +112,6 @@ namespace OrchardCore.Media
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddContentPart<ImageMediaPart>();
-            services.AddMedia();
 
             services.AddLiquidFilter<MediaUrlFilter>("asset_url");
             services.AddLiquidFilter<ResizeUrlFilter>("resize_url");
@@ -137,8 +134,8 @@ namespace OrchardCore.Media
                 .AddProcessor<BackgroundColorWebProcessor>();
 
             // Media Field
-            services.AddContentField<MediaField>();
-            services.AddScoped<IContentFieldDisplayDriver, MediaFieldDisplayDriver>();
+            services.AddContentField<MediaField>()
+                .UseDisplayDriver<MediaFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
             services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();

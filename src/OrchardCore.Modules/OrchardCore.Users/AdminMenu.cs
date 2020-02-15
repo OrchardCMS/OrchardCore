@@ -43,6 +43,36 @@ namespace OrchardCore.Users
         }
     }
 
+    [Feature("OrchardCore.Users.ChangeEmail")]
+    public class ChangeEmailAdminMenu : INavigationProvider
+    {
+        private readonly IStringLocalizer S;
+ 
+        public ChangeEmailAdminMenu(IStringLocalizer<ChangeEmailAdminMenu> localizer)
+        {
+            S = localizer;
+        }
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Security"], security => security
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Email"], S["Email"], registration => registration
+                            .Permission(Permissions.ManageUsers)
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ChangeEmailSettingsDisplayDriver.GroupId })
+                            .LocalNav()
+                        )));
+
+            return Task.CompletedTask;
+        }
+    }
+
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationAdminMenu : INavigationProvider
     {

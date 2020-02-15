@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 
 namespace OrchardCore.Environment.Shell.Descriptor.Models
 {
@@ -15,6 +16,8 @@ namespace OrchardCore.Environment.Shell.Descriptor.Models
         }
 
         public string Id { get; set; }
+
+        [JsonIgnore]
         public bool AlwaysEnabled { get; set; }
 
         public bool Equals(ShellFeature other)
