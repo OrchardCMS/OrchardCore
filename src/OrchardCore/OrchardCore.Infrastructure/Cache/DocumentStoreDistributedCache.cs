@@ -41,7 +41,7 @@ namespace OrchardCore.Infrastructure.Cache
                 throw new ArgumentException("Can't load for update a cached object");
             }
 
-            document.Identifier = _idGenerator.GenerateUniqueId();
+            document.Identifier = null;
 
             return document;
         }
@@ -77,6 +77,8 @@ namespace OrchardCore.Infrastructure.Cache
                 options = new DistributedCacheEntryOptions();
             }
 
+            document.Identifier ??= _idGenerator.GenerateUniqueId();
+
             return _documentStore.UpdateAsync(document, document =>
             {
                 return SetInternalAsync(document, options, checkConsistency);
@@ -101,6 +103,11 @@ namespace OrchardCore.Infrastructure.Cache
             }
 
             var id = Encoding.UTF8.GetString(idData);
+
+            if (id == "NULL")
+            {
+                id = null;
+            }
 
             if (_memoryCache.TryGetValue<T>(key, out var document))
             {
@@ -148,8 +155,6 @@ namespace OrchardCore.Infrastructure.Cache
 
         private async Task SetInternalAsync<T>(T document, DistributedCacheEntryOptions options, bool checkConsistency) where T : DistributedDocument, new()
         {
-            document.Identifier ??= _idGenerator.GenerateUniqueId();
-
             byte[] data;
 
             using (var stream = new MemoryStream())
@@ -158,7 +163,7 @@ namespace OrchardCore.Infrastructure.Cache
                 data = stream.ToArray();
             }
 
-            var idData = Encoding.UTF8.GetBytes(document.Identifier);
+            var idData = Encoding.UTF8.GetBytes(document.Identifier ?? "NULL");
 
             var key = typeof(T).FullName;
 
@@ -178,11 +183,6 @@ namespace OrchardCore.Infrastructure.Cache
                     AbsoluteExpirationRelativeToNow = options.AbsoluteExpirationRelativeToNow,
                     SlidingExpiration = options.SlidingExpiration
                 });
-
-                if (!_scopedCache.TryGetValue(key, out var scoped))
-                {
-                    _scopedCache[key] = document;
-                }
             }
         }
 
