@@ -154,7 +154,7 @@ namespace OrchardCore.Templates.Controllers
 
                 if (submit == "SaveAndContinue")
                 {
-                    RedirectToAction(nameof(Edit), new { name = model.Name, adminTemplates = model.AdminTemplates, returnUrl });
+                    return RedirectToAction(nameof(Edit), new { name = model.Name, adminTemplates = model.AdminTemplates, returnUrl });
                 }
                 else
                 {

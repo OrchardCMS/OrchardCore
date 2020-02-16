@@ -195,9 +195,9 @@ namespace OrchardCore.DisplayManagement.Views
             {
                 await zoneOnDemand.AddAsync(newShape, position);
             }
-            else
+            else if (parentShape is Shape shape)
             {
-                parentShape.Add(newShape, position);
+                shape.Add(newShape, position);
             }
         }
 
