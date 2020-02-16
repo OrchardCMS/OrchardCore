@@ -1,10 +1,13 @@
 # OrchardCore.DisplayManagement
 
-This article is about DisplayManagement and placement files.
+This article is about Display management and placement files.
 
 ## Placement files
 
-Any extension can contain an optional `placement.json` file providing custom placement logic.
+Any module or theme can contain an optional `placement.json` file providing custom placement logic.
+
+!!! note
+    The `placement.json` file must be added at the root of a module or a theme.
 
 ### Format
 
