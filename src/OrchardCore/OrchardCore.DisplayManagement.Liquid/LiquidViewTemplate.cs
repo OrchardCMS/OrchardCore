@@ -72,6 +72,9 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<ShapeRemovePropertyTag>("shape_remove_property");
             Factory.RegisterTag<ShapePagerTag>("shape_pager");
 
+            Factory.RegisterTag<HttpContextAddItemTag>("httpcontext_add_items");
+            Factory.RegisterTag<HttpContextRemoveItemTag>("httpcontext_remove_items");
+
             Factory.RegisterTag<HelperTag>("helper");
             Factory.RegisterTag<NamedHelperTag>("shape");
             Factory.RegisterTag<NamedHelperTag>("contentitem");
@@ -84,7 +87,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterBlock<HelperBlock>("block");
             Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
-            Factory.RegisterBlock<NamedHelperBlock>("scriptblock");
+            Factory.RegisterBlock<NamedHelperBlock>("scriptblock");            
 
             // Dynamic caching
             Factory.RegisterBlock<CacheBlock>("cache");
