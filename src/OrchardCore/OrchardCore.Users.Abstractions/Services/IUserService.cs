@@ -26,7 +26,7 @@ namespace OrchardCore.Users.Services
         /// <param name="reportError">The error reported in case failure happened during the creation process.</param>
         /// <returns>A <see cref="IUser"/> represents a created user.</returns>
         Task<IUser> CreateUserAsync(IUser user, string password, Action<string, string> reportError);
-      
+
         /// <summary>
         /// Change a user email.
         /// </summary>

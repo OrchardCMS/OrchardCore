@@ -30,7 +30,6 @@ namespace OrchardCore.ContentManagement.Cache
 
                 return;
             }
-
         }
     }
 }

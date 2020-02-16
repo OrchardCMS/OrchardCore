@@ -17,7 +17,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
 {
-    public class RequiresPermissionValidationRuleTests 
+    public class RequiresPermissionValidationRuleTests
     {
         internal readonly static Dictionary<string, Permission> _permissions = new Dictionary<string, Permission> {
             { "permissionOne",  new Permission("TestPermissionOne", "TestPermissionOne") },
@@ -86,7 +86,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
                             new PermissionsContext
                             {
                                 UsePermissionsContext = true,
-                                AuthorizedPermissions = _permissions.Values 
+                                AuthorizedPermissions = _permissions.Values
                             });
 
             var executer = new DocumentExecuter();
@@ -148,6 +148,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
                     .Resolve(_ => new object());
             }
         }
+
         private class TestField : ObjectGraphType
         {
             public TestField()

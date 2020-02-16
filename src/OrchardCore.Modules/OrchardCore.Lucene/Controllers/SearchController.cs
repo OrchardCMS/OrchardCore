@@ -12,11 +12,11 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.Entities;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Mvc.Utilities;
 using YesSql;
 using YesSql.Services;
 
@@ -63,11 +63,11 @@ namespace OrchardCore.Lucene.Controllers
             Logger = logger;
         }
 
-        ILogger Logger { get; set; }
+        private ILogger Logger { get; set; }
 
         [HttpGet]
         public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
-        {   
+        {
             var permissionsProvider = _permissionProviders.FirstOrDefault(x => x.GetType().FullName == "OrchardCore.Lucene.Permissions");
             var permissions = await permissionsProvider.GetPermissionsAsync();
 

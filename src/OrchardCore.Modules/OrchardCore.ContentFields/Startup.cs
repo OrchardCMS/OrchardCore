@@ -28,7 +28,7 @@ namespace OrchardCore.ContentFields
         private readonly AdminOptions _adminOptions;
         static Startup()
         {
-            // Registering both field types and shape types are necessary as they can 
+            // Registering both field types and shape types are necessary as they can
             // be accessed from inner properties.
 
             TemplateContext.GlobalMemberAccessStrategy.Register<BooleanField>();

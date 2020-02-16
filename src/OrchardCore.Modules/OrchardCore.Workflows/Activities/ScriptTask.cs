@@ -21,9 +21,9 @@ namespace OrchardCore.Workflows.Activities
         }
 
         public override string Name => nameof(ScriptTask);
-        
+
         public override LocalizedString DisplayText => S["Script Task"];
-        
+
         public override LocalizedString Category => S["Control Flow"];
 
         public IList<string> AvailableOutcomes

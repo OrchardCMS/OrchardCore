@@ -24,20 +24,20 @@ namespace OrchardCore.ContentLocalization.GraphQL
                 .Name("Localizations")
                 .Description(S["The localizations of the content item."])
                 .Argument<StringGraphType, string>("culture", "the culture of the content item")
-                .ResolveLockedAsync( async ctx =>
-                {
-                    var culture = ctx.GetArgument<string>("culture");
-                    var contentLocalizationManager = ctx.ResolveServiceProvider().GetService<IContentLocalizationManager>();
+                .ResolveLockedAsync(async ctx =>
+               {
+                   var culture = ctx.GetArgument<string>("culture");
+                   var contentLocalizationManager = ctx.ResolveServiceProvider().GetService<IContentLocalizationManager>();
 
-                    if (culture != null)
-                    {
-                        var contentItem = await contentLocalizationManager.GetContentItemAsync(ctx.Source.LocalizationSet, culture);
+                   if (culture != null)
+                   {
+                       var contentItem = await contentLocalizationManager.GetContentItemAsync(ctx.Source.LocalizationSet, culture);
 
-                        return contentItem != null ? new[] { contentItem } : Enumerable.Empty<ContentItem>();
-                    }
+                       return contentItem != null ? new[] { contentItem } : Enumerable.Empty<ContentItem>();
+                   }
 
-                    return await contentLocalizationManager.GetItemsForSetAsync(ctx.Source.LocalizationSet);
-                });
+                   return await contentLocalizationManager.GetItemsForSetAsync(ctx.Source.LocalizationSet);
+               });
         }
     }
 }

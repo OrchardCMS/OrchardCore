@@ -5,6 +5,6 @@ namespace OrchardCore.Liquid
 {
     public class LiquidOptions
     {
-        public Dictionary<string, Type> FilterRegistrations { get; }  = new Dictionary<string, Type>();
+        public Dictionary<string, Type> FilterRegistrations { get; } = new Dictionary<string, Type>();
     }
 }

@@ -4,7 +4,7 @@
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @using OrchardCore.ContentManagement.Metadata.Settings;
-    
+
 @*
     This template is used to render the editor for a Taxonomy content item.
     It render the hierarchy of the terms.
@@ -31,10 +31,10 @@
 {
     var termContentType = ContentDefinitionManager.GetTypeDefinition(Model.TermContentType);
 
-    <a class="btn btn-primary btn-sm" 
-        asp-route-action="Create" 
-        asp-route-controller="Admin" 
-        asp-route-id="@Model.TaxonomyPart.TermContentType" 
+    <a class="btn btn-primary btn-sm"
+        asp-route-action="Create"
+        asp-route-controller="Admin"
+        asp-route-id="@Model.TaxonomyPart.TermContentType"
         asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
         asp-route-area="OrchardCore.Taxonomies">
         @T["Add {0}", termContentType.DisplayName]
@@ -83,6 +83,4 @@
             window.onbeforeunload = function () { };
         });
     });
-
-
 </script>

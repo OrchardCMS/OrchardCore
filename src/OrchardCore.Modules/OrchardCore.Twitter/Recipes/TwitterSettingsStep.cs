@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Twitter.Services;
-using OrchardCore.Twitter.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Twitter.Services;
+using OrchardCore.Twitter.Settings;
 
 namespace OrchardCore.Twitter.Recipes
 {

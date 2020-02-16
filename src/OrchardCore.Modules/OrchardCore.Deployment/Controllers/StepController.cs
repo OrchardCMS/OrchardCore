@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -47,7 +46,7 @@ namespace OrchardCore.Deployment.Controllers
             _siteService = siteService;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
-            New = shapeFactory;            
+            New = shapeFactory;
             H = htmlLocalizer;
         }
 
@@ -161,7 +160,7 @@ namespace OrchardCore.Deployment.Controllers
 
             model.Editor.DeploymentStep = step;
 
-           return View(model);
+            return View(model);
         }
 
         [HttpPost]

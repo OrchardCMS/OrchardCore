@@ -1,12 +1,10 @@
 using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email.Drivers;
 using OrchardCore.Email.ViewModels;
@@ -36,7 +34,7 @@ namespace OrchardCore.Email.Controllers
             T = stringLocalizer;
         }
 
-        IStringLocalizer T { get; set; }
+        private IStringLocalizer T { get; set; }
 
         [HttpGet]
         public async Task<IActionResult> Index()

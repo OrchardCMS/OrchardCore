@@ -145,6 +145,5 @@ namespace OrchardCore.Users.Controllers
                 return Redirect("~/");
             }
         }
-
     }
 }

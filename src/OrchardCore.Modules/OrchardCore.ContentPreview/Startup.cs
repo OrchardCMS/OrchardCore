@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentPreview.Drivers;
 using OrchardCore.ContentPreview.Handlers;
 using OrchardCore.ContentPreview.Models;
@@ -25,7 +24,7 @@ namespace OrchardCore.ContentPreview
             services.AddContentPart<PreviewPart>()
                 .AddHandler<PreviewPartHandler>();
 
-            services.AddScoped<IDataMigration, Migrations>();            
+            services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, PreviewStartupFilter>());
         }

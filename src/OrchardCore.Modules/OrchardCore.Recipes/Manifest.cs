@@ -6,7 +6,7 @@ using OrchardCore.Modules.Manifest;
     Website = "https://orchardproject.net",
     Version = "2.0.0",
     Description = "Provides Orchard Recipes.",
-    Dependencies = new []
+    Dependencies = new[]
     {
         "OrchardCore.Features",
         "OrchardCore.Scripting"

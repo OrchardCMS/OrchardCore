@@ -23,13 +23,13 @@ namespace OrchardCore.Environment.Shell
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IRunningShellTable _runningShellTable;
+        private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
 
         private bool _initialized;
-        private ConcurrentDictionary<string, ShellContext> _shellContexts;
-        private readonly IExtensionManager _extensionManager;
-        private SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
+        private ConcurrentDictionary<string, ShellContext> _shellContexts = new ConcurrentDictionary<string, ShellContext>();
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
+        private SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
 
         public ShellHost(
             IShellSettingsManager shellSettingsManager,
@@ -38,10 +38,10 @@ namespace OrchardCore.Environment.Shell
             IExtensionManager extensionManager,
             ILogger<ShellHost> logger)
         {
-            _extensionManager = extensionManager;
             _shellSettingsManager = shellSettingsManager;
             _shellContextFactory = shellContextFactory;
             _runningShellTable = runningShellTable;
+            _extensionManager = extensionManager;
             _logger = logger;
         }
 
@@ -56,7 +56,6 @@ namespace OrchardCore.Environment.Shell
 
                     if (!_initialized)
                     {
-                        _shellContexts = new ConcurrentDictionary<string, ShellContext>();
                         await PreCreateAndRegisterShellsAsync();
                     }
                 }
@@ -122,7 +121,7 @@ namespace OrchardCore.Environment.Shell
                 // We create a scope before checking if the shell has been released.
                 scope = shellContext.CreateScope();
 
-                // If CreateScope() returned null, the shell is released. We then remove it and 
+                // If CreateScope() returned null, the shell is released. We then remove it and
                 // retry with the hope to get one that won't be released before we create a scope.
                 if (scope == null)
                 {
@@ -301,11 +300,6 @@ namespace OrchardCore.Environment.Shell
                 _logger.LogInformation("A tenant needs to be restarted '{TenantName}'", tenant);
             }
 
-            if (_shellContexts == null)
-            {
-                return Task.CompletedTask;
-            }
-
             if (_shellContexts.TryRemove(tenant, out var context))
             {
                 context.Release();
@@ -347,56 +341,7 @@ namespace OrchardCore.Environment.Shell
             await GetOrCreateShellContextAsync(settings);
         }
 
-        /// <summary>
-        /// Marks the shell as released to free up resources but keeps its settings in the '_runningShellTable',
-        /// so that it is still served but a new shell will only be created and activated on a new request.
-        /// </summary>
-        /// <param name="settings"></param>
-        public void ReleaseShellContext(ShellSettings settings)
-        {
-            if (_shellContexts == null)
-            {
-                return;
-            }
-
-            if (settings.State == TenantState.Disabled)
-            {
-                // If a disabled shell is still in use it will be released and then disposed by its last scope.
-                if (_shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
-                {
-                    return;
-                }
-            }
-
-            if (_shellContexts.TryRemove(settings.Name, out var context))
-            {
-                context.Release();
-            }
-        }
-
-        /// <summary>
-        /// Marks all shells as released to free up resources but keeps all settings in the '_runningShellTable',
-        /// so that they are still served but new shells will only be created and activated on new requests.
-        /// </summary>
-        public void ReleaseAllShellContexts()
-        {
-            if (_shellContexts == null)
-            {
-                return;
-            }
-
-            var shells = _shellContexts.Values.ToArray();
-
-            foreach (var shell in shells)
-            {
-                ReleaseShellContext(shell.Settings);
-            }
-        }
-
-        public IEnumerable<ShellContext> ListShellContexts()
-        {
-            return _shellContexts?.Values.ToArray() ?? Enumerable.Empty<ShellContext>();
-        }
+        public IEnumerable<ShellContext> ListShellContexts() => _shellContexts.Values.ToArray();
 
         /// <summary>
         /// Tries to retrieve the shell settings associated with the specified tenant.
@@ -404,7 +349,7 @@ namespace OrchardCore.Environment.Shell
         /// <returns><c>true</c> if the settings could be found, <c>false</c> otherwise.</returns>
         public bool TryGetSettings(string name, out ShellSettings settings)
         {
-            if (_shellContexts != null && _shellContexts.TryGetValue(name, out var shell))
+            if (_shellContexts.TryGetValue(name, out var shell))
             {
                 settings = shell.Settings;
                 return true;
@@ -418,17 +363,7 @@ namespace OrchardCore.Environment.Shell
         /// Retrieves all shell settings.
         /// </summary>
         /// <returns>All shell settings.</returns>
-        public IEnumerable<ShellSettings> GetAllSettings()
-        {
-            var shells = _shellContexts?.Values.ToArray();
-
-            if (shells == null || shells.Length == 0)
-            {
-                return Enumerable.Empty<ShellSettings>();
-            }
-
-            return shells.Select(s => s.Settings);
-        }
+        public IEnumerable<ShellSettings> GetAllSettings() => ListShellContexts().Select(s => s.Settings);
 
         /// <summary>
         /// Whether or not a shell can be added to the list of available shells.
@@ -455,11 +390,6 @@ namespace OrchardCore.Environment.Shell
 
         public void Dispose()
         {
-            if (_shellContexts == null)
-            {
-                return;
-            }
-
             var shells = _shellContexts.Values.ToArray();
 
             foreach (var shell in shells)

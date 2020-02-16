@@ -5,7 +5,6 @@ namespace OrchardCore.Tenants.ViewModels
 {
     public class SetupApiViewModel
     {
-
         [Required]
         public string Name { get; set; }
 

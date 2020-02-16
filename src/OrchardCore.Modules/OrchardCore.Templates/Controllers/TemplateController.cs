@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
@@ -105,7 +104,7 @@ namespace OrchardCore.Templates.Controllers
             }
 
             ViewData["ReturnUrl"] = returnUrl;
-            return View(new TemplateViewModel() { AdminTemplates = adminTemplates} );
+            return View(new TemplateViewModel() { AdminTemplates = adminTemplates });
         }
 
         [HttpPost, ActionName("Create")]
@@ -154,7 +153,7 @@ namespace OrchardCore.Templates.Controllers
 
                 if (submit == "SaveAndContinue")
                 {
-                    RedirectToAction(nameof(Edit), new { name = model.Name, adminTemplates = model.AdminTemplates, returnUrl });
+                    return RedirectToAction(nameof(Edit), new { name = model.Name, adminTemplates = model.AdminTemplates, returnUrl });
                 }
                 else
                 {
@@ -226,7 +225,7 @@ namespace OrchardCore.Templates.Controllers
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
                 }
-                else if(!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && templatesDocument.Templates.ContainsKey(model.Name))
+                else if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && templatesDocument.Templates.ContainsKey(model.Name))
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
                 }

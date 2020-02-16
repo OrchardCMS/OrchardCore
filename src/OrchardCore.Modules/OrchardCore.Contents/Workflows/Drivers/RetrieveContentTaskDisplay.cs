@@ -7,7 +7,6 @@ namespace OrchardCore.Contents.Workflows.Drivers
 {
     public class RetrieveContentTaskDisplay : ContentTaskDisplayDriver<RetrieveContentTask, RetrieveContentTaskViewModel>
     {
-
         protected override void EditActivity(RetrieveContentTask activity, RetrieveContentTaskViewModel model)
         {
             model.ContentItemId = activity.Content.Expression;

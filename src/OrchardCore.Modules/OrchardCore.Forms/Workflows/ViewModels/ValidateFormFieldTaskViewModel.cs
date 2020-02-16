@@ -6,6 +6,7 @@ namespace OrchardCore.Forms.Workflows.ViewModels
     {
         [Required]
         public string FieldName { get; set; }
+
         [Required]
         public string ErrorMessage { get; set; }
     }

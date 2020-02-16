@@ -335,6 +335,29 @@ The following properties are available on the `Culture` object.
 | `Name` | `en-US` | The request's culture as an ISO language code. |
 | `Dir` | `rtl` | The text writing direction. |
 
+
+### HttpContext
+
+Represents the HttpContext of the current request.
+
+The following properties are available on the `HttpContext` object.
+
+| Property | Example | Description |
+| --------- | ---- |------------ |
+| `Items` | `HttpContext.Items["Item1"]` | Returns an item with key Item1 |
+
+
+#### httpcontext_add_items
+Adds key/value to HttpContext.Items collection
+
+`{% httpcontext_add_items Item1:"value 1", Item2:"Value2"  %}`
+
+#### httpcontext_remove_items
+Removes key from HttpContext.Items collection
+
+`{% httpcontext_remove_items "Item1" %}`
+
+
 ## Shape Filters
 
 These filters let you create and filter shapes.
