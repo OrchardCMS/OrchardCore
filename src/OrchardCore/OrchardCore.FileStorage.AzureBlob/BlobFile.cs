@@ -26,7 +26,6 @@ namespace OrchardCore.FileStorage.AzureBlob
             }
         }
 
-
         public string Path => _path;
 
         public string Name => _name;

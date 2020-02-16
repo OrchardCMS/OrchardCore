@@ -451,6 +451,11 @@ body:not(.left-sidebar-compact) {
             display: block;
             margin: 0px auto;
         }
+
+        #filter, #filter:focus{
+            border: none;
+            box-shadow: unset;
+        }
     }
 }
 // Layout 4 : ta-left-sidebar when compacted
@@ -873,6 +878,10 @@ body:not(.left-sidebar-compact) {
             display: block;
             margin: 0px auto;
         }
+
+        #filter, #filter:focus{
+            display:none;
+        }
     }
 }
 /* rtl:ignore */
@@ -960,7 +969,7 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 }
 
 .field-validation-error {
-    @extend small, .invalid-feedback;
+    @extend small
 }
 
 .input-validation-error {
@@ -1036,6 +1045,7 @@ select[multiple] {
 ul.pager {
     @extend .pagination;
     margin-top: 1rem;
+    justify-content: center;
 }
 
 ul.pager li {

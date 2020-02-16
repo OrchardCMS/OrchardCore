@@ -5,7 +5,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields.Fields
 {
@@ -19,8 +18,8 @@ namespace OrchardCore.ContentFields.Fields
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(TimeField field, BuildFieldEditorContext context)

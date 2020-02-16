@@ -28,8 +28,8 @@ namespace OrchardCore.ContentFields.Fields
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(LinkField field, BuildFieldEditorContext context)
@@ -50,7 +50,7 @@ namespace OrchardCore.ContentFields.Fields
             bool modelUpdated = await updater.TryUpdateModelAsync(field, Prefix, f => f.Url, f => f.Text);
 
             if (modelUpdated)
-            {                
+            {
                 var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
 
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Url))

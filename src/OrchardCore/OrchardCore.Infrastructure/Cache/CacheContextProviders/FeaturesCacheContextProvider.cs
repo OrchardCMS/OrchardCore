@@ -1,18 +1,18 @@
-using OrchardCore.Environment.Extensions.Features;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.Environment.Cache.CacheContextProviders
 {
     public class FeaturesCacheContextProvider : ICacheContextProvider
     {
         private const string FeaturesPrefix = "features:";
-        
+
         private readonly IFeatureHash _featureHash;
-        
+
         public FeaturesCacheContextProvider(IFeatureHash featureHash)
         {
             _featureHash = featureHash;

@@ -246,7 +246,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return GetDisplayShapeType(typeof(TField).Name, context);
         }
 
-
         private void BuildPrefix(ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, string htmlFieldPrefix)
         {
             Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;

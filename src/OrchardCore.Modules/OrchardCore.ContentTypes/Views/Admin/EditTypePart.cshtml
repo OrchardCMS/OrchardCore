@@ -9,7 +9,8 @@
     var typePart = Model.TypePartDefinition;
     var theme = await ThemeManager.GetThemeAsync();
     var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
-    var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
+    var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
+    var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
 }
 
 <h1>@RenderTitleSegments(T["Edit Part - {0}", Model.DisplayName])</h1>
@@ -40,7 +41,6 @@
         </div>
     }
 
-
     @if (Model.Shape.Content != null)
     {
         <div class="form-group">
@@ -67,6 +67,25 @@
         <div id="type-part-editor-container" class="form-group" style="display: none">
             @await DisplayAsync(Model.Shape.Editor)
         </div>
+
+        @if (displayShapes.Any())
+        {
+            <div class="form-group">
+                <label asp-for="DisplayMode">@T["What type of display mode should be used?"]</label>
+                <select asp-for="DisplayMode" class="form-control col-sm-6" id="type-part-display-select">
+                    @foreach (var displayShape in displayShapes)
+                    {
+                        dynamic shape = await Factory.CreateAsync(displayShape);
+                        shape.DisplayMode = Model.DisplayMode;
+                        @await DisplayAsync(shape)
+                    }
+                </select>
+            </div>
+        }
+
+        <div id="type-part-display-container" class="form-group" style="display: none">
+            @await DisplayAsync(Model.Shape.DisplayMode)
+        </div>
     }
 
     <div class="form-group">
@@ -88,6 +107,19 @@
             typePartEditorSelect.change(function () {
                 $('.type-part-editor').hide();
                 $('.type-part-editor-' + typePartEditorSelect.val().toLowerCase()).show();
+            });
+        }
+
+        $('.type-part-display').hide();
+        $('#type-part-display-container').show();
+        var typePartDisplaySelect = $('#type-part-display-select');
+        if (typePartDisplaySelect.length > 0) {
+            $('.type-part-display-' + typePartDisplaySelect.val().toLowerCase()).show();
+
+            typePartDisplaySelect.change(function () {
+                console.log('boom');
+                $('.type-part-display').hide();
+                $('.type-part-display-' + typePartDisplaySelect.val().toLowerCase()).show();
             });
         }
     });

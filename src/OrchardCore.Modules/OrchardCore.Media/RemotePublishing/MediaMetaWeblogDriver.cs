@@ -1,8 +1,5 @@
-using OrchardCore.ContentManagement;
-using OrchardCore.XmlRpc;
-using OrchardCore.XmlRpc.Models;
-using OrchardCore.MetaWeblog;
 using System;
+using OrchardCore.MetaWeblog;
 
 namespace OrchardCore.Media.RemotePublishing
 {

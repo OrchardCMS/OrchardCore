@@ -33,8 +33,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
         protected ISetupService SetupService { get; }
 
         public override string Name => nameof(SetupTenantTask);
-        public override LocalizedString Category => T["Tenant"];
-        public override LocalizedString DisplayText => T["Setup Tenant Task"];
+
+        public override LocalizedString Category => S["Tenant"];
+
+        public override LocalizedString DisplayText => S["Setup Tenant Task"];
 
         public WorkflowExpression<string> SiteName
         {
@@ -86,7 +88,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"], T["Failed"]);
+            return Outcomes(S["Done"], S["Failed"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

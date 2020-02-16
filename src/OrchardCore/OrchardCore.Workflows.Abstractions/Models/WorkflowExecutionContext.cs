@@ -131,7 +131,6 @@ namespace OrchardCore.Workflows.Models
                         yield return parentActivityId;
                     }
                 }
-
             }
         }
     }

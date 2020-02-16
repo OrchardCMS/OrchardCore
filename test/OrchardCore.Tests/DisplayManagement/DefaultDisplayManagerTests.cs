@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Localization;
 using OrchardCore.Tests.Stubs;
 using Xunit;
 
@@ -17,17 +18,17 @@ namespace OrchardCore.Tests.DisplayManagement
 {
     public class DefaultDisplayManagerTests
     {
-        TestShapeTable _defaultShapeTable;
-        TestShapeBindingsDictionary _additionalBindings;
-        IServiceProvider _serviceProvider;
+        private ShapeTable _defaultShapeTable;
+        private TestShapeBindingsDictionary _additionalBindings;
+        private IServiceProvider _serviceProvider;
 
         public DefaultDisplayManagerTests()
         {
-            _defaultShapeTable = new TestShapeTable
-            {
-                Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
-                Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
-            };
+            _defaultShapeTable = new ShapeTable
+            (
+                new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
+                new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
+            );
             _additionalBindings = new TestShapeBindingsDictionary();
 
             IServiceCollection serviceCollection = new ServiceCollection();
@@ -38,7 +39,9 @@ namespace OrchardCore.Tests.DisplayManagement
             serviceCollection.AddScoped<IShapeBindingResolver, TestShapeBindingResolver>();
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-            serviceCollection.AddScoped<IStringLocalizer<DefaultHtmlDisplay>, NullStringLocalizer<DefaultHtmlDisplay>>();
+            serviceCollection.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+            serviceCollection.AddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
+
             serviceCollection.AddLogging();
 
             serviceCollection.AddSingleton(_defaultShapeTable);
@@ -48,18 +51,27 @@ namespace OrchardCore.Tests.DisplayManagement
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        class TestDisplayEvents : IShapeDisplayEvents
+        private class TestDisplayEvents : IShapeDisplayEvents
         {
             public Action<ShapeDisplayContext> Displaying = ctx => { };
             public Action<ShapeDisplayContext> Displayed = ctx => { };
             public Action<ShapeDisplayContext> Finalized = ctx => { };
 
-            Task IShapeDisplayEvents.DisplayingAsync(ShapeDisplayContext context) { Displaying(context); return Task.CompletedTask; }
-            Task IShapeDisplayEvents.DisplayedAsync(ShapeDisplayContext context) { Displayed(context); return Task.CompletedTask; }
-            Task IShapeDisplayEvents.DisplayingFinalizedAsync(ShapeDisplayContext context) { Finalized(context); return Task.CompletedTask; }
+            Task IShapeDisplayEvents.DisplayingAsync(ShapeDisplayContext context)
+            {
+                Displaying(context); return Task.CompletedTask;
+            }
+            Task IShapeDisplayEvents.DisplayedAsync(ShapeDisplayContext context)
+            {
+                Displayed(context); return Task.CompletedTask;
+            }
+            Task IShapeDisplayEvents.DisplayingFinalizedAsync(ShapeDisplayContext context)
+            {
+                Finalized(context); return Task.CompletedTask;
+            }
         }
 
-        void AddShapeDescriptor(ShapeDescriptor shapeDescriptor)
+        private void AddShapeDescriptor(ShapeDescriptor shapeDescriptor)
         {
             _defaultShapeTable.Descriptors[shapeDescriptor.ShapeType] = shapeDescriptor;
             foreach (var binding in shapeDescriptor.Bindings)
@@ -68,7 +80,7 @@ namespace OrchardCore.Tests.DisplayManagement
             }
         }
 
-        static DisplayContext CreateDisplayContext(Shape shape)
+        private static DisplayContext CreateDisplayContext(Shape shape)
         {
             return new DisplayContext
             {
@@ -163,8 +175,8 @@ namespace OrchardCore.Tests.DisplayManagement
                 ProcessingAsync = new Func<ShapeDisplayContext, Task>[] {
                     context =>
                     {
-                        dynamic shape = context.Shape;
-                        shape.Data = "some data";
+                        dynamic dynamicShape = context.Shape;
+                        dynamicShape.Data = "some data";
                         return Task.CompletedTask;
                     }
                 }

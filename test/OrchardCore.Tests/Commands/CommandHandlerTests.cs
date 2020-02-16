@@ -1,11 +1,10 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Commands;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Environment.Commands;
+using OrchardCore.Localization;
 using Xunit;
 
 namespace OrchardCore.Tests.Commands
@@ -95,7 +94,6 @@ namespace OrchardCore.Tests.Commands
             _handler.ExecuteAsync(commandContext);
             Assert.Equal("Command Baz Called : This was a test", commandContext.Output.ToString());
         }
-
 
         [Fact]
         public void TestBooleanSwitchForCommand()
@@ -203,7 +201,9 @@ namespace OrchardCore.Tests.Commands
 
     public class StubCommandHandler : DefaultCommandHandler
     {
-        public StubCommandHandler() : base(new NullStringLocalizer()) { }
+        public StubCommandHandler() : base(new NullStringLocalizerFactory().Create(typeof(object)))
+        {
+        }
 
         [OrchardSwitch]
         public bool Verbose { get; set; }

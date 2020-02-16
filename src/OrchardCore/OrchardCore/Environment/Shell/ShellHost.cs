@@ -122,7 +122,7 @@ namespace OrchardCore.Environment.Shell
                 // We create a scope before checking if the shell has been released.
                 scope = shellContext.CreateScope();
 
-                // If CreateScope() returned null, the shell is released. We then remove it and 
+                // If CreateScope() returned null, the shell is released. We then remove it and
                 // retry with the hope to get one that won't be released before we create a scope.
                 if (scope == null)
                 {
@@ -141,7 +141,7 @@ namespace OrchardCore.Environment.Shell
             await ReloadShellContextAsync(settings);
         }
 
-        async Task PreCreateAndRegisterShellsAsync()
+        private async Task PreCreateAndRegisterShellsAsync()
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -328,6 +328,7 @@ namespace OrchardCore.Environment.Shell
                 if (_shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
                 {
                     _runningShellTable.Remove(settings);
+                    return;
                 }
             }
 

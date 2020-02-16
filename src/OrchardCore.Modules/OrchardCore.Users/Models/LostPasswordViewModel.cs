@@ -13,4 +13,4 @@ namespace OrchardCore.Users.ViewModels
         public User User { get; set; }
         public string LostPasswordUrl { get; set; }
     }
-} 
+}

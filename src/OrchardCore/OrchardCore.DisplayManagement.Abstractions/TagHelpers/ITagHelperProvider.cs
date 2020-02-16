@@ -26,7 +26,6 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         }
 
         public IEnumerable<Type> GetTypes() => _assembly.ExportedTypes.Where(t => t.IsSubclassOf(typeof(TagHelper)));
-
     }
 
     public class TagHelpersProvider<T> : ITagHelpersProvider

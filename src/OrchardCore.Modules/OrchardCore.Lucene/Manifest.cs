@@ -6,7 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
-
 [assembly: Feature(
     Id = "OrchardCore.Lucene",
     Name = "Lucene",
@@ -14,7 +13,8 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[]
     {
         "OrchardCore.Indexing",
-        "OrchardCore.Liquid"
+        "OrchardCore.Liquid",
+        "OrchardCore.ContentTypes"
     },
     Category = "Content Management"
 )]

@@ -12,14 +12,14 @@ namespace OrchardCore.Twitter.Services
     public class TwitterSettingsService : ITwitterSettingsService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<TwitterSettingsService> T;
+        private readonly IStringLocalizer<TwitterSettingsService> S;
 
         public TwitterSettingsService(
             ISiteService siteService,
             IStringLocalizer<TwitterSettingsService> stringLocalizer)
         {
             _siteService = siteService;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public async Task<TwitterSettings> GetSettingsAsync()
@@ -54,24 +54,23 @@ namespace OrchardCore.Twitter.Services
 
             if (string.IsNullOrWhiteSpace(settings.ConsumerKey))
             {
-                yield return new ValidationResult(T["ConsumerKey is required"], new string[] { nameof(settings.ConsumerKey) });
+                yield return new ValidationResult(S["ConsumerKey is required"], new string[] { nameof(settings.ConsumerKey) });
             }
 
             if (string.IsNullOrWhiteSpace(settings.ConsumerSecret))
             {
-                yield return new ValidationResult(T["ConsumerSecret is required"], new string[] { nameof(settings.ConsumerSecret) });
+                yield return new ValidationResult(S["ConsumerSecret is required"], new string[] { nameof(settings.ConsumerSecret) });
             }
 
             if (string.IsNullOrWhiteSpace(settings.AccessToken))
             {
-                yield return new ValidationResult(T["Access Token is required"], new string[] { nameof(settings.AccessToken) });
+                yield return new ValidationResult(S["Access Token is required"], new string[] { nameof(settings.AccessToken) });
             }
 
             if (string.IsNullOrWhiteSpace(settings.AccessTokenSecret))
             {
-                yield return new ValidationResult(T["Access Token Secret is required"], new string[] { nameof(settings.AccessTokenSecret) });
+                yield return new ValidationResult(S["Access Token Secret is required"], new string[] { nameof(settings.AccessTokenSecret) });
             }
         }
-
     }
 }

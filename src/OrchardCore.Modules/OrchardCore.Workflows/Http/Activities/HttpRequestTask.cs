@@ -17,6 +17,7 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        private readonly IStringLocalizer<HttpRequestTask> S;
 
         public HttpRequestTask(
             IStringLocalizer<HttpRequestTask> localizer,
@@ -24,16 +25,16 @@ namespace OrchardCore.Workflows.Http.Activities
             IWorkflowExpressionEvaluator expressionEvaluator
         )
         {
-            T = localizer;
+            S = localizer;
             _httpContextAccessor = httpContextAccessor;
             _expressionEvaluator = expressionEvaluator;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(HttpRequestTask);
-        public override LocalizedString DisplayText => T["Http Request Task"];
-        public override LocalizedString Category => T["HTTP"];
+
+        public override LocalizedString DisplayText => S["Http Request Task"];
+
+        public override LocalizedString Category => S["HTTP"];
 
         public WorkflowExpression<string> Url
         {
@@ -144,10 +145,10 @@ namespace OrchardCore.Workflows.Http.Activities
                 {
                     var status = int.Parse(x.Trim());
                     var description = httpStatusCodeDictionary.ContainsKey(status) ? $"{status} {httpStatusCodeDictionary[status]}" : status.ToString();
-                    return new Outcome(status.ToString(), T[description]);
+                    return new Outcome(status.ToString(), S[description]);
                 }).ToList()
                 : new List<Outcome>();
-            outcomes.Add(new Outcome("UnhandledHttpStatus", T["Unhandled Http Status"]));
+            outcomes.Add(new Outcome("UnhandledHttpStatus", S["Unhandled Http Status"]));
 
             return outcomes;
         }

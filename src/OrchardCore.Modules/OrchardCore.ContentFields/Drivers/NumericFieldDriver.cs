@@ -29,8 +29,8 @@ namespace OrchardCore.ContentFields.Fields
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(NumericField field, BuildFieldEditorContext context)
@@ -51,7 +51,7 @@ namespace OrchardCore.ContentFields.Fields
             var viewModel = new EditNumericFieldViewModel();
 
             bool modelUpdated = await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Value);
-            
+
             if (modelUpdated)
             {
                 decimal value;

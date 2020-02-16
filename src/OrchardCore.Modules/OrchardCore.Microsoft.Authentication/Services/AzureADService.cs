@@ -12,14 +12,14 @@ namespace OrchardCore.Microsoft.Authentication.Services
     public class AzureADService : IAzureADService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<AzureADService> T;
+        private readonly IStringLocalizer<AzureADService> S;
 
         public AzureADService(
             ISiteService siteService,
             IStringLocalizer<AzureADService> stringLocalizer)
         {
             _siteService = siteService;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public async Task<AzureADSettings> GetSettingsAsync()
@@ -55,17 +55,17 @@ namespace OrchardCore.Microsoft.Authentication.Services
 
             if (string.IsNullOrWhiteSpace(settings.DisplayName))
             {
-                yield return new ValidationResult(T["DisplayName is required"], new string[] { nameof(settings.DisplayName) });
+                yield return new ValidationResult(S["DisplayName is required"], new string[] { nameof(settings.DisplayName) });
             }
 
             if (string.IsNullOrWhiteSpace(settings.AppId))
             {
-                yield return new ValidationResult(T["AppId is required"], new string[] { nameof(settings.AppId) });
+                yield return new ValidationResult(S["AppId is required"], new string[] { nameof(settings.AppId) });
             }
 
             if (string.IsNullOrWhiteSpace(settings.TenantId))
             {
-                yield return new ValidationResult(T["TenantId is required"], new string[] { nameof(settings.TenantId) });
+                yield return new ValidationResult(S["TenantId is required"], new string[] { nameof(settings.TenantId) });
             }
         }
     }

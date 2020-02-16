@@ -76,7 +76,7 @@ namespace OrchardCore.Taxonomies.Drivers
             ContentItem taxonomyItem = null;
 
             // Seek the term represented by the list of indexes
-            foreach(var index in indexes)
+            foreach (var index in indexes)
             {
                 if (taxonomyItems == null || taxonomyItems.Count < index)
                 {
@@ -99,7 +99,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
             return newObj;
         }
-        
+
         private JObject ProcessItem(TaxonomyPart originalItems, JObject item)
         {
             var contentItem = GetTaxonomyItemAt(originalItems.Terms, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());

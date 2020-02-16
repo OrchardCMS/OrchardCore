@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using MimeKit;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -20,8 +21,10 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-
         private readonly INotifier _notifier;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer<RegistrationController> S;
+        private readonly IHtmlLocalizer<RegistrationController> H;
 
         public RegistrationController(
             UserManager<IUser> userManager,
@@ -36,15 +39,10 @@ namespace OrchardCore.Users.Controllers
             _authorizationService = authorizationService;
             _siteService = siteService;
             _notifier = notifier;
-
             _logger = logger;
-            TH = htmlLocalizer;
-            T = stringLocalizer;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
-
-        ILogger _logger;
-        IHtmlLocalizer TH { get; set; }
-        IStringLocalizer T { get; set; }
 
         [HttpGet]
         [AllowAnonymous]
@@ -72,10 +70,15 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
+            if (!string.IsNullOrEmpty(model.Email) && !MailboxAddress.TryParse(model.Email, out var emailAddress))
+            {
+                ModelState.AddModelError("Email", S["Invalid email."]);
+            }
+
             ViewData["ReturnUrl"] = returnUrl;
 
             // If we get a user, redirect to returnUrl
-            if (await this.RegisterUser(model, T["Confirm your account"], _logger) != null)
+            if (await this.RegisterUser(model, S["Confirm your account"], _logger) != null)
             {
                 return RedirectToLocal(returnUrl);
             }
@@ -117,15 +120,15 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user != null)
             {
-                await this.SendEmailConfirmationTokenAsync(user, T["Confirm your account"]);
+                await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
 
-                _notifier.Success(TH["Verification email sent."]);
+                _notifier.Success(H["Verification email sent."]);
             }
 
             return RedirectToAction(nameof(AdminController.Index), "Admin");
@@ -142,6 +145,5 @@ namespace OrchardCore.Users.Controllers
                 return Redirect("~/");
             }
         }
-
     }
 }

@@ -28,7 +28,6 @@ namespace OrchardCore.Html
             _logger = logger;
         }
 
-
         public int Create()
         {
             _contentDefinitionManager.AlterPartDefinition("HtmlBodyPart", builder => builder
@@ -112,6 +111,5 @@ namespace OrchardCore.Html
 
             return 4;
         }
-
     }
 }

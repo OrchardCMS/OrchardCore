@@ -149,7 +149,6 @@ namespace OrchardCore.Tests.Extensions
             Assert.Equal("Sample2", features.ElementAt(1).Id);
         }
 
-
         [Fact]
         public void GetFeaturesWithAIdShouldReturnThatFeatureWithDependenciesOrderedWithNoDuplicates()
         {

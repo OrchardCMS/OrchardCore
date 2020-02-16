@@ -1,0 +1,35 @@
+@model EditSourceViewModel
+
+<h1>@RenderTitleSegments(T["Edit Sitemap Source"])</h1>
+
+@if (String.IsNullOrEmpty(Site.BaseUrl))
+{
+    <p class="alert alert-warning">@T["The site settings 'Base url' property is empty, but is required to generate sitemaps."]</p>
+}
+
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Edit" method="post">
+    @await DisplayAsync(Model.Editor.Content)
+
+    <input type="hidden" asp-for="SitemapId" />
+    <input type="hidden" asp-for="SitemapSourceId" />
+
+    <fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+
+            <a asp-action="Delete"
+               asp-controller="Source"
+               asp-route-sitemapId="@Model.SitemapId"
+               asp-route-sourceId="@Model.SitemapSourceId"
+               class="btn btn-danger"
+               itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+
+            <a class="btn btn-secondary"
+               asp-route-action="Display"
+               asp-route-controller="Admin"
+               asp-route-sitemapId="@Model.SitemapId">@T["Cancel"]</a>
+
+        </div>
+    </fieldset>
+</form>

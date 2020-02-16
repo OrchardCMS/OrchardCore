@@ -50,7 +50,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);

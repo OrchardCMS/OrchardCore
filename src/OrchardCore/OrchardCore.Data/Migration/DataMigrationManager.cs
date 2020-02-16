@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration.Records;
 using OrchardCore.Environment.Extensions;
@@ -116,7 +115,7 @@ namespace OrchardCore.Data.Migration
                 var uninstallAsyncMethod = GetUninstallAsyncMethod(migration);
                 if (uninstallAsyncMethod != null)
                 {
-                    await (Task) uninstallAsyncMethod.Invoke(migration, new object[0]);
+                    await (Task)uninstallAsyncMethod.Invoke(migration, new object[0]);
                 }
 
                 if (dataMigrationRecord == null)
@@ -179,7 +178,8 @@ namespace OrchardCore.Data.Migration
                 var current = 0;
                 if (dataMigrationRecord != null)
                 {
-                    current = dataMigrationRecord.Version.Value;
+                    // This can be null if a failed create migration has occured and the data migration record was saved.
+                    current = dataMigrationRecord.Version.HasValue ? dataMigrationRecord.Version.Value : current;
                 }
                 else
                 {
@@ -221,11 +221,11 @@ namespace OrchardCore.Data.Migration
                         var isAwaitable = methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
                         if (isAwaitable)
                         {
-                            current = await (Task<int>) methodInfo.Invoke(migration, new object[0]);
+                            current = await (Task<int>)methodInfo.Invoke(migration, new object[0]);
                         }
                         else
                         {
-                            current = (int) methodInfo.Invoke(migration, new object[0]);
+                            current = (int)methodInfo.Invoke(migration, new object[0]);
                         }
                     }
 
