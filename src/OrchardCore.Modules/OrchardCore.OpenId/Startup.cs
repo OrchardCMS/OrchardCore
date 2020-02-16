@@ -65,13 +65,7 @@ namespace OrchardCore.OpenId
             {
                 ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
                 ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
-                ServiceDescriptor.Scoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>(),
-
-                ServiceDescriptor.Transient<IDeploymentSource, OpenIdServerDeploymentSource>(),
-
-                ServiceDescriptor.Singleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>(),
             });
-
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -197,8 +191,14 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Scoped<IDisplayManager<OpenIdServerSettings>, DisplayManager<OpenIdServerSettings>>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdServerSettingsStep>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdApplicationStep>(),
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdScopeStep>(),
 
                 ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
+
+                // Deployment
+                ServiceDescriptor.Scoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>(),
+                ServiceDescriptor.Transient<IDeploymentSource, OpenIdServerDeploymentSource>(),
+                ServiceDescriptor.Singleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>(),
             });
 
             // Note: the OpenIddict extensions add two authentication options initializers that take care of
@@ -305,6 +305,7 @@ namespace OrchardCore.OpenId
             {
                 ServiceDescriptor.Scoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>(),
                 ServiceDescriptor.Scoped<IDisplayManager<OpenIdValidationSettings>, DisplayManager<OpenIdValidationSettings>>(),
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>()
             });
 
             // Note: the OpenIddict extensions add an authentication options initializer that takes care of

@@ -45,7 +45,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var remoteInstanceList = await _service.GetRemoteInstanceListAsync();
@@ -62,7 +62,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new EditRemoteInstanceViewModel();
@@ -75,7 +75,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -99,7 +99,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var remoteInstance = await _service.GetRemoteInstanceAsync(id);
@@ -126,7 +126,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var remoteInstance = await _service.GetRemoteInstanceAsync(model.Id);
@@ -159,7 +159,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var remoteInstance = await _service.GetRemoteInstanceAsync(id);

@@ -433,6 +433,11 @@ namespace OrchardCore.ContentManagement
                     x.ContentItemId == contentItem.ContentItemId &&
                     (x.Published || x.Latest)).ListAsync();
 
+            if (!activeVersions.Any())
+            {
+                return;
+            }
+
             var context = new RemoveContentContext(contentItem, true);
 
             await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), context, _logger);
