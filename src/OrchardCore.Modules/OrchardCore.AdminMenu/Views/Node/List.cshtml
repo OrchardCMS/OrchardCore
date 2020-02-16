@@ -56,7 +56,6 @@
     <div class="form-group">
         <a class="btn btn-secondary" asp-route-controller="menu" asp-route-action="List">@T["Back"]</a>
     </div>
-
 </form>
 
 <!-- Modal -->
@@ -86,7 +85,6 @@
     </div>
 </div>
 
-
 <div id="move-error-message" class="d-none" data-message="@T["There was an error when moving the tree node."]"></div>
 
 <script at="Foot">
@@ -105,7 +103,7 @@
             success: function () {
                 location.reload(true);
             },
-            error: function (error) {                
+            error: function (error) {
                 alert($('#move-error-message').data("message"));
             }
         });
@@ -129,6 +127,4 @@
                 }
             });
     });
-
-
 </script>

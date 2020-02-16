@@ -141,10 +141,10 @@ namespace OrchardCore.Users.Controllers
             foreach (var user in results)
             {
                 userEntries.Add(new UserEntry
-                    {
-                        Id = user.Id,
-                        Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
-                    }
+                {
+                    Id = user.Id,
+                    Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
+                }
                 );
             }
 

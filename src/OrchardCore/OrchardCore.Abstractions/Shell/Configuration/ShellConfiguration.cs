@@ -22,7 +22,9 @@ namespace OrchardCore.Environment.Shell.Configuration
         private Func<string, IConfigurationBuilder> _configBuilderFactory;
         private readonly IEnumerable<IConfigurationProvider> _configurationProviders;
 
-        public ShellConfiguration() { }
+        public ShellConfiguration()
+        {
+        }
 
         public ShellConfiguration(IConfiguration configuration)
         {
@@ -37,7 +39,9 @@ namespace OrchardCore.Environment.Shell.Configuration
             _configBuilderFactory = factory;
         }
 
-        public ShellConfiguration(ShellConfiguration configuration) : this(null, configuration) { }
+        public ShellConfiguration(ShellConfiguration configuration) : this(null, configuration)
+        {
+        }
 
         public ShellConfiguration(string name, ShellConfiguration configuration)
         {

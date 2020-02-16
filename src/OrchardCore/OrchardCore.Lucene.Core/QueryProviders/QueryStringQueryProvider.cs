@@ -15,7 +15,7 @@ namespace OrchardCore.Lucene.QueryProviders
 
             var queryString = query["query"]?.Value<string>();
             var defaultField = query["default_field"]?.Value<string>();
-            
+
             var queryParser = new QueryParser(context.DefaultVersion, "", context.DefaultAnalyzer);
             return queryParser.Parse(queryString);
         }

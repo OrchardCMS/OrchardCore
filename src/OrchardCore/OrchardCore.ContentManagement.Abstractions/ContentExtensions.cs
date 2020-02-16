@@ -112,7 +112,7 @@ namespace OrchardCore.ContentManagement
         public static ContentElement Weld<TElement>(this ContentElement contentElement, object settings = null) where TElement : ContentElement, new()
         {
             var elementName = typeof(TElement).Name;
-            
+
             var elementData = contentElement.Data[elementName] as JObject;
 
             if (elementData == null)

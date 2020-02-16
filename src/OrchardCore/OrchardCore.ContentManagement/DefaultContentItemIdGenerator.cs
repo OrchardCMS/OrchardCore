@@ -15,6 +15,5 @@ namespace OrchardCore.ContentManagement
         {
             return _generator.GenerateUniqueId();
         }
-        
     }
 }

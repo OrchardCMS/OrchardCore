@@ -50,7 +50,7 @@ namespace OrchardCore.ContentFields.Fields
             bool modelUpdated = await updater.TryUpdateModelAsync(field, Prefix, f => f.Url, f => f.Text);
 
             if (modelUpdated)
-            {                
+            {
                 var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
 
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Url))

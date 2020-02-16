@@ -169,7 +169,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
             }
         }
 
-
         [Fact]
         public async Task ShouldQueryByStatus()
         {

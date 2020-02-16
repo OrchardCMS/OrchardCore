@@ -24,7 +24,6 @@ namespace OrchardCore.Admin
             ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory)
         {
-
             _navigationManager = navigationManager;
             _layoutAccessor = layoutAccessor;
             _shapeFactory = shapeFactory;

@@ -9,6 +9,5 @@ namespace OrchardCore.Media.Azure
         /// Create blob container on startup if it does not exist.
         /// </summary>
         public bool CreateContainer { get; set; }
-       
     }
 }

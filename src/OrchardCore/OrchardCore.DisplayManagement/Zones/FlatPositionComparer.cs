@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.DisplayManagement.Zones
 {
     public class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>
     {
-
         public static FlatPositionComparer Instance { get; private set; }
 
         static FlatPositionComparer()

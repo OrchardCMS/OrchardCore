@@ -4,7 +4,6 @@ using OrchardCore.Indexing;
 
 namespace OrchardCore.ContentFields.Indexing
 {
-
     public class YoutubeFieldIndexHandler : ContentFieldIndexHandler<YoutubeField>
     {
         public override Task BuildIndexAsync(YoutubeField field, BuildFieldIndexContext context)

@@ -14,7 +14,6 @@ using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
-
     [Admin]
     public class RemoteClientController : Controller
     {
@@ -54,7 +53,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
 
             var remoteClientList = await _service.GetRemoteClientListAsync();
-            
+
             var model = new RemoteClientIndexViewModel
             {
                 RemoteClientList = remoteClientList

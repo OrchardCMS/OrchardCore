@@ -6,12 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
@@ -92,7 +90,6 @@ namespace OrchardCore.AdminMenu.Controllers
                 _notifier.Error(H["Error when retrieving the list of admin menus"]);
             }
 
-
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
             routeData.Values.Add("Options.Search", options.Search);
@@ -108,7 +105,6 @@ namespace OrchardCore.AdminMenu.Controllers
 
             return View(model);
         }
-
 
         public async Task<IActionResult> Create()
         {
@@ -215,7 +211,6 @@ namespace OrchardCore.AdminMenu.Controllers
 
             var removed = await _adminMenuService.DeleteAsync(adminMenu);
 
-
             if (removed == 1)
             {
                 _notifier.Success(H["Admin menu deleted successfully"]);
@@ -227,7 +222,6 @@ namespace OrchardCore.AdminMenu.Controllers
 
             return RedirectToAction(nameof(List));
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Toggle(string id)
@@ -253,6 +247,5 @@ namespace OrchardCore.AdminMenu.Controllers
 
             return RedirectToAction(nameof(List));
         }
-
     }
 }

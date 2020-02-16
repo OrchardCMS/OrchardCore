@@ -22,7 +22,6 @@ namespace OrchardCore.ReCaptcha.Services
             _logger = logger;
         }
 
-
         /// <summary>
         /// Verifies the supplied token with ReCaptcha Api
         /// </summary>

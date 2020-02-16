@@ -78,13 +78,13 @@ namespace OrchardCore.Users.TimeZone.Services
             {
                 var user = await _userManager.FindByNameAsync(userName) as User;
                 timeZoneId = user.As<UserTimeZone>()?.TimeZoneId;
-                
+
                 if (!String.IsNullOrEmpty(timeZoneId))
                 {
                     await _distributedCache.SetStringAsync(key, timeZoneId, new DistributedCacheEntryOptions { SlidingExpiration = SlidingExpiration });
                 }
             }
-            
+
             return timeZoneId;
         }
 

@@ -6,8 +6,8 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
@@ -311,7 +311,7 @@ namespace OrchardCore.Tests.Localization
 
         [Fact]
         public async Task PortableObjectStringLocalizerShouldRegisterIStringLocalizerOfT()
-            => await StartupRunner.Run(typeof(PortableObjectLocalizationStartup),"en", "Hello");
+            => await StartupRunner.Run(typeof(PortableObjectLocalizationStartup), "en", "Hello");
 
         [Theory]
         [InlineData("ar", 1)]

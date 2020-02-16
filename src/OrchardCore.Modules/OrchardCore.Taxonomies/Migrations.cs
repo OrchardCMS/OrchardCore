@@ -10,7 +10,7 @@ namespace OrchardCore.Taxonomies
 {
     public class Migrations : DataMigration
     {
-        IContentDefinitionManager _contentDefinitionManager;
+        private IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
@@ -59,7 +59,7 @@ namespace OrchardCore.Taxonomies
         }
     }
 
-    class AliasPartSettings
+    internal class AliasPartSettings
     {
         public string Pattern { get; set; }
     }

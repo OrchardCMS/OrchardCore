@@ -49,11 +49,11 @@ namespace OrchardCore.DisplayManagement
             return propertiesAccessor(propertyObject);
         }
 
-        class NamedEnumerable<T> : INamedEnumerable<T>
+        private class NamedEnumerable<T> : INamedEnumerable<T>
         {
-            readonly List<T> _arguments;
-            readonly List<string> _names;
-            readonly T[] _positional;
+            private readonly List<T> _arguments;
+            private readonly List<string> _names;
+            private readonly T[] _positional;
             private IDictionary<string, T> _named;
 
             public NamedEnumerable(IEnumerable<T> arguments, IEnumerable<string> names)
@@ -71,7 +71,7 @@ namespace OrchardCore.DisplayManagement
                 if (_arguments.Count != _names.Count)
                 {
                     _positional = _arguments.Take(_arguments.Count - _names.Count).ToArray();
-                }                
+                }
             }
 
             IEnumerator IEnumerable.GetEnumerator()
@@ -94,7 +94,7 @@ namespace OrchardCore.DisplayManagement
                 get { return _named ?? (_named = new Named(_arguments, _names)); }
             }
 
-            class Named : IDictionary<string, T>
+            private class Named : IDictionary<string, T>
             {
                 private readonly IList<T> _arguments;
                 private readonly IList<string> _names;
@@ -114,9 +114,9 @@ namespace OrchardCore.DisplayManagement
                     _names = names;
                 }
 
-                IEnumerable<KeyValuePair<string, T>> MakeEnumerable()
+                private IEnumerable<KeyValuePair<string, T>> MakeEnumerable()
                 {
-                    return _enumerable ?? (_enumerable =_arguments.Zip(_names, (arg, name) => new KeyValuePair<string, T>(name, arg)));
+                    return _enumerable ?? (_enumerable = _arguments.Zip(_names, (arg, name) => new KeyValuePair<string, T>(name, arg)));
                 }
 
                 IEnumerator<KeyValuePair<string, T>> IEnumerable<KeyValuePair<string, T>>.GetEnumerator()

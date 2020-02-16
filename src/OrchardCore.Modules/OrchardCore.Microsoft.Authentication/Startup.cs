@@ -34,7 +34,7 @@ namespace OrchardCore.Microsoft.Authentication
             services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
             services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
-            services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>(); 
+            services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
             // Register the options initializers required by the Microsoft Account Handler.
             services.TryAddEnumerable(new[]
             {

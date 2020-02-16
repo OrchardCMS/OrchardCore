@@ -27,9 +27,9 @@ namespace OrchardCore.Forms.Workflows.Activities
         }
 
         public override string Name => nameof(BindModelStateTask);
-        
+
         public override LocalizedString DisplayText => S["Bind Model State Task"];
-        
+
         public override LocalizedString Category => S["Validation"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

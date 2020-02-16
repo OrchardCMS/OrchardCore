@@ -13,7 +13,7 @@ namespace OrchardCore.Workflows.Activities
         private readonly ILogger<LogTask> _logger;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         private readonly IStringLocalizer<LogTask> S;
-        
+
         public LogTask(ILogger<LogTask> logger, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<LogTask> localizer)
         {
             _logger = logger;
@@ -21,9 +21,9 @@ namespace OrchardCore.Workflows.Activities
             S = localizer;
         }
         public override string Name => nameof(LogTask);
-        
+
         public override LocalizedString DisplayText => S["Log Task"];
-        
+
         public override LocalizedString Category => S["Primitives"];
 
         public LogLevel LogLevel
