@@ -1,9 +1,17 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using OrchardCore.Data;
 
-namespace OrchardCore.Data
+namespace OrchardCore.Infrastructure.Cache
 {
+    /// <summary>
+    /// A generic service to keep in sync a multi level distributed cache with a given document store.
+    /// </summary>
+    public interface IDocumentStoreDistributedCache<TDocumentStore> : IDocumentStoreDistributedCache where TDocumentStore : ICacheableDocumentStore
+    {
+    }
+
     /// <summary>
     /// Keeps in sync a multi level distributed cache with a given document store.
     /// </summary>

@@ -15,7 +15,7 @@ namespace OrchardCore.Infrastructure.Cache
     /// <summary>
     /// A generic service to keep in sync a multi level distributed cache with a given document store.
     /// </summary>
-    public class DistributedCache<TDocumentStore> : IDistributedCache<TDocumentStore> where TDocumentStore : ICacheableDocumentStore
+    public class DocumentStoreDistributedCache<TDocumentStore> : IDocumentStoreDistributedCache<TDocumentStore> where TDocumentStore : ICacheableDocumentStore
     {
         private static readonly DefaultIdGenerator _idGenerator = new DefaultIdGenerator();
 
@@ -25,7 +25,7 @@ namespace OrchardCore.Infrastructure.Cache
 
         private readonly Dictionary<string, object> _scopedCache = new Dictionary<string, object>();
 
-        public DistributedCache(TDocumentStore documentStore, IDistributedCache distributedCache, IMemoryCache memoryCache)
+        public DocumentStoreDistributedCache(TDocumentStore documentStore, IDistributedCache distributedCache, IMemoryCache memoryCache)
         {
             _documentStore = documentStore;
             _distributedCache = distributedCache;
