@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using OrchardCore.DisplayManagement;
 
-namespace OrchardCore.UI
+namespace OrchardCore.DisplayManagement.Zones
 {
     public class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>
     {

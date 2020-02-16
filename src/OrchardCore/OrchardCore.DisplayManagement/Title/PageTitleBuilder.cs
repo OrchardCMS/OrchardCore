@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
-using OrchardCore.UI;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Title
 {
