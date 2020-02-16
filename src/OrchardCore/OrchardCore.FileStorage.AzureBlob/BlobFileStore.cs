@@ -269,7 +269,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             return blobFile.BlobReference.OpenReadAsync();
         }
 
-        public async Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+        public async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
             var blob = GetBlobReference(path);
 
@@ -283,6 +283,8 @@ namespace OrchardCore.FileStorage.AzureBlob
             blob.Properties.ContentType = contentType ?? "application/octet-stream";
 
             await blob.UploadFromStreamAsync(inputStream);
+
+            return path;
         }
 
         private CloudBlockBlob GetBlobReference(string path)
