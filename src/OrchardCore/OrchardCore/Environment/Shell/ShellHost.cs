@@ -363,17 +363,7 @@ namespace OrchardCore.Environment.Shell
         /// Retrieves all shell settings.
         /// </summary>
         /// <returns>All shell settings.</returns>
-        public IEnumerable<ShellSettings> GetAllSettings()
-        {
-            var shells = _shellContexts.Values.ToArray();
-
-            if (shells.Length == 0)
-            {
-                return Enumerable.Empty<ShellSettings>();
-            }
-
-            return shells.Select(s => s.Settings);
-        }
+        public IEnumerable<ShellSettings> GetAllSettings() => ListShellContexts().Select(s => s.Settings);
 
         /// <summary>
         /// Whether or not a shell can be added to the list of available shells.
