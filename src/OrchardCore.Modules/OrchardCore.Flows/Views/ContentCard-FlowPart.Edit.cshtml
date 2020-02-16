@@ -32,7 +32,7 @@
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            @foreach (var type in widgetContentTypes)
+                            @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                             {
                                 <a class="dropdown-item insert-widget btn-sm"
                                     data-target-id="@Model.TargetId"
