@@ -89,7 +89,7 @@ namespace OrchardCore.Environment.Extensions.Features
                     {
                         builder.Built(featureInfo);
                     }
-                    
+
                     featuresInfos.Add(featureInfo);
                 }
             }

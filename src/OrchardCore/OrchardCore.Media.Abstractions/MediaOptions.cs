@@ -28,7 +28,7 @@ namespace OrchardCore.Media
         public int MaxCacheDays { get; set; }
 
         /// <summary>
-        /// The maximum size of an uploaded file in bytes. 
+        /// The maximum size of an uploaded file in bytes.
         /// NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
         /// </summary>
         public int MaxFileSize { get; set; }

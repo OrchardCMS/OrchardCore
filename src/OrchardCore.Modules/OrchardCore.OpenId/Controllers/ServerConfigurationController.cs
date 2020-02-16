@@ -16,7 +16,7 @@ using OrchardCore.OpenId.Settings;
 namespace OrchardCore.OpenId.Controllers
 {
     [Admin, Feature(OpenIdConstants.Features.Server)]
-    public class ServerConfigurationController : Controller, IUpdateModel
+    public class ServerConfigurationController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
@@ -24,6 +24,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IDisplayManager<OpenIdServerSettings> _serverSettingsDisplayManager;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHtmlLocalizer<ServerConfigurationController> H;
 
         public ServerConfigurationController(
@@ -33,7 +34,8 @@ namespace OrchardCore.OpenId.Controllers
             IOpenIdServerService serverService,
             IDisplayManager<OpenIdServerSettings> serverSettingsDisplayManager,
             IShellHost shellHost,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _authorizationService = authorizationService;
             H = htmlLocalizer;
@@ -42,17 +44,18 @@ namespace OrchardCore.OpenId.Controllers
             _serverSettingsDisplayManager = serverSettingsDisplayManager;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            _updateModelAccessor = updateModelAccessor;
         }
 
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageServerSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var settings = await _serverService.GetSettingsAsync();
-            var shape = await _serverSettingsDisplayManager.BuildEditorAsync(settings, updater: this, isNew: false);
+            var shape = await _serverSettingsDisplayManager.BuildEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             return View(shape);
         }
@@ -63,11 +66,11 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageServerSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var settings = await _serverService.GetSettingsAsync();
-            var shape = await _serverSettingsDisplayManager.UpdateEditorAsync(settings, updater: this, isNew: false);
+            var shape = await _serverSettingsDisplayManager.UpdateEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             if (!ModelState.IsValid)
             {

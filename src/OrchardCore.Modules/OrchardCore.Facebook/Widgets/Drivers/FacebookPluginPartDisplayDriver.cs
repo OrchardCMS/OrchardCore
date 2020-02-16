@@ -17,6 +17,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
+        private readonly IStringLocalizer<FacebookPluginPartDisplayDriver> S;
 
         public FacebookPluginPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
@@ -25,10 +26,8 @@ namespace OrchardCore.Facebook.Widgets.Drivers
         {
             _contentDefinitionManager = contentDefinitionManager;
             _liquidTemplatemanager = liquidTemplatemanager;
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Display(FacebookPluginPart part)
         {
@@ -83,7 +82,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             {
                 if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
                 {
-                    updater.ModelState.AddModelError(nameof(model.Liquid), T["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
                 }
                 else
                 {

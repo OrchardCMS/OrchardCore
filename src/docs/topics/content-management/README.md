@@ -1,6 +1,6 @@
 # Content Management
 
-Orchard Core allows you to define your content types and manage your content items dynamically.
+Orchard Core allows you to define your [content types](../glossary/#Content-Type) and manage your [content items](../glossary/#Content-Item) dynamically.
 
 ## How to Create Contents
 
@@ -9,4 +9,4 @@ Orchard Core allows you to define your content types and manage your content ite
 - [Add Content Fields](../../reference/modules/ContentFields/README.md)
 - [Preview your Content](../../reference/modules/ContentPreview/README.md)
 - [Use Widgets](../../reference/modules/Widgets/README.md)
-- TBD [Layers and Zones](https://github.com/OrchardCMS/OrchardCore/issues/3111)
+- [Layers and Zones](../../reference/modules/Layers/README.md)

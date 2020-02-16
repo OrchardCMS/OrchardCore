@@ -16,12 +16,14 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(RetrieveContentTask);
-        public override LocalizedString DisplayText => T["Retrieve Content Task"];
-        public override LocalizedString Category => T["Content"];
+
+        public override LocalizedString DisplayText => S["Retrieve Content Task"];
+
+        public override LocalizedString Category => S["Content"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Retrieved"]);
+            return Outcomes(S["Retrieved"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -29,6 +31,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             var contentItemId = await GetContentItemIdAsync(workflowContext);
             var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
             workflowContext.LastResult = contentItem;
+
             return Outcomes("Retrieved");
         }
     }

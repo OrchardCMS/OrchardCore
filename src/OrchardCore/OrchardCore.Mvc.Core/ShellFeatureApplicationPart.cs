@@ -62,7 +62,6 @@ namespace OrchardCore.Mvc
                     }
                 }
 
-
                 return _shellBlueprint
                     .Dependencies.Keys
                     .Concat(_tagHelpers.SelectMany(p => p.GetTypes()))

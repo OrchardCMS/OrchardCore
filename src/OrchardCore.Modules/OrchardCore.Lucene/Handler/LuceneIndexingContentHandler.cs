@@ -16,7 +16,9 @@ namespace OrchardCore.Lucene.Handlers
     {
         private readonly List<ContentContextBase> _contexts = new List<ContentContextBase>();
 
-        public LuceneIndexingContentHandler() { }
+        public LuceneIndexingContentHandler()
+        {
+        }
 
         public override Task PublishedAsync(PublishContentContext context) => AddContextAsync(context);
         public override Task CreatedAsync(CreateContentContext context) => AddContextAsync(context);
@@ -26,6 +28,12 @@ namespace OrchardCore.Lucene.Handlers
 
         private Task AddContextAsync(ContentContextBase context)
         {
+            // A previewed content item is transient, and is marked as such with a negative id.
+            if (context.ContentItem.Id == -1)
+            {
+                return Task.CompletedTask;
+            }
+
             if (_contexts.Count == 0)
             {
                 var contexts = _contexts;

@@ -19,7 +19,7 @@ namespace OrchardCore.Contents.Indexing
             var result = await _contentManager.PopulateAspectAsync<FullTextAspect>(context.ContentItem);
 
             // Index each segment as a new value to prevent from allocation a new string
-            foreach(var segment in result.Segments)
+            foreach (var segment in result.Segments)
             {
                 context.DocumentIndex.Set(
                     IndexingConstants.FullTextKey,

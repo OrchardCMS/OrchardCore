@@ -24,11 +24,13 @@ namespace OrchardCore.ContentFields.Fields
         public override IDisplayResult Display(YoutubeField field, BuildFieldDisplayContext context)
         {
             return Initialize<YoutubeFieldDisplayViewModel>(GetDisplayShapeType(context), model =>
-           {
-               model.Field = field;
-               model.Part = context.ContentPart;
-               model.PartFieldDefinition = context.PartFieldDefinition;
-           }).Location("Content").Location("SummaryAdmin", "");
+            {
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
+            })
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(YoutubeField field, BuildFieldEditorContext context)

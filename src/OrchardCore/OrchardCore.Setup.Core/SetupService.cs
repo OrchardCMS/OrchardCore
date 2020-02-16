@@ -28,7 +28,7 @@ namespace OrchardCore.Setup.Services
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer T;
+        private readonly IStringLocalizer<SetupService> S;
         private readonly IHostApplicationLifetime _applicationLifetime;
         private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
@@ -60,7 +60,7 @@ namespace OrchardCore.Setup.Services
             _shellContextFactory = shellContextFactory;
             _recipeHarvesters = recipeHarvesters;
             _logger = logger;
-            T = stringLocalizer;
+            S = stringLocalizer;
             _applicationLifetime = applicationLifetime;
         }
 
@@ -165,7 +165,7 @@ namespace OrchardCore.Setup.Services
                         // unless the recipe is executing?
 
                         _logger.LogError(e, "An error occurred while initializing the datastore.");
-                        context.Errors.Add("DatabaseProvider", T["An error occurred while initializing the datastore: {0}", e.Message]);
+                        context.Errors.Add("DatabaseProvider", S["An error occurred while initializing the datastore: {0}", e.Message]);
                         return;
                     }
 
@@ -189,18 +189,18 @@ namespace OrchardCore.Setup.Services
 
                 await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new
                 {
-                    SiteName = context.SiteName,
-                    AdminUsername = context.AdminUsername,
-                    AdminEmail = context.AdminEmail,
-                    AdminPassword = context.AdminPassword,
-                    DatabaseProvider = context.DatabaseProvider,
-                    DatabaseConnectionString = context.DatabaseConnectionString,
-                    DatabaseTablePrefix = context.DatabaseTablePrefix
+                    context.SiteName,
+                    context.AdminUsername,
+                    context.AdminEmail,
+                    context.AdminPassword,
+                    context.DatabaseProvider,
+                    context.DatabaseConnectionString,
+                    context.DatabaseTablePrefix
                 },
                 _applicationLifetime.ApplicationStopping);
             }
 
-            // Reloading the shell context as the recipe  has probably updated its features
+            // Reloading the shell context as the recipe has probably updated its features
             using (var shellContext = await _shellHost.CreateShellContextAsync(shellSettings))
             {
                 await shellContext.CreateScope().UsingAsync(async scope =>

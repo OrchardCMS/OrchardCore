@@ -24,6 +24,7 @@ using OrchardCore.Contents.Recipes;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.Settings;
+using OrchardCore.Contents.Sitemaps;
 using OrchardCore.Contents.TagHelpers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
@@ -40,6 +41,10 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Sitemaps.Builders;
+using OrchardCore.Sitemaps.Cache;
+using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Contents
 {
@@ -75,11 +80,11 @@ namespace OrchardCore.Contents
             services.AddScoped<IDataMigration, Migrations>();
 
             // Common Part
-            services.AddContentPart<CommonPart>();
+            services.AddContentPart<CommonPart>()
+                .UseDisplayDriver<DateEditorDriver>()
+                .UseDisplayDriver<OwnerEditorDriver>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, CommonPartSettingsDisplayDriver>();
-            services.AddScoped<IContentPartDisplayDriver, DateEditorDriver>();
-            services.AddScoped<IContentPartDisplayDriver, OwnerEditorDriver>();
 
             // FullTextAspect
             services.AddScoped<IContentTypeDefinitionDisplayDriver, FullTextAspectSettingsDisplayDriver>();
@@ -160,7 +165,42 @@ namespace OrchardCore.Contents
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
                 pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentTypeId?}",
-                defaults: new {controller = adminControllerName, action = nameof(AdminController.List) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.List) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "AdminPublishContentItem",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Publish",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Publish) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "AdminDiscardDraftContentItem",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/DiscardDraft",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.DiscardDraft) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "AdminDeleteContentItem",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Delete",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Remove) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "AdminCloneContentItem",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Clone",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Clone) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "AdminUnpublishContentItem",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Unpublish",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Unpublish) }
             );
         }
     }
@@ -192,7 +232,6 @@ namespace OrchardCore.Contents
         }
     }
 
-
     [RequireFeatures("OrchardCore.AdminMenu")]
     public class AdminMenuStartup : StartupBase
     {
@@ -210,6 +249,21 @@ namespace OrchardCore.Contents
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddFileContentDefinitionStore();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Sitemaps")]
+    public class SitemapsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ISitemapSourceBuilder, ContentTypesSitemapSourceBuilder>();
+            services.AddScoped<ISitemapSourceCacheManager, ContentTypesSitemapSourceCacheManager>();
+            services.AddScoped<ISitemapSourceModifiedDateProvider, ContentTypesSitemapSourceModifiedDateProvider>();
+            services.AddScoped<IDisplayDriver<SitemapSource>, ContentTypesSitemapSourceDriver>();
+            services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<ContentTypesSitemapSource>>();
+            services.AddScoped<IContentItemsQueryProvider, DefaultContentItemsQueryProvider>();
+            services.AddScoped<IContentHandler, ContentTypesSitemapCacheHandler>();
         }
     }
 }

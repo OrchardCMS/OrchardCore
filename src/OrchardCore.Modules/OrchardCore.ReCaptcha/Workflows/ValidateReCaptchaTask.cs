@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.ReCaptcha.Services;
@@ -14,6 +13,7 @@ namespace OrchardCore.ReCaptcha.Workflows
     {
         private readonly ReCaptchaService _reCaptchaService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IStringLocalizer<ValidateReCaptchaTask> S;
 
         public ValidateReCaptchaTask(
             ReCaptchaService reCaptchaService,
@@ -23,19 +23,20 @@ namespace OrchardCore.ReCaptcha.Workflows
         {
             _reCaptchaService = reCaptchaService;
             _updateModelAccessor = updateModelAccessor;
-            T = localizer;
+            S = localizer;
         }
 
         public override string Name => nameof(ValidateReCaptchaTask);
-        public override LocalizedString DisplayText => T["Validate ReCaptcha Task"];
-        public override LocalizedString Category => T["Validation"];
-        public override bool HasEditor => false;
 
-        private IStringLocalizer T { get; set; }
+        public override LocalizedString DisplayText => S["Validate ReCaptcha Task"];
+
+        public override LocalizedString Category => S["Validation"];
+
+        public override bool HasEditor => false;
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"], T["Valid"], T["Invalid"]);
+            return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -48,7 +49,7 @@ namespace OrchardCore.ReCaptcha.Workflows
                 outcome = "Invalid";
                 if (updater != null)
                 {
-                    updater.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, T["Captcha validation failed. Try again."]);
+                    updater.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
                 }
             });
 

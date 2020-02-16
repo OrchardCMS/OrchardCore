@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -13,14 +12,14 @@ namespace OrchardCore.Html.GraphQL
 {
     public class HtmlBodyQueryObjectType : ObjectGraphType<HtmlBodyPart>
     {
-        public HtmlBodyQueryObjectType(IStringLocalizer<HtmlBodyQueryObjectType> T)
+        public HtmlBodyQueryObjectType(IStringLocalizer<HtmlBodyQueryObjectType> S)
         {
             Name = "HtmlBodyPart";
-            Description = T["Content stored as HTML."];
+            Description = S["Content stored as HTML."];
 
             Field<StringGraphType>()
                 .Name("html")
-                .Description(T["the HTML content"])
+                .Description(S["the HTML content"])
                 .ResolveLockedAsync(RenderHtml);
         }
 
@@ -32,16 +31,13 @@ namespace OrchardCore.Html.GraphQL
 
             var model = new HtmlBodyPartViewModel()
             {
+                Html = ctx.Source.Html,
                 HtmlBodyPart = ctx.Source,
                 ContentItem = ctx.Source.ContentItem
             };
 
-            var templateContext = new TemplateContext();
-            templateContext.SetValue("ContentItem", ctx.Source.ContentItem);
-            templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
-            templateContext.SetValue("Model", model);
-
-            return await liquidTemplateManager.RenderAsync(ctx.Source.Html, htmlEncoder, templateContext);
+            return await liquidTemplateManager.RenderAsync(ctx.Source.Html, htmlEncoder, model,
+                scope => scope.SetValue("ContentItem", model.ContentItem));
         }
     }
 }

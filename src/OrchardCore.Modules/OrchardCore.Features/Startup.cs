@@ -37,7 +37,6 @@ namespace OrchardCore.Features
             services.AddScoped<IModuleService, ModuleService>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-
             services.AddTransient<IDeploymentSource, AllFeaturesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllFeaturesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllFeaturesDeploymentStepDriver>();

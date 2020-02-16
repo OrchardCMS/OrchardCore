@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
 using OrchardCore.Recipes.Models;
@@ -53,7 +51,7 @@ namespace OrchardCore.Deployment.Recipes
                 {
                     if (deploymentStepFactories.TryGetValue(step.Type, out var deploymentStepFactory))
                     {
-                        var deploymentStep = (DeploymentStep) step.Step.ToObject(deploymentStepFactory.Create().GetType());
+                        var deploymentStep = (DeploymentStep)step.Step.ToObject(deploymentStepFactory.Create().GetType());
 
                         deploymentPlan.DeploymentSteps.Add(deploymentStep);
                     }

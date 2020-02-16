@@ -14,7 +14,7 @@ namespace OrchardCore.Media.Services
 {
     /// <summary>
     /// Handles file management operations related to the attached media field
-    /// </summary>    
+    /// </summary>
     public class AttachedMediaFieldFileService
     {
         private readonly IMediaFileStore _fileStore;

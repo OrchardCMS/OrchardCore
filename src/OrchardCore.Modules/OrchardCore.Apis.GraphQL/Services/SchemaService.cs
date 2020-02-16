@@ -91,7 +91,6 @@ namespace OrchardCore.Apis.GraphQL.Services
 
                 schema.Initialize();
                 return _schema = schema;
-
             }
             finally
             {

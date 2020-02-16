@@ -57,7 +57,7 @@ namespace OrchardCore.DisplayManagement.Views
                 _defaultLocation = context.DefaultZone;
             }
 
-            // Look into specific implementations of placements (like placement.info files)
+            // Look into specific implementations of placements (like placement.json files)
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
 
             // Look for mapped display type locations
@@ -87,7 +87,6 @@ namespace OrchardCore.DisplayManagement.Views
             {
                 placement.DefaultPosition = context.DefaultPosition;
             }
-
 
             // If there are no placement or it's explicitely noop then stop rendering execution
             if (String.IsNullOrEmpty(placement.Location) || placement.Location == "-")
@@ -195,9 +194,9 @@ namespace OrchardCore.DisplayManagement.Views
             {
                 await zoneOnDemand.AddAsync(newShape, position);
             }
-            else
+            else if (parentShape is Shape shape)
             {
-                parentShape.Add(newShape, position);
+                shape.Add(newShape, position);
             }
         }
 

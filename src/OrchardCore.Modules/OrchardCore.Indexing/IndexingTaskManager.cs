@@ -147,7 +147,6 @@ namespace OrchardCore.Indexing.Services
                                 await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
                                 ids = ids.Skip(pageSize).ToArray();
                             }
-
                         } while (ids.Any());
 
                         var insertCmd = $"insert into {dialect.QuoteForTableName(table)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";

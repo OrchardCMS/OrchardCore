@@ -1,8 +1,8 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using System;
-using OrchardCore.Environment.Shell;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Tenants
 {

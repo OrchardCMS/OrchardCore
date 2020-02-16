@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Filters;
-
 namespace OrchardCore.ReCaptcha.ActionFilters.Detection
 {
     /// <summary>
