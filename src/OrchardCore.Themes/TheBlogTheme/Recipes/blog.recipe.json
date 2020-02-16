@@ -1094,13 +1094,11 @@
                 "[js: variables('spaceTagContentItemId')]"
               ],
               "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]",
-              "TagElement":{ 
-                "Tags":[ 
-                  "Earth",
-                  "Exploration",
-                  "Space"
-                ]
-              }
+              "TagNames": [ 
+                "Earth",
+                "Exploration",
+                "Space"
+              ]
             },
             "Category": {
               "TermContentItemIds": [

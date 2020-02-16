@@ -94,7 +94,7 @@ namespace OrchardCore.Taxonomies.Drivers
                     terms.Add(term);
                 }
 
-                field.Alter<TagElement>(nameof(TagElement), t => t.Tags = terms.Select(t => t.DisplayText).ToArray());
+                field.SetTagNames(terms.Select(t => t.DisplayText).ToArray());
             }
 
             return Edit(field, context);
