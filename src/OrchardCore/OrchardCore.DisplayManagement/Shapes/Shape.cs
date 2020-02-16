@@ -6,6 +6,7 @@ using System.Dynamic;
 using System.Linq;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using OrchardCore.UI;
 
 namespace OrchardCore.DisplayManagement.Shapes
@@ -22,8 +23,8 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public string Id { get; set; }
         public string TagName { get; set; }
-        public IList<string> Classes => _classes = _classes ?? new List<string>();
-        public IDictionary<string, string> Attributes => _attributes = _attributes ?? new Dictionary<string, string>();
+        public IList<string> Classes => _classes ??= new List<string>();
+        public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
         public IEnumerable<dynamic> Items => _items;
         public bool HasItems => _items.Count > 0;
 
@@ -159,16 +160,18 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             var tagName = defaultTagName;
 
+            // We keep this for backward compatibility
             if (shape.Properties.TryGetValue("Tag", out var value) && value is string valueString)
             {
                 tagName = valueString;
             }
 
-            string id = shape.Id;
-            IEnumerable<string> classes = shape.Classes;
-            IDictionary<string, string> attributes = shape.Attributes;
+            if (!String.IsNullOrEmpty(shape.TagName))
+            {
+                tagName = shape.TagName;
+            }
 
-            return GetTagBuilder(tagName, id, classes, attributes);
+            return GetTagBuilder(tagName, shape.Id, shape.Classes, shape.Attributes);
         }
 
         public static TagBuilder GetTagBuilder(string tagName, string id, IEnumerable<string> classes, IDictionary<string, string> attributes)
@@ -185,7 +188,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 tagBuilder.AddCssClass(cssClass);
             }
 
-            if (!string.IsNullOrWhiteSpace(id))
+            if (!String.IsNullOrWhiteSpace(id))
             {
                 tagBuilder.Attributes["id"] = id;
             }
@@ -206,6 +209,69 @@ namespace OrchardCore.DisplayManagement.Shapes
                     result = NormalizedNamed(name.Replace("__", "-"));
                 }
             }
+
+            return true;
+        }
+
+        protected override bool TrySetMemberImpl(string name, object value)
+        {
+            // We set the Shape real properties for Razor
+            if (name == "Id")
+            {
+                Id = value as string;
+
+                return true;
+            }
+
+            if (name == "TagName")
+            {
+                TagName = value as string;
+
+                return true;
+            }
+
+            if (name == "Attributes")
+            {
+                if (value is Dictionary<string, string> attributes)
+                {
+                    foreach (var attribute in attributes)
+                    {
+                        Attributes.TryAdd(attribute.Key, attribute.Value);
+                    }
+                }
+
+                if (value is string stringValue)
+                {
+                    attributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
+
+                    foreach (var attribute in attributes)
+                    {
+                        Attributes.TryAdd(attribute.Key, attribute.Value);
+                    }
+                }
+            }
+
+            if (name == "Classes")
+            {
+                if (value is List<string> classes)
+                {
+                    foreach (var item in classes)
+                    {
+                        Classes.Add(item);
+                    }
+                }
+
+                if (value is string stringValue)
+                {
+                    var values = stringValue.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var item in values)
+                    {
+                        Classes.Add(item);
+                    }
+                }
+            }
+
+            base.TrySetMemberImpl(name, value);
 
             return true;
         }

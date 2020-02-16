@@ -84,6 +84,18 @@
   },
   {
     "inputs": [
+      "node_modules/codemirror/mode/css/css.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/mode/css/css.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/mode/htmlmixed/htmlmixed.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/mode/htmlmixed/htmlmixed.js"
+  },
+  {
+    "inputs": [
       "node_modules/codemirror/mode/javascript/javascript.js"
     ],
     "output": "wwwroot/Scripts/codemirror/mode/javascript/javascript.js"
