@@ -8,25 +8,21 @@ using OrchardCore.Environment.Shell.State;
 
 namespace OrchardCore.Environment.Shell
 {
-    // This class is registered automatically as transient as it is an event handler
     public class ShellStateCoordinator : IShellDescriptorManagerEventHandler
     {
-        private readonly ShellSettings _settings;
         private readonly IShellStateManager _stateManager;
 
         public ShellStateCoordinator(
-            ShellSettings settings,
             IShellStateManager stateManager,
             ILogger<ShellStateCoordinator> logger)
         {
-            _settings = settings;
             _stateManager = stateManager;
             Logger = logger;
         }
 
         public ILogger Logger { get; set; }
 
-        async Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
+        async Task IShellDescriptorManagerEventHandler.ChangedAsync(ShellDescriptor descriptor, ShellSettings settings)
         {
             // deduce and apply state changes involved
             var shellState = await _stateManager.GetShellStateAsync();
@@ -78,7 +74,7 @@ namespace OrchardCore.Environment.Shell
                 {
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Adding pending task 'ApplyChanges' for tenant '{TenantName}'", _settings.Name);
+                        Logger.LogInformation("Adding pending task 'ApplyChanges' for tenant '{TenantName}'", scope.ShellContext.Settings.Name);
                     }
 
                     await shellStateUpdater.ApplyChanges();
@@ -98,6 +94,7 @@ namespace OrchardCore.Environment.Shell
             {
                 return true;
             }
+
             return false;
         }
     }

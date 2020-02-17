@@ -48,7 +48,7 @@ namespace OrchardCore.Environment.Shell
         void ReleaseAllShellContexts();
 
         /// <summary>
-        /// Creates a new <see cref="ShellContext"/>.
+        /// Creates a new <see cref="ShellContext"/>. Not intended to be used directly, use instead <see cref="GetOrCreateShellContextAsync"/>.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to create.</param>
         /// <returns></returns>

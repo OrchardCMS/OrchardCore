@@ -134,11 +134,112 @@ namespace OrchardCore.Environment.Shell
             return scope;
         }
 
+        /// <summary>
+        /// A feature is enabled / disabled, the tenant needs to be restarted.
+        /// </summary>
+        Task IShellDescriptorManagerEventHandler.ChangedAsync(ShellDescriptor descriptor, ShellSettings settings)
+        {
+            ReleaseShellContext(settings);
+            return Task.CompletedTask;
+        }
+
         public async Task UpdateShellSettingsAsync(ShellSettings settings)
         {
             await _shellSettingsManager.SaveSettingsAsync(settings);
             await ReloadShellContextAsync(settings);
         }
+
+        /// <summary>
+        /// Marks the specific tenant as released, such that a new shell is created for subsequent requests,
+        /// while existing requests get flushed.
+        /// </summary>
+        /// <param name="settings"></param>
+        public async Task ReloadShellContextAsync(ShellSettings settings)
+        {
+            // If a disabled shell is still in use it will be released and then disposed by its last scope. So here,
+            // we keep it in the list to prevent the consumer from creating a new one that would have a null service provider,
+            // knowing that it is still removed from the running shell table, so that it is no more served.
+
+            if (settings.State == TenantState.Disabled && _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
+            {
+                _runningShellTable.Remove(settings);
+                return;
+            }
+
+            if (_shellContexts.TryRemove(settings.Name, out var context))
+            {
+                _runningShellTable.Remove(settings);
+                context.Release();
+            }
+
+            if (settings.State != TenantState.Initializing)
+            {
+                settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
+            }
+
+            await GetOrCreateShellContextAsync(settings);
+        }
+
+        /// <summary>
+        /// Releases a shell to free up resources but keeps its settings in the running shell table,
+        /// so that it is still served but a new shell will only be created on a new request.
+        /// </summary>
+        /// <param name="settings"></param>
+        public void ReleaseShellContext(ShellSettings settings)
+        {
+            // If a disabled shell is still in use it will be released and then disposed by its last scope. So here,
+            // we keep it in the list to prevent the consumer from creating a new one that would have a null service provider,
+            // knowing that it has been or will be removed from the running shell table, so that it is no more served.
+
+            if (settings.State == TenantState.Disabled && _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
+            {
+                return;
+            }
+
+            if (_shellContexts.TryRemove(settings.Name, out var context))
+            {
+                context.Release();
+            }
+
+            // Keep a placeholder holding the settings so that they can still be retrieved by another shell.
+            _shellContexts.TryAdd(context.Settings.Name, new ShellContext.PlaceHolder { Settings = settings });
+        }
+
+        /// <summary>
+        /// Releases all shells to free up resources but keeps all settings in the running shell table,
+        /// so that they are still served but new shells will only be created on new requests.
+        /// </summary>
+        public void ReleaseAllShellContexts()
+        {
+            foreach (var shell in ListShellContexts())
+            {
+                ReleaseShellContext(shell.Settings);
+            }
+        }
+
+        public IEnumerable<ShellContext> ListShellContexts() => _shellContexts.Values.ToArray();
+
+        /// <summary>
+        /// Tries to retrieve the shell settings associated with the specified tenant.
+        /// </summary>
+        /// <returns><c>true</c> if the settings could be found, <c>false</c> otherwise.</returns>
+        public bool TryGetSettings(string name, out ShellSettings settings)
+        {
+            if (_shellContexts.TryGetValue(name, out var shell))
+            {
+                settings = shell.Settings;
+                return true;
+            }
+
+            settings = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Retrieves all shell settings.
+        /// </summary>
+        /// <returns>All shell settings.</returns>
+        public IEnumerable<ShellSettings> GetAllSettings() => ListShellContexts().Select(s => s.Settings);
 
         private async Task PreCreateAndRegisterShellsAsync()
         {
@@ -172,12 +273,6 @@ namespace OrchardCore.Environment.Shell
                 // Pre-create and register all tenant shells.
                 foreach (var settings in allSettings)
                 {
-                    if (settings.Name == ShellHelper.DefaultShellName)
-                    {
-                        await GetOrCreateShellContextAsync(settings);
-                        continue;
-                    }
-
                     AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings });
                 };
             }
@@ -186,48 +281,6 @@ namespace OrchardCore.Environment.Shell
             {
                 _logger.LogInformation("Done pre-creating and registering shells");
             }
-        }
-
-        /// <summary>
-        /// Adds the shell and registers its settings in RunningShellTable
-        /// </summary>
-        private void AddAndRegisterShell(ShellContext context)
-        {
-            if (_shellContexts.TryAdd(context.Settings.Name, context) && CanRegisterShell(context))
-            {
-                RegisterShellSettings(context.Settings);
-            }
-        }
-
-        /// <summary>
-        /// Whether or not a shell can be activated and added to the running shells.
-        /// </summary>
-        private bool CanRegisterShell(ShellContext context)
-        {
-            if (!CanRegisterShell(context.Settings))
-            {
-                if (_logger.IsEnabled(LogLevel.Debug))
-                {
-                    _logger.LogDebug("Skipping shell context registration for tenant '{TenantName}'", context.Settings.Name);
-                }
-
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Registers the shell settings in RunningShellTable
-        /// </summary>
-        private void RegisterShellSettings(ShellSettings settings)
-        {
-            if (_logger.IsEnabled(LogLevel.Debug))
-            {
-                _logger.LogDebug("Registering shell context for tenant '{TenantName}'", settings.Name);
-            }
-
-            _runningShellTable.Add(settings);
         }
 
         /// <summary>
@@ -291,79 +344,46 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// A feature is enabled / disabled, the tenant needs to be restarted
+        /// Adds the shell and registers its settings in RunningShellTable
         /// </summary>
-        Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
+        private void AddAndRegisterShell(ShellContext context)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
+            if (_shellContexts.TryAdd(context.Settings.Name, context) && CanRegisterShell(context))
             {
-                _logger.LogInformation("A tenant needs to be restarted '{TenantName}'", tenant);
+                RegisterShellSettings(context.Settings);
             }
-
-            if (_shellContexts.TryRemove(tenant, out var context))
-            {
-                context.Release();
-            }
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Marks the specific tenant as released, such that a new shell is created for subsequent requests,
-        /// while existing requests get flushed.
+        /// Whether or not a shell can be activated and added to the running shells.
         /// </summary>
-        /// <param name="settings"></param>
-        public async Task ReloadShellContextAsync(ShellSettings settings)
+        private bool CanRegisterShell(ShellContext context)
         {
-            if (settings.State == TenantState.Disabled)
+            if (!CanRegisterShell(context.Settings))
             {
-                // If a disabled shell is still in use it will be released and then disposed by its last scope.
-                // So, we keep it in the list and don't create a new one that would have a null service provider.
-                // Knowing that it is still removed from the running shell table, so that it is no more served.
-                if (_shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
+                if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    _runningShellTable.Remove(settings);
-                    return;
+                    _logger.LogDebug("Skipping shell context registration for tenant '{TenantName}'", context.Settings.Name);
                 }
+
+                return false;
             }
 
-            if (_shellContexts.TryRemove(settings.Name, out var context))
-            {
-                _runningShellTable.Remove(settings);
-                context.Release();
-            }
-
-            if (settings.State != TenantState.Initializing)
-            {
-                settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
-            }
-
-            await GetOrCreateShellContextAsync(settings);
+            return true;
         }
 
-        public IEnumerable<ShellContext> ListShellContexts() => _shellContexts.Values.ToArray();
-
         /// <summary>
-        /// Tries to retrieve the shell settings associated with the specified tenant.
+        /// Registers the shell settings in RunningShellTable
         /// </summary>
-        /// <returns><c>true</c> if the settings could be found, <c>false</c> otherwise.</returns>
-        public bool TryGetSettings(string name, out ShellSettings settings)
+        private void RegisterShellSettings(ShellSettings settings)
         {
-            if (_shellContexts.TryGetValue(name, out var shell))
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                settings = shell.Settings;
-                return true;
+                _logger.LogDebug("Registering shell context for tenant '{TenantName}'", settings.Name);
             }
 
-            settings = null;
-            return false;
+            _runningShellTable.Add(settings);
         }
-
-        /// <summary>
-        /// Retrieves all shell settings.
-        /// </summary>
-        /// <returns>All shell settings.</returns>
-        public IEnumerable<ShellSettings> GetAllSettings() => ListShellContexts().Select(s => s.Settings);
 
         /// <summary>
         /// Whether or not a shell can be added to the list of available shells.
@@ -390,9 +410,7 @@ namespace OrchardCore.Environment.Shell
 
         public void Dispose()
         {
-            var shells = _shellContexts.Values.ToArray();
-
-            foreach (var shell in shells)
+            foreach (var shell in ListShellContexts())
             {
                 shell.Dispose();
             }

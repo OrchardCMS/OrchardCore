@@ -25,6 +25,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
         private readonly IEnumerable<IShellDescriptorManagerEventHandler> _shellDescriptorManagerEventHandlers;
         private readonly ISession _session;
         private readonly ILogger _logger;
+
         private ShellDescriptor _shellDescriptor;
 
         public ShellDescriptorManager(
@@ -104,10 +105,8 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             _session.Save(shellDescriptorRecord);
 
-            // Update cached reference
-            _shellDescriptor = shellDescriptorRecord;
-
-            await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptorRecord, _shellSettings) => handler.Changed(shellDescriptorRecord, _shellSettings.Name), shellDescriptorRecord, _shellSettings, _logger);
+            await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptorRecord, _shellSettings) =>
+                handler.ChangedAsync(shellDescriptorRecord, _shellSettings), shellDescriptorRecord, _shellSettings, _logger);
         }
 
         private class ConfiguredFeatures
