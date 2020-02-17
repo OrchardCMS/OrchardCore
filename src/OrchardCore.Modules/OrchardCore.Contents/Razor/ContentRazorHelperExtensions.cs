@@ -10,29 +10,29 @@ using YesSql;
 public static class ContentRazorHelperExtensions
 {
     /// <summary>
-    /// Returns a content item id from an alias.
+    /// Returns a content item id from its name.
     /// </summary>
-    /// <param name="alias">The alias.</param>
-    /// <example>GetContentItemIdByAliasAsync("alias:carousel")</example>
-    /// <example>GetContentItemIdByAliasAsync("slug:myblog/my-blog-post")</example>
+    /// <param name="name">The name.</param>
+    /// <example>GetContentItemByNameAsync("alias:carousel")</example>
+    /// <example>GetContentItemByNameAsync("slug:myblog/my-blog-post")</example>
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
-    public static Task<string> GetContentItemIdByAliasAsync(this IOrchardHelper orchardHelper, string alias)
+    public static Task<string> GetContentItemIdByNameAsync(this IOrchardHelper orchardHelper, string name)
     {
         var contentAliasManager = orchardHelper.HttpContext.RequestServices.GetService<IContentAliasManager>();
-        return contentAliasManager.GetContentItemIdAsync(alias);
+        return contentAliasManager.GetContentItemIdAsync(name);
     }
 
     /// <summary>
-    /// Loads a content item by its alias.
+    /// Loads a content item by its name.
     /// </summary>
-    /// <param name="alias">The alias to load.</param>
+    /// <param name="name">The name to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
-    /// <example>GetContentItemByAliasAsync("alias:carousel")</example>
-    /// <example>GetContentItemByAliasAsync("slug:myblog/my-blog-post", true)</example>
-    /// <returns>A content item with the specific alias, or <c>null</c> if it doesn't exist.</returns>
-    public static async Task<ContentItem> GetContentItemByAliasAsync(this IOrchardHelper orchardHelper, string alias, bool latest = false)
+    /// <example>GetContentItemByNameAsync("alias:carousel")</example>
+    /// <example>GetContentItemByNameAsync("slug:myblog/my-blog-post", true)</example>
+    /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
+    public static async Task<ContentItem> GetContentItemByAliasAsync(this IOrchardHelper orchardHelper, string name, bool latest = false)
     {
-        var contentItemId = await GetContentItemIdByAliasAsync(orchardHelper, alias);
+        var contentItemId = await GetContentItemIdByNameAsync(orchardHelper, name);
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         return await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
     }
