@@ -31,8 +31,8 @@
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc1-100729" />
     <PackageManagement Include="Serilog.AspNetCore" Version="3.2.0" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0009" />
-    <PackageManagement Include="Swashbuckle.AspNetCore" Version="5.0.0-rc2" />
-    <PackageManagement Include="Swashbuckle.AspNetCore.Annotations" Version="5.0.0-rc2" />
+    <PackageManagement Include="Swashbuckle.AspNetCore" Version="5.0.0" />
+    <PackageManagement Include="Swashbuckle.AspNetCore.Annotations" Version="5.0.0" />
     <PackageManagement Include="Microsoft.Azure.Storage.Blob" Version="11.1.2" />
     <PackageManagement Include="Microsoft.OpenApi" Version="1.1.4"/>
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />

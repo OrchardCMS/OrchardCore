@@ -360,7 +360,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Benchmarks", "t
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.OpenApi.Abstractions", "src\OrchardCore\OrchardCore.OpenApi.Abstractions\OrchardCore.OpenApi.Abstractions.csproj", "{4248F491-E3A4-4D47-8F92-4E03E276EA62}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.OpenApi.Swagger", "src\OrchardCore.Modules\OrchardCore.OpenApi.Swagger\OrchardCore.OpenApi.Swagger.csproj", "{6AFC926D-7222-41B3-B9F7-9B8D45B0623E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.OpenApi.Swashbuckle", "src\OrchardCore.Modules\OrchardCore.OpenApi.Swashbuckle\OrchardCore.OpenApi.Swashbuckle.csproj", "{6AFC926D-7222-41B3-B9F7-9B8D45B0623E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.OpenApi", "src\OrchardCore.Modules\OrchardCore.OpenApi\OrchardCore.OpenApi.csproj", "{2DCE817A-3B09-4EB7-B6C7-7B133FC6CB62}"
 EndProject
