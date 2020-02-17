@@ -156,12 +156,12 @@ namespace OrchardCore.Environment.Shell
         /// <param name="settings"></param>
         public async Task ReloadShellContextAsync(ShellSettings settings)
         {
-            // If a disabled shell is still in use it will be released and then disposed by its last scope. So here,
-            // we keep it in the list to prevent the consumer from creating a new one that would have a null service provider,
-            // knowing that it is still removed from the running shell table, so that it is no more served.
+            // If a disabled shell is still in use it will be released by its last scope. So we keep it
+            // in the list to prevent the consumer from getting a new one with a null service provider.
 
             if (settings.State == TenantState.Disabled && _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
             {
+                // But we still remove it from the running shell table, so that it is no more served.
                 _runningShellTable.Remove(settings);
                 return;
             }
@@ -187,9 +187,8 @@ namespace OrchardCore.Environment.Shell
         /// <param name="settings"></param>
         public void ReleaseShellContext(ShellSettings settings)
         {
-            // If a disabled shell is still in use it will be released and then disposed by its last scope. So here,
-            // we keep it in the list to prevent the consumer from creating a new one that would have a null service provider,
-            // knowing that it has been or will be removed from the running shell table, so that it is no more served.
+            // If a disabled shell is still in use it will be released by its last scope. So we keep it
+            // in the list to prevent the consumer from getting a new one with a null service provider.
 
             if (settings.State == TenantState.Disabled && _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
             {
