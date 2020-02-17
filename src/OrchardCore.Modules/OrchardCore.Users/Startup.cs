@@ -2,6 +2,7 @@ using System;
 using System.Web;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -147,7 +148,8 @@ namespace OrchardCore.Users
                 // Note: it has no practical impact on the security of the site since all endpoints are always
                 // protected by antiforgery checks, that are enforced with or without this setting being changed.
                 // 2019-12-10; Removed, since https://github.com/aspnet/Announcements/issues/390
-                // options.Cookie.SameSite = SameSiteMode.None;
+                // 2020-02-17; Reenabled since we have compensation logic for backwardscompatibility
+                options.Cookie.SameSite = SameSiteMode.None;
             });
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
