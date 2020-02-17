@@ -1,9 +1,13 @@
 @using OrchardCore.OpenId.ViewModels
 @model LogoutViewModel
 
+@{
+    ViewLayout = "Layout__Login";
+}
+
 <div class="jumbotron">
     <h1>@T["Log out"]</h1>
-    
+
     <p class="lead text-left">@T["Are you sure you want to log out?"]</p>
 
     <form method="post">

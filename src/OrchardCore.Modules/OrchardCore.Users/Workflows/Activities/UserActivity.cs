@@ -11,17 +11,20 @@ namespace OrchardCore.Users.Workflows.Activities
 {
     public abstract class UserActivity : Activity
     {
+        protected readonly IStringLocalizer S;
+
         protected UserActivity(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
         {
             UserService = userService;
             ScriptEvaluator = scriptEvaluator;
-            T = localizer;
+            S = localizer;
         }
 
         protected IUserService UserService { get; }
+
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
-        protected IStringLocalizer T { get; }
-        public override LocalizedString Category => T["User"];
+
+        public override LocalizedString Category => S["User"];
 
         /// <summary>
         /// An expression that evaluates to an <see cref="User"/> item.
@@ -34,7 +37,7 @@ namespace OrchardCore.Users.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

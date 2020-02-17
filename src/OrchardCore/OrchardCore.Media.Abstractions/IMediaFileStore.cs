@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
 using OrchardCore.FileStorage;
-using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Media
 {

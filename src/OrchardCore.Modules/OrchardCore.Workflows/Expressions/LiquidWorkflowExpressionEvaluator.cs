@@ -5,7 +5,6 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Models;
@@ -39,24 +38,25 @@ namespace OrchardCore.Workflows.Expressions
             var templateContext = CreateTemplateContext(workflowContext);
             var expressionContext = new WorkflowExecutionExpressionContext(templateContext, workflowContext);
 
-            await _workflowContextHandlers.InvokeAsync(x => x.EvaluatingExpressionAsync(expressionContext), _logger);
+            await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingExpressionAsync(expressionContext), expressionContext, _logger);
 
-            var result = await _liquidTemplateManager.RenderAsync(expression.Expression, System.Text.Encodings.Web.JavaScriptEncoder.Default, templateContext);
+            // Set WorkflowContext as a local scope property.
+            var result = await _liquidTemplateManager.RenderAsync(expression.Expression, System.Text.Encodings.Web.JavaScriptEncoder.Default,
+                scope => scope.SetValue("Workflow", workflowContext));
+
             return string.IsNullOrWhiteSpace(result) ? default(T) : (T)Convert.ChangeType(result, typeof(T));
         }
 
         private TemplateContext CreateTemplateContext(WorkflowExecutionContext workflowContext)
         {
-            var context = new TemplateContext();
+            var context = _liquidTemplateManager.Context;
 
-            // Set WorkflowContext as the model.
             context.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
             context.MemberAccessStrategy.Register<WorkflowExecutionContext>();
             context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Input, name)));
             context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Output, name)));
             context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Properties, name)));
 
-            context.SetValue("Workflow", workflowContext);
             return context;
         }
 

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
 
@@ -12,7 +12,7 @@
   <!-- Add a ".props" file in the package specific to the "Theme" module type -->
   <ItemGroup>
     <None Include="OrchardCore.Theme.Targets.props" Pack="true">
-      <PackagePath>build\netcoreapp3.0\OrchardCore.Theme.Targets.props</PackagePath>
+      <PackagePath>build\$(TargetFramework)\OrchardCore.Theme.Targets.props</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>

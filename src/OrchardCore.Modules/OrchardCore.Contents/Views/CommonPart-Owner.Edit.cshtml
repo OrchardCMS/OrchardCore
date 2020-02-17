@@ -1,9 +1,9 @@
 @using OrchardCore.Contents.ViewModels;
 @model OwnerEditorViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Owner">
+<div class="form-group" asp-validation-class-for="Owner">
     <label asp-for="Owner">@T["Owner"]</label>
     <input asp-for="Owner" class="form-control" />
     <span asp-validation-for="Owner"></span>
     <span class="hint">@T["The owner of the content item."]</span>
-</fieldset>
+</div>

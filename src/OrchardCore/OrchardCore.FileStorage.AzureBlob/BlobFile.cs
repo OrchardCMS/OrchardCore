@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.Azure.Storage.Blob;
 
 namespace OrchardCore.FileStorage.AzureBlob
 {
@@ -27,7 +25,6 @@ namespace OrchardCore.FileStorage.AzureBlob
                 _directoryPath = _path.Substring(0, _path.Length - _name.Length - 1);
             }
         }
-
 
         public string Path => _path;
 

@@ -8,7 +8,7 @@
 
 <input asp-for="Id" type="hidden" />
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="UserName">@T["User name"]</label>
     <div class="input-group row col-md-4">
         <div class="input-group-prepend">
@@ -17,8 +17,8 @@
         <input asp-for="UserName" class="form-control" autofocus />
         <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
     </div>
-</fieldset>
-<fieldset class="form-group" asp-validation-class-for="Email">
+</div>
+<div class="form-group" asp-validation-class-for="Email">
     <label asp-for="Email">@T["Email"]</label>
     <div class="input-group row col-md-4">
         <div class="input-group-prepend">
@@ -27,26 +27,34 @@
         <input asp-for="Email" class="form-control" type="email" />
         <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
     </div>
-</fieldset>
+</div>
 
 @if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="custom-control custom-checkbox">
             <input asp-for="EmailConfirmed" type="checkbox" class="custom-control-input">
             <label class="custom-control-label" asp-for="EmailConfirmed">@T["Email confirmed"]</label>
         </div>
-    </fieldset>
+    </div>
 }
 
 <h6>@T["Roles"]</h6>
-<fieldset class="form-group">
+<div class="form-group">
     @for (var i = 0; i < Model.Roles.Length; i++)
     {
         <div class="custom-control custom-checkbox">
             <input asp-for="Roles[i].IsSelected" type="checkbox" class="custom-control-input">
             <input type="hidden" asp-for="Roles[i].Role" />
-            <label class="custom-control-label" asp-for="Roles[i].IsSelected">@Model.Roles[i].Role</label>
+            <label class="custom-control-label cursor-pointer" asp-for="Roles[i].IsSelected">@Model.Roles[i].Role</label>
         </div>
     }
-</fieldset>
+</div>
+
+<div class="form-group">
+    <div class="custom-control custom-switch">
+        <input asp-for="IsEnabled" type="checkbox" class="custom-control-input" checked="@Model.IsEnabled" />
+        <label asp-for="IsEnabled" class="custom-control-label cursor-pointer">@T["Is enabled?"]</label>
+        <span class="hint">— @T["Uncheck to disable this user account."]</span>
+    </div>
+</div>

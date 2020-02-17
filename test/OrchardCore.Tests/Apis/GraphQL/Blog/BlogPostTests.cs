@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
+using GraphQLApi = OrchardCore.Apis.GraphQL;
 
-namespace OrchardCore.Tests.Apis.GraphQL.Blog
+namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class BlogPostTests
     {
@@ -169,7 +169,6 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
             }
         }
 
-
         [Fact]
         public async Task ShouldQueryByStatus()
         {
@@ -207,6 +206,69 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                     .Query("blogPost(status: LATEST) { displayText, published }");
 
                 Assert.Equal(2, result["data"]["blogPost"].Count());
+            }
+        }
+
+        [Fact]
+        public async Task ShouldNotBeAbleToExecuteAnyQueriesWithoutPermission()
+        {
+            using (var context = new SiteContext())
+            {
+                await context.InitializeAsync(new PermissionsContext { UsePermissionsContext = true });
+
+                var response = await context.GraphQLClient.Client.GetAsync("api/graphql");
+                Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldReturnBlogsWithViewBlogContentPermission()
+        {
+            var permissionContext = new PermissionsContext
+            {
+                UsePermissionsContext = true,
+                AuthorizedPermissions = new[] {
+                    GraphQLApi.Permissions.ExecuteGraphQL,
+                    Contents.Permissions.ViewContent
+                }
+            };
+
+            using (var context = new SiteContext())
+            {
+                await context.InitializeAsync(permissionContext);
+
+                var result = await context.GraphQLClient.Content
+                    .Query("blog", builder =>
+                    {
+                        builder.WithField("contentItemId");
+                    });
+
+                Assert.NotEmpty(result["data"]["blog"]);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldNotReturnBlogsWithoutViewBlogContentPermission()
+        {
+            var permissionContext = new PermissionsContext
+            {
+                UsePermissionsContext = true,
+                AuthorizedPermissions = new[] {
+                    GraphQLApi.Permissions.ExecuteGraphQL
+                }
+            };
+
+            using (var context = new SiteContext())
+            {
+                await context.InitializeAsync(permissionContext);
+
+                var result = await context.GraphQLClient.Content
+                    .Query("blog", builder =>
+                    {
+                        builder.WithField("contentItemId");
+                    });
+
+                Assert.Equal(GraphQLApi.ValidationRules.RequiresPermissionValidationRule.ErrorCode, result["errors"][0]["extensions"]["code"]);
             }
         }
     }

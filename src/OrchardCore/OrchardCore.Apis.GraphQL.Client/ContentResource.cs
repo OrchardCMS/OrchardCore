@@ -13,7 +13,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         {
             _client = client;
         }
-        
+
         public async Task<JObject> Query(string contentType, Action<ContentTypeQueryResourceBuilder> builder)
         {
             var contentTypeBuilder = new ContentTypeQueryResourceBuilder(contentType);
@@ -26,9 +26,9 @@ namespace OrchardCore.Apis.GraphQL.Client
             var response = await _client
                 .PostJsonAsync("api/graphql", requestJson.ToString());
 
-            if (!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
             {
-                throw new Exception(await response.Content.ReadAsStringAsync());
+                throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
             }
 
             return JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -44,7 +44,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception(await response.Content.ReadAsStringAsync());
+                throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
             }
 
             return JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -60,7 +60,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception(await response.Content.ReadAsStringAsync());
+                throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
             }
 
             return JObject.Parse(await response.Content.ReadAsStringAsync());

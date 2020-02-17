@@ -27,8 +27,14 @@
   },
   {
     "inputs": [
-      "Assets/trumbowyg.media.js"
+      "Assets/trumbowyg.media.tag.js"
     ],
-    "output": "wwwroot/Scripts/trumbowyg.media.js"
+    "output": "wwwroot/Scripts/trumbowyg.media.tag.js"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg.media.url.js"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg.media.url.js"
   }
 ]

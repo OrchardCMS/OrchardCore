@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -65,7 +63,6 @@ namespace OrchardCore.Facebook.Drivers
                 {
                     model.AppSecret = protector.Unprotect(settings.AppSecret);
                 }
-
             }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
         }
 
@@ -97,6 +94,7 @@ namespace OrchardCore.Facebook.Drivers
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
+
             return await EditAsync(settings, context);
         }
     }

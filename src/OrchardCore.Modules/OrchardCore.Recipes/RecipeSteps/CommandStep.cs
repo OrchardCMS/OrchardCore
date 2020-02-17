@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -32,7 +32,7 @@ namespace OrchardCore.Recipes.RecipeSteps
         private ILogger Logger { get; set; }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
-        { 
+        {
             if (!String.Equals(context.Name, "Command", StringComparison.OrdinalIgnoreCase))
             {
                 return;
@@ -40,7 +40,7 @@ namespace OrchardCore.Recipes.RecipeSteps
 
             var step = context.Step.ToObject<CommandStepModel>();
 
-            foreach(var command in step.Commands)
+            foreach (var command in step.Commands)
             {
                 using (var output = new StringWriter())
                 {

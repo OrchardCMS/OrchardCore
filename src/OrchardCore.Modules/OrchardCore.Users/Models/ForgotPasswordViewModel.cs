@@ -7,4 +7,4 @@ namespace OrchardCore.Users.ViewModels
         [Required]
         public string UserIdentifier { get; set; }
     }
-} 
+}

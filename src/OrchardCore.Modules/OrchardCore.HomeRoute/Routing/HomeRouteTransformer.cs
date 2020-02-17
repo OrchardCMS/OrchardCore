@@ -17,7 +17,16 @@ namespace OrchardCore.HomeRoute.Routing
 
         public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
         {
-            return new RouteValueDictionary((await _siteService.GetSiteSettingsAsync()).HomeRoute);
+            var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
+
+            if (homeRoute.Count > 0)
+            {
+                return new RouteValueDictionary(homeRoute);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

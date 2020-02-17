@@ -1,5 +1,3 @@
-using Newtonsoft.Json.Linq;
-using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.Handlers

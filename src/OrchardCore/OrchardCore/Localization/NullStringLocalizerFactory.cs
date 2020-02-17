@@ -6,36 +6,45 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization
 {
-    internal class NullStringLocalizerFactory : IStringLocalizerFactory
+    /// Represents a null <see cref="IStringLocalizerFactory"/> which is used by default when the localization module is disabled.
+    /// <remarks>
+    /// A LocalizedString is not encoded, so it can contain the formatted string
+    /// including the argument values.
+    /// </remarks>
+    public class NullStringLocalizerFactory : IStringLocalizerFactory
     {
-        public IStringLocalizer Create(Type resourceSource) => NullStringLocalizer.Instance;
+        /// <inheritdocs />
+        public IStringLocalizer Create(Type resourceSource) => NullLocalizer.Instance;
 
-        public IStringLocalizer Create(string baseName, string location) => NullStringLocalizer.Instance;
+        /// <inheritdocs />
+        public IStringLocalizer Create(string baseName, string location) => NullLocalizer.Instance;
 
-        private class NullStringLocalizer : IStringLocalizer
+        internal class NullLocalizer : IStringLocalizer
         {
             private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n == 1) ? 0 : 1;
 
-            public static NullStringLocalizer Instance { get; } = new NullStringLocalizer();
+            public static NullLocalizer Instance { get; } = new NullLocalizer();
 
-            public LocalizedString this[string name] => new LocalizedString(name, name);
+            public LocalizedString this[string name] => new LocalizedString(name, name, false);
 
             public LocalizedString this[string name, params object[] arguments]
             {
                 get
                 {
-                    var value = String.Empty;
+                    var translation = name;
+
                     if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
                     {
-                        var pluralForm = pluralArgument.Forms[_defaultPluralRule(pluralArgument.Count)];
-                        value = String.Format(pluralForm, pluralArgument.Count);
-                    }
-                    else
-                    {
-                        value = String.Format(name, arguments);
+                        translation = pluralArgument.Forms[_defaultPluralRule(pluralArgument.Count)];
+
+                        arguments = new object[pluralArgument.Arguments.Length + 1];
+                        arguments[0] = pluralArgument.Count;
+                        Array.Copy(pluralArgument.Arguments, 0, arguments, 1, pluralArgument.Arguments.Length);
                     }
 
-                    return new LocalizedString(name, value);
+                    translation = String.Format(translation, arguments);
+
+                    return new LocalizedString(name, translation, false);
                 }
             }
 
@@ -43,6 +52,10 @@ namespace OrchardCore.Localization
                 => Enumerable.Empty<LocalizedString>();
 
             public IStringLocalizer WithCulture(CultureInfo culture) => Instance;
+
+            public LocalizedString GetString(string name) => this[name];
+
+            public LocalizedString GetString(string name, params object[] arguments) => this[name, arguments];
         }
     }
 }

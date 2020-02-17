@@ -2,12 +2,13 @@ using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
+using OrchardCore.Lists.Services;
 using OrchardCore.Lists.ViewModels;
 
 namespace OrchardCore.Lists.Settings
@@ -15,20 +16,22 @@ namespace OrchardCore.Lists.Settings
     public class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContainerService _containerService;
+        private readonly IStringLocalizer S;
 
         public ListPartSettingsDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
+            IContainerService containerService,
             IStringLocalizer<ListPartSettingsDisplayDriver> localizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            TS = localizer;
+            _containerService = containerService;
+            S = localizer;
         }
-
-        public IStringLocalizer TS { get; set; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -37,6 +40,7 @@ namespace OrchardCore.Lists.Settings
             {
                 model.ListPartSettings = contentTypePartDefinition.GetSettings<ListPartSettings>();
                 model.PageSize = model.ListPartSettings.PageSize;
+                model.EnableOrdering = model.ListPartSettings.EnableOrdering;
                 model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
                 model.ContentTypes = new NameValueCollection();
 
@@ -49,26 +53,34 @@ namespace OrchardCore.Lists.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
+            var settings = contentTypePartDefinition.GetSettings<ListPartSettings>();
 
             var model = new ListPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.PageSize);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.PageSize, m => m.EnableOrdering);
 
             if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
             {
-                context.Updater.ModelState.AddModelError(nameof(model.ContainedContentTypes), TS["At least one content type must be selected."]);
+                context.Updater.ModelState.AddModelError(nameof(model.ContainedContentTypes), S["At least one content type must be selected."]);
             }
             else
             {
                 context.Builder.WithSettings(new ListPartSettings
                 {
                     PageSize = model.PageSize,
+                    EnableOrdering = model.EnableOrdering,
                     ContainedContentTypes = model.ContainedContentTypes
                 });
+
+                // Update order of existing content if enable ordering has been turned on
+                if (settings.EnableOrdering != model.EnableOrdering && model.EnableOrdering == true)
+                {
+                    await _containerService.SetInitialOrder(contentTypePartDefinition.ContentTypeDefinition.Name);
+                }
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

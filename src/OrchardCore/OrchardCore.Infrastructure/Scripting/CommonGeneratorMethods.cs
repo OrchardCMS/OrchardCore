@@ -12,7 +12,7 @@ namespace OrchardCore.Scripting
         private static GlobalMethod Base64 = new GlobalMethod
         {
             Name = "base64",
-            Method = serviceProvider => (Func<string, object>)(encoded =>
+            Method = serviceProvider => (Func<string, string>)(encoded =>
             {
                 return Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
             })
@@ -21,7 +21,7 @@ namespace OrchardCore.Scripting
         private static GlobalMethod Html = new GlobalMethod
         {
             Name = "html",
-            Method = serviceProvider => (Func<string, object>)(encoded =>
+            Method = serviceProvider => (Func<string, string>)(encoded =>
             {
                 return WebUtility.HtmlDecode(encoded);
             })
@@ -34,7 +34,7 @@ namespace OrchardCore.Scripting
         private static GlobalMethod GZip = new GlobalMethod
         {
             Name = "gzip",
-            Method = serviceProvider => (Func<string, object>)(encoded =>
+            Method = serviceProvider => (Func<string, string>)(encoded =>
             {
                 var bytes = Convert.FromBase64String(encoded);
                 using (var gzip = new GZipStream(new MemoryStream(bytes), CompressionMode.Decompress))
@@ -54,7 +54,7 @@ namespace OrchardCore.Scripting
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new [] { Base64, Html, GZip };
+            return new[] { Base64, Html, GZip };
         }
     }
 }

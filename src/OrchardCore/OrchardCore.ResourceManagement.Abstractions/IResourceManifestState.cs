@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace OrchardCore.ResourceManagement
 {
@@ -10,7 +10,5 @@ namespace OrchardCore.ResourceManagement
     public class ResourceManifestState : IResourceManifestState
     {
         public IEnumerable<ResourceManifest> ResourceManifests { get; set; }
-
     }
-
 }

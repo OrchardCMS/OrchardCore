@@ -1,12 +1,13 @@
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Razor;
 
@@ -20,7 +21,6 @@ public static class OrchardRazorHelperExtensions
         return await orchardDisplayHelper.DisplayHelper.ShapeExecuteAsync(shape);
     }
 
- 
     /// <summary>
     /// Renders an object in the browser's console.
     /// </summary>
@@ -28,32 +28,43 @@ public static class OrchardRazorHelperExtensions
     /// <returns>The encoded script rendering the object to the console.</returns>
     public static IHtmlContent ConsoleLog(this IOrchardHelper orchardHelper, object content)
     {
-        const string FormatConsole = "<script>console.log({0})</script>";
+        var builder = new HtmlContentBuilder(3);
 
-        if (content == null)
+        builder.AppendHtml("<script>console.log(");
+
+        var env = orchardHelper.HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
+
+        if (content == null || env.IsProduction())
         {
-            return new HtmlString(string.Format(FormatConsole, "null"));
+            builder.AppendHtml("null");
+        }
+        else if (content is string stringContent)
+        {
+            builder.AppendHtml("\"").Append(stringContent).AppendHtml("\"");
+        }
+        else if (content is JToken jTokenContent)
+        {
+            builder.AppendHtml(jTokenContent.ToString());
+        }
+        else if (content is ContentItem contentItem)
+        {
+            builder.AppendHtml(ConvertContentItem(contentItem).ToString());
+        }
+        else if (content is IShape shape)
+        {
+            builder.AppendHtml(shape.ShapeToJson().ToString());
+        }
+        else
+        {
+            builder.AppendHtml(JsonConvert.SerializeObject(content));
         }
 
-        if (content is string)
-        {
-            return new HtmlString(string.Format(FormatConsole, WebUtility.HtmlEncode((string)content)));
-        }
+        builder.AppendHtml(")</script>");
 
-        if (content is JToken)
-        {
-            return new HtmlString(string.Format(FormatConsole, content.ToString()));
-        }
-
-        if (content is ContentItem contentItem)
-        {
-            return new HtmlString(string.Format(FormatConsole, ConvertContentItem(contentItem).ToString()));
-        }
-
-        return new HtmlString(string.Format(FormatConsole, JsonConvert.SerializeObject(content)));
+        return builder;
     }
 
-    private static JObject ConvertContentItem(ContentItem contentItem)
+    internal static JObject ConvertContentItem(ContentItem contentItem)
     {
         var o = new JObject();
 

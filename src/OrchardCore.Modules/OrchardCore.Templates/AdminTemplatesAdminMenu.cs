@@ -1,18 +1,18 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Templates
 {
     public class AdminTemplatesAdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminTemplatesAdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -22,8 +22,8 @@ namespace OrchardCore.Templates
             }
 
             builder
-                .Add(T["Configuration"], content => content
-                    .Add(T["Admin Templates"], "10", import => import
+                .Add(S["Design"], design => design
+                    .Add(S["Admin Templates"], "Admin Templates", import => import
                         .Action("Admin", "Template", new { area = "OrchardCore.Templates" })
                         .Permission(AdminTemplatesPermissions.ManageAdminTemplates)
                         .LocalNav()

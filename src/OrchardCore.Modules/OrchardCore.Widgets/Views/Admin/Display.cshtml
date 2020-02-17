@@ -5,7 +5,6 @@
 @{
     // Don't render the theme
     Layout = "";
-    Model.EditorShape.Metadata.Alternates.Add("Widget_Edit__List");
 
     var sw = new System.IO.StringWriter();
     ((IHtmlContent)await DisplayAsync(Model.EditorShape)).WriteTo(sw, HtmlEncoder);
@@ -32,4 +31,4 @@
 {
     "Content": @Json.Serialize(content),
     "Scripts": @Json.Serialize(scripts)
-}
+    }

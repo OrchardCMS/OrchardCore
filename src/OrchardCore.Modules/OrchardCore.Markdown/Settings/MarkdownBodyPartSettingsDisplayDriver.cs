@@ -12,11 +12,10 @@ namespace OrchardCore.Markdown.Settings
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(MarkdownBodyPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(MarkdownBodyPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
-
 
             return Initialize<MarkdownBodyPartSettings>("MarkdownBodyPartSettings_Edit", model => contentTypePartDefinition.PopulateSettings<MarkdownBodyPartSettings>(model))
                 .Location("Content");
@@ -24,7 +23,7 @@ namespace OrchardCore.Markdown.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(MarkdownBodyPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(MarkdownBodyPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }

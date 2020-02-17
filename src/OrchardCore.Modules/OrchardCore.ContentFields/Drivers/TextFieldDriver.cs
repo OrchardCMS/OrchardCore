@@ -13,12 +13,12 @@ namespace OrchardCore.ContentFields.Fields
 {
     public class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField>
     {
+        private readonly IStringLocalizer S;
+
         public TextFieldDisplayDriver(IStringLocalizer<TextFieldDisplayDriver> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Display(TextField field, BuildFieldDisplayContext context)
         {
@@ -28,8 +28,8 @@ namespace OrchardCore.ContentFields.Fields
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(TextField field, BuildFieldEditorContext context)
@@ -50,7 +50,7 @@ namespace OrchardCore.ContentFields.Fields
                 var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Text))
                 {
-                    updater.ModelState.AddModelError(Prefix, T["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
             }
 

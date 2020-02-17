@@ -9,16 +9,18 @@ namespace OrchardCore.Workflows.UserTasks.Activities
 {
     public class UserTaskEvent : EventActivity
     {
+        private readonly IStringLocalizer<UserTaskEvent> S;
+
         public UserTaskEvent(IStringLocalizer<UserTaskEvent> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
         private IStringLocalizer T { get; }
 
         public override string Name => nameof(UserTaskEvent);
-        public override LocalizedString DisplayText => T["User Task Event"];
-        public override LocalizedString Category => T["Content"];
+        public override LocalizedString DisplayText => S["User Task Event"];
+        public override LocalizedString Category => S["Content"];
 
         public IList<string> Actions
         {

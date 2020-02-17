@@ -10,33 +10,30 @@
     <input type="hidden" asp-for="AdminNodeId" />
     <input type="hidden" asp-for="AdminNodeType" />
 
-    <fieldset>
-        <div class="form-group">
-            <label asp-for="Priority">@T["Selection Priority"]</label>
-            <input asp-for="Priority" class="form-control col-md-2">
-            <span class="hint">@T["The priority of this link to be displayed as active instead of another one when both are pointing to the same url. The link with the highest value has the active status in the navigation."]</span>
-        </div>
+    <div class="form-group">
+        <label asp-for="Priority">@T["Selection Priority"]</label>
+        <input asp-for="Priority" class="form-control col-md-2">
+        <span class="hint">@T["The priority of this link to be displayed as active instead of another one when both are pointing to the same url. The link with the highest value has the active status in the navigation."]</span>
+    </div>
 
-        <div class="form-group">
-            <label asp-for="Position">@T["Position Order"]</label>
-            <input asp-for="Position" class="form-control col-md-2">
-            <span class="hint">@T["The position order of this link in the admin menu."]</span>
-        </div>
+    <div class="form-group">
+        <label asp-for="Position">@T["Position Order"]</label>
+        <input asp-for="Position" class="form-control col-md-2">
+        <span class="hint">@T["The position order of this link in the admin menu."]</span>
+    </div>
 
-        <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
 
-            <a asp-action="Delete"
-               asp-controller="Node"
-               asp-route-id="@Model.AdminMenuId"
-               asp-route-treeNodeId="@Model.AdminNodeId"
-               class="btn btn-danger"
-               itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+        <a asp-action="Delete"
+           asp-controller="Node"
+           asp-route-id="@Model.AdminMenuId"
+           asp-route-treeNodeId="@Model.AdminNodeId"
+           class="btn btn-danger"
+           itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
 
-            <a class="btn btn-secondary"
-               asp-route-action="List"
-               asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
-
-        </div>
-    </fieldset>
+        <a class="btn btn-secondary"
+           asp-route-action="List"
+           asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
+    </div>
 </form>

@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Twitter.Settings;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Signin.Settings;
 
@@ -42,7 +36,7 @@ namespace OrchardCore.Twitter.Signin.Services
             {
                 throw new ArgumentNullException(nameof(settings));
             }
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<TwitterSigninSettings>(nameof(TwitterSigninSettings), aspect =>
             {
                 aspect.CallbackPath = settings.CallbackPath;

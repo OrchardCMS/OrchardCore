@@ -236,6 +236,31 @@ namespace OrchardCore.Mvc.Utilities
             return (sb.ToString().Normalize(NormalizationForm.FormC));
         }
 
+        /// <summary>
+        /// Transforms the culture of a letter to its equivalent representation in the 0-127 ascii table, such as the letter 'é' is substituted by an 'e'
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string ReplaceDiacritics(this string s)
+        {
+            string normalizedString = null;
+            StringBuilder stringBuilder = new StringBuilder();
+            normalizedString = s.Normalize(NormalizationForm.FormD);
+            int i = 0;
+            char c = '\0';
+
+            for (i = 0; i <= normalizedString.Length - 1; i++)
+            {
+                c = normalizedString[i];
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString();
+        }
+
         public static string Strip(this string subject, params char[] stripped)
         {
             if (stripped == null || stripped.Length == 0 || string.IsNullOrEmpty(subject))
@@ -370,7 +395,7 @@ namespace OrchardCore.Mvc.Utilities
             if (rough == null)
                 return null;
 
-            return rough.EndsWith(trim)
+            return rough.EndsWith(trim, StringComparison.Ordinal)
                        ? rough.Substring(0, rough.Length - trim.Length)
                        : rough;
         }

@@ -1,6 +1,10 @@
 @model ReverseProxySettingsViewModel
 
-<fieldset class="form-group" asp-validation-class-for="EnableXForwardedFor">
+<p class="alert alert-warning">
+    @T["The current tenant will be reloaded when the settings are saved."]
+</p>
+
+<div class="form-group" asp-validation-class-for="EnableXForwardedFor">
     <div class="form-check">
         <label class="form-check-label">
             <input asp-for="EnableXForwardedFor" class="form-check-input" />
@@ -9,9 +13,9 @@
     </div>
     <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-For"]</span>
     <span class="hint">@T["Current request value;"] @Context.Connection.RemoteIpAddress</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="EnableXForwardedProto">
+<div class="form-group" asp-validation-class-for="EnableXForwardedProto">
     <div class="form-check">
         <label class="form-check-label">
             <input asp-for="EnableXForwardedProto" class="form-check-input" />
@@ -20,9 +24,9 @@
     </div>
     <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-Proto"]</span>
     <span class="hint">@T["Current request value;"] @Context.Request.Scheme</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="EnableXForwardedHost">
+<div class="form-group" asp-validation-class-for="EnableXForwardedHost">
     <div class="form-check">
         <label class="form-check-label">
             <input asp-for="EnableXForwardedHost" class="form-check-input" />
@@ -31,8 +35,8 @@
     </div>
     <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-Host"]</span>
     <span class="hint">@T["Current request value;"] @Context.Request.Host</span>
-</fieldset>
+</div>
 
-<span class="hint">
-    Documentation available at; https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
-</span>
+<p class="hint">
+    @T["Documentation available at: {0}", "https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-3.0"]
+</p>

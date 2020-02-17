@@ -1,35 +1,35 @@
 @using OrchardCore.ContentManagement.Metadata.Settings
 @model ContentPartSettingsViewModel
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="row col-md ">
-        <label asp-for="DisplayName" >@T["Display Name"]</label>
+        <label asp-for="DisplayName">@T["Display Name"]</label>
         <input asp-for="DisplayName" class="form-control" placeholder="@Model.ContentPartDefinition.DisplayName()" />
         <span class="hint">@T["Name of the part as it will be displayed in screens. Leave empty to use defaults."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="row col-lg ">
         <label asp-for="Description">@T["Description"]</label>
         @Html.ValidationMessageFor(m => m.Description)
         <input asp-for="Description" class="form-control" />
         <span class="hint">@T["Optionally provide a description for this part."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="Attachable">
         <label class="custom-control-label" asp-for="Attachable">@T["Attachable"]</label>
         <span class="hint">@T["Check to allow this part to be attached to other content types."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="Reusable">
         <label class="custom-control-label" asp-for="Reusable">@T["Reusable"]</label>
         <span class="hint">@T["Check to allow this part to be attached multiple times."]</span>
     </div>
-</fieldset>
+</div>

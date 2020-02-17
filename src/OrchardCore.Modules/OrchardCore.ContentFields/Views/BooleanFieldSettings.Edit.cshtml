@@ -1,25 +1,25 @@
 @model OrchardCore.ContentFields.Settings.BooleanFieldSettings
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="row col-md">
         <label asp-for="Hint">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="row col-sm">
         <label asp-for="Label">@T["Label"]</label>
-        <input asp-for="Label" class="form-control"/>
+        <input asp-for="Label" class="form-control" />
         <span class="hint">@T["The text associated to the checkbox."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="custom-control custom-checkbox">
-        <input asp-for="DefaultValue" type="checkbox" class="custom-control-input"/>
+        <input asp-for="DefaultValue" type="checkbox" class="custom-control-input" />
         <label class="custom-control-label" asp-for="DefaultValue">@T["Default value is true"]</label>
         <span class="hint">— @T["The default value this field will be initialized with when creating a new item."]</span>
     </div>
-</fieldset>
+</div>

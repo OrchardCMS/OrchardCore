@@ -33,9 +33,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field(ci => ci.Owner).Description("The owner of the content item");
             Field(ci => ci.Author).Description("The author of the content item");
 
-            Field<StringGraphType>()
+            Field<StringGraphType, string>()
                 .Name("render")
-                .ResolveAsync(async context =>
+                .ResolveLockedAsync(async context =>
                 {
                     var userContext = (GraphQLContext)context.UserContext;
                     var serviceProvider = userContext.ServiceProvider;
@@ -46,13 +46,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     var model = await displayManager.BuildDisplayAsync(context.Source, updateModelAccessor.ModelUpdater);
 
                     var displayHelper = serviceProvider.GetRequiredService<IDisplayHelper>();
+                    var htmlEncoder = serviceProvider.GetRequiredService<HtmlEncoder>();
 
                     using (var sb = StringBuilderPool.GetInstance())
                     {
                         using (var sw = new StringWriter(sb.Builder))
                         {
                             var htmlContent = await displayHelper.ShapeExecuteAsync(model);
-                            htmlContent.WriteTo(sw, HtmlEncoder.Default);
+                            htmlContent.WriteTo(sw, htmlEncoder);
 
                             await sw.FlushAsync();
                             return sw.ToString();

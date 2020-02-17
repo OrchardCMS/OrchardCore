@@ -20,11 +20,16 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
+        private readonly HtmlEncoder _htmlEncoder;
 
-        public DynamicCacheShapeDisplayEvents(IDynamicCacheService dynamicCacheService, ICacheScopeManager cacheScopeManager)
+        public DynamicCacheShapeDisplayEvents(
+            IDynamicCacheService dynamicCacheService,
+            ICacheScopeManager cacheScopeManager,
+            HtmlEncoder htmlEncoder)
         {
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
+            _htmlEncoder = htmlEncoder;
         }
 
         public async Task DisplayingAsync(ShapeDisplayContext context)
@@ -33,10 +38,9 @@ namespace OrchardCore.DynamicCache.EventHandlers
             var debugMode = false;
 
             // The shape has cache settings and no content yet
-            if (context.ShapeMetadata.IsCached && context.ChildContent == null)
+            if (context.Shape.Metadata.IsCached && context.ChildContent == null)
             {
-
-                var cacheContext = context.ShapeMetadata.Cache();
+                var cacheContext = context.Shape.Metadata.Cache();
                 _cacheScopeManager.EnterScope(cacheContext);
                 _openScopes[cacheContext.CacheId] = cacheContext;
 
@@ -51,14 +55,14 @@ namespace OrchardCore.DynamicCache.EventHandlers
                 }
                 else if (debugMode)
                 {
-                    context.ShapeMetadata.Wrappers.Add("CachedShapeWrapper");
+                    context.Shape.Metadata.Wrappers.Add("CachedShapeWrapper");
                 }
             }
         }
 
         public async Task DisplayedAsync(ShapeDisplayContext context)
         {
-            var cacheContext = context.ShapeMetadata.Cache();
+            var cacheContext = context.Shape.Metadata.Cache();
 
             // If the shape is not configured to be cached, continue as usual
             if (cacheContext == null)
@@ -85,7 +89,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
                 {
                     using (var sw = new StringWriter(sb.Builder))
                     {
-                        context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
+                        context.ChildContent.WriteTo(sw, _htmlEncoder);
                         await _dynamicCacheService.SetCachedValueAsync(cacheContext, sw.ToString());
                         await sw.FlushAsync();
                     }
@@ -95,7 +99,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
         public Task DisplayingFinalizedAsync(ShapeDisplayContext context)
         {
-            var cacheContext = context.ShapeMetadata.Cache();
+            var cacheContext = context.Shape.Metadata.Cache();
 
             if (cacheContext != null && _openScopes.ContainsKey(cacheContext.CacheId))
             {

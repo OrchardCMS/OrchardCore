@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +14,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly GraphQLContentOptions _contentOptions;
+        private readonly IStringLocalizer S;
+        private readonly Dictionary<string, FieldType> _dynamicPartFields;
 
         public DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
             IOptions<GraphQLContentOptions> contentOptionsAccessor,
@@ -20,11 +23,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         {
             _httpContextAccessor = httpContextAccessor;
             _contentOptions = contentOptionsAccessor.Value;
+            _dynamicPartFields = new Dictionary<string, FieldType>();
 
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
@@ -43,7 +45,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 if (_contentOptions.ShouldSkip(part)) continue;
 
-                if (_contentOptions.ShouldCollapse(part)) {
+                if (_contentOptions.ShouldCollapse(part))
+                {
                     foreach (var field in part.PartDefinition.Fields)
                     {
                         foreach (var fieldProvider in contentFieldProviders)
@@ -62,21 +65,34 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 }
                 else
                 {
-                    var field = contentItemType.Field(
-                        typeof(DynamicPartGraphType),
-                        partName.ToFieldName(),
-                        description: T["Represents a {0}.", part.PartDefinition.Name],
-                        resolve: context =>
-                        {
-                            var nameToResolve = partName;
-                            var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
+                    if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
+                    {
+                        contentItemType.AddField(fieldType);
+                    }
+                    else
+                    {
+                        var field = contentItemType.Field(
+                            typeof(DynamicPartGraphType),
+                            partName.ToFieldName(),
+                            description: S["Represents a {0}.", part.PartDefinition.Name],
+                            resolve: context =>
+                            {
+                                var nameToResolve = partName;
+                                var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
-                            return context.Source.Get(typeToResolve, nameToResolve);
-                        });
+                                return context.Source.Get(typeToResolve, nameToResolve);
+                            });
 
-                    field.ResolvedType = new DynamicPartGraphType(_httpContextAccessor, part);
+                        field.ResolvedType = new DynamicPartGraphType(_httpContextAccessor, part);
+                        _dynamicPartFields[partName] = field;
+                    }
                 }
             }
+        }
+
+        public void Clear()
+        {
+            _dynamicPartFields.Clear();
         }
     }
 }

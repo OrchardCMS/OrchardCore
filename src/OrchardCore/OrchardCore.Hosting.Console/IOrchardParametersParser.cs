@@ -1,4 +1,4 @@
-﻿using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Commands;
 
 namespace OrchardCore.Hosting
 {

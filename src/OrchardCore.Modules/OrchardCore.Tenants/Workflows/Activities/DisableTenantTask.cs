@@ -1,0 +1,37 @@
+using System.Collections.Generic;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Workflows.Abstractions.Models;
+using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
+
+namespace OrchardCore.Tenants.Workflows.Activities
+{
+    public class DisableTenantTask : TenantTask
+    {
+        public DisableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<DisableTenantTask> localizer)
+            : base(shellSettingsManager, shellHost, scriptEvaluator, localizer)
+        {
+        }
+
+        public override string Name => nameof(DisableTenantTask);
+
+        public override LocalizedString Category => S["Tenant"];
+
+        public override LocalizedString DisplayText => S["Disable Tenant Task"];
+
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return Outcomes(S["Disabled"]);
+        }
+
+        //public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        //{
+        //    //var shellSettings = await GetTenantAsync(workflowContext);
+        //    //shellSettings.State = TenantState.Disabled;
+        //    //await ShellHost.UpdateShellSettingsAsync(shellSettings);
+
+        //    return Outcomes("Disable");
+        //}
+    }
+}

@@ -10,10 +10,13 @@ namespace OrchardCore.OpenId.ViewModels
     {
         [HiddenInput]
         public string Id { get; set; }
+
         [Required]
         public string ClientId { get; set; }
+
         [Required]
         public string DisplayName { get; set; }
+
         public string RedirectUris { get; set; }
         public string PostLogoutRedirectUris { get; set; }
         public string Type { get; set; }
@@ -27,11 +30,8 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowImplicitFlow { get; set; }
         public bool AllowLogoutEndpoint { get; set; }
 
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            return OpenIdUrlValidator.ValidateUrls(nameof(RedirectUris), RedirectUris)
-                .Union(OpenIdUrlValidator.ValidateUrls(nameof(PostLogoutRedirectUris), PostLogoutRedirectUris));
-        }
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) => validationContext.ValidateUrls(nameof(RedirectUris), RedirectUris)
+                .Union(validationContext.ValidateUrls(nameof(PostLogoutRedirectUris), PostLogoutRedirectUris));
 
         public class RoleEntry
         {

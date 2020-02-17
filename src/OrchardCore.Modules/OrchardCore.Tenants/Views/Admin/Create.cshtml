@@ -33,7 +33,7 @@
         @T["Recipe"]
         <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
     </h6>
-    <fieldset class="row recipes" asp-validation-class-for="RecipeName">
+    <div class="row recipes" asp-validation-class-for="RecipeName">
         <div class="form-group col-md-6">
             <select asp-for="RecipeName" class="form-control">
 
@@ -46,7 +46,7 @@
                 }
             </select>
         </div>
-    </fieldset>
+    </div>
     <h6>
         @T["Database Presets"]
         <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
@@ -69,21 +69,19 @@
         </div>
     </div>
 
-    <fieldset class="row connectionString" asp-validation-class-for="ConnectionString">
+    <div class="row connectionString" asp-validation-class-for="ConnectionString">
         <div class="form-group col-md-12">
             <label asp-for="ConnectionString">@T["Connection string"]</label>
             <input asp-for="ConnectionString" class="form-control" />
             <span asp-validation-for="ConnectionString" class="text-danger"></span>
             <span id="connectionStringHint" class="text-muted form-text small"></span>
         </div>
-    </fieldset>
+    </div>
 
-    <fieldset>
-        <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Create"]</button>
-            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
-        </div>
-    </fieldset>
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Create"]</button>
+        <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+    </div>
 </form>
 
 <script at="Foot" type="text/javascript" asp-src="~/OrchardCore.Tenants/Scripts/tenant.js" depends-on="jquery"></script>

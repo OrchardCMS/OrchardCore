@@ -5,7 +5,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 {
     public class GraphQLField<IGraphType> : GraphQLField where IGraphType : IObjectGraphType
     {
-        public GraphQLField(string fieldName) : base (typeof(IGraphType), fieldName)
+        public GraphQLField(string fieldName) : base(typeof(IGraphType), fieldName)
         {
         }
     }

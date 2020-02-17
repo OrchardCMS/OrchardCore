@@ -43,7 +43,7 @@ namespace OrchardCore.ContentTypes.Editors
             Logger = logger;
         }
 
-        ILogger Logger { get; set; }
+        private ILogger Logger { get; set; }
 
         public async Task<dynamic> BuildTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, string groupId)
         {
@@ -67,7 +67,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             await BindPlacementAsync(typeContext);
 
-            await _handlers.InvokeAsync(handler => handler.BuildTypeEditorAsync(contentTypeDefinition, typeContext), Logger);
+            await _handlers.InvokeAsync((handler, contentTypeDefinition, typeContext) => handler.BuildTypeEditorAsync(contentTypeDefinition, typeContext), contentTypeDefinition, typeContext, Logger);
 
             return contentTypeDefinitionShape;
         }
@@ -96,10 +96,9 @@ namespace OrchardCore.ContentTypes.Editors
                     updater
                 );
 
-                BindPlacementAsync(typeContext).Wait();
+                BindPlacementAsync(typeContext).GetAwaiter().GetResult();
 
-                _handlers.InvokeAsync(handler => handler.UpdateTypeEditorAsync(contentTypeDefinition, typeContext), Logger).Wait();
-
+                _handlers.InvokeAsync((handler, contentTypeDefinition, typeContext) => handler.UpdateTypeEditorAsync(contentTypeDefinition, typeContext), contentTypeDefinition, typeContext, Logger).GetAwaiter().GetResult();
             });
 
             return contentTypeDefinitionShape;
@@ -126,7 +125,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             await BindPlacementAsync(partContext);
 
-            await _handlers.InvokeAsync(handler => handler.BuildPartEditorAsync(contentPartDefinition, partContext), Logger);
+            await _handlers.InvokeAsync((handler, contentPartDefinition, partContext) => handler.BuildPartEditorAsync(contentPartDefinition, partContext), contentPartDefinition, partContext, Logger);
 
             return contentPartDefinitionShape;
         }
@@ -154,11 +153,11 @@ namespace OrchardCore.ContentTypes.Editors
                     layout,
                     updater
                 );
+
+                BindPlacementAsync(partContext).GetAwaiter().GetResult();
+
+                _handlers.InvokeAsync((handler, contentPartDefinition, partContext) => handler.UpdatePartEditorAsync(contentPartDefinition, partContext), contentPartDefinition, partContext, Logger).GetAwaiter().GetResult();
             });
-
-            await BindPlacementAsync(partContext);
-
-            await _handlers.InvokeAsync(handler => handler.UpdatePartEditorAsync(contentPartDefinition, partContext), Logger);
 
             return contentPartDefinitionShape;
         }
@@ -185,8 +184,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             await BindPlacementAsync(partContext);
 
-            await _handlers.InvokeAsync(handler => handler.BuildTypePartEditorAsync(contentTypePartDefinition, partContext), Logger);
-
+            await _handlers.InvokeAsync((handler, contentTypePartDefinition, partContext) => handler.BuildTypePartEditorAsync(contentTypePartDefinition, partContext), contentTypePartDefinition, partContext, Logger);
 
             return typePartDefinitionShape;
         }
@@ -203,7 +201,6 @@ namespace OrchardCore.ContentTypes.Editors
 
             _contentDefinitionManager.AlterTypeDefinition(contentTypePartDefinition.ContentTypeDefinition.Name, typeBuilder =>
             {
-
                 typeBuilder.WithPart(contentTypePartDefinition.Name, async typePartBuilder =>
                 {
                     typePartDefinitionShape.ContentPart = contentTypePartDefinition;
@@ -220,9 +217,8 @@ namespace OrchardCore.ContentTypes.Editors
 
                     await BindPlacementAsync(partContext);
 
-                    await _handlers.InvokeAsync(handler => handler.UpdateTypePartEditorAsync(contentTypePartDefinition, partContext), Logger);
+                    await _handlers.InvokeAsync((handler, contentTypePartDefinition, partContext) => handler.UpdateTypePartEditorAsync(contentTypePartDefinition, partContext), contentTypePartDefinition, partContext, Logger);
                 });
-
             });
 
             return typePartDefinitionShape;
@@ -250,7 +246,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             await BindPlacementAsync(fieldContext);
 
-            await _handlers.InvokeAsync(handler => handler.BuildPartFieldEditorAsync(contentPartFieldDefinition, fieldContext), Logger);
+            await _handlers.InvokeAsync((handler, contentPartFieldDefinition, fieldContext) => handler.BuildPartFieldEditorAsync(contentPartFieldDefinition, fieldContext), contentPartFieldDefinition, fieldContext, Logger);
 
             return partFieldDefinitionShape;
         }
@@ -285,7 +281,7 @@ namespace OrchardCore.ContentTypes.Editors
 
                     await BindPlacementAsync(fieldContext);
 
-                    await _handlers.InvokeAsync(handler => handler.UpdatePartFieldEditorAsync(contentPartFieldDefinition, fieldContext), Logger);
+                    await _handlers.InvokeAsync((handler, contentPartFieldDefinition, fieldContext) => handler.UpdatePartFieldEditorAsync(contentPartFieldDefinition, fieldContext), contentPartFieldDefinition, fieldContext, Logger);
                 });
             });
 

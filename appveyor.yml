@@ -1,4 +1,4 @@
-image: Windows Server 2019
+image: Visual Studio 2019
 
 # Do not build feature branch with open Pull Requests
 skip_branch_with_pr: true
@@ -40,8 +40,8 @@ install:
   - ps: $IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
 # Uncomment to download a specific version of dotnet
-  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
-  - ps: .\dotnet-install.ps1 --Version 3.0.100
+#  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
+# - ps: .\dotnet-install.ps1 --Version 3.1.101
 
 build_script:
   - dotnet build -c Release
@@ -72,6 +72,15 @@ deploy:
     server: https://www.myget.org/F/orchardcore-preview/api/v2/package
     api_key:
       secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
+    skip_symbols: true
+    artifact: /.*\.nupkg/
+  - provider: NuGet
+    on:
+      branch: dev
+    server: https://nuget.pkg.github.com/OrchardCMS/index.json
+    username: sebastienros
+    api_key:
+      secure: AJx82moR9XibIs1lxvDToOle/7BqC+XX6ztrJ6CMSU+85/dqM3dvHUdf0LVymAzV
     skip_symbols: true
     artifact: /.*\.nupkg/
   - provider: NuGet

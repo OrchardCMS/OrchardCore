@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -590,7 +591,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// whose result returns the instantiated token, that can be persisted in the database.
         /// </returns>
         public virtual ValueTask<TToken> InstantiateAsync(CancellationToken cancellationToken)
-            => new ValueTask<TToken>(new TToken { TokenId = Guid.NewGuid().ToString("n") } );
+            => new ValueTask<TToken>(new TToken { TokenId = Guid.NewGuid().ToString("n") });
 
         /// <summary>
         /// Executes the specified query and returns all the corresponding elements.
@@ -668,7 +669,6 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 {
                     await _session.CommitAsync();
                 }
-
                 catch (Exception exception)
                 {
                     if (exceptions == null)
@@ -935,7 +935,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task UpdateAsync(TToken token, CancellationToken cancellationToken)
+        public virtual async Task UpdateAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -944,9 +944,19 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(token);
+            _session.Save(token, checkConcurrency: true);
 
-            return _session.CommitAsync();
+            try
+            {
+                await _session.CommitAsync();
+            }
+            catch (ConcurrencyException exception)
+            {
+                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
+                    .AppendLine("The token was concurrently updated and cannot be persisted in its current state.")
+                    .Append("Reload the token from the database and retry the operation.")
+                    .ToString(), exception);
+            }
         }
     }
 }

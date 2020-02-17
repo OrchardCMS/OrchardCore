@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -20,7 +19,6 @@ namespace OrchardCore.Google.Authentication.Configuration
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger<GoogleOptionsConfiguration> _logger;
         private readonly string _tenantPrefix;
-
 
         public GoogleOptionsConfiguration(
             GoogleAuthenticationService googleAuthenticationService,
@@ -54,7 +52,7 @@ namespace OrchardCore.Google.Authentication.Configuration
 
         public void Configure(string name, GoogleOptions options)
         {
-            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme))
             {
                 return;
             }

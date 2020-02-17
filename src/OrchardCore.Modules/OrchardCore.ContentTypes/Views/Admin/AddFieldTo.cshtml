@@ -7,28 +7,27 @@
     var returnUrl = ViewData["returnUrl"]?.ToString();
 }
 
-
 <h1>@RenderTitleSegments(T["Add New Field To \"{0}\"", Model.Part.DisplayName()])</h1>
 
 <form asp-action="AddFieldTo" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="row col-md">
             <label for="DisplayName">@T["Display Name"]</label>
             <input asp-for="DisplayName" class="form-control" autofocus />
             <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
         </div>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="row col-sm">
             <label for="Name">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" />
             <span class="hint">@T["Technical name of the field."]</span>
         </div>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <label for="DisplayName">@T["Field Type"]</label>
         <ul class="list-group w-md-50">
             @for (var i = 0; i < Model.Fields.Count; i++)
@@ -41,15 +40,15 @@
                 </li>
             }
         </ul>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <button class="btn btn-primary" type="submit">@T["Save"]</button>
         @if (Url.IsLocalUrl(returnUrl))
         {
             <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
         }
-    </fieldset>
+    </div>
 </form>
 
 <script at="Foot" type="text/javascript">
