@@ -312,7 +312,7 @@ We can now update the Razor Page to use the alias instead of the content item id
 @inject OrchardCore.IOrchardHelper Orchard
 
 @{
-    var blogPost = await Orchard.GetContentItemByAliasAsync($"alias:{Slug}");
+    var blogPost = await Orchard.GetContentItemByHandleAsync($"alias:{Slug}");
 }
 
 ...
