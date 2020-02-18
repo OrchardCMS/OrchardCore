@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Indexing;
 using YesSql;
 
 namespace OrchardCore.Contents.Recipes
@@ -16,11 +17,22 @@ namespace OrchardCore.Contents.Recipes
     {
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
+        private readonly IContentItemIdGenerator _idGenerator;
+        private readonly IContentManagerSession _contentManagerSession;
+        private readonly IIndexingTaskManager _indexingTaskManager;
 
-        public ContentStep(IContentManager contentManager, ISession session)
+        public ContentStep(
+            IContentManager contentManager,
+            IContentManagerSession contentManagerSession,
+            ISession session,
+            IContentItemIdGenerator idGenerator,
+            IIndexingTaskManager indexingTaskManager)
         {
             _contentManager = contentManager;
+            _contentManagerSession = contentManagerSession;
             _session = session;
+            _idGenerator = idGenerator;
+            _indexingTaskManager = indexingTaskManager;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -46,16 +58,28 @@ namespace OrchardCore.Contents.Recipes
                 {
                     // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
                     contentItem.Id = 0;
-                    await _contentManager.CreateAsync(contentItem);
+
+                    //await _contentManager.CreateAsync(contentItem);
+
+                    if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
+                    {
+                        contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
+                        contentItem.Published = true;
+                        contentItem.Latest = true;
+                    }
+
+                    _session.Save(contentItem);
+                    _contentManagerSession.Store(contentItem);
+                    await _indexingTaskManager.CreateTaskAsync(contentItem, IndexingTaskTypes.Update);
 
                     // Overwrite ModifiedUtc & PublishedUtc values that handlers have changes
                     // Should not be necessary if IContentManager had an Import method
-                    contentItem.ModifiedUtc = modifiedUtc;
-                    contentItem.PublishedUtc = publishedUtc;
+                    // contentItem.ModifiedUtc = modifiedUtc;
+                    // contentItem.PublishedUtc = publishedUtc;
 
                     // Reset published and latest to imported values as CreateAsync sets these values arbitrarily.
-                    contentItem.Published = isPublished;
-                    contentItem.Latest = isLatest;
+                    //contentItem.Published = isPublished;
+                    //contentItem.Latest = isLatest;
 
                     // Resolve previous published or draft items or they will continue to be listed as published or draft.
                     var relatedContentItems = await _session
@@ -67,7 +91,8 @@ namespace OrchardCore.Contents.Recipes
                     foreach (var relatedItem in relatedContentItems)
                     {
                         // CreateAsync calls session.Save so the importing item is now resolved as part of the query.
-                        if (String.Equals(relatedItem.ContentItemVersionId, contentItem.ContentItemVersionId)){
+                        if (String.Equals(relatedItem.ContentItemVersionId, contentItem.ContentItemVersionId))
+                        {
                             continue;
                         }
 
@@ -82,6 +107,8 @@ namespace OrchardCore.Contents.Recipes
                         }
 
                         _session.Save(relatedItem);
+                        _contentManagerSession.Store(relatedItem);
+                        await _indexingTaskManager.CreateTaskAsync(relatedItem, IndexingTaskTypes.Update);
                     }
                 }
             }
