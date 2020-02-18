@@ -153,7 +153,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
             var options = new Mock<IOptions<SmtpSettings>>();
             options.Setup(o => o.Value).Returns(new SmtpSettings
             {
-                DefaultSender = "Sébastien Ros <sebastienros@gmail.com>",
+                DefaultSender = "Sebastien Ros <sebastienros@gmail.com>",
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
                 PickupDirectoryLocation = pickupDirectoryPath
             });
@@ -178,7 +178,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
 
             var content = File.ReadAllText(file.FullName);
 
-            Assert.Contains("From: Sébastien Ros <sebastienros@gmail.com>", content);
+            Assert.Contains("From: Sebastien Ros <sebastienros@gmail.com>", content);
             Assert.Contains("Sender: Hisham Bin Ateya <hishamco_2007@hotmail.com>", content);
         }
 
