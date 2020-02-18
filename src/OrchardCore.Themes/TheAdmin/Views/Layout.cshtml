@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
@@ -23,22 +23,31 @@
 </head>
 <body class="preload">
     <div class="ta-wrapper">
-        <div class="ta-navbar-top">
+        <nav class="ta-navbar-top">
             <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
+            <button class="navbar-toggler mr-2" type="button" data-toggle="collapse" data-target="#navbar-links" aria-controls="navbar-links" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
             <div class="collapse navbar-collapse" id="navbar-links">
                 <div class="mr-auto">
                     @await RenderSectionAsync("NavbarTop", required: false)
                 </div>
-                <ul class="nav navbar-nav">
+                <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
                         <a class="nav-link"><span><i class="fa fa-user" aria-hidden="true"></i></span><span> @User.Identity.Name</span></a>
                     </li>
+                    <li class="nav-item">
+                        <div class="nav-link">
+                            <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post">
+                                <button type="submit" class="btn btn-link" role="button"><i class="fa fa-sign-out" aria-hidden="true"></i> @T["Log off"]</button>
+                            </form>
+                        </div>
+                    </li>
                 </ul>
-                <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline">
-                    <button type="submit" class="btn btn-link nav-link" role="button"><i class="fa fa-sign-out" aria-hidden="true"></i> @T["Log off"]</button>
-                </form>
+
             </div>
-        </div>
+        </nav>
 
         <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
             @await RenderSectionAsync("Navigation", required: false)

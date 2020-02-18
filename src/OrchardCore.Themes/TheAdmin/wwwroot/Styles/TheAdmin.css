@@ -9352,22 +9352,31 @@ html[dir], [dir] body {
 
 .ta-navbar-top {
   height: 49px;
-  z-index: 1000; }
+  z-index: 1030; }
 
 [dir] .ta-navbar-top {
   border-bottom: 1px solid #DEDEDE;
+  padding: 0px;
+  padding-top: 0.3em;
   background-color: white; }
-
-[dir=ltr] .ta-navbar-top {
-  padding-left: 0px; }
-
-[dir=rtl] .ta-navbar-top {
-  padding-right: 0px; }
+  [dir] .ta-navbar-top .navbar-collapse.collapsing, [dir] .ta-navbar-top .navbar-collapse.show {
+    background-color: white; }
+    [dir] .ta-navbar-top .navbar-collapse.collapsing .navbar-nav .nav-link, [dir] .ta-navbar-top .navbar-collapse.show .navbar-nav .nav-link {
+      padding: 0.5rem 1rem !important; }
+    [dir=ltr] .ta-navbar-top .navbar-collapse.collapsing .navbar-nav .nav-link, [dir=ltr] .ta-navbar-top .navbar-collapse.show .navbar-nav .nav-link {
+  text-align: right; }
+    [dir=rtl] .ta-navbar-top .navbar-collapse.collapsing .navbar-nav .nav-link, [dir=rtl] .ta-navbar-top .navbar-collapse.show .navbar-nav .nav-link {
+      text-align: left; }
   .ta-navbar-top .nav-link {
     font-size: 14px; }
   [dir] .ta-navbar-top .breadcrumb {
     background-color: transparent;
     margin-top: 1rem; }
+  [dir] .ta-navbar-top .navbar-toggler {
+    padding: 5px; }
+  .ta-navbar-top .navbar-toggler-icon {
+    width: 1.2em;
+    height: 1.2em; }
 
 .ta-navbar-brand {
   overflow: hidden;
