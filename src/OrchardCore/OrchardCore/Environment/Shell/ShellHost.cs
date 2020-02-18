@@ -154,19 +154,27 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
+        /// A feature is enabled / disabled, the tenant needs to be released so that a new shell will be created.
+        /// </summary>
+        Task IShellDescriptorManagerEventHandler.ChangedAsync(ShellDescriptor descriptor, ShellSettings settings)
+        {
+            ReleaseShellContext(settings);
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Marks the specific tenant as released, such that a new shell is created for subsequent requests,
         /// while existing requests get flushed.
         /// </summary>
         /// <param name="settings"></param>
         public Task ReloadShellContextAsync(ShellSettings settings)
         {
-            // If a disabled shell is still in use it will be released by its last scope. So we keep it
-            // in the list to prevent the consumer from getting a new one with a null service provider.
-
-            if (settings.State == TenantState.Disabled && _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
+            // If a disabled shell is still in use it will be released by its last scope.
+            if (IsDisabledAndInUse(settings))
             {
-                // But we still remove it from the running shell table, so that it is no more served.
+                // But we still remove it from the running shells, so that it is no more served.
                 _runningShellTable.Remove(settings);
+
                 return Task.CompletedTask;
             }
 
@@ -179,24 +187,15 @@ namespace OrchardCore.Environment.Shell
             AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings, Reload = true });
 
             // Reload the settings in a new scope.
-            ShellScope.AddDeferredTask(async scope =>
-            {
-                // Already created if it is the default tenant.
-                if (settings.Name != ShellHelper.DefaultShellName)
-                {
-                    await GetOrCreateShellContextAsync(settings);
-                }
-            });
+            //ShellScope.AddDeferredTask(async scope =>
+            //{
+            //    // Already recreated if it is the default tenant.
+            //    if (settings.Name != ShellHelper.DefaultShellName)
+            //    {
+            //        await GetOrCreateShellContextAsync(settings);
+            //    }
+            //});
 
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// A feature is enabled / disabled, the tenant needs to be released so that a new shell will be created.
-        /// </summary>
-        Task IShellDescriptorManagerEventHandler.ChangedAsync(ShellDescriptor descriptor, ShellSettings settings)
-        {
-            ReleaseShellContext(settings);
             return Task.CompletedTask;
         }
 
@@ -207,10 +206,8 @@ namespace OrchardCore.Environment.Shell
         /// <param name="settings"></param>
         public void ReleaseShellContext(ShellSettings settings)
         {
-            // If a disabled shell is still in use it will be released by its last scope. So we keep it
-            // in the list to prevent the consumer from getting a new one with a null service provider.
-
-            if (settings.State == TenantState.Disabled && _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
+            // If a disabled shell is still in use it will be released by its last scope.
+            if (IsDisabledAndInUse(settings))
             {
                 return;
             }
@@ -426,6 +423,12 @@ namespace OrchardCore.Environment.Shell
                 shellSettings.State == TenantState.Uninitialized ||
                 shellSettings.State == TenantState.Initializing;
         }
+
+        /// <summary>
+        /// Whether or not a disabled shell is still in use.
+        /// </summary>
+        private bool IsDisabledAndInUse(ShellSettings settings) =>
+            settings.State == TenantState.Disabled && _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0;
 
         public void Dispose()
         {
