@@ -9,6 +9,7 @@ namespace OrchardCore.Title.Models
         GeneratedHidden,
         EditableRequired
     }
+
     public class TitlePartSettings
     {
         /// <summary>

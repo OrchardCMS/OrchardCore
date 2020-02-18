@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Xml.Linq;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Modules;
 
 namespace OrchardCore.XmlRpc.Controllers
 {
@@ -20,7 +20,7 @@ namespace OrchardCore.XmlRpc.Controllers
             Logger = logger;
         }
 
-        ILogger Logger { get; }
+        private ILogger Logger { get; }
 
         [ResponseCache(Duration = 0, NoStore = true)]
         public ActionResult Manifest()

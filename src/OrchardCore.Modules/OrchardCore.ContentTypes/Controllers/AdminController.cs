@@ -63,7 +63,10 @@ namespace OrchardCore.ContentTypes.Controllers
         }
 
         public ILogger Logger { get; }
-        public Task<ActionResult> Index() { return List(); }
+        public Task<ActionResult> Index()
+        {
+            return List();
+        }
 
         #region Types
 
@@ -140,7 +143,6 @@ namespace OrchardCore.ContentTypes.Controllers
             var contentTypeDefinition = _contentDefinitionService.AddType(viewModel.Name, viewModel.DisplayName);
 
             var typeViewModel = new EditTypeViewModel(contentTypeDefinition);
-
 
             _notifier.Success(H["The \"{0}\" content type has been created.", typeViewModel.DisplayName]);
 
@@ -417,7 +419,7 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction("Edit", new { id });
         }
 
-        #endregion
+        #endregion Types
 
         #region Parts
 
@@ -780,7 +782,6 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Success(H["The \"{0}\" field settings have been saved.", field.DisplayName()]);
             }
 
-
             if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
@@ -832,9 +833,10 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction("EditPart", new { id });
         }
 
-        #endregion
+        #endregion Parts
 
         #region Type Parts
+
         public async Task<ActionResult> EditTypePart(string id, string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -923,7 +925,6 @@ namespace OrchardCore.ContentTypes.Controllers
                         _session.Cancel();
                         return View(viewModel);
                     }
-
                 }
             }
 
@@ -947,7 +948,6 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction("Edit", new { id });
         }
 
-        #endregion
+        #endregion Type Parts
     }
-
 }

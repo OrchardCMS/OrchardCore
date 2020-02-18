@@ -8,7 +8,6 @@ using OrchardCore.Modules.Manifest;
     Description = "Provides a part that allows to localize content items.",
     Category = "Internationalization"
 )]
-
 [assembly: Feature(
     Id = "OrchardCore.ContentLocalization",
     Name = "Content Localization",
@@ -16,7 +15,6 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[] { "OrchardCore.ContentTypes", "OrchardCore.Localization" },
     Category = "Internationalization"
 )]
-
 
 [assembly: Feature(
     Id = "OrchardCore.ContentLocalization.ContentCulturePicker",

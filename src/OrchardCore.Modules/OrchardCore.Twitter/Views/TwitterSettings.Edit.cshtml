@@ -5,11 +5,10 @@
 
 <h3>@T["Twitter Integration Settings"]</h3>
 
-
 <div class="form-group row" asp-validation-class-for="APIKey">
     <div class="col-lg">
         <label asp-for="APIKey">@T["API key"]</label>
-        <input asp-for="APIKey" class="form-control" autocomplete="off"/>
+        <input asp-for="APIKey" class="form-control" autocomplete="off" />
         <span asp-validation-for="APIKey"></span>
         <span class="hint">@T["The API key defined in the Keys and tokens tab of twitter app dashboard."]</span>
     </div>
@@ -18,7 +17,7 @@
 <div class="form-group row" asp-validation-class-for="APISecretKey">
     <div class="col-lg">
         <label asp-for="APISecretKey">@T["API secret key"]</label>
-        <input asp-for="APISecretKey" class="form-control" type="password" value="@Model.APISecretKey" autocomplete="off"/>
+        <input asp-for="APISecretKey" class="form-control" type="password" value="@Model.APISecretKey" autocomplete="off" />
         <span asp-validation-for="APISecretKey"></span>
         <span class="hint">@T["The API secret defined in the Keys and tokens tab of twitter app dashboard."]</span>
     </div>
@@ -27,7 +26,7 @@
 <div class="form-group row" asp-validation-class-for="AccessToken">
     <div class="col-lg">
         <label asp-for="AccessToken">@T["Access Token"]</label>
-        <input asp-for="AccessToken" class="form-control" autocomplete="off"/>
+        <input asp-for="AccessToken" class="form-control" autocomplete="off" />
         <span asp-validation-for="AccessToken"></span>
         <span class="hint">@T["The Access Token defined in the Keys and tokens tab of twitter app dashboard."]</span>
     </div>
@@ -36,9 +35,8 @@
 <div class="form-group row" asp-validation-class-for="AccessTokenSecret">
     <div class="col-lg">
         <label asp-for="AccessTokenSecret">@T["Access Token Secret"]</label>
-        <input asp-for="AccessTokenSecret" class="form-control" type="password" value="@Model.AccessTokenSecret" autocomplete="off"/>
+        <input asp-for="AccessTokenSecret" class="form-control" type="password" value="@Model.AccessTokenSecret" autocomplete="off" />
         <span asp-validation-for="AccessTokenSecret"></span>
         <span class="hint">@T["The Access Token Secret in the Keys and tokens tab of twitter app dashboard."]</span>
     </div>
 </div>
-

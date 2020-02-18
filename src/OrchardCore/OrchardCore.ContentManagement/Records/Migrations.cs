@@ -106,7 +106,6 @@ namespace OrchardCore.ContentManagement.Records
                         builder.WithPart(contentTypePartDefinition.Name, contentTypePartDefinition.PartDefinition, partBuilder =>
                         {
                             partBuilder.WithSettings(existingTypePartSettings);
-
                         });
                     }
                 });

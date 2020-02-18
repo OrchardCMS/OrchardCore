@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Indexing
@@ -6,7 +6,7 @@ namespace OrchardCore.Indexing
     public class BuildIndexContext
     {
         public BuildIndexContext(
-            DocumentIndex documentIndex, 
+            DocumentIndex documentIndex,
             ContentItem contentItem,
             IList<string> keys)
         {

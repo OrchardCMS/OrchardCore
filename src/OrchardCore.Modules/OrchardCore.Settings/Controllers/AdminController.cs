@@ -36,8 +36,8 @@ namespace OrchardCore.Settings.Controllers
             S = s;
         }
 
-        IHtmlLocalizer H { get; set; }
-        IStringLocalizer S { get; set; }
+        private IHtmlLocalizer H { get; set; }
+        private IStringLocalizer S { get; set; }
 
         public async Task<IActionResult> Index(string groupId)
         {

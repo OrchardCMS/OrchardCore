@@ -24,7 +24,9 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         private readonly Func<ViewContext, ITagHelper> _activatorByService;
         private readonly Action<object, object> _viewContextSetter;
 
-        public LiquidTagHelperActivator() { }
+        public LiquidTagHelperActivator()
+        {
+        }
 
         public LiquidTagHelperActivator(Type type)
         {

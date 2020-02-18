@@ -14,6 +14,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
     {
         // Maximum length that MySql can support in an index under utf8 collation.
         public const int MaxTextSize = 768;
+
         public string Text { get; set; }
         public string BigText { get; set; }
     }

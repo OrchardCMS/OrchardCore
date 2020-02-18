@@ -5,7 +5,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields.Fields
 {

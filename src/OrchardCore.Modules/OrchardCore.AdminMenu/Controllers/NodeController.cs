@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.AdminMenu.ViewModels;
@@ -324,7 +323,6 @@ namespace OrchardCore.AdminMenu.Controllers
             {
                 return NotFound();
             }
-
 
             var nodeToMove = adminMenu.GetMenuItemById(nodeToMoveId);
             if (nodeToMove == null)

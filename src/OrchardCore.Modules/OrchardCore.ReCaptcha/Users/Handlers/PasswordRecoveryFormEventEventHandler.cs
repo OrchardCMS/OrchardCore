@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Users.Events;
 

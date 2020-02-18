@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;

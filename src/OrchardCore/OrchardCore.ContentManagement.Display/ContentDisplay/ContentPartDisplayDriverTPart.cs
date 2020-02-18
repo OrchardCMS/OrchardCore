@@ -174,7 +174,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             using (BuildPrefix(typePartDefinition, context.HtmlFieldPrefix))
             {
-
                 _typePartDefinition = typePartDefinition;
 
                 var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
@@ -198,7 +197,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             using (BuildPrefix(typePartDefinition, context.HtmlFieldPrefix))
             {
-
                 var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
 
                 var result = await UpdateAsync(part, context.Updater, updateEditorContext);

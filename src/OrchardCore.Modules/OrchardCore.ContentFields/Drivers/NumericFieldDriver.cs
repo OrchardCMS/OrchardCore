@@ -51,7 +51,7 @@ namespace OrchardCore.ContentFields.Fields
             var viewModel = new EditNumericFieldViewModel();
 
             bool modelUpdated = await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Value);
-            
+
             if (modelUpdated)
             {
                 decimal value;

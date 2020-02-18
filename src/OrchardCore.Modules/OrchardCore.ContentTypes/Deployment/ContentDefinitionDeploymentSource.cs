@@ -2,9 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Deployment;
-using YesSql;
 
 namespace OrchardCore.ContentTypes.Deployment
 {
@@ -25,7 +23,7 @@ namespace OrchardCore.ContentTypes.Deployment
             }
 
             var contentTypeDefinitionRecord = await _contentDefinitionStore.LoadContentDefinitionAsync();
-           
+
             var contentTypes = contentDefinitionStep.IncludeAll
                 ? contentTypeDefinitionRecord.ContentTypeDefinitionRecords
                 : contentTypeDefinitionRecord.ContentTypeDefinitionRecords

@@ -59,7 +59,7 @@ namespace OrchardCore.Liquid.Services
                     LiquidViewTemplate.TryParse(String.Join(System.Environment.NewLine, errors), out parsed, out errors);
                 }
 
-                // Define a default sliding expiration to prevent the 
+                // Define a default sliding expiration to prevent the
                 // cache from being filled and still apply some micro-caching
                 // in case the template is use commonly
                 e.SetSlidingExpiration(TimeSpan.FromSeconds(30));

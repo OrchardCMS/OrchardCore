@@ -21,7 +21,7 @@ namespace OrchardCore.Email.Workflows.Activities
         )
         {
             _smtpService = smtpService;
-            _expressionEvaluator = expressionEvaluator;           
+            _expressionEvaluator = expressionEvaluator;
             S = localizer;
         }
 

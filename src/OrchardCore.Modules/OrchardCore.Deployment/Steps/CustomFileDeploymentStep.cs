@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Deployment.Steps
 {
     /// <summary>
-    /// Adds a custom file to a <see cref="DeploymentPlanResult"/>. 
+    /// Adds a custom file to a <see cref="DeploymentPlanResult"/>.
     /// </summary>
     public class CustomFileDeploymentStep : DeploymentStep
     {
@@ -14,6 +14,7 @@ namespace OrchardCore.Deployment.Steps
 
         [Required]
         public string FileName { get; set; }
+
         public string FileContent { get; set; }
     }
 }

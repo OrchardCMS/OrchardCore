@@ -7,7 +7,7 @@
     var contentItemDisplayText = contentItem.ContentItem.DisplayText;
     var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
 
-    var editorId = "contentEditor_" + Model.PrefixValue; 
+    var editorId = "contentEditor_" + Model.PrefixValue;
 }
 
 <div class="widget widget-editor card my-1 @(Model.Inline != true ? "collapsed" : "")">
@@ -23,7 +23,7 @@
             <div class="btn-group">
                  @if(Model.Footer != null)
                 {
-                    @await DisplayAsync(Model.Footer)                
+                    @await DisplayAsync(Model.Footer)
                 }
                 @if (Model.CanInsert != false)
                 {
@@ -49,7 +49,7 @@
                 }
             </div>
         </div>
-        <div class="btn-group btn-group-sm float-right" role="group">        
+        <div class="btn-group btn-group-sm float-right" role="group">
         @if (Model.CanDelete != false)
         {
             <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
@@ -63,5 +63,5 @@
                 @await DisplayAsync(Model.ContentEditor)
             }
         </div>
-    </div>    
+    </div>
 </div>
