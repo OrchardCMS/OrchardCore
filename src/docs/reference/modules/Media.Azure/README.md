@@ -21,7 +21,7 @@ The following configuration values are used by default and can be customized:
     "OrchardCore.Media.Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
-      // Set to the Azure Blob container name.
+      // Set to the Azure Blob container name. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "somecontainer",
       // Optionally, set to a path to store media in a subdirectory inside your container.
       "BasePath": "some/base/path",
@@ -56,7 +56,7 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
     "OrchardCore.Media.Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
-      // Optionally configure with liquid.
+      // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "{{ ShellSettings.Name }}-media",
       // Optionally configure with liquid.
       "BasePath": "Media",
@@ -74,7 +74,7 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
     "OrchardCore.Media.Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
-      // Optionally configure with liquid.
+      // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "somecontainer",
       // Optionally configure with liquid.
       "BasePath": "{{ ShellSettings.Name }}/Media",

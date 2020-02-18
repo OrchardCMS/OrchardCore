@@ -16,6 +16,7 @@ These settings need to be available to the `IShellConfiguration` implementation.
   "OrchardCore": {
     "OrchardCore.DataProtection.Azure": {
       "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=<myaccountname>;AccountKey=<myaccountkey>;EndpointSuffix=core.windows.net",
+      // Set to the Azure Blob container name. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "dataprotection",
       "BlobName": "",
       "CreateContainer": true
@@ -45,6 +46,7 @@ If not supplied the `BlobName` will automatically default to a folder per tenant
   "OrchardCore": {
     "OrchardCore.DataProtection.Azure": {
       "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=<myaccountname>;AccountKey=<myaccountkey>;EndpointSuffix=core.windows.net",
+      // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "{{ ShellSettings.Name }}-dataprotection",
       "BlobName": "{{ ShellSettings.Name }}DataProtectionKeys.xml",
       "CreateContainer": true
