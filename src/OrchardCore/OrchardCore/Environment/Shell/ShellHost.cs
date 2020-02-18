@@ -98,7 +98,14 @@ namespace OrchardCore.Environment.Shell
                 {
                     // If the context is released, it is removed from the dictionary so that
                     // a new call on 'GetOrCreateShellContextAsync' will recreate a new shell context.
-                    _shellContexts.TryRemove(settings.Name, out var value);
+
+                    if (_shellContexts.TryRemove(settings.Name, out var value) &&
+                        value is ShellContext.PlaceHolder holder && holder.Reload &&
+                        settings.State != TenantState.Initializing)
+                    {
+                        settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
+                    }
+
                     shell = null;
                 }
             }
@@ -127,20 +134,17 @@ namespace OrchardCore.Environment.Shell
                 {
                     // If the context is released, it is removed from the dictionary so that
                     // a new call on 'GetScope' will recreate a new shell context.
-                    _shellContexts.TryRemove(settings.Name, out var value);
+
+                    if (_shellContexts.TryRemove(settings.Name, out var value) &&
+                        value is ShellContext.PlaceHolder holder && holder.Reload &&
+                        settings.State != TenantState.Initializing)
+                    {
+                        settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
+                    }
                 }
             }
 
             return scope;
-        }
-
-        /// <summary>
-        /// A feature is enabled / disabled, the tenant needs to be restarted.
-        /// </summary>
-        Task IShellDescriptorManagerEventHandler.ChangedAsync(ShellDescriptor descriptor, ShellSettings settings)
-        {
-            ReleaseShellContext(settings);
-            return Task.CompletedTask;
         }
 
         public async Task UpdateShellSettingsAsync(ShellSettings settings)
@@ -154,7 +158,7 @@ namespace OrchardCore.Environment.Shell
         /// while existing requests get flushed.
         /// </summary>
         /// <param name="settings"></param>
-        public async Task ReloadShellContextAsync(ShellSettings settings)
+        public Task ReloadShellContextAsync(ShellSettings settings)
         {
             // If a disabled shell is still in use it will be released by its last scope. So we keep it
             // in the list to prevent the consumer from getting a new one with a null service provider.
@@ -163,7 +167,7 @@ namespace OrchardCore.Environment.Shell
             {
                 // But we still remove it from the running shell table, so that it is no more served.
                 _runningShellTable.Remove(settings);
-                return;
+                return Task.CompletedTask;
             }
 
             if (_shellContexts.TryRemove(settings.Name, out var context))
@@ -172,12 +176,28 @@ namespace OrchardCore.Environment.Shell
                 context.Release();
             }
 
-            if (settings.State != TenantState.Initializing)
-            {
-                settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
-            }
+            AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings, Reload = true });
 
-            await GetOrCreateShellContextAsync(settings);
+            // Reload the settings in a new scope.
+            ShellScope.AddDeferredTask(async scope =>
+            {
+                // Already created if it is the default tenant.
+                if (settings.Name != ShellHelper.DefaultShellName)
+                {
+                    await GetOrCreateShellContextAsync(settings);
+                }
+            });
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// A feature is enabled / disabled, the tenant needs to be released so that a new shell will be created.
+        /// </summary>
+        Task IShellDescriptorManagerEventHandler.ChangedAsync(ShellDescriptor descriptor, ShellSettings settings)
+        {
+            ReleaseShellContext(settings);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -285,7 +305,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Creates a shell context based on shell settings
         /// </summary>
-        public Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
+        private Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
         {
             if (settings.State == TenantState.Uninitialized)
             {

@@ -48,13 +48,6 @@ namespace OrchardCore.Environment.Shell
         void ReleaseAllShellContexts();
 
         /// <summary>
-        /// Creates a new <see cref="ShellContext"/>. Not intended to be used directly, use instead <see cref="GetOrCreateShellContextAsync"/>.
-        /// </summary>
-        /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to create.</param>
-        /// <returns></returns>
-        Task<ShellContext> CreateShellContextAsync(ShellSettings settings);
-
-        /// <summary>
         /// Lists all available <see cref="ShellContext"/> instances.
         /// A shell might have been released or not yet built, if so 'shell.Released' is true and
         /// 'shell.CreateScope()' return null, but you can still use 'GetScopeAsync(shell.Settings)'.

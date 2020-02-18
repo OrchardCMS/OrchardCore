@@ -201,36 +201,33 @@ namespace OrchardCore.Setup.Services
             }
 
             // Reloading the shell context as the recipe has probably updated its features
-            using (var shellContext = await _shellHost.CreateShellContextAsync(shellSettings))
+            await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
             {
-                await shellContext.CreateScope().UsingAsync(async scope =>
+                void reportError(string key, string message)
                 {
-                    void reportError(string key, string message)
-                    {
-                        context.Errors[key] = message;
-                    }
-
-                    // Invoke modules to react to the setup event
-                    var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
-
-                    await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
-                        context.SiteName,
-                        context.AdminUsername,
-                        context.AdminEmail,
-                        context.AdminPassword,
-                        context.DatabaseProvider,
-                        context.DatabaseConnectionString,
-                        context.DatabaseTablePrefix,
-                        context.SiteTimeZone,
-                        reportError
-                    ), context, logger);
-                });
-
-                if (context.Errors.Any())
-                {
-                    return executionId;
+                    context.Errors[key] = message;
                 }
+
+                // Invoke modules to react to the setup event
+                var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
+
+                await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
+                    context.SiteName,
+                    context.AdminUsername,
+                    context.AdminEmail,
+                    context.AdminPassword,
+                    context.DatabaseProvider,
+                    context.DatabaseConnectionString,
+                    context.DatabaseTablePrefix,
+                    context.SiteTimeZone,
+                    reportError
+                ), context, logger);
+            });
+
+            if (context.Errors.Any())
+            {
+                return executionId;
             }
 
             // Update the shell state
