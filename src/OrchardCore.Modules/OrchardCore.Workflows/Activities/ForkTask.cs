@@ -16,9 +16,9 @@ namespace OrchardCore.Workflows.Activities
         }
 
         public override string Name => nameof(ForkTask);
-        
+
         public override LocalizedString DisplayText => S["Fork Task"];
-        
+
         public override LocalizedString Category => S["Control Flow"];
 
         public IList<string> Forks

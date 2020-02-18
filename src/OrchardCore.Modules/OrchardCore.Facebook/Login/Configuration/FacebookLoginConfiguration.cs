@@ -121,6 +121,5 @@ namespace OrchardCore.Facebook.Login.Configuration
 
             return settings;
         }
-
     }
 }

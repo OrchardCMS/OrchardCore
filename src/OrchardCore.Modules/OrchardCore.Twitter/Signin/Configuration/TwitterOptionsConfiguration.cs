@@ -26,7 +26,6 @@ namespace OrchardCore.Twitter.Signin.Configuration
         private readonly ILogger<TwitterOptionsConfiguration> _logger;
         private readonly string _tenantPrefix;
 
-
         public TwitterOptionsConfiguration(
             ITwitterSettingsService twitterService,
             ITwitterSigninService twitterSigninService,

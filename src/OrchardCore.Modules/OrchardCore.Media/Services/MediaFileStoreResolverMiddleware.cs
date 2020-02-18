@@ -68,7 +68,7 @@ namespace OrchardCore.Media.Services
             var isFileCached = await _mediaFileStoreCache.IsCachedAsync(subPathValue);
             if (isFileCached)
             {
-                // When multiple requests occur for the same file the download 
+                // When multiple requests occur for the same file the download
                 // may already be in progress so we wait for it to complete.
                 if (Workers.TryGetValue(subPathValue, out var writeTask))
                 {

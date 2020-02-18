@@ -8,12 +8,12 @@ namespace OrchardCore.Environment.Shell
     public interface IShellHost
     {
         /// <summary>
-        /// Ensure that all the <see cref="ShellContext"/> are pre-created and available to process requests. 
+        /// Ensure that all the <see cref="ShellContext"/> are pre-created and available to process requests.
         /// </summary>
         Task InitializeAsync();
 
         /// <summary>
-        /// Returns an existing <see cref="ShellContext"/> or creates a new one if necessary. 
+        /// Returns an existing <see cref="ShellContext"/> or creates a new one if necessary.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
         /// <returns></returns>
@@ -24,7 +24,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
         Task<ShellScope> GetScopeAsync(ShellSettings settings);
-        
+
         /// <summary>
         /// Updates an existing shell configuration.
         /// </summary>

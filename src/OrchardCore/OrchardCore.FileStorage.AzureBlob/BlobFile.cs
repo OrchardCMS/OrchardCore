@@ -28,7 +28,6 @@ namespace OrchardCore.FileStorage.AzureBlob
             _lastModified = lastModified;
         }
 
-
         public string Path => _path;
 
         public string Name => _name;

@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Html;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.DisplayManagement.Implementation
 {

@@ -59,7 +59,7 @@ namespace OrchardCore.Media.Services
         }
 
         public Task ActivatingAsync()
-        {            
+        {
             return Task.CompletedTask;
         }
 

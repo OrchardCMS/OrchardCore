@@ -6,12 +6,11 @@ using OrchardCore.Modules.Manifest;
     Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
-
 [assembly: Feature(
     Id = "OrchardCore.Media",
     Name = "Media",
     Description = "The media module adds media management support.",
-    Dependencies = new []
+    Dependencies = new[]
     {
         "OrchardCore.ContentTypes"
     },

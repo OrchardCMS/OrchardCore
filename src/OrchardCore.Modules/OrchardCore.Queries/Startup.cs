@@ -92,7 +92,6 @@ namespace OrchardCore.Queries
         }
     }
 
-
     [RequireFeatures("OrchardCore.Liquid")]
     public class LiquidStartup : StartupBase
     {

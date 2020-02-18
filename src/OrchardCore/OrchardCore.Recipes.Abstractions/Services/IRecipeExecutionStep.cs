@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Recipes.Services

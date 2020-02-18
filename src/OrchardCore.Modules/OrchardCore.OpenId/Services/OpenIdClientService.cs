@@ -106,8 +106,6 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-
-
             return Task.FromResult(results.ToImmutable());
         }
     }

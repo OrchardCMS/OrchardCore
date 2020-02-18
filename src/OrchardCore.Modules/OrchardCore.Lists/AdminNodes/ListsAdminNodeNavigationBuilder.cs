@@ -84,7 +84,6 @@ namespace OrchardCore.Lists.AdminNodes
                     _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childNode.GetType().Name);
                 }
             }
-
         }
 
         private async Task AddContentItemsAsync(NavigationBuilder listTypeMenu)

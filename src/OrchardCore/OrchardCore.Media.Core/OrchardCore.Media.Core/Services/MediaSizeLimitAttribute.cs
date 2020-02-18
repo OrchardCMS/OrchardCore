@@ -42,7 +42,6 @@ namespace OrchardCore.Media.Services
                 var effectiveFormPolicy = context.FindEffectivePolicy<IRequestFormLimitsPolicy>();
                 if (effectiveFormPolicy == null || effectiveFormPolicy == this)
                 {
-
                     var features = context.HttpContext.Features;
                     var formFeature = features.Get<IFormFeature>();
 
@@ -61,7 +60,7 @@ namespace OrchardCore.Media.Services
                 var effectiveRequestSizePolicy = context.FindEffectivePolicy<IRequestSizePolicy>();
                 if (effectiveRequestSizePolicy == null || effectiveRequestSizePolicy == this)
                 {
-                    //  Will only be available when running OutOfProcess with Kestrel 
+                    //  Will only be available when running OutOfProcess with Kestrel
                     var maxRequestBodySizeFeature = context.HttpContext.Features.Get<IHttpMaxRequestBodySizeFeature>();
 
                     if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)

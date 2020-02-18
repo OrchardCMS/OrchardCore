@@ -19,9 +19,9 @@ namespace OrchardCore.Workflows.Activities
         }
 
         public override string Name => nameof(SetPropertyTask);
-        
+
         public override LocalizedString DisplayText => S["Set Property Task"];
-        
+
         public override LocalizedString Category => S["Primitives"];
 
         public string PropertyName

@@ -127,7 +127,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        class FieldConfigurerImpl : ContentPartFieldDefinitionBuilder
+        private class FieldConfigurerImpl : ContentPartFieldDefinitionBuilder
         {
             private ContentFieldDefinition _fieldDefinition;
             private readonly ContentPartDefinition _partDefinition;
