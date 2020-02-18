@@ -96,7 +96,6 @@ namespace OrchardCore.Contents.Recipes
                         }
 
                         _session.Save(relatedItem);
-                        _contentManagerSession.Store(relatedItem);
                         await _indexingTaskManager.CreateTaskAsync(relatedItem, IndexingTaskTypes.Update);
                     }
                 }
