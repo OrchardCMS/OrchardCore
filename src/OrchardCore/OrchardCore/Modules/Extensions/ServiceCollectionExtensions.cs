@@ -286,6 +286,10 @@ namespace Microsoft.Extensions.DependencyInjection
                         options.OnAppendCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
                         options.OnDeleteCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
                     });
+                })
+                .Configure(app =>
+                {
+                    app.UseCookiePolicy();
                 });
         }
 
