@@ -11,8 +11,8 @@
 @{
     var theme = await ThemeManager.GetThemeAsync();
     var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
-    var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
-    var displayShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
+    var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
+    var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
     var returnUrl = ViewData["returnUrl"]?.ToString();
 }
 

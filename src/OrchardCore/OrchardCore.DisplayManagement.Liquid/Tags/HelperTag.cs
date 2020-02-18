@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
@@ -76,43 +75,48 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 return Completion.Normal;
             }
 
-            var tagHelper = factory.CreateTagHelper(_activator, (ViewContext)viewContext,
+            var tagHelper = factory.CreateTagHelper(_activator, viewContext,
                 arguments, out var contextAttributes, out var outputAttributes);
 
-            var content = "";
+            ViewBufferTextWriterContent content = null;
 
-            // Build the ChildContent of this tag
-            using (var sb = StringBuilderPool.GetInstance())
+            if (Statements != null && Statements.Count > 0)
             {
-                using (var output = new StringWriter(sb.Builder))
+                content = new ViewBufferTextWriterContent();
+
+                var completion = Completion.Break;
+
+                for (var index = 0; index < Statements.Count; index++)
                 {
-                    if (Statements != null && Statements.Count > 0)
+                    completion = await Statements[index].WriteToAsync(content, encoder, context);
+
+                    if (completion != Completion.Normal)
                     {
-                        var completion = Completion.Break;
-
-                        for (var index = 0; index < Statements.Count; index++)
-                        {
-                            completion = await Statements[index].WriteToAsync(output, encoder, context);
-
-                            if (completion != Completion.Normal)
-                            {
-                                return completion;
-                            }
-                        }
+                        return completion;
                     }
-
-                    await output.FlushAsync();
                 }
-
-                content = sb.Builder.ToString();
             }
 
             var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
-            var tagHelperOutput = new TagHelperOutput(helper, outputAttributes, (_, e)
-                => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content)));
+            TagHelperOutput tagHelperOutput = null;
 
-            tagHelperOutput.Content.AppendHtml(content);
+            if (content != null)
+            {
+                tagHelperOutput = new TagHelperOutput(
+                    helper,
+                    outputAttributes, (_, e) => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content))
+                );
+
+                tagHelperOutput.Content.AppendHtml(content);
+            }
+            else
+            {
+                tagHelperOutput = new TagHelperOutput(
+                    helper,
+                    outputAttributes, (_, e) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+                );
+            }
 
             await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 

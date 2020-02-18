@@ -56,7 +56,6 @@ namespace OrchardCore.ContentTypes.Editors
             return Edit(contentTypeDefinition);
         }
 
-
         private static bool IsAlphaNumericOrEmpty(string value)
         {
             if (String.IsNullOrEmpty(value))

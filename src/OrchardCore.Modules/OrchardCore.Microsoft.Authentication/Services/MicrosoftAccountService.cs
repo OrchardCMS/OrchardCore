@@ -12,14 +12,14 @@ namespace OrchardCore.Microsoft.Authentication.Services
     public class MicrosoftAccountService : IMicrosoftAccountService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<MicrosoftAccountService> T;
+        private readonly IStringLocalizer<MicrosoftAccountService> S;
 
         public MicrosoftAccountService(
             ISiteService siteService,
             IStringLocalizer<MicrosoftAccountService> stringLocalizer)
         {
             _siteService = siteService;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public async Task<MicrosoftAccountSettings> GetSettingsAsync()
@@ -53,12 +53,12 @@ namespace OrchardCore.Microsoft.Authentication.Services
 
             if (string.IsNullOrWhiteSpace(settings.AppId))
             {
-                yield return new ValidationResult(T["AppId is required"], new string[] { nameof(settings.AppId) });
+                yield return new ValidationResult(S["AppId is required"], new string[] { nameof(settings.AppId) });
             }
 
             if (string.IsNullOrWhiteSpace(settings.AppSecret))
             {
-                yield return new ValidationResult(T["AppSecret is required"], new string[] { nameof(settings.AppSecret) });
+                yield return new ValidationResult(S["AppSecret is required"], new string[] { nameof(settings.AppSecret) });
             }
         }
     }

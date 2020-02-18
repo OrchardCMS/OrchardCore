@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
@@ -28,7 +28,7 @@ using YesSql.Services;
 namespace OrchardCore.Workflows.Controllers
 {
     [Admin]
-    public class WorkflowController : Controller, IUpdateModel
+    public class WorkflowController : Controller
     {
         private readonly ISiteService _siteService;
         private readonly ISession _session;
@@ -38,7 +38,9 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
-        private readonly ILogger<WorkflowController> _logger;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IHtmlLocalizer<WorkflowController> H;
+        private readonly IStringLocalizer<WorkflowController> S;
 
         public WorkflowController(
             ISiteService siteService,
@@ -50,9 +52,9 @@ namespace OrchardCore.Workflows.Controllers
             IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            IHtmlLocalizer<WorkflowController> localizer,
-            ILogger<WorkflowController> logger
-        )
+            IHtmlLocalizer<WorkflowController> htmlLocalizer,
+            IStringLocalizer<WorkflowController> stringLocalizer,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _siteService = siteService;
             _session = session;
@@ -62,20 +64,19 @@ namespace OrchardCore.Workflows.Controllers
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
-            _logger = logger;
-
+            _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
-            T = localizer;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
 
         private dynamic New { get; }
-        private IHtmlLocalizer<WorkflowController> T { get; }
 
         public async Task<IActionResult> Index(int workflowTypeId, WorkflowIndexViewModel model, PagerParameters pagerParameters, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!Url.IsLocalUrl(returnUrl))
@@ -102,6 +103,19 @@ namespace OrchardCore.Workflows.Controllers
                     break;
             }
 
+            switch (model.Options.OrderBy)
+            {
+                case WorkflowOrder.CreatedDesc:
+                    query = query.OrderByDescending(x => x.CreatedUtc);
+                    break;
+                case WorkflowOrder.Created:
+                    query = query.OrderBy(x => x.CreatedUtc);
+                    break;
+                default:
+                    query = query.OrderByDescending(x => x.CreatedUtc);
+                    break;
+            }
+
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             var routeData = new RouteData();
@@ -123,14 +137,19 @@ namespace OrchardCore.Workflows.Controllers
                 ReturnUrl = returnUrl
             };
 
+            model.Options.WorkflowsSorts = new List<SelectListItem>() {
+                new SelectListItem() { Text = S["Recently created"], Value = nameof(WorkflowOrder.CreatedDesc) },
+                new SelectListItem() { Text = S["Least recently created"], Value = nameof(WorkflowOrder.Created) }
+            };
+
             model.Options.WorkflowsStatuses = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["All"].Value, Value = nameof(WorkflowFilter.All) },
-                new SelectListItem() { Text = T["Faulted"].Value, Value = nameof(WorkflowFilter.Faulted) },
-                new SelectListItem() { Text = T["Finished"].Value, Value = nameof(WorkflowFilter.Finished) }
+                new SelectListItem() { Text = S["All"], Value = nameof(WorkflowFilter.All) },
+                new SelectListItem() { Text = S["Faulted"], Value = nameof(WorkflowFilter.Faulted) },
+                new SelectListItem() { Text = S["Finished"], Value = nameof(WorkflowFilter.Finished) }
             };
 
             viewModel.Options.WorkflowsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["Delete"].Value, Value = nameof(WorkflowBulkAction.Delete) }
+                new SelectListItem() { Text = S["Delete"], Value = nameof(WorkflowBulkAction.Delete) }
             };
 
             return View(viewModel);
@@ -141,7 +160,8 @@ namespace OrchardCore.Workflows.Controllers
         public ActionResult IndexFilterPOST(WorkflowIndexViewModel model)
         {
             return RedirectToAction("Index", new RouteValueDictionary {
-                { "Options.Filter", model.Options.Filter }
+                { "Options.Filter", model.Options.Filter },
+                { "Options.OrderBy", model.Options.OrderBy }
             });
         }
 
@@ -149,7 +169,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var workflow = await _workflowStore.GetAsync(id);
@@ -208,7 +228,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var workflow = await _workflowStore.GetAsync(id);
@@ -220,7 +240,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
             await _workflowStore.DeleteAsync(workflow);
-            _notifier.Success(T["Workflow {0} has been deleted.", id]);
+            _notifier.Success(H["Workflow {0} has been deleted.", id]);
             return RedirectToAction("Index", new { workflowTypeId = workflowType.Id });
         }
 
@@ -231,7 +251,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (itemIds?.Count() > 0)
@@ -249,7 +269,7 @@ namespace OrchardCore.Workflows.Controllers
                             if (workflow != null)
                             {
                                 await _workflowStore.DeleteAsync(workflow);
-                                _notifier.Success(T["Workflow {0} has been deleted.", workflow.Id]);
+                                _notifier.Success(H["Workflow {0} has been deleted.", workflow.Id]);
                             }
                         }
                         break;
@@ -263,7 +283,7 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowTypeId, bool isBlocking, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
+            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}ReadOnly";
             activityShape.Activity = activityContext.Activity;
             activityShape.ActivityRecord = activityContext.ActivityRecord;

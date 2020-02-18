@@ -5,15 +5,14 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.DisplayManagement.Handlers
 {
-    public abstract class DisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext> : 
-        DisplayDriverBase, 
+    public abstract class DisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext> :
+        DisplayDriverBase,
         IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>
         where TModel : class
         where TDisplayContext : BuildDisplayContext
         where TEditorContext : BuildEditorContext
         where TUpdateContext : UpdateEditorContext
     {
-
         /// <summary>
         /// Returns <c>true</c> if the model can be handle by the current driver.
         /// </summary>
@@ -25,7 +24,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildDisplayAsync(TModel model, TDisplayContext context)
         {
-            if(!CanHandleModel(model))
+            if (!CanHandleModel(model))
             {
                 return Task.FromResult<IDisplayResult>(null);
             }
@@ -88,7 +87,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         {
             return Task.FromResult(Edit(model, updater));
         }
-        
+
         public virtual IDisplayResult Edit(TModel model, IUpdateModel updater)
         {
             return Edit(model);
@@ -108,7 +107,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         {
             return UpdateAsync(model, context.Updater);
         }
-        
+
         public virtual Task<IDisplayResult> UpdateAsync(TModel model, IUpdateModel updater)
         {
             return EditAsync(model, updater);
@@ -125,19 +124,18 @@ namespace OrchardCore.DisplayManagement.Handlers
         }
     }
 
-    public abstract class DisplayDriver<TModel> : 
-        DisplayDriver<TModel, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>, 
+    public abstract class DisplayDriver<TModel> :
+        DisplayDriver<TModel, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>,
         IDisplayDriver<TModel>
         where TModel : class
     {
-
     }
 
     public abstract class DisplayDriver<TModel, TConcrete, TDisplayContext, TEditorContext, TUpdateContext> :
         DisplayDriver<TConcrete, TDisplayContext, TEditorContext, TUpdateContext>,
         IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>
-        where TConcrete: class, TModel
-        where TModel: class
+        where TConcrete : class, TModel
+        where TModel : class
         where TDisplayContext : BuildDisplayContext
         where TEditorContext : BuildEditorContext
         where TUpdateContext : UpdateEditorContext
@@ -200,6 +198,5 @@ namespace OrchardCore.DisplayManagement.Handlers
         where TConcrete : class, TModel
         where TModel : class
     {
-
     }
 }

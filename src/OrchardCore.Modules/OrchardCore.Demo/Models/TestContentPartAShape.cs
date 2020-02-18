@@ -1,5 +1,3 @@
-﻿using OrchardCore.ContentManagement;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.Demo.Models

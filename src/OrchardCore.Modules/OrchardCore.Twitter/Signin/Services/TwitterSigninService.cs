@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Twitter.Settings;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Signin.Settings;
 

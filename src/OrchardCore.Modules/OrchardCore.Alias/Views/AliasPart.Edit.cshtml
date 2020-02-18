@@ -1,14 +1,21 @@
 @model AliasPartViewModel
+@using OrchardCore.ContentLocalization
+@using OrchardCore.Localization
+@using OrchardCore.Alias.Settings
+
+@{
+    var culture = await Orchard.GetContentCultureAsync(Model.AliasPart.ContentItem);
+}
 
 <div class="form-group" asp-validation-class-for="Alias">
     <label asp-for="Alias">@T["Alias"] </label>
-    <input asp-for="Alias" class="form-control text-muted" />
+    <input asp-for="Alias" class="form-control text-muted" disabled="@(Model.Settings?.Options == AliasPartOptions.GeneratedDisabled)" dir="@culture.GetLanguageDirection()" />
     <span asp-validation-for="Alias"></span>
     <span class="hint">
         @T["The alias of the content item."]
         @if (!String.IsNullOrWhiteSpace(Model.Settings.Pattern))
         {
             @T["Leave empty to re-generate it."]
-        } 
-    </span>       
+        }
+    </span>
 </div>

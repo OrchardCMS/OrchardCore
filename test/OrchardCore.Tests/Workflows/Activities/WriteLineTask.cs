@@ -13,18 +13,20 @@ namespace OrchardCore.Tests.Workflows.Activities
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly TextWriter _output;
+        private readonly IStringLocalizer S;
 
-        public WriteLineTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer t, TextWriter output)
+        public WriteLineTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer stringLocalizer, TextWriter output)
         {
             _scriptEvaluator = scriptEvaluator;
             _output = output;
-            T = t;
+            S = stringLocalizer;
         }
 
-        private IStringLocalizer T { get; }
         public override string Name => nameof(WriteLineTask);
-        public override LocalizedString DisplayText => T["Write Line Task"];
-        public override LocalizedString Category => T["Test"];
+
+        public override LocalizedString DisplayText => S["Write Line Task"];
+
+        public override LocalizedString Category => S["Test"];
 
         public WorkflowExpression<string> Text
         {
@@ -34,7 +36,7 @@ namespace OrchardCore.Tests.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

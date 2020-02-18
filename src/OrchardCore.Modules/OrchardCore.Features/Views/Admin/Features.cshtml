@@ -39,6 +39,7 @@
 
 <form asp-action="Features" method="post">
     <input name="BulkAction" type="hidden" />
+    <input name="Force" type="hidden" value="true" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
     @{
         var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).OrderBy(o => o.Key).ToArray();
@@ -80,7 +81,7 @@
                             var featureState = feature.IsEnabled ? "enabled" : "disabled";
 
                             var dependencies = (from d in feature.FeatureDependencies
-                                                select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);                            
+                                                select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
                             var dependenciesNames = String.Join(" ", dependencies.Select(d => d.Descriptor.Name));
                             var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
@@ -129,11 +130,11 @@
                                         }
                                         @if (showDisable && feature.IsEnabled)
                                         {
-                                            var confirmationMessage = T["Are you sure you want to disable this feature? Continue?"];
-                                            if (feature.DependentFeatures.Any())
+                                            var confirmationMessage = T["Are you sure you want to disable the {0} feature? Continue?", feature.Descriptor.Name];
+                                            if (feature.EnabledDependentFeatures.Any())
                                             {
-                                                var dependentFeatures = new HtmlString($"<ul>{String.Join("", feature.DependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
-                                                confirmationMessage = T["Disabling this feature will also disable the following dependent features:{0}Continue?", dependentFeatures];
+                                                var enabledDependentFeatures = new HtmlString($"<ul>{String.Join("", feature.EnabledDependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
+                                                confirmationMessage = T["Disabling the {0} feature will also disable the following dependent features:{1}Continue?", feature.Descriptor.Name, enabledDependentFeatures];
                                             }
                                             <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
                                         }

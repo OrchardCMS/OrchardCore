@@ -35,7 +35,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         public IHtmlLocalizer H { get; }
 
         /// <remarks>
-        /// We ignore the AFT as the service is called from external applications (they can't have valid ones) and 
+        /// We ignore the AFT as the service is called from external applications (they can't have valid ones) and
         /// we use a private API key to secure its calls.
         /// </remarks>
         [HttpPost]

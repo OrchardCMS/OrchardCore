@@ -90,7 +90,6 @@ namespace OrchardCore.Roles.Services
                 var stereotypes = permissionProvider.GetDefaultStereotypes();
                 foreach (var stereotype in stereotypes)
                 {
-
                     // turn those stereotypes into roles
                     var role = await _roleManager.FindByNameAsync(stereotype.Name);
                     if (role == null)
@@ -100,7 +99,7 @@ namespace OrchardCore.Roles.Services
                             Logger.LogInformation("Defining new role '{RoleName}' for permission stereotype", stereotype.Name);
                         }
 
-                        role = new Role { RoleName = stereotype.Name };
+                        role = new Role { RoleName = stereotype.Name, RoleDescription = stereotype.Name + " role" };
                         await _roleManager.CreateAsync(role);
                     }
 

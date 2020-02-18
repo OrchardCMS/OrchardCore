@@ -12,4 +12,4 @@ namespace OrchardCore.Users.ViewModels
         public IUser User { get; set; }
         public string ConfirmEmailUrl { get; set; }
     }
-} 
+}

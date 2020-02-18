@@ -9,12 +9,12 @@ namespace OrchardCore.ContentTypes.Editors
 {
     public class DefaultContentTypeDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
+        private readonly IStringLocalizer<DefaultContentTypeDisplayDriver> S;
+
         public DefaultContentTypeDisplayDriver(IStringLocalizer<DefaultContentTypeDisplayDriver> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {
@@ -34,7 +34,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             if (String.IsNullOrWhiteSpace(model.DisplayName))
             {
-                context.Updater.ModelState.AddModelError("DisplayName", T["The Content Type name can't be empty."]);
+                context.Updater.ModelState.AddModelError("DisplayName", S["The Content Type name can't be empty."]);
             }
 
             return Edit(contentTypeDefinition);

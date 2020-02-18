@@ -14,7 +14,7 @@ theme:
 extra:
   social:
     - type: 'leaf'
-      link: 'http://orchardproject.net'
+      link: 'https://orchardcore.net'
     - type: 'github-alt'
       link: 'https://github.com/OrchardCMS/OrchardCore'
     - type: 'twitter'
@@ -40,11 +40,16 @@ markdown_extensions:
       permalink: true
 #  - markdown.extensions.nl2br
 
+plugins:
+  - search
+  - git-revision-date-localized
+  
 # Page tree
 nav:
     - About Orchard Core: README.md
     - Getting started: 
         - Create a CMS Web application: docs/getting-started/README.md
+        - Recipes and Starter Themes: docs/getting-started/starter-recipes.md
         - Code Generation Templates: docs/getting-started/templates/README.md
         - Create a Theme: docs/getting-started/theme.md
     - How-to guides: 
@@ -53,6 +58,7 @@ nav:
         - Create a website: docs/guides/create-cms-application/README.md
         - Create a Decoupled CMS site: docs/guides/decoupled-cms/README.md
         - Add an admin menu: docs/guides/add-admin-menu/README.md
+        - Implement Full Text search: docs/guides/implement-fulltext-search/README.md
         - Install localization files: docs/guides/install-localization-files/README.md
         - Integrate Facebook plugins: docs/guides/integrate-facebook-plugins/README.md
         - Run code on startup: docs/guides/run-code-on-startup/README.md
@@ -93,8 +99,10 @@ nav:
             - Lucene: docs/reference/modules/Lucene/README.md
             - Queries: docs/reference/modules/Queries/README.md
             - Media: docs/reference/modules/Media/README.md
+            - Media Azure: docs/reference/modules/Media.Azure/README.md
             - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
             - Resources: docs/reference/modules/Resources/README.md
+            - Sitemaps: docs/reference/modules/Sitemaps/README.md
             - Menu: docs/reference/modules/Menu/README.md
             - Navigation: docs/reference/modules/Navigation/README.md
             - Admin: docs/reference/modules/Admin/README.md
@@ -108,6 +116,7 @@ nav:
                 - Google: docs/reference/modules/Google/README.md
         - Core Modules: 
     #        - How to use Core Modules: docs/reference/core/README.md
+            - Features: docs/reference/modules/Features/README.md
             - Contents: docs/reference/modules/Contents/README.md
             - Configuration: docs/reference/core/Configuration/README.md
             - Custom Settings: docs/reference/modules/CustomSettings/README.md
@@ -120,9 +129,9 @@ nav:
             - Health Check: docs/reference/modules/HealthChecks/README.md
             - Localization: docs/reference/modules/Localize/README.md
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
-            - Media Azure: docs/reference/modules/Media.Azure/README.md
             - Modules: docs/reference/core/Modules/README.md
             - OpenId: docs/reference/modules/OpenId/README.md
+            - Razor Helpers: docs/reference/core/Razor/README.md
             - Recipes: docs/reference/modules/Recipes/README.md
             - Roles: docs/reference/modules/Roles/README.md
             - Scripting: docs/reference/modules/Scripting/README.md
@@ -130,3 +139,5 @@ nav:
             - Tenants: docs/reference/modules/Tenants/README.md
             - Workflows: docs/reference/modules/Workflows/README.md
             - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
+    - Glossary: docs/glossary/README.md
+    

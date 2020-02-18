@@ -11,6 +11,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(ContentDeletedEvent);
-        public override LocalizedString DisplayText => T["Content Deleted Event"];
+
+        public override LocalizedString DisplayText => S["Content Deleted Event"];
     }
 }

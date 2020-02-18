@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -14,14 +13,13 @@ namespace OrchardCore.Facebook.Widgets.Settings
     public class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
+        private readonly IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> S;
 
         public FacebookPluginPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer)
         {
             _templateManager = templateManager;
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
@@ -51,7 +49,7 @@ namespace OrchardCore.Facebook.Widgets.Settings
 
             if (!string.IsNullOrEmpty(model.Liquid) && !_templateManager.Validate(model.Liquid, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.Liquid), T["The Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
             }
             else
             {

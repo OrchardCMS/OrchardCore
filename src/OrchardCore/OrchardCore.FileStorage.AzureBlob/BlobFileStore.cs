@@ -5,8 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
 using OrchardCore.Modules;
 
 namespace OrchardCore.FileStorage.AzureBlob
@@ -18,20 +18,20 @@ namespace OrchardCore.FileStorage.AzureBlob
     /// Azure Blob Storage has very different semantics for directories compared to a local file system, and
     /// some special consideration is required for make this provider conform to the semantics of the
     /// <see cref="IFileStore"/> interface and behave in an expected way.
-    /// 
+    ///
     /// Directories have no physical manifestation in blob storage; we can obtain a reference to them, but
     /// that reference can be created regardless of whether the directory exists, and it can only be used
     /// as a scoping container to operate on blobs within that directory namespace.
-    /// 
-    /// As a consequence, this provider generally behaves as if any given directory always exists. To 
+    ///
+    /// As a consequence, this provider generally behaves as if any given directory always exists. To
     /// simulate "creating" a directory (which cannot technically be done in blob storage) this provider creates
     /// a marker file inside the directory, which makes the directory "exist" and appear when listing contents
     /// subsequently. This marker file is ignored (excluded) when listing directory contents.
     ///
     /// Note that the Blob Container is not created automatically, and existence of the Container is not verified.
-    /// 
+    ///
     /// Create the Blob Container before enabling a Blob File Store.
-    /// 
+    ///
     /// Azure Blog Storage will create the BasePath inside the container during the upload of the first file.
     /// </remarks>
     public class BlobFileStore : IFileStore
@@ -257,7 +257,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         }
 
         // Reduces the need to call blob.FetchAttributes, and blob.ExistsAsync,
-        // as Azure Storage Library will perform these actions on OpenReadAsync(). 
+        // as Azure Storage Library will perform these actions on OpenReadAsync().
         public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
         {
             var blobFile = fileStoreEntry as BlobFile;
@@ -269,7 +269,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             return blobFile.BlobReference.OpenReadAsync();
         }
 
-        public async Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+        public async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
             var blob = GetBlobReference(path);
 
@@ -283,6 +283,8 @@ namespace OrchardCore.FileStorage.AzureBlob
             blob.Properties.ContentType = contentType ?? "application/octet-stream";
 
             await blob.UploadFromStreamAsync(inputStream);
+
+            return path;
         }
 
         private CloudBlockBlob GetBlobReference(string path)

@@ -24,7 +24,7 @@ namespace OrchardCore.OpenId.Controllers
     public class ScopeController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer<ScopeController> T;
+        private readonly IStringLocalizer<ScopeController> S;
         private readonly IHtmlLocalizer<ScopeController> H;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly ISiteService _siteService;
@@ -49,7 +49,7 @@ namespace OrchardCore.OpenId.Controllers
             _scopeManager = scopeManager;
             New = shapeFactory;
             _siteService = siteService;
-            T = stringLocalizer;
+            S = stringLocalizer;
             H = htmlLocalizer;
             _authorizationService = authorizationService;
             _notifier = notifier;
@@ -62,7 +62,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -93,7 +93,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new CreateOpenIdScopeViewModel();
@@ -116,12 +116,12 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (await _scopeManager.FindByNameAsync(model.Name) != null)
             {
-                ModelState.AddModelError(nameof(model.Name), T["The name is already taken by another scope."]);
+                ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
             }
 
             if (!ModelState.IsValid)
@@ -161,7 +161,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(id);
@@ -204,7 +204,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(model.Id);
@@ -220,7 +220,7 @@ namespace OrchardCore.OpenId.Controllers
                     await _scopeManager.GetIdAsync(other),
                     await _scopeManager.GetIdAsync(scope)))
                 {
-                    ModelState.AddModelError(nameof(model.Name), T["The name is already taken by another scope."]);
+                    ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
                 }
             }
 
@@ -264,7 +264,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(id);

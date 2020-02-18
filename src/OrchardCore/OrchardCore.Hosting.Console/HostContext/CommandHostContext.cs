@@ -1,5 +1,5 @@
-﻿using OrchardCore.Environment.Commands;
 using System.IO;
+using OrchardCore.Environment.Commands;
 
 namespace OrchardCore.Hosting.HostContext
 {

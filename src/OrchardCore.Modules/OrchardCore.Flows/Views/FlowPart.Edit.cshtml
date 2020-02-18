@@ -37,14 +37,14 @@
                 BuildEditor: true,
                 ParentContentType: parentContentType,
                 CollectionPartName: partName,
-                //FlowPart Card Specific - For Frame 
+                //FlowPart Card Specific - For Frame
                 ColumnSize: colSize,
                 //Card Specific Properties
                 TargetId: widgetTemplatePlaceholderId,
                 Inline: false,
                 CanMove: true,
                 CanDelete: true,
-                //Input hidden 
+                //Input hidden
                 //Prefixes
                 HtmlFieldPrefix: htmlFieldPrefix,
                 PrefixesId: Html.IdFor(x => x.Prefixes),
@@ -190,7 +190,7 @@
                 widgetItemDestId = null;
             },
             over: function (event, ui) {
-                var $self = $(this); 
+                var $self = $(this);
                 if (lastContainer[0] != this) {
                     lastContainer.toggleClass('widget-dropzone-hint');
                     lastContainer = $self;

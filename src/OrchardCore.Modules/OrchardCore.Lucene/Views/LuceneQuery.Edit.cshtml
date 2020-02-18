@@ -6,7 +6,7 @@
 <div class="form-group">
     <label asp-for="Index">@T["Index"]</label>
     <select asp-for="Index" class="form-control">
-        @foreach(var index in Model.Indices)
+        @foreach (var index in Model.Indices)
         {
             <option value="@index">@index</option>
         }

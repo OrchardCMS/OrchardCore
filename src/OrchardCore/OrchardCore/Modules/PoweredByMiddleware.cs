@@ -23,11 +23,11 @@ namespace OrchardCore.Modules
             {
                 httpContext.Response.Headers[_options.HeaderName] = _options.HeaderValue;
             }
-            
+
             return _next.Invoke(httpContext);
         }
     }
-    
+
     public interface IPoweredByMiddlewareOptions
     {
         bool Enabled { get; set; }
@@ -35,10 +35,10 @@ namespace OrchardCore.Modules
         string HeaderValue { get; set; }
     }
 
-    class PoweredByMiddlewareOptions : IPoweredByMiddlewareOptions
+    internal class PoweredByMiddlewareOptions : IPoweredByMiddlewareOptions
     {
-        const string PoweredByHeaderName = "X-Powered-By";
-        const string PoweredByHeaderValue = "OrchardCore";
+        private const string PoweredByHeaderName = "X-Powered-By";
+        private const string PoweredByHeaderValue = "OrchardCore";
 
         public string HeaderName => PoweredByHeaderName;
         public string HeaderValue { get; set; } = PoweredByHeaderValue;

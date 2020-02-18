@@ -38,7 +38,7 @@ namespace OrchardCore.Twitter
             services.AddScoped<IDisplayDriver<ISite>, TwitterSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddSingleton<ITwitterSettingsService, TwitterSettingsService>();
-            
+
             services.AddRecipeExecutionStep<TwitterSettingsStep>();
 
             services.AddTransient<TwitterClientMessageHandler>();

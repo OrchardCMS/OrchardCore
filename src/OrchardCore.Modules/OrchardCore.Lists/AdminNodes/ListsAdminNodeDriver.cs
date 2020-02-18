@@ -57,7 +57,6 @@ namespace OrchardCore.Lists.AdminNodes
             return Edit(treeNode);
         }
 
-
         private List<SelectListItem> GetContenTypesSelectList()
         {
             return _contentDefinitionManager.ListTypeDefinitions()

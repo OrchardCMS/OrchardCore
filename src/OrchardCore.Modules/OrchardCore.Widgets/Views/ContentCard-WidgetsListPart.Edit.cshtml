@@ -25,7 +25,7 @@
                         <div class="dropdown-menu dropdown-menu-right">
                             @foreach (var type in widgetContentTypes)
                             {
-                                <a 
+                                <a
                                 class="dropdown-item insert-list-widget btn-sm"
                                 data-target-id="@Model.TargetId"
                                 data-prefixes-name="@Model.PrefixesName"
@@ -39,8 +39,8 @@
                     }
                 </div>
         </div>
-        
-        <div class="btn-group btn-group-sm float-sm-right" role="group">            
+
+        <div class="btn-group btn-group-sm float-sm-right" role="group">
             @if (Model.CanDelete != false)
             {
                 <button type="button" class="btn btn-danger widget-list-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>

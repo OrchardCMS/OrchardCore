@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration.EnvironmentVariables;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -49,7 +50,7 @@ namespace OrchardCore.Environment.Shell
             _configuration = configurationBuilder.Build().GetSection("OrchardCore");
 
             _configuredTenants = _configuration.GetChildren()
-                .Where(section => section["State"] != null)
+                .Where(section => Enum.TryParse<TenantState>(section["State"], ignoreCase: true, out var result))
                 .Select(section => section.Key)
                 .Distinct()
                 .ToArray();
@@ -57,12 +58,7 @@ namespace OrchardCore.Environment.Shell
             _configBuilderFactory = (tenant) =>
             {
                 var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
-
-                if (_configuredTenants.Contains(tenant))
-                {
-                    builder.AddConfiguration(_configuration.GetSection(tenant));
-                }
-
+                builder.AddConfiguration(_configuration.GetSection(tenant));
                 return builder.AddSources(tenant, _tenantConfigSources);
             };
         }
@@ -131,7 +127,6 @@ namespace OrchardCore.Environment.Shell
                 {
                     Name = tenant,
                 };
-
             }
             finally
             {
