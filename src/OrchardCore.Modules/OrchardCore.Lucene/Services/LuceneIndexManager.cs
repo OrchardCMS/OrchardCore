@@ -34,16 +34,15 @@ namespace OrchardCore.Lucene
         private readonly IClock _clock;
         private readonly ILogger<LuceneIndexManager> _logger;
         private readonly string _rootPath;
-        private readonly DirectoryInfo _rootDirectory;
         private bool _disposing;
-        private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
-        private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
-        private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
-        private SpatialContext _ctx;
-        private GeohashPrefixTree _grid;
-        private static object _synLock = new object();
+        private readonly SpatialContext _ctx;
+        private readonly GeohashPrefixTree _grid;
+        private readonly static object _synLock = new object();
 
         public LuceneIndexManager(
             IClock clock,
@@ -61,7 +60,6 @@ namespace OrchardCore.Lucene
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
 
-            _rootDirectory = Directory.CreateDirectory(_rootPath);
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _luceneIndexSettingsService = luceneIndexSettingsService;
 
@@ -69,7 +67,7 @@ namespace OrchardCore.Lucene
             // These can also be constructed from SpatialContextFactory
             _ctx = SpatialContext.GEO;
 
-            int maxLevels = 11; //results in sub-meter precision for geohash
+            var maxLevels = 11; // Results in sub-meter precision for geohash
 
             // TODO demo lookup by detail distance
             // This can also be constructed from SpatialPrefixTreeFactory
@@ -111,8 +109,8 @@ namespace OrchardCore.Lucene
                 {
                     reader.Dispose();
                 }
-
-                _timestamps.TryRemove(indexName, out var timestamp);
+                
+                _timestamps.TryRemove(indexName, out _);
 
                 var indexFolder = PathExtensions.Combine(_rootPath, indexName);
 
@@ -125,13 +123,13 @@ namespace OrchardCore.Lucene
                     catch { }
                 }
 
-                _writers.TryRemove(indexName, out writer);
+                _writers.TryRemove(indexName, out _);
             }
         }
 
         public bool Exists(string indexName)
         {
-            if (string.IsNullOrWhiteSpace(indexName))
+            if (String.IsNullOrWhiteSpace(indexName))
             {
                 return false;
             }
@@ -210,7 +208,7 @@ namespace OrchardCore.Lucene
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
-                        // store "true"/"false" for booleans
+                        // Store "true"/"false" for booleans
                         doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
                         break;
 
@@ -235,7 +233,7 @@ namespace OrchardCore.Lucene
                     case DocumentIndex.Types.Integer:
                         if (entry.Value != null && Int32.TryParse(entry.Value.ToString(), out var value))
                         {
-                            doc.Add(new Int32Field(entry.Name, Convert.ToInt32(entry.Value), store));
+                            doc.Add(new Int32Field(entry.Name, value, store));
                         }
                         else
                         {
@@ -366,17 +364,11 @@ namespace OrchardCore.Lucene
             var pool = _indexPools.GetOrAdd(indexName, n =>
             {
                 var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
-                //var directory = CreateDirectory(indexName);
                 var reader = DirectoryReader.Open(FSDirectory.Open(path));
                 return new IndexReaderPool(reader);
             });
 
             return pool.Acquire();
-        }
-
-        private string GetFilename(string indexName, int documentId)
-        {
-            return PathExtensions.Combine(_rootPath, indexName, documentId + ".json");
         }
 
         /// <summary>
@@ -441,9 +433,9 @@ namespace OrchardCore.Lucene
                     reader.Dispose();
                 }
 
-                _timestamps.TryRemove(indexName, out var timestamp);
+                _timestamps.TryRemove(indexName, out _);
 
-                _writers.TryRemove(indexName, out writer);
+                _writers.TryRemove(indexName, out _);
             }
         }
 
@@ -479,7 +471,7 @@ namespace OrchardCore.Lucene
     {
         private bool _dirty;
         private int _count;
-        private IndexReader _reader;
+        private readonly IndexReader _reader;
 
         public IndexReaderPool(IndexReader reader)
         {
@@ -511,7 +503,7 @@ namespace OrchardCore.Lucene
 
         public struct IndexReaderLease : IDisposable
         {
-            private IndexReaderPool _pool;
+            private readonly IndexReaderPool _pool;
 
             public IndexReaderLease(IndexReaderPool pool, IndexReader reader)
             {
@@ -524,7 +516,7 @@ namespace OrchardCore.Lucene
 
             public void Dispose()
             {
-                var count = Interlocked.Decrement(ref _pool._count);
+                Interlocked.Decrement(ref _pool._count);
                 _pool.Release();
             }
         }
