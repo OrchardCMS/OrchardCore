@@ -5,12 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.StaticFiles;
-//using Microsoft.Azure.Storage.Blob;
-//using Microsoft.Azure.Storage;
 using OrchardCore.Modules;
 
 namespace OrchardCore.FileStorage.AzureBlob
@@ -61,7 +58,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 _basePrefix = this.NormalizePrefix(_options.BasePath);
             }
         }
-        
+
         public async Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
             var blob = GetBlobReference(path);
@@ -212,7 +209,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             while (properties.Value.CopyStatus == CopyStatus.Pending)
             {
                 await Task.Delay(250);
-                // Need to fetch or CopyState will never update.
+                // Need to fetch properties or CopyStatus will never update.
                 properties = await newBlob.GetPropertiesAsync();
             }
 
@@ -276,7 +273,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             // Directory exists if path contains any files.
             var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
-            
+
             var enumerator = page.GetAsyncEnumerator();
 
             var result = await enumerator.MoveNextAsync();
