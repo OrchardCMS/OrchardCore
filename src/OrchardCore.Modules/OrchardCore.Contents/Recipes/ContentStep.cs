@@ -59,8 +59,6 @@ namespace OrchardCore.Contents.Recipes
                     // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
                     contentItem.Id = 0;
 
-                    //await _contentManager.CreateAsync(contentItem);
-
                     if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
                     {
                         contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
@@ -71,15 +69,6 @@ namespace OrchardCore.Contents.Recipes
                     _session.Save(contentItem);
                     _contentManagerSession.Store(contentItem);
                     await _indexingTaskManager.CreateTaskAsync(contentItem, IndexingTaskTypes.Update);
-
-                    // Overwrite ModifiedUtc & PublishedUtc values that handlers have changes
-                    // Should not be necessary if IContentManager had an Import method
-                    // contentItem.ModifiedUtc = modifiedUtc;
-                    // contentItem.PublishedUtc = publishedUtc;
-
-                    // Reset published and latest to imported values as CreateAsync sets these values arbitrarily.
-                    //contentItem.Published = isPublished;
-                    //contentItem.Latest = isLatest;
 
                     // Resolve previous published or draft items or they will continue to be listed as published or draft.
                     var relatedContentItems = await _session
