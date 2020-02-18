@@ -42,7 +42,7 @@ namespace OrchardCore.Lucene
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private SpatialContext _ctx;
-        private GeohashPrefixTree _grid;     
+        private GeohashPrefixTree _grid;
         private static object _synLock = new object();
 
         public LuceneIndexManager(
@@ -64,14 +64,15 @@ namespace OrchardCore.Lucene
             _rootDirectory = Directory.CreateDirectory(_rootPath);
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _luceneIndexSettingsService = luceneIndexSettingsService;
-            
-            //Typical geospatial context
-            //  These can also be constructed from SpatialContextFactory
+
+            // Typical geospatial context
+            // These can also be constructed from SpatialContextFactory
             _ctx = SpatialContext.GEO;
 
-            int maxLevels = 11;//results in sub-meter precision for geohash
-            //TODO demo lookup by detail distance
-            //  This can also be constructed from SpatialPrefixTreeFactory
+            int maxLevels = 11; //results in sub-meter precision for geohash
+
+            // TODO demo lookup by detail distance
+            // This can also be constructed from SpatialPrefixTreeFactory
             _grid = new GeohashPrefixTree(_ctx, maxLevels);
         }
 
@@ -275,8 +276,10 @@ namespace OrchardCore.Lucene
                             else
                             {
                                 doc.Add(new StringField(entry.Name, "NULL", store));
+                            }
                         }
                         break;
+
                     case DocumentIndex.Types.GeoPoint:
                         var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Name);
                         if (entry.Value is DocumentIndex.GeoPoint point)
@@ -287,9 +290,8 @@ namespace OrchardCore.Lucene
                                 doc.Add(field);
                             }
 
-                            //store it too
+                            // Store it too
                             doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
-                            }
                         }
                         break;
                 }
