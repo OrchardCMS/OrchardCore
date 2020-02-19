@@ -174,7 +174,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             using (BuildPrefix(typePartDefinition, context.HtmlFieldPrefix))
             {
-
                 _typePartDefinition = typePartDefinition;
 
                 var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
@@ -198,7 +197,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             using (BuildPrefix(typePartDefinition, context.HtmlFieldPrefix))
             {
-
                 var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
 
                 var result = await UpdateAsync(part, context.Updater, updateEditorContext);
@@ -275,6 +273,19 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         protected string GetEditorShapeType(BuildPartEditorContext context)
         {
             return GetEditorShapeType(context.TypePartDefinition);
+        }
+
+        protected string GetDisplayShapeType(string shapeType, BuildPartDisplayContext context)
+        {
+            var displayMode = context.TypePartDefinition.DisplayMode();
+            return !String.IsNullOrEmpty(displayMode)
+                ? shapeType + "_Display__" + displayMode
+                : shapeType;
+        }
+
+        protected string GetDisplayShapeType(BuildPartDisplayContext context)
+        {
+            return GetDisplayShapeType(typeof(TPart).Name, context);
         }
 
         private TempPrefix BuildPrefix(ContentTypePartDefinition typePartDefinition, string htmlFieldPrefix)

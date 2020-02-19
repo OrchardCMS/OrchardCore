@@ -433,6 +433,11 @@ namespace OrchardCore.ContentManagement
                     x.ContentItemId == contentItem.ContentItemId &&
                     (x.Published || x.Latest)).ListAsync();
 
+            if (!activeVersions.Any())
+            {
+                return;
+            }
+
             var context = new RemoveContentContext(contentItem, true);
 
             await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), context, _logger);
@@ -464,7 +469,6 @@ namespace OrchardCore.ContentManagement
             _session.Save(contentItem);
 
             await ReversedHandlers.InvokeAsync((handler, ccontexttx) => handler.RemovedAsync(context), context, _logger);
-
 
             if (publishedItem != null)
             {

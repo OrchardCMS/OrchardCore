@@ -52,7 +52,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);

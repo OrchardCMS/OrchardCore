@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 
 namespace OrchardCore.Environment.Commands
@@ -37,7 +37,8 @@ namespace OrchardCore.Environment.Commands
 
             StringBuilder builder = new StringBuilder();
 
-            foreach (var value in helpText) {
+            foreach (var value in helpText)
+            {
                 builder.AppendLine(value);
             }
 

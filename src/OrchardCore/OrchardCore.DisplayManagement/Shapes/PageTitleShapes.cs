@@ -1,13 +1,9 @@
 using System;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.WebEncoders;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.Environment.Shell.Scope;
@@ -21,6 +17,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     public class PageTitleShapes : IShapeAttributeProvider
     {
         private IPageTitleBuilder _pageTitleBuilder;
+
         public IPageTitleBuilder Title
         {
             get
@@ -38,7 +35,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         public async Task<IHtmlContent> PageTitle(IHtmlHelper Html)
         {
             var siteSettings = await ShellScope.Services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
-            
+
             // We must return a page title so if the format setting is blank just use the current title unformatted
             if (String.IsNullOrWhiteSpace(siteSettings.PageTitleFormat))
             {
@@ -49,7 +46,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 var liquidTemplateManager = ShellScope.Services.GetRequiredService<ILiquidTemplateManager>();
                 var htmlEncoder = ShellScope.Services.GetRequiredService<HtmlEncoder>();
 
-                var result = await liquidTemplateManager.RenderAsync(siteSettings.PageTitleFormat, htmlEncoder, new TemplateContext());
+                var result = await liquidTemplateManager.RenderAsync(siteSettings.PageTitleFormat, htmlEncoder);
                 return new HtmlString(result);
             }
         }

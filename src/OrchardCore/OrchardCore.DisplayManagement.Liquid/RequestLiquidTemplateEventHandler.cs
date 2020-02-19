@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
@@ -27,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     case "QueryString": return new StringValue(request.QueryString.Value);
                     case "ContentType": return new StringValue(request.ContentType);
                     case "ContentLength": return NumberValue.Create(request.ContentLength ?? 0);
-                    case "Cookies": return new ObjectValue(request.Cookies);
+                    case "Cookies": return new ObjectValue(new CookieCollectionWrapper(request.Cookies));
                     case "Headers": return new ObjectValue(new HeaderDictionaryWrapper(request.Headers));
                     case "Query": return new ObjectValue(request.Query);
                     case "Form": return request.HasFormContentType ? (FluidValue)new ObjectValue(request.Form) : NilValue.Instance;
@@ -52,10 +53,20 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                 return new ArrayValue(forms[name].Select(x => new StringValue(x)).ToArray());
             });
+            
+            TemplateContext.GlobalMemberAccessStrategy.Register<HttpContext, FluidValue>((httpcontext, name) =>
+            {
+                switch (name)
+                {
+                    case "Items": return new ObjectValue(new HttpContextItemsWrapper(httpcontext.Items));
+                    default: return null;
+                }
+            });
 
-            TemplateContext.GlobalMemberAccessStrategy.Register<IRequestCookieCollection, string>((cookies, name) => cookies[name]);
+            TemplateContext.GlobalMemberAccessStrategy.Register<HttpContextItemsWrapper, object>((httpContext, name) => httpContext.Items[name]); 
             TemplateContext.GlobalMemberAccessStrategy.Register<QueryCollection, string[]>((queries, name) => queries[name].ToArray());
-            TemplateContext.GlobalMemberAccessStrategy.Register<HeaderDictionaryWrapper, string[]>((headers, name) => headers.HeaderDictionary[name].ToArray());
+            TemplateContext.GlobalMemberAccessStrategy.Register<CookieCollectionWrapper, string>((cookies, name) => cookies.RequestCookieCollection[name]);
+            TemplateContext.GlobalMemberAccessStrategy.Register<HeaderDictionaryWrapper, string[]>((headers, name) => headers.HeaderDictionary[name].ToArray());            
         }
 
         public RequestLiquidTemplateEventHandler(IServiceProvider serviceProvider)
@@ -71,9 +82,20 @@ namespace OrchardCore.DisplayManagement.Liquid
             if (_httpContext != null)
             {
                 context.SetValue("Request", _httpContext.Request);
+                context.SetValue("HttpContext", _httpContext);
             }
 
             return Task.CompletedTask;
+        }
+
+        private class CookieCollectionWrapper
+        {
+            public readonly IRequestCookieCollection RequestCookieCollection;
+
+            public CookieCollectionWrapper(IRequestCookieCollection requestCookieCollection)
+            {
+                RequestCookieCollection = requestCookieCollection;
+            }
         }
 
         private class HeaderDictionaryWrapper
@@ -83,6 +105,16 @@ namespace OrchardCore.DisplayManagement.Liquid
             public HeaderDictionaryWrapper(IHeaderDictionary headerDictionary)
             {
                 HeaderDictionary = headerDictionary;
+            }
+        }
+
+        private class HttpContextItemsWrapper
+        {
+            public readonly IDictionary<object,object> Items;
+
+            public HttpContextItemsWrapper(IDictionary<object,object> items)
+            {
+                Items = items;
             }
         }
     }

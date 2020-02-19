@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Models;
@@ -41,12 +40,9 @@ namespace OrchardCore.Markdown.Handlers
                         ContentItem = part.ContentItem
                     };
 
-                    var templateContext = new TemplateContext();
-                    templateContext.SetValue("ContentItem", part.ContentItem);
-                    templateContext.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
-                    templateContext.SetValue("Model", model);
+                    var markdown = await _liquidTemplateManager.RenderAsync(part.Markdown, _htmlEncoder, model,
+                        scope => scope.SetValue("ContentItem", model.ContentItem));
 
-                    var markdown = await _liquidTemplateManager.RenderAsync(part.Markdown, _htmlEncoder, templateContext);
                     var result = Markdig.Markdown.ToHtml(markdown ?? "");
 
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);

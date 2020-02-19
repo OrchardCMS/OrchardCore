@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy

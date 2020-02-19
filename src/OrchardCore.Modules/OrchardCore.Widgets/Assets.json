@@ -1,0 +1,14 @@
+[
+  {
+    "inputs": [
+      "Assets/js/widgetslist.edit.js"
+    ],
+    "output": "wwwroot/Scripts/widgetslist.edit.js"
+  },
+  {
+    "inputs": [
+      "Assets/scss/widgetslist.edit.scss"
+    ],
+    "output": "wwwroot/Styles/widgetslist.edit.css"
+  }
+]

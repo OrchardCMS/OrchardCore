@@ -12,7 +12,6 @@ namespace OrchardCore.DisplayManagement.ModelBinding
 
         public PrefixedModelUpdater(IUpdateModel updateModel) : this(updateModel, x => x)
         {
-
         }
 
         public PrefixedModelUpdater(IUpdateModel updateModel, Func<string, string> prefix)

@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Features.Models;
 
-namespace OrchardCore.Features.Services 
+namespace OrchardCore.Features.Services
 {
-    public interface IModuleService 
+    public interface IModuleService
     {
         /// <summary>
         /// Retrieves an enumeration of the available features together with its state (enabled / disabled).

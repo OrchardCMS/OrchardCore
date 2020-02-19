@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
@@ -7,19 +6,30 @@ namespace OrchardCore.Lucene
 {
     public class Permissions : IPermissionProvider
     {
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+
         public static readonly Permission ManageIndexes = new Permission("ManageIndexes", "Manage Indexes");
         public static readonly Permission QueryLuceneApi = new Permission("QueryLuceneApi", "Query Lucene Api", new[] { ManageIndexes });
-        public static readonly Permission QueryLuceneSearch = new Permission("QueryLuceneSearch", "Query Lucene Search", new[] { ManageIndexes });
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        public Permissions(LuceneIndexSettingsService luceneIndexSettingsService)
         {
-            return Task.FromResult(new[]
+            _luceneIndexSettingsService = luceneIndexSettingsService;
+        }
+
+        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
+        {
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
+            var result = new List<Permission>();
+            foreach (var index in luceneIndexSettings)
             {
-                ManageIndexes,
-                QueryLuceneApi,
-                QueryLuceneSearch
+                var permission = new Permission("QueryLucene" + index.IndexName + "Index", "Query Lucene " + index.IndexName + " Index", new[] { ManageIndexes });
+                result.Add(permission);
             }
-            .AsEnumerable());
+
+            result.Add(ManageIndexes);
+            result.Add(QueryLuceneApi);
+
+            return result;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

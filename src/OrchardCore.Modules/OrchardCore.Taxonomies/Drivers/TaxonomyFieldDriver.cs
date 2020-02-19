@@ -38,8 +38,8 @@ namespace OrchardCore.Taxonomies.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(TaxonomyField field, BuildFieldEditorContext context)
@@ -49,7 +49,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
                 model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
 
-                if (model.Taxonomy != null )
+                if (model.Taxonomy != null)
                 {
                     var termEntries = new List<TermEntry>();
                     PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
@@ -96,7 +96,7 @@ namespace OrchardCore.Taxonomies.Drivers
         /// The list is ordered so that roots appear right before their child terms.
         private void PopulateTermEntries(List<TermEntry> termEntries, TaxonomyField field, IEnumerable<ContentItem> contentItems, int level)
         {
-            foreach(var contentItem in contentItems)
+            foreach (var contentItem in contentItems)
             {
                 var children = Array.Empty<ContentItem>();
 

@@ -6,11 +6,17 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ExecuteGraphQL = new Permission("ExecuteGraphQL", "Execute GraphQL.");
+        public static readonly Permission ExecuteGraphQLMutations = new Permission("ExecuteGraphQLMutations", "Execute GraphQL Mutations.");
+        public static readonly Permission ExecuteGraphQL = new Permission("ExecuteGraphQL", "Execute GraphQL.", new[] { ExecuteGraphQLMutations });
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(GetPermissions());
+            return Task.FromResult<IEnumerable<Permission>>(
+                new[] {
+                    ExecuteGraphQLMutations,
+                    ExecuteGraphQL,
+                }
+            );
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -18,16 +24,8 @@ namespace OrchardCore.Apis.GraphQL
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = GetPermissions()
+                    Permissions = new[] { ExecuteGraphQLMutations }
                 }
-            };
-        }
-
-        private IEnumerable<Permission> GetPermissions()
-        {
-            return new[]
-            {
-                ExecuteGraphQL
             };
         }
     }

@@ -29,10 +29,13 @@ namespace OrchardCore.Taxonomies.ViewModels
     {
         [BindNever]
         public ContentItem Term { get; set; }
+
         public bool Selected { get; set; }
         public string ContentItemId { get; set; }
+
         [BindNever]
         public int Level { get; set; }
+
         public bool IsLeaf { get; set; }
     }
 }

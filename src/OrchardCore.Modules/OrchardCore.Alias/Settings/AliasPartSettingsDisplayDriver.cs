@@ -13,14 +13,13 @@ namespace OrchardCore.Alias.Settings
     public class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
+        private readonly IStringLocalizer<AliasPartSettingsDisplayDriver> S;
 
         public AliasPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AliasPartSettingsDisplayDriver> localizer)
         {
             _templateManager = templateManager;
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
@@ -34,6 +33,7 @@ namespace OrchardCore.Alias.Settings
                 var settings = contentTypePartDefinition.GetSettings<AliasPartSettings>();
 
                 model.Pattern = settings.Pattern;
+                model.Options = settings.Options;
                 model.AliasPartSettings = settings;
             }).Location("Content");
         }
@@ -47,15 +47,15 @@ namespace OrchardCore.Alias.Settings
 
             var model = new AliasPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern))
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern, m => m.Options))
             {
                 if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
                 {
-                    context.Updater.ModelState.AddModelError(nameof(model.Pattern), T["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
                 }
                 else
                 {
-                    context.Builder.WithSettings(new AliasPartSettings { Pattern = model.Pattern });
+                    context.Builder.WithSettings(new AliasPartSettings { Pattern = model.Pattern, Options = model.Options });
                 }
             }
 

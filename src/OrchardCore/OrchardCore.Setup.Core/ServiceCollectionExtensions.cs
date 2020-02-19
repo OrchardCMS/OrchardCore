@@ -3,6 +3,9 @@ using OrchardCore.Setup.Services;
 
 namespace OrchardCore.Setup
 {
+    /// <summary>
+    /// Provides extension methods for <see cref="IServiceCollection"/>.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
         /// <summary>

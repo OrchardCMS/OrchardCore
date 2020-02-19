@@ -10,7 +10,7 @@ namespace OrchardCore.Taxonomies
 {
     public class Migrations : DataMigration
     {
-        IContentDefinitionManager _contentDefinitionManager;
+        private IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
@@ -25,7 +25,7 @@ namespace OrchardCore.Taxonomies
                 .Creatable()
                 .Listable()
                 .WithPart("TitlePart", part => part.WithPosition("1"))
-                .WithPart("AliasPart", part => part.WithPosition("2").WithSettings(new AliasPartSettings { Pattern = "{{ ContentItem | display_text | slugify }}" }))
+                .WithPart("AliasPart", part => part.WithPosition("2").WithSettings(new AliasPartSettings { Pattern = "{{ Model.ContentItem | display_text | slugify }}" }))
                 .WithPart("TaxonomyPart", part => part.WithPosition("3"))
             );
 
@@ -59,7 +59,7 @@ namespace OrchardCore.Taxonomies
         }
     }
 
-    class AliasPartSettings
+    internal class AliasPartSettings
     {
         public string Pattern { get; set; }
     }

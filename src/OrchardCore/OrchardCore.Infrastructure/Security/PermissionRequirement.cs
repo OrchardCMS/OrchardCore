@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Security.Permissions;
 
@@ -19,5 +19,3 @@ namespace OrchardCore.Security
         public Permission Permission { get; set; }
     }
 }
-
-
