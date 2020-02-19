@@ -696,6 +696,7 @@ The content of this block can then be reused from the Layout using the `{{ Model
 
 ASP.NET Core MVC provides a set of tag helpers to render predefined HTML outputs. The Liquid module provides a way to call into these Tag Helpers using custom liquid tags.
 
+
 ### `form`
 
 Invokes the `form` tag helper of ASP.NET Core.
@@ -761,6 +762,26 @@ Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [s
 ### `a`
 
 Invokes the `a` content link tag helper from the `OrchardCore.Contents` package.
+
+### `route-*`
+Route data can be added using `route-*` to tag helper of ASP.NET Core that supports route data using `asp-route-*` attribute.
+
+In following example, `route-returnUrl` adds `returnUrl` to form action.
+
+```liquid
+{% form action:"Update", method:"post",  route-returnUrl:Request.Query["returnurl"] %}
+... ... ...
+{% endform %}
+```
+
+In following example, `route-id` adds `Model.Id` to hyperlink.
+
+```liquid
+{% a action:"Delete" , controller: "Todo", class:"btn btn-danger", route-id:Model.Id %}
+Delete
+{%enda%}
+```
+
 
 ### `antiforgerytoken`
 
