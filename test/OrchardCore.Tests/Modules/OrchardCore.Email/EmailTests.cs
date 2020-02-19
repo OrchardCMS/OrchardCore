@@ -234,6 +234,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         [InlineData("<mailbox@domain.com>", "", "mailbox@domain.com")]
         [InlineData("mailbox@domain.com", "", "mailbox@domain.com")]
         [InlineData("(comment)mailbox(comment)@(comment)domain.com(me) ", "me", "mailbox@domain.com")]
+        [InlineData("Sébastien <sébastien@domain.com>", "Sébastien", "sébastien@domain.com")]
         public void MailBoxAddress_ShouldParseEmail(string text, string name, string address)
         {
             Assert.True(MailboxAddress.TryParse(text, out var mailboxAddress));
