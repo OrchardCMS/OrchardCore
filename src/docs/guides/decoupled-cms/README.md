@@ -324,6 +324,9 @@ We can now update the Razor Page to use the alias instead of the content item id
 }
 ```
 
+!!! waring "Release packages"
+    If you are not using the latest MyGet packages then this method is called `GetContentItemByAliasAsync(string alias)`.
+
 The changes consist in using the `slug` name in both the route and the local property, and also use a new method to load a content item with an alias.
 
 - Open the page `/blogpost/new-day` which should display the exact same result, but using a more SEO and user friendly url.
