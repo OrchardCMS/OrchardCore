@@ -32,44 +32,33 @@ namespace OrchardCore.Environment.Shell
         Task UpdateShellSettingsAsync(ShellSettings settings);
 
         /// <summary>
-        /// Reloads the shell settings.
+        /// Reloads a shell so that its settings will be reloaded before creating a new one
+        /// for subsequent requests, while existing requests get flushed.
         /// </summary>
         /// <param name="settings"></param>
         Task ReloadShellContextAsync(ShellSettings settings);
 
         /// <summary>
-        /// Reloads all shell settings.
-        /// </summary>
-        Task ReloadAllShellContextsAsync();
-
-        /// <summary>
-        /// Releases a shell to free up resources but it is still served.
+        /// Releases a shell so that a new one will be created for subsequent requests.
+        /// Note: Can be used to free up resources after a given period of inactivity.
         /// </summary>
         Task ReleaseShellContextAsync(ShellSettings settings);
-
-        /// <summary>
-        /// Releases all shells to free up resources but there are still served.
-        /// </summary>
-        Task ReleaseAllShellContextsAsync();
 
         /// <summary>
         /// Lists all available <see cref="ShellContext"/> instances.
         /// A shell might have been released or not yet built, if so 'shell.Released' is true and
         /// 'shell.CreateScope()' return null, but you can still use 'GetScopeAsync(shell.Settings)'.
         /// </summary>
-        /// <remarks>A shell might not be listed if it hasn't been created yet, for instance if it has been removed and not yet recreated.</remarks>
         IEnumerable<ShellContext> ListShellContexts();
 
         /// <summary>
         /// Tries to retrieve the shell settings associated with the specified tenant.
         /// </summary>
-        /// <returns><c>true</c> if the settings could be found, <c>false</c> otherwise.</returns>
         bool TryGetSettings(string name, out ShellSettings settings);
 
         /// <summary>
         /// Retrieves all shell settings.
         /// </summary>
-        /// <returns>All shell settings.</returns>
         IEnumerable<ShellSettings> GetAllSettings();
     }
 }
