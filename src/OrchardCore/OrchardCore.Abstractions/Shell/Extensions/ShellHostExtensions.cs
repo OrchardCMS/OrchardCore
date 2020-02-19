@@ -7,6 +7,15 @@ namespace OrchardCore.Environment.Shell
     public static class ShellHostExtensions
     {
         /// <summary>
+        /// Creates a standalone service scope that can be used to resolve local services.
+        /// </summary>
+        /// <param name="tenant">The tenant name related to the service scope to get.</param>
+        public static Task<ShellScope> GetScopeAsync(this IShellHost shellHost, string tenant)
+        {
+            return shellHost.GetScopeAsync(shellHost.GetSettings(tenant));
+        }
+
+        /// <summary>
         /// Retrieves the shell settings associated with the specified tenant.
         /// </summary>
         /// <returns>The shell settings associated with the tenant.</returns>
@@ -18,15 +27,6 @@ namespace OrchardCore.Environment.Shell
             }
 
             return settings;
-        }
-
-        /// <summary>
-        /// Creates a standalone service scope that can be used to resolve local services.
-        /// </summary>
-        /// <param name="tenant">The tenant name related to the service scope to get.</param>
-        public static Task<ShellScope> GetScopeAsync(this IShellHost shellHost, string tenant)
-        {
-            return shellHost.GetScopeAsync(shellHost.GetSettings(tenant));
         }
     }
 }

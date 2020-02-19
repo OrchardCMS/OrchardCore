@@ -96,13 +96,12 @@ namespace OrchardCore.Environment.Shell
 
                 if (shell.Released)
                 {
-                    // If the context is released, it is removed from the dictionary so that
-                    // a new call on 'GetOrCreateShellContextAsync' will recreate a new shell context.
-
+                    // If the context is released, it is removed from the dictionary so that the next iteration
+                    // or a new call on 'GetOrCreateShellContextAsync' will recreate a new shell context.
                     if (_shellContexts.TryRemove(settings.Name, out var value) &&
-                        value is ShellContext.PlaceHolder holder && holder.Reload &&
-                        settings.State != TenantState.Initializing)
+                        value is ReloadPlaceHolder && settings.State != TenantState.Initializing)
                     {
+                        // Settings are lazily reloaded here if the shell is marked to do so.
                         settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
                     }
 
@@ -132,13 +131,12 @@ namespace OrchardCore.Environment.Shell
                 // retry with the hope to get one that won't be released before we create a scope.
                 if (scope == null)
                 {
-                    // If the context is released, it is removed from the dictionary so that
-                    // a new call on 'GetScope' will recreate a new shell context.
-
+                    // If the context is released, it is removed from the dictionary so that the next
+                    // iteration or a new call on 'GetScope' will recreate a new shell context.
                     if (_shellContexts.TryRemove(settings.Name, out var value) &&
-                        value is ShellContext.PlaceHolder holder && holder.Reload &&
-                        settings.State != TenantState.Initializing)
+                        value is ReloadPlaceHolder && settings.State != TenantState.Initializing)
                     {
+                        // Settings are lazily reloaded here if the shell is marked to do so.
                         settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
                     }
                 }
@@ -157,24 +155,20 @@ namespace OrchardCore.Environment.Shell
         /// A feature is enabled / disabled, the tenant needs to be released so that a new shell will be created.
         /// </summary>
         Task IShellDescriptorManagerEventHandler.ChangedAsync(ShellDescriptor descriptor, ShellSettings settings)
-        {
-            ReleaseShellContext(settings);
-            return Task.CompletedTask;
-        }
+            => ReleaseShellContextAsync(settings);
 
         /// <summary>
-        /// Marks the specific tenant as released, such that a new shell is created for subsequent requests,
-        /// while existing requests get flushed.
+        /// Marks the specific tenant as released and to be reloaded, such that its settings are reloaded
+        /// and a new shell is created for subsequent requests, while existing requests get flushed.
         /// </summary>
         /// <param name="settings"></param>
         public Task ReloadShellContextAsync(ShellSettings settings)
         {
-            // If a disabled shell is still in use it will be released by its last scope.
+            // If a disabled shell is still in use we keep it in the list to prevent a consumer from creating
+            // a new one that would have a null service provider, and we let it be released by its last scope.
             if (IsDisabledAndInUse(settings))
             {
-                // But we still remove it from the running shells, so that it is no more served.
                 _runningShellTable.Remove(settings);
-
                 return Task.CompletedTask;
             }
 
@@ -184,32 +178,34 @@ namespace OrchardCore.Environment.Shell
                 context.Release();
             }
 
-            AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings, Reload = true });
-
-            // Reload the settings in a new scope.
-            //ShellScope.AddDeferredTask(async scope =>
-            //{
-            //    // Already recreated if it is the default tenant.
-            //    if (settings.Name != ShellHelper.DefaultShellName)
-            //    {
-            //        await GetOrCreateShellContextAsync(settings);
-            //    }
-            //});
+            // Add a 'ReloadPlaceHolder' so that settings are lazily reloaded.
+            AddAndRegisterShell(new ReloadPlaceHolder { Settings = settings });
 
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Reloads all shell settings.
+        /// </summary>
+        public async Task ReloadAllShellContextsAsync()
+        {
+            foreach (var shell in ListShellContexts())
+            {
+                await ReloadShellContextAsync(shell.Settings);
+            }
         }
 
         /// <summary>
         /// Releases a shell to free up resources but keeps its settings in the running shell table,
         /// so that it is still served but a new shell will only be created on a new request.
         /// </summary>
-        /// <param name="settings"></param>
-        public void ReleaseShellContext(ShellSettings settings)
+        public Task ReleaseShellContextAsync(ShellSettings settings)
         {
-            // If a disabled shell is still in use it will be released by its last scope.
+            // If a disabled shell is still in use we keep it in the list to prevent a consumer from creating
+            // a new one that would have a null service provider, and we let it be released by its last scope.
             if (IsDisabledAndInUse(settings))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             if (_shellContexts.TryRemove(settings.Name, out var context))
@@ -217,19 +213,20 @@ namespace OrchardCore.Environment.Shell
                 context.Release();
             }
 
-            // Keep a placeholder holding the settings so that they can still be retrieved by another shell.
+            // Add a placeholder holding the settings so that they can still be retrieved by another shell.
             _shellContexts.TryAdd(context.Settings.Name, new ShellContext.PlaceHolder { Settings = settings });
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Releases all shells to free up resources but keeps all settings in the running shell table,
-        /// so that they are still served but new shells will only be created on new requests.
+        /// Releases all shells to free up resources but there are still served.
         /// </summary>
-        public void ReleaseAllShellContexts()
+        public async Task ReleaseAllShellContextsAsync()
         {
             foreach (var shell in ListShellContexts())
             {
-                ReleaseShellContext(shell.Settings);
+                await ReleaseShellContextAsync(shell.Settings);
             }
         }
 
@@ -264,9 +261,8 @@ namespace OrchardCore.Environment.Shell
                 _logger.LogInformation("Start creation of shells");
             }
 
-            // Load all extensions and features so that the controllers are
-            // registered in ITypeFeatureProvider and their areas defined in the application
-            // conventions.
+            // Load all extensions and features so that the controllers are registered in
+            // 'ITypeFeatureProvider' and their areas defined in the application conventions.
             var features = _extensionManager.LoadFeaturesAsync();
 
             // Is there any tenant right now?
@@ -427,8 +423,14 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Whether or not a disabled shell is still in use.
         /// </summary>
-        private bool IsDisabledAndInUse(ShellSettings settings) =>
-            settings.State == TenantState.Disabled && _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0;
+        private bool IsDisabledAndInUse(ShellSettings settings)
+        {
+            return settings.State == TenantState.Disabled && _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0;
+        }
+
+        private class ReloadPlaceHolder : ShellContext.PlaceHolder
+        {
+        }
 
         public void Dispose()
         {

@@ -44,11 +44,6 @@ namespace OrchardCore.Environment.Shell.Builders
                 _released = true;
                 _disposed = true;
             }
-
-            /// <summary>
-            /// Whether the 'ShellSettings' need to be reloaded.
-            /// </summary>
-            public bool Reload { get; set; }
         }
 
         public ShellScope CreateScope()

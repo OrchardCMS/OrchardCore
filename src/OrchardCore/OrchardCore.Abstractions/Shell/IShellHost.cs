@@ -32,20 +32,25 @@ namespace OrchardCore.Environment.Shell
         Task UpdateShellSettingsAsync(ShellSettings settings);
 
         /// <summary>
-        /// Reloads a shell.
+        /// Reloads the shell settings.
         /// </summary>
         /// <param name="settings"></param>
         Task ReloadShellContextAsync(ShellSettings settings);
 
         /// <summary>
+        /// Reloads all shell settings.
+        /// </summary>
+        Task ReloadAllShellContextsAsync();
+
+        /// <summary>
         /// Releases a shell to free up resources but it is still served.
         /// </summary>
-        void ReleaseShellContext(ShellSettings settings);
+        Task ReleaseShellContextAsync(ShellSettings settings);
 
         /// <summary>
         /// Releases all shells to free up resources but there are still served.
         /// </summary>
-        void ReleaseAllShellContexts();
+        Task ReleaseAllShellContextsAsync();
 
         /// <summary>
         /// Lists all available <see cref="ShellContext"/> instances.
