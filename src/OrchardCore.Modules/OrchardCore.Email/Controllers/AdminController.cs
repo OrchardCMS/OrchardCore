@@ -61,7 +61,6 @@ namespace OrchardCore.Email.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    // send email with DefaultSender
                     var result = await _smtpService.SendAsync(message);
 
                     if (!result.Succeeded)
