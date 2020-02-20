@@ -115,7 +115,7 @@ namespace OrchardCore.OpenId.Controllers
 
                 if (!string.IsNullOrEmpty(updatedAtClaimValue))
                 {
-                    claims[OpenIdConnectConstants.Claims.UpdatedAt] = long.Parse(updatedAtClaimValue, CultureInfo.CurrentCulture);
+                    claims[OpenIdConnectConstants.Claims.UpdatedAt] = long.Parse(updatedAtClaimValue, CultureInfo.InvariantCulture);
                 }
             }
 
