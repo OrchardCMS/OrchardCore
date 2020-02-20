@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -15,11 +15,12 @@ using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
-    public class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
+    public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
+        private readonly IStringLocalizer<TaxonomyFieldDisplayDriver> S;
 
-        public TaxonomyFieldDisplayDriver(
+        public TaxonomyFieldTagsDisplayDriver(
             IContentManager contentManager,
             IStringLocalizer<TaxonomyFieldDisplayDriver> s)
         {
@@ -27,11 +28,9 @@ namespace OrchardCore.Taxonomies.Drivers
             S = s;
         }
 
-        public IStringLocalizer S { get; }
-
         public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayTaxonomyFieldViewModel>(GetDisplayShapeType(context), model =>
+            return Initialize<DisplayTaxonomyFieldTagsViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -52,9 +51,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 {
                     var termEntries = new List<TermEntry>();
                     TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
-
                     model.TermEntries = termEntries;
-                    model.UniqueValue = termEntries.FirstOrDefault(x => x.Selected)?.ContentItemId;
                 }
 
                 model.Field = field;
@@ -74,17 +71,30 @@ namespace OrchardCore.Taxonomies.Drivers
                 field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
                 field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
 
-                if (settings.Unique && !String.IsNullOrEmpty(model.UniqueValue))
-                {
-                    field.TermContentItemIds = new[] { model.UniqueValue };
-                }
-
                 if (settings.Required && field.TermContentItemIds.Length == 0)
                 {
                     updater.ModelState.AddModelError(
                         nameof(EditTaxonomyFieldViewModel.TermEntries),
                         S["A value is required for '{0}'", context.PartFieldDefinition.Name]);
                 }
+
+                // Update display text for tags.
+                var taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
+
+                if (taxonomy == null)
+                {
+                    return null;
+                }
+
+                var terms = new List<ContentItem>();
+
+                foreach (var termContentItemId in field.TermContentItemIds)
+                {
+                    var term = TaxonomyOrchardHelperExtensions.FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId);
+                    terms.Add(term);
+                }
+
+                field.SetTagNames(terms.Select(t => t.DisplayText).ToArray());
             }
 
             return Edit(field, context);
