@@ -164,11 +164,20 @@ namespace OrchardCore.Lists.RemotePublishing
             var name = file.Optional<string>("name");
             var bits = file.Optional<byte[]>("bits");
 
-            string directoryName = Path.GetDirectoryName(name);
-            string filePath = _mediaFileStore.Combine(directoryName, Path.GetFileName(name));
-            await _mediaFileStore.CreateFileFromStreamAsync(filePath, new MemoryStream(bits));
+            var directoryName = Path.GetDirectoryName(name);
+            var filePath = _mediaFileStore.Combine(directoryName, Path.GetFileName(name));
+            Stream stream = null;
+            try
+            {
+                stream = new MemoryStream(bits);
+                filePath = await _mediaFileStore.CreateFileFromStreamAsync(filePath, stream);
+            }
+            finally
+            {
+                stream?.Dispose();
+            }
 
-            string publicUrl = _mediaFileStore.MapPathToPublicUrl(filePath);
+            var publicUrl = _mediaFileStore.MapPathToPublicUrl(filePath);
 
             return new XRpcStruct() // Some clients require all optional attributes to be declared Wordpress responds in this way as well.
                 .Set("file", publicUrl)
