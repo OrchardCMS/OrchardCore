@@ -16,8 +16,8 @@ namespace OrchardCore.Admin
     /// </summary>
     public class AdminMenuFilter : IAsyncResultFilter
     {
-        private IShapeFactory shapeFactory;
-        private ILayoutAccessor layoutAccessor;
+        private IShapeFactory _shapeFactory;
+        private ILayoutAccessor _layoutAccessor;
 
         public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
         {
@@ -51,18 +51,18 @@ namespace OrchardCore.Admin
             }
 
             // Resolve services lazy if we got this far.
-            shapeFactory ??= filterContext.HttpContext.RequestServices.GetRequiredService<IShapeFactory>();
-            layoutAccessor ??= filterContext.HttpContext.RequestServices.GetRequiredService<ILayoutAccessor>();
+            _shapeFactory ??= filterContext.HttpContext.RequestServices.GetRequiredService<IShapeFactory>();
+            _layoutAccessor ??= filterContext.HttpContext.RequestServices.GetRequiredService<ILayoutAccessor>();
 
             // Populate main nav
-            var menuShape = await shapeFactory.CreateAsync("Navigation",
+            var menuShape = await _shapeFactory.CreateAsync("Navigation",
                 Arguments.From(new
                 {
                     MenuName = "admin",
                     RouteData = filterContext.RouteData,
                 }));
 
-            dynamic layout = await layoutAccessor.GetLayoutAsync();
+            dynamic layout = await _layoutAccessor.GetLayoutAsync();
 
             if (layout.Navigation is ZoneOnDemand zoneOnDemand)
             {

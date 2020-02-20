@@ -34,7 +34,7 @@ namespace OrchardCore.Layers.Services
         private ILayerService _layerService;
         private ILayoutAccessor _layoutAccessor;
         private IContentItemDisplayManager _contentItemDisplayManager;
-        private IUpdateModel _updater;
+        private IUpdateModelAccessor _updateModelAccessor;
 
         public LayerFilter(
             IScriptingManager scriptingManager,
@@ -71,7 +71,7 @@ namespace OrchardCore.Layers.Services
                 _layerService ??= context.HttpContext.RequestServices.GetRequiredService<ILayerService>();
                 _layoutAccessor ??= context.HttpContext.RequestServices.GetRequiredService<ILayoutAccessor>();
                 _contentItemDisplayManager ??= context.HttpContext.RequestServices.GetRequiredService<IContentItemDisplayManager>();
-                _updater ??= context.HttpContext.RequestServices.GetRequiredService<IUpdateModelAccessor>().ModelUpdater;
+                _updateModelAccessor ??= context.HttpContext.RequestServices.GetRequiredService<IUpdateModelAccessor>();
 
                 var widgets = await _memoryCache.GetOrCreateAsync("OrchardCore.Layers.LayerFilter:AllWidgets", entry =>
                 {
@@ -86,6 +86,7 @@ namespace OrchardCore.Layers.Services
                 var engine = _scriptingManager.GetScriptingEngine("js");
                 var scope = engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, null, null);
 
+                var updater = _updateModelAccessor.ModelUpdater;
                 var layersCache = new Dictionary<string, bool>();
 
                 foreach (var widget in widgets)
@@ -117,7 +118,7 @@ namespace OrchardCore.Layers.Services
                         continue;
                     }
 
-                    var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updater);
+                    var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
 
                     widgetContent.Classes.Add("widget");
                     widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
