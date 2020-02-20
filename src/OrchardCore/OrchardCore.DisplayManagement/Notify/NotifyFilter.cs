@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Layout;
@@ -18,21 +19,21 @@ namespace OrchardCore.DisplayManagement.Notify
     public class NotifyFilter : IActionFilter, IAsyncResultFilter
     {
         public const string CookiePrefix = "orch_notify";
+
         private readonly INotifier _notifier;
-        private readonly dynamic _shapeFactory;
-        private readonly ILayoutAccessor _layoutAccessor;
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly HtmlEncoder _htmlEncoder;
+        private readonly ILogger<NotifyFilter> _logger;
+        private readonly string _tenantPath;
+
+        private dynamic _shapeFactory;
+        private ILayoutAccessor _layoutAccessor;
 
         private NotifyEntry[] _existingEntries = Array.Empty<NotifyEntry>();
         private bool _shouldDeleteCookie;
-        private string _tenantPath;
-        private readonly HtmlEncoder _htmlEncoder;
-        private readonly ILogger<NotifyFilter> _logger;
 
         public NotifyFilter(
             INotifier notifier,
-            ILayoutAccessor layoutAccessor,
-            IShapeFactory shapeFactory,
             ShellSettings shellSettings,
             IDataProtectionProvider dataProtectionProvider,
             HtmlEncoder htmlEncoder,
@@ -41,10 +42,7 @@ namespace OrchardCore.DisplayManagement.Notify
             _htmlEncoder = htmlEncoder;
             _logger = logger;
             _dataProtectionProvider = dataProtectionProvider;
-
-            _layoutAccessor = layoutAccessor;
             _notifier = notifier;
-            _shapeFactory = shapeFactory;
 
             _tenantPath = "/" + shellSettings.RequestUrlPrefix;
         }
@@ -120,6 +118,10 @@ namespace OrchardCore.DisplayManagement.Notify
                 return;
             }
 
+            // Resolve services lazy if we got this far.
+            _layoutAccessor ??= filterContext.HttpContext.RequestServices.GetRequiredService<ILayoutAccessor>();
+            _shapeFactory ??= filterContext.HttpContext.RequestServices.GetRequiredService<IShapeFactory>();
+
             dynamic layout = await _layoutAccessor.GetLayoutAsync();
             var messagesZone = layout.Zones["Messages"];
 
@@ -169,7 +171,6 @@ namespace OrchardCore.DisplayManagement.Notify
             catch
             {
                 messageEntries = null;
-
                 _logger.LogWarning("The notification entries could not be decrypted");
             }
         }

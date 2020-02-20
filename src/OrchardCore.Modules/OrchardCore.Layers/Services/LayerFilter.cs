@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.Layout;
@@ -24,37 +25,25 @@ namespace OrchardCore.Layers.Services
 {
     public class LayerFilter : IAsyncResultFilter
     {
-        private readonly ILayoutAccessor _layoutAccessor;
-        private readonly IContentItemDisplayManager _contentItemDisplayManager;
-        private readonly IUpdateModelAccessor _modelUpdaterAccessor;
         private readonly IScriptingManager _scriptingManager;
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
-        private readonly IThemeManager _themeManager;
-        private readonly IAdminThemeService _adminThemeService;
-        private readonly ILayerService _layerService;
+
+        private IThemeManager _themeManager;
+        private IAdminThemeService _adminThemeService;
+        private ILayerService _layerService;
+        private ILayoutAccessor _layoutAccessor;
+        private IContentItemDisplayManager _contentItemDisplayManager;
+        private IUpdateModel _updater;
 
         public LayerFilter(
-            ILayerService layerService,
-            ILayoutAccessor layoutAccessor,
-            IContentItemDisplayManager contentItemDisplayManager,
-            IUpdateModelAccessor modelUpdaterAccessor,
             IScriptingManager scriptingManager,
-            IServiceProvider serviceProvider,
             IMemoryCache memoryCache,
-            ISignal signal,
-            IThemeManager themeManager,
-            IAdminThemeService adminThemeService)
+            ISignal signal)
         {
-            _layerService = layerService;
-            _layoutAccessor = layoutAccessor;
-            _contentItemDisplayManager = contentItemDisplayManager;
-            _modelUpdaterAccessor = modelUpdaterAccessor;
             _scriptingManager = scriptingManager;
             _memoryCache = memoryCache;
             _signal = signal;
-            _themeManager = themeManager;
-            _adminThemeService = adminThemeService;
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
@@ -65,6 +54,11 @@ namespace OrchardCore.Layers.Services
             {
                 // Even if the Admin attribute is not applied we might be using the admin theme, for instance in Login views.
                 // In this case don't render Layers.
+
+                // Resolve scoped services lazy if we got this far.
+                _themeManager ??= context.HttpContext.RequestServices.GetRequiredService<IThemeManager>();
+                _adminThemeService ??= context.HttpContext.RequestServices.GetRequiredService<IAdminThemeService>();
+
                 var selectedTheme = (await _themeManager.GetThemeAsync())?.Id;
                 var adminTheme = await _adminThemeService.GetAdminThemeNameAsync();
                 if (selectedTheme == adminTheme)
@@ -72,6 +66,12 @@ namespace OrchardCore.Layers.Services
                     await next.Invoke();
                     return;
                 }
+
+                // Resolve scoped services lazy if we got this far.
+                _layerService ??= context.HttpContext.RequestServices.GetRequiredService<ILayerService>();
+                _layoutAccessor ??= context.HttpContext.RequestServices.GetRequiredService<ILayoutAccessor>();
+                _contentItemDisplayManager ??= context.HttpContext.RequestServices.GetRequiredService<IContentItemDisplayManager>();
+                _updater ??= context.HttpContext.RequestServices.GetRequiredService<IUpdateModelAccessor>().ModelUpdater;
 
                 var widgets = await _memoryCache.GetOrCreateAsync("OrchardCore.Layers.LayerFilter:AllWidgets", entry =>
                 {
@@ -82,7 +82,6 @@ namespace OrchardCore.Layers.Services
                 var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
 
                 dynamic layout = await _layoutAccessor.GetLayoutAsync();
-                var updater = _modelUpdaterAccessor.ModelUpdater;
 
                 var engine = _scriptingManager.GetScriptingEngine("js");
                 var scope = engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, null, null);
@@ -118,7 +117,7 @@ namespace OrchardCore.Layers.Services
                         continue;
                     }
 
-                    var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
+                    var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updater);
 
                     widgetContent.Classes.Add("widget");
                     widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());

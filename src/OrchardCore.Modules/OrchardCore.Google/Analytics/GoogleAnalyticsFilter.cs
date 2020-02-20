@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Admin;
 using OrchardCore.Entities;
 using OrchardCore.Google.Analytics.Settings;
@@ -13,18 +14,11 @@ namespace OrchardCore.Google.Analytics
 {
     public class GoogleAnalyticsFilter : IAsyncResultFilter
     {
-        private readonly IResourceManager _resourceManager;
-        private readonly ISiteService _siteService;
+        private IResourceManager _resourceManager;
+        private ISiteService _siteService;
 
         private HtmlString _scriptsCache;
 
-        public GoogleAnalyticsFilter(
-            IResourceManager resourceManager,
-            ISiteService siteService)
-        {
-            _resourceManager = resourceManager;
-            _siteService = siteService;
-        }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
@@ -34,6 +28,9 @@ namespace OrchardCore.Google.Analytics
             {
                 if (_scriptsCache == null)
                 {
+                    // Resolve scoped services lazy if we got this far.
+                    _siteService ??= context.HttpContext.RequestServices.GetRequiredService<ISiteService>();
+
                     var settings = (await _siteService.GetSiteSettingsAsync()).As<GoogleAnalyticsSettings>();
 
                     if (!string.IsNullOrWhiteSpace(settings?.TrackingID))
@@ -44,6 +41,9 @@ namespace OrchardCore.Google.Analytics
 
                 if (_scriptsCache != null)
                 {
+                    // Resolve scoped services lazy if we got this far.
+                    _resourceManager ??= context.HttpContext.RequestServices.GetRequiredService<IResourceManager>();
+
                     _resourceManager.RegisterHeadScript(_scriptsCache);
                 }
             }

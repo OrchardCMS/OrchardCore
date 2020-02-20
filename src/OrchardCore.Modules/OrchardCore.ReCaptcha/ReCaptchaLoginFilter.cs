@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.Entities;
@@ -14,22 +15,10 @@ namespace OrchardCore.ReCaptcha
 {
     public class ReCaptchaLoginFilter : IAsyncResultFilter
     {
-        private readonly ILayoutAccessor _layoutAccessor;
-        private readonly ISiteService _siteService;
-        private readonly ReCaptchaService _reCaptchaService;
-        private readonly IShapeFactory _shapeFactory;
-
-        public ReCaptchaLoginFilter(
-            ILayoutAccessor layoutAccessor,
-            ISiteService siteService,
-            ReCaptchaService reCaptchaService,
-            IShapeFactory shapeFactory)
-        {
-            _layoutAccessor = layoutAccessor;
-            _siteService = siteService;
-            _reCaptchaService = reCaptchaService;
-            _shapeFactory = shapeFactory;
-        }
+        private ILayoutAccessor _layoutAccessor;
+        private ISiteService _siteService;
+        private ReCaptchaService _reCaptchaService;
+        private IShapeFactory _shapeFactory;
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
@@ -40,6 +29,8 @@ namespace OrchardCore.ReCaptcha
                 return;
             }
 
+            // Resolve scoped services lazy if we got this far.
+            _siteService ??= context.HttpContext.RequestServices.GetRequiredService<ISiteService>();
             var settings = (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
 
             if (!settings.IsValid())
@@ -47,6 +38,11 @@ namespace OrchardCore.ReCaptcha
                 await next();
                 return;
             }
+
+            // Resolve scoped services lazy if we got this far.
+            _layoutAccessor ??= context.HttpContext.RequestServices.GetRequiredService<ILayoutAccessor>();
+            _reCaptchaService ??= context.HttpContext.RequestServices.GetRequiredService<ReCaptchaService>();
+            _shapeFactory ??= context.HttpContext.RequestServices.GetRequiredService<IShapeFactory>();
 
             dynamic layout = await _layoutAccessor.GetLayoutAsync();
 

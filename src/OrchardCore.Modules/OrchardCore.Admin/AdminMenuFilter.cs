@@ -2,11 +2,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.Admin
 {
@@ -16,18 +16,8 @@ namespace OrchardCore.Admin
     /// </summary>
     public class AdminMenuFilter : IAsyncResultFilter
     {
-        private readonly INavigationManager _navigationManager;
-        private readonly ILayoutAccessor _layoutAccessor;
-        private readonly IShapeFactory _shapeFactory;
-
-        public AdminMenuFilter(INavigationManager navigationManager,
-            ILayoutAccessor layoutAccessor,
-            IShapeFactory shapeFactory)
-        {
-            _navigationManager = navigationManager;
-            _layoutAccessor = layoutAccessor;
-            _shapeFactory = shapeFactory;
-        }
+        private IShapeFactory shapeFactory;
+        private ILayoutAccessor layoutAccessor;
 
         public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
         {
@@ -60,15 +50,19 @@ namespace OrchardCore.Admin
                 return;
             }
 
+            // Resolve services lazy if we got this far.
+            shapeFactory ??= filterContext.HttpContext.RequestServices.GetRequiredService<IShapeFactory>();
+            layoutAccessor ??= filterContext.HttpContext.RequestServices.GetRequiredService<ILayoutAccessor>();
+
             // Populate main nav
-            var menuShape = await _shapeFactory.CreateAsync("Navigation",
+            var menuShape = await shapeFactory.CreateAsync("Navigation",
                 Arguments.From(new
                 {
                     MenuName = "admin",
                     RouteData = filterContext.RouteData,
                 }));
 
-            dynamic layout = await _layoutAccessor.GetLayoutAsync();
+            dynamic layout = await layoutAccessor.GetLayoutAsync();
 
             if (layout.Navigation is ZoneOnDemand zoneOnDemand)
             {
