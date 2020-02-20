@@ -14,9 +14,9 @@ using OrchardCore.Environment.Shell.Scope;
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// All <see cref="ShellContext"/> objects are loaded when <see cref="InitializeAsync"/> is called. They can be removed when the
-    /// tenant is removed, but are necessary to match an incoming request, even if they are not initialized.
-    /// Each <see cref="ShellContext"/> is activated (its service provider is built) on the first request.
+    /// All <see cref="ShellContext"/> are pre-created when <see cref="InitializeAsync"/> is called on startup and where we first load
+    /// all <see cref="ShellSettings"/> that we also need to register in the <see cref="IRunningShellTable"/> to serve incoming requests.
+    /// For each <see cref="ShellContext"/> a service container and then a request pilpeline are only built on the first matching request.
     /// </summary>
     public class ShellHost : IShellHost, IShellDescriptorManagerEventHandler, IDisposable
     {
@@ -99,8 +99,10 @@ namespace OrchardCore.Environment.Shell
                     // If the context is released, it is removed from the dictionary so that the next iteration
                     // or a new call on 'GetOrCreateShellContextAsync()' will recreate a new shell context.
                     if (_shellContexts.TryRemove(settings.Name, out var value) &&
-                        value is ReloadedPlaceHolder && settings.State != TenantState.Initializing)
+                        settings.State != TenantState.Initializing &&
+                        value is ReloadedPlaceHolder)
                     {
+                        // If a 'ReloadedPlaceHolder' was registered, reload shell settings.
                         settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
                     }
 
@@ -133,8 +135,10 @@ namespace OrchardCore.Environment.Shell
                     // If the context is released, it is removed from the dictionary so that the next
                     // iteration or a new call on 'GetScope()' will recreate a new shell context.
                     if (_shellContexts.TryRemove(settings.Name, out var value) &&
-                        value is ReloadedPlaceHolder && settings.State != TenantState.Initializing)
+                        settings.State != TenantState.Initializing &&
+                        value is ReloadedPlaceHolder)
                     {
+                        // If a 'ReloadedPlaceHolder' was registered, reload shell settings.
                         settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
                     }
                 }
