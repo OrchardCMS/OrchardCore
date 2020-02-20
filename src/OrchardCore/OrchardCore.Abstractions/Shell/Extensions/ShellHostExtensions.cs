@@ -27,7 +27,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Releases all shells so that new shells will be created for subsequent requests.
+        /// Releases all shells so that new shells will be built for subsequent requests.
         /// Note: Can be used to free up resources after a given period of inactivity.
         /// </summary>
         public async static Task ReleaseAllShellContextsAsync(this IShellHost shellHost)

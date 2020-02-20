@@ -96,7 +96,7 @@ namespace OrchardCore.Email.Drivers
                     section.Password = protector.Protect(section.Password);
                 }
 
-                // Rebuild the tenant to apply the settings
+                // Reset the tenant to apply the settings
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
 
