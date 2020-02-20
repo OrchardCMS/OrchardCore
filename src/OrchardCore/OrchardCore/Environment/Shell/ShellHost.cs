@@ -156,7 +156,7 @@ namespace OrchardCore.Environment.Shell
             => ReleaseShellContextAsync(settings);
 
         /// <summary>
-        /// Reloads a shell so that its settings will be reloaded before creating a new one
+        /// Reloads a shell so that its settings will be reloaded before building a new shell
         /// for subsequent requests, while existing requests get flushed.
         /// </summary>
         public Task ReloadShellContextAsync(ShellSettings settings)
@@ -181,7 +181,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Releases a shell so that a new one will be created for subsequent requests.
+        /// Releases a shell so that a new shell will be built for subsequent requests.
         /// Note: Can be used to free up resources after a given period of inactivity.
         /// </summary>
         public Task ReleaseShellContextAsync(ShellSettings settings)

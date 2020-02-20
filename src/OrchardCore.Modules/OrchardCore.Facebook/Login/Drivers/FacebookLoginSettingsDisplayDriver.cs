@@ -60,7 +60,7 @@ namespace OrchardCore.Facebook.Login.Drivers
                 if (context.Updater.ModelState.IsValid)
                 {
                     settings.CallbackPath = model.CallbackPath;
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);
