@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -68,5 +67,4 @@ namespace OrchardCore.Microsoft.Authentication
             return Task.CompletedTask;
         }
     }
-
 }

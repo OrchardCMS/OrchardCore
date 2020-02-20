@@ -6,10 +6,10 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Twitter.Settings;
-using OrchardCore.Twitter.ViewModels;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Services;
+using OrchardCore.Twitter.Settings;
+using OrchardCore.Twitter.ViewModels;
 
 namespace OrchardCore.Twitter.Drivers
 {

@@ -33,7 +33,7 @@ namespace OrchardCore.Feeds.Controllers
             Logger = logger;
         }
 
-        ILogger Logger { get; }
+        private ILogger Logger { get; }
 
         public async Task<ActionResult> Index(string format)
         {

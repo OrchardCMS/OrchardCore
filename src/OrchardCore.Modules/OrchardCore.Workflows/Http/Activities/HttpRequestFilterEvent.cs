@@ -14,7 +14,7 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IStringLocalizer<HttpRequestFilterEvent> S;
-        
+
         public static string EventName => nameof(HttpRequestFilterEvent);
 
         public HttpRequestFilterEvent(IStringLocalizer<HttpRequestFilterEvent> localizer, IHttpContextAccessor httpContextAccessor)

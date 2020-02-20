@@ -29,9 +29,11 @@ namespace OrchardCore.Lucene.ViewModels
         public ContentsBulkAction BulkAction { get; set; }
 
         #region Lists to populate
+
         [BindNever]
         public List<SelectListItem> ContentsBulkAction { get; set; }
-        #endregion
+
+        #endregion Lists to populate
     }
 
     public enum ContentsBulkAction

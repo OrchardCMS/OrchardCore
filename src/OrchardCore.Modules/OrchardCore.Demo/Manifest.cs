@@ -7,5 +7,5 @@ using OrchardCore.Modules.Manifest;
     Version = "2.0.0",
     Description = "Test",
     Category = "Samples",
-    Dependencies = new[] { "OrchardCore.Contents" }
+    Dependencies = new []{ "OrchardCore.Users", "OrchardCore.Contents" }
 )]

@@ -75,7 +75,7 @@ namespace OrchardCore.Environment.Shell
                 var shellState = await stateManager.GetShellStateAsync();
 
                 while (shellState.Features.Any(FeatureIsChanging))
-                {                    
+                {
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
                         Logger.LogInformation("Adding pending task 'ApplyChanges' for tenant '{TenantName}'", _settings.Name);
@@ -100,6 +100,5 @@ namespace OrchardCore.Environment.Shell
             }
             return false;
         }
-
     }
 }

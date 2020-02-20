@@ -1,5 +1,4 @@
 using System;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Recipes.Models;
@@ -30,7 +29,7 @@ namespace OrchardCore.Facebook.Recipes
 
             var settings = await _loginService.GetSettingsAsync();
             settings.AppId = model.AppId;
-            settings.AppSecret= model.AppSecret;
+            settings.AppSecret = model.AppSecret;
             settings.SdkJs = model.SdkJs ?? "sdk.js";
             settings.FBInit = model.FBInit;
             settings.FBInitParams = model.FBInitParams;

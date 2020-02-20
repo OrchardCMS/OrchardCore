@@ -37,13 +37,13 @@ namespace OrchardCore.Contents.Recipes
                 var modifiedUtc = contentItem.ModifiedUtc;
                 var publishedUtc = contentItem.PublishedUtc;
                 var existing = await _contentManager.GetVersionAsync(contentItem.ContentItemVersionId);
-                
+
                 if (existing == null)
                 {
                     // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
                     contentItem.Id = 0;
                     await _contentManager.CreateAsync(contentItem);
-                    
+
                     // Overwrite ModifiedUtc & PublishedUtc values that handlers have changes
                     // Should not be necessary if IContentManager had an Import method
                     contentItem.ModifiedUtc = modifiedUtc;

@@ -4,6 +4,8 @@ namespace OrchardCore.ContentManagement
 {
     public class ContentFieldOption : ContentFieldOptionBase
     {
-        public ContentFieldOption(Type contentFieldType) : base(contentFieldType) { }
+        public ContentFieldOption(Type contentFieldType) : base(contentFieldType)
+        {
+        }
     }
 }

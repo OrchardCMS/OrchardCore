@@ -591,7 +591,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// whose result returns the instantiated token, that can be persisted in the database.
         /// </returns>
         public virtual ValueTask<TToken> InstantiateAsync(CancellationToken cancellationToken)
-            => new ValueTask<TToken>(new TToken { TokenId = Guid.NewGuid().ToString("n") } );
+            => new ValueTask<TToken>(new TToken { TokenId = Guid.NewGuid().ToString("n") });
 
         /// <summary>
         /// Executes the specified query and returns all the corresponding elements.
@@ -669,7 +669,6 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 {
                     await _session.CommitAsync();
                 }
-
                 catch (Exception exception)
                 {
                     if (exceptions == null)

@@ -124,7 +124,6 @@ namespace OrchardCore.ContentTypes.Services
 
             var contentTypeDefinition = new ContentTypeDefinition(name, displayName);
 
-
             _contentDefinitionManager.StoreTypeDefinition(contentTypeDefinition);
             // Ensure it has its own part
             _contentDefinitionManager.AlterTypeDefinition(name, builder => builder.WithPart(name));
@@ -137,7 +136,6 @@ namespace OrchardCore.ContentTypes.Services
 
         public void RemoveType(string name, bool deleteContent)
         {
-
             // first remove all attached parts
             var typeDefinition = _contentDefinitionManager.LoadTypeDefinition(name);
             var partDefinitions = typeDefinition.Parts.ToArray();
@@ -460,7 +458,6 @@ namespace OrchardCore.ContentTypes.Services
                 {
                     fieldDefinitions = typePart.PartDefinition.Fields.ToArray();
                 }
-
             }
             else
             {
