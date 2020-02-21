@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using MimeKit;
 
 namespace OrchardCore.Users.ViewModels
@@ -15,7 +15,7 @@ namespace OrchardCore.Users.ViewModels
 
         [Required]
         public string Email { get; set; }
-        
+
         [DataType(DataType.Password)]
         public string Password { get; set; }
 

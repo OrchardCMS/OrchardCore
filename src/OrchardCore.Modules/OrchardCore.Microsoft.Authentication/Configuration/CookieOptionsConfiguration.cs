@@ -2,10 +2,8 @@ using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {

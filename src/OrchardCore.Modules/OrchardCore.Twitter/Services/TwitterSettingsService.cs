@@ -72,6 +72,5 @@ namespace OrchardCore.Twitter.Services
                 yield return new ValidationResult(S["Access Token Secret is required"], new string[] { nameof(settings.AccessTokenSecret) });
             }
         }
-
     }
 }

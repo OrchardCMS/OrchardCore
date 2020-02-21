@@ -83,6 +83,7 @@ namespace OrchardCore.DynamicCache.TagHelpers
         /// Prefix used by <see cref="CacheTagHelper"/> instances when creating entries in <see cref="IDynamicCacheService"/>.
         /// </summary>
         public static readonly string CacheKeyPrefix = nameof(DynamicCacheTagHelper);
+
         private const string CachePriorityAttributeName = "priority";
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
@@ -193,7 +194,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
 
         public async Task<IHtmlContent> ProcessContentAsync(TagHelperOutput output, CacheContext cacheContext)
         {
-
             IHtmlContent content = null;
 
             while (content == null)
@@ -238,8 +238,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
 
                                 content = formattingContext.Html;
                             }
-
-
                         }
                         else
                         {

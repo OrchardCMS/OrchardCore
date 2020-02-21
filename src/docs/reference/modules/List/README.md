@@ -1,5 +1,7 @@
 # Lists (`OrchardCore.Lists`)
 
+A ListPart allows you to associate content items to a parent container (Ex: A blog contains a list of blog posts).
+
 ## Theming
 
 ### Shapes

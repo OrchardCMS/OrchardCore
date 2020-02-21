@@ -8,4 +8,4 @@ namespace OrchardCore.Users.ViewModels
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
     }
-} 
+}

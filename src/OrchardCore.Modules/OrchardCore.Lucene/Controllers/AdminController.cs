@@ -113,7 +113,7 @@ namespace OrchardCore.Lucene.Controllers
 
             return View(model);
         }
-        
+
         public async Task<ActionResult> Edit(string indexName = null)
         {
             var IsCreate = String.IsNullOrWhiteSpace(indexName);
@@ -223,10 +223,9 @@ namespace OrchardCore.Lucene.Controllers
                 _notifier.Success(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
             }
 
-
             return RedirectToAction("Index");
         }
-        
+
         [HttpPost]
         public async Task<ActionResult> Reset(string id)
         {
@@ -451,7 +450,8 @@ namespace OrchardCore.Lucene.Controllers
 
         private void ValidateModel(LuceneIndexSettingsViewModel model)
         {
-            if (model.IndexedContentTypes == null || model.IndexedContentTypes.Count() < 1) {
+            if (model.IndexedContentTypes == null || model.IndexedContentTypes.Count() < 1)
+            {
                 ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexedContentTypes), S["At least one content type selection is required."]);
             }
 

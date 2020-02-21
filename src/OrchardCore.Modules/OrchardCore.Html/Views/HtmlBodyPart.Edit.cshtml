@@ -15,3 +15,21 @@
     <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
     <span class="hint">@T["The body of the content item."]</span>
 </div>
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-css" at="Foot"></script>
+<script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script at="Foot">
+    $(function () {
+        var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Html)');
+        var editor = CodeMirror.fromTextArea(optionsTexArea, {
+            lineNumbers: false,
+            lineWrapping: true,
+            matchBrackets: true,
+            mode: { name: "htmlmixed" }
+        });
+        setTimeout(function() { editor.refresh(); },1);
+    });
+</script>

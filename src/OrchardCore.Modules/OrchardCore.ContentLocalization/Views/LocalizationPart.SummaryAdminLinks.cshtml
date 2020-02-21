@@ -11,7 +11,7 @@
             {
                 if (!string.IsNullOrEmpty(culture.ContentItemId))
                 {
-                    <a class="dropdown-item btn-sm" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" itemprop="UnsafeUrl" title=@T["Edit {0}", culture.Culture.DisplayName]><i class="fa fa-edit"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>   
+                    <a class="dropdown-item btn-sm" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" itemprop="UnsafeUrl" title=@T["Edit {0}", culture.Culture.DisplayName]><i class="fa fa-edit"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
                 }
                 else
                 {

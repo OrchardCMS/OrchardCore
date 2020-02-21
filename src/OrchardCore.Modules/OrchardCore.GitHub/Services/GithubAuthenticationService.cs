@@ -61,6 +61,5 @@ namespace OrchardCore.GitHub.Services
                 yield return new ValidationResult(S["ClientSecret is required"], new string[] { nameof(settings.ClientSecret) });
             }
         }
-
     }
 }

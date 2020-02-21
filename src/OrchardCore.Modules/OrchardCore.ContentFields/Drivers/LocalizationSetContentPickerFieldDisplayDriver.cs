@@ -30,7 +30,6 @@ namespace OrchardCore.ContentFields.Fields
             _contentManager = contentManager;
             S = localizer;
             _contentLocalizationManager = contentLocalizationManager;
-
         }
 
         public override IDisplayResult Display(LocalizationSetContentPickerField field, BuildFieldDisplayContext context)

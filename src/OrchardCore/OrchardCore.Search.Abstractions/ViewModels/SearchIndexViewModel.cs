@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement;
-using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Search.Abstractions.ViewModels
 {

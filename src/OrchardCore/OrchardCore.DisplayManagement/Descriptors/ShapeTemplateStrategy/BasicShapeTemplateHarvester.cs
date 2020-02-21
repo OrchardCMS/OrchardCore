@@ -32,7 +32,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             }
         }
 
-        static string Adjust(string subPath, string fileName, string displayType)
+        private static string Adjust(string subPath, string fileName, string displayType)
         {
             var leader = "";
             if (subPath.StartsWith("Views/", StringComparison.Ordinal) && subPath != "Views/Items")

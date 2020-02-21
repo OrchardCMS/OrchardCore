@@ -117,7 +117,7 @@ namespace OrchardCore.Navigation
         /// <summary>
         /// Ensures only one menuitem (and its ancestors) are marked as selected for the menu.
         /// </summary>
-        /// <param name="parentShape">The menu shape.</param>    
+        /// <param name="parentShape">The menu shape.</param>
         private static void ApplySelection(dynamic parentShape, ViewContext viewContext)
         {
             var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);

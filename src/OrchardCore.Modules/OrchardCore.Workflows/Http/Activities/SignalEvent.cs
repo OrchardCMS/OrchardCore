@@ -15,7 +15,7 @@ namespace OrchardCore.Workflows.Http.Activities
         public static string EventName => nameof(SignalEvent);
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         private readonly IStringLocalizer<SignalEvent> S;
-        
+
         public SignalEvent(IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<SignalEvent> localizer)
         {
             _expressionEvaluator = expressionEvaluator;

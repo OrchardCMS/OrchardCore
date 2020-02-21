@@ -8,7 +8,7 @@ namespace OrchardCore.Navigation
 {
     public class NavigationBuilder
     {
-        List<MenuItem> Contained { get; set; }
+        private List<MenuItem> Contained { get; set; }
 
         public NavigationBuilder()
         {
