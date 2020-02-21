@@ -10,7 +10,6 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
-using PlaceHolder = OrchardCore.Environment.Shell.Builders.ShellContext.PlaceHolder;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -99,14 +98,7 @@ namespace OrchardCore.Environment.Shell
                 {
                     // If the context is released, it is removed from the dictionary so that the next iteration
                     // or a new call on 'GetOrCreateShellContextAsync()' will recreate a new shell context.
-                    if (_shellContexts.TryRemove(settings.Name, out var value) &&
-                        value is PlaceHolder holder && holder.Reloading &&
-                        settings.State != TenantState.Initializing)
-                    {
-                        // If a reloaded 'PlaceHolder' was registered, reload shell settings.
-                        settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
-                    }
-
+                    _shellContexts.TryRemove(settings.Name, out var value);
                     shell = null;
                 }
             }
@@ -134,43 +126,47 @@ namespace OrchardCore.Environment.Shell
                 if (scope == null)
                 {
                     // If the context is released, it is removed from the dictionary so that the next
-                    // iteration or a new call on 'GetScope()' will recreate a new shell context.
-                    if (_shellContexts.TryRemove(settings.Name, out var value) &&
-                        value is PlaceHolder holder && holder.Reloading &&
-                        settings.State != TenantState.Initializing)
-                    {
-                        // If a reloaded 'PlaceHolder' was registered, reload shell settings.
-                        settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
-                    }
+                    // iteration or a new call on 'GetScopeAsync()' will recreate a new shell context.
+                    _shellContexts.TryRemove(settings.Name, out var value);
                 }
             }
 
             return scope;
         }
 
-        public async Task UpdateShellSettingsAsync(ShellSettings settings)
+        public Task UpdateShellSettingsAsync(ShellSettings settings)
         {
-            await _shellSettingsManager.SaveSettingsAsync(settings);
-            await ReloadShellContextAsync(settings);
+            // The settings will be reloaded in a new scope.
+            ShellScope.AddDeferredTask(scope =>
+            {
+                return ReloadShellContextAsync(settings);
+            });
+
+            return _shellSettingsManager.SaveSettingsAsync(settings);
         }
 
         /// <summary>
-        /// A feature is enabled / disabled, the tenant needs to be released so that a new shell will be created.
+        /// A feature is enabled / disabled, the tenant needs to be released so that a new shell will be built.
         /// </summary>
         Task IShellDescriptorManagerEventHandler.ChangedAsync(ShellDescriptor descriptor, ShellSettings settings)
             => ReleaseShellContextAsync(settings);
 
         /// <summary>
-        /// Reloads a shell so that its settings will be reloaded before building a new shell
-        /// for subsequent requests, while existing requests get flushed.
+        /// Reloads the settings and releases the shell so that a new one will be
+        /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
-        public Task ReloadShellContextAsync(ShellSettings settings)
+        public async Task ReloadShellContextAsync(ShellSettings settings)
         {
             // A disabled shell still in use will be released by its last scope.
             if (!CanReleaseShell(settings))
             {
                 _runningShellTable.Remove(settings);
-                return Task.CompletedTask;
+                return;
+            }
+
+            if (settings.State != TenantState.Initializing)
+            {
+                settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
             }
 
             if (_shellContexts.TryRemove(settings.Name, out var context))
@@ -179,15 +175,13 @@ namespace OrchardCore.Environment.Shell
                 context.Release();
             }
 
-            // Add a reloading 'PlaceHolder' so that settings will be reloaded.
-            AddAndRegisterShell(new PlaceHolder { Settings = settings, Reloading = true });
-
-            return Task.CompletedTask;
+            // Add a 'PlaceHolder' holding the settings until the shell will be rebuilt.
+            AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings });
         }
 
         /// <summary>
-        /// Releases a shell so that a new shell will be built for subsequent requests.
-        /// Note: Can be used to free up resources after a given period of inactivity.
+        /// Releases a shell so that a new one will be built for subsequent requests.
+        /// Note: Can be used to free up resources after a given time of inactivity.
         /// </summary>
         public Task ReleaseShellContextAsync(ShellSettings settings)
         {
@@ -202,8 +196,8 @@ namespace OrchardCore.Environment.Shell
                 context.Release();
             }
 
-            // Add a 'PlaceHolder' holding the settings so that they can still be retrieved.
-            _shellContexts.TryAdd(context.Settings.Name, new PlaceHolder { Settings = settings });
+            // Add a 'PlaceHolder' allowing the settings to be retrieved until the shell will be rebuilt.
+            _shellContexts.TryAdd(context.Settings.Name, new ShellContext.PlaceHolder { Settings = settings });
 
             return Task.CompletedTask;
         }
@@ -263,7 +257,7 @@ namespace OrchardCore.Environment.Shell
                 // Pre-create and register all tenant shells.
                 foreach (var settings in allSettings)
                 {
-                    AddAndRegisterShell(new PlaceHolder { Settings = settings });
+                    AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings });
                 };
             }
 

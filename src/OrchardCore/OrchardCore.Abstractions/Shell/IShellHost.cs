@@ -26,21 +26,21 @@ namespace OrchardCore.Environment.Shell
         Task<ShellScope> GetScopeAsync(ShellSettings settings);
 
         /// <summary>
-        /// Updates an existing shell configuration.
+        /// Updates an existing shell configuration and then reloads the shell.
         /// </summary>
         /// <param name="settings"></param>
         Task UpdateShellSettingsAsync(ShellSettings settings);
 
         /// <summary>
-        /// Reloads a shell so that its settings will be reloaded before building a new shell
-        /// for subsequent requests, while existing requests get flushed.
+        /// Reloads the settings and releases the shell so that a new one will be
+        /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
         /// <param name="settings"></param>
         Task ReloadShellContextAsync(ShellSettings settings);
 
         /// <summary>
-        /// Releases a shell so that a new shell will be built for subsequent requests.
-        /// Note: Can be used to free up resources after a given period of inactivity.
+        /// Releases a shell so that a new one will be built for subsequent requests.
+        /// Note: Can be used to free up resources after a given time of inactivity.
         /// </summary>
         Task ReleaseShellContextAsync(ShellSettings settings);
 

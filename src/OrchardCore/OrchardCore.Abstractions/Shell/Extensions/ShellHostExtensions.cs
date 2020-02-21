@@ -15,8 +15,8 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Reloads all shells so that their settings will be reloaded before building new shells
-        /// for subsequent requests, while existing requests get flushed.
+        /// Reloads all shell settings and releases all shells so that new ones will be
+        /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
         public async static Task ReloadAllShellContextsAsync(this IShellHost shellHost)
         {
@@ -27,7 +27,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Releases all shells so that new shells will be built for subsequent requests.
+        /// Releases all shells so that new ones will be built for subsequent requests.
         /// Note: Can be used to free up resources after a given period of inactivity.
         /// </summary>
         public async static Task ReleaseAllShellContextsAsync(this IShellHost shellHost)
