@@ -12,7 +12,7 @@ namespace OrchardCore.Users.Workflows.Activities
     public abstract class UserActivity : Activity
     {
         protected readonly IStringLocalizer S;
-        
+
         protected UserActivity(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
         {
             UserService = userService;

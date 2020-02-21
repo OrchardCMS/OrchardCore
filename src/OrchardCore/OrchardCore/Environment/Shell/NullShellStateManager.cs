@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell.State;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell.State;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -11,7 +11,7 @@ namespace OrchardCore.Environment.Shell
             Logger = logger;
         }
 
-        ILogger Logger { get; set; }
+        private ILogger Logger { get; set; }
 
         public Task<ShellState> GetShellStateAsync()
         {

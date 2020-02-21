@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -40,7 +39,7 @@ namespace OrchardCore.Twitter
     }
 
     [Feature(TwitterConstants.Features.Signin)]
-    public class AdminMenuSignin: INavigationProvider
+    public class AdminMenuSignin : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
         private readonly IStringLocalizer S;
@@ -59,7 +58,7 @@ namespace OrchardCore.Twitter
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Twitter"], "15", settings => settings
-                        .AddClass("twitter").Id("twitter")                        
+                        .AddClass("twitter").Id("twitter")
                         .Add(S["Sign in with Twitter"], "15", client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Signin })
                             .Permission(Permissions.ManageTwitterSignin)
@@ -69,5 +68,4 @@ namespace OrchardCore.Twitter
             return Task.CompletedTask;
         }
     }
-
 }

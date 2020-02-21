@@ -19,4 +19,4 @@ namespace OrchardCore.Users.ViewModels
 
         public string ResetToken { get; set; }
     }
-} 
+}

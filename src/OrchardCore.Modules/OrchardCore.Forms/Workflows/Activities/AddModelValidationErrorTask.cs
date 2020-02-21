@@ -23,9 +23,9 @@ namespace OrchardCore.Forms.Workflows.Activities
         }
 
         public override string Name => nameof(AddModelValidationErrorTask);
-        
+
         public override LocalizedString DisplayText => S["Add Model Validation Error Task"];
-        
+
         public override LocalizedString Category => S["Validation"];
 
         public string Key

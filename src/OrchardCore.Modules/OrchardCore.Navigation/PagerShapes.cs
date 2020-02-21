@@ -49,7 +49,6 @@ namespace OrchardCore.Navigation
                     created.Shape.Properties["ItemAttributes"] = new Dictionary<string, string>();
                 });
 
-
             builder.Describe("Pager_Gap")
                 .OnDisplaying(displaying =>
                 {
@@ -139,7 +138,6 @@ namespace OrchardCore.Navigation
         {
             return alternateElement.Replace("-", "__").Replace('.', '_');
         }
-
     }
 
     public class PagerShapes : IShapeAttributeProvider
@@ -260,7 +258,6 @@ namespace OrchardCore.Navigation
                 routeData[pageKey] = currentPage - 1;
             }
             shape.Add(await New.Pager_Previous(Value: previousText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page < 2));
-
 
             // gap at the beginning of the pager
             if (firstPage > 1 && numberOfPagesToShow > 0)

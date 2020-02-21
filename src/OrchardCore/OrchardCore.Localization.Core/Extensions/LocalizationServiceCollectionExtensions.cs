@@ -12,7 +12,6 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class LocalizationServiceCollectionExtensions
     {
-
         /// <summary>
         /// Registers the services to enable localization using Portable Object files.
         /// </summary>

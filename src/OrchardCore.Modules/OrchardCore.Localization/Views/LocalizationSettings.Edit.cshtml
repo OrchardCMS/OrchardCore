@@ -4,7 +4,7 @@
 
 <p class="alert alert-warning col-xl-6">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
-@{ 
+@{
     // ['fr-FR', 'en-US']
     var supportedCultures = JsonConvert.SerializeObject(Model.Cultures.Where(x => x.Supported).Select(c => c.CultureInfo.Name).ToArray());
     var allCultures = JsonConvert.SerializeObject(Model.Cultures.Select(c => new { Name = c.CultureInfo.Name, DisplayName = !String.IsNullOrEmpty(c.CultureInfo.DisplayName) ? c.CultureInfo.DisplayName : c.CultureInfo.NativeName, Supported = c.Supported }).ToArray());
@@ -67,7 +67,6 @@
         <input class="form-control" id="@Html.IdFor(m => m.DefaultCulture)" name="@Html.NameFor(m => m.DefaultCulture)" type="hidden" v-bind:value="getDefaultCulture()" />
     </div>
 </script>
-
 
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
 

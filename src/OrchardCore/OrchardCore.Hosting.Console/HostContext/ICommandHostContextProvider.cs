@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Hosting.HostContext
+namespace OrchardCore.Hosting.HostContext
 {
     public interface ICommandHostContextProvider
     {

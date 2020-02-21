@@ -21,11 +21,11 @@ namespace OrchardCore.Workflows.Activities
             _expressionEvaluator = expressionvaluator;
             S = localizer;
         }
-        
+
         public override string Name => nameof(NotifyTask);
-        
+
         public override LocalizedString DisplayText => S["Notify Task"];
-        
+
         public override LocalizedString Category => S["UI"];
 
         public NotifyType NotificationType

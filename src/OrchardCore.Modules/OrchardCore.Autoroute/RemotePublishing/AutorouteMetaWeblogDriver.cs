@@ -1,9 +1,10 @@
-﻿using OrchardCore.ContentManagement;
-using OrchardCore.XmlRpc;
-using OrchardCore.XmlRpc.Models;
-using OrchardCore.MetaWeblog;
-using OrchardCore.Autoroute.Models;
 using System;
+using OrchardCore.Autoroute.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.MetaWeblog;
+using OrchardCore.XmlRpc;
+
+using OrchardCore.XmlRpc.Models;
 
 namespace OrchardCore.Autoroute.RemotePublishing
 {
@@ -34,7 +35,7 @@ namespace OrchardCore.Autoroute.RemotePublishing
                 if (!string.IsNullOrWhiteSpace(slug))
                 {
                     contentItem.Alter<AutoroutePart>(x => x.Path = slug);
-                }                
+                }
             }
         }
     }

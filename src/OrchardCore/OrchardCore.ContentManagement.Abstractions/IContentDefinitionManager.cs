@@ -61,7 +61,7 @@ namespace OrchardCore.ContentManagement.Metadata
         }
 
         /// <summary>
-        /// Migrate existing ContentPart settings to WithSettings<typeparamref name="TSettings"/> 
+        /// Migrate existing ContentPart settings to WithSettings<typeparamref name="TSettings"/>
         /// This method will be removed in a future release.
         /// </summary>
         /// <typeparam name="TPart"></typeparam>
@@ -99,7 +99,7 @@ namespace OrchardCore.ContentManagement.Metadata
         }
 
         /// <summary>
-        /// Migrate existing ContentField settings to WithSettings<typeparamref name="TSettings"/> 
+        /// Migrate existing ContentField settings to WithSettings<typeparamref name="TSettings"/>
         /// This method will be removed in a future release.
         /// </summary>
         /// <typeparam name="TField"></typeparam>

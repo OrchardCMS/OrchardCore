@@ -35,7 +35,7 @@ namespace OrchardCore.AdminMenu
                     ));
 
             // This is the entry point for the adminMenu: dynamically generated custom admin menus
-           await  _adminMenuNavigationProvider.BuildNavigationAsync("adminMenu", builder);            
+            await _adminMenuNavigationProvider.BuildNavigationAsync("adminMenu", builder);
         }
     }
 }

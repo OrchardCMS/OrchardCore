@@ -12,7 +12,6 @@ using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
-
     [Admin]
     public class RemoteInstanceController : Controller
     {
@@ -49,7 +48,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
 
             var remoteInstanceList = await _service.GetRemoteInstanceListAsync();
-            
+
             var model = new RemoteInstanceIndexViewModel
             {
                 RemoteInstanceList = remoteInstanceList

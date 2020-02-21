@@ -6,6 +6,7 @@ namespace OrchardCore.Workflows.Http.ViewModels
     {
         [Required]
         public string Location { get; set; }
+
         public bool Permanent { get; set; }
     }
 }

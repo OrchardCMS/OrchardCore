@@ -176,14 +176,12 @@ namespace OrchardCore.Media.Controllers
                     continue;
                 }
 
+                Stream stream = null;
                 try
                 {
                     var mediaFilePath = _mediaFileStore.Combine(path, file.FileName);
-
-                    using (var stream = file.OpenReadStream())
-                    {
-                        await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
-                    }
+                    stream = file.OpenReadStream();
+                    mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
 
                     var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
 
@@ -200,6 +198,10 @@ namespace OrchardCore.Media.Controllers
                         folder = path,
                         error = ex.Message
                     });
+                }
+                finally
+                {
+                    stream?.Dispose();
                 }
             }
 
@@ -227,7 +229,9 @@ namespace OrchardCore.Media.Controllers
             }
 
             if (await _mediaFileStore.TryDeleteDirectoryAsync(path) == false)
+            {
                 return NotFound();
+            }
 
             return Ok();
         }

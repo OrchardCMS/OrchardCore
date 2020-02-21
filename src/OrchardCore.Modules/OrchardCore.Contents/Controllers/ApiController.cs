@@ -67,7 +67,7 @@ namespace OrchardCore.Content.Controllers
         {
             // It is really important to keep the proper method calls order with the ContentManager
             // so that all event handlers gets triggered in the right sequence.
-            
+
             var contentItem = await _contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);
 
             if (contentItem == null)
@@ -96,7 +96,7 @@ namespace OrchardCore.Content.Controllers
 
                 if (!draft)
                 {
-                    await _contentManager.PublishAsync(contentItem); 
+                    await _contentManager.PublishAsync(contentItem);
                 }
             }
 

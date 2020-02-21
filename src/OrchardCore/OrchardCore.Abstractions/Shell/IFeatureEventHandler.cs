@@ -1,4 +1,5 @@
 using OrchardCore.Environment.Extensions.Features;
+
 namespace OrchardCore.Environment.Shell
 {
     public interface IFeatureEventHandler

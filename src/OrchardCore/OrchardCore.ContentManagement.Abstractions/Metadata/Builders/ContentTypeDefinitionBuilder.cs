@@ -129,7 +129,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinitionBuilder WithPart(string name, ContentPartDefinition partDefinition, Action<ContentTypePartDefinitionBuilder> configuration)
         {
-            var existingPart = _parts.FirstOrDefault(x => x.Name == name );
+            var existingPart = _parts.FirstOrDefault(x => x.Name == name);
             if (existingPart != null)
             {
                 _parts.Remove(existingPart);
@@ -146,7 +146,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        class PartConfigurerImpl : ContentTypePartDefinitionBuilder
+        private class PartConfigurerImpl : ContentTypePartDefinitionBuilder
         {
             private readonly ContentPartDefinition _partDefinition;
 

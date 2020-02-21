@@ -8,6 +8,7 @@ namespace OrchardCore.Media.ViewModels
     {
         // A Json serialized array of media paths
         public string Paths { get; set; }
+
         public MediaField Field { get; set; }
         public ContentPart Part { get; set; }
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
@@ -15,7 +16,6 @@ namespace OrchardCore.Media.ViewModels
         // This will be used by the uploader of an attached media field
         public string TempUploadFolder { get; set; }
     }
-
 
     public class EditMediaFieldItemInfo
     {

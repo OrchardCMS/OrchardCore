@@ -41,7 +41,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         /// <summary>
         /// Additional properties for the shape.
         /// </summary>
-        [HtmlAttributeName(PropertyDictionaryName,DictionaryAttributePrefix = PropertyPrefix)]
+        [HtmlAttributeName(PropertyDictionaryName, DictionaryAttributePrefix = PropertyPrefix)]
         public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         public override async Task ProcessAsync(TagHelperContext tagHelperContext, TagHelperOutput output)

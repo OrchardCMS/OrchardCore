@@ -285,10 +285,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // IAuthenticationSchemeProvider is already registered at the host level.
                 // We need to register it again so it is taken into account at the tenant level
-                // because it holds a reference to an underlying dictionary, responsible of storing 
+                // because it holds a reference to an underlying dictionary, responsible of storing
                 // the registered schemes which need to be distinct for each tenant.
                 services.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
-
             })
             .Configure(app =>
             {

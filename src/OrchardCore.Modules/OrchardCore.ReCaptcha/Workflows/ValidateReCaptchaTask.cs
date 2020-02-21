@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.ReCaptcha.Services;
@@ -28,11 +27,11 @@ namespace OrchardCore.ReCaptcha.Workflows
         }
 
         public override string Name => nameof(ValidateReCaptchaTask);
-        
+
         public override LocalizedString DisplayText => S["Validate ReCaptcha Task"];
-        
+
         public override LocalizedString Category => S["Validation"];
-        
+
         public override bool HasEditor => false;
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -51,12 +50,13 @@ namespace OrchardCore.Localization.GraphQL
             var defaultCulture = await localizationService.GetDefaultCultureAsync();
             var supportedCultures = await localizationService.GetSupportedCulturesAsync();
 
-             var cultures = supportedCultures.Select(culture =>
-                new SiteCulture {
-                    Culture = culture,
-                    IsDefault = string.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase)
-                }
-            );
+            var cultures = supportedCultures.Select(culture =>
+               new SiteCulture
+               {
+                   Culture = culture,
+                   IsDefault = string.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase)
+               }
+           );
 
             return cultures;
         }
