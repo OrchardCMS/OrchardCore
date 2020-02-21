@@ -10,6 +10,7 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
+using PlaceHolder = OrchardCore.Environment.Shell.Builders.ShellContext.PlaceHolder;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -99,10 +100,10 @@ namespace OrchardCore.Environment.Shell
                     // If the context is released, it is removed from the dictionary so that the next iteration
                     // or a new call on 'GetOrCreateShellContextAsync()' will recreate a new shell context.
                     if (_shellContexts.TryRemove(settings.Name, out var value) &&
-                        settings.State != TenantState.Initializing &&
-                        value is ReloadedPlaceHolder)
+                        value is PlaceHolder holder && holder.Reloading &&
+                        settings.State != TenantState.Initializing)
                     {
-                        // If a 'ReloadedPlaceHolder' was registered, reload shell settings.
+                        // If a reloaded 'PlaceHolder' was registered, reload shell settings.
                         settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
                     }
 
@@ -135,10 +136,10 @@ namespace OrchardCore.Environment.Shell
                     // If the context is released, it is removed from the dictionary so that the next
                     // iteration or a new call on 'GetScope()' will recreate a new shell context.
                     if (_shellContexts.TryRemove(settings.Name, out var value) &&
-                        settings.State != TenantState.Initializing &&
-                        value is ReloadedPlaceHolder)
+                        value is PlaceHolder holder && holder.Reloading &&
+                        settings.State != TenantState.Initializing)
                     {
-                        // If a 'ReloadedPlaceHolder' was registered, reload shell settings.
+                        // If a reloaded 'PlaceHolder' was registered, reload shell settings.
                         settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
                     }
                 }
@@ -178,8 +179,8 @@ namespace OrchardCore.Environment.Shell
                 context.Release();
             }
 
-            // Add a 'ReloadedPlaceHolder' so that settings will be reloaded.
-            AddAndRegisterShell(new ReloadedPlaceHolder { Settings = settings });
+            // Add a reloading 'PlaceHolder' so that settings will be reloaded.
+            AddAndRegisterShell(new PlaceHolder { Settings = settings, Reloading = true });
 
             return Task.CompletedTask;
         }
@@ -201,8 +202,8 @@ namespace OrchardCore.Environment.Shell
                 context.Release();
             }
 
-            // Add a 'ReleasedPlaceHolder' holding the settings so that they can still be retrieved.
-            _shellContexts.TryAdd(context.Settings.Name, new ReleasedPlaceHolder { Settings = settings });
+            // Add a 'PlaceHolder' holding the settings so that they can still be retrieved.
+            _shellContexts.TryAdd(context.Settings.Name, new PlaceHolder { Settings = settings });
 
             return Task.CompletedTask;
         }
@@ -262,7 +263,7 @@ namespace OrchardCore.Environment.Shell
                 // Pre-create and register all tenant shells.
                 foreach (var settings in allSettings)
                 {
-                    AddAndRegisterShell(new ReleasedPlaceHolder { Settings = settings });
+                    AddAndRegisterShell(new PlaceHolder { Settings = settings });
                 };
             }
 
@@ -405,14 +406,6 @@ namespace OrchardCore.Environment.Shell
         private bool CanReleaseShell(ShellSettings settings)
         {
             return settings.State != TenantState.Disabled || _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes == 0;
-        }
-
-        private class ReloadedPlaceHolder : ShellContext.PlaceHolder
-        {
-        }
-
-        private class ReleasedPlaceHolder : ShellContext.PlaceHolder
-        {
         }
 
         public void Dispose()

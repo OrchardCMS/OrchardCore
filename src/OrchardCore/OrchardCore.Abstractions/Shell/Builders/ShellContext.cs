@@ -44,6 +44,8 @@ namespace OrchardCore.Environment.Shell.Builders
                 _released = true;
                 _disposed = true;
             }
+
+            public bool Reloading { get; set; }
         }
 
         public ShellScope CreateScope()
