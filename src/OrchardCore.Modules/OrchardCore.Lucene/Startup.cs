@@ -50,7 +50,7 @@ namespace OrchardCore.Lucene
             services.AddSingleton<LuceneAnalyzerManager>();
             services.AddScoped<LuceneIndexingService>();
             services.AddScoped<ISearchQueryService, SearchQueryService>();
-
+            services.AddScoped<ISearchPermissionService, SearchPermissionService>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();

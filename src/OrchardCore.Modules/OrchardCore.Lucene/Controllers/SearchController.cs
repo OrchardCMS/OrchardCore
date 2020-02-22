@@ -24,9 +24,9 @@ namespace OrchardCore.Lucene.Controllers
 {
     public class SearchController : Controller
     {
+        private readonly ISearchPermissionService _searchPermissionService;
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISiteService _siteService;
-        private readonly LuceneIndexManager _luceneIndexProvider;
+        private readonly ISiteService _siteService;        
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
@@ -36,9 +36,9 @@ namespace OrchardCore.Lucene.Controllers
         private readonly dynamic New;
 
         public SearchController(
+            ISearchPermissionService searchPermissionService,
             IAuthorizationService authorizationService,
-            ISiteService siteService,
-            LuceneIndexManager luceneIndexProvider,
+            ISiteService siteService,            
             LuceneIndexingService luceneIndexingService,
             LuceneIndexSettingsService luceneIndexSettingsService,
             LuceneAnalyzerManager luceneAnalyzerManager,
@@ -49,9 +49,9 @@ namespace OrchardCore.Lucene.Controllers
             ILogger<SearchController> logger
             )
         {
+            _searchPermissionService = searchPermissionService;
             _authorizationService = authorizationService;
-            _siteService = siteService;
-            _luceneIndexProvider = luceneIndexProvider;
+            _siteService = siteService;            
             _luceneIndexingService = luceneIndexingService;
             _luceneIndexSettingsService = luceneIndexSettingsService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
@@ -68,45 +68,32 @@ namespace OrchardCore.Lucene.Controllers
         [HttpGet]
         public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
         {
-            var permissionsProvider = _permissionProviders.FirstOrDefault(x => x.GetType().FullName == "OrchardCore.Lucene.Permissions");
-            var permissions = await permissionsProvider.GetPermissionsAsync();
-
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var searchSettings = siteSettings.As<LuceneSettings>();
+            var searchSettings = siteSettings.As<LuceneSettings>();            
 
-            if (permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index") != null)
-            {
-                if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index")))
-                {
-                    return this.ChallengeOrForbid();
-                }
-            }
-            else
-            {
-                Logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
-                return BadRequest("Search is not configured.");
-            }
-
-            if (searchSettings.SearchIndex != null && !_luceneIndexProvider.Exists(searchSettings.SearchIndex))
-            {
-                Logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
-                return BadRequest("Search is not configured.");
-            }
-
-            var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
-
-            if (luceneSettings == null || luceneSettings?.DefaultSearchFields == null)
+            if (searchSettings?.DefaultSearchFields == null)
             {
                 Logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
                 return BadRequest("Search is not configured.");
             }
 
-            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(searchSettings.SearchIndex);
+            string indexName = searchSettings.SearchIndex;
+            var result = await _searchPermissionService.CheckPermission(indexName, User);
+            if(result.Forbided) return this.ChallengeOrForbid();
+            if (result.Failed)
+            {
+                foreach (var error in result.Errors)
+                {
+                    return BadRequest( error.ToString());
+                }
+            }
+
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
 
             if (luceneIndexSettings == null)
             {
                 Logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({searchSettings.SearchIndex}) index.");
-                return BadRequest($"Search index ({searchSettings.SearchIndex}) is not configured.");
+                return BadRequest($"Search index ({indexName}) is not configured.");
             }
 
             if (string.IsNullOrWhiteSpace(viewModel.Terms))
@@ -121,7 +108,7 @@ namespace OrchardCore.Lucene.Controllers
 
             // We Query Lucene index
             var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(luceneIndexSettings.IndexName));
-            var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, analyzer);
+            var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, searchSettings.DefaultSearchFields, analyzer);
             var query = queryParser.Parse(QueryParser.Escape(viewModel.Terms));
 
             // Fetch one more result than PageSize to generate "More" links
@@ -139,7 +126,7 @@ namespace OrchardCore.Lucene.Controllers
                 end = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
             }
 
-            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end);
+            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, indexName, start, end);
 
             // We Query database to retrieve content items.
             IQuery<ContentItem> queryDb;
