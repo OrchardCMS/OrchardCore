@@ -89,7 +89,7 @@ The templates and alternate names for the Content Items contained in a BagPart a
 
 ## Placement Differentiator
 
-The name of a BagPart is used as it's differentiator in `placement.json`
+The name of a BagPart is used as the differentiator in `placement.json`
 
 ```json
   "BagPart": [
