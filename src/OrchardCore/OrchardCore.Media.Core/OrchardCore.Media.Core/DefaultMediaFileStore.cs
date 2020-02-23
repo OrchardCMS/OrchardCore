@@ -106,7 +106,7 @@ namespace OrchardCore.Media.Core
 
         public async Task MoveFileAsync(string oldPath, string newPath)
         {
-            var context = new MediaMovingContext
+            var context = new MediaMoveContext
             {
                 OldPath = oldPath,
                 NewPath = newPath
@@ -115,6 +115,8 @@ namespace OrchardCore.Media.Core
             await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaMovingAsync(context), context, _logger);
 
             await _fileStore.MoveFileAsync(context.OldPath, context.NewPath);
+
+            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaMovedAsync(context), context, _logger);
         }
 
         public Task CopyFileAsync(string srcPath, string dstPath)

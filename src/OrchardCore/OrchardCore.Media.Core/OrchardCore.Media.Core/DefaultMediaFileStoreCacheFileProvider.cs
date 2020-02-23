@@ -96,5 +96,77 @@ namespace OrchardCore.Media.Core
 
             return Task.FromResult(hasErrors);
         }
+
+        public Task<bool> TryDeleteDirectoryAsync(string path)
+        {
+            var hasErrors = false;
+
+            // Delete the directory contents.
+            var folders = GetDirectoryContents(path);
+            foreach (var fileInfo in folders)
+            {
+                if (fileInfo.IsDirectory)
+                {
+                    try
+                    {
+                        Directory.Delete(fileInfo.PhysicalPath, true);
+                    }
+                    catch (IOException ex)
+                    {
+                        _logger.LogError(ex, "Error deleting cache folder {Path}", fileInfo.PhysicalPath);
+                        hasErrors = true;
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        File.Delete(fileInfo.PhysicalPath);
+                    }
+                    catch (IOException ex)
+                    {
+                        _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
+                        hasErrors = true;
+                    }
+                }
+            }
+
+            // Then delete the directory itself.
+            var rootDirectory = GetFileInfo(path);
+            try
+            {
+                Directory.Delete(rootDirectory.PhysicalPath);
+            }
+            catch (IOException ex)
+            {
+                _logger.LogError(ex, "Error deleting cache folder {Path}", rootDirectory.PhysicalPath);
+                hasErrors = true;
+            }
+
+            return Task.FromResult(hasErrors);
+        }
+
+        public Task<bool> TryDeleteFileAsync(string path)
+        {
+            var fileInfo = GetFileInfo(path);
+
+            if (fileInfo.Exists)
+            {
+                try
+                {
+                    File.Delete(fileInfo.PhysicalPath);
+                    return Task.FromResult(true);
+                }
+                catch (IOException ex)
+                {
+                    _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
+                    return Task.FromResult(false);
+                }
+            }
+            else
+            {
+                return Task.FromResult(false);
+            }
+        }
     }
 }
