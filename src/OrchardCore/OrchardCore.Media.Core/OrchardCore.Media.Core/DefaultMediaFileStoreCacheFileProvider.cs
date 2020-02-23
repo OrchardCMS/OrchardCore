@@ -99,51 +99,19 @@ namespace OrchardCore.Media.Core
 
         public Task<bool> TryDeleteDirectoryAsync(string path)
         {
-            var hasErrors = false;
+            var directoryInfo = GetFileInfo(path);
 
-            // Delete the directory contents.
-            var folders = GetDirectoryContents(path);
-            foreach (var fileInfo in folders)
-            {
-                if (fileInfo.IsDirectory)
-                {
-                    try
-                    {
-                        Directory.Delete(fileInfo.PhysicalPath, true);
-                    }
-                    catch (IOException ex)
-                    {
-                        _logger.LogError(ex, "Error deleting cache folder {Path}", fileInfo.PhysicalPath);
-                        hasErrors = true;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        File.Delete(fileInfo.PhysicalPath);
-                    }
-                    catch (IOException ex)
-                    {
-                        _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
-                        hasErrors = true;
-                    }
-                }
-            }
-
-            // Then delete the directory itself.
-            var rootDirectory = GetFileInfo(path);
             try
             {
-                Directory.Delete(rootDirectory.PhysicalPath);
+                Directory.Delete(directoryInfo.PhysicalPath, true);
             }
             catch (IOException ex)
             {
-                _logger.LogError(ex, "Error deleting cache folder {Path}", rootDirectory.PhysicalPath);
-                hasErrors = true;
+                _logger.LogError(ex, "Error deleting cache folder {Path}", directoryInfo.PhysicalPath);
+                return Task.FromResult(false);
             }
 
-            return Task.FromResult(hasErrors);
+            return Task.FromResult(true);
         }
 
         public Task<bool> TryDeleteFileAsync(string path)
