@@ -20,6 +20,11 @@ namespace OrchardCore.ContentFields.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+            if (model.DisplayAllContentTypes)
+            {
+                model.DisplayedContentTypes = new string[0];
+            }
+
             context.Builder.WithSettings(model);
 
             return Edit(partFieldDefinition);

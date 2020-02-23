@@ -28,11 +28,11 @@ namespace OrchardCore.ContentFields.Services
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {
             var contentTypes = searchContext.ContentTypes;
-            if (contentTypes.Count() == 0)
+            if (searchContext.DisplayAllContentTypes == true)
             {
                 contentTypes = _contentDefinitionManager
                     .ListTypeDefinitions()
-                    .Where(ctd => string.IsNullOrEmpty(ctd.GetSettings<ContentTypeSettings>().Stereotype))
+                    .Where(x => string.IsNullOrEmpty(x.GetSettings<ContentTypeSettings>().Stereotype))
                     .Select(x => x.Name)
                     .AsEnumerable();
             }
