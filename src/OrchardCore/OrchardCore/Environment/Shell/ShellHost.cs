@@ -134,15 +134,15 @@ namespace OrchardCore.Environment.Shell
             return scope;
         }
 
-        public Task UpdateShellSettingsAsync(ShellSettings settings)
+        public async Task UpdateShellSettingsAsync(ShellSettings settings)
         {
-            // The settings will be reloaded in a new scope.
+            await _shellSettingsManager.SaveSettingsAsync(settings);
+
+            // Reload settings in a new scope.
             ShellScope.AddDeferredTask(scope =>
             {
                 return ReloadShellContextAsync(settings);
             });
-
-            return _shellSettingsManager.SaveSettingsAsync(settings);
         }
 
         /// <summary>
@@ -169,14 +169,22 @@ namespace OrchardCore.Environment.Shell
                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
             }
 
+            // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
+            var placeholder = new ShellContext.PlaceHolder { Settings = settings };
+
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
                 _runningShellTable.Remove(settings);
                 context.Release();
             }
 
-            // Add a 'PlaceHolder' holding the settings until the shell will be rebuilt.
-            AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings });
+            AddAndRegisterShell(placeholder);
+
+            // We may have been the last to reload the settings but unable to register them.
+            if (_shellContexts.TryGetValue(settings.Name, out var value) && value.Settings != settings)
+            {
+                await ReloadShellContextAsync(settings);
+            }
         }
 
         /// <summary>
@@ -196,7 +204,7 @@ namespace OrchardCore.Environment.Shell
                 context.Release();
             }
 
-            // Add a 'PlaceHolder' allowing the settings to be retrieved until the shell will be rebuilt.
+            // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
             _shellContexts.TryAdd(context.Settings.Name, new ShellContext.PlaceHolder { Settings = settings });
 
             return Task.CompletedTask;
