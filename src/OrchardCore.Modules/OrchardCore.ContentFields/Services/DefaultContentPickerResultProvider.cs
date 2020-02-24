@@ -28,7 +28,7 @@ namespace OrchardCore.ContentFields.Services
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {
             var contentTypes = searchContext.ContentTypes;
-            if (searchContext.DisplayAllContentTypes == true)
+            if (searchContext.DisplayAllContentTypes)
             {
                 contentTypes = _contentDefinitionManager
                     .ListTypeDefinitions()
