@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebUtilities;
 using Fluid;
 using Fluid.Values;
-using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Media.Filters
