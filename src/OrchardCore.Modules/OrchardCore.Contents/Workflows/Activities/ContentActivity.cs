@@ -96,6 +96,11 @@ namespace OrchardCore.Contents.Workflows.Activities
                 {
                     return contentItemId;
                 }
+                else if (contentItemIdResult is Newtonsoft.Json.Linq.JArray contentItemArray)
+                {
+                    if (contentItemArray.Count == 1)
+                        return contentItemArray.First.ToString();
+                }
             }
             return null;
         }

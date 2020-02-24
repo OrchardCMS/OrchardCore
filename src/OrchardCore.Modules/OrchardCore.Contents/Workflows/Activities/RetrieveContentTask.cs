@@ -29,7 +29,22 @@ namespace OrchardCore.Contents.Workflows.Activities
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var contentItemId = await GetContentItemIdAsync(workflowContext);
+
+            // Clean up return string if passed expression had a string add: variable + ""
+            contentItemId = contentItemId
+                .Replace("\r\n", string.Empty)
+                .Replace("\n", string.Empty)
+                .Replace("\r", string.Empty)
+                .Replace("\\", string.Empty)
+                .Replace("\"", string.Empty)
+                .Replace("[", string.Empty)
+                .Replace("]", string.Empty)
+                .Trim();
+
             var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
+            if (contentItem == null)
+                return Outcomes("Not Found");
+
             workflowContext.LastResult = contentItem;
 
             return Outcomes("Retrieved");
