@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         {
             var contentItemId = await GetContentItemIdAsync(workflowContext);
 
-            // Clean up return string if passed expression had a string add: variable + ""
+            // Clean up return string if passed expression was malformed due to trying to add a string: variable + ""
             contentItemId = contentItemId
                 .Replace("\r\n", string.Empty)
                 .Replace("\n", string.Empty)
