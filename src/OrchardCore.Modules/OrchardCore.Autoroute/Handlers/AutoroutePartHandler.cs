@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
@@ -7,11 +8,13 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
+using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
 using OrchardCore.Settings;
@@ -125,6 +128,12 @@ namespace OrchardCore.Autoroute.Handlers
                     AutoroutePart = part,
                     ContentItem = part.ContentItem
                 };
+
+                var localizationPart = part.ContentItem.As<LocalizationPart>();
+                if (localizationPart.Culture != null)
+                {
+                    LiquidViewTemplate.Context.CultureInfo = CultureInfo.GetCultureInfo(localizationPart.Culture);
+                }
 
                 part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
                     scope => scope.SetValue("ContentItem", model.ContentItem));
