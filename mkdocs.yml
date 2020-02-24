@@ -85,7 +85,8 @@ nav:
                 - Html: docs/reference/modules/Html/README.md
                 - Markdown: docs/reference/modules/Markdown/README.md
                 - List: docs/reference/modules/List/README.md
-                - Flow: docs/reference/modules/Flow/README.md        
+                - Flow: docs/reference/modules/Flow/README.md 
+                - Bag: docs/reference/modules/Flow/BagPart.md        
             - Content Fields: docs/reference/modules/ContentFields/README.md
             - Content Preview: docs/reference/modules/ContentPreview/README.md
             - Content Localization: docs/reference/modules/ContentLocalization/README.md
