@@ -7,12 +7,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.XmlEncryption;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
@@ -28,6 +26,7 @@ using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
+using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -276,13 +275,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds backwards compatibility to the handling of SameSite cookies.
         /// </summary>
-        public static void AddSameSiteCookieBackwardsCompatibility(OrchardCoreBuilder builder)
+        private static void AddSameSiteCookieBackwardsCompatibility(OrchardCoreBuilder builder)
         {
             builder.ConfigureServices(services =>
                 {
                     services.Configure<CookiePolicyOptions>(options =>
                     {
-                        options.MinimumSameSitePolicy = AspNetCore.Http.SameSiteMode.Unspecified;
+                        options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
                         options.OnAppendCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
                         options.OnDeleteCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
                     });
@@ -297,7 +296,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var userAgent = httpContext.Request.Headers["User-Agent"].ToString();
 
-            if (options.SameSite == AspNetCore.Http.SameSiteMode.None)
+            if (options.SameSite == SameSiteMode.None)
             {
                 if (string.IsNullOrEmpty(userAgent))
                 {
