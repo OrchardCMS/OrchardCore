@@ -47,6 +47,7 @@ namespace OrchardCore.Autoroute.Handlers
             _options = options.Value;
             _liquidTemplateManager = liquidTemplateManager;
             _contentDefinitionManager = contentDefinitionManager;
+            _contentManager = contentManager;
             _siteService = siteService;
             _tagCache = tagCache;
             _session = session;
