@@ -39,6 +39,7 @@ namespace OrchardCore.Taxonomies
 
             TemplateContext.GlobalMemberAccessStrategy.Register<TaxonomyField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTaxonomyFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTaxonomyFieldTagsViewModel>();
         }
 
         public Startup(IOptions<AdminOptions> adminOptions)
@@ -57,10 +58,16 @@ namespace OrchardCore.Taxonomies
 
             // Taxonomy Field
             services.AddContentField<TaxonomyField>()
-                .UseDisplayDriver<TaxonomyFieldDisplayDriver>();
+                .UseDisplayDriver<TaxonomyFieldDisplayDriver>(d => !String.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase));
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
+
+            // Taxonomy Tags Display Mode and Editor.
+            services.AddContentField<TaxonomyField>()
+                .UseDisplayDriver<TaxonomyFieldTagsDisplayDriver>(d => String.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase));
+
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldTagsEditorSettingsDriver>();
 
             services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
         }
