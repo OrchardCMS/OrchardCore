@@ -30,7 +30,7 @@ using YesSql.Services;
 namespace OrchardCore.Contents.Controllers
 {
     public class AdminController : Controller
-    {
+    {        
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
@@ -42,9 +42,10 @@ namespace OrchardCore.Contents.Controllers
         private readonly IHtmlLocalizer<AdminController> H;
         private readonly IStringLocalizer<AdminController> S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IContentQueryService _contentQueryService;
         private readonly dynamic New;
 
-        public AdminController(
+        public AdminController(            
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
@@ -57,7 +58,8 @@ namespace OrchardCore.Contents.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IAuthorizationService authorizationService,
             IEnumerable<IContentAdminFilter> contentAdminFilters,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IContentQueryService contentQueryService)
         {
             _contentAdminFilters = contentAdminFilters;
             _authorizationService = authorizationService;
@@ -68,7 +70,7 @@ namespace OrchardCore.Contents.Controllers
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _updateModelAccessor = updateModelAccessor;
-
+            _contentQueryService = contentQueryService;
             H = htmlLocalizer;
             S = stringLocalizer;
             New = shapeFactory;
@@ -82,35 +84,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-
-            var query = _session.Query<ContentItem, ContentItemIndex>();
-
-            if (!string.IsNullOrEmpty(model.Options.DisplayText))
-            {
-                query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.Options.DisplayText));
-            }
-
-            switch (model.Options.ContentsStatus)
-            {
-                case ContentsStatus.Published:
-                    query = query.With<ContentItemIndex>(x => x.Published);
-                    break;
-                case ContentsStatus.Draft:
-                    query = query.With<ContentItemIndex>(x => x.Latest && !x.Published);
-                    break;
-                case ContentsStatus.AllVersions:
-                    query = query.With<ContentItemIndex>(x => x.Latest);
-                    break;
-                default:
-                    query = query.With<ContentItemIndex>(x => x.Latest);
-                    break;
-            }
-
-            if (model.Options.ContentsStatus == ContentsStatus.Owner)
-            {
-                query = query.With<ContentItemIndex>(x => x.Owner == HttpContext.User.Identity.Name);
-            }
-
+           
             if (!string.IsNullOrEmpty(contentTypeId))
             {
                 model.Options.SelectedContentType = contentTypeId;
@@ -122,11 +96,7 @@ namespace OrchardCore.Contents.Controllers
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
                 if (contentTypeDefinition == null)
                     return NotFound();
-                contentTypeDefinitions = contentTypeDefinitions.Append(contentTypeDefinition);
-
-                // We display a specific type even if it's not listable so that admin pages
-                // can reuse the Content list page for specific types.
-                query = query.With<ContentItemIndex>(x => x.ContentType == model.Options.SelectedContentType);
+                contentTypeDefinitions = contentTypeDefinitions.Append(contentTypeDefinition);              
 
                 // Allows non creatable types to be created by another admin page.
                 if (model.Options.CanCreateSelectedContentType)
@@ -139,34 +109,9 @@ namespace OrchardCore.Contents.Controllers
             }
             else
             {
-                contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
-
-                var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
-                if (listableTypes.Any())
-                {
-                    query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
-                }
+                contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();               
             }
-
-            switch (model.Options.OrderBy)
-            {
-                case ContentsOrder.Modified:
-                    query = query.OrderByDescending(x => x.ModifiedUtc);
-                    break;
-                case ContentsOrder.Published:
-                    query = query.OrderByDescending(cr => cr.PublishedUtc);
-                    break;
-                case ContentsOrder.Created:
-                    query = query.OrderByDescending(cr => cr.CreatedUtc);
-                    break;
-                case ContentsOrder.Title:
-                    query = query.OrderBy(cr => cr.DisplayText);
-                    break;
-                default:
-                    query = query.OrderByDescending(cr => cr.ModifiedUtc);
-                    break;
-            }
-
+     
             // Allow parameters to define creatable types.
             if (model.Options.CreatableTypes == null)
             {
@@ -182,6 +127,8 @@ namespace OrchardCore.Contents.Controllers
 
                 model.Options.CreatableTypes = creatableList;
             }
+
+            var query = await _contentQueryService.GetQueryByOptions(model.Options);
 
             // Invoke any service that could alter the query
             await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, Logger);
@@ -226,7 +173,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            var ContentTypeOptions = (await GetListableTypesAsync())
+            var ContentTypeOptions = (await _contentQueryService.GetListableTypesAsync(User))
                 .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
                 .ToList().OrderBy(kvp => kvp.Value);
 
@@ -246,6 +193,8 @@ namespace OrchardCore.Contents.Controllers
 
             return View(viewModel);
         }
+
+        
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.Filter")]
@@ -718,28 +667,6 @@ namespace OrchardCore.Contents.Controllers
             return creatable;
         }
 
-        private async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync()
-        {
-            var listable = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
-            {
-                if (ctd.GetSettings<ContentTypeSettings>().Listable)
-                {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
-                    {
-                        listable.Add(ctd);
-                    }
-                }
-            }
-            return listable;
-        }
-
-        //ActionResult ListableTypeList(int? containerId)
-        //{
-        //    var viewModel = Shape.ViewModel(ContentTypes: GetListableTypes(containerId.HasValue), ContainerId: containerId);
-
-        //    return View("ListableTypeList", viewModel);
-        //}
+       
     }
 }
