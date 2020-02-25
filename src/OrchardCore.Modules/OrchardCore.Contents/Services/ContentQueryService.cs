@@ -21,18 +21,20 @@ namespace OrchardCore.Contents.Services
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IContentManager _contentManager;
         public ContentQueryService(
             YesSql.ISession session,
             IAuthorizationService authorizationService,
             IContentDefinitionManager contentDefinitionManager,
             IHttpContextAccessor httpContextAccessor
-
+            IContentManager contentManager
             )
         {
             _session = session;
             _authorizationService = authorizationService;
             _contentDefinitionManager = contentDefinitionManager;
             _httpContextAccessor = httpContextAccessor;
+            _contentManager = contentManager;
         }
         public async Task<IQuery<ContentItem, ContentItemIndex>> GetQueryByOptions(OrchardCore.Contents.ViewModels.ContentOptions options)
         {
