@@ -58,7 +58,7 @@ namespace OrchardCore.ReverseProxy.Drivers
                 if (model.EnableXForwardedProto)
                     section.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
 
-                // If the settings are valid, reset the current tenant.
+                // If the settings are valid, release the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
                     await _shellHost.ReleaseShellContextAsync(_shellSettings);

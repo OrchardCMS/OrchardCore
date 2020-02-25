@@ -102,7 +102,7 @@ namespace OrchardCore.Localization.Drivers
                         section.DefaultCulture = section.SupportedCultures[0];
                     }
 
-                    // We always reset the tenant for the default culture and also supported cultures to take effect
+                    // We always release the tenant for the default culture and also supported cultures to take effect
                     await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
                     _notifier.Warning(H["The site has been restarted for the settings to take effect"]);

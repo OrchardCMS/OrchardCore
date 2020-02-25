@@ -169,21 +169,21 @@ namespace OrchardCore.Environment.Shell
                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
             }
 
-            // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
-            var placeholder = new ShellContext.PlaceHolder { Settings = settings };
-
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
                 _runningShellTable.Remove(settings);
                 context.Release();
             }
 
-            AddAndRegisterShell(placeholder);
-
-            // We may have been the last to reload the settings but unable to register them.
-            if (_shellContexts.TryGetValue(settings.Name, out var value) && value.Settings != settings)
+            // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
+            if (!_shellContexts.TryAdd(settings.Name, new ShellContext.PlaceHolder { Settings = settings }))
             {
+                // We may have been the last to reload the settings but unable to re-register them.
                 await ReloadShellContextAsync(settings);
+            }
+            else if (CanRegisterShell(settings))
+            {
+                _runningShellTable.Add(settings);
             }
         }
 
