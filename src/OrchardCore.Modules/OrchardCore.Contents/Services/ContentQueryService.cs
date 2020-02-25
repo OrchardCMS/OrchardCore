@@ -26,7 +26,7 @@ namespace OrchardCore.Contents.Services
             YesSql.ISession session,
             IAuthorizationService authorizationService,
             IContentDefinitionManager contentDefinitionManager,
-            IHttpContextAccessor httpContextAccessor
+            IHttpContextAccessor httpContextAccessor,
             IContentManager contentManager
             )
         {
