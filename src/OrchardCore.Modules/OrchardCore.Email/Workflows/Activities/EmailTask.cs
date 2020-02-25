@@ -82,7 +82,7 @@ namespace OrchardCore.Email.Workflows.Activities
 
             var message = new MailMessage
             {
-                // Both Author and Sender are both not required fields.
+                // Author and Sender are both not required fields.
                 From = author?.Trim() ?? sender?.Trim(),
                 To = recipients.Trim(),
                 Subject = subject.Trim(),
