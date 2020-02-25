@@ -28,6 +28,7 @@ namespace OrchardCore.Autoroute.Handlers
         private readonly AutorouteOptions _options;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentManager _contentManager;
         private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
         private readonly ISession _session;
@@ -36,6 +37,7 @@ namespace OrchardCore.Autoroute.Handlers
             IAutorouteEntries entries,
             IOptions<AutorouteOptions> options,
             ILiquidTemplateManager liquidTemplateManager,
+            IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             ITagCache tagCache,
@@ -129,10 +131,10 @@ namespace OrchardCore.Autoroute.Handlers
                     ContentItem = part.ContentItem
                 };
 
-                var localizationPart = part.ContentItem.As<LocalizationPart>();
-                if (localizationPart.Culture != null)
+                var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
+                if (cultureAspect.Culture != null)
                 {
-                    LiquidViewTemplate.Context.CultureInfo = CultureInfo.GetCultureInfo(localizationPart.Culture);
+                    LiquidViewTemplate.Context.CultureInfo = CultureInfo.GetCultureInfo(cultureAspect.Culture);
                 }
 
                 part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
