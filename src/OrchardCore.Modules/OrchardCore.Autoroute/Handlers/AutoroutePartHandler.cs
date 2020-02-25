@@ -131,7 +131,7 @@ namespace OrchardCore.Autoroute.Handlers
                     ContentItem = part.ContentItem
                 };
 
-                var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
+                var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
                 if (cultureAspect.Culture != null)
                 {
                     LiquidViewTemplate.Context.CultureInfo = CultureInfo.GetCultureInfo(cultureAspect.Culture);
