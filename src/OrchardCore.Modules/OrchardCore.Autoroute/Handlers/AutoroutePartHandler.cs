@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
+using OrchardCore.ContentLocalization;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -133,10 +134,7 @@ namespace OrchardCore.Autoroute.Handlers
                 };
 
                 var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
-                if (cultureAspect.Culture != null)
-                {
-                    LiquidViewTemplate.Context.CultureInfo = CultureInfo.GetCultureInfo(cultureAspect.Culture);
-                }
+                LiquidViewTemplate.Context.CultureInfo = cultureAspect.Culture;
 
                 part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
                     scope => scope.SetValue("ContentItem", model.ContentItem));
