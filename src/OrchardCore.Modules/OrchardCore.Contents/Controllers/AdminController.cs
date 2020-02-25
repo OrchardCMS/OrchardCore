@@ -470,18 +470,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 return Forbid();
             }
-
-            //string previousRoute = null;
-            //if (contentItem.Has<IAliasAspect>() &&
-            //    !string.IsNullOrWhiteSpace(returnUrl)
-            //    && Request.IsLocalUrl(returnUrl)
-            //    // only if the original returnUrl is the content itself
-            //    && String.Equals(returnUrl, Url.ItemDisplayUrl(contentItem), StringComparison.OrdinalIgnoreCase)
-            //    )
-            //{
-            //    previousRoute = contentItem.As<IAliasAspect>().Path;
-            //}
-
+          
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
             if (!ModelState.IsValid)
             {
