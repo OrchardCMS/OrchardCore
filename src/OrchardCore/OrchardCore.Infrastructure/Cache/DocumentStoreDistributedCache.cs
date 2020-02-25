@@ -170,7 +170,7 @@ namespace OrchardCore.Infrastructure.Cache
             await _distributedCache.SetAsync(key, data, options);
             await _distributedCache.SetAsync("ID_" + key, idData, options);
 
-            // In case we were the last to update the cache, check if we didn't cache the last stored document.
+            // We may have been the last to update the cache but we didn't cache the last stored document.
             if (checkConsistency && (await _documentStore.GetForCachingAsync<T>()).Identifier != document.Identifier)
             {
                 await _distributedCache.RemoveAsync("ID_" + key);
