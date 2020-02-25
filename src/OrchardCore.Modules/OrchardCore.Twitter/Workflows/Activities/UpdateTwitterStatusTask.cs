@@ -1,11 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Twitter.Services;
@@ -35,6 +31,7 @@ namespace OrchardCore.Twitter.Workflows.Activities
 
         // The technical name of the activity. Activities on a workflow definition reference this name.
         public override string Name => nameof(UpdateTwitterStatusTask);
+
         public override LocalizedString DisplayText => S["Update Twitter Status Task"];
 
         // The category to which this activity belongs. The activity picker groups activities by this category.

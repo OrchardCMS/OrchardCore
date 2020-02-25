@@ -18,13 +18,16 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public static readonly LiquidTagHelperActivator None = new LiquidTagHelperActivator();
 
         private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activatorByFactory;
+
         private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters =
             new Dictionary<string, Action<ITagHelper, FluidValue>>(StringComparer.OrdinalIgnoreCase);
 
         private readonly Func<ViewContext, ITagHelper> _activatorByService;
         private readonly Action<object, object> _viewContextSetter;
 
-        public LiquidTagHelperActivator() { }
+        public LiquidTagHelperActivator()
+        {
+        }
 
         public LiquidTagHelperActivator(Type type)
         {

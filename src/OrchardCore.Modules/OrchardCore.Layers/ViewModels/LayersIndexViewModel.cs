@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Layers.Models;
 
@@ -11,7 +11,7 @@ namespace OrchardCore.Layers.ViewModels
 
         [BindNever]
         public Dictionary<string, List<dynamic>> Widgets { get; set; } = new Dictionary<string, List<dynamic>>();
-     
+
         [BindNever]
         public List<Layer> Layers { get; set; }
     }

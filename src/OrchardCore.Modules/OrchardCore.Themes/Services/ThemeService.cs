@@ -31,7 +31,7 @@ namespace OrchardCore.Themes.Services
             _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
             _siteThemeService = siteThemeService;
-            
+
             _logger = logger;
             _notifier = notifier;
             H = htmlLocalizer;
@@ -91,7 +91,7 @@ namespace OrchardCore.Themes.Services
                 await EnableFeaturesAsync(new[] { themeId }, true);
             }
         }
-        
+
         /// <summary>
         /// Enables a list of features.
         /// </summary>
@@ -144,6 +144,6 @@ namespace OrchardCore.Themes.Services
             {
                 _notifier.Success(H["{0} was disabled.", feature.Name]);
             }
-        }        
+        }
     }
 }

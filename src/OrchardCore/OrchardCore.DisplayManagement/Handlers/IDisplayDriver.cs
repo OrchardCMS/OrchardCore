@@ -1,5 +1,5 @@
-using OrchardCore.DisplayManagement.Views;
 using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.DisplayManagement.Handlers
 {
@@ -15,6 +15,5 @@ namespace OrchardCore.DisplayManagement.Handlers
 
     public interface IDisplayDriver<in TModel> : IDisplayDriver<TModel, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>
     {
-
     }
 }

@@ -100,6 +100,7 @@ namespace OrchardCore.DisplayManagement.Razor
         }
 
         private dynamic _themeLayout;
+
         public dynamic ThemeLayout
         {
             get
@@ -155,6 +156,7 @@ namespace OrchardCore.DisplayManagement.Razor
         }
 
         private IPageTitleBuilder _pageTitleBuilder;
+
         public IPageTitleBuilder Title
         {
             get

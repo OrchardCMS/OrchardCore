@@ -21,7 +21,7 @@ namespace OrchardCore.ReCaptcha.Services
         private readonly ILogger<ReCaptchaService> _logger;
         private readonly IStringLocalizer<ReCaptchaService> S;
 
-        public ReCaptchaService(ReCaptchaClient reCaptchaClient, IOptions<ReCaptchaSettings> optionsAccessor, IEnumerable<IDetectRobots> robotDetectors, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaService> logger, IStringLocalizer<ReCaptchaService> stringLocalizer)    
+        public ReCaptchaService(ReCaptchaClient reCaptchaClient, IOptions<ReCaptchaSettings> optionsAccessor, IEnumerable<IDetectRobots> robotDetectors, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaService> logger, IStringLocalizer<ReCaptchaService> stringLocalizer)
         {
             _reCaptchaClient = reCaptchaClient;
             _settings = optionsAccessor.Value;
@@ -32,7 +32,7 @@ namespace OrchardCore.ReCaptcha.Services
         }
 
         /// <summary>
-        /// Flags the behavior as that of a robot 
+        /// Flags the behavior as that of a robot
         /// </summary>
         public void MaybeThisIsARobot()
         {

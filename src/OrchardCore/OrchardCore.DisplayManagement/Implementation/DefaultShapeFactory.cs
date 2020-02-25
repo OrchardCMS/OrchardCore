@@ -14,7 +14,6 @@ namespace OrchardCore.DisplayManagement.Implementation
         private readonly IThemeManager _themeManager;
         private ShapeTable _scopedShapeTable;
 
-
         public DefaultShapeFactory(
             IEnumerable<IShapeFactoryEvents> events,
             IShapeTableManager shapeTableManager,

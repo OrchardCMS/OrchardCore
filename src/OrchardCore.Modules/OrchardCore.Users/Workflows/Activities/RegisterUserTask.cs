@@ -47,7 +47,7 @@ namespace OrchardCore.Users.Workflows.Activities
 
         // The technical name of the activity. Activities on a workflow definition reference this name.
         public override string Name => nameof(RegisterUserTask);
-        
+
         public override LocalizedString DisplayText => S["Register User Task"];
 
         // The category to which this activity belongs. The activity picker groups activities by this category.
@@ -65,7 +65,6 @@ namespace OrchardCore.Users.Workflows.Activities
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
-
 
         // The message to display.
         public WorkflowExpression<string> ConfirmationEmailTemplate
@@ -93,7 +92,6 @@ namespace OrchardCore.Users.Workflows.Activities
                 isValid = !string.IsNullOrWhiteSpace(email);
             }
             var outcome = isValid ? "Valid" : "Invalid";
-
 
             if (isValid)
             {

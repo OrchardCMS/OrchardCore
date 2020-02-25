@@ -116,7 +116,6 @@ namespace OrchardCore.Contents.Controllers
                 model.Options.SelectedContentType = contentTypeId;
             }
 
-
             IEnumerable<ContentTypeDefinition> contentTypeDefinitions = new List<ContentTypeDefinition>();
             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {

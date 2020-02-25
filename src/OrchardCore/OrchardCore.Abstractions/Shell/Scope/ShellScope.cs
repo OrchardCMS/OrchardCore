@@ -262,7 +262,6 @@ namespace OrchardCore.Environment.Shell.Scope
                     ShellContext.IsActivated = true;
                 }
             }
-
             finally
             {
                 semaphore.Release();

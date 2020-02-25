@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentLocalization.Handlers;
+using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -56,9 +57,10 @@ namespace OrchardCore.Lists
             services.AddTransient<IContentAdminFilter, ListPartContentAdminFilter>();
 
             // List Part
-            services.AddScoped<IContentPartDisplayDriver, ListPartDisplayDriver>();
-            services.AddContentPart<ListPart>();
-            services.AddScoped<IContentPartHandler, ListPartHandler>();
+            services.AddContentPart<ListPart>()
+                .UseDisplayDriver<ListPartDisplayDriver>()
+                .AddHandler<ListPartHandler>();
+
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
@@ -67,8 +69,9 @@ namespace OrchardCore.Lists
             // Feeds
             // TODO: Create feature
             services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
-            services.AddScoped<IContentPartDisplayDriver, ListPartFeedDisplayDriver>();
-            services.AddScoped<IContentPartHandler, ListPartFeedHandler>();
+            services.AddContentPart<ListPart>()
+                .UseDisplayDriver<ListPartFeedDisplayDriver>()
+                .AddHandler<ListPartFeedHandler>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -107,7 +110,8 @@ namespace OrchardCore.Lists
         {
             services.AddScoped<IContentLocalizationPartHandler, ContainedPartLocalizationHandler>();
             services.AddScoped<IContentLocalizationPartHandler, ListPartLocalizationHandler>();
-            services.AddScoped<IContentPartHandler, LocalizationContainedPartHandler>();
+            services.AddContentPart<LocalizationPart>()
+                .AddHandler<LocalizationContainedPartHandler>();
         }
     }
 
@@ -120,5 +124,4 @@ namespace OrchardCore.Lists
             services.AddLiquidFilter<ListItemsFilter>("list_items");
         }
     }
-
 }

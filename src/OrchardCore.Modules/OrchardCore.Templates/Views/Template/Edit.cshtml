@@ -18,7 +18,6 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
 
-
     <input type="hidden" value="@Model.Name" name="sourceName" />
     <input type="hidden" asp-for="AdminTemplates" />
 

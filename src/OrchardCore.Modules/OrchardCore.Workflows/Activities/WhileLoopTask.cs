@@ -19,9 +19,9 @@ namespace OrchardCore.Workflows.Activities
         }
 
         public override string Name => nameof(WhileLoopTask);
-        
+
         public override LocalizedString DisplayText => S["While Loop Task"];
-        
+
         public override LocalizedString Category => S["Control Flow"];
 
         /// <summary>

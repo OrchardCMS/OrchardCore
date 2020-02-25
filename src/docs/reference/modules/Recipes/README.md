@@ -59,6 +59,9 @@ The Feature step allows you to disable/enable some features.
     }
 ```
 
+!!! warning
+    If you want to use your own theme (Ex: `YourTheme`), do not forget to enable its feature or else, the theme layout will not be working after the execution of the recipe.
+
 ### Themes Step
 
 The Themes step allows you to set the admin and the site themes.
@@ -67,7 +70,7 @@ The Themes step allows you to set the admin and the site themes.
     {
       "name": "themes",
       "admin": "TheAdmin",
-      "site": "TheBlogTheme"
+      "site": "YourTheme"
     }
 ```
 

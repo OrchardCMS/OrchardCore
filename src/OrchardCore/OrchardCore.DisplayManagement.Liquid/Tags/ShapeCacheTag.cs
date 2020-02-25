@@ -22,7 +22,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                 var metadata = shape.Metadata;
 
-                
                 if (arguments.HasNamed("cache_id"))
                 {
                     metadata.Cache(arguments["cache_id"].ToStringValue());

@@ -82,12 +82,12 @@ namespace OrchardCore.Modules.Manifest
         public string Category { get; set; }
 
         /// <summary>
-        /// Set to <c>true</c> to only allow the Default tenant to enable it.
+        /// Set to <c>true</c> to only allow the Default tenant to enable / disable the feature.
         /// </summary>
         public bool DefaultTenantOnly { get; set; }
 
         /// <summary>
-        /// Check whether the feature is always enabled. Defaults to false.
+        /// Once enabled, check whether the feature can't be disabled. Defaults to false.
         /// </summary>
         public bool IsAlwaysEnabled { get; set; } = false;
     }

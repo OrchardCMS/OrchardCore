@@ -79,7 +79,6 @@ namespace OrchardCore.Modules
                     shellContext.Pipeline = BuildTenantPipeline();
                 }
             }
-
             finally
             {
                 semaphore.Release();

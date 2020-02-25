@@ -42,7 +42,6 @@ namespace OrchardCore.Facebook
             {
                 options.Filters.Add(typeof(FBInitFilter));
             });
-
         }
     }
 }

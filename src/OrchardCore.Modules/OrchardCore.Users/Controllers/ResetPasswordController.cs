@@ -37,7 +37,7 @@ namespace OrchardCore.Users.Controllers
             IDisplayHelper displayHelper,
             IStringLocalizer<ResetPasswordController> stringLocalizer,
             ILogger<ResetPasswordController> logger,
-            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents) 
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents)
         {
             _userService = userService;
             _userManager = userManager;
@@ -162,6 +162,5 @@ namespace OrchardCore.Users.Controllers
                 return Redirect("~/");
             }
         }
-
     }
 }

@@ -71,7 +71,6 @@ namespace OrchardCore.Environment.Commands
             }
         }
 
-
         private async Task InvokeAsync(CommandContext context)
         {
             CheckMethodForSwitches(context.CommandDescriptor.MethodInfo, context.Switches);

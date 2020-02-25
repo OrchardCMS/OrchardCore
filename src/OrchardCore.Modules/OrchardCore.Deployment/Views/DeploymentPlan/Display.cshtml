@@ -58,7 +58,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="card-columns">
+                <div class="form-group">
+                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
+                </div>
+                <div id="cards" class="card-columns">
                     @foreach (var thumbnail in Model.Thumbnails)
                     {
                         thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
@@ -108,3 +111,24 @@
         </div>
     </div>
 </div>
+<script at="Foot" type="text/javascript">
+    $(function () {
+        var searchBox = $('#search-box');
+
+        // On each keypress filter the list of cards
+        searchBox.keyup(function (e) {
+            var search = $(this).val().toLowerCase();
+            if (search == '') {
+                searchBox.val('');
+                $('#cards > div').toggle(true);
+            }
+            else {
+                $('#cards > div').each(function () {
+                    var filter = $(this).children().first().html().toLowerCase();
+                    var found = filter.indexOf(search) > -1;
+                    $(this).toggle(found);
+                });
+            }
+        });
+    })
+</script>

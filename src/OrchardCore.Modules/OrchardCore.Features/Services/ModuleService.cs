@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.Localization;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Features.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Features.Services
 {
@@ -39,7 +39,7 @@ namespace OrchardCore.Features.Services
         /// <returns>An enumeration of the available features together with its state (enabled / disabled).</returns>
         public async Task<IEnumerable<ModuleFeature>> GetAvailableFeaturesAsync()
         {
-            var enabledFeatures = 
+            var enabledFeatures =
                 await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
             var availableFeatures = _extensionManager.GetFeatures();

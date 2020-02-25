@@ -6,7 +6,7 @@ using OrchardCore.Modules.Manifest;
     Website = "https://orchardproject.net",
     Version = "2.0.0",
     Description = "The Menu module provides menu management features.",
-    Dependencies = new []
+    Dependencies = new[]
     {
         "OrchardCore.Contents",
         "OrchardCore.Title",

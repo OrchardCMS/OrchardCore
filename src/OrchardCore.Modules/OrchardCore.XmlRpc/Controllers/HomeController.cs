@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.XmlRpc.Models;
 using OrchardCore.XmlRpc.Services;
-using OrchardCore.XmlRpc;
 
 namespace OrchardCore.XmlRpc.Controllers
 {
@@ -28,7 +27,7 @@ namespace OrchardCore.XmlRpc.Controllers
             Logger = logger;
         }
 
-        ILogger Logger { get; }
+        private ILogger Logger { get; }
 
         [HttpPost, ActionName("Index")]
         [IgnoreAntiforgeryToken]
