@@ -1,19 +1,29 @@
-using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
+using Fluid;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
+using OrchardCore.PublishLater.Drivers;
+using OrchardCore.PublishLater.Indexes;
+using OrchardCore.PublishLater.Models;
+using OrchardCore.PublishLater.ViewModels;
+using YesSql.Indexes;
 
 namespace OrchardCore.PublishLater
 {
     public class Startup : StartupBase
     {
-        public override void ConfigureServices(IServiceCollection services)
+        static Startup()
         {
+            TemplateContext.GlobalMemberAccessStrategy.Register<PublishLaterPartViewModel>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddContentPart<PublishLaterPart>().UseDisplayDriver<PublishLaterPartDisplayDriver>();
+            services.AddScoped<IDataMigration, Migrations>();
+            services.AddSingleton<IIndexProvider, PublishLaterPartIndexProvider>();
         }
     }
 }

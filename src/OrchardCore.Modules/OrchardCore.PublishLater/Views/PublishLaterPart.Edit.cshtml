@@ -1,0 +1,18 @@
+@using Microsoft.AspNetCore.Authorization
+@model PublishLaterPartViewModel
+
+@inject IAuthorizationService AuthorizationService
+
+@if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.PublishContent))
+{
+    <div class="btn-group">
+        <input asp-for="ScheduledPublishLocalDateTime" type="datetime-local" class="form-control content-preview-select" />
+        <button class="btn btn-primary" type="submit" name="submit.Save" value="submit.PublishLater">@T["Publish&nbsp;Later"]</button>
+    </div>
+    @if (Model.ScheduledPublishUtc.HasValue)
+    {
+        <div class="btn-group">
+            <button class="btn btn-primary" type="submit" name="submit.Save" value="submit.CancelPublishLater">@T["Cancel&nbsp;Publish&nbsp;Later"]</button>
+        </div>
+    }
+}
