@@ -2,16 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.OpenId.ViewModels
 {
     public class CreateOpenIdApplicationViewModel : IValidatableObject
     {
-        [BindNever]
-        private IStringLocalizer S { get; set; }
-
         [Required]
         public string ClientId { get; set; }
 
@@ -44,11 +41,12 @@ namespace OrchardCore.OpenId.ViewModels
         {
             if (member != null)
             {
+                var S = context.GetRequiredService<IStringLocalizer<CreateOpenIdApplicationViewModel>>();
+
                 foreach (var url in member.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || !uri.IsWellFormedOriginalString())
                     {
-                        S ??= (IStringLocalizer)context.GetService(typeof(IStringLocalizer<CreateOpenIdApplicationViewModel>));
                         yield return new ValidationResult(S["{0} is not wellformed", url], new[] { memberName });
                     }
                 }
