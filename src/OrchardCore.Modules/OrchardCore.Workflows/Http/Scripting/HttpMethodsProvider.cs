@@ -118,6 +118,10 @@ namespace OrchardCore.Workflows.Http.Scripting
                             result = values.ToArray();
                         }
                     }
+                    else if (httpContextAccessor.HttpContext.Request.Form.Count > 0)
+                    {
+                        result = httpContextAccessor.HttpContext.Request.Form.ToArray();
+                    }
                     else
                     {
                         result = null;
