@@ -136,6 +136,7 @@ namespace OrchardCore.Environment.Shell
 
         public async Task UpdateShellSettingsAsync(ShellSettings settings)
         {
+            settings.Identifier = FastGuid.NewGuid().IdString;
             await _shellSettingsManager.SaveSettingsAsync(settings);
 
             // Settings may not have been commited yet.
@@ -179,12 +180,23 @@ namespace OrchardCore.Environment.Shell
             // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
             if (!_shellContexts.TryAdd(settings.Name, new ShellContext.PlaceHolder { Settings = settings }))
             {
-                // We may have been the last to reload the settings but unable to re-register them.
+                // Atomicity: We may have been the last to reload the settings but unable to register the shell.
                 await ReloadShellContextAsync(settings);
+                return;
             }
-            else if (CanRegisterShell(settings))
+
+            if (CanRegisterShell(settings))
             {
                 _runningShellTable.Add(settings);
+            }
+
+            if (settings.State != TenantState.Initializing)
+            {
+                // Consistency: We may have been the last to register the shell but not with the last settings.
+                if (settings.Identifier != (await _shellSettingsManager.LoadSettingsAsync(settings.Name)).Identifier)
+                {
+                    await ReloadShellContextAsync(settings);
+                }
             }
         }
 
