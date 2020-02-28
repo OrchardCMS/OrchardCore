@@ -374,9 +374,6 @@ namespace OrchardCore.DisplayManagement.Razor
                 return _site;
             }
         }
-
-        public bool IsMockRendering => ((dynamic)Model).Metadata.Prefix.StartsWith("MockLayout");
-
     }
 
     public abstract class RazorPage : RazorPage<dynamic>
