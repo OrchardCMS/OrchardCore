@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Data;
 using OrchardCore.Entities;
+using OrchardCore.Environment;
 
 namespace OrchardCore.Infrastructure.Cache
 {
@@ -17,8 +18,6 @@ namespace OrchardCore.Infrastructure.Cache
     /// </summary>
     public class DocumentStoreDistributedCache<TDocumentStore> : IDocumentStoreDistributedCache<TDocumentStore> where TDocumentStore : ICacheableDocumentStore
     {
-        private static readonly DefaultIdGenerator _idGenerator = new DefaultIdGenerator();
-
         private readonly TDocumentStore _documentStore;
         private readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
@@ -77,7 +76,7 @@ namespace OrchardCore.Infrastructure.Cache
                 options = new DistributedCacheEntryOptions();
             }
 
-            document.Identifier ??= _idGenerator.GenerateUniqueId();
+            document.Identifier ??= FastGuid.NewGuid().IdString;
 
             return _documentStore.UpdateAsync(document, document =>
             {
@@ -170,7 +169,7 @@ namespace OrchardCore.Infrastructure.Cache
             await _distributedCache.SetAsync(key, data, options);
             await _distributedCache.SetAsync("ID_" + key, idData, options);
 
-            // We may have been the last to update the cache but we didn't cache the last stored document.
+            // Consistency: We may have been the last to update the cache but not with the last stored document.
             if (checkConsistency && (await _documentStore.GetForCachingAsync<T>()).Identifier != document.Identifier)
             {
                 await _distributedCache.RemoveAsync("ID_" + key);
