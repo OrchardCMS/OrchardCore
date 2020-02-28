@@ -17,8 +17,6 @@
 
 <script asp-name="jquery-ui" at="Foot"></script>
 
-@if (!IsMockRendering)
-{
 <div class="form-group">
     @foreach (var zone in Model.AvailableZones)
     {
@@ -135,13 +133,13 @@
                                     @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                                     {
                                         <a class="dropdown-item add-list-widget  btn-sm"
-                                        data-target-id="@widgetTemplatePlaceholderId"
-                                        data-zones-name="@Html.NameFor(x => x.Zones)"
-                                        data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
-                                        data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
-                                        data-widget-type="@type.Name"
-                                        data-zone="@zone"
-                                        href="javascript:;">@type.DisplayName</a>
+                                           data-target-id="@widgetTemplatePlaceholderId"
+                                           data-zones-name="@Html.NameFor(x => x.Zones)"
+                                           data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
+                                           data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
+                                           data-widget-type="@type.Name"
+                                           data-zone="@zone"
+                                           href="javascript:;">@type.DisplayName</a>
                                     }
                                 </div>
                             </div>
@@ -151,8 +149,6 @@
             </div>
         </div>
     }
-</div>
-}
 
     @if (Context.Items["WidgetsListPart.Edit"] == null)
     {
@@ -167,5 +163,6 @@
         <script asp-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.min.js"
                 debug-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
         <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
-                debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+               debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
     }
+</div>
