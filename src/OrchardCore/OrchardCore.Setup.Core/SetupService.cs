@@ -189,18 +189,18 @@ namespace OrchardCore.Setup.Services
 
                 await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new
                 {
-                    SiteName = context.SiteName,
-                    AdminUsername = context.AdminUsername,
-                    AdminEmail = context.AdminEmail,
-                    AdminPassword = context.AdminPassword,
-                    DatabaseProvider = context.DatabaseProvider,
-                    DatabaseConnectionString = context.DatabaseConnectionString,
-                    DatabaseTablePrefix = context.DatabaseTablePrefix
+                    context.SiteName,
+                    context.AdminUsername,
+                    context.AdminEmail,
+                    context.AdminPassword,
+                    context.DatabaseProvider,
+                    context.DatabaseConnectionString,
+                    context.DatabaseTablePrefix
                 },
                 _applicationLifetime.ApplicationStopping);
             }
 
-            // Reloading the shell context as the recipe  has probably updated its features
+            // Reloading the shell context as the recipe has probably updated its features
             using (var shellContext = await _shellHost.CreateShellContextAsync(shellSettings))
             {
                 await shellContext.CreateScope().UsingAsync(async scope =>

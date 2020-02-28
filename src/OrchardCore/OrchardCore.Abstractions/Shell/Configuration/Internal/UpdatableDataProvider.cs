@@ -30,7 +30,9 @@ namespace OrchardCore.Environment.Shell.Configuration.Internal
 
         public virtual void Set(string key, string value) => Data[key] = value;
 
-        public virtual void Load() { }
+        public virtual void Load()
+        {
+        }
 
         public virtual IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
         {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Navigation;
 
@@ -23,7 +24,6 @@ namespace OrchardCore.Admin
             ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory)
         {
-
             _navigationManager = navigationManager;
             _layoutAccessor = layoutAccessor;
             _shapeFactory = shapeFactory;
@@ -74,9 +74,9 @@ namespace OrchardCore.Admin
             {
                 await zoneOnDemand.AddAsync(menuShape);
             }
-            else
+            else if (layout.Navigation is Shape shape)
             {
-                layout.Navigation.Add(menuShape);
+                shape.Add(menuShape);
             }
 
             await next();

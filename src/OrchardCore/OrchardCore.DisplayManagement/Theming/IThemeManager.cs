@@ -1,5 +1,5 @@
-﻿using OrchardCore.Environment.Extensions;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Extensions;
 
 namespace OrchardCore.DisplayManagement.Theming
 {

@@ -13,7 +13,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         {
             _client = client;
         }
-        
+
         public async Task<JObject> Query(string contentType, Action<ContentTypeQueryResourceBuilder> builder)
         {
             var contentTypeBuilder = new ContentTypeQueryResourceBuilder(contentType);

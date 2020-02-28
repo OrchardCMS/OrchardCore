@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -142,7 +141,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 session.Save(ci);
                 await session.CommitAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 } ));
+                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
                 context.Arguments["where"] = JObject.Parse("{ contentItemId: \"1\" }");
                 var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
@@ -203,7 +202,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
             }
         }
 
-
         [Fact]
         public async Task ShouldBeAbleToUseTheSameIndexForMultipleAliases()
         {
@@ -247,7 +245,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                 Assert.Single(cats);
                 Assert.Equal("doug", cats.First().As<Animal>().Name);
-
 
                 context.Arguments["where"] = JObject.Parse("{ dogs: { name: \"doug\" } }");
                 var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
@@ -296,7 +293,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                 var ci2 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "3", ContentItemVersionId = "3" };
                 ci2.Weld(new Animal { Name = "tommy", IsHappy = false, IsScary = true });
-
 
                 var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
@@ -513,7 +509,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 });
         }
     }
-
 
     public class MultipleAliasIndexProvider : IIndexAliasProvider
     {

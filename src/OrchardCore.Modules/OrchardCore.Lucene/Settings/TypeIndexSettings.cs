@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace OrchardCore.Indexing.Settings
 {
@@ -10,7 +10,7 @@ namespace OrchardCore.Indexing.Settings
         /// <summary>
         /// The list of indexes that this type should be included into.
         /// </summary>
-        public List<TypeIndexEntry> Indexes { get; set; } 
+        public List<TypeIndexEntry> Indexes { get; set; }
     }
 
     public class TypeIndexEntry

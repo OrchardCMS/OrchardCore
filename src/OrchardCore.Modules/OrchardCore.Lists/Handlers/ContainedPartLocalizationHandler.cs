@@ -1,12 +1,9 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.Records;
-using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using YesSql;
 

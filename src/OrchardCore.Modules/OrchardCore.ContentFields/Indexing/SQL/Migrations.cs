@@ -9,7 +9,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         public int Create()
         {
             // NOTE: The Text Length has been decreased from 4000 characters to 768.
-            // For existing SQL databases update the TextFieldIndex tables Text column length manually. 
+            // For existing SQL databases update the TextFieldIndex tables Text column length manually.
             SchemaBuilder.CreateMapIndexTable(nameof(TextFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))

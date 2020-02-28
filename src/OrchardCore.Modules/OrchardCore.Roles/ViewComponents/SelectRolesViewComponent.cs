@@ -23,7 +23,7 @@ namespace OrchardCore.Roles.ViewComponents
             }
 
             var roleSelections = await BuildRoleSelectionsAsync(selectedRoles);
-            
+
             var model = new SelectRolesViewModel
             {
                 HtmlName = htmlName,

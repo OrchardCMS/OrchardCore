@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
-using System.Collections.Generic;
 
 namespace OrchardCore.Navigation
 {

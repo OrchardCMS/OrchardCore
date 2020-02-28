@@ -1,6 +1,5 @@
 @model LuceneSettingsViewModel
 
-
 @if (Model.SearchIndexes.Any())
 {
 <div class="form-group" asp-validation-class-for="SearchIndex">
@@ -26,4 +25,3 @@ else
     <span asp-validation-for="SearchFields"></span>
     <span class="hint">@T["A comma separated list of fields to use for search pages. The default value is <code>Content.ContentItem.FullText</code>."]</span>
 </div>
-

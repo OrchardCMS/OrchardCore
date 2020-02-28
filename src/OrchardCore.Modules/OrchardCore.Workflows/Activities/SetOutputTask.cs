@@ -19,9 +19,9 @@ namespace OrchardCore.Workflows.Activities
         }
 
         public override string Name => nameof(SetOutputTask);
-        
+
         public override LocalizedString DisplayText => S["Set Output Task"];
-        
+
         public override LocalizedString Category => S["Primitives"];
 
         public string OutputName

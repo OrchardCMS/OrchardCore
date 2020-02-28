@@ -41,27 +41,27 @@ namespace OrchardCore.Tenants.Controllers
 
         public AdminController(
             IShellHost shellHost,
-            ShellSettings currentShellSettings,
-            IAuthorizationService authorizationService,
             IShellSettingsManager shellSettingsManager,
             IEnumerable<DatabaseProvider> databaseProviders,
+            IAuthorizationService authorizationService,
+            ShellSettings currentShellSettings,
+            IEnumerable<IRecipeHarvester> recipeHarvesters,
             IDataProtectionProvider dataProtectorProvider,
             IClock clock,
             INotifier notifier,
-            IEnumerable<IRecipeHarvester> recipeHarvesters,
             ISiteService siteService,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
-            _dataProtectorProvider = dataProtectorProvider;
-            _clock = clock;
-            _recipeHarvesters = recipeHarvesters;
             _shellHost = shellHost;
             _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
             _databaseProviders = databaseProviders;
             _currentShellSettings = currentShellSettings;
+            _dataProtectorProvider = dataProtectorProvider;
+            _recipeHarvesters = recipeHarvesters;
+            _clock = clock;
             _notifier = notifier;
             _siteService = siteService;
 
@@ -357,7 +357,7 @@ namespace OrchardCore.Tenants.Controllers
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
             };
 
-            // The user can change the 'preset' database information only if the 
+            // The user can change the 'preset' database information only if the
             // tenant has not been initialized yet
             if (shellSettings.State == TenantState.Uninitialized)
             {
@@ -407,7 +407,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
 
-                // The user can change the 'preset' database information only if the 
+                // The user can change the 'preset' database information only if the
                 // tenant has not been initialized yet
                 if (shellSettings.State == TenantState.Uninitialized)
                 {
@@ -423,7 +423,7 @@ namespace OrchardCore.Tenants.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // The user can change the 'preset' database information only if the 
+            // The user can change the 'preset' database information only if the
             // tenant has not been initialized yet
             if (shellSettings.State == TenantState.Uninitialized)
             {

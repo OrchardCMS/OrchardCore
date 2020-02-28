@@ -188,7 +188,7 @@ namespace OrchardCore.ContentManagement.Handlers
         {
             // This method is called on Get()
             // Adds all the missing parts to a content item based on the content type definition.
-            // A part is missing if the content type is changed and an old content item is loaded, 
+            // A part is missing if the content type is changed and an old content item is loaded,
             // like edited.
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);

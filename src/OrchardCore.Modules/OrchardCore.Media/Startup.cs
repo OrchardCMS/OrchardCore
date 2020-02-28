@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Admin;
@@ -26,10 +27,10 @@ using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
+using OrchardCore.Media.Events;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
-using OrchardCore.Media.Models;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
 using OrchardCore.Media.Services;
@@ -93,6 +94,9 @@ namespace OrchardCore.Media
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
+                var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
+                var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
                 var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsPath);
                 var fileStore = new FileSystemStore(mediaPath);
@@ -107,14 +111,12 @@ namespace OrchardCore.Media
                     mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                 }
 
-                return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
+                return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddContentPart<ImageMediaPart>();
-            services.AddMedia();
 
             services.AddLiquidFilter<MediaUrlFilter>("asset_url");
             services.AddLiquidFilter<ResizeUrlFilter>("resize_url");

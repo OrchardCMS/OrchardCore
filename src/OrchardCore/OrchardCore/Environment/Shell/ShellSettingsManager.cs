@@ -127,7 +127,6 @@ namespace OrchardCore.Environment.Shell
                 {
                     Name = tenant,
                 };
-
             }
             finally
             {

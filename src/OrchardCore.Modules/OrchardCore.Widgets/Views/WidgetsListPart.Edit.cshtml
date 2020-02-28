@@ -47,14 +47,14 @@
                                     BuildEditor: true,
                                     ParentContentType: parentContentType,
                                     CollectionPartName: partName,
-                                    //WidgetListPart Specific 
+                                    //WidgetListPart Specific
                                     ZoneValue: zone,
                                     //Card Specific Properties
                                     TargetId: widgetTemplatePlaceholderId,
                                     Inline: false,
                                     CanMove: true,
                                     CanDelete: true,
-                                    //Input hidden 
+                                    //Input hidden
                                     //Prefixes
                                     HtmlFieldPrefix: htmlFieldPrefix,
                                     PrefixesId: Html.IdFor(x => x.Prefixes),
@@ -124,7 +124,6 @@
                                 });
                             }
                         </script>
-
                     </div>
                     <div class="btn-widget-add-below-wrapper w-100">
                         <div class="btn-widget-add-below w-100 border border-info">
@@ -133,7 +132,7 @@
                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                 </button>
                                 <div class="dropdown-menu">
-                                    @foreach (var type in widgetContentTypes)
+                                    @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                                     {
                                         <a class="dropdown-item add-list-widget  btn-sm"
                                         data-target-id="@widgetTemplatePlaceholderId"
@@ -148,7 +147,6 @@
                             </div>
                         </div>
                     </div>
-                    
                 </div>
             </div>
         </div>
