@@ -56,6 +56,15 @@ namespace OrchardCore.Mvc.LocationExpander
                         {
                             modulesWithComponentViews.Add(module);
                         }
+
+                        moduleComponentsViewFilePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
+                            module.SubPath + "/Pages/Shared/Components", RazorExtensions,
+                            viewsFolder: null, inViewsFolder: true, inDepth: true);
+
+                        if (moduleComponentsViewFilePaths.Any())
+                        {
+                            modulesWithComponentViews.Add(module);
+                        }
                     }
 
                     _modulesWithComponentViews = modulesWithComponentViews;
