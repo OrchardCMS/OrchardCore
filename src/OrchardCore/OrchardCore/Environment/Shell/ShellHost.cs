@@ -136,7 +136,7 @@ namespace OrchardCore.Environment.Shell
 
         public async Task UpdateShellSettingsAsync(ShellSettings settings)
         {
-            settings.Identifier = FastGuid.NewGuid().IdString;
+            settings.Identifier = IdGenerator.GenerateId();
             await _shellSettingsManager.SaveSettingsAsync(settings);
 
             // Settings may not have been commited yet.
@@ -171,31 +171,39 @@ namespace OrchardCore.Environment.Shell
                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
             }
 
-            if (_shellContexts.TryRemove(settings.Name, out var context))
+            while (true)
             {
-                _runningShellTable.Remove(settings);
-                context.Release();
-            }
-
-            // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
-            if (!_shellContexts.TryAdd(settings.Name, new ShellContext.PlaceHolder { Settings = settings }))
-            {
-                // Atomicity: We may have been the last to reload the settings but unable to register the shell.
-                await ReloadShellContextAsync(settings);
-                return;
-            }
-
-            if (CanRegisterShell(settings))
-            {
-                _runningShellTable.Add(settings);
-            }
-
-            if (settings.State != TenantState.Initializing)
-            {
-                // Consistency: We may have been the last to register the shell but not with the last settings.
-                if (settings.Identifier != (await _shellSettingsManager.LoadSettingsAsync(settings.Name)).Identifier)
+                if (_shellContexts.TryRemove(settings.Name, out var context))
                 {
-                    await ReloadShellContextAsync(settings);
+                    _runningShellTable.Remove(settings);
+                    context.Release();
+                }
+
+                // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
+                if (!_shellContexts.TryAdd(settings.Name, new ShellContext.PlaceHolder { Settings = settings }))
+                {
+                    // Atomicity: We may have been the last to load the settings but unable to add the shell.
+                    continue;
+                }
+
+                if (CanRegisterShell(settings))
+                {
+                    _runningShellTable.Add(settings);
+                }
+
+                if (settings.State == TenantState.Initializing)
+                {
+                    return;
+                }
+
+                var currentIdentifier = settings.Identifier;
+
+                settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
+
+                // Consistency: We may have been the last to add the shell but not with the last settings.
+                if (settings.Identifier == currentIdentifier)
+                {
+                    return;
                 }
             }
         }
