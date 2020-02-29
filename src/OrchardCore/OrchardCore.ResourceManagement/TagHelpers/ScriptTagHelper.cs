@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.CSharp.RuntimeBinder;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
@@ -40,6 +42,9 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         private readonly IResourceManager _resourceManager;
 
+        [ViewContext]
+        public ViewContext ViewContext { get; set; }
+
         public ScriptTagHelper(IResourceManager resourceManager)
         {
             _resourceManager = resourceManager;
@@ -48,6 +53,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             output.SuppressOutput();
+            dynamic model = ViewContext.ViewData.Model;
 
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
@@ -261,6 +267,21 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
                 // Custom script content
+                var shapePrefix = string.Empty;
+                try
+                {
+                    shapePrefix = model?.Metadata?.Prefix as string;
+                }
+                catch (RuntimeBinderException)
+                {
+                    //Model is not a shape.
+                }
+
+                if (!string.IsNullOrWhiteSpace(shapePrefix) && shapePrefix.StartsWith("MockLayout_"))
+                {
+                    //if mock redering do not render inline dom scripts
+                    return;
+                }
 
                 var childContent = await output.GetChildContentAsync();
 
