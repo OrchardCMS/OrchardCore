@@ -9,7 +9,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services
 {
-    class UserPropertiesService<T> where T : new()
+    public abstract class UserPropertiesService<T> where T : new()
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<IUser> _userManager;
