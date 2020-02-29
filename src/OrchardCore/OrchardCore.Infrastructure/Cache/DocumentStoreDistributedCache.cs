@@ -8,8 +8,6 @@ using MessagePack.Resolvers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Data;
-using OrchardCore.Entities;
-using OrchardCore.Environment;
 
 namespace OrchardCore.Infrastructure.Cache
 {
@@ -76,7 +74,7 @@ namespace OrchardCore.Infrastructure.Cache
                 options = new DistributedCacheEntryOptions();
             }
 
-            document.Identifier ??= FastGuid.NewGuid().IdString;
+            document.Identifier ??= IdGenerator.GenerateId();
 
             return _documentStore.UpdateAsync(document, document =>
             {
