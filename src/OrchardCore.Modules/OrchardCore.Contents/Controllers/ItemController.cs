@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -27,7 +28,7 @@ namespace OrchardCore.Contents.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
-        public async Task<IActionResult> Display(string contentItemId)
+        public async Task<IActionResult> Display(string contentItemId, string jsonPath)
         {
             if (contentItemId == null)
             {
@@ -44,6 +45,19 @@ namespace OrchardCore.Contents.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
                 return this.ChallengeOrForbid();
+            }
+
+            // It represents a contained content item
+            if (!string.IsNullOrEmpty(jsonPath))
+            {
+                var root = contentItem.Content as JObject;
+                contentItem = root.SelectToken(jsonPath)?.ToObject<ContentItem>();
+
+                // Permissions are granted or revoked on the container item.
+                if (contentItem == null)
+                {
+                    return NotFound();
+                }
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);

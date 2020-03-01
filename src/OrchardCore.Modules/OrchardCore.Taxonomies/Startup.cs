@@ -8,6 +8,7 @@ using OrchardCore.Admin;
 using OrchardCore.Apis;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -20,6 +21,7 @@ using OrchardCore.Taxonomies.Controllers;
 using OrchardCore.Taxonomies.Drivers;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.GraphQL;
+using OrchardCore.Taxonomies.Handlers;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Liquid;
 using OrchardCore.Taxonomies.Models;
@@ -54,7 +56,8 @@ namespace OrchardCore.Taxonomies
 
             // Taxonomy Part
             services.AddContentPart<TaxonomyPart>()
-                .UseDisplayDriver<TaxonomyPartDisplayDriver>();
+                .UseDisplayDriver<TaxonomyPartDisplayDriver>()
+                .AddHandler<TaxonomyPartHandler>();
 
             // Taxonomy Field
             services.AddContentField<TaxonomyField>()
@@ -70,6 +73,11 @@ namespace OrchardCore.Taxonomies
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldTagsEditorSettingsDriver>();
 
             services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
+
+            // Terms
+            services.AddContentPart<TermPart>();
+            services.AddScoped<IContentHandler, TermPartContentHandler>();
+            services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

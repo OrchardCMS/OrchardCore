@@ -63,6 +63,10 @@ namespace OrchardCore.Autoroute.Drivers
                     model.IsHomepage = true;
                 }
 
+                model.Disabled = autoroutePart.Disabled;
+                model.Absolute = autoroutePart.Absolute;
+                model.RouteContainedItems = autoroutePart.RouteContainedItems;
+
                 model.Settings = context.TypePartDefinition.GetSettings<AutoroutePartSettings>();
             });
         }
@@ -71,7 +75,7 @@ namespace OrchardCore.Autoroute.Drivers
         {
             var viewModel = new AutoroutePartViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Path, t => t.UpdatePath);
+            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Path, t => t.UpdatePath, t => t.RouteContainedItems, t => t.Absolute, t => t.Disabled);
 
             var settings = context.TypePartDefinition.GetSettings<AutoroutePartSettings>();
 
@@ -85,6 +89,10 @@ namespace OrchardCore.Autoroute.Drivers
                 // Make it empty to force a regeneration
                 model.Path = "";
             }
+
+            model.Disabled = viewModel.Disabled;
+            model.Absolute = viewModel.Absolute;
+            model.RouteContainedItems = viewModel.RouteContainedItems;
 
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -116,6 +124,30 @@ namespace OrchardCore.Autoroute.Drivers
                 updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is too long. The permalink can only be up to {0} characters.", MaxPathLength]);
             }
 
+            // TODO resolve for absolute routes. Hard to resolve for bag items as they are changing ids.
+            // So for later...
+            // Or choose that absolute routing is too hard to achieve in this scenario.
+
+            //if (autoroute.Path != null)
+            //{
+            //    var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path).ListAsync();
+            //    if (possibleConflicts.Any())
+            //    {
+            //        bool hasConflict = false;
+            //        // Check to see if this is the same content item
+            //        if (possibleConflicts.Any(x => x.ContentItemId != autoroute.ContentItem.ContentItemId))
+            //        {
+            //            if (possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != autoroute.ContentItem.ContentItemId))
+            //            {
+            //                hasConflict = true;
+            //            }
+            //        }
+            //        if (hasConflict)
+            //        {
+            //            updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is already in use."]);
+            //        }
+            //    }
+            //}
             if (autoroute.Path != null && (await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).CountAsync()) > 0)
             {
                 updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is already in use."]);

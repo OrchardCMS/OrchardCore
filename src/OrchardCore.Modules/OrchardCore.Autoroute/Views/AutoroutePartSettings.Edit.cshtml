@@ -41,6 +41,22 @@
     </div>
 </div>
 
+<div class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="AllowRouteContainedItems" checked="@Model.AllowRouteContainedItems">
+        <label class="custom-control-label" asp-for="AllowRouteContainedItems">@T["Allow contained item routing"]</label>
+        <span class="hint">@T["Check to allow users to enable contained item routing."]</span>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="AllowAbsolutePath" checked="@Model.AllowAbsolutePath">
+        <label class="custom-control-label" asp-for="AllowAbsolutePath">@T["Allow absolute path"]</label>
+        <span class="hint">@T["Check to allow users to enable absolute path routing for contained content items."]</span>
+    </div>
+</div>
+
 <script at="Foot" depends-on="jquery">
     //<![CDATA[
     $(function () {

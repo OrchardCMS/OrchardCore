@@ -1,0 +1,24 @@
+@model TermPartViewModel
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@await DisplayAsync(await New.Term(Model))
+
+@if (Model.ContentItems.Any())
+{
+    <ul class="list-group">
+        @foreach (var contentItem in Model.ContentItems)
+        {
+            var contentItemSummary = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "Summary", Model.Context.GroupId);
+
+            <li class="list-group-item">
+                @await DisplayAsync(contentItemSummary)
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p class="alert alert-warning">@T["The list is empty"]</p>
+}
+
+@await DisplayAsync(Model.Pager)

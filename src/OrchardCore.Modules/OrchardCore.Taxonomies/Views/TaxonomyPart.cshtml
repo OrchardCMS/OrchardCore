@@ -1,0 +1,6 @@
+@model TaxonomyPartViewModel
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+<section class="taxonomy">
+    @await DisplayAsync(await New.Term(Model))
+</section>

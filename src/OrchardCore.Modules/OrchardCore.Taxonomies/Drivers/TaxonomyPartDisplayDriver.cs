@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -29,6 +30,17 @@ namespace OrchardCore.Taxonomies.Drivers
             _contentDefinitionManager = contentDefinitionManager;
             _serviceProvider = serviceProvider;
             _contentManager = contentManager;
+        }
+        public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
+        {
+            var hasItems = part.Terms.Any();
+            return Initialize<TaxonomyPartViewModel>(hasItems ? "TaxonomyPart" : "TaxonomyPart_Empty", m =>
+            {
+                m.Terms = TermDriverHelper.PopulateTermEntries(part.Terms, context);
+                m.TaxonomyPart = part;
+                m.BuildPartDisplayContext = context;
+            })
+            .Location("Detail", "Content:5");
         }
 
         public override IDisplayResult Edit(TaxonomyPart part)

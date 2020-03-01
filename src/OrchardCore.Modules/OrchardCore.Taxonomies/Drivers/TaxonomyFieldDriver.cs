@@ -51,7 +51,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 if (model.Taxonomy != null)
                 {
                     var termEntries = new List<TermEntry>();
-                    TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
+                    TermDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
 
                     model.TermEntries = termEntries;
                     model.UniqueValue = termEntries.FirstOrDefault(x => x.Selected)?.ContentItemId;

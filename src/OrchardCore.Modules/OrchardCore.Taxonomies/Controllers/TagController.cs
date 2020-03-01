@@ -67,6 +67,8 @@ namespace OrchardCore.Taxonomies.Controllers
             // later edited with the taxonomy editor.
             var contentItem = await _contentManager.NewAsync(part.TermContentType);
             contentItem.DisplayText = displayText;
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
             if (!ModelState.IsValid)
             {

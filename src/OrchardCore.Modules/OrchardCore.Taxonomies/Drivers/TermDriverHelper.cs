@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
-    public static class TaxonomyFieldDriverHelper
+    public static class TermDriverHelper
     {
         /// <summary>
         /// Populates a list of <see cref="TermEntry"/> with the hierarchy of terms.
@@ -40,6 +41,34 @@ namespace OrchardCore.Taxonomies.Drivers
                     PopulateTermEntries(termEntries, field, children, level + 1);
                 }
             }
+        }
+
+        public static List<TermEntryViewModel> PopulateTermEntries(IEnumerable<ContentItem> terms, BuildDisplayContext context)
+        {
+            var termsEntries = new List<TermEntryViewModel>();
+            if (terms == null)
+            {
+                return termsEntries;
+            }
+
+            foreach (var contentItem in terms)
+            {
+                var children = Array.Empty<ContentItem>();
+
+                if (contentItem.Content.Terms is JArray termsArray)
+                {
+                    children = termsArray.ToObject<ContentItem[]>();
+                }
+
+                termsEntries.Add(new TermEntryViewModel
+                {
+                    Term = contentItem,
+                    BuildDisplayContext = context,
+                    Terms = PopulateTermEntries(children, context)
+                });
+            }
+
+            return termsEntries;
         }
     }
 }

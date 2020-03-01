@@ -24,5 +24,15 @@ namespace OrchardCore.Autoroute.Models
         /// Whether a user can request a new path if some data has changed.
         /// </summary>
         public bool AllowUpdatePath { get; set; }
+
+        /// <summary>
+        /// Whether to allow routing of contained content items.
+        /// </summary>
+        public bool AllowRouteContainedItems { get; set; }
+
+        /// <summary>
+        /// Whether to allow routing of contained content items to absolute paths.
+        /// </summary>
+        public bool AllowAbsolutePath { get; set; }
     }
 }

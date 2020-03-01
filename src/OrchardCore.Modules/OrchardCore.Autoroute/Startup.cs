@@ -17,9 +17,11 @@ using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.GraphQL.Options;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -48,11 +50,13 @@ namespace OrchardCore.Autoroute
                 .UseDisplayDriver<AutoroutePartDisplay>()
                 .AddHandler<AutoroutePartHandler>();
 
+            services.AddScoped<IContentHandler, DefaultRouteContentHandler>();
+            services.AddScoped<IContentHandler, AutorouteContentHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
 
-            services.AddSingleton<IIndexProvider, AutoroutePartIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, AutoroutePartIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
@@ -78,7 +82,7 @@ namespace OrchardCore.Autoroute
             var session = serviceProvider.GetRequiredService<ISession>();
 
             var autoroutes = session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync().GetAwaiter().GetResult();
-            entries.AddEntries(autoroutes.Select(x => new AutorouteEntry { ContentItemId = x.ContentItemId, Path = x.Path }));
+            entries.AddEntries(autoroutes.Select(e => new AutorouteEntry(e.ContentItemId, e.Path, e.ContainedContentItemId, e.JsonPath)));
 
             // The 1st segment prevents the transformer to be executed for the home.
             routes.MapDynamicControllerRoute<AutoRouteTransformer>("/{any}/{**slug}");

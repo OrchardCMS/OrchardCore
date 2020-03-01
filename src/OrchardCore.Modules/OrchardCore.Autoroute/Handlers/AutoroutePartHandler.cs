@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
@@ -28,6 +31,9 @@ namespace OrchardCore.Autoroute.Handlers
         private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
         private readonly ISession _session;
+        private readonly IServiceProvider _serviceProvider;
+
+        private IContentManager _contentManager;
 
         public AutoroutePartHandler(
             IAutorouteEntries entries,
@@ -36,7 +42,8 @@ namespace OrchardCore.Autoroute.Handlers
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             ITagCache tagCache,
-            ISession session)
+            ISession session,
+            IServiceProvider serviceProvider)
         {
             _entries = entries;
             _options = options.Value;
@@ -45,13 +52,29 @@ namespace OrchardCore.Autoroute.Handlers
             _siteService = siteService;
             _tagCache = tagCache;
             _session = session;
+            _serviceProvider = serviceProvider;
         }
 
         public override async Task PublishedAsync(PublishContentContext context, AutoroutePart part)
         {
+            // Add parent content item path, and children, only if parent has a valid path.
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
-                _entries.AddEntry(part.ContentItem.ContentItemId, part.Path);
+                var entriesToAdd = new List<AutorouteEntry>
+                {
+                    new AutorouteEntry(part.ContentItem.ContentItemId, part.Path)
+                };
+
+                if (part.RouteContainedItems)
+                {
+                    _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
+
+                    var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(context.PublishingItem);
+
+                    await PopulateContainedContentItemRoutes(entriesToAdd, part.ContentItem.ContentItemId, containedAspect, context.PublishingItem.Content as JObject, part.Path);
+                }
+
+                _entries.AddEntries(entriesToAdd);
             }
 
             if (part.SetHomepage)
@@ -109,6 +132,188 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override async Task UpdatedAsync(UpdateContentContext context, AutoroutePart part)
         {
+            await GenerateContainerPathFromPattern(part);
+            await GenerateContainedPathsFromPattern(context.UpdatingItem, part);
+        }
+
+        public async override Task CloningAsync(CloneContentContext context, AutoroutePart part)
+        {
+            var clonedPart = context.CloneContentItem.As<AutoroutePart>();
+            clonedPart.Path = await GenerateUniqueAbsolutePathAsync(part.Path, context.CloneContentItem.ContentItemId);
+            clonedPart.SetHomepage = false;
+            clonedPart.Apply();
+
+            await GenerateContainedPathsFromPattern(context.CloneContentItem, part);
+        }
+
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, AutoroutePart part)
+        {
+            return context.ForAsync<RouteHandlerAspect>(aspect =>
+            {
+                aspect.Path = part.Path;
+                aspect.Absolute = part.Absolute;
+                aspect.Disabled = part.Disabled;
+
+                return Task.CompletedTask;
+            });
+        }
+
+        private Task RemoveTagAsync(AutoroutePart part)
+        {
+            return _tagCache.RemoveTagAsync($"slug:{part.Path}");
+        }
+
+        private async Task GenerateContainedPathsFromPattern(ContentItem contentItem, AutoroutePart part)
+        {
+            // Validate contained content item routes if container has valid path.
+            if (!String.IsNullOrWhiteSpace(part.Path) || !part.RouteContainedItems)
+            {
+                return;
+            }
+
+            _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
+
+            var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
+
+            // Build the entries for this content item to evaluate for duplicates.
+            var entries = new List<AutorouteEntry>();
+            await PopulateContainedContentItemRoutes(entries, part.ContentItem.ContentItemId, containedAspect, contentItem.Content as JObject, part.Path);
+
+            await ValidateContainedContentItemRoutes(entries, part.ContentItem.ContentItemId, containedAspect, contentItem.Content as JObject, part.Path);
+        }
+
+        private async Task PopulateContainedContentItemRoutes(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
+        {
+            foreach (var accessor in containedContentItemsAspect.Accessors)
+            {
+                var jItems = accessor.Invoke(content);
+
+                foreach (JObject jItem in jItems)
+                {
+                    var contentItem = jItem.ToObject<ContentItem>();
+                    var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
+
+                    if (!handlerAspect.Disabled)
+                    {
+                        var path = handlerAspect.Path;
+                        if (!handlerAspect.Absolute)
+                        {
+                            path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
+                        }
+
+                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.Path));
+                    }
+
+                    var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
+                    var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
+                    await PopulateContainedContentItemRoutes(entries, containerContentItemId, childrenAspect, jItem, itemBasePath);
+                }
+            }
+        }
+
+        private async Task ValidateContainedContentItemRoutes(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
+        {
+            foreach (var accessor in containedContentItemsAspect.Accessors)
+            {
+                var jItems = accessor.Invoke(content);
+
+                foreach (JObject jItem in jItems)
+                {
+                    var contentItem = jItem.ToObject<ContentItem>();
+                    var containedAutoroutePart = contentItem.As<AutoroutePart>();
+
+                    // This is only relevant if the content items have an autoroute part as we adjust the part value as required to guarantee a unique route.
+                    // Content items routed only through the handler aspect already guarantee uniqueness.
+                    if (containedAutoroutePart != null && !containedAutoroutePart.Disabled)
+                    {
+                        var path = containedAutoroutePart.Path;
+
+                        if (containedAutoroutePart.Absolute && !await IsAbsolutePathUniqueAsync(path, contentItem.ContentItemId))
+                        {
+                            path = await GenerateUniqueAbsolutePathAsync(path, contentItem.ContentItemId);
+                            containedAutoroutePart.Path = path;
+                            containedAutoroutePart.Apply();
+
+                            // Merge because we have disconnected the content item from it's json owner.
+                            jItem.Merge(contentItem.Content, new JsonMergeSettings
+                            {
+                                MergeArrayHandling = MergeArrayHandling.Replace,
+                                MergeNullValueHandling = MergeNullValueHandling.Merge
+                            });
+                        }
+                        else
+                        {
+                            var currentItemBasePath = basePath.EndsWith('/') ? basePath : basePath + '/';
+                            path = currentItemBasePath + containedAutoroutePart.Path;
+                            if (!IsRelativePathUnique(entries, path, containedAutoroutePart))
+                            {
+                                path = GenerateRelativeUniquePath(entries, path, containedAutoroutePart);
+                                // Remove base path and update part path.
+                                containedAutoroutePart.Path = path.Substring(currentItemBasePath.Length);
+                                containedAutoroutePart.Apply();
+
+                                // Merge because we have disconnected the content item from it's json owner.
+                                jItem.Merge(contentItem.Content, new JsonMergeSettings
+                                {
+                                    MergeArrayHandling = MergeArrayHandling.Replace,
+                                    MergeNullValueHandling = MergeNullValueHandling.Merge
+                                });
+                            }
+
+                            path = path.Substring(currentItemBasePath.Length);
+                        }
+
+                        var containedItemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + path;
+                        var childItemAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
+                        await ValidateContainedContentItemRoutes(entries, containerContentItemId, childItemAspect, jItem, containedItemBasePath);
+                    }
+                }
+            }
+        }
+
+        private bool IsRelativePathUnique(List<AutorouteEntry> entries, string path, AutoroutePart context)
+        {
+            var result = !entries.Any(e => context.ContentItem.ContentItemId != e.ContainedContentItemId && String.Equals(e.Path, path, StringComparison.OrdinalIgnoreCase));
+            return result;
+        }
+
+        private string GenerateRelativeUniquePath(List<AutorouteEntry> entries, string path, AutoroutePart context)
+        {
+            var version = 1;
+            var unversionedPath = path;
+
+            var versionSeparatorPosition = path.LastIndexOf('-');
+            if (versionSeparatorPosition > -1 && int.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version))
+            {
+                unversionedPath = path.Substring(0, versionSeparatorPosition);
+            }
+
+            while (true)
+            {
+                // Unversioned length + seperator char + version length.
+                var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePartDisplay.MaxPathLength;
+                if (quantityCharactersToTrim > 0)
+                {
+                    unversionedPath = unversionedPath.Substring(0, unversionedPath.Length - quantityCharactersToTrim);
+                }
+
+                var versionedPath = $"{unversionedPath}-{version++}";
+                if (IsRelativePathUnique(entries, versionedPath, context))
+                {
+                    //TODO maybe findlast index is better, because it would do the last item entered.
+                    // consider.
+                    var entryIndex = entries.FindIndex(e => e.ContainedContentItemId == context.ContentItem.ContentItemId);
+                    var entry = entries[entryIndex];
+                    entry.Path = versionedPath;
+                    entries[entryIndex] = entry;
+
+                    return versionedPath;
+                }
+            }
+        }
+
+        private async Task GenerateContainerPathFromPattern(AutoroutePart part)
+        {
             // Compute the Path only if it's empty
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
@@ -136,26 +341,13 @@ namespace OrchardCore.Autoroute.Handlers
                     part.Path = part.Path.Substring(0, AutoroutePartDisplay.MaxPathLength);
                 }
 
-                if (!await IsPathUniqueAsync(part.Path, part))
+                if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
                 {
-                    part.Path = await GenerateUniquePathAsync(part.Path, part);
+                    part.Path = await GenerateUniqueAbsolutePathAsync(part.Path, part.ContentItem.ContentItemId);
                 }
 
                 part.Apply();
             }
-        }
-
-        public async override Task CloningAsync(CloneContentContext context, AutoroutePart part)
-        {
-            var clonedPart = context.CloneContentItem.As<AutoroutePart>();
-            clonedPart.Path = await GenerateUniquePathAsync(part.Path, clonedPart);
-            clonedPart.SetHomepage = false;
-            clonedPart.Apply();
-        }
-
-        private Task RemoveTagAsync(AutoroutePart part)
-        {
-            return _tagCache.RemoveTagAsync($"slug:{part.Path}");
         }
 
         /// <summary>
@@ -170,7 +362,7 @@ namespace OrchardCore.Autoroute.Handlers
             return pattern;
         }
 
-        private async Task<string> GenerateUniquePathAsync(string path, AutoroutePart context)
+        private async Task<string> GenerateUniqueAbsolutePathAsync(string path, string contentItemId)
         {
             var version = 1;
             var unversionedPath = path;
@@ -191,16 +383,16 @@ namespace OrchardCore.Autoroute.Handlers
                 }
 
                 var versionedPath = $"{unversionedPath}-{version++}";
-                if (await IsPathUniqueAsync(versionedPath, context))
+                if (await IsAbsolutePathUniqueAsync(versionedPath, contentItemId))
                 {
                     return versionedPath;
                 }
             }
         }
 
-        private async Task<bool> IsPathUniqueAsync(string path, AutoroutePart context)
+        private async Task<bool> IsAbsolutePathUniqueAsync(string path, string contentItemId)
         {
-            return (await _session.QueryIndex<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path == path).CountAsync()) == 0;
+            return (await _session.QueryIndex<AutoroutePartIndex>(o => o.ContentItemId != contentItemId && o.Path == path).CountAsync()) == 0;
         }
     }
 }
