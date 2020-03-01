@@ -11,6 +11,6 @@ namespace OrchardCore.Contents.Services
     public interface IContentQueryService
     {
         Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync(ClaimsPrincipal user);
-        Task<IQuery<ContentItem, ContentItemIndex>> GetQueryByOptions(ViewModels.ContentOptions options);
+        Task<IQuery<ContentItem, ContentItemIndex>> GetQueryByOptions(OrchardCore.Contents.ViewModels.ContentOptions options, ClaimsPrincipal user = null);
     }
 }

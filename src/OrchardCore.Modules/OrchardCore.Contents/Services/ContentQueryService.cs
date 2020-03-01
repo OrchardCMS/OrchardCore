@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -36,13 +37,15 @@ namespace OrchardCore.Contents.Services
             _httpContextAccessor = httpContextAccessor;
             _contentManager = contentManager;
         }
-        public async Task<IQuery<ContentItem, ContentItemIndex>> GetQueryByOptions(OrchardCore.Contents.ViewModels.ContentOptions options)
+        public async Task<IQuery<ContentItem, ContentItemIndex>> GetQueryByOptions(OrchardCore.Contents.ViewModels.ContentOptions options, ClaimsPrincipal user = null)
         {
-            ClaimsPrincipal user = null;
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext != null)
+            if (user == null)
             {
-                user = httpContext.User;
+                var httpContext = _httpContextAccessor.HttpContext;
+                if (httpContext != null)
+                {
+                    user = httpContext.User;
+                }
             }
 
             var query = _session.Query<ContentItem, ContentItemIndex>();
@@ -138,3 +141,5 @@ namespace OrchardCore.Contents.Services
 
     }
 }
+
+
