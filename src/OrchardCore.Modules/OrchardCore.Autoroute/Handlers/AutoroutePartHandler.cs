@@ -150,9 +150,15 @@ namespace OrchardCore.Autoroute.Handlers
         {
             return context.ForAsync<RouteHandlerAspect>(aspect =>
             {
-                aspect.Path = part.Path;
-                aspect.Absolute = part.Absolute;
-                aspect.Disabled = part.Disabled;
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
+                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AutoroutePart"));
+                var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
+                if (settings.ManageContainedItemRoutes)
+                {
+                    aspect.Path = part.Path;
+                    aspect.Absolute = part.Absolute;
+                    aspect.Disabled = part.Disabled;
+                }
 
                 return Task.CompletedTask;
             });
@@ -392,7 +398,20 @@ namespace OrchardCore.Autoroute.Handlers
 
         private async Task<bool> IsAbsolutePathUniqueAsync(string path, string contentItemId)
         {
-            return (await _session.QueryIndex<AutoroutePartIndex>(o => o.ContentItemId != contentItemId && o.Path == path).CountAsync()) == 0;
+            var hasConflict = false;
+            var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == path).ListAsync();
+            if (possibleConflicts.Any())
+            {
+                if (possibleConflicts.Any(x => x.ContentItemId != contentItemId) &&
+                    possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != contentItemId))
+                {
+                    hasConflict = true;
+                }
+            }
+
+            return hasConflict;
+
+            //return (await _session.QueryIndex<AutoroutePartIndex>(o => o.ContentItemId != contentItemId && o.Path == path).CountAsync()) == 0;
         }
     }
 }

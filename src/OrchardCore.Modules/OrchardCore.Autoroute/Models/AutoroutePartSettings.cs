@@ -31,6 +31,11 @@ namespace OrchardCore.Autoroute.Models
         public bool AllowRouteContainedItems { get; set; }
 
         /// <summary>
+        /// Whether this part is managing contained item routes.
+        /// </summary>
+        public bool ManageContainedItemRoutes { get; set; }
+
+        /// <summary>
         /// Whether to allow routing of contained content items to absolute paths.
         /// </summary>
         public bool AllowAbsolutePath { get; set; }

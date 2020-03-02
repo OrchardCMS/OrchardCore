@@ -101,12 +101,12 @@ namespace OrchardCore.Autoroute.Drivers
                 await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
             }
 
-            await ValidateAsync(model, updater);
+            await ValidateAsync(model, updater, settings);
 
             return Edit(model, context);
         }
 
-        private async Task ValidateAsync(AutoroutePart autoroute, IUpdateModel updater)
+        private async Task ValidateAsync(AutoroutePart autoroute, IUpdateModel updater, AutoroutePartSettings settings)
         {
             if (autoroute.Path == "/")
             {
@@ -128,29 +128,42 @@ namespace OrchardCore.Autoroute.Drivers
             // So for later...
             // Or choose that absolute routing is too hard to achieve in this scenario.
 
-            //if (autoroute.Path != null)
+            //if (autoroute.Path != null &&
+            //    (await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path &&
+            //    o.ContentItemId != autoroute.ContentItem.ContentItemId &&
+            //    o.ContainedContentItemId != autoroute.ContentItem.ContentItemId).CountAsync()) > 0)
             //{
-            //    var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path).ListAsync();
-            //    if (possibleConflicts.Any())
-            //    {
-            //        bool hasConflict = false;
-            //        // Check to see if this is the same content item
-            //        if (possibleConflicts.Any(x => x.ContentItemId != autoroute.ContentItem.ContentItemId))
-            //        {
-            //            if (possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != autoroute.ContentItem.ContentItemId))
-            //            {
-            //                hasConflict = true;
-            //            }
-            //        }
-            //        if (hasConflict)
-            //        {
-            //            updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is already in use."]);
-            //        }
-            //    }
+            //    updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is already in use."]);
+
             //}
-            if (autoroute.Path != null && (await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).CountAsync()) > 0)
+
+            // TODO a. clean this up.
+            // b. this has no knowledge of whether it is contained or not
+            // so path test will fail if it is supposed to be relative.
+            // maybe with an Relative flag that is false by default
+            // and must be turned on, we can skip path checking here.
+
+            // We either need a RouteHandlerPart
+            // Or a flag on the Settings called ManageContainedItemRoutes
+
+            // Or the hack of binding the main contentItemId to see if it matches this one.
+            // Too hacky!
+            if (autoroute.Path != null && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && autoroute.Absolute)))
             {
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is already in use."]);
+                var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path).ListAsync();
+                if (possibleConflicts.Any())
+                {
+                    var hasConflict = false;
+                    if (possibleConflicts.Any(x => x.ContentItemId != autoroute.ContentItem.ContentItemId) &&
+                        possibleConflicts.Any(x => x.ContainedContentItemId != autoroute.ContentItem.ContentItemId))
+                    {
+                        hasConflict = true;
+                    }
+                    if (hasConflict)
+                    {
+                        updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is already in use."]);
+                    }
+                }
             }
         }
     }

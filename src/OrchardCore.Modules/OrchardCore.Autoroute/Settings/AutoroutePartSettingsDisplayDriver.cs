@@ -38,6 +38,7 @@ namespace OrchardCore.Autoroute.Settings
                 model.Pattern = settings.Pattern;
                 model.ShowHomepageOption = settings.ShowHomepageOption;
                 model.AllowRouteContainedItems = settings.AllowRouteContainedItems;
+                model.ManageContainedItemRoutes = settings.ManageContainedItemRoutes;
                 model.AllowAbsolutePath = settings.AllowAbsolutePath;
                 model.AutoroutePartSettings = settings;
             }).Location("Content");
@@ -58,6 +59,7 @@ namespace OrchardCore.Autoroute.Settings
                 m => m.AllowUpdatePath,
                 m => m.ShowHomepageOption,
                 m => m.AllowRouteContainedItems,
+                m => m.ManageContainedItemRoutes,
                 m => m.AllowAbsolutePath);
 
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
@@ -73,6 +75,7 @@ namespace OrchardCore.Autoroute.Settings
                     AllowUpdatePath = model.AllowUpdatePath,
                     ShowHomepageOption = model.ShowHomepageOption,
                     AllowRouteContainedItems = model.AllowRouteContainedItems,
+                    ManageContainedItemRoutes = model.ManageContainedItemRoutes,
                     AllowAbsolutePath = model.AllowAbsolutePath
                 });
             }
