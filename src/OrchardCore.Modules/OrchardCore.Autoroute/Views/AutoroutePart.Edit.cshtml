@@ -1,9 +1,13 @@
 @using OrchardCore.Autoroute.ViewModels;
+@using OrchardCore.ContentManagement;
+@using OrchardCore.ContentManagement.Routing;
 @model AutoroutePartViewModel
 @inject IAuthorizationService AuthorizationService
 @inject OrchardCore.Settings.ISiteService SiteService
+@inject OrchardCore.ContentManagement.IContentManager ContentManager
 @{
     var site = await SiteService.GetSiteSettingsAsync();
+    var containedContentItemsAspect = await ContentManager.PopulateAspectAsync<ContainedContentItemsAspect>(Model.ContentItem);
 }
 
 <div class="form-group" asp-validation-class-for="Path">
@@ -50,7 +54,6 @@
     }
 }
 
-
 @if (Model.Settings.AllowUpdatePath)
 {
     <div class="form-group">
@@ -62,7 +65,7 @@
     </div>
 }
 
-@if (Model.Settings.AllowRouteContainedItems)
+@if (containedContentItemsAspect.Accessors.Any() && Model.Settings.AllowRouteContainedItems)
 {
     <div class="form-group">
         <div class="custom-control custom-checkbox">
@@ -73,7 +76,7 @@
     </div>
 }
 
-@if (Model.Settings.AllowAbsolutePath)
+@if (Model.Settings.ManageContainedItemRoutes && Model.Settings.AllowAbsolutePath)
 {
     <div class="form-group">
         <div class="custom-control custom-checkbox">
@@ -84,13 +87,13 @@
     </div>
 }
 
-<div class="form-group">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="Disabled" checked="@Model.Disabled" />
-        <label class="custom-control-label" asp-for="Disabled">@T["Disabled"]</label>
-        <span class="hint">— @T["Check to specify that when the content item is contained routing is disabled. Note: When disabled paths are no longer generated or validated."]</span>
+@if (Model.Settings.ManageContainedItemRoutes)
+{
+    <div class="form-group">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="Disabled" checked="@Model.Disabled" />
+            <label class="custom-control-label" asp-for="Disabled">@T["Disabled"]</label>
+            <span class="hint">— @T["Check to specify that when the content item is contained routing is disabled. Note: When disabled paths are no longer generated or validated."]</span>
+        </div>
     </div>
-</div>
-
-
-
+}

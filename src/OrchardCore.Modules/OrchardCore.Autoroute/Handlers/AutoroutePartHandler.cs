@@ -398,18 +398,18 @@ namespace OrchardCore.Autoroute.Handlers
 
         private async Task<bool> IsAbsolutePathUniqueAsync(string path, string contentItemId)
         {
-            var hasConflict = false;
+            var isUnique = true;
             var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == path).ListAsync();
             if (possibleConflicts.Any())
             {
                 if (possibleConflicts.Any(x => x.ContentItemId != contentItemId) &&
                     possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != contentItemId))
                 {
-                    hasConflict = true;
+                    isUnique = false;
                 }
             }
 
-            return hasConflict;
+            return isUnique;
 
             //return (await _session.QueryIndex<AutoroutePartIndex>(o => o.ContentItemId != contentItemId && o.Path == path).CountAsync()) == 0;
         }

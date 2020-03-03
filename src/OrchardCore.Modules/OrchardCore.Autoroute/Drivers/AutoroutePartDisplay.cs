@@ -53,6 +53,7 @@ namespace OrchardCore.Autoroute.Drivers
             {
                 model.Path = autoroutePart.Path;
                 model.AutoroutePart = autoroutePart;
+                model.ContentItem = autoroutePart.ContentItem;
                 model.SetHomepage = false;
 
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
