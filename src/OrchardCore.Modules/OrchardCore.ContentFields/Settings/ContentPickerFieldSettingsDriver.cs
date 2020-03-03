@@ -22,7 +22,7 @@ namespace OrchardCore.ContentFields.Settings
 
             if (model.DisplayAllContentTypes)
             {
-                model.DisplayedContentTypes = new string[0];
+                model.DisplayedContentTypes = Array.Empty<String>();
             }
 
             context.Builder.WithSettings(model);
