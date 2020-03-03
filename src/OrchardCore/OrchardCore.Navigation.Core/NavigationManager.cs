@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
@@ -143,7 +142,6 @@ namespace OrchardCore.Navigation
                                 source.Classes.AddRange(cursor.Classes);
                             }
                         }
-
                     }
                 }
 

@@ -5,7 +5,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using GraphQL;
-using GraphQL.DataLoader;
 using GraphQL.Execution;
 using GraphQL.Validation;
 using GraphQL.Validation.Complexity;
@@ -16,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Routing;
 
 namespace OrchardCore.Apis.GraphQL
@@ -48,16 +48,14 @@ namespace OrchardCore.Apis.GraphQL
             }
             else
             {
-                var principal = context.User;
-
                 var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
 
                 if (authenticateResult.Succeeded)
                 {
-                    principal = authenticateResult.Principal;
+                    context.User = authenticateResult.Principal;
                 }
 
-                var authorized = await authorizationService.AuthorizeAsync(principal, Permissions.ExecuteGraphQL);
+                var authorized = await authorizationService.AuthorizeAsync(context.User, Permissions.ExecuteGraphQL);
 
                 if (authorized)
                 {
@@ -85,7 +83,6 @@ namespace OrchardCore.Apis.GraphQL
 
             if (HttpMethods.IsPost(context.Request.Method))
             {
-
                 var mediaType = new MediaType(context.Request.ContentType);
 
                 try
@@ -110,9 +107,10 @@ namespace OrchardCore.Apis.GraphQL
                     }
                     else if (context.Request.Query.ContainsKey("query"))
                     {
-                        request = new GraphQLRequest();
-
-                        request.Query = context.Request.Query["query"];
+                        request = new GraphQLRequest
+                        {
+                            Query = context.Request.Query["query"]
+                        };
 
                         if (context.Request.Query.ContainsKey("variables"))
                         {
@@ -139,9 +137,10 @@ namespace OrchardCore.Apis.GraphQL
                     return;
                 }
 
-                request = new GraphQLRequest();
-
-                request.Query = context.Request.Query["query"];
+                request = new GraphQLRequest
+                {
+                    Query = context.Request.Query["query"]
+                };
             }
 
             var queryToExecute = request.Query;
@@ -178,11 +177,12 @@ namespace OrchardCore.Apis.GraphQL
                 _.Listeners.Add(dataLoaderDocumentListener);
             });
 
-            var httpResult = result.Errors?.Count > 0
-                ? HttpStatusCode.BadRequest
-                : HttpStatusCode.OK;
+            context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
+                ? HttpStatusCode.OK
+                : result.Errors.Any(x => x.Code == RequiresPermissionValidationRule.ErrorCode)
+                    ? HttpStatusCode.Unauthorized
+                    : HttpStatusCode.BadRequest);
 
-            context.Response.StatusCode = (int)httpResult;
             context.Response.ContentType = "application/json";
 
             // Asynchronous write to the response body is mandatory.
@@ -197,8 +197,10 @@ namespace OrchardCore.Apis.GraphQL
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var errorResult = new ExecutionResult();
-            errorResult.Errors = new ExecutionErrors();
+            var errorResult = new ExecutionResult
+            {
+                Errors = new ExecutionErrors()
+            };
 
             if (e == null)
             {

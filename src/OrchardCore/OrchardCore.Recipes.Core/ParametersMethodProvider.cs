@@ -16,10 +16,10 @@ namespace OrchardCore.Recipes
             _globalMethod = new GlobalMethod
             {
                 Name = "parameters",
-                Method = serviceprovider => (Func<string, object>) (name =>
-                {
-                    return environmentObject[name].Value<string>();
-                })
+                Method = serviceprovider => (Func<string, object>)(name =>
+               {
+                   return environmentObject[name].Value<string>();
+               })
             };
         }
 

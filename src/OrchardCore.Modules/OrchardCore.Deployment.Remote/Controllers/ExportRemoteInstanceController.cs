@@ -12,6 +12,7 @@ using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Recipes.Models;
 using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
@@ -50,7 +51,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
@@ -74,7 +75,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder);
+                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, new RecipeDescriptor());
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
 
                 if (System.IO.File.Exists(archiveFileName))

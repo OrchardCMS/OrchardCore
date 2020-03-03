@@ -74,7 +74,7 @@ namespace OrchardCore.OpenId.YesSql.Models
 
         /// <summary>
         /// Gets or sets the application type
-        /// associated with the current application.        
+        /// associated with the current application.
         /// </summary>
         public string Type { get; set; }
     }

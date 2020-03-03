@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using MimeKit;
 
 namespace OrchardCore.Users.ViewModels
 {
@@ -14,7 +14,6 @@ namespace OrchardCore.Users.ViewModels
 
         public string UserName { get; set; }
 
-        [EmailAddress]
         public string Email { get; set; }
 
         [DataType(DataType.Password)]
@@ -26,9 +25,16 @@ namespace OrchardCore.Users.ViewModels
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var S = validationContext.GetService<IStringLocalizer<RegisterExternalLoginViewModel>>();
-            if (string.IsNullOrWhiteSpace(Email) && !NoEmail)
+            if (string.IsNullOrWhiteSpace(Email))
             {
-                yield return new ValidationResult(S["Email is required!"], new[] { "Email" });
+                if (!NoEmail)
+                {
+                    yield return new ValidationResult(S["Email is required!"], new[] { "Email" });
+                }
+            }
+            else if (!MailboxAddress.TryParse(Email, out var emailAddress))
+            {
+                yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
             }
 
             if (string.IsNullOrWhiteSpace(UserName) && !NoUsername)

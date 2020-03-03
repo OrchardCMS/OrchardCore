@@ -64,7 +64,7 @@ namespace OrchardCore.Mvc
                             var page = assets.FirstOrDefault(a => a.ProjectAssetPath.Contains("/Pages/"));
 
                             // Check if the module project may have a razor page.
-                            if (page != null)
+                            if (page != null && Directory.Exists(root))
                             {
                                 // Razor pages are not watched in the same way as other razor views.
                                 // We need a physical file provider on the "{ModuleProjectDirectory}".
@@ -216,7 +216,6 @@ namespace OrchardCore.Mvc
 
             // The view engine uses a watch on "Pages/**/*.cshtml" but only for razor pages.
             // So here, we only use file providers for modules which have a "Pages" folder.
-
             else if (path.Equals("Pages/**/*.cshtml"))
             {
                 var changeTokens = new List<IChangeToken>();

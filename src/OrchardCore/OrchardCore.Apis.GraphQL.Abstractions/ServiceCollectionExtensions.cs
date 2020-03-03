@@ -11,10 +11,9 @@ namespace OrchardCore.Apis
         /// <typeparam name="TInputType"></typeparam>
         /// <param name="services"></param>
         public static void AddInputObjectGraphType<TObject, TObjectType>(this IServiceCollection services)
-            where TObject : class 
+            where TObject : class
             where TObjectType : InputObjectGraphType<TObject>
         {
-
             // Instances are registered as singletons as their constructor holds the logic to configure the type
             // and doesn't need to run everytime
             services.AddSingleton<TObjectType>();

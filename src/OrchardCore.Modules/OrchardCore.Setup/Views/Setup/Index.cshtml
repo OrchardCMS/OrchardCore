@@ -21,14 +21,14 @@
     if (options.Password.RequireNonAlphanumeric)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one non-alphanumeric"]);
-        separator = T[", "];
+        separator = new HtmlString(", ");
         passwordRegex += @"(?=.*[^A-Za-z0-9])";
     }
 
     if (options.Password.RequireUppercase)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one uppercase"]);
-        separator = T[", "];
+        separator = new HtmlString(", ");
         passwordRegex += @"(?=.*[A-Z])";
     }
 
@@ -42,7 +42,7 @@
     if (options.Password.RequireDigit)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one digit"]);
-        separator = T[", "];
+        separator = new HtmlString(", ");
         passwordRegex += @"(?=.*[0-9])";
     }
 
@@ -115,7 +115,6 @@
                             </div>
                         }
                         <span class="text-muted form-text small">@T["Recipes allow you to setup your site with additional pre-configured options, features and settings out of the box."]</span>
-
                     </div>
                 </nav>
             </div>
@@ -133,7 +132,6 @@
             <span asp-validation-for="SiteTimeZone"></span>
             <span class="text-muted form-text small">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
         </div>
-
     </div>
 
     @if (!Model.DatabaseConfigurationPreset)

@@ -46,7 +46,6 @@ namespace OrchardCore.OpenId.Drivers
                 }
 
                 model.AvailableTenants = availableTenants;
-
             }).Location("Content:2"));
 
         public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, UpdateEditorContext context)

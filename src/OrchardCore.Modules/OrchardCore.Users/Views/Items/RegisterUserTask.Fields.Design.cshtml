@@ -5,7 +5,7 @@
 @model ActivityViewModel<RegisterUserTask>
 
 <header>
-    @{ 
+    @{
         var icon = Model.Activity.SendConfirmationEmail ? "fa-user-shield" : "fa-user";
     }
     <h4><i class="fa @icon"></i>@Model.Activity.GetTitleOrDefault(() => T["Register User"])</h4>

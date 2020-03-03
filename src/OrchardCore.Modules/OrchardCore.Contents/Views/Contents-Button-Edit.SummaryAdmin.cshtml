@@ -1,4 +1,4 @@
-﻿@using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement
 @inject IContentManager ContentManager
 
 @{
@@ -7,7 +7,6 @@
 }
 
 <a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
-
 
 @if (hasPublished)
 {

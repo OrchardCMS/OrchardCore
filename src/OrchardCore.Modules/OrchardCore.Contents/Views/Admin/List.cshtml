@@ -47,13 +47,20 @@
             <div class="btn-group float-right">
                 @if (Model.Options.CreatableTypes.Any())
                 {
-                    <button class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" id="new-dropdown" type="button" aria-haspopup="true" aria-expanded="false">@T["New"]</button>
-                    <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
-                        @foreach (var item in Model.Options.CreatableTypes)
-                        {
-                            <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value })">@item.Text</a>
-                        }
-                    </div>
+                    @if (Model.Options.CreatableTypes.Count == 1)
+                    {
+                        <a class="btn btn-sm btn-success" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @Model.Options.CreatableTypes.First().Value })">@T["New {0}", Model.Options.CreatableTypes.First().Text]</a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" id="new-dropdown" type="button" aria-haspopup="true" aria-expanded="false">@T["New"]</button>
+                        <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
+                            @foreach (var item in Model.Options.CreatableTypes)
+                            {
+                                <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value })">@T[item.Text]</a>
+                            }
+                        </div>
+                    }
                 }
             </div>
         </div>
@@ -69,8 +76,8 @@
                         <label id="selected-items" class="text-muted" for="select-all"></label>
                     </div>
                 </div>
-                <div class="form-group col-2 mb-n1" style="display:none">
-                    <span class="dropdown float-right mt-1" id="actions">
+                <div class="form-group col-2 mb-n1" style="display:none" id="actions">
+                    <span class="dropdown float-right mt-1">
                         <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @T["Actions"]
                         </button>
@@ -117,7 +124,7 @@
 @* This is because ContentTypesAdminNode requires the ContenType to be available as part of the url *@
 <script at="Foot" type="text/javascript">
     $(function () {
-        $('select').selectpicker();
+        $('.selectpicker').selectpicker();
 
         var actions = $("#actions");
         var items = $("#items");
@@ -133,7 +140,7 @@
             $("#items-form").attr("action", newAction);
         });
 
-        $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
 
@@ -151,13 +158,13 @@
 
         function displayActionsOrFilters() {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                actions.parent().show();
+                actions.show();
                 filters.hide();
                 selectedItems.show();
                 items.hide();
             }
             else {
-                actions.parent().hide();
+                actions.hide();
                 filters.show();
                 selectedItems.hide();
                 items.show();

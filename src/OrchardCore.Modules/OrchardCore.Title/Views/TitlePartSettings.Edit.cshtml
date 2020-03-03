@@ -10,13 +10,16 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="row col-sm-6 mb-3">
-    <label asp-for="Options">@T["Options"]</label>
-    <select asp-for="Options" class="form-control">
-        <option value="@TitlePartOptions.Editable" selected="@(Model.Options == TitlePartOptions.Editable)">@T["Title is editable"]</option>
-        <option value="@TitlePartOptions.GeneratedDisabled" selected="@(Model.Options == TitlePartOptions.GeneratedDisabled)">@T["Title is generated and input is disabled"]</option>
-        <option value="@TitlePartOptions.GeneratedHidden" selected="@(Model.Options == TitlePartOptions.GeneratedHidden)">@T["Title is generated and input is hidden"]</option>
-    </select>
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <label asp-for="Options">@T["Options"]</label>
+        <select asp-for="Options" class="form-control">
+            <option value="@TitlePartOptions.Editable" selected="@(Model.Options == TitlePartOptions.Editable)">@T["Title is editable"]</option>
+            <option value="@TitlePartOptions.EditableRequired" selected="@(Model.Options == TitlePartOptions.EditableRequired)">@T["Title is editable and required"]</option>
+            <option value="@TitlePartOptions.GeneratedDisabled" selected="@(Model.Options == TitlePartOptions.GeneratedDisabled)">@T["Title is generated and input is disabled"]</option>
+            <option value="@TitlePartOptions.GeneratedHidden" selected="@(Model.Options == TitlePartOptions.GeneratedHidden)">@T["Title is generated and input is hidden"]</option>
+        </select>
+    </div>
 </div>
 <div class="row mb-3">
     <div class="col-lg">

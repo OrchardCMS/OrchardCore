@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OpenIddict.Abstractions;
 using OrchardCore.Modules;
@@ -16,10 +18,14 @@ namespace OrchardCore.OpenId.Controllers
     [OpenIdController, SkipStatusCodePages]
     public class UserInfoController : Controller
     {
-        private readonly IStringLocalizer<UserInfoController> T;
+        private readonly ILogger<UserInfoController> _logger;
+        private readonly IStringLocalizer<UserInfoController> S;
 
-        public UserInfoController(IStringLocalizer<UserInfoController> localizer)
-            => T = localizer;
+        public UserInfoController(IStringLocalizer<UserInfoController> localizer, ILogger<UserInfoController> logger)
+        {
+            S = localizer;
+            _logger = logger;
+        }
 
         // GET/POST: /connect/userinfo
         [AcceptVerbs("GET", "POST")]
@@ -49,11 +55,69 @@ namespace OrchardCore.OpenId.Controllers
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIddictConstants.Errors.InvalidRequest,
-                    ErrorDescription = T["The userinfo endpoint can only be used with access tokens representing users."]
+                    ErrorDescription = S["The userinfo endpoint can only be used with access tokens representing users."]
                 });
             }
 
             var claims = new JObject();
+
+            if (principal.HasClaim(OpenIdConnectConstants.Claims.Scope, OpenIdConnectConstants.Scopes.Profile))
+            {
+                var preferredUsername = principal.FindFirst(OpenIdConnectConstants.Claims.PreferredUsername)
+                                                 ?.Value;
+                if (!string.IsNullOrEmpty(preferredUsername))
+                {
+                    claims[OpenIdConnectConstants.Claims.PreferredUsername] = preferredUsername;
+                }
+
+                var name = principal.FindFirst(OpenIdConnectConstants.Claims.Name)?.Value ??
+                              principal.FindFirst(ClaimTypes.Name)?.Value;
+
+                if (!string.IsNullOrEmpty(name))
+                {
+                    claims[OpenIdConnectConstants.Claims.Name] = name;
+                }
+
+                var familyName = principal.FindFirst(OpenIdConnectConstants.Claims.FamilyName)?.Value ??
+                           principal.FindFirst(ClaimTypes.Surname)?.Value;
+
+                if (!string.IsNullOrEmpty(familyName))
+                {
+                    claims[OpenIdConnectConstants.Claims.FamilyName] = familyName;
+                }
+
+                var givenName = principal.FindFirst(OpenIdConnectConstants.Claims.GivenName)?.Value ??
+                           principal.FindFirst(ClaimTypes.GivenName)?.Value;
+
+                if (!string.IsNullOrEmpty(givenName))
+                {
+                    claims[OpenIdConnectConstants.Claims.GivenName] = givenName;
+                }
+
+                var middleName = principal.FindFirst(OpenIdConnectConstants.Claims.MiddleName)
+                                          ?.Value;
+
+                if (!string.IsNullOrEmpty(middleName))
+                {
+                    claims[OpenIdConnectConstants.Claims.MiddleName] = middleName;
+                }
+
+                var picture = principal.FindFirst(OpenIdConnectConstants.Claims.Picture)
+                                       ?.Value;
+
+                if (!string.IsNullOrEmpty(picture))
+                {
+                    claims[OpenIdConnectConstants.Claims.Picture] = picture;
+                }
+
+                var updatedAtClaimValue = principal.FindFirst(OpenIdConnectConstants.Claims.UpdatedAt)
+                                       ?.Value;
+
+                if (!string.IsNullOrEmpty(updatedAtClaimValue))
+                {
+                    claims[OpenIdConnectConstants.Claims.UpdatedAt] = long.Parse(updatedAtClaimValue, CultureInfo.InvariantCulture);
+                }
+            }
 
             // Note: the "sub" claim is a mandatory claim and must be included in the JSON response.
             claims[OpenIdConnectConstants.Claims.Subject] = principal.GetUserIdentifier();

@@ -12,6 +12,9 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 {
     public class TextFieldIndex : ContentFieldIndex
     {
+        // Maximum length that MySql can support in an index under utf8 collation.
+        public const int MaxTextSize = 768;
+
         public string Text { get; set; }
         public string BigText { get; set; }
     }
@@ -81,7 +84,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                             ContentType = contentItem.ContentType,
                             ContentPart = fieldDefinition.PartDefinition.Name,
                             ContentField = fieldDefinition.Name,
-                            Text = field.Text?.Substring(0, Math.Min(field.Text.Length, 4000)),
+                            Text = field.Text?.Substring(0, Math.Min(field.Text.Length, TextFieldIndex.MaxTextSize)),
                             BigText = field.Text
                         });
                     }

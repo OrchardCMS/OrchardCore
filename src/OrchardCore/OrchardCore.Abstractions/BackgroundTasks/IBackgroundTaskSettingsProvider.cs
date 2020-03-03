@@ -6,7 +6,7 @@ namespace OrchardCore.BackgroundTasks
 {
     public interface IBackgroundTaskSettingsProvider
     {
-        IChangeToken ChangeToken { get;  }
+        IChangeToken ChangeToken { get; }
         Task<BackgroundTaskSettings> GetSettingsAsync(IBackgroundTask task);
     }
 }

@@ -48,7 +48,7 @@ namespace OrchardCore.Tests.Localization
             // "Content-Type: text/plain; charset=UTF-8\n"
             // "Content-Transfer-Encoding: 8bit\n"
             // "Plural-Forms: nplurals=2; plural=n != 1;\n"
-               
+
             // msgid "Unknown system error"
             // msgstr "Error desconegut del sistema"
             var entries = ParseText("PoeditHeader");
@@ -111,7 +111,6 @@ namespace OrchardCore.Tests.Localization
 
             Assert.Equal("Foo \"{0}\"", entries[0].Key);
         }
-
 
         [Fact]
         public void ParseHandlesMultilineEntry()

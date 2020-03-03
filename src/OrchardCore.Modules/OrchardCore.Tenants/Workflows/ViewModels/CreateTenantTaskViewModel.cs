@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using OrchardCore.Tenants.Workflows.Activities;
 
 namespace OrchardCore.Tenants.Workflows.ViewModels

@@ -30,7 +30,6 @@ namespace OrchardCore.ContentFields.Fields
             _contentManager = contentManager;
             S = localizer;
             _contentLocalizationManager = contentLocalizationManager;
-
         }
 
         public override IDisplayResult Display(LocalizationSetContentPickerField field, BuildFieldDisplayContext context)
@@ -41,8 +40,8 @@ namespace OrchardCore.ContentFields.Fields
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(LocalizationSetContentPickerField field, BuildFieldEditorContext context)

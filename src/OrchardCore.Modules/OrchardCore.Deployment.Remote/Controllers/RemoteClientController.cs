@@ -14,7 +14,6 @@ using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
-
     [Admin]
     public class RemoteClientController : Controller
     {
@@ -50,11 +49,11 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var remoteClientList = await _service.GetRemoteClientListAsync();
-            
+
             var model = new RemoteClientIndexViewModel
             {
                 RemoteClientList = remoteClientList
@@ -67,7 +66,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new EditRemoteClientViewModel();
@@ -80,7 +79,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -104,7 +103,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var remoteClient = await _service.GetRemoteClientAsync(id);
@@ -129,7 +128,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var remoteClient = await _service.GetRemoteClientAsync(model.Id);
@@ -162,7 +161,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var remoteClient = await _service.GetRemoteClientAsync(id);

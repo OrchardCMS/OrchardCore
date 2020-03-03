@@ -1,13 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
@@ -16,84 +16,80 @@ using OrchardCore.Settings;
 namespace OrchardCore.ContentLocalization.Controllers
 {
     [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
-    public class ContentCulturePickerController : Controller, IUpdateModel
+    public class ContentCulturePickerController : Controller
     {
         private readonly ISiteService _siteService;
         private readonly ILocalizationService _locationService;
         private readonly IContentCulturePickerService _culturePickerService;
 
-        public IHtmlLocalizer T { get; }
-
         public ContentCulturePickerController(
-             ISiteService siteService,
-            IHtmlLocalizer<AdminController> localizer,
+            ISiteService siteService,
             ILocalizationService locationService,
             IContentCulturePickerService culturePickerService)
         {
             _siteService = siteService;
-            T = localizer;
             _locationService = locationService;
             _culturePickerService = culturePickerService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, PathString contentItemUrl)
+        public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, PathString contentItemUrl, string queryStringValue)
         {
-            // Invariant culture name is empty so a null value is bound.
-            targetCulture = targetCulture ?? "";
+            targetCulture ??= CultureInfo.InvariantCulture.Name;
 
             if (!contentItemUrl.HasValue)
             {
                 contentItemUrl = "/";
             }
 
+            var queryString = new QueryString(queryStringValue);
+            var url = HttpContext.Request.PathBase + contentItemUrl + queryString;
+
             var supportedCultures = await _locationService.GetSupportedCulturesAsync();
 
-            if (!supportedCultures.Any(t => t == targetCulture))
+            if (supportedCultures.Any(t => t == targetCulture))
             {
-                return LocalRedirect('~' + contentItemUrl);
-            }
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<ContentCulturePickerSettings>();
+                var settings = (await _siteService.GetSiteSettingsAsync()).As<ContentCulturePickerSettings>();
 
-            if (settings.SetCookie)
-            {
-                // Set the cookie to handle redirecting to a custom controller
-                Response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
-                Response.Cookies.Append(
-                    CookieRequestCultureProvider.DefaultCookieName,
-                    CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
-                    new CookieOptions { Expires = DateTime.UtcNow.AddDays(14) }
-                );
-            }
-            // Redirect the user to the Content with the same localizationSet as the ContentItem of the current url
-            var localizations = await _culturePickerService.GetLocalizationsFromRouteAsync(contentItemUrl);
-            if (localizations.Any())
-            {
-                var localization = localizations.SingleOrDefault(l => String.Equals(l.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
-
-                if (localization != null)
+                if (settings.SetCookie)
                 {
-                    return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }));
+                    // Set the cookie to handle redirecting to a custom controller
+                    Response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
+                    Response.Cookies.Append(
+                        CookieRequestCultureProvider.DefaultCookieName,
+                        CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
+                        new CookieOptions { Expires = DateTime.UtcNow.AddDays(14) }
+                    );
+                }
+
+                // Redirect the user to the Content with the same localizationSet as the ContentItem of the current url
+                var localizations = await _culturePickerService.GetLocalizationsFromRouteAsync(contentItemUrl);
+                if (!TryGetLocalizedContentUrl(localizations) && settings.RedirectToHomepage)
+                {
+                    // Try to get the Homepage for the current culture
+                    var homeLocalizations = await _culturePickerService.GetLocalizationsFromRouteAsync("/");
+                    TryGetLocalizedContentUrl(homeLocalizations);
                 }
             }
 
-            if (settings.RedirectToHomepage)
+            bool TryGetLocalizedContentUrl(IEnumerable<LocalizationEntry> localizationEntries)
             {
-                // Try to get the Homepage for the current culture
-                var homeLocalizations = await _culturePickerService.GetLocalizationsFromRouteAsync("/");
-                if (homeLocalizations.Any())
+                if (localizationEntries.Any())
                 {
-                    var localization = homeLocalizations.SingleOrDefault(h => String.Equals(h.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
+                    var localization = localizationEntries.SingleOrDefault(e => String.Equals(e.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
 
                     if (localization != null)
                     {
-                        return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }));
+                        url = Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }) + queryString;
+
+                        return true;
                     }
                 }
+
+                return false;
             }
 
-            // Redirect to the same page by default
-            return LocalRedirect('~' + contentItemUrl);
+            return LocalRedirect(url);
         }
     }
 }

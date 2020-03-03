@@ -78,7 +78,6 @@ namespace OrchardCore.Modules
                     await WaitAsync(pollingDelay, stoppingToken);
                 }
             }
-
             catch (Exception e)
             {
                 Logger.LogError(e, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
@@ -129,7 +128,6 @@ namespace OrchardCore.Modules
 
                             Logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
-
                         catch (Exception e)
                         {
                             Logger.LogError(e, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
@@ -199,7 +197,6 @@ namespace OrchardCore.Modules
                                 settings = await settingsProvider.GetSettingsAsync(task);
                             }
                         }
-
                         catch (Exception e)
                         {
                             Logger.LogError(e, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);

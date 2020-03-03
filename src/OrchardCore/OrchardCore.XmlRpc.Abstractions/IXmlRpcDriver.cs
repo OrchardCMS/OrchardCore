@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.XmlRpc
+namespace OrchardCore.XmlRpc
 {
     public interface IXmlRpcDriver
     {

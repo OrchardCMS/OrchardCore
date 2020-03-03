@@ -11,7 +11,7 @@ using YesSql;
 public static class TaxonomyOrchardHelperExtensions
 {
     /// <summary>
-    /// Returns a the term from its content item id and taxonomy.
+    /// Returns a term from its content item id and taxonomy.
     /// </summary>
     /// <param name="taxonomyContentItemId">The taxonomy content item id.</param>
     /// <param name="termContentItemId">The term content item id.</param>
@@ -67,7 +67,7 @@ public static class TaxonomyOrchardHelperExtensions
 
     internal static ContentItem FindTerm(JArray termsArray, string termContentItemId)
     {
-        foreach(JObject term in termsArray)
+        foreach (JObject term in termsArray)
         {
             var contentItemId = term.GetValue("ContentItemId").ToString();
 
@@ -118,5 +118,4 @@ public static class TaxonomyOrchardHelperExtensions
 
         return false;
     }
-
 }

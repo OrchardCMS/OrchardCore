@@ -52,7 +52,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
@@ -86,6 +86,16 @@ namespace OrchardCore.Workflows.Http.Controllers
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
                     _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' could not be found.", payload.WorkflowId);
+                }
+
+                return NotFound();
+            }
+
+            if(!workflowType.IsEnabled)
+            {
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' is not enabled.", payload.WorkflowId);
                 }
 
                 return NotFound();

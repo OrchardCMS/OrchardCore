@@ -12,6 +12,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Events;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Azure
@@ -32,7 +33,7 @@ namespace OrchardCore.Media.Azure
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<MediaBlobStorageOptions>(_configuration.GetSection("OrchardCore.Media.Azure"));
+            services.AddTransient<IConfigureOptions<MediaBlobStorageOptions>, MediaBlobStorageOptionsConfiguration>();
 
             // Only replace default implementation if options are valid.
             var connectionString = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
@@ -81,6 +82,10 @@ namespace OrchardCore.Media.Azure
                     var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                     var clock = serviceProvider.GetRequiredService<IClock>();
                     var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
+                    var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                    var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
+                    var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
+
                     var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
 
                     var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsPath);
@@ -95,8 +100,10 @@ namespace OrchardCore.Media.Azure
                         mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                     }
 
-                    return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
+                    return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
                 }));
+
+                services.AddScoped<IModularTenantEvents, CreateMediaBlobContainerEvent>();
             }
         }
 
