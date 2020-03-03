@@ -49,7 +49,7 @@ namespace OrchardCore.PublishLater.Drivers
         {
             var httpContext = _hca.HttpContext;
 
-            if (await _authorizationService.AuthorizeAsync(httpContext?.User, Permissions.PublishContent))
+            if (await _authorizationService.AuthorizeAsync(httpContext?.User, Permissions.PublishContent, part.ContentItem))
             {
                 var viewModel = new PublishLaterPartViewModel();
 
@@ -70,6 +70,7 @@ namespace OrchardCore.PublishLater.Drivers
 
         private async ValueTask PopulateViewModel(PublishLaterPart part, PublishLaterPartViewModel viewModel)
         {
+            viewModel.ContentItem = part.ContentItem;
             viewModel.ScheduledPublishUtc = part.ScheduledPublishUtc;
             viewModel.ScheduledPublishLocalDateTime = part.ScheduledPublishUtc.HasValue ?
                 (await _localClock.ConvertToLocalAsync(part.ScheduledPublishUtc.Value)).DateTime :

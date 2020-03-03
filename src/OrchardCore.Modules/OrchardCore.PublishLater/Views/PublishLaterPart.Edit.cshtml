@@ -3,7 +3,7 @@
 
 @inject IAuthorizationService AuthorizationService
 
-@if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.PublishContent))
+@if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.PublishContent, Model.ContentItem))
 {
     <div class="btn-group">
         <input asp-for="ScheduledPublishLocalDateTime" type="datetime-local" class="form-control content-preview-select" />
