@@ -51,16 +51,17 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
                 }
 
-                var setter = MakeFastPropertySetter(type, property);
-                var viewContextAttribute = property.GetCustomAttribute<ViewContextAttribute>();
-                if (viewContextAttribute != null && property.PropertyType == typeof(ViewContext))
-                {
-                    _viewContextSetter = (helper, context) => setter(helper, context);
-                    continue;
-                }
-
                 foreach (var propertyName in allNames)
                 {
+                    var setter = MakeFastPropertySetter(type, property);
+                    var viewContextAttribute = property.GetCustomAttribute<ViewContextAttribute>();
+
+                    if (viewContextAttribute != null && property.PropertyType == typeof(ViewContext))
+                    {
+                        _viewContextSetter = (helper, context) => setter(helper, context);
+                        continue;
+                    }
+
                     _setters.Add(propertyName, (h, v) =>
                     {
                         object value = null;
