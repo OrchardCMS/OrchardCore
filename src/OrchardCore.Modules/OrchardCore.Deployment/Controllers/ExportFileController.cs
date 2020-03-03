@@ -57,7 +57,7 @@ namespace OrchardCore.Deployment.Controllers
                 archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
 
                 var recipeDescriptor = new RecipeDescriptor();
-                RecipeFileDeploymentStep recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == "RecipeFileDeploymentStep") as RecipeFileDeploymentStep;
+                var recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == nameof(RecipeFileDeploymentStep)) as RecipeFileDeploymentStep;
 
                 if (recipeFileDeploymentStep != null)
                 {

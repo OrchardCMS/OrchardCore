@@ -9,7 +9,7 @@ namespace OrchardCore.Deployment.Steps
     {
         public CustomFileDeploymentStep()
         {
-            Name = "CustomFileDeploymentStep";
+            Name = nameof(CustomFileDeploymentStep);
         }
 
         [Required]

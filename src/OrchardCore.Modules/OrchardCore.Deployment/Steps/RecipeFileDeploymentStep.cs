@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace OrchardCore.Deployment.Steps
 {
     /// <summary>
@@ -9,11 +7,8 @@ namespace OrchardCore.Deployment.Steps
     {
         public RecipeFileDeploymentStep()
         {
-            Name = "RecipeFileDeploymentStep";
+            Name = nameof(RecipeFileDeploymentStep);
         }
-
-        //[Required]
-        //public string FileName { get; set; }
                 
         public string RecipeName { get; set; }
 
