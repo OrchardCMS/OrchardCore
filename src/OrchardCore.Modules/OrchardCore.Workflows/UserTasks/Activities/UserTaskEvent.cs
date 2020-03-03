@@ -16,7 +16,6 @@ namespace OrchardCore.Workflows.UserTasks.Activities
             S = localizer;
         }
 
-
         public override string Name => nameof(UserTaskEvent);
         public override LocalizedString DisplayText => S["User Task Event"];
         public override LocalizedString Category => S["Content"];
