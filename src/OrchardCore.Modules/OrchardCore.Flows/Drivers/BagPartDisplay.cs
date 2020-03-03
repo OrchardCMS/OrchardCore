@@ -68,7 +68,7 @@ namespace OrchardCore.Flows.Drivers
             for (var i = 0; i < model.Prefixes.Length; i++)
             {
                 var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
-                var existing = part.ContentItems.FirstOrDefault(x => x.ContentItemId == model.Prefixes[i]);
+                var existing = part.ContentItems.FirstOrDefault(x => String.Equals(x.ContentItemId, model.Prefixes[i], StringComparison.OrdinalIgnoreCase));
                 if (existing != null)
                 {
                     contentItem.ContentItemId = model.Prefixes[i];
