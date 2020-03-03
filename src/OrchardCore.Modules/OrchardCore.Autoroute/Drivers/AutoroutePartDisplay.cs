@@ -124,30 +124,7 @@ namespace OrchardCore.Autoroute.Drivers
                 updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is too long. The permalink can only be up to {0} characters.", MaxPathLength]);
             }
 
-            // TODO resolve for absolute routes. Hard to resolve for bag items as they are changing ids.
-            // So for later...
-            // Or choose that absolute routing is too hard to achieve in this scenario.
-
-            //if (autoroute.Path != null &&
-            //    (await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path &&
-            //    o.ContentItemId != autoroute.ContentItem.ContentItemId &&
-            //    o.ContainedContentItemId != autoroute.ContentItem.ContentItemId).CountAsync()) > 0)
-            //{
-            //    updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is already in use."]);
-
-            //}
-
-            // TODO a. clean this up.
-            // b. this has no knowledge of whether it is contained or not
-            // so path test will fail if it is supposed to be relative.
-            // maybe with an Relative flag that is false by default
-            // and must be turned on, we can skip path checking here.
-
-            // We either need a RouteHandlerPart
-            // Or a flag on the Settings called ManageContainedItemRoutes
-
-            // Or the hack of binding the main contentItemId to see if it matches this one.
-            // Too hacky!
+            // This can only validate the path if the Autoroute is not managing content item routes or the path is absolute.
             if (autoroute.Path != null && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && autoroute.Absolute)))
             {
                 var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path).ListAsync();

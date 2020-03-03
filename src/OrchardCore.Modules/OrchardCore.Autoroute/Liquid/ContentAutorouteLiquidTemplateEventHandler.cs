@@ -32,7 +32,6 @@ namespace OrchardCore.Autoroute.Liquid
                     if (_autorouteEntries.TryGetEntryByPath(alias, out var entry))
                     {
                         // TODO this requires more work, to support contained content items.
-                        // as it will require returning the id and jsonPath.
                         return FluidValue.Create(await _contentManager.GetAsync(entry.ContentItemId));
                     }
 

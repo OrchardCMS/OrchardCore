@@ -58,10 +58,9 @@
     </div>
 </div>
 
-@*TODO hide when ManageContainedItemRoutes is unchecked.*@
 <div class="form-group">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="AllowAbsolutePath" checked="@Model.AllowAbsolutePath">
+    <div class="custom-control custom-checkbox manage-contained-item-routes" style="@(Model.ManageContainedItemRoutes ? "" : "display: none")">
+        <input type="checkbox" class="custom-control-input" asp-for="AllowAbsolutePath" checked="@Model.AllowAbsolutePath" >
         <label class="custom-control-label" asp-for="AllowAbsolutePath">@T["Allow absolute path"]</label>
         <span class="hint">@T["Check to allow users to enable absolute path routing for contained content items."]</span>
     </div>
@@ -76,6 +75,12 @@
             styleActiveLine: true,
             matchBrackets: true,
             mode: { name: "liquid" },
+        });
+    });
+    $('#@Html.IdFor(i => i.ManageContainedItemRoutes)').change(function (e) {
+        var checked = $(e.target).prop('checked');
+        $('.manage-contained-item-routes').each(function () {
+            checked ? $(this).show() : $(this).hide();
         });
     });
     //]]>
