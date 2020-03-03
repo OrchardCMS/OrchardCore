@@ -25,7 +25,7 @@ In the following example, we describe the placement for the `TextField` and `Par
 A placement rule contains two sets of data:
 
 - **Filters** - defines what specific shapes are targeted.
-- **Placement** information - the placement information to apply when the filter is matched.
+- **Placement information** - the placement information to apply when the filter is matched.
 
 Currently you can filter shapes by:
 
