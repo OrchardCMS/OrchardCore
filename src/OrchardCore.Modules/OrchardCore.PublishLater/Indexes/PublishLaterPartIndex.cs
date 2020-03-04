@@ -18,15 +18,18 @@ namespace OrchardCore.PublishLater.Indexes
                 .Map(contentItem =>
                 {
                     var publishLaterPart = contentItem.As<PublishLaterPart>();
-                    if (publishLaterPart != null)
+                    if (publishLaterPart == null ||
+                        !publishLaterPart.ScheduledPublishUtc.HasValue ||
+                        contentItem.Published ||
+                        !contentItem.Latest)
                     {
-                        return new PublishLaterPartIndex
-                        {
-                            ScheduledPublishUtc = publishLaterPart.ScheduledPublishUtc,
-                        };
+                        return null;
                     }
 
-                    return null;
+                    return new PublishLaterPartIndex
+                    {
+                        ScheduledPublishUtc = publishLaterPart.ScheduledPublishUtc,
+                    };
                 });
         }
     }
