@@ -9,7 +9,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Modules;
 using OrchardCore.PublishLater.Indexes;
-using OrchardCore.PublishLater.Models;
 using YesSql;
 
 namespace OrchardCore.PublishLater.Services
@@ -42,9 +41,6 @@ namespace OrchardCore.PublishLater.Services
             foreach (var item in itemsToPublish)
             {
                 _logger.LogDebug($"Publishing content item {item.ContentItemId}.");
-                var publishLaterPart = item.ContentItem.As<PublishLaterPart>();
-                publishLaterPart.ScheduledPublishUtc = null;
-                item.ContentItem.Apply(publishLaterPart);
                 await serviceProvider.GetRequiredService<IContentManager>().PublishAsync(item);
             }
         }
