@@ -18,7 +18,6 @@ namespace OrchardCore.Workflows.Activities
             S = localizer;
         }
 
-        private IStringLocalizer T { get; }
         public override string Name => nameof(CommitTransactionTask);
 
         public override LocalizedString DisplayText => S["Commit Transaction Task"];
