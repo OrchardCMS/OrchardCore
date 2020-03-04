@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Modules;
 using OrchardCore.PublishLater.Indexes;
 using OrchardCore.PublishLater.Models;
@@ -30,6 +31,7 @@ namespace OrchardCore.PublishLater.Services
             var itemsToPublish = await serviceProvider
                 .GetRequiredService<ISession>()
                 .Query<ContentItem, PublishLaterPartIndex>(index => index.ScheduledPublishUtc < _clock.UtcNow)
+                .With<ContentItemIndex>(index => index.Latest && !index.Published)
                 .ListAsync();
 
             if (!itemsToPublish.Any())
