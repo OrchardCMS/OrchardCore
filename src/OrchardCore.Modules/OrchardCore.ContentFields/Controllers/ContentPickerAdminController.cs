@@ -52,6 +52,7 @@ namespace OrchardCore.ContentFields.Controllers
             var results = await resultProvider.Search(new ContentPickerSearchContext
             {
                 Query = query,
+                DisplayAllContentTypes = fieldSettings.DisplayAllContentTypes,
                 ContentTypes = fieldSettings.DisplayedContentTypes,
                 PartFieldDefinition = partFieldDefinition
             });

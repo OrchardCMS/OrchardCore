@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -114,15 +115,7 @@ namespace OrchardCore.OpenId.Controllers
 
                 if (!string.IsNullOrEmpty(updatedAtClaimValue))
                 {
-                    if (long.TryParse(updatedAtClaimValue, out var epoch))
-                    {
-                        claims[OpenIdConnectConstants.Claims.UpdatedAt] = epoch;
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"{OpenIdConnectConstants.Claims.UpdatedAt} claim value '{updatedAtClaimValue}' is invalid. Should be the time the end-user's" +
-                                           " information was last updated, as number of seconds since the Unix epoch (1970-01-01T0:0:0Z) as measured in UTC until the date/time. ");
-                    }
+                    claims[OpenIdConnectConstants.Claims.UpdatedAt] = long.Parse(updatedAtClaimValue, CultureInfo.InvariantCulture);
                 }
             }
 

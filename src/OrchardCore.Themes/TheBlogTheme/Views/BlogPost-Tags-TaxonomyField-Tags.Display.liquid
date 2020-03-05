@@ -1,0 +1,10 @@
+{% assign name = Model.PartFieldDefinition.PartDefinition.Name | append: '-' | append: Model.PartFieldDefinition.Name | html_class %}
+
+<div class="d-inline field field-type-taxonomyfield field-name-{{ name }}">
+    {% for tagName in Model.TagNames %}
+        <span class="badge badge-secondary">
+            <i class="fas fa-tag fa-xs fa-rotate-90 align-middel"></i>
+            <span class="align-middle"> {{ tagName }} </span> 
+        </span>
+    {% endfor %}
+</div>

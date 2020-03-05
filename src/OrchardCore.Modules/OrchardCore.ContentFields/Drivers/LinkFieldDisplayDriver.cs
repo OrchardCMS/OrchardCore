@@ -53,11 +53,18 @@ namespace OrchardCore.ContentFields.Fields
             {
                 var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
 
+                var urlToValidate = field.Url;
+                var indexAnchor = urlToValidate.IndexOf("#");
+                if (indexAnchor > -1)
+                {
+                    urlToValidate = urlToValidate.Substring(0, indexAnchor);
+                }
+
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Url))
                 {
                     updater.ModelState.AddModelError(Prefix, S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
-                else if (!string.IsNullOrWhiteSpace(field.Url) && !Uri.IsWellFormedUriString(field.Url, UriKind.RelativeOrAbsolute))
+                else if (!string.IsNullOrWhiteSpace(field.Url) && !Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
                 {
                     updater.ModelState.AddModelError(Prefix, S["{0} is an invalid url.", field.Url]);
                 }
