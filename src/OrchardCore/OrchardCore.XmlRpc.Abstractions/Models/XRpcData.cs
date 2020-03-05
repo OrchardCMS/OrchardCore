@@ -5,6 +5,7 @@ namespace OrchardCore.XmlRpc.Models
     public class XRpcData
     {
         private object _value;
+
         public object Value
         {
             get { return _value; }
@@ -26,15 +27,15 @@ namespace OrchardCore.XmlRpc.Models
 
     public class XRpcData<T> : XRpcData
     {
-
         private T _value;
+
         public new T Value
         {
             get { return _value; }
             set { SetValue(value); }
         }
 
-        void SetValue(T value)
+        private void SetValue(T value)
         {
             _value = value;
             base.SetValue(value);

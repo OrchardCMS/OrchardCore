@@ -1,0 +1,61 @@
+.md-fenced-code-tabs * {
+    box-sizing: border-box;
+}
+
+.md-fenced-code-tabs {
+    display: flex;
+    position: relative;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: 10px 0 20px 0;
+}
+
+.md-fenced-code-tabs input {
+    position: absolute;
+    opacity: 0;
+}
+
+.md-fenced-code-tabs label {
+    display: block;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0 5px 5px 0;
+    padding: 5px 10px;
+    float: left;
+    background-color: #999;
+    color: #fff;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    -khtml-border-radius: 5px;
+}
+
+.md-fenced-code-tabs label:hover {
+    background-color: #777;
+}
+
+.md-fenced-code-tabs input:checked + label {
+    background-color: #2980b9;
+}
+
+.md-fenced-code-tabs input:checked + label:hover {
+    background-color: #333;
+}
+
+.md-fenced-code-tabs .code-tabpanel {
+    display: none;
+    width: 100%;
+    order: 99;
+    border: 1px solid #e1e4e5;
+}
+
+.md-fenced-code-tabs input:checked + label + .code-tabpanel {
+    display: block;
+}
+
+.md-fenced-code-tabs pre,
+.md-fenced-code-tabs .codehilite {
+    width: 100%;
+    margin: 0px;
+    padding: 5px;
+}

@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Html;
+using System;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
@@ -20,58 +21,65 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public ResourceType Type { get; set; }
 
         private readonly IResourceManager _resourceManager;
-        private readonly IRequireSettingsProvider _requireSettingsProvider;
+        private readonly ILogger _logger;
 
-        public ResourcesTagHelper(IResourceManager resourceManager, IRequireSettingsProvider requireSettingsProvider)
+        public ResourcesTagHelper(
+            IResourceManager resourceManager,
+            ILogger<ResourcesTagHelper> logger)
         {
-            _requireSettingsProvider = requireSettingsProvider;
             _resourceManager = resourceManager;
+            _logger = logger;
         }
 
         public override void Process(TagHelperContext tagHelperContext, TagHelperOutput output)
         {
-            var defaultSettings = _requireSettingsProvider.GetDefault();
-
-            switch (Type)
+            try
             {
-                case ResourceType.Meta:
-                    _resourceManager.RenderMeta(output.Content);
-                    break;
+                switch (Type)
+                {
+                    case ResourceType.Meta:
+                        _resourceManager.RenderMeta(output.Content);
+                        break;
 
-                case ResourceType.HeadLink:
-                    _resourceManager.RenderHeadLink(output.Content);
-                    break;
+                    case ResourceType.HeadLink:
+                        _resourceManager.RenderHeadLink(output.Content);
+                        break;
 
-                case ResourceType.Stylesheet:
-                    _resourceManager.RenderStylesheet(output.Content, defaultSettings);
-                    break;
+                    case ResourceType.Stylesheet:
+                        _resourceManager.RenderStylesheet(output.Content);
+                        break;
 
-                case ResourceType.HeadScript:
-                    _resourceManager.RenderHeadScript(output.Content, defaultSettings);
-                    break;
+                    case ResourceType.HeadScript:
+                        _resourceManager.RenderHeadScript(output.Content);
+                        break;
 
-                case ResourceType.FootScript:
-                    _resourceManager.RenderFootScript(output.Content, defaultSettings);
-                    break;
+                    case ResourceType.FootScript:
+                        _resourceManager.RenderFootScript(output.Content);
+                        break;
 
-                case ResourceType.Header:
-                    var htmlBuilder = new HtmlContentBuilder();
+                    case ResourceType.Header:
+                        _resourceManager.RenderMeta(output.Content);
+                        _resourceManager.RenderHeadLink(output.Content);
+                        _resourceManager.RenderStylesheet(output.Content);
+                        _resourceManager.RenderHeadScript(output.Content);
+                        break;
 
-                    _resourceManager.RenderMeta(output.Content);
-                    _resourceManager.RenderHeadLink(output.Content);
-                    _resourceManager.RenderStylesheet(output.Content, defaultSettings);
-                    _resourceManager.RenderHeadScript(output.Content, defaultSettings);
-                    break;
+                    case ResourceType.Footer:
+                        _resourceManager.RenderFootScript(output.Content);
+                        break;
 
-                case ResourceType.Footer:
-                    _resourceManager.RenderFootScript(output.Content, defaultSettings);
-                    break;
-
-                default:
-                    break;
+                    default:
+                        break;
+                }
             }
-
-            output.TagName = null;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occured while rendering {Type} resource.", Type);
+            }
+            finally
+            {
+                output.TagName = null;
+            }
         }
     }
 }

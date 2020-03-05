@@ -31,10 +31,15 @@ namespace OrchardCore.DisplayManagement.Views
         }
 
         public string Id { get; set; }
+        public string TagName { get; set; }
+
         private List<string> _classes;
         public IList<string> Classes => _classes = _classes ?? new List<string>();
 
         private Dictionary<string, string> _attributes;
         public IDictionary<string, string> Attributes => _attributes = _attributes ?? new Dictionary<string, string>();
+
+        private Dictionary<string, object> _properties;
+        public IDictionary<string, object> Properties => _properties = _properties ?? new Dictionary<string, object>();
     }
 }

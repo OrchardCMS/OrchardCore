@@ -63,7 +63,7 @@ namespace OrchardCore.Queries.Sql
 
                 return true;
             }
-            catch(SqlParserException se)
+            catch (SqlParserException se)
             {
                 query = null;
                 messages = new string[] { se.Message };
@@ -86,7 +86,7 @@ namespace OrchardCore.Queries.Sql
 
             foreach (var selectStatement in statementList.ChildNodes)
             {
-                statementsBuilder.Append(EvaluateSelectStatement(selectStatement)).Append(";");
+                statementsBuilder.Append(EvaluateSelectStatement(selectStatement)).Append(';');
             }
 
             return statementsBuilder.ToString();
@@ -94,7 +94,7 @@ namespace OrchardCore.Queries.Sql
 
         private void PopulateAliases(ParseTree tree)
         {
-            // In order to determine if an Id is a table name or an alias, we 
+            // In order to determine if an Id is a table name or an alias, we
             // analyze every Alias and store the value.
 
             _aliases = new HashSet<string>();
@@ -260,7 +260,6 @@ namespace OrchardCore.Queries.Sql
             }
 
             _builder.Clear();
-            
 
             _modes.Push(FormattingModes.SelectClause);
             EvaluateExpression(parseTreeNode.ChildNodes[1]);
@@ -387,7 +386,7 @@ namespace OrchardCore.Queries.Sql
                     var name = parseTreeNode.ChildNodes[1].ChildNodes[0].Token.ValueString;
 
                     _builder.Append("@" + name);
-                    
+
                     if (_parameters != null && !_parameters.ContainsKey(name))
                     {
                         // If a parameter is not set and there is no default value, report it
@@ -425,7 +424,6 @@ namespace OrchardCore.Queries.Sql
 
         private void EvaluateFunCall(ParseTreeNode funCall)
         {
-            
             var funcName = funCall.ChildNodes[0].ChildNodes[0].Token.ValueString;
             IList<string> arguments;
             var tempBuilder = _builder;
@@ -485,35 +483,41 @@ namespace OrchardCore.Queries.Sql
 
             _modes.Push(FormattingModes.FromClause);
             EvaluateAliasList(aliasList);
+            _modes.Pop();
 
             var joins = parseTreeNode.ChildNodes[2];
 
+            // process join statements
             if (joins.ChildNodes.Count != 0)
             {
-                var jointKindOpt = joins.ChildNodes[0];
-
-                if (jointKindOpt.ChildNodes.Count > 0)
+                foreach (var joinStatement in joins.ChildNodes)
                 {
-                    _builder.Append(" ").Append(jointKindOpt.ChildNodes[0].Term.Name);
+                    _modes.Push(FormattingModes.FromClause);
+
+                    var jointKindOpt = joinStatement.ChildNodes[0];
+
+                    if (jointKindOpt.ChildNodes.Count > 0)
+                    {
+                        _builder.Append(" ").Append(jointKindOpt.ChildNodes[0].Term.Name);
+                    }
+
+                    _builder.Append(" JOIN ");
+
+                    EvaluateAliasList(joinStatement.ChildNodes[2]);
+
+                    _builder.Append(" ON ");
+                    _modes.Push(FormattingModes.SelectClause);
+
+                    EvaluateId(joinStatement.ChildNodes[4]);
+
+                    _builder.Append(" = ");
+
+                    EvaluateId(joinStatement.ChildNodes[6]);
+                    _modes.Pop();
                 }
-
-                _builder.Append(" JOIN ");
-
-                EvaluateAliasList(joins.ChildNodes[2]);
-
-                _builder.Append(" ON ");
-                _modes.Push(FormattingModes.SelectClause);
-
-                EvaluateId(joins.ChildNodes[4]);
-
-                _builder.Append(" = ");
-
-                EvaluateId(joins.ChildNodes[6]);
             }
 
             _from = _builder.ToString();
-
-            _modes.Pop();
         }
 
         private void EvaluateAliasList(ParseTreeNode aliasList)
@@ -619,7 +623,6 @@ namespace OrchardCore.Queries.Sql
                     {
                         _builder.Append(_dialect.QuoteForColumnName(id.ChildNodes[i].Token.ValueString));
                     }
-                    
                 }
             }
         }
@@ -647,7 +650,7 @@ namespace OrchardCore.Queries.Sql
                 _builder.Append(parseTreeNode.ChildNodes[0].Token.ValueString);
             }
         }
-        
+
         private void EvaluateSelectRestriction(ParseTreeNode parseTreeNode)
         {
             _builder.Clear();
@@ -657,7 +660,7 @@ namespace OrchardCore.Queries.Sql
                 _builder.Append(parseTreeNode.ChildNodes[0].Term.Name).Append(" ");
             }
         }
-        
+
         private enum FormattingModes
         {
             SelectClause,

@@ -1,0 +1,14 @@
+@page "{name?}"
+
+@{
+    Layout = "_BazLayout";
+}
+
+@functions{
+    [FromRoute]
+    public string Name { get; set; }
+}
+
+<h1>Module Baz Page</h1>
+
+<p>Name: @(Name ?? "Without name")</p>

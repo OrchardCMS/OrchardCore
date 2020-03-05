@@ -70,7 +70,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
 
             if (await updater.TryUpdateModelAsync(testContentPart, ""))
             {
-                if (testContentPart.Line.EndsWith(" "))
+                if (testContentPart.Line.EndsWith(' '))
                 {
                     updater.ModelState.AddModelError(nameof(testContentPart.Line), "Value cannot end with a space");
                 }

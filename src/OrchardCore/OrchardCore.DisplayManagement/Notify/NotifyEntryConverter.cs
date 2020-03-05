@@ -1,8 +1,7 @@
-﻿using System;
-using System.Reflection;
-using System.Text.Encodings.Web;
-using System.Text;
+using System;
 using System.IO;
+using System.Text;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -32,7 +31,7 @@ namespace OrchardCore.DisplayManagement.Notify
             var notifyEntry = new NotifyEntry();
             notifyEntry.Message = new HtmlString(jo.Value<string>("Message"));
 
-            if(Enum.TryParse(jo.Value<string>("Type"), out type))
+            if (Enum.TryParse(jo.Value<string>("Type"), out type))
             {
                 notifyEntry.Type = type;
             }
@@ -59,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
             // Write all well-known properties
             o.Add(new JProperty(nameof(NotifyEntry.Type), notifyEntry.Type.ToString()));
-            o.Add(new JProperty(nameof(NotifyEntry.Message), stringBuilder.ToString()));
+            o.Add(new JProperty(nameof(NotifyEntry.Message), notifyEntry.GetMessageAsString(_htmlEncoder)));
 
             o.WriteTo(writer);
         }

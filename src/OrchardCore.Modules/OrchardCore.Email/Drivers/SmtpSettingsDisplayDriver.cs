@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Services;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
@@ -22,8 +22,8 @@ namespace OrchardCore.Email.Drivers
         private readonly IAuthorizationService _authorizationService;
 
         public SmtpSettingsDisplayDriver(
-            IDataProtectionProvider dataProtectionProvider, 
-            IShellHost orchardHost, 
+            IDataProtectionProvider dataProtectionProvider,
+            IShellHost orchardHost,
             ShellSettings currentShellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
@@ -53,7 +53,8 @@ namespace OrchardCore.Email.Drivers
                     model.PickupDirectoryLocation = section.PickupDirectoryLocation;
                     model.Host = section.Host;
                     model.Port = section.Port;
-                    model.EnableSsl = section.EnableSsl;
+                    model.EncryptionMethod = section.EncryptionMethod;
+                    model.AutoSelectEncryption = section.AutoSelectEncryption;
                     model.RequireCredentials = section.RequireCredentials;
                     model.UseDefaultCredentials = section.UseDefaultCredentials;
                     model.UserName = section.UserName;

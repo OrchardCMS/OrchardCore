@@ -16,5 +16,15 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         /// Gest or set the editor of the part field.
         /// </summary>
         public string Editor { get; set; }
+
+        /// <summary>
+        /// Gest or set the display mode of the part field.
+        /// </summary>
+        public string DisplayMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the position of the part field in the editor.
+        /// </summary>
+        public string Position { get; set; }
     }
 }

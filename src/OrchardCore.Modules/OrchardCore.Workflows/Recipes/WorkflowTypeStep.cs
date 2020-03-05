@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
@@ -40,11 +38,14 @@ namespace OrchardCore.Workflows.Recipes
                 if (existing == null)
                 {
                     workflow.Id = 0;
-                    await _workflowTypeStore.SaveAsync(workflow);
                 }
-            }
+                else
+                {
+                    await _workflowTypeStore.DeleteAsync(existing);
+                }
 
-            return;
+                await _workflowTypeStore.SaveAsync(workflow);
+            }
         }
     }
 

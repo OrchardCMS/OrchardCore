@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Routing;
 
 namespace OrchardCore.Autoroute.Services
 {
@@ -20,7 +21,7 @@ namespace OrchardCore.Autoroute.Services
             {
                 alias = alias.Substring(5);
 
-                if (!alias.StartsWith("/"))
+                if (!alias.StartsWith('/'))
                 {
                     alias = "/" + alias;
                 }

@@ -11,13 +11,19 @@ var fs = require("file-system"),
     sourcemaps = require("gulp-sourcemaps"),
     less = require("gulp-less"),
     scss = require("gulp-sass"),
-    cssnano = require("gulp-cssnano"),
+    minify = require("gulp-minifier"),
     typescript = require("gulp-typescript"),
-    uglify = require("gulp-uglify"),
+    terser = require("gulp-terser"),
     rename = require("gulp-rename"),
     concat = require("gulp-concat"),
     header = require("gulp-header"),
-    eol = require("gulp-eol");
+    eol = require("gulp-eol"),
+    util = require('gulp-util'),
+    postcss = require('gulp-postcss'),
+    rtl = require('postcss-rtl'),
+    babel = require('gulp-babel'),
+    agencytheme = require('./src/OrchardCore.Themes/TheAgencyTheme/wwwroot/gulpfile'),
+    blogtheme = require('./src/OrchardCore.Themes/TheBlogTheme/wwwroot/gulpfile');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -30,7 +36,7 @@ require("events").EventEmitter.prototype._maxListeners = 100;
 */
 
 // Incremental build (each asset group is built only if one or more inputs are newer than the output).
-gulp.task("build", function () {
+gulp.task("build-assets", function () {
     var assetGroupTasks = getAssetGroups().map(function (assetGroup) {
         var doRebuild = false;
         return createAssetGroupTask(assetGroup, doRebuild);
@@ -39,7 +45,7 @@ gulp.task("build", function () {
 });
 
 // Full rebuild (all assets groups are built regardless of timestamps).
-gulp.task("rebuild", function () {
+gulp.task("rebuild-assets", function () {
     var assetGroupTasks = getAssetGroups().map(function (assetGroup) {
         var doRebuild = true;
         return createAssetGroupTask(assetGroup, doRebuild);
@@ -54,25 +60,77 @@ gulp.task("watch", function () {
         var watchPaths = assetGroup.inputPaths.concat(assetGroup.watchPaths);
         var inputWatcher;
         function createWatcher() {
-            inputWatcher = gulp.watch(watchPaths, function (event) {
+            inputWatcher = gulp.watch(watchPaths);
+            inputWatcher.on('change', function (watchedPath) {                
                 var isConcat = path.basename(assetGroup.outputFileName, path.extname(assetGroup.outputFileName)) !== "@";
                 if (isConcat)
-                    console.log("Asset file '" + event.path + "' was " + event.type + ", rebuilding asset group with output '" + assetGroup.outputPath + "'.");
+                    console.log("Asset file '" + watchedPath + "' was changed, rebuilding asset group with output '" + assetGroup.outputPath + "'.");
                 else
-                    console.log("Asset file '" + event.path + "' was " + event.type + ", rebuilding asset group.");
+                    console.log("Asset file '" + watchedPath + "' was changed, rebuilding asset group.");
                 var doRebuild = true;
                 var task = createAssetGroupTask(assetGroup, doRebuild);
             });
         }
+        
         createWatcher();
-        gulp.watch(assetGroup.manifestPath, function (event) {
-            console.log("Asset manifest file '" + event.path + "' was " + event.type + ", restarting watcher.");
-            inputWatcher.remove();
-            inputWatcher.end();
+        
+        gulp.watch(assetGroup.manifestPath).on('change', function (watchedPath) {
+            console.log("Asset manifest file '" + watchedPath + "' was changed, restarting watcher.");            
+            inputWatcher.close();
             createWatcher();
         });
     });
 });
+
+gulp.task('help', function() {
+    util.log(`
+  Usage: gulp [TASK]
+  Tasks:
+      build     Incremental build (each asset group is built only if one or more inputs are newer than the output).
+      rebuild   Full rebuild (all assets groups are built regardless of timestamps).
+      watch     Continuous watch (each asset group is built whenever one of its inputs changes).
+    `);
+  });
+
+gulp.task("build-agencytheme", function(done){
+	return buildAgencyTheme(done);
+});
+
+gulp.task("build-blogtheme", function(done){
+	return buildBlogTheme(done);
+});
+
+gulp.task("build-themes", function(done){
+    buildAgencyTheme( ()=> buildBlogTheme (done) );
+});
+
+
+gulp.task( 'build',  gulp.series([ 'build-assets', 'build-themes' ]) );
+gulp.task( 'rebuild',  gulp.series([ 'rebuild-assets', 'build-themes' ]) );
+gulp.task( 'default',  gulp.series([ 'build' ]) );
+
+/*
+** Build Themes
+*/
+
+function buildAgencyTheme(done){
+    var cwd = process.cwd();      
+    process.chdir('./src/OrchardCore.Themes/TheAgencyTheme/wwwroot');       
+	agencytheme.build( ()=> {
+         process.chdir(cwd);
+         done();
+    });
+}
+
+function buildBlogTheme(done){
+    var cwd = process.cwd();      
+    process.chdir('./src/OrchardCore.Themes/TheBlogTheme/wwwroot');    
+	blogtheme.build( ()=> {
+        process.chdir(cwd);
+        done();
+    });
+    
+}
 
 /*
 ** ASSET GROUPS
@@ -95,15 +153,15 @@ function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
     assetGroup.manifestPath = assetManifestPath;
     assetGroup.basePath = path.dirname(assetManifestPath);
     assetGroup.inputPaths = assetGroup.inputs.map(function (inputPath) {
-        return path.resolve(path.join(assetGroup.basePath, inputPath));
+        return path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
     });
     assetGroup.watchPaths = [];
     if (!!assetGroup.watch) {
         assetGroup.watchPaths = assetGroup.watch.map(function (watchPath) {
-            return path.resolve(path.join(assetGroup.basePath, watchPath));
+            return path.resolve(path.join(assetGroup.basePath, watchPath)).replace(/\\/g, '/');
         });
     }
-    assetGroup.outputPath = path.resolve(path.join(assetGroup.basePath, assetGroup.output));
+    assetGroup.outputPath = path.resolve(path.join(assetGroup.basePath, assetGroup.output)).replace(/\\/g, '/');
     assetGroup.outputDir = path.dirname(assetGroup.outputPath);
     assetGroup.outputFileName = path.basename(assetGroup.output);
     // Uncomment to copy assets to wwwroot
@@ -119,15 +177,17 @@ function createAssetGroupTask(assetGroup, doRebuild) {
         var outputStats = fs.existsSync(assetGroup.outputPath) ? fs.statSync(assetGroup.outputPath) : null;
         doRebuild = !outputStats || assetManifestStats.mtime > outputStats.mtime;
     }
-    switch (outputExt) {
-        case ".css":
-            return buildCssPipeline(assetGroup, doConcat, doRebuild);
-        case ".js":
-            return buildJsPipeline(assetGroup, doConcat, doRebuild);
-    }
-    
+
     if(assetGroup.copy === true){
         return buildCopyPipeline(assetGroup, doRebuild);
+    }
+    else{
+        switch (outputExt) {
+            case ".css":
+                return buildCssPipeline(assetGroup, doConcat, doRebuild);
+            case ".js":
+                return buildJsPipeline(assetGroup, doConcat, doRebuild);
+        }
     }
 }
 
@@ -142,6 +202,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
             throw "Input file '" + inputPath + "' is not of a valid type for output file '" + assetGroup.outputPath + "'.";
     });
     var generateSourceMaps = assetGroup.hasOwnProperty("generateSourceMaps") ? assetGroup.generateSourceMaps : true;
+    var generateRTL = assetGroup.hasOwnProperty("generateRTL") ? assetGroup.generateRTL : false;
     var containsLessOrScss = assetGroup.inputPaths.some(function (inputPath) {
         var ext = path.extname(inputPath).toLowerCase();
         return ext === ".less" || ext === ".scss";
@@ -165,19 +226,23 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
 
         })))
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
-        .pipe(cssnano({
-            autoprefixer: { browsers: ["last 2 versions"] },
-            discardComments: { removeAll: true },
-            discardUnused: false,
-            mergeIdents: false,
-            reduceIdents: false,
-            zindex: false
-        }))
-        .pipe(rename({
-            suffix: ".min"
-        }))
+        .pipe(gulpif(generateRTL, postcss([rtl()])))
+        .pipe(minify({
+			minify: true,
+			minifyHTML: {
+			  collapseWhitespace: true,
+			  conservativeCollapse: true,
+			},
+			minifyJS: {
+			  sourceMap: true
+			},
+			minifyCSS: true
+		}))
+		.pipe(rename({
+			suffix: ".min"
+		}))
         .pipe(eol())
-        .pipe(gulp.dest(assetGroup.outputDir))
+        .pipe(gulp.dest(assetGroup.outputDir));
         // Uncomment to copy assets to wwwroot
         //.pipe(gulp.dest(assetGroup.webroot));
     var devStream = gulp.src(assetGroup.inputPaths) // Non-minified output, with source mapping
@@ -200,9 +265,10 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
             "** NOTE: This file is generated by Gulp and should not be edited directly!\n" +
             "** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.\n" +
             "*/\n\n"))
+        .pipe(gulpif(generateRTL, postcss([rtl()])))
         .pipe(gulpif(generateSourceMaps, sourcemaps.write()))
         .pipe(eol())
-        .pipe(gulp.dest(assetGroup.outputDir))
+        .pipe(gulp.dest(assetGroup.outputDir));
         // Uncomment to copy assets to wwwroot
         //.pipe(gulp.dest(assetGroup.webroot));
     return merge([minifiedStream, devStream]);
@@ -229,7 +295,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
                     ext: ".js"
                 }))))
         .pipe(plumber())
-        .pipe(gulpif(generateSourceMaps, sourcemaps.init()))
+        .pipe(gulpif(generateSourceMaps, sourcemaps.init()))		
         .pipe(gulpif("*.ts", typescript({
             declaration: false,
             noImplicitAny: true,
@@ -241,7 +307,18 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
                 "es2015.iterable"
             ],
             target: "es5",
-        })))
+        })))	
+        .pipe(babel({
+		  "presets": [
+			[
+			  "@babel/preset-env",
+			  {
+				"modules": false
+			  },
+			  "@babel/preset-flow"
+			]
+		  ]
+		}))
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
         .pipe(header(
             "/*\n" +
@@ -252,7 +329,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(gulp.dest(assetGroup.outputDir))
         // Uncomment to copy assets to wwwroot
         //.pipe(gulp.dest(assetGroup.webroot))
-        .pipe(uglify())
+        .pipe(terser())
         .pipe(rename({
             suffix: ".min"
         }))
@@ -268,8 +345,12 @@ function buildCopyPipeline(assetGroup, doRebuild) {
     if(!doRebuild) {
         stream = stream.pipe(newer(assetGroup.outputDir))
     }
-  
-    stream = stream.pipe(gulp.dest(assetGroup.outputDir));
+    
+    var renameFile = assetGroup.outputFileName != "@";
+
+    stream = stream
+                .pipe(gulpif(renameFile, rename(assetGroup.outputFileName)))
+                .pipe(gulp.dest(assetGroup.outputDir));
     // Uncomment to copy assets to wwwroot
     //.pipe(gulp.dest(assetGroup.webroot));
 

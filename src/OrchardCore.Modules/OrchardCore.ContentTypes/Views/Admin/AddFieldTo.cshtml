@@ -3,42 +3,52 @@
 
 @model AddFieldViewModel
 
+@{
+    var returnUrl = ViewData["returnUrl"]?.ToString();
+}
+
 <h1>@RenderTitleSegments(T["Add New Field To \"{0}\"", Model.Part.DisplayName()])</h1>
 
-<form asp-action="AddFieldTo">
+<form asp-action="AddFieldTo" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="row col-md">
             <label for="DisplayName">@T["Display Name"]</label>
             <input asp-for="DisplayName" class="form-control" autofocus />
             <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
         </div>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="row col-sm">
             <label for="Name">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" />
             <span class="hint">@T["Technical name of the field."]</span>
         </div>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <label for="DisplayName">@T["Field Type"]</label>
-        @for (var i = 0; i < Model.Fields.Count; i++)
-        {
-            <div class="radio">
-                <label asp-for="Fields[i]">
-                    <input checked="@(i == 0)" type="radio" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i])" value="@Model.Fields[i]" />
-                    @Model.Fields[i].CamelFriendly()
-                </label>
-            </div>
-        }
-    </fieldset>
+        <ul class="list-group w-md-50">
+            @for (var i = 0; i < Model.Fields.Count; i++)
+            {
+                <li class="list-group-item">
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i])" value="@Model.Fields[i]" checked="@(i == 0)">
+                        <label class="custom-control-label" asp-for="Fields[i]">@Model.Fields[i].CamelFriendly()</label>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <button class="btn btn-primary" type="submit">@T["Save"]</button>
-    </fieldset>
+        @if (Url.IsLocalUrl(returnUrl))
+        {
+            <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
+        }
+    </div>
 </form>
 
 <script at="Foot" type="text/javascript">

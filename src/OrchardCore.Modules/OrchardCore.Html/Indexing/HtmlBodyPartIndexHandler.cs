@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using OrchardCore.Html.Model;
+using OrchardCore.Html.Models;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.Html.Indexing
@@ -8,12 +8,15 @@ namespace OrchardCore.Html.Indexing
     {
         public override Task BuildIndexAsync(HtmlBodyPart part, BuildPartIndexContext context)
         {
-            var options = context.Settings.ToOptions() 
-                | DocumentIndexOptions.Sanitize 
+            var options = context.Settings.ToOptions()
+                | DocumentIndexOptions.Sanitize
                 | DocumentIndexOptions.Analyze
                 ;
 
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(part.Html, DocumentIndex.Types.Text, options));
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, part.Html, options);
+            }
 
             return Task.CompletedTask;
         }

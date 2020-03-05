@@ -18,31 +18,31 @@
   ],
   "Parts_Contents_Publish": [
     {
-      "display-type": "Detail",
+      "displayType": "Detail",
       "place": "Content:5"
     }
   ],
   "Parts_Contents_Publish_SummaryAdmin": [
     {
-      "display-type": "SummaryAdmin",
+      "displayType": "SummaryAdmin",
       "place": "Actions:5"
     }
   ],
   "Parts_Contents_Clone_SummaryAdmin": [
     {
-      "display-type": "SummaryAdmin",
+      "displayType": "SummaryAdmin",
       "place": "Actions:6"
     }
   ]
   //,
   //"TextField_Edit": [
   //  {
-  //    "display-type": "Edit",
+  //    "displayType": "Edit",
   //    "differentiator": "BillingAddress.City",
   //    "place": "Content:60"
   //  },
   //  {
-  //    "display-type": "Edit",
+  //    "displayType": "Edit",
   //    "differentiator": "BillingAddress.Street",
   //    "place": "Content:50"
   //  }

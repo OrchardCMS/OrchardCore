@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.DisplayManagement.Events;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
@@ -13,13 +13,13 @@ namespace OrchardCore.Tests.Extensions
 {
     public class ExtensionManagerTests
     {
-        private static IHostingEnvironment HostingEnvironment
+        private static IHostEnvironment HostingEnvironment
             = new StubHostingEnvironment();
 
         private static IApplicationContext ApplicationContext
             = new ModularApplicationContext(HostingEnvironment, new List<IModuleNamesProvider>()
             {
-                new AssemblyAttributeModuleNamesProvider(HostingEnvironment)
+                new ModuleNamesProvider()
             });
 
         private static IFeaturesProvider ModuleFeatureProvider =
@@ -60,6 +60,28 @@ namespace OrchardCore.Tests.Extensions
                 ThemeFeatureProvider,
                 new NullLogger<ExtensionManager>()
                 );
+        }
+
+        private class ModuleNamesProvider : IModuleNamesProvider
+        {
+            private readonly string[] _moduleNames;
+
+            public ModuleNamesProvider()
+            {
+                _moduleNames = new[]
+                {
+                    "BaseThemeSample",
+                    "BaseThemeSample2",
+                    "DerivedThemeSample",
+                    "DerivedThemeSample2",
+                    "ModuleSample"
+                };
+            }
+
+            public IEnumerable<string> GetModuleNames()
+            {
+                return _moduleNames;
+            }
         }
 
         [Fact]
@@ -126,7 +148,6 @@ namespace OrchardCore.Tests.Extensions
             Assert.Equal("Sample1", features.ElementAt(0).Id);
             Assert.Equal("Sample2", features.ElementAt(1).Id);
         }
-
 
         [Fact]
         public void GetFeaturesWithAIdShouldReturnThatFeatureWithDependenciesOrderedWithNoDuplicates()

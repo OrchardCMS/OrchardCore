@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Html;
 using System.Text;
+using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.DisplayManagement.Descriptors
 {

@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Threading.Tasks;
 
 namespace OrchardCore.ContentManagement.Handlers
 {
@@ -8,19 +9,18 @@ namespace OrchardCore.ContentManagement.Handlers
         public object Aspect { get; set; }
 
         /// <summary>
-        /// Provides a value for a specific aspect type. 
+        /// Provides a value for a specific aspect type.
         /// </summary>
-        public ContentItemAspectContext For<TAspect>(Action<TAspect> action) where TAspect : class
+        public async Task<ContentItemAspectContext> ForAsync<TAspect>(Func<TAspect, Task> action) where TAspect : class
         {
             var aspect = Aspect as TAspect;
 
             if (aspect != null)
             {
-                action(aspect);
+                await action(aspect);
             }
 
             return this;
         }
     }
-
 }

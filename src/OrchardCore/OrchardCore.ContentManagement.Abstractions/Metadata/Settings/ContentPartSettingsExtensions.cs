@@ -1,7 +1,7 @@
 using System;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentManagement.Metadata.Settings
 {
@@ -9,42 +9,52 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
     {
         public static ContentPartDefinitionBuilder Attachable(this ContentPartDefinitionBuilder builder, bool attachable = true)
         {
-            return builder.WithSetting(nameof(ContentPartSettings.Attachable), attachable.ToString());
+            return builder.MergeSettings<ContentPartSettings>(x => x.Attachable = attachable);
         }
 
         public static bool IsAttachable(this ContentPartDefinition part)
         {
-            return part.Settings.ToObject<ContentPartSettings>().Attachable;
+            return part.GetSettings<ContentPartSettings>().Attachable;
         }
 
         public static ContentPartDefinitionBuilder Reusable(this ContentPartDefinitionBuilder builder, bool reusable = true)
         {
-            return builder.WithSetting(nameof(ContentPartSettings.Reusable), reusable.ToString());
+            return builder.MergeSettings<ContentPartSettings>(x => x.Reusable = reusable);
         }
 
         public static bool IsReusable(this ContentPartDefinition part)
         {
-            return part.Settings.ToObject<ContentPartSettings>().Reusable;
+            return part.GetSettings<ContentPartSettings>().Reusable;
         }
 
         public static ContentPartDefinitionBuilder WithDescription(this ContentPartDefinitionBuilder builder, string description)
         {
-            return builder.WithSetting(nameof(ContentPartSettings.Description), description);
+            return builder.MergeSettings<ContentPartSettings>(x => x.Description = description);
         }
 
         public static ContentPartDefinitionBuilder WithDisplayName(this ContentPartDefinitionBuilder builder, string description)
         {
-            return builder.WithSetting(nameof(ContentPartSettings.DisplayName), description);
+            return builder.MergeSettings<ContentPartSettings>(x => x.DisplayName = description);
+        }
+
+        public static ContentPartDefinitionBuilder WithDefaultPosition(this ContentPartDefinitionBuilder builder, string position)
+        {
+            return builder.MergeSettings<ContentPartSettings>(x => x.DefaultPosition = position);
+        }
+
+        public static string DefaultPosition(this ContentPartDefinition part)
+        {
+            return part.GetSettings<ContentPartSettings>().DefaultPosition;
         }
 
         public static string Description(this ContentPartDefinition part)
         {
-            return part.Settings.ToObject<ContentPartSettings>().Description;
+            return part.GetSettings<ContentPartSettings>().Description;
         }
 
         public static string DisplayName(this ContentPartDefinition part)
         {
-            var displayName = part.Settings.ToObject<ContentPartSettings>().DisplayName;
+            var displayName = part.GetSettings<ContentPartSettings>().DisplayName;
 
             if (String.IsNullOrEmpty(displayName))
             {

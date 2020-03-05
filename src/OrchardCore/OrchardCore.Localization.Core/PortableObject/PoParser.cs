@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -5,6 +6,9 @@ using System.Text;
 
 namespace OrchardCore.Localization.PortableObject
 {
+    /// <summary>
+    /// Represents a parser for portable objects.
+    /// </summary>
     public class PoParser
     {
         private static readonly Dictionary<char, char> _escapeTranslations = new Dictionary<char, char> {
@@ -13,6 +17,11 @@ namespace OrchardCore.Localization.PortableObject
             { 't', '\t' }
         };
 
+        /// <summary>
+        /// Parses a .po file.
+        /// </summary>
+        /// <param name="reader">The <see cref="TextReader"/>.</param>
+        /// <returns>A list of culture records.</returns>
         public IEnumerable<CultureDictionaryRecord> Parse(TextReader reader)
         {
             var entryBuilder = new DictionaryRecordBuilder();
@@ -87,7 +96,7 @@ namespace OrchardCore.Localization.PortableObject
 
         private string TrimQuote(string str)
         {
-            if (str.StartsWith("\"") && str.EndsWith("\""))
+            if (str.StartsWith('\"') && str.EndsWith('\"'))
             {
                 if (str.Length == 1)
                 {
@@ -102,7 +111,7 @@ namespace OrchardCore.Localization.PortableObject
 
         private (PoContext context, string content) ParseLine(string line)
         {
-            if (line.StartsWith("\""))
+            if (line.StartsWith('\"'))
             {
                 return (PoContext.Text, Unescape(TrimQuote(line.Trim())));
             }
@@ -118,7 +127,7 @@ namespace OrchardCore.Localization.PortableObject
             {
                 case "msgctxt": return (PoContext.MessageContext, content);
                 case "msgid": return (PoContext.MessageId, content);
-                case var key when key.StartsWith("msgstr"): return (PoContext.Translation, content);
+                case var key when key.StartsWith("msgstr", StringComparison.Ordinal): return (PoContext.Translation, content);
                 default: return (PoContext.Other, content);
             }
         }
@@ -148,14 +157,14 @@ namespace OrchardCore.Localization.PortableObject
                 {
                     case PoContext.MessageId:
                         {
-                            // If the MessageId has been set to an empty string and now gets set again 
+                            // If the MessageId has been set to an empty string and now gets set again
                             // before flushing the values should be reset.
                             if (string.IsNullOrEmpty(MessageId))
                             {
                                 _values.Clear();
                             }
-                            
-                            MessageId = text; 
+
+                            MessageId = text;
                             break;
                         }
                     case PoContext.MessageContext: MessageContext = text; break;

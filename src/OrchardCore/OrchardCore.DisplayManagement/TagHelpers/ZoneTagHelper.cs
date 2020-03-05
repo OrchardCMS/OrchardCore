@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
@@ -35,7 +37,14 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             dynamic layout = await _layoutAccessor.GetLayoutAsync();
             var zone = layout.Zones[Name];
 
-            zone.Add(childContent, Position);
+            if (zone is ZoneOnDemand zoneOnDemand)
+            {
+                await zoneOnDemand.AddAsync(childContent, Position);
+            }
+            else if (zone is Shape shape)
+            {
+                shape.Add(childContent, Position);
+            }
 
             // Don't render the zone tag or the inner content
             output.SuppressOutput();

@@ -14,11 +14,11 @@ namespace OrchardCore.Liquid.Ast
             _arguments = arguments;
         }
 
-        public override async Task<FluidValue> EvaluateAsync(TemplateContext context)
+        public override async ValueTask<FluidValue> EvaluateAsync(TemplateContext context)
         {
             var arguments = new FilterArguments();
 
-            foreach(var argument in _arguments)
+            foreach (var argument in _arguments)
             {
                 arguments.Add(argument.Name, await argument.Expression.EvaluateAsync(context));
             }

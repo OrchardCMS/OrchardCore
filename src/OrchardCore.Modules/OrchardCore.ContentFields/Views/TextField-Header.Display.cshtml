@@ -1,0 +1,15 @@
+@model OrchardCore.ContentFields.ViewModels.DisplayTextFieldViewModel
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentFields.Settings
+
+@{
+    var headerSettings = Model.PartFieldDefinition.GetSettings<TextFieldHeaderDisplaySettings>();
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+
+    var tagBuilder = new TagBuilder(headerSettings.Level);
+    tagBuilder.AddCssClass($"field field-type-textfield field-name-{name}");
+}
+
+@tagBuilder.RenderStartTag()
+@Model.Text
+@tagBuilder.RenderEndTag()

@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 
 namespace OrchardCore.DisplayManagement.Implementation
@@ -14,9 +12,8 @@ namespace OrchardCore.DisplayManagement.Implementation
         private readonly IEnumerable<IShapeFactoryEvents> _events;
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IThemeManager _themeManager;
-        private ShapeTable _scopedShapeTable; 
+        private ShapeTable _scopedShapeTable;
 
-        
         public DefaultShapeFactory(
             IEnumerable<IShapeFactoryEvents> events,
             IShapeTableManager shapeTableManager,
@@ -27,7 +24,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             _themeManager = themeManager;
         }
 
-        public dynamic New { get { return this; } }
+        public dynamic New => this;
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
@@ -36,14 +33,14 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             var binderName = binder.Name;
 
-            if (binderName.EndsWith("Async"))
+            if (binderName.EndsWith("Async", StringComparison.Ordinal))
             {
                 binderName = binder.Name.Substring(binder.Name.Length - "Async".Length);
             }
 
             result = ShapeFactoryExtensions.CreateAsync(this, binderName, Arguments.From(args, binder.CallInfo.ArgumentNames));
-                        
-			return true;
+
+            return true;
         }
 
         private async Task<ShapeTable> GetShapeTableAsync()
@@ -57,7 +54,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             return _scopedShapeTable;
         }
 
-        public async Task<IShape> CreateAsync(string shapeType, Func<Task<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
+        public async ValueTask<IShape> CreateAsync(string shapeType, Func<ValueTask<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
         {
             ShapeDescriptor shapeDescriptor;
             (await GetShapeTableAsync()).Descriptors.TryGetValue(shapeType, out shapeDescriptor);
@@ -118,7 +115,8 @@ namespace OrchardCore.DisplayManagement.Implementation
                 ev.Created(createdContext);
             }
 
-            if (shapeDescriptor != null) {
+            if (shapeDescriptor != null)
+            {
                 foreach (var ev in shapeDescriptor.CreatedAsync)
                 {
                     await ev(createdContext);
@@ -138,5 +136,4 @@ namespace OrchardCore.DisplayManagement.Implementation
             return createdContext.Shape;
         }
     }
-
 }

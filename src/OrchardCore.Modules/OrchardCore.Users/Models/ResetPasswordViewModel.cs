@@ -14,8 +14,9 @@ namespace OrchardCore.Users.ViewModels
 
         [Required]
         [DataType(DataType.Password)]
+        [Compare(nameof(NewPassword))]
         public string PasswordConfirmation { get; set; }
 
         public string ResetToken { get; set; }
     }
-} 
+}

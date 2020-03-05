@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Orchard Project",
+  "classifications": [ "Web", "Orchard Core", "Mvc" ],
+  "name": "Orchard Core Module",
+  "identity": "OrchardCore.Templates.Mvc.Module",
+  "shortName": "ocmodulemvc",
+  "sourceName": "OrchardCore.Templates.Mvc.Module",
+  "preferNameDirectory": true,
+  "symbols": {
+    "OrchardVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Specifies which version of Orchard Core packages to use.",
+      "replaces": "$(TemplateOrchardPackageVersion)",
+      "defaultValue": "${TemplateOrchardVersion}"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+      ]
+    }
+  ],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  }
+}

@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.ContentManagement.Metadata.Settings
+namespace OrchardCore.ContentManagement.Metadata.Settings
 {
     public class ContentPartSettings
     {
@@ -21,5 +21,10 @@
         /// Gest or set the description of the part.
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Gest or set the default position of the part when attached to a type.
+        /// </summary>
+        public string DefaultPosition { get; set; }
     }
 }

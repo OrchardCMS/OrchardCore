@@ -1,0 +1,13 @@
+@page "{id?}"
+
+@functions{
+    [FromRoute]
+    public string Id { get; set; }
+}
+
+<h1>Module SubPages/Index Page</h1>
+
+<p>Id: @(Id ?? "Without id")</p>
+
+<p><a asp-page="/Foo">Foo without name</a></p>
+<p><a asp-page="/Foo" asp-route-name="Bill Gates">Foo with "Bill Gates"</a></p>

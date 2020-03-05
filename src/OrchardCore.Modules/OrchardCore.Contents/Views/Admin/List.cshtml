@@ -1,121 +1,185 @@
+@model ListContentsViewModel
 @using OrchardCore.ContentManagement;
 @using OrchardCore.Contents.ViewModels;
 @inject IContentManager ContentManager
+
 @{
-    var typeDisplayName = Model.TypeDisplayName;
+    var contentTypeDisplayName = Model.Options.ContentTypeOptions.Find(x => x.Value == Model.Options.SelectedContentType && x.Value != null)?.Text;
     var pageTitle = T["Manage Content"];
     var createLinkText = T["Create New Content"];
-    if (!string.IsNullOrWhiteSpace(typeDisplayName))
+    if (!string.IsNullOrWhiteSpace(contentTypeDisplayName))
     {
-        pageTitle = T["Manage {0} Content", (string)typeDisplayName];
-        createLinkText = T["Create New {0}", (string)typeDisplayName];
+        pageTitle = T["Manage {0} Content", (string)contentTypeDisplayName];
+        createLinkText = T["Create New {0}", (string)contentTypeDisplayName];
     }
-
-    IEnumerable<string> cultures = Model.Options.Cultures;
-    List<SelectListItem> contentStatuses = new List<SelectListItem>() {
-        new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString() },
-        new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
-        new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString() },
-        new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
-        new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
-    };    
-    List<SelectListItem> contentSorts = new List<SelectListItem>() {
-        new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
-        new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
-        new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
-        new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
-    };
+    var formActionWithoutTypeName = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "List" });
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.ContentItems.Count - 1;
 }
-<h1>@RenderTitleSegments(pageTitle)</h1>
 
-@using (Html.BeginForm())
-{
-    @*<fieldset class="bulk-actions">
-            <label><input type="checkbox" class="check-all" />@T["Select all"]</label>@T[" | "]
-            <label for="publishActions">@T["Actions:"]</label>
-            <select id="publishActions" name="Options.BulkAction">
-                @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.None, T("Choose action...").ToString())
-                @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.PublishNow, T("Publish Now").ToString())
-                @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.Unpublish, T("Unpublish").ToString())
-                @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.Remove, T("Delete").ToString())
-            </select>
-            <button type="submit" name="submit.BulkEdit" value="yes">@T["Apply")</button>
-        </fieldset>
-    <fieldset class="bulk-actions container-fluid">
-        <label for="filterResults" class="bulk-filter">@T["Show"]</label>
-            <select id="filterResults" name="Options.SelectedFilter">
-                @Html.SelectOption((string)Model.Options.SelectedFilter, "", T["any (show all)"])
-                @foreach (var filterOption in Model.Options.FilterOptions) {
-                    @Html.SelectOption((string)Model.Options.SelectedFilter, (string)filterOption.Key, (string)filterOption.Value)
-                }
-            </select>
-    </fieldset>*@
-    <fieldset class="filter-options container-fluid">
-        <div class="row">
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="contentResults" class="label col-form-label">@T["Filter"]</label>
-            </div>
-            <div class="col-md-4 col-xl-3 form-group">
-                <select id="contentResults" class="form-control" name="Id">
-                    <option value="">@T["All content types"]</option>
-                    @foreach (var option in Model.Options.FilterOptions)
-                    {
-                        string isSelected = option.Key == Model.Options.SelectedFilter ? "selected='selected'" : string.Empty;
-                        <!option @isSelected value="@option.Key">@option.Value</!option>
-                    }
-                </select>
-            </div>   
-            @*@if (cultures.Count() > 1) {
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="filterCultures" class="label col-form-label">@T["Culture"]</label>
-            </div>
-            <div class="col-md-4 col-xl-3 form-group">
-                <select id="filterCultures" class="form-control" name="Options.SelectedCulture">
-                    <option value="">@T["All cultures"]</option>
-                    @foreach (string culture in cultures) {
-                        string isSelected = culture == Model.Options.SelectedCulture ? "selected='selected'" : string.Empty;
-                        <!option @isSelected value="culture">@System.Globalization.CultureInfo.GetCultureInfo(culture).DisplayName</!option>
-                    }
-                </select>
-            </div>   
-            }*@
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="filterResults" class="label col-form-label">@T["Show"]</label>
-            </div>
-            <div class="col-md-4 col-xl-2 form-group">
-                <select id="filterResults" class="form-control" name="Options.ContentsStatus" asp-items="@contentStatuses">
-                </select>
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="orderResults" class="label col-form-label">@T["Sort by"]</label>
-            </div>
-            <div class="col-md-4 col-xl-3 form-group">
-                <select id="orderResults" class="form-control" name="Options.OrderBy" asp-items="@contentSorts">
-                </select>
-            </div>        
-            <div class="col-md-2 col-xl-1 form-group">
-                <button type="submit" class="btn btn-primary" name="submit.Filter">@T["Apply"]</button>
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<style asp-name="bootstrap-select"></style>
+
+<h1>@RenderTitleSegments(pageTitle)</h1>
+<form asp-action="List" asp-controller="Admin" method="post" id="items-form" autocomplete="off">
+    <!-- Hidden submit button do not remove -->
+    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input asp-for="Options.BulkAction" type="hidden" />
+
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            <div class="input-group input-group-sm filter-options">
+                <div class="input-group-prepend">
+                    <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                        @T["Filters"]
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="filter-dropdown">
+                        <a class="dropdown-item" href="?Options.ContentsStatus=Draft">@T["Only draft items"]</a>
+                        <a class="dropdown-item" href="?Options.ContentsStatus=Published">@T["Only published items"]</a>
+                        <a class="dropdown-item" href="?Options.ContentsStatus=Owner">@T["Owned by me"]</a>
+                    </div>
+                </div>
+                <input asp-for="Options.DisplayText" class="form-control" placeholder="@T["Search all content items"]" type="search" />
             </div>
         </div>
-    </fieldset>
-
-    @if (Model.ContentItems.Count > 0)
-    {
-        <ul class="list-group">
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                @if (Model.Options.CreatableTypes.Any())
+                {
+                    @if (Model.Options.CreatableTypes.Count == 1)
+                    {
+                        <a class="btn btn-sm btn-success" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @Model.Options.CreatableTypes.First().Value })">@T["New {0}", Model.Options.CreatableTypes.First().Text]</a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" id="new-dropdown" type="button" aria-haspopup="true" aria-expanded="false">@T["New"]</button>
+                        <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
+                            @foreach (var item in Model.Options.CreatableTypes)
+                            {
+                                <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value })">@T[item.Text]</a>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <ul class="list-group with-checkbox">
+        <li class="list-group-item bg-light">
+            <div class="row">
+                <div class="form-group col mb-n1 text-nowrap">
+                    <div class="custom-control custom-checkbox mt-2 mr-n2">
+                        <input type="checkbox" class="custom-control-input" id="select-all">
+                        <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                        <label id="items" for="select-all">@T.Plural(Model.ContentItems.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                        <label id="selected-items" class="text-muted" for="select-all"></label>
+                    </div>
+                </div>
+                <div class="form-group col-2 mb-n1" style="display:none" id="actions">
+                    <span class="dropdown float-right mt-1">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Actions"]
+                        </button>
+                        <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                            @foreach (var item in Model.Options.ContentsBulkAction)
+                            {
+                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} this/these item(s)?", @item.Text.ToLower()]">@item.Text</a>
+                            }
+                        </span>
+                    </span>
+                </div>
+                <div class="form-group col mb-n1 filter">
+                    <div class="btn-group float-right mt-1">
+                        <select asp-for="Options.SelectedContentType" asp-items="Model.Options.ContentTypeOptions" class="selectpicker show-tick mr-2" data-header="@T["Filter by content type"]" data-live-search="true" data-selected-text-format="static" data-width="fit" title="@T["Content Type"]" data-style="btn-sm">
+                        </select>
+                        <select asp-for="Options.ContentsStatus" asp-items="@Model.Options.ContentStatuses" class="selectpicker show-tick mr-2" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="true" title="@T["Show"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.ContentSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
+                    </div>
+                </div>
+            </div>
+        </li>
+        @if (Model.ContentItems.Count > 0)
+        {
             @foreach (var contentItemSummary in Model.ContentItems)
             {
                 <li class="list-group-item">
                     @await DisplayAsync(contentItemSummary)
                 </li>
             }
-        </ul>
-    }
-    else
-    {
-        <div class="alert alert-info">
-            @T["No result found."]
-        </div>
-    }
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info">
+                    @T["No results found."]
+                </div>
+            </li>
+        }
+    </ul>
 
     @await DisplayAsync(Model.Pager)
-}
+</form>
+
+@* This is because ContentTypesAdminNode requires the ContenType to be available as part of the url *@
+<script at="Foot" type="text/javascript">
+    $(function () {
+        $('.selectpicker').selectpicker();
+
+        var actions = $("#actions");
+        var items = $("#items");
+        var filters = $(".filter");
+        var selectAllCtrl = $("#select-all");
+        var selectedItems = $("#selected-items");
+        var contentItemsCheckboxes = $(":checkbox[name='itemIds']");
+
+        $("#Options_SelectedContentType").change(function (e) {
+            var value = $("#Options_SelectedContentType option:selected").val();
+            console.log(value);
+            var newAction = "@formActionWithoutTypeName" + "/" + value;
+            $("#items-form").attr("action", newAction);
+        });
+
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $("[name='submit.Filter']").click();
+        });
+
+        $(".dropdown-menu .dropdown-item").on("click", function () {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                var $this = $(this);
+                confirmDialog({...$this.data(), callback: function(r) {
+                    if (r) {
+                        $("[name='Options.BulkAction']").val($this.data("action"));
+                        $("[name='submit.BulkAction']").click();
+                    }
+                }});
+            }
+        });
+
+        function displayActionsOrFilters() {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                actions.show();
+                filters.hide();
+                selectedItems.show();
+                items.hide();
+            }
+            else {
+                actions.hide();
+                filters.show();
+                selectedItems.hide();
+                items.show();
+            }
+        }
+
+        selectAllCtrl.click(function(){
+            contentItemsCheckboxes.not(this).prop("checked", this.checked);
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+
+        contentItemsCheckboxes.on("click", function () {
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+    })
+</script>

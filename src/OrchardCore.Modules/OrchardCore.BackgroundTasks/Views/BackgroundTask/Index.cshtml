@@ -1,0 +1,43 @@
+@model BackgroundTaskIndexViewModel
+@inject OrchardCore.Modules.ILocalClock LocalClock
+
+<h1>@RenderTitleSegments(T["Background Tasks"])</h1>
+
+<form asp-action="Index"> @* the form is necessary to generate an antiforgery token for the delete action *@
+
+    @if (Model.Tasks.Any())
+    {
+        <ul class="list-group">
+            @foreach (var settings in Model.Tasks.Select(t => t.Settings))
+            {
+                <li class="list-group-item">
+                    <div class="properties">
+                        <div class="related">
+                        @if (@settings.Enable)
+                        {
+                            <a asp-action="Disable" asp-route-name="@settings.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+                        }
+                        else
+                        {
+                            <a asp-action="Enable" asp-route-name="@settings.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+                        }
+
+                            <a asp-action="Edit" asp-route-name="@settings.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                        </div>
+                        <span class="text-primary" title="@T["Settings"]"><i class="fa fa-cog" aria-hidden="true"></i></span>
+                        <span class="text-primary"><a asp-action="Edit" asp-route-name="@settings.Name">@settings.Name</a></span>
+                        <span class="hint">— @settings.Description</span>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            @T["<strong>Nothing here!</strong> There are no background task for the moment."]
+        </div>
+    }
+</form>
+
+@await DisplayAsync(Model.Pager)

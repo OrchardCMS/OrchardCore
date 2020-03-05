@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.Services
         private readonly IClock _clock;
 
         public SecurityTokenService(
-            IDataProtectionProvider dataProtectionProvider, 
+            IDataProtectionProvider dataProtectionProvider,
             IClock clock,
             IStringLocalizer<SecurityTokenService> localizer)
         {

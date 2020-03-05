@@ -1,0 +1,5 @@
+@model OrchardCore.Users.Workflows.ViewModels.UserEventViewModel<OrchardCore.Users.Workflows.Activities.UserEnabledEvent>
+
+<header>
+    <h4><i class="fa fa-user"></i>@Model.Activity.GetTitleOrDefault(() => T["User Enabled"])</h4>
+</header>

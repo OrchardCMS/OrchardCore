@@ -3,14 +3,20 @@ using OrchardCore.Modules.Manifest;
 [assembly: Module(
     Name = "Users",
     Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
+    Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
-
 [assembly: Feature(
     Id = "OrchardCore.Users",
     Name = "Users",
     Description = "The users module enables authentication UI and user management.",
+    Category = "Security"
+)]
+[assembly: Feature(
+    Id = "OrchardCore.Users.ChangeEmail",
+    Name = "Users Change Email",
+    Description = "The Change email feature allows users to change their email address.",
+    Dependencies = new[] { "OrchardCore.Users" },
     Category = "Security"
 )]
 

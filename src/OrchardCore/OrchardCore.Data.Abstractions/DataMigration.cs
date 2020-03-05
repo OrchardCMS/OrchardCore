@@ -1,9 +1,13 @@
-﻿using YesSql.Sql;
+using YesSql.Sql;
 
 namespace OrchardCore.Data.Migration
 {
+    /// <summary>
+    /// Represents a database migration.
+    /// </summary>
     public abstract class DataMigration : IDataMigration
     {
-        public SchemaBuilder SchemaBuilder { get; set; }
+        /// <inheritdocs />
+        public ISchemaBuilder SchemaBuilder { get; set; }
     }
 }

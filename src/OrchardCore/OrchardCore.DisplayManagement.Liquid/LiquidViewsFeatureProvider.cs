@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using OrchardCore.DisplayManagement.Liquid.Internal;
+using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.FileProviders;
 
@@ -13,16 +13,16 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
+        public const string DefaultLiquidViewName = "DefaultLiquidViewName";
+        public static string DefaultRazorViewPath = '/' + DefaultLiquidViewName + RazorViewEngine.ViewExtension;
+        public static string DefaultLiquidViewPath = '/' + DefaultLiquidViewName + LiquidViewTemplate.ViewExtension;
+
         private static List<string> _sharedPaths;
         private static object _synLock = new object();
-        private readonly IHostingEnvironment _hostingEnvironment;
 
         public LiquidViewsFeatureProvider(
-            IHostingEnvironment hostingEnvironment,
             ILiquidViewFileProviderAccessor fileProviderAccessor)
         {
-            _hostingEnvironment = hostingEnvironment;
-
             if (_sharedPaths != null)
             {
                 return;
@@ -45,17 +45,22 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
         {
-            if (!parts.Where(p => p.Name == _hostingEnvironment.ApplicationName).Any())
+            feature.ViewDescriptors.Add(new CompiledViewDescriptor
             {
-                return;
-            }
+                RelativePath = DefaultRazorViewPath,
+                Item = new RazorViewCompiledItem(typeof(LiquidPage), @"mvc.1.0.view", DefaultLiquidViewPath)
+            });
 
             foreach (var path in _sharedPaths)
             {
-                if (!Path.GetFileName(path).StartsWith("_"))
+                if (!Path.GetFileName(path).StartsWith('_'))
                 {
                     var viewPath = Path.ChangeExtension(path, RazorViewEngine.ViewExtension);
-                    feature.ViewDescriptors.Add(new CompiledViewDescriptor { RelativePath = viewPath, ViewAttribute = new RazorViewAttribute(path, typeof(LiquidPage)) });
+                    feature.ViewDescriptors.Add(new CompiledViewDescriptor
+                    {
+                        RelativePath = viewPath,
+                        Item = new RazorViewCompiledItem(typeof(LiquidPage), @"mvc.1.0.view", viewPath)
+                    });
                 }
             }
         }

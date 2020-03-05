@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -17,24 +18,41 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     {
         private ContentTypePartDefinition _typePartDefinition;
 
-        public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
+        public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
             // e.g., HtmlBodyPart.Summary, HtmlBodyPart-BlogPost, BagPart-LandingPage-Services
             // context.Shape is the ContentItem shape, we need to alter the part shape
 
             var result = base.Factory(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
 
-            // This should only be set in Display methods
             if (_typePartDefinition != null)
             {
+                // The stereotype is used when not displaying for a specific content type. We don't use [Stereotype] and [ContentType] at
+                // the same time in an alternate because a content type is always of one stereotype.
+
+                var stereotype = "";
+
+                var settings = _typePartDefinition.ContentTypeDefinition?.GetSettings<ContentTypeSettings>();
+
+                if (settings != null)
+                {
+                    stereotype = settings.Stereotype;
+                }
+
+                if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                {
+                    stereotype = stereotype + "__";
+                }
+
                 var partName = _typePartDefinition.Name;
                 var partType = _typePartDefinition.PartDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
+                var editorPartType = GetEditorShapeType(_typePartDefinition);
 
-                if (partType == shapeType)
+                if (partType == shapeType || editorPartType == shapeType)
                 {
                     // HtmlBodyPart, Services
-                    result.Differentiator($"{partName}");
+                    result.Differentiator(partName);
                 }
                 else
                 {
@@ -44,17 +62,32 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 result.Displaying(ctx =>
                 {
-                    var displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
+                    string[] displayTypes;
 
-                    // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
-                    ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
+                    if (editorPartType == shapeType)
+                    {
+                        displayTypes = new[] { "_" + ctx.Shape.Metadata.DisplayType };
+                    }
+                    else
+                    {
+                        displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
 
-                    if (shapeType == partType)
+                        // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
+                        ctx.Shape.Metadata.Alternates.Add($"{shapeType}_{ctx.Shape.Metadata.DisplayType}");
+                    }
+
+                    if (shapeType == partType || shapeType == editorPartType)
                     {
                         foreach (var displayType in displayTypes)
                         {
                             // [ContentType]_[DisplayType]__[PartType], e.g. Blog-HtmlBodyPart, LandingPage-BagPart
-                            ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}");
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}");
+
+                            if (!String.IsNullOrEmpty(stereotype))
+                            {
+                                // [Stereotype]__[DisplayType]__[PartType], e.g. Widget-ContentsMetadata
+                                ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partType}");
+                            }
                         }
 
                         if (partType != partName)
@@ -62,7 +95,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             foreach (var displayType in displayTypes)
                             {
                                 // [ContentType]_[DisplayType]__[PartName], e.g. LandingPage-Services
-                                ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partName}");
+                                ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}");
+
+                                if (!String.IsNullOrEmpty(stereotype))
+                                {
+                                    // [Stereotype]_[DisplayType]__[PartName], e.g. LandingPage-Services
+                                    ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partName}");
+                                }
                             }
                         }
                     }
@@ -71,7 +110,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                         foreach (var displayType in displayTypes)
                         {
                             // [ContentType]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
-                            ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}__{shapeType}");
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{shapeType}");
+
+                            if (!String.IsNullOrEmpty(stereotype))
+                            {
+                                // [Stereotype]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
+                                ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partType}__{shapeType}");
+                            }
                         }
 
                         if (partType != partName)
@@ -79,7 +124,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             foreach (var displayType in displayTypes)
                             {
                                 // [ContentType]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
-                                ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partName}__{shapeType}");
+                                ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}__{shapeType}");
+
+                                if (!String.IsNullOrEmpty(stereotype))
+                                {
+                                    // [Stereotype]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
+                                    ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partName}__{shapeType}");
+                                }
                             }
                         }
                     }
@@ -98,53 +149,62 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 return null;
             }
 
-            BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
+            using (BuildPrefix(typePartDefinition, context.HtmlFieldPrefix))
+            {
+                _typePartDefinition = typePartDefinition;
 
-            _typePartDefinition = typePartDefinition;
+                var buildDisplayContext = new BuildPartDisplayContext(typePartDefinition, context);
 
-            var buildDisplayContext = new BuildPartDisplayContext(typePartDefinition, context);
+                var result = await DisplayAsync(part, buildDisplayContext);
 
-            var result = await DisplayAsync(part, buildDisplayContext);
+                _typePartDefinition = null;
 
-            _typePartDefinition = null;
-
-            return result;
+                return result;
+            }
         }
 
-        Task<IDisplayResult> IContentPartDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
+        async Task<IDisplayResult> IContentPartDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
         {
             var part = contentPart as TPart;
 
             if (part == null)
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
-            BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
+            using (BuildPrefix(typePartDefinition, context.HtmlFieldPrefix))
+            {
+                _typePartDefinition = typePartDefinition;
 
-            var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
+                var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
 
-            return EditAsync(part, buildEditorContext);
+                var result = await EditAsync(part, buildEditorContext);
+
+                _typePartDefinition = null;
+
+                return result;
+            }
         }
 
         async Task<IDisplayResult> IContentPartDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
         {
             var part = contentPart as TPart;
 
-            if(part == null)
+            if (part == null)
             {
                 return null;
             }
 
-            BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
+            using (BuildPrefix(typePartDefinition, context.HtmlFieldPrefix))
+            {
+                var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
 
-            var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
+                var result = await UpdateAsync(part, context.Updater, updateEditorContext);
 
-            var result = await UpdateAsync(part, context.Updater, updateEditorContext);
+                part.ContentItem.Apply(typePartDefinition.Name, part);
 
-            part.ContentItem.Apply(typePartDefinition.Name, part);
-            
-            return result;
+                return result;
+            }
         }
 
         public virtual Task<IDisplayResult> DisplayAsync(TPart part, BuildPartDisplayContext context)
@@ -182,7 +242,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return UpdateAsync(part, context);
         }
 
-        public virtual Task<IDisplayResult> UpdateAsync(TPart part, BuildPartEditorContext context)
+        public virtual Task<IDisplayResult> UpdateAsync(TPart part, UpdatePartEditorContext context)
         {
             return UpdateAsync(part, context.Updater);
         }
@@ -192,26 +252,73 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return Task.FromResult<IDisplayResult>(null);
         }
 
-        protected string GetEditorShapeType(string shapeType, BuildPartEditorContext context)
+        protected string GetEditorShapeType(string shapeType, ContentTypePartDefinition typePartDefinition)
         {
-            var editor = context.TypePartDefinition.Editor();
+            var editor = typePartDefinition.Editor();
             return !String.IsNullOrEmpty(editor)
                 ? shapeType + "__" + editor
                 : shapeType;
         }
 
-        protected string GetEditorShapeType(BuildPartEditorContext context)
+        protected string GetEditorShapeType(string shapeType, BuildPartEditorContext context)
         {
-            return GetEditorShapeType(typeof(TPart).Name + "_Edit", context);
+            return GetEditorShapeType(shapeType, context.TypePartDefinition);
         }
 
-        private void BuildPrefix(ContentTypePartDefinition typePartDefinition, string htmlFieldPrefix)
+        protected string GetEditorShapeType(ContentTypePartDefinition typePartDefinition)
         {
+            return GetEditorShapeType(typeof(TPart).Name + "_Edit", typePartDefinition);
+        }
+
+        protected string GetEditorShapeType(BuildPartEditorContext context)
+        {
+            return GetEditorShapeType(context.TypePartDefinition);
+        }
+
+        protected string GetDisplayShapeType(string shapeType, BuildPartDisplayContext context)
+        {
+            var displayMode = context.TypePartDefinition.DisplayMode();
+            return !String.IsNullOrEmpty(displayMode)
+                ? shapeType + "_Display__" + displayMode
+                : shapeType;
+        }
+
+        protected string GetDisplayShapeType(BuildPartDisplayContext context)
+        {
+            return GetDisplayShapeType(typeof(TPart).Name, context);
+        }
+
+        private TempPrefix BuildPrefix(ContentTypePartDefinition typePartDefinition, string htmlFieldPrefix)
+        {
+            var tempPrefix = new TempPrefix(this, Prefix);
+
             Prefix = typePartDefinition.Name;
 
             if (!String.IsNullOrEmpty(htmlFieldPrefix))
             {
                 Prefix = htmlFieldPrefix + "." + Prefix;
+            }
+
+            return tempPrefix;
+        }
+
+        /// <summary>
+        /// Restores the previous prefix automatically
+        /// </summary>
+        private class TempPrefix : IDisposable
+        {
+            private readonly ContentPartDisplayDriver<TPart> _driver;
+            private readonly string _originalPrefix;
+
+            public TempPrefix(ContentPartDisplayDriver<TPart> driver, string originalPrefix)
+            {
+                _driver = driver;
+                _originalPrefix = originalPrefix;
+            }
+
+            public void Dispose()
+            {
+                _driver.Prefix = _originalPrefix;
             }
         }
     }

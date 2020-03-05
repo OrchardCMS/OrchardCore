@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Validation;
+using OpenIddict.Validation.Internal;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -26,10 +29,8 @@ namespace OrchardCore.OpenId.Configuration
         private readonly ILogger<OpenIdValidationConfiguration> _logger;
         private readonly IOpenIdValidationService _validationService;
         private readonly IRunningShellTable _runningShellTable;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly IShellSettingsManager _shellSettingsManager;
 
         public OpenIdValidationConfiguration(
             ILogger<OpenIdValidationConfiguration> logger,
@@ -37,16 +38,13 @@ namespace OrchardCore.OpenId.Configuration
             IRunningShellTable runningShellTable,
             IServiceProvider serviceProvider,
             IShellHost shellHost,
-            ShellSettings shellSettings,
-            IShellSettingsManager shellSettingsManager)
+            ShellSettings shellSettings)
         {
             _logger = logger;
             _validationService = validationService;
             _runningShellTable = runningShellTable;
-            _serviceProvider = serviceProvider;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _shellSettingsManager = shellSettingsManager;
         }
 
         public void Configure(AuthenticationOptions options)
@@ -57,19 +55,16 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
-                options.AddScheme(JwtBearerDefaults.AuthenticationScheme, builder =>
-                {
-                    builder.HandlerType = typeof(JwtBearerHandler);
-                });
+                options.AddScheme<JwtBearerHandler>(JwtBearerDefaults.AuthenticationScheme, displayName: null);
 
                 return;
             }
 
             // Note: the shell host guarantees that the OpenID server service resolved inside
             // this using block won't be disposed until the service scope itself is released.
-            using (var scope = CreateTenantScope(settings.Tenant))
+            CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
             {
                 var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
                 if (service == null)
@@ -77,7 +72,7 @@ namespace OrchardCore.OpenId.Configuration
                     return;
                 }
 
-                var configuration = GetServerSettingsAsync(service).GetAwaiter().GetResult();
+                var configuration = await GetServerSettingsAsync(service);
                 if (configuration == null)
                 {
                     return;
@@ -86,29 +81,23 @@ namespace OrchardCore.OpenId.Configuration
                 // Register the JWT or validation handler in the authentication handlers collection.
                 if (configuration.AccessTokenFormat == OpenIdServerSettings.TokenFormat.Encrypted)
                 {
-                    options.AddScheme(OpenIddictValidationDefaults.AuthenticationScheme, builder =>
-                    {
-                        builder.HandlerType = typeof(OpenIddictValidationHandler);
-                    });
+                    options.AddScheme<OpenIddictValidationHandler>(OpenIddictValidationDefaults.AuthenticationScheme, displayName: null);
                 }
                 else if (configuration.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT)
                 {
-                    options.AddScheme(JwtBearerDefaults.AuthenticationScheme, builder =>
-                    {
-                        builder.HandlerType = typeof(JwtBearerHandler);
-                    });
+                    options.AddScheme<JwtBearerHandler>(JwtBearerDefaults.AuthenticationScheme, displayName: null);
                 }
                 else
                 {
                     throw new InvalidOperationException("The specified access token format is not valid.");
                 }
-            }
+            }).GetAwaiter().GetResult();
         }
 
         public void Configure(string name, JwtBearerOptions options)
         {
             // Ignore JWT handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, JwtBearerDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, JwtBearerDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -125,18 +114,18 @@ namespace OrchardCore.OpenId.Configuration
             // Otherwise, set the authority to allow the JWT handler to retrieve the endpoint URLs/signing keys
             // from the remote server's metadata by sending an OpenID Connect/OAuth2 discovery request.
 
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
-                options.RequireHttpsMetadata = settings.Authority.StartsWith(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
+                options.RequireHttpsMetadata = string.Equals(settings.Authority.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
                 options.Audience = settings.Audience;
-                options.Authority = settings.Authority;
+                options.Authority = settings.Authority.AbsoluteUri;
 
                 return;
             }
 
             // Note: the shell host guarantees that the OpenID server service resolved inside
             // this using block won't be disposed until the service scope itself is released.
-            using (var scope = CreateTenantScope(settings.Tenant))
+            CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
             {
                 var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
                 if (service == null)
@@ -144,7 +133,7 @@ namespace OrchardCore.OpenId.Configuration
                     return;
                 }
 
-                var configuration = GetServerSettingsAsync(service).GetAwaiter().GetResult();
+                var configuration = await GetServerSettingsAsync(service);
                 if (configuration == null)
                 {
                     return;
@@ -154,13 +143,13 @@ namespace OrchardCore.OpenId.Configuration
                 // to choose the valid audiences, as this would otherwise allow it
                 // to validate/introspect tokens meant to be used with another tenant.
                 options.TokenValidationParameters.ValidAudience = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
-                options.TokenValidationParameters.IssuerSigningKeys = service.GetSigningKeysAsync().GetAwaiter().GetResult();
+                options.TokenValidationParameters.IssuerSigningKeys = await service.GetSigningKeysAsync();
 
                 // If an authority was explicitly set in the OpenID server options,
                 // prefer it to the dynamic tenant comparison as it's more efficient.
-                if (!string.IsNullOrEmpty(configuration.Authority))
+                if (configuration.Authority != null)
                 {
-                    options.TokenValidationParameters.ValidIssuer = configuration.Authority;
+                    options.TokenValidationParameters.ValidIssuer = configuration.Authority.AbsoluteUri;
                 }
                 else
                 {
@@ -171,8 +160,8 @@ namespace OrchardCore.OpenId.Configuration
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }
 
-                        var tenant = _runningShellTable.Match(uri.Authority, uri.AbsolutePath);
-                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant, StringComparison.Ordinal))
+                        var tenant = _runningShellTable.Match(new HostString(uri.Authority), uri.AbsolutePath);
+                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant))
                         {
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }
@@ -180,7 +169,7 @@ namespace OrchardCore.OpenId.Configuration
                         return issuer;
                     };
                 }
-            }
+            }).GetAwaiter().GetResult();
         }
 
         public void Configure(JwtBearerOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
@@ -188,7 +177,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(string name, OpenIddictValidationOptions options)
         {
             // Ignore validation handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, OpenIddictValidationDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, OpenIddictValidationDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -202,23 +191,21 @@ namespace OrchardCore.OpenId.Configuration
             // If the tokens are issued by an authorization server located in a separate tenant,
             // resolve the isolated data protection provider associated with the specified tenant.
             if (!string.IsNullOrEmpty(settings.Tenant) &&
-                !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
+                !string.Equals(settings.Tenant, _shellSettings.Name))
             {
-                var shellSettings = _shellSettingsManager.GetSettings(settings.Tenant);
-                var (scope, shellContext) = _shellHost.GetScopeAndContextAsync(shellSettings).GetAwaiter().GetResult();
-                using (scope)
+                _shellHost.GetScopeAsync(settings.Tenant).GetAwaiter().GetResult().UsingAsync(async scope =>
                 {
                     // If the other tenant is released, ensure the current tenant is also restarted as it
                     // relies on a data protection provider whose lifetime is managed by the other tenant.
                     // To make sure the other tenant is not disposed before all the pending requests are
                     // processed by the current tenant, a tenant dependency is manually added.
-                    shellContext.AddDependentShell(_shellHost.GetOrCreateShellContextAsync(_shellSettings).GetAwaiter().GetResult());
+                    scope.ShellContext.AddDependentShell(await _shellHost.GetOrCreateShellContextAsync(_shellSettings));
 
                     // Note: the data protection provider is always registered as a singleton and thus will
                     // survive the current scope, which is mainly used to prevent the other tenant from being
                     // released before we have a chance to declare the current tenant as a dependent tenant.
                     options.DataProtectionProvider = scope.ServiceProvider.GetDataProtectionProvider();
-                }
+                }).GetAwaiter().GetResult();
             }
 
             // Don't allow the current tenant to choose the valid audiences, as this would
@@ -228,17 +215,15 @@ namespace OrchardCore.OpenId.Configuration
 
         public void Configure(OpenIddictValidationOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
-        private IServiceScope CreateTenantScope(string tenant)
+        private ShellScope CreateTenantScope(string tenant)
         {
-            // Optimization: if the specified name corresponds to the current tenant, use the
-            // service provider injected via the constructor instead of using the host APIs.
-            if (string.IsNullOrEmpty(tenant) || string.Equals(tenant, _shellSettings.Name, StringComparison.Ordinal))
+            // Optimization: if the specified name corresponds to the current tenant, use the current 'ShellScope'.
+            if (string.IsNullOrEmpty(tenant) || string.Equals(tenant, _shellSettings.Name))
             {
-                return _serviceProvider.CreateScope();
+                return ShellScope.Current;
             }
 
-            var settings = _shellSettingsManager.GetSettings(tenant);
-            return _shellHost.GetScopeAsync(settings).GetAwaiter().GetResult();
+            return _shellHost.GetScopeAsync(tenant).GetAwaiter().GetResult();
         }
 
         private async Task<OpenIdServerSettings> GetServerSettingsAsync(IOpenIdServerService service)

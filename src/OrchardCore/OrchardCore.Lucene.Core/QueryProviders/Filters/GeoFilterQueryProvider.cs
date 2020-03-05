@@ -1,8 +1,10 @@
 using System.Linq;
+using Lucene.Net.Queries.Function;
 using Lucene.Net.Search;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Spatial.Queries;
+using Lucene.Net.Spatial.Util;
 using Newtonsoft.Json.Linq;
 using Spatial4n.Core.Context;
 
@@ -10,10 +12,18 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
 {
     public class GeoBoundingBoxFilterProvider : ILuceneBooleanFilterProvider
     {
-        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject queryObj, Query toFilter)
+        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type,
+            JObject queryObj, Query toFilter)
         {
             if (type != "geo_bounding_box")
+            {
                 return null;
+            }
+
+            if (!(toFilter is BooleanQuery booleanQuery))
+            {
+                return null;
+            }
 
             var ctx = SpatialContext.GEO;
 
@@ -26,13 +36,15 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             var geoPropertyName = first.Name;
             var strategy = new RecursivePrefixTreeStrategy(grid, geoPropertyName);
 
-            var boundingBox = (JObject) first.Value;
+            var boundingBox = (JObject)first.Value;
 
             var topLeftProperty = boundingBox["top_left"] as JObject;
-            var bottomRightProperty =boundingBox["bottom_right"] as JObject;
+            var bottomRightProperty = boundingBox["bottom_right"] as JObject;
 
             if (topLeftProperty == null || bottomRightProperty == null)
+            {
                 return null;
+            }
 
             var left = topLeftProperty["lon"];
             var top = topLeftProperty["lat"];
@@ -43,10 +55,13 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
 
             var args = new SpatialArgs(SpatialOperation.Intersects, rectangle);
 
-            var filter = strategy.MakeFilter(args);
+            var spatialQuery = strategy.MakeQuery(args);
+            var valueSource = strategy.MakeRecipDistanceValueSource(rectangle);
+            var valueSourceFilter = new ValueSourceFilter(new QueryWrapperFilter(spatialQuery), valueSource, 0, 1);
 
-            return new FilteredQuery(toFilter, filter);
+            booleanQuery.Add(new FunctionQuery(valueSource), Occur.MUST);
+
+            return new FilteredQuery(booleanQuery, valueSourceFilter);
         }
     }
-
 }

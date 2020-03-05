@@ -13,6 +13,7 @@ namespace OrchardCore.OpenId.YesSql.Indexes
         public string ReferenceId { get; set; }
         public string Status { get; set; }
         public string Subject { get; set; }
+        public string Type { get; set; }
     }
 
     public class OpenIdTokenIndexProvider : IndexProvider<OpenIdToken>
@@ -28,7 +29,8 @@ namespace OrchardCore.OpenId.YesSql.Indexes
                     ExpirationDate = token.ExpirationDate,
                     ReferenceId = token.ReferenceId,
                     Status = token.Status,
-                    Subject = token.Subject
+                    Subject = token.Subject,
+                    Type = token.Type
                 });
         }
     }

@@ -5,67 +5,51 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Admin;
-using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
+using MimeKit;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers
 {
     [Feature("OrchardCore.Users.Registration")]
-    [Admin]
-    public class RegistrationController : BaseEmailController
+    public class RegistrationController : Controller
     {
-        private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
-        private readonly SignInManager<IUser> _signInManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-
         private readonly INotifier _notifier;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer<RegistrationController> S;
+        private readonly IHtmlLocalizer<RegistrationController> H;
 
         public RegistrationController(
-            IUserService userService,
             UserManager<IUser> userManager,
-            SignInManager<IUser> signInManager,
             IAuthorizationService authorizationService,
             ISiteService siteService,
             INotifier notifier,
-            ISmtpService smtpService,
-            IShapeFactory shapeFactory,
-            IHtmlDisplay displayManager,
             ILogger<RegistrationController> logger,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
-            IStringLocalizer<RegistrationController> stringLocalizer) : base(smtpService, shapeFactory, displayManager)
+            IStringLocalizer<RegistrationController> stringLocalizer)
         {
-            _userService = userService;
             _userManager = userManager;
-            _signInManager = signInManager;
             _authorizationService = authorizationService;
             _siteService = siteService;
             _notifier = notifier;
-
             _logger = logger;
-            TH = htmlLocalizer;
-            T = stringLocalizer;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
-
-        ILogger _logger;
-        IHtmlLocalizer TH { get; set; }
-        IStringLocalizer T { get; set; }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Register(string returnUrl = null)
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister)
+            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
             {
                 return NotFound();
             }
@@ -81,31 +65,22 @@ namespace OrchardCore.Users.Controllers
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
 
-            if (!settings.UsersCanRegister)
+            if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
             {
                 return NotFound();
             }
 
-            ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
+            if (!string.IsNullOrEmpty(model.Email) && !MailboxAddress.TryParse(model.Email, out var emailAddress))
             {
-                var user = await _userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail, RoleNames = new string[0] }, model.Password, (key, message) => ModelState.AddModelError(key, message)) as User;
-                
-                if (user != null)
-                {
-                    if (settings.UsersMustValidateEmail)
-                    {
-                        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                        // Send an email with this link
-                        await SendEmailConfirmationTokenAsync(user);
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                    }
-                    _logger.LogInformation(3, "User created a new account with password.");
-                    return RedirectToLocal(returnUrl);
-                }
+                ModelState.AddModelError("Email", S["Invalid email."]);
+            }
+
+            ViewData["ReturnUrl"] = returnUrl;
+
+            // If we get a user, redirect to returnUrl
+            if (await this.RegisterUser(model, S["Confirm your account"], _logger) != null)
+            {
+                return RedirectToLocal(returnUrl);
             }
 
             // If we got this far, something failed, redisplay form
@@ -120,14 +95,22 @@ namespace OrchardCore.Users.Controllers
             {
                 return RedirectToAction(nameof(RegistrationController.Register), "Registration");
             }
+
             var user = await _userManager.FindByIdAsync(userId);
+
             if (user == null)
             {
-                return  NotFound();
+                return NotFound();
             }
+
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+            if (result.Succeeded)
+            {
+                return View();
+            }
+
+            return NotFound();
         }
 
         [Authorize]
@@ -137,27 +120,30 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user != null)
             {
-                await SendEmailConfirmationTokenAsync(user);
+                await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
 
-                _notifier.Success(TH["Verification email sent."]);
+                _notifier.Success(H["Verification email sent."]);
             }
 
             return RedirectToAction(nameof(AdminController.Index), "Admin");
         }
 
-        private async Task<string> SendEmailConfirmationTokenAsync(User user)
+        private IActionResult RedirectToLocal(string returnUrl)
         {
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Action("ConfirmEmail", "Registration", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-            await SendEmailAsync(user.Email, T["Confirm your account"], new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl }, "TemplateUserConfirmEmail");
-
-            return callbackUrl;
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return Redirect("~/");
+            }
         }
     }
 }

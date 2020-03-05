@@ -20,16 +20,15 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Display(DateTimeField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayDateTimeFieldViewModel>("DateTimeField", async model =>
+            return Initialize<DisplayDateTimeFieldViewModel>(GetDisplayShapeType(context), async model =>
             {
                 model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
-            ;
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(DateTimeField field, BuildFieldEditorContext context)
@@ -46,7 +45,7 @@ namespace OrchardCore.ContentFields.Fields
         public override async Task<IDisplayResult> UpdateAsync(DateTimeField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
             var model = new EditDateTimeFieldViewModel();
-            
+
             if (await updater.TryUpdateModelAsync(model, Prefix, f => f.LocalDateTime))
             {
                 if (model.LocalDateTime == null)
@@ -56,7 +55,7 @@ namespace OrchardCore.ContentFields.Fields
                 else
                 {
                     field.Value = await _localClock.ConvertToUtcAsync(model.LocalDateTime.Value);
-                }  
+                }
             }
 
             return Edit(field, context);

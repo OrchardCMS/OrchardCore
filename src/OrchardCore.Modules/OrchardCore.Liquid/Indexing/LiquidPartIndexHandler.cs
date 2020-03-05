@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Indexing;
-using OrchardCore.Liquid.Model;
+using OrchardCore.Liquid.Models;
 
 namespace OrchardCore.Liquid.Indexing
 {
@@ -8,12 +8,15 @@ namespace OrchardCore.Liquid.Indexing
     {
         public override Task BuildIndexAsync(LiquidPart part, BuildPartIndexContext context)
         {
-            var options = context.Settings.ToOptions() 
-                | DocumentIndexOptions.Sanitize 
+            var options = context.Settings.ToOptions()
+                | DocumentIndexOptions.Sanitize
                 | DocumentIndexOptions.Analyze
                 ;
 
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(part.Liquid, DocumentIndex.Types.Text, options));
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, part.Liquid, options);
+            }
 
             return Task.CompletedTask;
         }

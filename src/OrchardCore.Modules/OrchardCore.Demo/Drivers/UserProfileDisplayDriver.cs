@@ -1,10 +1,10 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.Demo.Models;
 using OrchardCore.Demo.ViewModels;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Demo.Drivers
@@ -16,7 +16,8 @@ namespace OrchardCore.Demo.Drivers
             return Initialize<EditUserProfileViewModel>("UserProfile_Edit", model =>
             {
                 model.Age = profile.Age;
-                model.Name = profile.Name;
+                model.FirstName = profile.FirstName;
+                model.LastName = profile.LastName;
             }).Location("Content:2");
         }
 
@@ -27,7 +28,9 @@ namespace OrchardCore.Demo.Drivers
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
                 profile.Age = model.Age;
-                profile.Name = model.Name;
+                profile.FirstName = model.FirstName;
+                profile.LastName = model.LastName;
+                profile.UpdatedAt = DateTime.UtcNow;
             }
 
             return Edit(profile, context);

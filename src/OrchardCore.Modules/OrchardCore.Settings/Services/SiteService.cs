@@ -1,10 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
 
@@ -15,106 +16,89 @@ namespace OrchardCore.Settings.Services
     /// </summary>
     public class SiteService : ISiteService
     {
-        private readonly IMemoryCache _memoryCache;
-        private readonly ISignal _signal;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IClock _clock;
         private const string SiteCacheKey = "SiteService";
+
+        private readonly ISignal _signal;
+        private readonly IMemoryCache _memoryCache;
+        private readonly IClock _clock;
 
         public SiteService(
             ISignal signal,
-            IServiceProvider serviceProvider,
             IMemoryCache memoryCache,
             IClock clock)
         {
             _signal = signal;
-            _serviceProvider = serviceProvider;
-            _clock = clock;
             _memoryCache = memoryCache;
+            _clock = clock;
         }
 
         /// <inheritdoc/>
         public IChangeToken ChangeToken => _signal.GetToken(SiteCacheKey);
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Returns the document from the database to be updated.
+        /// </summary>
+        public async Task<ISite> LoadSiteSettingsAsync()
+        {
+            return await SessionHelper.LoadForUpdateAsync(GetDefaultSettings);
+        }
+
+        /// <summary>
+        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// </summary>
         public async Task<ISite> GetSiteSettingsAsync()
         {
-            ISite site;
-
-            if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
+            if (!_memoryCache.TryGetValue<SiteSettings>(SiteCacheKey, out var site))
             {
-                var session = GetSession();
+                var sessionHelper = SessionHelper;
 
-                site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
+                // First get a new token.
+                var changeToken = ChangeToken;
 
-                if (site == null)
-                {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
-                        {
-                            site = new SiteSettings
-                            {
-                                SiteSalt = Guid.NewGuid().ToString("N"),
-                                SiteName = "My Orchard Project Application",
-                                PageSize = 10,
-                                MaxPageSize = 100,
-                                MaxPagedCount = 0,
-                                TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
-                                Culture = ""
-                            };
+                // The cache is always updated with the actual persisted data.
+                site = await sessionHelper.GetForCachingAsync(GetDefaultSettings);
 
-                            session.Save(site);
-                            _memoryCache.Set(SiteCacheKey, site);
-                            _signal.SignalToken(SiteCacheKey);
-                        }
-                    }
-                }
-                else
-                {
-                    _memoryCache.Set(SiteCacheKey, site);
-                    _signal.SignalToken(SiteCacheKey);
-                }
+                // Prevent data from being updated.
+                site.IsReadonly = true;
+
+                _memoryCache.Set(SiteCacheKey, site, changeToken);
             }
 
             return site;
         }
 
+        private SiteSettings GetDefaultSettings()
+        {
+            return new SiteSettings
+            {
+                SiteSalt = Guid.NewGuid().ToString("N"),
+                SiteName = "My Orchard Project Application",
+                PageTitleFormat = "{% page_title Site.SiteName, position: \"after\", separator: \" - \" %}",
+                TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
+                PageSize = 10,
+                MaxPageSize = 100,
+                MaxPagedCount = 0
+            };
+        }
+
         /// <inheritdoc/>
-        public async Task UpdateSiteSettingsAsync(ISite site)
+        public Task UpdateSiteSettingsAsync(ISite site)
         {
-            var session = GetSession();
+            if (site.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
 
-            var existing = await session.Query<SiteSettings>().FirstOrDefaultAsync();
+            // Persists new data.
+            Session.Save(site);
 
-            existing.BaseUrl = site.BaseUrl;
-            existing.Calendar = site.Calendar;
-            existing.Culture = site.Culture;
-            existing.SupportedCultures = site.SupportedCultures;
-            existing.HomeRoute = site.HomeRoute;
-            existing.MaxPagedCount = site.MaxPagedCount;
-            existing.MaxPageSize = site.MaxPageSize;
-            existing.PageSize = site.PageSize;
-            existing.Properties = site.Properties;
-            existing.ResourceDebugMode = site.ResourceDebugMode;
-            existing.SiteName = site.SiteName;
-            existing.SiteSalt = site.SiteSalt;
-            existing.SuperUser = site.SuperUser;
-            existing.TimeZoneId = site.TimeZoneId;
-            existing.UseCdn = site.UseCdn;
+            // Invalidates the cache after the session is committed.
+            _signal.DeferredSignalToken(SiteCacheKey);
 
-            session.Save(existing);
-
-            _memoryCache.Set(SiteCacheKey, site);
-            _signal.SignalToken(SiteCacheKey);
-
-            return;
+            return Task.CompletedTask;
         }
 
-        private YesSql.ISession GetSession()
-        {
-            var httpContextAccessor = _serviceProvider.GetService<IHttpContextAccessor>();
-            return httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
-        }
+        private ISession Session => ShellScope.Services.GetRequiredService<ISession>();
+        private ISessionHelper SessionHelper => ShellScope.Services.GetRequiredService<ISessionHelper>();
     }
 }

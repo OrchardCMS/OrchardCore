@@ -13,9 +13,7 @@ namespace OrchardCore.DisplayManagement
     public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel>
     {
         private readonly IEnumerable<IDisplayDriver<TModel>> _drivers;
-        private readonly IShapeTableManager _shapeTableManager;
         private readonly IShapeFactory _shapeFactory;
-        private readonly IThemeManager _themeManager;
         private readonly ILayoutAccessor _layoutAccessor;
 
         public DisplayManager(
@@ -27,16 +25,14 @@ namespace OrchardCore.DisplayManagement
             ILayoutAccessor layoutAccessor
             ) : base(shapeTableManager, shapeFactory, themeManager)
         {
-            _shapeTableManager = shapeTableManager;
             _shapeFactory = shapeFactory;
-            _themeManager = themeManager;
             _layoutAccessor = layoutAccessor;
             _drivers = drivers;
 
             Logger = logger;
         }
 
-        ILogger Logger { get; set; }
+        private ILogger Logger { get; set; }
 
         public async Task<IShape> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
         {
@@ -66,14 +62,14 @@ namespace OrchardCore.DisplayManagement
 
             await BindPlacementAsync(context);
 
-            await _drivers.InvokeAsync(async driver =>
+            await _drivers.InvokeAsync(async (driver, model, context) =>
             {
                 var result = await driver.BuildDisplayAsync(model, context);
                 if (result != null)
                 {
                     await result.ApplyAsync(context);
                 }
-            }, Logger);
+            }, model, context, Logger);
 
             return shape;
         }
@@ -100,14 +96,14 @@ namespace OrchardCore.DisplayManagement
 
             await BindPlacementAsync(context);
 
-            await _drivers.InvokeAsync(async driver =>
+            await _drivers.InvokeAsync(async (driver, model, context) =>
             {
                 var result = await driver.BuildEditorAsync(model, context);
                 if (result != null)
                 {
                     await result.ApplyAsync(context);
                 }
-            }, Logger);
+            }, model, context, Logger);
 
             return shape;
         }
@@ -134,14 +130,14 @@ namespace OrchardCore.DisplayManagement
 
             await BindPlacementAsync(context);
 
-            await _drivers.InvokeAsync(async driver =>
+            await _drivers.InvokeAsync(async (driver, model, context) =>
             {
                 var result = await driver.UpdateEditorAsync(model, context);
                 if (result != null)
                 {
                     await result.ApplyAsync(context);
                 }
-            }, Logger);
+            }, model, context, Logger);
 
             return shape;
         }

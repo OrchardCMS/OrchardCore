@@ -1,16 +1,17 @@
+@using Microsoft.AspNetCore.Html
 @model OrchardCore.Flows.ViewModels.BuildEditorViewModel
-@inject OrchardCore.ResourceManagement.IResourceManager ResourceManager    
+@inject OrchardCore.ResourceManagement.IResourceManager ResourceManager
 
 @{
     // Don't render the theme
     Layout = "";
 
     var sw = new System.IO.StringWriter();
-    (await DisplayAsync(Model.EditorShape)).WriteTo(sw, HtmlEncoder);
+    ((IHtmlContent)await DisplayAsync(Model.EditorShape)).WriteTo(sw, HtmlEncoder);
     var content = sw.ToString();
 
     // Gather all registered scripts for this editor
-    var htmlBuilder = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+    var htmlBuilder = new HtmlContentBuilder();
 
     foreach (var script in ResourceManager.GetRegisteredHeadScripts())
     {
@@ -30,4 +31,4 @@
 {
     "Content": @Json.Serialize(content),
     "Scripts": @Json.Serialize(scripts)
-}
+    }

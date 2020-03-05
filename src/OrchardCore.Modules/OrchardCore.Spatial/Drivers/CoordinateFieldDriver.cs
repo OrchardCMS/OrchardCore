@@ -8,11 +8,11 @@ using OrchardCore.Spatial.ViewModels;
 
 namespace OrchardCore.Spatial.Drivers
 {
-    public class CoordinateFieldDisplayDriver : ContentFieldDisplayDriver<CoordinateField>
+    public class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPointField>
     {
-        public override IDisplayResult Display(CoordinateField field, BuildFieldDisplayContext context)
+        public override IDisplayResult Display(GeoPointField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayCoordinateFieldViewModel>("CoordinateField", model =>
+            return Initialize<DisplayGeoPointFieldViewModel>("GeoPointField", model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -22,9 +22,9 @@ namespace OrchardCore.Spatial.Drivers
             .Location("SummaryAdmin", "");
         }
 
-        public override IDisplayResult Edit(CoordinateField field, BuildFieldEditorContext context)
+        public override IDisplayResult Edit(GeoPointField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditCoordinateFieldViewModel>(GetEditorShapeType(context), model =>
+            return Initialize<EditGeoPointFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Latitude = field.Latitude;
                 model.Longitude = field.Longitude;
@@ -34,7 +34,7 @@ namespace OrchardCore.Spatial.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(CoordinateField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(GeoPointField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
             await updater.TryUpdateModelAsync(field, Prefix, f => f.Latitude, f => f.Longitude);
 

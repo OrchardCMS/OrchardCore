@@ -1,0 +1,114 @@
+@using OrchardCore.Tenants.Workflows.ViewModels
+@model SetupTenantTaskViewModel
+
+<div class="form-group" asp-validation-class-for="TenantNameExpression">
+    <label asp-for="TenantNameExpression">@T["Tenant name"] <span asp-validation-for="TenantNameExpression"></span></label>
+    <input type="text" asp-for="TenantNameExpression" class="form-control code" autofocus />
+    <span class="hint">@T["Select the name of tenant to setup."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="SiteNameExpression">
+    <label asp-for="SiteNameExpression">@T["Site name"] <span asp-validation-for="SiteNameExpression"></span></label>
+    <input type="text" asp-for="SiteNameExpression" class="form-control code" />
+</div>
+
+<div class="form-group" asp-validation-class-for="AdminUsernameExpression">
+    <label asp-for="AdminUsernameExpression">@T["Admin user name"] <span asp-validation-for="AdminUsernameExpression"></span></label>
+    <input type="text" asp-for="AdminUsernameExpression" class="form-control code" />
+</div>
+
+<div class="form-group" asp-validation-class-for="AdminEmailExpression">
+    <label asp-for="AdminEmailExpression">@T["Admin email"] <span asp-validation-for="AdminEmailExpression"></span></label>
+    <input type="text" asp-for="AdminEmailExpression" class="form-control code" />
+</div>
+<div class="form-group" asp-validation-class-for="AdminPasswordExpression">
+    <label asp-for="AdminPasswordExpression">@T["Admin password"] <span asp-validation-for="AdminPasswordExpression"></span></label>
+    <input type="text" asp-for="AdminPasswordExpression" class="form-control code" />
+</div>
+
+<div class="form-group" asp-validation-class-for="DatabaseProviderExpression">
+    <label asp-for="DatabaseProviderExpression">@T["What type of database to use?"] <span asp-validation-for="DatabaseProviderExpression"></span></label>
+    <input type="text" asp-for="DatabaseProviderExpression" class="form-control code" />
+</div>
+
+<div class="form-group" asp-validation-class-for="DatabaseTablePrefixExpression">
+    <label asp-for="DatabaseTablePrefixExpression">@T["Table Prefix"] <span asp-validation-for="DatabaseTablePrefixExpression"></span></label>
+    <input type="text" asp-for="DatabaseTablePrefixExpression" class="form-control code" />
+</div>
+
+<div class="form-group" asp-validation-class-for="DatabaseConnectionStringExpression">
+    <label asp-for="DatabaseConnectionStringExpression">@T["Connection string"] <span asp-validation-for="DatabaseConnectionStringExpression"></span></label>
+    <input type="text" asp-for="DatabaseConnectionStringExpression" class="form-control code" />
+</div>
+
+<div class="form-group" asp-validation-class-for="RecipeNameExpression">
+    <label asp-for="RecipeNameExpression">@T["Recipe"] <span asp-validation-for="RecipeNameExpression"></span></label>
+    <input type="text" asp-for="RecipeNameExpression" class="form-control code" />
+</div>
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<script at="Foot">
+$(function () {
+    var editorTn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TenantNameExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorSn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.SiteNameExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorAu = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.AdminUsernameExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorAe = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.AdminEmailExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorAp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.AdminPasswordExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorDp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseProviderExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorTp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseTablePrefixExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorCs = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseConnectionStringExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorRn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RecipeNameExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+});
+</script>

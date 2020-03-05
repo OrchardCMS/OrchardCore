@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -27,10 +28,10 @@ namespace OrchardCore.ContentFields.Services
 
             if (!string.IsNullOrEmpty(searchContext.Query))
             {
-                query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query));
+                query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query) || x.ContentType.Contains(searchContext.Query));
             }
 
-            var contentItems = await query.Take(20).ListAsync();
+            var contentItems = await query.Take(50).ListAsync();
 
             var results = new List<ContentPickerResult>();
 
@@ -39,11 +40,12 @@ namespace OrchardCore.ContentFields.Services
                 results.Add(new ContentPickerResult
                 {
                     ContentItemId = contentItem.ContentItemId,
-                    DisplayText = contentItem.DisplayText
+                    DisplayText = contentItem.ToString(),
+                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
                 });
             }
 
-            return results;
+            return results.OrderBy(x => x.DisplayText);
         }
     }
 }

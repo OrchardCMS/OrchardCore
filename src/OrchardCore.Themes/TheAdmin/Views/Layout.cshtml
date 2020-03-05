@@ -1,27 +1,27 @@
-<!DOCTYPE html>
-<html lang="@Orchard.CultureName()">
+﻿<!DOCTYPE html>
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link type="image/x-icon" rel="shortcut icon" href="/TheAdmin/favicon.ico" />
+    <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/TheAdmin/Styles/TheAdmin.css">
+    <style asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" depends-on="jQuery-ui"></style>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <script asp-name="font-awesome" use-cdn="true" at="Foot" version="5"></script>
-    <script asp-name="font-awesome-v4-shims" use-cdn="true" at="Foot" version="5"></script>
-    <script asp-name="admin" asp-src="/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui" at="Foot"></script>
-
+    <script asp-name="font-awesome" at="Foot" version="5"></script>
+    <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
+    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui, jQuery-ui-i18n" at="Foot"></script>
     <resources type="Header" />
 
     <!-- This script can't wait to the footer -->
-    <script type="text/javascript" src="/TheAdmin/Scripts/userPreferencesLoader.js"></script>
+    <script type="text/javascript" asp-src="~/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="~/TheAdmin/Scripts/userPreferencesLoader.js"></script>
 
     @await RenderSectionAsync("Header", required: false)
 </head>
-<body class="preload" dir="@Orchard.CultureDir()">
+<body class="preload">
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
             <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
@@ -31,7 +31,7 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link"><i class="fa fa-user" aria-hidden="true"></i> @User.Identity.Name</a>
+                        <a class="nav-link"><span><i class="fa fa-user" aria-hidden="true"></i></span><span> @User.Identity.Name</span></a>
                     </li>
                 </ul>
                 <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline">
@@ -40,13 +40,16 @@
             </div>
         </div>
 
-        <div id="ta-left-sidebar">
-            <button class="leftbar-compactor" type="button"><span> <i class="fas fa-bars" aria-hidden="false"></i> </span></button>
-            @await RenderSectionAsync("Navigation", required: false)            
+        <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
+            @await RenderSectionAsync("Navigation", required: false)
+            <div class="footer">
+                <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
+            </div>
         </div>
 
         <div class="ta-content">
             @await RenderSectionAsync("Messages", required: false)
+            @await RenderSectionAsync("Breadcrumbs", required: false)
 
             @await RenderBodyAsync()
         </div>
@@ -54,8 +57,8 @@
 
     @await RenderSectionAsync("Footer", required: false)
 
-    <div id="confirmRemoveMessage" data-value="@T["Are you sure you want to remove this element?"]"></div>
+    <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
 
-    <resources type="Footer" />    
+    <resources type="Footer" />
 </body>
 </html>
