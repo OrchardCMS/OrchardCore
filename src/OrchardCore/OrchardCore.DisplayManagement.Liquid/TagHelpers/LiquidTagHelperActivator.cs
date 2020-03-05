@@ -69,17 +69,10 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
                 }
 
-                var setter = MakeFastPropertySetter(type, property);
                 var getter = MakeFastPropertyGetter(type, property);
 
                 foreach (var propertyName in allNames)
                 {
-                    if (propertyName == "ViewContext")
-                    {
-                        _viewContextSetter = (helper, context) => setter(helper, context);
-                        continue;
-                    }
-
                     _setters.Add(propertyName, (h, mp, vd, k, v) =>
                     {
                         object value = null;
