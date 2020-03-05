@@ -61,7 +61,6 @@ namespace OrchardCore.Email.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    // send email with DefaultSender
                     var result = await _smtpService.SendAsync(message);
 
                     if (!result.Succeeded)
@@ -92,6 +91,11 @@ namespace OrchardCore.Email.Controllers
                 Cc = testSettings.Cc,
                 ReplyTo = testSettings.ReplyTo
             };
+
+            if (!String.IsNullOrWhiteSpace(testSettings.Sender))
+            {
+                message.Sender = testSettings.Sender;
+            }
 
             if (!String.IsNullOrWhiteSpace(testSettings.Subject))
             {
