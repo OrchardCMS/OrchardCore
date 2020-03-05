@@ -12,14 +12,14 @@ namespace OrchardCore.Spatial.Drivers
     {
         public override IDisplayResult Display(GeoPointField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayGeoPointFieldViewModel>("GeoPointField", model =>
-            {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+            return Initialize<DisplayGeoPointFieldViewModel>(GetDisplayShapeType(context), model =>
+                {
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                })
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(GeoPointField field, BuildFieldEditorContext context)
