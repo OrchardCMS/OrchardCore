@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Shells.Azure.Services;
@@ -8,6 +8,7 @@ namespace OrchardCore.Shells.Azure.Configuration
     public class BlobShellsConfigurationSources : IShellsConfigurationSources
     {
         private readonly IShellsFileStore _shellsFileStore;
+
         private readonly string _environment;
 
         public BlobShellsConfigurationSources(IShellsFileStore shellsFileStore, IHostEnvironment hostingEnvironment)
@@ -35,4 +36,3 @@ namespace OrchardCore.Shells.Azure.Configuration
         }
     }
 }
-

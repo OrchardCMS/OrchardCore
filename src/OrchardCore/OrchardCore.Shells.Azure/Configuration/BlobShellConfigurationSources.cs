@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -6,13 +9,9 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.Shells.Azure.Services;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Shells.Azure.Configuration
 {
-    //This is for the tenants appsettings.json
     public class BlobShellConfigurationSources : IShellConfigurationSources
     {
         private readonly IShellsFileStore _shellsFileStore;
@@ -92,4 +91,3 @@ namespace OrchardCore.Shells.Azure.Configuration
         }
     }
 }
-

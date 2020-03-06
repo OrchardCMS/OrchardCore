@@ -1,14 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Shells.Azure.Services;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Shells.Azure.Services;
 
 namespace OrchardCore.Shells.Azure.Configuration
 {
