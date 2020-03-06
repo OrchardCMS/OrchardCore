@@ -13,15 +13,20 @@ namespace OrchardCore.ContentManagement.GraphQL
         {
             services.AddSingleton<ISchemaBuilder, ContentItemQuery>();
             services.AddSingleton<ISchemaBuilder, ContentTypeQuery>();
+            services.AddSingleton<ISchemaBuilder, SiteQuery>();
+
             services.AddSingleton<ContentItemInterface>();
 
             services.AddTransient<ContentItemType>();
+            services.AddTransient<SiteGraphType>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
 
             services.AddTransient<DynamicPartGraphType>();
             services.AddScoped<IContentTypeBuilder, TypedContentTypeBuilder>();
             services.AddScoped<IContentTypeBuilder, DynamicContentTypeBuilder>();
+
+            services.AddScoped<ISiteGraphBuilder, CustomSettingsSiteGraphBuilder>();
 
             services.AddOptions<GraphQLContentOptions>();
 

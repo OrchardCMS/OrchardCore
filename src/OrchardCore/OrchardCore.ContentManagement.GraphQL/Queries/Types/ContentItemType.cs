@@ -15,6 +15,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     {
         private readonly GraphQLContentOptions _options;
 
+        /// <summary>
+        /// Allow a GraphQL type name to be different from the ContentType,
+        /// so it can be a field on another query like `Site__MyCustomSetting`
+        /// </summary>
+        public string ContentType { get; set; }
+
         public ContentItemType(IOptions<GraphQLContentOptions> optionsAccessor)
         {
             _options = optionsAccessor.Value;
@@ -68,7 +74,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
         private bool IsContentType(object obj)
         {
-            return obj is ContentItem item && item.ContentType == Name;
+            return obj is ContentItem item && item.ContentType == (ContentType ?? Name);
         }
 
         public override FieldType AddField(FieldType fieldType)
