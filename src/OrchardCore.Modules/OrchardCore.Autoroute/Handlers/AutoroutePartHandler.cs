@@ -57,8 +57,14 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override async Task PublishedAsync(PublishContentContext context, AutoroutePart part)
         {
+            // Remove entry if part is disabled.
+            if (part.Disabled)
+            {
+                _entries.RemoveEntry(part.ContentItem.ContentItemId, part.Path);
+            }
+
             // Add parent content item path, and children, only if parent has a valid path.
-            if (!String.IsNullOrWhiteSpace(part.Path))
+            if (!String.IsNullOrWhiteSpace(part.Path) && !part.Disabled)
             {
                 var entriesToAdd = new List<AutorouteEntry>
                 {
@@ -71,37 +77,44 @@ namespace OrchardCore.Autoroute.Handlers
 
                     var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(context.PublishingItem);
 
-                    await PopulateContainedContentItemRoutes(entriesToAdd, part.ContentItem.ContentItemId, containedAspect, context.PublishingItem.Content as JObject, part.Path);
+                    await PopulateContainedContentItemRoutes(entriesToAdd, part.ContentItem.ContentItemId, containedAspect, context.PublishingItem.Content as JObject, part.Path, true);
                 }
 
                 _entries.AddEntries(entriesToAdd);
             }
 
-            if (part.SetHomepage)
+            if (!String.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
             {
-                var site = await _siteService.LoadSiteSettingsAsync();
-
-                if (site.HomeRoute == null)
-                {
-                    site.HomeRoute = new RouteValueDictionary();
-                }
-
-                var homeRoute = site.HomeRoute;
-
-                foreach (var entry in _options.GlobalRouteValues)
-                {
-                    homeRoute[entry.Key] = entry.Value;
-                }
-
-                homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId;
-
-                // Once we too the flag into account we can dismiss it.
-                part.SetHomepage = false;
-                await _siteService.UpdateSiteSettingsAsync(site);
+                await SetHomeRoute(part, homeRoute => homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId);
             }
 
             // Evict any dependent item from cache
             await RemoveTagAsync(part);
+        }
+
+        private async Task SetHomeRoute(AutoroutePart part, Action<RouteValueDictionary> action)
+        {
+            var site = await _siteService.LoadSiteSettingsAsync();
+
+            if (site.HomeRoute == null)
+            {
+                site.HomeRoute = new RouteValueDictionary();
+            }
+
+            var homeRoute = site.HomeRoute;
+
+            foreach (var entry in _options.GlobalRouteValues)
+            {
+                homeRoute[entry.Key] = entry.Value;
+            }
+
+            action.Invoke(homeRoute);
+
+            // Once we took the flag into account we can dismiss it.
+            part.SetHomepage = false;
+            part.Apply();
+
+            await _siteService.UpdateSiteSettingsAsync(site);
         }
 
         public override Task UnpublishedAsync(PublishContentContext context, AutoroutePart part)
@@ -188,7 +201,7 @@ namespace OrchardCore.Autoroute.Handlers
             await ValidateContainedContentItemRoutes(entries, part.ContentItem.ContentItemId, containedAspect, contentItem.Content as JObject, part.Path);
         }
 
-        private async Task PopulateContainedContentItemRoutes(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
+        private async Task PopulateContainedContentItemRoutes(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath, bool setHomepage = false)
         {
             foreach (var accessor in containedContentItemsAspect.Accessors)
             {
@@ -208,6 +221,16 @@ namespace OrchardCore.Autoroute.Handlers
                         }
 
                         entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.Path));
+
+                        // Only an autoroute part, not a default handler aspect can set itself as the homepage.
+                        var autoroutePart = contentItem.As<AutoroutePart>();
+                        if (setHomepage && autoroutePart != null && autoroutePart.SetHomepage)
+                        {
+                            await SetHomeRoute(autoroutePart, homeRoute => {
+                                homeRoute[_options.ContentItemIdKey] = containerContentItemId;
+                                homeRoute[_options.JsonPathKey] = jItem.Path;
+                            });
+                        }
                     }
 
                     var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
@@ -306,8 +329,6 @@ namespace OrchardCore.Autoroute.Handlers
                 var versionedPath = $"{unversionedPath}-{version++}";
                 if (IsRelativePathUnique(entries, versionedPath, context))
                 {
-                    //TODO maybe findlast index is better, because it would do the last item entered.
-                    // consider.
                     var entryIndex = entries.FindIndex(e => e.ContainedContentItemId == context.ContentItem.ContentItemId);
                     var entry = entries[entryIndex];
                     entry.Path = versionedPath;

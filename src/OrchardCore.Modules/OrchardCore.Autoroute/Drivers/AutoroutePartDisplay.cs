@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -59,7 +60,13 @@ namespace OrchardCore.Autoroute.Drivers
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
                 var homeRoute = siteSettings.HomeRoute;
 
-                if (autoroutePart.ContentItem.ContentItemId == homeRoute?[_options.ContentItemIdKey]?.ToString())
+                if(homeRoute != null && homeRoute.TryGetValue(_options.ContainedContentItemIdKey, out var containedContentItemId))
+                {
+                    if (string.Equals(autoroutePart.ContentItem.ContentItemId, containedContentItemId.ToString(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        model.IsHomepage = true;
+                    }
+                } else if (string.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[_options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     model.IsHomepage = true;
                 }
@@ -80,29 +87,34 @@ namespace OrchardCore.Autoroute.Drivers
 
             var settings = context.TypePartDefinition.GetSettings<AutoroutePartSettings>();
 
-            if (settings.AllowCustomPath)
-            {
-                model.Path = viewModel.Path;
-            }
-
-            if (settings.AllowUpdatePath && viewModel.UpdatePath)
-            {
-                // Make it empty to force a regeneration
-                model.Path = "";
-            }
-
             model.Disabled = viewModel.Disabled;
             model.Absolute = viewModel.Absolute;
             model.RouteContainedItems = viewModel.RouteContainedItems;
 
-            var httpContext = _httpContextAccessor.HttpContext;
-
-            if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, Permissions.SetHomepage))
+            // When disabled these values are not updated.
+            if (!model.Disabled)
             {
-                await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
-            }
+                if (settings.AllowCustomPath)
+                {
+                    model.Path = viewModel.Path;
+                }
 
-            await ValidateAsync(model, updater, settings);
+                if (settings.AllowUpdatePath && viewModel.UpdatePath)
+                {
+                    // Make it empty to force a regeneration
+                    model.Path = "";
+                }
+
+
+                var httpContext = _httpContextAccessor.HttpContext;
+
+                if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, Permissions.SetHomepage))
+                {
+                    await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
+                }
+
+                await ValidateAsync(model, updater, settings);
+            }
 
             return Edit(model, context);
         }

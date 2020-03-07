@@ -23,12 +23,12 @@ namespace OrchardCore.ContentManagement.Records
         public string Path { get; set; }
 
         /// <summary>
-        /// When contained is set to the value of the container content item.
+        /// Whether this content item is published.
         /// </summary>
         public bool Published { get; set; }
 
         /// <summary>
-        /// When contained is set to the value of the container content item.
+        /// Whether this content item is latest.
         /// </summary>
         public bool Latest { get; set; }
 
@@ -67,7 +67,7 @@ namespace OrchardCore.ContentManagement.Records
                     }
 
                     var path = part?.Path;
-                    if (String.IsNullOrEmpty(path) || !(contentItem.Published || contentItem.Latest))
+                    if (String.IsNullOrEmpty(path) || part.Disabled || !(contentItem.Published || contentItem.Latest))
                     {
                         return null;
                     }

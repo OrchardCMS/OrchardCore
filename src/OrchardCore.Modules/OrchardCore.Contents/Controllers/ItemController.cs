@@ -35,7 +35,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            var contentItem = await _contentManager.GetAsync(contentItemId);
+            var contentItem = await _contentManager.GetAsync(contentItemId, jsonPath);
 
             if (contentItem == null)
             {
@@ -45,19 +45,6 @@ namespace OrchardCore.Contents.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
                 return this.ChallengeOrForbid();
-            }
-
-            // It represents a contained content item
-            if (!string.IsNullOrEmpty(jsonPath))
-            {
-                var root = contentItem.Content as JObject;
-                contentItem = root.SelectToken(jsonPath)?.ToObject<ContentItem>();
-
-                // Permissions are granted or revoked on the container item.
-                if (contentItem == null)
-                {
-                    return NotFound();
-                }
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);

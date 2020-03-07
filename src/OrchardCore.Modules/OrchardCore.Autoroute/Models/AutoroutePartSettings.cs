@@ -26,6 +26,11 @@ namespace OrchardCore.Autoroute.Models
         public bool AllowUpdatePath { get; set; }
 
         /// <summary>
+        /// Whether a user is allowed to disable autoute generation to content items of this type.
+        /// </summary>
+        public bool AllowDisabled { get; set; }
+
+        /// <summary>
         /// Whether to allow routing of contained content items.
         /// </summary>
         public bool AllowRouteContainedItems { get; set; }
