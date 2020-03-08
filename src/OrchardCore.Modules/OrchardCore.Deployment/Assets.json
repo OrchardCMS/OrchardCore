@@ -1,0 +1,16 @@
+[
+  {
+    "generateRTL": false,
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/cards.scss"
+    ],
+    "output": "wwwroot/Styles/cards.css"
+  },
+  {
+    "inputs": [
+      "node_modules/jquery-match-height/dist/jquery.matchHeight.js"
+    ],
+    "output": "wwwroot/Scripts/jquery.matchHeight.js"
+  }
+]

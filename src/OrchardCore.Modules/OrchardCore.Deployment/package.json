@@ -1,0 +1,7 @@
+{
+  "name": "orchardcore.deployment",
+  "version": "1.0.0",
+  "dependencies": {
+    "jquery-match-height": "0.7.2"
+  }
+}

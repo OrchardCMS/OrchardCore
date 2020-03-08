@@ -1,0 +1,25 @@
+.cards {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    .card {
+        width: 32%;
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .card-footer {
+        text-align: right;
+    }
+}
+
+@media only screen and (max-width: 700px) {
+    .cards {
+        .card {
+            width: 49%;
+        }
+    }
+}
