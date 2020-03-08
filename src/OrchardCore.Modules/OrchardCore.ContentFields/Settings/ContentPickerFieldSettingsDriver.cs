@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -19,6 +20,11 @@ namespace OrchardCore.ContentFields.Settings
             var model = new ContentPickerFieldSettings();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            if (model.DisplayAllContentTypes)
+            {
+                model.DisplayedContentTypes = Array.Empty<String>();
+            }
 
             context.Builder.WithSettings(model);
 

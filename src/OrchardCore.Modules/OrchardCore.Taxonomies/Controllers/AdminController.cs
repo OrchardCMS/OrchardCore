@@ -98,10 +98,13 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
+                model.TaxonomyContentItemId = taxonomyContentItemId;
+                model.TaxonomyItemId = taxonomyItemId;
+
                 return View(model);
             }
 
@@ -207,10 +210,13 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentItem = taxonomyItem.ToObject<ContentItem>();
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             if (!ModelState.IsValid)
             {
+                model.TaxonomyContentItemId = taxonomyContentItemId;
+                model.TaxonomyItemId = taxonomyItemId;
+
                 return View(model);
             }
 
