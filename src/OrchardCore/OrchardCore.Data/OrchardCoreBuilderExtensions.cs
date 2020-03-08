@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // Configuring data access
 
-                services.AddSingleton<IStore>(sp =>
+                services.AddSingleton(sp =>
                 {
                     var shellSettings = sp.GetService<ShellSettings>();
 
