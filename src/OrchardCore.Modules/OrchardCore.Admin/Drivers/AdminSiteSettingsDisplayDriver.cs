@@ -83,7 +83,7 @@ namespace OrchardCore.Admin.Drivers
                 settings.DisplayMenuFilter = model.DisplayMenuFilter;
             }
 
-            // creates and returns an task with a display result
+            // creates and returns a task with a display result
             return await EditAsync (settings, context);
         }
     }
