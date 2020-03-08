@@ -138,13 +138,7 @@ namespace OrchardCore.Environment.Shell
         {
             settings.Identifier = IdGenerator.GenerateId();
             await _shellSettingsManager.SaveSettingsAsync(settings);
-
-            // Settings may not have been commited yet.
-            ShellScope.AddDeferredTask(scope =>
-            {
-                // So we reload them in a new scope.
-                return ReloadShellContextAsync(settings);
-            });
+            await ReloadShellContextAsync(settings);
         }
 
         /// <summary>
