@@ -26,13 +26,13 @@ namespace OrchardCore.Shells.Azure.Configuration
             _shellsFileStore = shellsFileStore;
         }
 
-        public void AddSources(string tenant, IConfigurationBuilder builder)
+        public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
             var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
-            var fileInfo = _shellsFileStore.GetFileInfoAsync(appsettings).GetAwaiter().GetResult();
+            var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
             if (fileInfo != null)
             {
-                var stream = _shellsFileStore.GetFileStreamAsync(appsettings).GetAwaiter().GetResult();
+                var stream = await _shellsFileStore.GetFileStreamAsync(appsettings);
                 builder.AddJsonStream(stream);
             }
         }

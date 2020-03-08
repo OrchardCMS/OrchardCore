@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Shell.Configuration.Internal;
@@ -19,8 +21,9 @@ namespace OrchardCore.Environment.Shell.Configuration
         private readonly IEnumerable<KeyValuePair<string, string>> _initialData;
 
         private readonly string _name;
-        private Func<string, IConfigurationBuilder> _configBuilderFactory;
+        private Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
         private readonly IEnumerable<IConfigurationProvider> _configurationProviders;
+        private SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         public ShellConfiguration()
         {
@@ -33,7 +36,7 @@ namespace OrchardCore.Environment.Shell.Configuration
                 .Build().Providers;
         }
 
-        public ShellConfiguration(string name, Func<string, IConfigurationBuilder> factory)
+        public ShellConfiguration(string name, Func<string, Task<IConfigurationBuilder>> factory)
         {
             _name = name;
             _configBuilderFactory = factory;
@@ -71,7 +74,16 @@ namespace OrchardCore.Environment.Shell.Configuration
         {
             if (_configuration == null)
             {
-                lock (this)
+                EnsureConfigurationAsync().GetAwaiter().GetResult();
+            }
+        }
+
+        internal async Task EnsureConfigurationAsync()
+        {
+            if (_configuration == null)
+            {
+                await _semaphore.WaitAsync();
+                try
                 {
                     if (_configuration == null)
                     {
@@ -80,7 +92,7 @@ namespace OrchardCore.Environment.Shell.Configuration
                         if (_configBuilderFactory != null)
                         {
                             providers.AddRange(new ConfigurationBuilder()
-                                .AddConfiguration(_configBuilderFactory.Invoke(_name).Build())
+                                .AddConfiguration((await _configBuilderFactory.Invoke(_name)).Build())
                                 .Build().Providers);
                         }
 
@@ -96,6 +108,10 @@ namespace OrchardCore.Environment.Shell.Configuration
 
                         _configuration = new ConfigurationRoot(providers);
                     }
+                }
+                finally
+                {
+                    _semaphore.Release();
                 }
             }
         }

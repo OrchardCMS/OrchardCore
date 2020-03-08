@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Shell.Configuration;
@@ -17,20 +18,20 @@ namespace OrchardCore.Shells.Azure.Configuration
             _environment = hostingEnvironment.EnvironmentName;
         }
 
-        public void AddSources(IConfigurationBuilder builder)
+        public async Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            var appSettingsFileInfo = _shellsFileStore.GetFileInfoAsync("appsettings.json").GetAwaiter().GetResult();
+            var appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync("appsettings.json");
             if (appSettingsFileInfo != null)
             {
-                var stream = _shellsFileStore.GetFileStreamAsync("appsettings.json").GetAwaiter().GetResult();
+                var stream = await _shellsFileStore.GetFileStreamAsync("appsettings.json");
                 builder.AddJsonStream(stream);
             }
 
             var environmentAppSettingsFileName = $"appsettings.{_environment}.json";
-            var environmentAppSettingsFileInfo = _shellsFileStore.GetFileInfoAsync(environmentAppSettingsFileName).GetAwaiter().GetResult();
+            var environmentAppSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(environmentAppSettingsFileName);
             if (environmentAppSettingsFileInfo != null)
             {
-                var stream = _shellsFileStore.GetFileStreamAsync(environmentAppSettingsFileName).GetAwaiter().GetResult();
+                var stream = await _shellsFileStore.GetFileStreamAsync(environmentAppSettingsFileName);
                 builder.AddJsonStream(stream);
             }
         }

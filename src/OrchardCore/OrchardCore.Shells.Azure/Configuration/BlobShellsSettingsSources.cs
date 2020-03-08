@@ -20,12 +20,12 @@ namespace OrchardCore.Shells.Azure.Configuration
             _shellsFileStore = shellsFileStore;
         }
 
-        public void AddSources(IConfigurationBuilder builder)
+        public async Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            var fileInfo = _shellsFileStore.GetFileInfoAsync(_tenantsFileName).GetAwaiter().GetResult();
+            var fileInfo = await _shellsFileStore.GetFileInfoAsync(_tenantsFileName);
             if (fileInfo != null)
             {
-                var stream = _shellsFileStore.GetFileStreamAsync(_tenantsFileName).GetAwaiter().GetResult();
+                var stream = await _shellsFileStore.GetFileStreamAsync(_tenantsFileName);
                 builder.AddJsonStream(stream);
             }
         }
