@@ -49,11 +49,10 @@ namespace OrchardCore.Environment.Shell
         {
             if (!_initialized)
             {
+                // Prevent concurrent requests from creating all shells multiple times
+                await _initializingSemaphore.WaitAsync();
                 try
                 {
-                    // Prevent concurrent requests from creating all shells multiple times
-                    await _initializingSemaphore.WaitAsync();
-
                     if (!_initialized)
                     {
                         await PreCreateAndRegisterShellsAsync();
