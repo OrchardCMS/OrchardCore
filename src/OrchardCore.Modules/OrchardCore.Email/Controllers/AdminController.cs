@@ -92,6 +92,11 @@ namespace OrchardCore.Email.Controllers
                 ReplyTo = testSettings.ReplyTo
             };
 
+            if (!String.IsNullOrWhiteSpace(testSettings.Sender))
+            {
+                message.Sender = testSettings.Sender;
+            }
+
             if (!String.IsNullOrWhiteSpace(testSettings.Subject))
             {
                 message.Subject = testSettings.Subject;
