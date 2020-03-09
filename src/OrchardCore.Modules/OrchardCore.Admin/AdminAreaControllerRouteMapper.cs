@@ -25,7 +25,7 @@ namespace OrchardCore.Admin
         */
         public AdminAreaControllerRouteMapper (IOptions <AdminOptions> adminOptions)
         {
-            _defaultAreaPattern = adminOptions.Value.AdminUrlPrefix + "/ {area} / {controller} / {action} / {id?}";
+            _defaultAreaPattern = adminOptions.Value.AdminUrlPrefix + "/{area}/{controller}/{action}/{id?}";
         }
 
         /*
