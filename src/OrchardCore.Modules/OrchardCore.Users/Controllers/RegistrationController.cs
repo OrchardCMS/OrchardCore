@@ -70,17 +70,15 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!string.IsNullOrEmpty(model.Email) && !MailboxAddress.TryParse(model.Email, out var emailAddress))
-            {
-                ModelState.AddModelError("Email", S["Invalid email."]);
-            }
-
             ViewData["ReturnUrl"] = returnUrl;
 
-            // If we get a user, redirect to returnUrl
-            if (await this.RegisterUser(model, S["Confirm your account"], _logger) != null)
+            if (TryValidateModel(model) && ModelState.IsValid)
             {
-                return RedirectToLocal(returnUrl);
+                // If we get a user, redirect to returnUrl
+                if (await this.RegisterUser(model, S["Confirm your account"], _logger) != null)
+                {
+                    return RedirectToLocal(returnUrl);
+                }
             }
 
             // If we got this far, something failed, redisplay form
