@@ -73,6 +73,14 @@ namespace OrchardCore.Users.Controllers
             if (!string.IsNullOrEmpty(model.Email) && !MailboxAddress.TryParse(model.Email, out var emailAddress))
             {
                 ModelState.AddModelError("Email", S["Invalid email."]);
+
+                // Check if user with same email already exists
+                var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
+
+                if (userWithEmail != null)
+                {
+                    ModelState.AddModelError("Email", S["A user with the same email already exists."]);
+                }
             }
 
             ViewData["ReturnUrl"] = returnUrl;
