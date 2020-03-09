@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using MimeKit;
@@ -15,11 +15,11 @@ namespace OrchardCore.Users.ViewModels
             var S = validationContext.GetService<IStringLocalizer<ChangeEmailViewModel>>();
             if (string.IsNullOrWhiteSpace(Email))
             {
-                yield return new ValidationResult(S["Email is required."], new[] { "Email" });
+                yield return new ValidationResult(S["Email is required."], new[] { nameof(Email) });
             }
-            else if (!MailboxAddress.TryParse(Email, out var emailAddress))
+            else if (Email.IndexOf('@') == -1 || !MailboxAddress.TryParse(Email, out var emailAddress))
             {
-                yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
+                yield return new ValidationResult(S["Invalid Email."], new[] { nameof(Email) });
             }
         }
     }
