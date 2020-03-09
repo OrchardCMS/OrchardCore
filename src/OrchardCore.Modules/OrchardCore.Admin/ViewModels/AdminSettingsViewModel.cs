@@ -1,6 +1,6 @@
 /*
 	defines the class "AdminSettignsViewModel"
-		with a flag field "DisplayMenuFilter"
+		with the flag field "DisplayMenuFilter"
 */
 
 using System;
