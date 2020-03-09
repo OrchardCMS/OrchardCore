@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using YesSql;
 
 namespace OrchardCore.Shells.Database.Configuration
@@ -41,7 +38,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
-            var context =  await GetContextAsync();
+            var context = await _shellContextFactory.GetDatabaseShellContextAsync(_options);
 
             using (var scope = context.ServiceProvider.CreateScope())
             {
@@ -66,7 +63,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            var context = await GetContextAsync();
+            var context = await _shellContextFactory.GetDatabaseShellContextAsync(_options);
 
             using (var scope = context.ServiceProvider.CreateScope())
             {
@@ -107,21 +104,6 @@ namespace OrchardCore.Shells.Database.Configuration
             }
 
             context.Release();
-        }
-
-        private Task<ShellContext> GetContextAsync()
-        {
-            var settings = new ShellSettings()
-            {
-                Name = ShellHelper.DefaultShellName,
-                State = TenantState.Running
-            };
-
-            settings["DatabaseProvider"] = _options.DatabaseProvider;
-            settings["ConnectionString"] = _options.ConnectionString;
-            settings["TablePrefix"] = _options.TablePrefix;
-
-            return _shellContextFactory.CreateDescribedContextAsync(settings, new ShellDescriptor());
         }
     }
 }
