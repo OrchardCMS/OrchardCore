@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -26,12 +25,6 @@ namespace OrchardCore.Shells.Database.Configuration
                 .GetSection("OrchardCore")
                 .GetSection("OrchardCore.Shells.Database")
                 .Get<DatabaseShellsStorageOptions>();
-
-            if (_options.DatabaseProvider == null)
-            {
-                throw new ArgumentNullException(nameof(_options.DatabaseProvider),
-                    "The 'OrchardCore.Shells.Database' configuration section needs at least to define a 'DatabaseProvider'");
-            }
 
             _shellContextFactory = shellContextFactory;
         }

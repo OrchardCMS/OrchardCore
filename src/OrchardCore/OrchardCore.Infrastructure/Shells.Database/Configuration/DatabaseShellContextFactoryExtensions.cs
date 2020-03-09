@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -10,6 +11,12 @@ namespace OrchardCore.Shells.Database.Configuration
     {
         internal static Task<ShellContext> GetDatabaseContextAsync(this IShellContextFactory shellContextFactory, DatabaseShellsStorageOptions options)
         {
+            if (options.DatabaseProvider == null)
+            {
+                throw new ArgumentNullException(nameof(options.DatabaseProvider),
+                    "The 'OrchardCore.Shells.Database' configuration section should define a 'DatabaseProvider'");
+            }
+
             var settings = new ShellSettings()
             {
                 Name = ShellHelper.DefaultShellName,
