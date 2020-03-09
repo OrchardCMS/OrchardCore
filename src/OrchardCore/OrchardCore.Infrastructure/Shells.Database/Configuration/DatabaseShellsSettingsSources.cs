@@ -41,7 +41,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            var context = GetContextAsync().GetAwaiter().GetResult();
+            var context = await GetContextAsync();
 
             using (var scope = context.ServiceProvider.CreateScope())
             {
@@ -56,6 +56,8 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings)));
             }
+
+            context.Release();
         }
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
@@ -99,6 +101,8 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 session.Save(document);
             }
+
+            context.Release();
         }
 
         private Task<ShellContext> GetContextAsync()
