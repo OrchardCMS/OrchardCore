@@ -3,19 +3,11 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-.cards {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap; }
-  .cards .card {
-    width: 32%;
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end; }
-  .cards .card-footer {
-    text-align: right; }
+@media (min-width: 34em) {
+  .card-deck > .card {
+    width: 29%;
+    flex-wrap: wrap;
+    flex: initial; } }
 
-@media only screen and (max-width: 700px) {
-  .cards .card {
-    width: 49%; } }
+.card {
+  margin-bottom: 15px !important; }

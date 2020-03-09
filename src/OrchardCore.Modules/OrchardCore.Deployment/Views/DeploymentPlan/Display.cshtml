@@ -61,7 +61,7 @@
                 <div class="form-group">
                     <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
                 </div>
-                <div id="cards" class="cards">
+                <div id="cards" class="card-deck">
                     @foreach (var thumbnail in Model.Thumbnails)
                     {
                         thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
@@ -113,17 +113,8 @@
 </div>
 
 <style asp-src="~/OrchardCore.Deployment/Styles/cards.min.css" debug-src="~/OrchardCore.Deployment/Styles/cards.css"></style>
-<script asp-src="~/OrchardCore.Deployment/Scripts/jquery.matchHeight.min.js" debug-src="~/OrchardCore.Deployment/Scripts/jquery.matchHeight.js" at="Foot" depends-on="admin"></script>
+
 <script at="Foot" type="text/javascript">
-//$(".card-body").each(function(){
-//    alert($(this).height());
-//  if($(this).outerHeight() > minHeight){
-//    minHeight = $(this).outerHeight();
-//  }
-//});
-$(function() {
-	$('.card').matchHeight();
-});
     $(function () {
         var searchBox = $('#search-box');
 
@@ -141,7 +132,6 @@ $(function() {
                     $(this).toggle(found);
                 });
             }            
-	        $('.card').matchHeight();
         });
     })
 </script>
