@@ -38,7 +38,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
-            var context = await _shellContextFactory.GetDatabaseShellContextAsync(_options);
+            var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
 
             using (var scope = context.ServiceProvider.CreateScope())
             {
@@ -51,7 +51,7 @@ namespace OrchardCore.Shells.Database.Configuration
                     return;
                 }
 
-                var configurations = JObject.Parse(document.ShellConfigurations);
+                var configurations = JObject.Parse(document.Configurations);
 
                 var config = configurations.GetValue(tenant) as JObject ?? new JObject();
 
@@ -63,7 +63,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            var context = await _shellContextFactory.GetDatabaseShellContextAsync(_options);
+            var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
 
             using (var scope = context.ServiceProvider.CreateScope())
             {
@@ -74,7 +74,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 JObject configurations;
                 if (document != null)
                 {
-                    configurations = JObject.Parse(document.ShellConfigurations);
+                    configurations = JObject.Parse(document.Configurations);
                 }
                 else
                 {
@@ -98,7 +98,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 configurations[tenant] = config;
 
-                document.ShellConfigurations = configurations.ToString();
+                document.Configurations = configurations.ToString();
 
                 session.Save(document);
             }

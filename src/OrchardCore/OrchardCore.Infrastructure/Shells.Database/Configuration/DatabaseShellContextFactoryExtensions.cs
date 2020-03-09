@@ -8,7 +8,7 @@ namespace OrchardCore.Shells.Database.Configuration
 {
     public static class DatabaseShellContextFactoryExtensions
     {
-        internal static Task<ShellContext> GetDatabaseShellContextAsync(this IShellContextFactory shellContextFactory, DatabaseShellsStorageOptions options)
+        internal static Task<ShellContext> GetDatabaseContextAsync(this IShellContextFactory shellContextFactory, DatabaseShellsStorageOptions options)
         {
             var settings = new ShellSettings()
             {

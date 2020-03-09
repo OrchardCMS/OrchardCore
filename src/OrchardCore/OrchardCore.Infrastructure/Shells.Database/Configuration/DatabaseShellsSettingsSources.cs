@@ -38,7 +38,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            var context = await _shellContextFactory.GetDatabaseShellContextAsync(_options);
+            var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
 
             using (var scope = context.ServiceProvider.CreateScope())
             {
@@ -51,7 +51,7 @@ namespace OrchardCore.Shells.Database.Configuration
                     return;
                 }
 
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings)));
+                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.Settings)));
             }
 
             context.Release();
@@ -59,7 +59,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            var context = await _shellContextFactory.GetDatabaseShellContextAsync(_options);
+            var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
 
             using (var scope = context.ServiceProvider.CreateScope())
             {
@@ -70,7 +70,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 JObject tenantsSettings;
                 if (document != null)
                 {
-                    tenantsSettings = JObject.Parse(document.ShellsSettings);
+                    tenantsSettings = JObject.Parse(document.Settings);
                 }
                 else
                 {
@@ -94,7 +94,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 tenantsSettings[tenant] = settings;
 
-                document.ShellsSettings = tenantsSettings.ToString();
+                document.Settings = tenantsSettings.ToString();
 
                 session.Save(document);
             }
