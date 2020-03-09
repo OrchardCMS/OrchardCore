@@ -72,47 +72,53 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         private void EnsureConfiguration()
         {
-            if (_configuration == null)
+            if (_configuration != null)
             {
-                EnsureConfigurationAsync().GetAwaiter().GetResult();
+                return;
             }
+
+            EnsureConfigurationAsync().GetAwaiter().GetResult();
         }
 
         internal async Task EnsureConfigurationAsync()
         {
-            if (_configuration == null)
+            if (_configuration != null)
             {
-                await _semaphore.WaitAsync();
-                try
+                return;
+            }
+
+            await _semaphore.WaitAsync();
+            try
+            {
+                if (_configuration != null)
                 {
-                    if (_configuration == null)
-                    {
-                        var providers = new List<IConfigurationProvider>();
-
-                        if (_configBuilderFactory != null)
-                        {
-                            providers.AddRange(new ConfigurationBuilder()
-                                .AddConfiguration((await _configBuilderFactory.Invoke(_name)).Build())
-                                .Build().Providers);
-                        }
-
-                        if (_configurationProviders != null)
-                        {
-                            providers.AddRange(_configurationProviders);
-                        }
-
-                        _updatableData = new UpdatableDataProvider(_initialData ??
-                            Enumerable.Empty<KeyValuePair<string, string>>());
-
-                        providers.Add(_updatableData);
-
-                        _configuration = new ConfigurationRoot(providers);
-                    }
+                    return;
                 }
-                finally
+
+                var providers = new List<IConfigurationProvider>();
+
+                if (_configBuilderFactory != null)
                 {
-                    _semaphore.Release();
+                    providers.AddRange(new ConfigurationBuilder()
+                        .AddConfiguration((await _configBuilderFactory.Invoke(_name)).Build())
+                        .Build().Providers);
                 }
+
+                if (_configurationProviders != null)
+                {
+                    providers.AddRange(_configurationProviders);
+                }
+
+                _updatableData = new UpdatableDataProvider(_initialData ??
+                    Enumerable.Empty<KeyValuePair<string, string>>());
+
+                providers.Add(_updatableData);
+
+                _configuration = new ConfigurationRoot(providers);
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
