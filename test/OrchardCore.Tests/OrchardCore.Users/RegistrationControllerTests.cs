@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -99,6 +100,9 @@ namespace OrchardCore.Tests.OrchardCore.Users
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(ITempDataDictionaryFactory)))
                 .Returns(Mock.Of<ITempDataDictionaryFactory>());
+            mockServiceProvider
+                .Setup(x => x.GetService(typeof(IObjectModelValidator)))
+                .Returns(Mock.Of<IObjectModelValidator>());
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext
