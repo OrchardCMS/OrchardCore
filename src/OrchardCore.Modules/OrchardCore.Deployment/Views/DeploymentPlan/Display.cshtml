@@ -87,7 +87,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="card-columns">
+                <div class="card-deck">
                     @foreach (var target in await DeploymentTargetManager.GetDeploymentTargetsAsync())
                     {
                         var routeWithId = new RouteValueDictionary(target.Route);
