@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -37,7 +38,6 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
-            DatabaseShellConfigurations document;
             JObject configurations;
 
             using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
@@ -45,7 +45,7 @@ namespace OrchardCore.Shells.Database.Configuration
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
-                document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
+                var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
 
                 if (document != null)
                 {
@@ -59,27 +59,18 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 if (!configurations.ContainsKey(tenant))
                 {
-                    if (!_options.MigrateFromFiles)
+                    if (!_options.MigrateFromFiles || ! await TryMigrateFromFileAsync(tenant, configurations))
                     {
                         return;
                     }
 
-                    var configuration = await GetConfigurationFromFileAsync(tenant);
-
-                    if (configuration == null)
-                    {
-                        return;
-                    }
-
-                    configurations[tenant] = JObject.Parse(configuration);
-                    document.Configurations = configurations.ToString();
-
-                    session.Save(document, checkConcurrency: true);
+                    document.Configurations = configurations.ToString(Formatting.None);
+                    session.Save(document);
                 }
             }
 
-            var config = configurations.GetValue(tenant) as JObject;
-            builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(config.ToString())));
+            var configuration = configurations.GetValue(tenant) as JObject;
+            builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configuration.ToString(Formatting.None))));
         }
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
@@ -118,27 +109,33 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 configurations[tenant] = config;
 
-                document.Configurations = configurations.ToString();
+                document.Configurations = configurations.ToString(Formatting.None);
 
                 session.Save(document);
             }
         }
 
-        private async Task<string> GetConfigurationFromFileAsync(string tenant)
+        private async Task<bool> TryMigrateFromFileAsync(string tenant, JObject configurations)
         {
             var tenantFolder = Path.Combine(_container, tenant);
             var appsettings = Path.Combine(tenantFolder, "appsettings.json");
 
             if (!File.Exists(appsettings))
             {
-                return null;
+                return false;
             }
 
             using (var file = File.OpenText(appsettings))
             {
                 var configuration = await file.ReadToEndAsync();
-                return configuration;
+
+                if (configuration != null)
+                {
+                    configurations[tenant] = JObject.Parse(configuration);
+                }
             }
+
+            return true;
         }
     }
 }

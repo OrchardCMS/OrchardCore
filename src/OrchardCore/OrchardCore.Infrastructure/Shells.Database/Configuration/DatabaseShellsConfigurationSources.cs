@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -15,7 +16,7 @@ namespace OrchardCore.Shells.Database.Configuration
 {
     public class DatabaseShellsConfigurationSources : IShellsConfigurationSources
     {
-        private const string _allEnvironments = "AllEnvironments";
+        private const string Any = "Any";
 
         private readonly DatabaseShellsStorageOptions _options;
         private readonly IShellContextFactory _shellContextFactory;
@@ -42,7 +43,6 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            DatabaseShellsConfigurations document;
             JObject configurations;
 
             using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
@@ -50,7 +50,7 @@ namespace OrchardCore.Shells.Database.Configuration
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
-                document = await session.Query<DatabaseShellsConfigurations>().FirstOrDefaultAsync();
+                var document = await session.Query<DatabaseShellsConfigurations>().FirstOrDefaultAsync();
 
                 if (document != null)
                 {
@@ -62,58 +62,63 @@ namespace OrchardCore.Shells.Database.Configuration
                     configurations = new JObject();
                 }
 
-                if (!configurations.ContainsKey(_allEnvironments) && _options.MigrateFromFiles)
+                if (!configurations.ContainsKey(Any) && _options.MigrateFromFiles &&
+                    await TryMigrateFromFileAsync(Any, configurations))
                 {
-                    var configuration = await GetConfigurationFromFileAsync($"{_appsettings}.json");
-
-                    if (configuration != null)
-                    {
-                        configurations[_allEnvironments] = JObject.Parse(configuration);
-                        document.Configurations = configurations.ToString();
-                        session.Save(document, checkConcurrency: true);
-                    }
+                    document.Configurations = configurations.ToString(Formatting.None);
+                    session.Save(document);
                 }
 
-                if (!configurations.ContainsKey(_environment) && _options.MigrateFromFiles)
+                if (!configurations.ContainsKey(_environment) && _options.MigrateFromFiles &&
+                    await TryMigrateFromFileAsync(_environment, configurations))
                 {
-                    var configuration = await GetConfigurationFromFileAsync($"{_appsettings}.{_environment}.json");
-
-                    if (configuration != null)
-                    {
-                        configurations[_environment] = JObject.Parse(configuration);
-                        document.Configurations = configurations.ToString();
-                        session.Save(document, checkConcurrency: true);
-                    }
+                    document.Configurations = configurations.ToString(Formatting.None);
+                    session.Save(document);
                 }
             }
 
-            var config = configurations.GetValue(_allEnvironments) as JObject;
+            var configuration = configurations.GetValue(Any) as JObject;
 
-            if (config != null)
+            if (configuration != null)
             {
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(config.ToString())));
+                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configuration.ToString(Formatting.None))));
             }
 
-            config = configurations.GetValue(_environment) as JObject;
+            configuration = configurations.GetValue(_environment) as JObject;
 
-            if (config != null)
+            if (configuration != null)
             {
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(config.ToString())));
+                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configuration.ToString(Formatting.None))));
             }
         }
 
-        private async Task<string> GetConfigurationFromFileAsync(string appsettings)
+        private async Task<bool> TryMigrateFromFileAsync(string environment, JObject configurations)
         {
+            var appsettings = _appsettings;
+
+            if (environment != Any)
+            {
+                appsettings += "." + environment;
+            }
+
+            appsettings += ".json";
+
             if (!File.Exists(appsettings))
             {
-                return null;
+                return false;
             }
 
             using (var file = File.OpenText(appsettings))
             {
                 var configuration = await file.ReadToEndAsync();
-                return configuration;
+
+                if (configuration != null)
+                {
+                    configurations[environment] = JObject.Parse(configuration);
+                }
             }
+
+            return true;
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -48,19 +49,14 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 if (document == null)
                 {
-                    if (!_options.MigrateFromFiles)
+                    document = new DatabaseShellsSettings();
+
+                    if (!_options.MigrateFromFiles || ! await TryMigrateFromFileAsync(document))
                     {
                         return;
                     }
 
-                    document = await GetDocumentFromFileAsync();
-
-                    if (document == null)
-                    {
-                        return;
-                    }
-
-                    session.Save(document, checkConcurrency: true);
+                    session.Save(document);
                 }
             }
 
@@ -103,26 +99,26 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 tenantsSettings[tenant] = settings;
 
-                document.Settings = tenantsSettings.ToString();
+                document.Settings = tenantsSettings.ToString(Formatting.None);
 
                 session.Save(document);
             }
         }
 
-        private async Task<DatabaseShellsSettings> GetDocumentFromFileAsync()
+        private async Task<bool> TryMigrateFromFileAsync(DatabaseShellsSettings document)
         {
             if (!File.Exists(_tenants))
             {
-                return null;
+                return false;
             }
 
             using (var file = File.OpenText(_tenants))
             {
-                return new DatabaseShellsSettings()
-                {
-                    Settings = await file.ReadToEndAsync()
-                };
+                var settings = await file.ReadToEndAsync();
+                document.Settings = settings;
             }
+
+            return true;
         }
     }
 }
