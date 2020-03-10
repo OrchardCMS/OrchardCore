@@ -48,6 +48,11 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 if (document == null)
                 {
+                    if (!_options.MigrateFromFiles)
+                    {
+                        return;
+                    }
+
                     document = await GetDocumentFromFileAsync();
 
                     if (document == null)
@@ -106,7 +111,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
         private async Task<DatabaseShellsSettings> GetDocumentFromFileAsync()
         {
-            if (!_options.MigrateFromFiles || !File.Exists(_tenants))
+            if (!File.Exists(_tenants))
             {
                 return null;
             }

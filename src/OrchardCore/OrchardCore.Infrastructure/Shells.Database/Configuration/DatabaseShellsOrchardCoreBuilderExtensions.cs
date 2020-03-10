@@ -15,6 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.Replace(ServiceDescriptor.Singleton<IShellsSettingsSources, DatabaseShellsSettingsSources>());
             services.Replace(ServiceDescriptor.Singleton<IShellConfigurationSources, DatabaseShellConfigurationSources>());
+            services.Replace(ServiceDescriptor.Singleton<IShellsConfigurationSources, DatabaseShellsConfigurationSources>());
 
             return builder;
         }

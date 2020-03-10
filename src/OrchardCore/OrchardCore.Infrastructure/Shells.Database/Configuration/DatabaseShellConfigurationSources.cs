@@ -59,6 +59,11 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 if (!configurations.ContainsKey(tenant))
                 {
+                    if (!_options.MigrateFromFiles)
+                    {
+                        return;
+                    }
+
                     var configuration = await GetConfigurationFromFileAsync(tenant);
 
                     if (configuration == null)
@@ -121,11 +126,6 @@ namespace OrchardCore.Shells.Database.Configuration
 
         private async Task<string> GetConfigurationFromFileAsync(string tenant)
         {
-            if (!_options.MigrateFromFiles)
-            {
-                return null;
-            }
-
             var tenantFolder = Path.Combine(_container, tenant);
             var appsettings = Path.Combine(tenantFolder, "appsettings.json");
 
