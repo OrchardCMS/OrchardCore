@@ -123,10 +123,10 @@
             var search = $(this).val().toLowerCase();
             if (search == '') {
                 searchBox.val('');
-                $('#cards > div').toggle(true);
+                $('.card').toggle(true);
             }
             else {
-                $('#cards > div').each(function () {
+                $('.card').each(function () {
                     var filter = $(this).children().first().html().toLowerCase();
                     var found = filter.indexOf(search) > -1;
                     $(this).toggle(found);
