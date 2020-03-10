@@ -61,12 +61,15 @@
                 <div class="form-group">
                     <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
                 </div>
-                <div id="cards" class="card-columns">
+                <div id="cards" class="row">
                     @foreach (var thumbnail in Model.Thumbnails)
                     {
                         thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
                         thumbnail.Value.Type = thumbnail.Key;
-                        @await DisplayAsync(thumbnail.Value)
+
+                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch">
+                            @await DisplayAsync(thumbnail.Value)
+                        </div>
                     }
                 </div>
             </div>
