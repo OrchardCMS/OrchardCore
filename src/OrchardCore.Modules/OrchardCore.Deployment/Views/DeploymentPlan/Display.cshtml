@@ -67,7 +67,7 @@
                         thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
                         thumbnail.Value.Type = thumbnail.Key;
 
-                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch">
+                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
                             @await DisplayAsync(thumbnail.Value)
                         </div>
                     }
@@ -123,13 +123,18 @@
             var search = $(this).val().toLowerCase();
             if (search == '') {
                 searchBox.val('');
-                $('.card').toggle(true);
+                $('.card-item').attr('style', 'display:flex !important');
             }
             else {
-                $('.card').each(function () {
-                    var filter = $(this).children().first().html().toLowerCase();
+                $('.card-item').each(function () {
+                    var filter = $(this).children().children().first().html().toLowerCase();
                     var found = filter.indexOf(search) > -1;
-                    $(this).toggle(found);
+                    if (found) {
+                        $(this).attr('style', 'display:flex !important');
+                    }
+                    else {
+                        $(this).attr('style', 'display:none !important');
+                    }
                 });
             }
         });
