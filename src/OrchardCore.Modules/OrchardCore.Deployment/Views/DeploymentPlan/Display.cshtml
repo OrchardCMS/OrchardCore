@@ -116,7 +116,7 @@
     </div>
 </div>
 <script at="Foot" type="text/javascript">
-    function removeDiacritics(str) {
+    function replaceDiacritics(str) {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
@@ -125,14 +125,14 @@
 
         // On each keypress filter the list of cards
         searchBox.keyup(function (e) {
-            var search = removeDiacritics($(this).val().toLowerCase());
+            var search = replaceDiacritics($(this).val().toLowerCase());
             if (search == '') {
                 searchBox.val('');
                 $('.card-item').attr('style', 'display:flex !important');
             }
             else {
                 $('.card-item').each(function () {
-                    var filter = removeDiacritics($(this).children().children().first().html().toLowerCase());
+                    var filter = replaceDiacritics($(this).children().children().first().html().toLowerCase());
                     var found = filter.indexOf(search) > -1;
                     if (found) {
                         $(this).attr('style', 'display:flex !important');
