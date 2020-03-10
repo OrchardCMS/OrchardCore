@@ -7,7 +7,7 @@
   .card-deck > .card {
     width: 29%;
     flex-wrap: wrap;
-    flex: initial; } }
+    flex: initial !important; } }
 
 .card {
   margin-bottom: 15px !important; }
