@@ -10,6 +10,8 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Shells.Database.Extensions;
+using OrchardCore.Shells.Database.Models;
 using YesSql;
 
 namespace OrchardCore.Shells.Database.Configuration
@@ -49,7 +51,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 if (document != null)
                 {
-                    configurations = JObject.Parse(document.Configurations);
+                    configurations = document.ShellConfigurations;
                 }
                 else
                 {
@@ -64,7 +66,7 @@ namespace OrchardCore.Shells.Database.Configuration
                         return;
                     }
 
-                    document.Configurations = configurations.ToString(Formatting.None);
+                    document.ShellConfigurations = configurations;
                     session.Save(document);
                 }
             }
@@ -85,7 +87,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 JObject configurations;
                 if (document != null)
                 {
-                    configurations = JObject.Parse(document.Configurations);
+                    configurations = document.ShellConfigurations;
                 }
                 else
                 {
@@ -109,7 +111,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 configurations[tenant] = config;
 
-                document.Configurations = configurations.ToString(Formatting.None);
+                document.ShellConfigurations = configurations;
 
                 session.Save(document);
             }

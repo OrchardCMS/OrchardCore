@@ -10,14 +10,14 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Shells.Database.Extensions;
+using OrchardCore.Shells.Database.Models;
 using YesSql;
 
 namespace OrchardCore.Shells.Database.Configuration
 {
     public class DatabaseShellsConfigurationSources : IShellsConfigurationSources
     {
-        private const string Any = "Any";
-
         private readonly DatabaseShellsStorageOptions _options;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly string _environment;
@@ -54,7 +54,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 if (document != null)
                 {
-                    configurations = JObject.Parse(document.Configurations);
+                    configurations = document.ShellsConfigurations;
                 }
                 else
                 {
@@ -62,22 +62,22 @@ namespace OrchardCore.Shells.Database.Configuration
                     configurations = new JObject();
                 }
 
-                if (!configurations.ContainsKey(Any) && _options.MigrateFromFiles &&
-                    await TryMigrateFromFileAsync(Any, configurations))
+                if (!configurations.ContainsKey("Any") && _options.MigrateFromFiles &&
+                    await TryMigrateFromFileAsync("Any", configurations))
                 {
-                    document.Configurations = configurations.ToString(Formatting.None);
+                    document.ShellsConfigurations = configurations;
                     session.Save(document);
                 }
 
                 if (!configurations.ContainsKey(_environment) && _options.MigrateFromFiles &&
                     await TryMigrateFromFileAsync(_environment, configurations))
                 {
-                    document.Configurations = configurations.ToString(Formatting.None);
+                    document.ShellsConfigurations = configurations;
                     session.Save(document);
                 }
             }
 
-            var configuration = configurations.GetValue(Any) as JObject;
+            var configuration = configurations.GetValue("Any") as JObject;
 
             if (configuration != null)
             {
@@ -96,7 +96,7 @@ namespace OrchardCore.Shells.Database.Configuration
         {
             var appsettings = _appsettings;
 
-            if (environment != Any)
+            if (environment != "Any")
             {
                 appsettings += "." + environment;
             }

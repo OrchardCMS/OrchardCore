@@ -10,6 +10,8 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Shells.Database.Extensions;
+using OrchardCore.Shells.Database.Models;
 using YesSql;
 
 namespace OrchardCore.Shells.Database.Configuration
@@ -60,7 +62,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 }
             }
 
-            builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.Settings)));
+            builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings.ToString(Formatting.None))));
         }
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
@@ -75,7 +77,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 JObject tenantsSettings;
                 if (document != null)
                 {
-                    tenantsSettings = JObject.Parse(document.Settings);
+                    tenantsSettings = document.ShellsSettings;
                 }
                 else
                 {
@@ -99,7 +101,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 tenantsSettings[tenant] = settings;
 
-                document.Settings = tenantsSettings.ToString(Formatting.None);
+                document.ShellsSettings = tenantsSettings;
 
                 session.Save(document);
             }
@@ -115,7 +117,7 @@ namespace OrchardCore.Shells.Database.Configuration
             using (var file = File.OpenText(_tenants))
             {
                 var settings = await file.ReadToEndAsync();
-                document.Settings = settings;
+                document.ShellsSettings = JObject.Parse(settings);
             }
 
             return true;

@@ -4,8 +4,9 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Shells.Database.Configuration;
 
-namespace OrchardCore.Shells.Database.Configuration
+namespace OrchardCore.Shells.Database.Extensions
 {
     public static class DatabaseShellContextFactoryExtensions
     {
