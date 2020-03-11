@@ -19,9 +19,9 @@ namespace OrchardCore.Workflows.Activities
         }
 
         public override string Name => nameof(CorrelateTask);
-        
+
         public override LocalizedString DisplayText => S["Correlate Task"];
-        
+
         public override LocalizedString Category => S["Primitives"];
 
         public WorkflowExpression<string> Value

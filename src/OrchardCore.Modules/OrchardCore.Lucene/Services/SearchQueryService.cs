@@ -18,14 +18,14 @@ namespace OrchardCore.Lucene.Services
         {
             _luceneIndexManager = luceneIndexManager;
             _contentManager = contentManager;
-
         }
+
         public async Task<IList<string>> ExecuteQueryAsync(Query query, string indexName, int start, int end)
         {
             var contentItemIds = new List<string>();
 
             await _luceneIndexManager.SearchAsync(indexName, searcher =>
-            {                
+            {
                 var collector = TopScoreDocCollector.Create(end, true);
 
                 searcher.Search(query, collector);
@@ -41,7 +41,6 @@ namespace OrchardCore.Lucene.Services
             });
 
             return contentItemIds;
-
         }
     }
 }

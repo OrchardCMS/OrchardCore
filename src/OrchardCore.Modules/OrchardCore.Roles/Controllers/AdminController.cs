@@ -65,7 +65,7 @@ namespace OrchardCore.Roles.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var roles = await _roleService.GetRolesAsync();
@@ -78,12 +78,11 @@ namespace OrchardCore.Roles.Controllers
             return View(model);
         }
 
-
         public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new CreateRoleViewModel();
@@ -102,7 +101,7 @@ namespace OrchardCore.Roles.Controllers
                 {
                     ModelState.AddModelError(string.Empty, S["Invalid role name."]);
                 }
-                
+
                 if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
                 {
                     ModelState.AddModelError(string.Empty, S["The role is already used."]);
@@ -131,13 +130,12 @@ namespace OrchardCore.Roles.Controllers
             return View(model);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var currentRole = await _roleManager.FindByIdAsync(id);
@@ -172,7 +170,7 @@ namespace OrchardCore.Roles.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
@@ -201,7 +199,7 @@ namespace OrchardCore.Roles.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));

@@ -1,6 +1,6 @@
-﻿using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Feeds;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Scripting
 {

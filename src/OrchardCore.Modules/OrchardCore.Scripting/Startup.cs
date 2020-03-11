@@ -1,5 +1,5 @@
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 using OrchardCore.Scripting.JavaScript;
 using OrchardCore.Scripting.Providers;
 

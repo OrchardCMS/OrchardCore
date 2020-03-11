@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using MimeKit;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -69,6 +70,11 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
+            if (!string.IsNullOrEmpty(model.Email) && !MailboxAddress.TryParse(model.Email, out var emailAddress))
+            {
+                ModelState.AddModelError("Email", S["Invalid email."]);
+            }
+
             ViewData["ReturnUrl"] = returnUrl;
 
             // If we get a user, redirect to returnUrl
@@ -114,7 +120,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -139,6 +145,5 @@ namespace OrchardCore.Users.Controllers
                 return Redirect("~/");
             }
         }
-
     }
 }

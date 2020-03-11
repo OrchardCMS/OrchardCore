@@ -73,6 +73,7 @@ namespace OrchardCore.Roles.Services
         }
 
         #region IRoleStore<IRole>
+
         public async Task<IdentityResult> CreateAsync(IRole role, CancellationToken cancellationToken)
         {
             if (role == null)
@@ -199,9 +200,10 @@ namespace OrchardCore.Roles.Services
             return IdentityResult.Success;
         }
 
-        #endregion
+        #endregion IRoleStore<IRole>
 
         #region IRoleClaimStore<IRole>
+
         public Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (role == null)
@@ -246,6 +248,6 @@ namespace OrchardCore.Roles.Services
             return Task.CompletedTask;
         }
 
-        #endregion
+        #endregion IRoleClaimStore<IRole>
     }
 }

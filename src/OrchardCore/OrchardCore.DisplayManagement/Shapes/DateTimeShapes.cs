@@ -30,8 +30,8 @@ namespace OrchardCore.DisplayManagement.Shapes
             H = htmlLocalizer;
         }
 
-        IStringLocalizer T { get; }
-        IHtmlLocalizer H { get; }
+        private IStringLocalizer T { get; }
+        private IHtmlLocalizer H { get; }
 
         [Shape]
         public IHtmlContent TimeSpan(IHtmlHelper Html, DateTime? Utc, DateTime? Origin)

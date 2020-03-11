@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentManagement.Metadata.Builders
 {
@@ -40,6 +41,15 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinition Build()
         {
+            if (!Name[0].IsLetter())
+            {
+                throw new ArgumentException("Content type name must start with a letter", "name");
+            }
+            if (!String.Equals(Name, Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException("Content type name contains invalid characters", "name");
+            }
+
             return new ContentPartDefinition(Name, _fields, _settings);
         }
 
@@ -127,7 +137,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        class FieldConfigurerImpl : ContentPartFieldDefinitionBuilder
+        private class FieldConfigurerImpl : ContentPartFieldDefinitionBuilder
         {
             private ContentFieldDefinition _fieldDefinition;
             private readonly ContentPartDefinition _partDefinition;
@@ -143,6 +153,15 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             public override ContentPartFieldDefinition Build()
             {
+                if (!_fieldName[0].IsLetter())
+                {
+                    throw new ArgumentException("Content field name must start with a letter", "name");
+                }
+                if (!String.Equals(_fieldName, _fieldName.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new ArgumentException("Content field name contains invalid characters", "name");
+                }
+
                 return new ContentPartFieldDefinition(_fieldDefinition, _fieldName, _settings);
             }
 

@@ -1,17 +1,17 @@
 using System.Collections.Generic;
 using OrchardCore.Environment.Extensions.Features;
 
-namespace OrchardCore.Features.Models 
+namespace OrchardCore.Features.Models
 {
     /// <summary>
     /// Represents a module's feature.
     /// </summary>
-    public class ModuleFeature 
+    public class ModuleFeature
     {
         /// <summary>
         /// The feature descriptor.
         /// </summary>
-        public IFeatureInfo Descriptor  { get; set; }
+        public IFeatureInfo Descriptor { get; set; }
 
         /// <summary>
         /// Boolean value indicating if the feature is enabled.
@@ -39,9 +39,9 @@ namespace OrchardCore.Features.Models
         public bool IsRecentlyInstalled { get; set; }
 
         /// <summary>
-        /// List of features that depend on this feature.
+        /// List of enabled features that depend on this feature.
         /// </summary>
-        public IEnumerable<IFeatureInfo> DependentFeatures { get; set; }
+        public IEnumerable<IFeatureInfo> EnabledDependentFeatures { get; set; }
 
         /// <summary>
         /// List of features that this feature depends on.

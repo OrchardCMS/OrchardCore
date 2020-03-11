@@ -33,9 +33,9 @@ namespace OrchardCore.Tenants.Workflows.Activities
         protected ISetupService SetupService { get; }
 
         public override string Name => nameof(SetupTenantTask);
-        
+
         public override LocalizedString Category => S["Tenant"];
-        
+
         public override LocalizedString DisplayText => S["Setup Tenant Task"];
 
         public WorkflowExpression<string> SiteName

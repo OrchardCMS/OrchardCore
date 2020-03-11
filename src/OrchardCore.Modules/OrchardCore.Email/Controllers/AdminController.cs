@@ -1,19 +1,17 @@
 using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email.Drivers;
 using OrchardCore.Email.ViewModels;
 
 namespace OrchardCore.Email.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
@@ -36,14 +34,14 @@ namespace OrchardCore.Email.Controllers
             T = stringLocalizer;
         }
 
-        IStringLocalizer T { get; set; }
+        private IStringLocalizer T { get; set; }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View();
@@ -54,7 +52,7 @@ namespace OrchardCore.Email.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -63,7 +61,6 @@ namespace OrchardCore.Email.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    // send email with DefaultSender
                     var result = await _smtpService.SendAsync(message);
 
                     if (!result.Succeeded)
@@ -95,6 +92,11 @@ namespace OrchardCore.Email.Controllers
                 ReplyTo = testSettings.ReplyTo
             };
 
+            if (!String.IsNullOrWhiteSpace(testSettings.Sender))
+            {
+                message.Sender = testSettings.Sender;
+            }
+
             if (!String.IsNullOrWhiteSpace(testSettings.Subject))
             {
                 message.Subject = testSettings.Subject;
@@ -106,16 +108,6 @@ namespace OrchardCore.Email.Controllers
             }
 
             return message;
-        }
-
-        private static bool ValidateEmail(string email)
-        {
-            var regexOptions = RegexOptions.Singleline | RegexOptions.IgnoreCase;
-            // From https://stackoverflow.com/questions/16167983/best-regular-expression-for-email-validation-in-c-sharp
-            // Retrieved 2018-11-16
-            string pattern = @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z";
-
-            return Regex.IsMatch(email, pattern, regexOptions);
         }
     }
 }

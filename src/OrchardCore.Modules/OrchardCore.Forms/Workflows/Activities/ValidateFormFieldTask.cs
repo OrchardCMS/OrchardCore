@@ -27,9 +27,9 @@ namespace OrchardCore.Forms.Workflows.Activities
         }
 
         public override string Name => nameof(ValidateFormFieldTask);
-        
+
         public override LocalizedString DisplayText => S["Validate Form Field Task"];
-        
+
         public override LocalizedString Category => S["Validation"];
 
         public string FieldName

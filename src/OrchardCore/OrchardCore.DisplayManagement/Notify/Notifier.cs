@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.DisplayManagement.Notify
 {
-
     public class Notifier : INotifier
     {
         private readonly IList<NotifyEntry> _entries;
@@ -23,7 +22,7 @@ namespace OrchardCore.DisplayManagement.Notify
             {
                 Logger.LogInformation("Notification '{NotificationType}' with message '{NotificationMessage}'", type, message);
             }
-            
+
             _entries.Add(new NotifyEntry { Type = type, Message = message });
         }
 

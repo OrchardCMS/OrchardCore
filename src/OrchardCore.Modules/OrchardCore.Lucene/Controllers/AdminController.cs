@@ -27,7 +27,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
 using YesSql;
-using YesSql.Services;
 
 namespace OrchardCore.Lucene.Controllers
 {
@@ -107,14 +106,14 @@ namespace OrchardCore.Lucene.Controllers
             model.Pager = pagerShape;
 
             model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["Reset"].Value, Value = nameof(ContentsBulkAction.Reset) },
-                new SelectListItem() { Text = H["Rebuild"].Value, Value = nameof(ContentsBulkAction.Rebuild) },
-                new SelectListItem() { Text = H["Delete"].Value, Value = nameof(ContentsBulkAction.Remove) }
+                new SelectListItem() { Text = S["Reset"], Value = nameof(ContentsBulkAction.Reset) },
+                new SelectListItem() { Text = S["Rebuild"], Value = nameof(ContentsBulkAction.Rebuild) },
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
             return View(model);
         }
-        
+
         public async Task<ActionResult> Edit(string indexName = null)
         {
             var IsCreate = String.IsNullOrWhiteSpace(indexName);
@@ -122,7 +121,7 @@ namespace OrchardCore.Lucene.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!IsCreate)
@@ -158,7 +157,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ValidateModel(model);
@@ -224,16 +223,15 @@ namespace OrchardCore.Lucene.Controllers
                 _notifier.Success(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
             }
 
-
             return RedirectToAction("Index");
         }
-        
+
         [HttpPost]
         public async Task<ActionResult> Reset(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!_luceneIndexManager.Exists(id))
@@ -254,7 +252,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!_luceneIndexManager.Exists(id))
@@ -275,7 +273,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!_luceneIndexManager.Exists(model.IndexName))
@@ -309,7 +307,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
@@ -397,7 +395,7 @@ namespace OrchardCore.Lucene.Controllers
                             {
                                 _notifier.Warning(H["Couldn't remove selected index."]);
                                 _session.Cancel();
-                                return Unauthorized();
+                                return Forbid();
                             }
 
                             await _luceneIndexingService.DeleteIndexAsync(item.IndexName);
@@ -409,7 +407,7 @@ namespace OrchardCore.Lucene.Controllers
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
                             {
-                                return Unauthorized();
+                                return Forbid();
                             }
 
                             if (!_luceneIndexManager.Exists(item.IndexName))
@@ -428,7 +426,7 @@ namespace OrchardCore.Lucene.Controllers
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
                             {
-                                return Unauthorized();
+                                return Forbid();
                             }
 
                             if (!_luceneIndexManager.Exists(item.IndexName))
@@ -452,7 +450,8 @@ namespace OrchardCore.Lucene.Controllers
 
         private void ValidateModel(LuceneIndexSettingsViewModel model)
         {
-            if (model.IndexedContentTypes == null || model.IndexedContentTypes.Count() < 1) {
+            if (model.IndexedContentTypes == null || model.IndexedContentTypes.Count() < 1)
+            {
                 ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexedContentTypes), S["At least one content type selection is required."]);
             }
 

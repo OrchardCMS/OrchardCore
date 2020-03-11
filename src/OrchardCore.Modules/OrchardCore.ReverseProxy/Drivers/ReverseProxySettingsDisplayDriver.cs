@@ -1,11 +1,8 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.ReverseProxy.Settings;
@@ -30,7 +27,7 @@ namespace OrchardCore.ReverseProxy.Drivers
             T = stringLocalizer;
         }
 
-        IHtmlLocalizer T { get; }
+        private IHtmlLocalizer T { get; }
 
         public override IDisplayResult Edit(ReverseProxySettings section, BuildEditorContext context)
         {

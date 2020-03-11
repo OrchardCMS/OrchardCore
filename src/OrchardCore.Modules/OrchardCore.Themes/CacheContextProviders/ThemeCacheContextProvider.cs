@@ -1,7 +1,6 @@
-﻿using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.Environment.Cache;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Theming;
 
 namespace OrchardCore.Environment.Cache.CacheContextProviders
 {

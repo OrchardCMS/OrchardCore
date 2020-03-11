@@ -131,7 +131,6 @@ namespace OrchardCore.OpenId.Services
                         nameof(settings.CertificateThumbprint)
                     }));
                 }
-
                 else if (!certificate.HasPrivateKey)
                 {
                     results.Add(new ValidationResult(S["The certificate doesn't contain the required private key."], new[]
@@ -139,7 +138,6 @@ namespace OrchardCore.OpenId.Services
                         nameof(settings.CertificateThumbprint)
                     }));
                 }
-
                 else if (certificate.Archived)
                 {
                     results.Add(new ValidationResult(S["The certificate is not valid because it is marked as archived."], new[]
@@ -147,7 +145,6 @@ namespace OrchardCore.OpenId.Services
                         nameof(settings.CertificateThumbprint)
                     }));
                 }
-
                 else if (certificate.NotBefore > DateTime.Now || certificate.NotAfter < DateTime.Now)
                 {
                     results.Add(new ValidationResult(S["The certificate is not valid for current date."], new[]

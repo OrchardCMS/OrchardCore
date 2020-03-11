@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "https://orchardproject.net",
     Version = "2.0.0",
     Description = "Provides email settings configuration and a default email service based on SMTP.",
-    Dependencies = new [] { "OrchardCore.Resources" },
+    Dependencies = new[] { "OrchardCore.Resources" },
     Category = "Messaging"
 )]

@@ -1,4 +1,4 @@
-﻿using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Shapes;
 using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement

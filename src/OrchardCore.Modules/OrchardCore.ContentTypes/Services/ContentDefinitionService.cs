@@ -115,6 +115,10 @@ namespace OrchardCore.ContentTypes.Services
                 {
                     throw new ArgumentException("Content type name must start with a letter", "name");
                 }
+                if (!String.Equals(name, name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new ArgumentException("Content type name contains invalid characters", "name");
+                }
             }
 
             while (_contentDefinitionManager.LoadTypeDefinition(name) != null)
@@ -123,7 +127,6 @@ namespace OrchardCore.ContentTypes.Services
             }
 
             var contentTypeDefinition = new ContentTypeDefinition(name, displayName);
-
 
             _contentDefinitionManager.StoreTypeDefinition(contentTypeDefinition);
             // Ensure it has its own part
@@ -137,7 +140,6 @@ namespace OrchardCore.ContentTypes.Services
 
         public void RemoveType(string name, bool deleteContent)
         {
-
             // first remove all attached parts
             var typeDefinition = _contentDefinitionManager.LoadTypeDefinition(name);
             var partDefinitions = typeDefinition.Parts.ToArray();
@@ -388,6 +390,7 @@ namespace OrchardCore.ContentTypes.Services
                     part.WithDisplayName(typePartViewModel.DisplayName);
                     part.WithDescription(typePartViewModel.Description);
                     part.WithEditor(typePartViewModel.Editor);
+                    part.WithDisplayMode(typePartViewModel.DisplayMode);
                 });
             });
         }
@@ -459,7 +462,6 @@ namespace OrchardCore.ContentTypes.Services
                 {
                     fieldDefinitions = typePart.PartDefinition.Fields.ToArray();
                 }
-
             }
             else
             {

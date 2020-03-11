@@ -6,12 +6,11 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 
 namespace OrchardCore.ContentLocalization.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentLocalizationManager _contentLocalizationManager;
@@ -48,7 +47,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.LocalizeContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var checkContentItem = await _contentManager.NewAsync(contentItem.ContentType);
@@ -58,7 +57,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, checkContentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var part = contentItem.As<LocalizationPart>();

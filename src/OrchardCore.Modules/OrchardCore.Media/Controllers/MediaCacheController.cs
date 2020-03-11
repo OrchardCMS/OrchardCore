@@ -38,7 +38,7 @@ namespace OrchardCore.Media.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, MediaCachePermissions.ManageAssetCache))
             {
-                return Unauthorized();
+                return Forbid();
             }
             var model = new MediaCacheViewModel
             {
@@ -53,7 +53,7 @@ namespace OrchardCore.Media.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, MediaCachePermissions.ManageAssetCache))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (_mediaFileStoreCache == null)
@@ -74,6 +74,5 @@ namespace OrchardCore.Media.Controllers
 
             return RedirectToAction("Index");
         }
-
     }
 }

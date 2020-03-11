@@ -1,11 +1,9 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Abstractions.Models;
-using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -21,7 +19,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
         public override string Name => nameof(EnableTenantTask);
 
         public override LocalizedString Category => S["Tenant"];
-        
+
         public override LocalizedString DisplayText => S["Enable Tenant Task"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

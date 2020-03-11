@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -65,12 +64,13 @@ namespace OrchardCore.Liquid
         public override void ConfigureServices(IServiceCollection services)
         {
             // Liquid Part
-            services.AddScoped<IContentPartDisplayDriver, LiquidPartDisplay>();
             services.AddScoped<IShapeTableProvider, LiquidShapes>();
-            services.AddContentPart<LiquidPart>();
+            services.AddContentPart<LiquidPart>()
+                .UseDisplayDriver<LiquidPartDisplay>()
+                .AddHandler<LiquidPartHandler>();
+
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
-            services.AddScoped<IContentPartHandler, LiquidPartHandler>();
         }
     }
 }

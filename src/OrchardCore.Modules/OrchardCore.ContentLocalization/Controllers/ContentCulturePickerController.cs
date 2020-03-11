@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
@@ -17,7 +16,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.ContentLocalization.Controllers
 {
     [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
-    public class ContentCulturePickerController : Controller, IUpdateModel
+    public class ContentCulturePickerController : Controller
     {
         private readonly ISiteService _siteService;
         private readonly ILocalizationService _locationService;

@@ -67,7 +67,7 @@ public static class TaxonomyOrchardHelperExtensions
 
     internal static ContentItem FindTerm(JArray termsArray, string termContentItemId)
     {
-        foreach(JObject term in termsArray)
+        foreach (JObject term in termsArray)
         {
             var contentItemId = term.GetValue("ContentItemId").ToString();
 
@@ -118,5 +118,4 @@ public static class TaxonomyOrchardHelperExtensions
 
         return false;
     }
-
 }

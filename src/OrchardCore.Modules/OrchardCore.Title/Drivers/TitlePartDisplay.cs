@@ -1,6 +1,9 @@
+using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Title.Models;
@@ -10,9 +13,17 @@ namespace OrchardCore.Title.Drivers
 {
     public class TitlePartDisplay : ContentPartDisplayDriver<TitlePart>
     {
-        public override IDisplayResult Display(TitlePart titlePart)
+        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IStringLocalizer S;
+        public TitlePartDisplay(IContentDefinitionManager contentDefinitionManager, IStringLocalizer<TitlePartDisplay> localizer)
         {
-            return Initialize<TitlePartViewModel>("TitlePart", model =>
+            S = localizer;
+            _contentDefinitionManager = contentDefinitionManager;
+        }
+
+        public override IDisplayResult Display(TitlePart titlePart, BuildPartDisplayContext context)
+        {
+            return Initialize<TitlePartViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Title = titlePart.ContentItem.DisplayText;
                 model.TitlePart = titlePart;
@@ -23,7 +34,7 @@ namespace OrchardCore.Title.Drivers
 
         public override IDisplayResult Edit(TitlePart titlePart, BuildPartEditorContext context)
         {
-            return Initialize<TitlePartViewModel>("TitlePart_Edit", model =>
+            return Initialize<TitlePartViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Title = titlePart.ContentItem.DisplayText;
                 model.TitlePart = titlePart;
@@ -33,7 +44,14 @@ namespace OrchardCore.Title.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Title);
+            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
+            {
+                var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
+                if (settings.Options == TitlePartOptions.EditableRequired && String.IsNullOrWhiteSpace(model.Title))
+                {
+                    updater.ModelState.AddModelError(Prefix, S["A value is required for Title."]);
+                }
+            }
 
             model.ContentItem.DisplayText = model.Title;
 
