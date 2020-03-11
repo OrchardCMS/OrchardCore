@@ -8,7 +8,7 @@ namespace OrchardCore.Cms.Web
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardCms().AddDatabaseShellsConfiguration();
+            services.AddOrchardCms();
         }
 
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
