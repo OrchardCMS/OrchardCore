@@ -99,12 +99,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
             {
                 shellSettings = new ShellSettings
                 {
-                    Description = tenantDescriptionTask.Result?.Trim(),
                     Name = tenantNameTask.Result?.Trim(),
                     RequestUrlPrefix = requestUrlPrefixTask.Result?.Trim(),
                     RequestUrlHost = requestUrlHostTask.Result?.Trim(),
                     State = TenantState.Uninitialized
                 };
+                shellSettings["Description"] = tenantDescriptionTask.Result?.Trim();
                 shellSettings["ConnectionString"] = connectionStringTask.Result?.Trim();
                 shellSettings["TablePrefix"] = tablePrefixTask.Result?.Trim();
                 shellSettings["DatabaseProvider"] = databaseProviderTask.Result?.Trim();
