@@ -149,7 +149,7 @@ Tags are a editor and display mode option for taxonomies to allow tagging of con
 
 When using the `Tags` mode the display text property of the tag is stored as well as the `TermContentItemId`.
 
-You can access the TagNames property directly with the following accessor:
+You can access the `TagNames` property directly with the following accessor:
 
 ``` liquid tab="Liquid"
 {% for tagName in Model.ContentItem.Content.BlogPost.Tags.TagNames %}
