@@ -33,6 +33,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public WorkflowExpression<string> Description
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
         public WorkflowExpression<string> RequestUrlPrefix
         {
             get => GetProperty(() => new WorkflowExpression<string>());
@@ -77,6 +83,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var tenantNameTask = _expressionEvaluator.EvaluateAsync(TenantName, workflowContext);
+            var tenantDescriptionTask = _expressionEvaluator.EvaluateAsync(Description, workflowContext);
             var requestUrlPrefixTask = _expressionEvaluator.EvaluateAsync(RequestUrlPrefix, workflowContext);
             var requestUrlHostTask = _expressionEvaluator.EvaluateAsync(RequestUrlHost, workflowContext);
             var databaseProviderTask = _expressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext);
@@ -84,7 +91,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var tablePrefixTask = _expressionEvaluator.EvaluateAsync(TablePrefix, workflowContext);
             var recipeNameTask = _expressionEvaluator.EvaluateAsync(RecipeName, workflowContext);
 
-            await Task.WhenAll(tenantNameTask, requestUrlPrefixTask, requestUrlHostTask, databaseProviderTask, connectionStringTask, tablePrefixTask, recipeNameTask);
+            await Task.WhenAll(tenantNameTask, tenantDescriptionTask, requestUrlPrefixTask, requestUrlHostTask, databaseProviderTask, connectionStringTask, tablePrefixTask, recipeNameTask);
 
             var shellSettings = new ShellSettings();
 
@@ -92,6 +99,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             {
                 shellSettings = new ShellSettings
                 {
+                    Description = tenantDescriptionTask.Result?.Trim(),
                     Name = tenantNameTask.Result?.Trim(),
                     RequestUrlPrefix = requestUrlPrefixTask.Result?.Trim(),
                     RequestUrlHost = requestUrlHostTask.Result?.Trim(),
