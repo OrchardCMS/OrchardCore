@@ -1,13 +1,21 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MimeKit;
+using OrchardCore.Email;
 
 namespace OrchardCore.Users.ViewModels
 {
     public class EditUserViewModel : IValidatableObject
     {
+        private readonly IEmailAddressValidator _emailAddressValidator;
+
+        public EditUserViewModel(IEmailAddressValidator emailAddressValidator)
+        {
+            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
+        }
+
         public string Id { get; set; }
 
         [Required]
@@ -32,7 +40,7 @@ namespace OrchardCore.Users.ViewModels
         {
             var S = validationContext.GetService<IStringLocalizer<EditUserViewModel>>();
 
-            if (!string.IsNullOrEmpty(Email) && !MailboxAddress.TryParse(Email, out var emailAddress))
+            if (!_emailAddressValidator.Validate(Email))
             {
                 yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
             }

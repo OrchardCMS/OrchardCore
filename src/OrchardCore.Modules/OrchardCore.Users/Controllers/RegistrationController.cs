@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -5,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using MimeKit;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -22,6 +23,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly ILogger _logger;
         private readonly IStringLocalizer<RegistrationController> S;
         private readonly IHtmlLocalizer<RegistrationController> H;
@@ -31,6 +33,7 @@ namespace OrchardCore.Users.Controllers
             IAuthorizationService authorizationService,
             ISiteService siteService,
             INotifier notifier,
+            IEmailAddressValidator emailAddressValidator,
             ILogger<RegistrationController> logger,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
             IStringLocalizer<RegistrationController> stringLocalizer)
@@ -39,6 +42,7 @@ namespace OrchardCore.Users.Controllers
             _authorizationService = authorizationService;
             _siteService = siteService;
             _notifier = notifier;
+            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             _logger = logger;
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -70,7 +74,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!string.IsNullOrEmpty(model.Email) && !MailboxAddress.TryParse(model.Email, out var emailAddress))
+            if (!_emailAddressValidator.Validate(model.Email))
             {
                 ModelState.AddModelError("Email", S["Invalid email."]);
             }
