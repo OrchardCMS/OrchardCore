@@ -91,7 +91,7 @@ namespace OrchardCore.Tenants.Controllers
                 {
                     var entry = new ShellSettingsEntry
                     {
-                        Description = x.["Description"],
+                        Description = x["Description"],
                         Name = x.Name,
                         ShellSettings = x,
                         IsDefaultTenant = string.Equals(x.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
