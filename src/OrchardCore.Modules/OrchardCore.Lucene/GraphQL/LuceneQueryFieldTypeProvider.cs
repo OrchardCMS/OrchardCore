@@ -134,35 +134,38 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
         private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, LuceneQuery query)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
+            
             if (typetype != null)
             {
-                var fieldType = new FieldType
-                {
-                    Arguments = new QueryArguments(
-                            new QueryArgument<StringGraphType> { Name = "parameters" }
-                        ),
-
-                    Name = query.Name,
-                    ResolvedType = typetype.ResolvedType,
-                    Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
-                    {
-                        var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
-                        var iquery = await queryManager.GetQueryAsync(context.FieldName);
-
-                        var parameters = context.GetArgument<string>("parameters");
-
-                        var queryParameters = parameters != null ?
-                            JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                            : new Dictionary<string, object>();
-
-                        var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
-                        return result.Items;
-                    }),
-                    Type = typetype.Type
-                };
-                return fieldType;
+                return null;
             }
-            return null;
+            
+            var fieldType = new FieldType
+            {
+                Arguments = new QueryArguments(
+                        new QueryArgument<StringGraphType> { Name = "parameters" }
+                    ),
+
+                Name = query.Name,
+                ResolvedType = typetype.ResolvedType,
+                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
+                {
+                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
+                    var iquery = await queryManager.GetQueryAsync(context.FieldName);
+
+                    var parameters = context.GetArgument<string>("parameters");
+
+                    var queryParameters = parameters != null ?
+                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                        : new Dictionary<string, object>();
+
+                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    return result.Items;
+                }),
+                Type = typetype.Type
+            };
+            
+            return fieldType;
         }
     }
 }
