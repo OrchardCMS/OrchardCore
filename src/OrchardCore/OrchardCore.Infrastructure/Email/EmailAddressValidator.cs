@@ -1,6 +1,7 @@
 using MimeKit;
+using OrchardCore.Email;
 
-namespace OrchardCore.Email.Services
+namespace OrchardCore.Infrastructure.Email
 {
     public class EmailAddressValidator : IEmailAddressValidator
     {

@@ -33,7 +33,6 @@ namespace OrchardCore.Email
 
             services.AddTransient<IConfigureOptions<SmtpSettings>, SmtpSettingsConfiguration>();
             services.AddScoped<ISmtpService, SmtpService>();
-            services.AddScoped<IEmailAddressValidator, EmailAddressValidator>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
