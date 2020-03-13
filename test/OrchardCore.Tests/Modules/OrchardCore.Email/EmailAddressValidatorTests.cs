@@ -9,6 +9,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         [InlineData("mailbox@domain.com", true)]
         [InlineData("mailbox_domain.com", false)]
         [InlineData("mailbox@domain", true)]
+        [InlineData(null, false)]
+        [InlineData("", false)]
         public void ValidateEmailAddress(string address, bool isValid)
         {
             // Arrange
