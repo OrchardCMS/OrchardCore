@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,26 +13,28 @@ namespace OrchardCore.Infrastructure.Cache
     /// <summary>
     /// A generic service to keep in sync a multi level distributed cache with a given document store.
     /// </summary>
-    public class DocumentStoreDistributedCache<TDocumentStore> : IDocumentStoreDistributedCache<TDocumentStore> where TDocumentStore : ICacheableDocumentStore
+    public class DocumentStoreDistributedCache<TDocument> : IDocumentStoreDistributedCache<TDocument> where TDocument : DistributedDocument, new()
     {
-        private readonly TDocumentStore _documentStore;
+        private readonly IDocumentStore _documentStore;
         private readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
 
-        private readonly Dictionary<string, object> _scopedCache = new Dictionary<string, object>();
+        private TDocument _scopedCache;
 
-        public DocumentStoreDistributedCache(TDocumentStore documentStore, IDistributedCache distributedCache, IMemoryCache memoryCache)
+        public DocumentStoreDistributedCache(IDocumentStore documentStore, IDistributedCache distributedCache, IMemoryCache memoryCache)
         {
             _documentStore = documentStore;
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
         }
 
-        public async Task<T> LoadAsync<T>() where T : DistributedDocument, new()
-        {
-            var document = await _documentStore.LoadForUpdateAsync<T>();
+        public DistributedCacheEntryOptions Options { get; set; }
 
-            if (_memoryCache.TryGetValue<T>(typeof(T).FullName, out var cached) && document == cached)
+        public async Task<TDocument> GetMutableAsync()
+        {
+            var document = await _documentStore.GetMutableAsync<TDocument>();
+
+            if (_memoryCache.TryGetValue<TDocument>(typeof(TDocument).FullName, out var cached) && document == cached)
             {
                 throw new ArgumentException("Can't load for update a cached object");
             }
@@ -43,53 +44,43 @@ namespace OrchardCore.Infrastructure.Cache
             return document;
         }
 
-        public async Task<T> GetAsync<T>(Func<T> factory = null, DistributedCacheEntryOptions options = null, bool checkConsistency = true) where T : DistributedDocument, new()
+        public async Task<TDocument> GetImmutableAsync(Func<TDocument> factory = null, bool checkConsistency = true)
         {
-            if (options == null)
-            {
-                options = new DistributedCacheEntryOptions();
-            }
-
-            var document = await GetInternalAsync<T>(options);
+            var document = await GetInternalAsync();
 
             if (document == null)
             {
-                document = await _documentStore.GetForCachingAsync(factory);
+                document = await _documentStore.GetImmutableAsync(factory);
 
-                await SetInternalAsync(document, options, checkConsistency);
+                await SetInternalAsync(document, checkConsistency);
             }
 
             return document;
         }
 
-        public Task UpdateAsync<T>(T document, DistributedCacheEntryOptions options = null, bool checkConcurrency = true, bool checkConsistency = true) where T : DistributedDocument, new()
+        public Task UpdateAsync(TDocument document, bool checkConcurrency = true, bool checkConsistency = true)
         {
-            if (_memoryCache.TryGetValue<T>(typeof(T).FullName, out var cached) && document == cached)
+            if (_memoryCache.TryGetValue<TDocument>(typeof(TDocument).FullName, out var cached) && document == cached)
             {
                 throw new ArgumentException("Can't update a cached object");
-            }
-
-            if (options == null)
-            {
-                options = new DistributedCacheEntryOptions();
             }
 
             document.Identifier ??= IdGenerator.GenerateId();
 
             return _documentStore.UpdateAsync(document, document =>
             {
-                return SetInternalAsync(document, options, checkConsistency);
+                return SetInternalAsync(document, checkConsistency);
             },
             checkConcurrency);
         }
 
-        private async Task<T> GetInternalAsync<T>(DistributedCacheEntryOptions options) where T : DistributedDocument
+        private async Task<TDocument> GetInternalAsync()
         {
-            var key = typeof(T).FullName;
+            var key = typeof(TDocument).FullName;
 
-            if (_scopedCache.TryGetValue(key, out var scoped))
+            if (_scopedCache != null)
             {
-                return (T)scoped;
+                return _scopedCache;
             }
 
             var idData = await _distributedCache.GetAsync("ID_" + key);
@@ -106,18 +97,16 @@ namespace OrchardCore.Infrastructure.Cache
                 id = null;
             }
 
-            if (_memoryCache.TryGetValue<T>(key, out var document))
+            if (_memoryCache.TryGetValue<TDocument>(key, out var document))
             {
                 if (document.Identifier == id)
                 {
-                    if (options.SlidingExpiration.HasValue)
+                    if (Options?.SlidingExpiration.HasValue ?? false)
                     {
                         await _distributedCache.RefreshAsync(key);
                     }
 
-                    _scopedCache[key] = document;
-
-                    return document;
+                    return _scopedCache = document;
                 }
             }
 
@@ -130,7 +119,7 @@ namespace OrchardCore.Infrastructure.Cache
 
             using (var stream = new MemoryStream(data))
             {
-                document = await DeserializeAsync<T>(stream);
+                document = await DeserializeAsync(stream);
             }
 
             if (document.Identifier != id)
@@ -138,19 +127,22 @@ namespace OrchardCore.Infrastructure.Cache
                 return null;
             }
 
+            if (Options == null)
+            {
+                Options = new DistributedCacheEntryOptions();
+            }
+
             _memoryCache.Set(key, document, new MemoryCacheEntryOptions()
             {
-                AbsoluteExpiration = options.AbsoluteExpiration,
-                AbsoluteExpirationRelativeToNow = options.AbsoluteExpirationRelativeToNow,
-                SlidingExpiration = options.SlidingExpiration
+                AbsoluteExpiration = Options.AbsoluteExpiration,
+                AbsoluteExpirationRelativeToNow = Options.AbsoluteExpirationRelativeToNow,
+                SlidingExpiration = Options.SlidingExpiration
             });
 
-            _scopedCache[key] = document;
-
-            return document;
+            return _scopedCache = document;
         }
 
-        private async Task SetInternalAsync<T>(T document, DistributedCacheEntryOptions options, bool checkConsistency) where T : DistributedDocument, new()
+        private async Task SetInternalAsync(TDocument document, bool checkConsistency)
         {
             byte[] data;
 
@@ -162,13 +154,18 @@ namespace OrchardCore.Infrastructure.Cache
 
             var idData = Encoding.UTF8.GetBytes(document.Identifier ?? "NULL");
 
-            var key = typeof(T).FullName;
+            var key = typeof(TDocument).FullName;
 
-            await _distributedCache.SetAsync(key, data, options);
-            await _distributedCache.SetAsync("ID_" + key, idData, options);
+            if (Options == null)
+            {
+                Options = new DistributedCacheEntryOptions();
+            }
+
+            await _distributedCache.SetAsync(key, data, Options);
+            await _distributedCache.SetAsync("ID_" + key, idData, Options);
 
             // Consistency: We may have been the last to update the cache but not with the last stored document.
-            if (checkConsistency && (await _documentStore.GetForCachingAsync<T>()).Identifier != document.Identifier)
+            if (checkConsistency && (await _documentStore.GetImmutableAsync<TDocument>()).Identifier != document.Identifier)
             {
                 await _distributedCache.RemoveAsync("ID_" + key);
             }
@@ -176,17 +173,17 @@ namespace OrchardCore.Infrastructure.Cache
             {
                 _memoryCache.Set(key, document, new MemoryCacheEntryOptions()
                 {
-                    AbsoluteExpiration = options.AbsoluteExpiration,
-                    AbsoluteExpirationRelativeToNow = options.AbsoluteExpirationRelativeToNow,
-                    SlidingExpiration = options.SlidingExpiration
+                    AbsoluteExpiration = Options.AbsoluteExpiration,
+                    AbsoluteExpirationRelativeToNow = Options.AbsoluteExpirationRelativeToNow,
+                    SlidingExpiration = Options.SlidingExpiration
                 });
             }
         }
 
-        private static Task SerializeAsync<T>(Stream stream, T document) =>
+        private static Task SerializeAsync(Stream stream, TDocument document) =>
             MessagePackSerializer.SerializeAsync(stream, document, ContractlessStandardResolver.Options);
 
-        private static ValueTask<T> DeserializeAsync<T>(Stream stream) =>
-            MessagePackSerializer.DeserializeAsync<T>(stream, ContractlessStandardResolver.Options);
+        private static ValueTask<TDocument> DeserializeAsync(Stream stream) =>
+            MessagePackSerializer.DeserializeAsync<TDocument>(stream, ContractlessStandardResolver.Options);
     }
 }

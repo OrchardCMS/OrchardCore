@@ -28,7 +28,7 @@ namespace OrchardCore.Data
         }
 
         /// <inheritdoc />
-        public async Task<T> LoadForUpdateAsync<T>(Func<T> factory = null) where T : class, new()
+        public async Task<T> GetMutableAsync<T>(Func<T> factory = null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
@@ -43,7 +43,7 @@ namespace OrchardCore.Data
         }
 
         /// <inheritdoc />
-        public async Task<T> GetForCachingAsync<T>(Func<T> factory = null) where T : class, new()
+        public async Task<T> GetImmutableAsync<T>(Func<T> factory = null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
@@ -110,6 +110,11 @@ namespace OrchardCore.Data
         /// <inheritdoc />
         public async Task CommitAsync()
         {
+            if (_session == null)
+            {
+                return;
+            }
+
             try
             {
                 if (_beforeCommit != null)
@@ -124,8 +129,12 @@ namespace OrchardCore.Data
                     await _afterCommitSuccess();
                 }
             }
-            catch
+            catch (ConcurrencyException) // exception)
             {
+                // Todo: Maybe better to have '_afterCommitFailure'.
+                // And then throw a custom 'ConcurrencyException'.
+                // Or let the callback doing what it wants.
+                //throw exception;
             }
             finally
             {

@@ -13,25 +13,29 @@ using OrchardCore.Infrastructure.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
 using OrchardCore.Security;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace OrchardCore.Roles.Services
 {
     public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IDocumentStoreDistributedCache<IDocumentStore> _distributedCache;
+        private readonly IDocumentStoreDistributedCache<RolesDocument> _distributedCache;
         private readonly IStringLocalizer<RoleStore> S;
 
         private bool _updating;
 
         public RoleStore(
             IServiceProvider serviceProvider,
-            IDocumentStoreDistributedCache<IDocumentStore> distributedCache,
+            IDocumentStoreDistributedCache<RolesDocument> distributedCache,
             IStringLocalizer<RoleStore> stringLocalizer,
             ILogger<RoleStore> logger)
         {
             _serviceProvider = serviceProvider;
+
             _distributedCache = distributedCache;
+            _distributedCache.Options = new DistributedCacheEntryOptions();
+
             S = stringLocalizer;
             Logger = logger;
         }
@@ -43,12 +47,12 @@ namespace OrchardCore.Roles.Services
         /// <summary>
         /// Loads the document from the database (or create a new one) for updating and that should not be cached.
         /// </summary>
-        private Task<RolesDocument> LoadRolesAsync() => _distributedCache.LoadAsync<RolesDocument>();
+        private Task<RolesDocument> LoadRolesAsync() => _distributedCache.GetMutableAsync();
 
         /// <summary>
         /// Gets the document from the cache (or create a new one) for sharing and that should not be updated.
         /// </summary>
-        private Task<RolesDocument> GetRolesAsync() => _distributedCache.GetAsync<RolesDocument>();
+        private Task<RolesDocument> GetRolesAsync() => _distributedCache.GetImmutableAsync();
 
         private Task UpdateRolesAsync(RolesDocument roles)
         {

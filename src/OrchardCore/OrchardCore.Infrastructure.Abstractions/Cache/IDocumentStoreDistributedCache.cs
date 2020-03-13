@@ -8,28 +8,26 @@ namespace OrchardCore.Infrastructure.Cache
     /// <summary>
     /// A generic service to keep in sync a multi level distributed cache with a given document store.
     /// </summary>
-    public interface IDocumentStoreDistributedCache<TDocumentStore> : IDocumentStoreDistributedCache where TDocumentStore : ICacheableDocumentStore
-    {
-    }
-
-    /// <summary>
-    /// Keeps in sync a multi level distributed cache with a given document store.
-    /// </summary>
-    public interface IDocumentStoreDistributedCache
+    public interface IDocumentStoreDistributedCache<TDocument> where TDocument : DistributedDocument, new()
     {
         /// <summary>
-        /// Loads a single document from the store or create a new one by using <see cref="ICacheableDocumentStore.LoadForUpdateAsync"/>.
+        /// Loads a single document from the store or create a new one by using <see cref="ICacheableDocumentStore.GetMutableAsync"/>.
         /// </summary>
-        Task<T> LoadAsync<T>() where T : DistributedDocument, new();
+        Task<TDocument> GetMutableAsync();
 
         /// <summary>
-        /// Gets a single document from the cache or create a new one by using <see cref="ICacheableDocumentStore.GetForCachingAsync"/>.
+        /// Gets a single document from the cache or create a new one by using <see cref="ICacheableDocumentStore.GetImmutableAsync"/>.
         /// </summary>
-        Task<T> GetAsync<T>(Func<T> factory = null, DistributedCacheEntryOptions options = null, bool checkConsistency = true) where T : DistributedDocument, new();
+        Task<TDocument> GetImmutableAsync(Func<TDocument> factory = null, bool checkConsistency = true);
 
         /// <summary>
         /// Updates the store with the provided document and then updates the cache.
         /// </summary>
-        Task UpdateAsync<T>(T document, DistributedCacheEntryOptions options = null, bool checkConcurrency = true, bool checkConsistency = true) where T : DistributedDocument, new();
+        Task UpdateAsync(TDocument document, bool checkConcurrency = true, bool checkConsistency = true);
+
+        /// <summary>
+        /// Provides the cache options for an entry in the cache.
+        /// </summary>
+        DistributedCacheEntryOptions Options { get; set; }
     }
 }
