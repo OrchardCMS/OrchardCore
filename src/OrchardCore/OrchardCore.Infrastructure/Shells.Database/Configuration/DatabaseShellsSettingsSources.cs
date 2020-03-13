@@ -53,12 +53,12 @@ namespace OrchardCore.Shells.Database.Configuration
                 {
                     document = new DatabaseShellsSettings();
 
-                    if (!_options.MigrateFromFiles || ! await TryMigrateFromFileAsync(document))
+                    if (!_options.MigrateFromFiles || !await TryMigrateFromFileAsync(document))
                     {
                         return;
                     }
 
-                    session.Save(document);
+                    session.Save(document, checkConcurrency: true);
                 }
             }
 
@@ -103,7 +103,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 document.ShellsSettings = tenantsSettings;
 
-                session.Save(document);
+                session.Save(document, checkConcurrency: true);
             }
         }
 

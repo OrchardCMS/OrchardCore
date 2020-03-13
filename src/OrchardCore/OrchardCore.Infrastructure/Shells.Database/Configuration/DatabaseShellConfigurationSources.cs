@@ -61,13 +61,14 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 if (!configurations.ContainsKey(tenant))
                 {
-                    if (!_options.MigrateFromFiles || ! await TryMigrateFromFileAsync(tenant, configurations))
+                    if (!_options.MigrateFromFiles || !await TryMigrateFromFileAsync(tenant, configurations))
                     {
                         return;
                     }
 
                     document.ShellConfigurations = configurations;
-                    session.Save(document);
+
+                    session.Save(document, checkConcurrency: true);
                 }
             }
 
@@ -113,7 +114,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 document.ShellConfigurations = configurations;
 
-                session.Save(document);
+                session.Save(document, checkConcurrency: true);
             }
         }
 
