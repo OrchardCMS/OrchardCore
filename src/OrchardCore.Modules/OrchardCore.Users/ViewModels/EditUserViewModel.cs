@@ -40,7 +40,7 @@ namespace OrchardCore.Users.ViewModels
         {
             var S = validationContext.GetService<IStringLocalizer<EditUserViewModel>>();
 
-            if (!_emailAddressValidator.Validate(Email))
+            if (!string.IsNullOrEmpty(Email) && !_emailAddressValidator.Validate(Email))
             {
                 yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
             }
