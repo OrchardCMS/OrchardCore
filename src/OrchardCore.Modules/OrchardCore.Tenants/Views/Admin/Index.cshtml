@@ -251,7 +251,13 @@
         });
 
         tenantItemsCheckboxes.on("click", function () {
-            selectedItems.text($(":checkbox[name='tenantNames']:checked").length + ' @T["selected"]');
+            var itemsCount = $(":checkbox[name='tenantNames']").length;
+            var selectedItemsCount = $(":checkbox[name='tenantNames']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
             displayActionsOrFilters();
         });
     });

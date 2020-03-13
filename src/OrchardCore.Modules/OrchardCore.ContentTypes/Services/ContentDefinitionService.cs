@@ -115,6 +115,10 @@ namespace OrchardCore.ContentTypes.Services
                 {
                     throw new ArgumentException("Content type name must start with a letter", "name");
                 }
+                if (!String.Equals(name, name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new ArgumentException("Content type name contains invalid characters", "name");
+                }
             }
 
             while (_contentDefinitionManager.LoadTypeDefinition(name) != null)

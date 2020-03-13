@@ -49,7 +49,7 @@ The `ShellSettings` property is made available to the liquid template.
 The `ContainerName` property and the `BasePath` property are the only templatable properties.
 
 !!! note
-When templating the `ContainerName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `ContainerName` conforms to other Azure Blob naming conventions as set out in Azure's documentation.
+    When templating the `ContainerName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `ContainerName` conforms to other Azure Blob naming conventions as set out in Azure's documentation.
 
 ### Configuring a container per tenant.
  
