@@ -31,6 +31,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public WorkflowExpression<string> Description
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
         public WorkflowExpression<string> RequestUrlPrefix
         {
             get => GetProperty(() => new WorkflowExpression<string>());

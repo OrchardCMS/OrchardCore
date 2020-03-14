@@ -1,19 +1,17 @@
-@model HtmlBodyPartViewModel
-@using OrchardCore.Html.ViewModels;
-@using OrchardCore.Html.Settings;
-@using OrchardCore.ContentLocalization
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.Localization
+@model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
 
 @{
-    var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
-    var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
+    var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
+    var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
 <div class="form-group">
-    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
-    <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
-    <span class="hint">@T["The body of the content item."]</span>
+    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
+    <textarea asp-for="Text" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
 </div>
 
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
@@ -24,7 +22,7 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script at="Foot">
     $(function () {
-        var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Html)');
+        var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Text)');
         var editor = CodeMirror.fromTextArea(optionsTexArea, {
             autoRefresh: true,
             lineNumbers: false,
