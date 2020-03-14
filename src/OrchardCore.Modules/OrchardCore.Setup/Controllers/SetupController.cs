@@ -101,6 +101,12 @@ namespace OrchardCore.Setup.Controllers
                 {
                     ModelState.AddModelError(nameof(model.ConnectionString), S["The connection string is mandatory for this provider."]);
                 }
+                var aux = model.ConnectionString.Replace(" ", "");
+                var database = aux.Split(";").Where(i => i.StartsWith("database=", StringComparison.CurrentCultureIgnoreCase));
+                if (database.Count() != 1)
+                {
+                    ModelState.AddModelError(nameof(model.ConnectionString), S["Invalid amount of 'database' entries defined on the connection string."]);
+                }
             }
 
             if (String.IsNullOrEmpty(model.Password))
