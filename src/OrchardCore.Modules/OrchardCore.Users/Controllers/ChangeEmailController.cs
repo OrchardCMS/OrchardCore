@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -29,7 +28,6 @@ namespace OrchardCore.Users.Controllers
             IUserService userService,
             UserManager<IUser> userManager,
             ISiteService siteService,
-            ISmtpService smtpService,
             IDisplayHelper displayHelper,
             IStringLocalizer<ChangeEmailController> stringLocalizer,
             ILogger<ChangeEmailController> logger)
