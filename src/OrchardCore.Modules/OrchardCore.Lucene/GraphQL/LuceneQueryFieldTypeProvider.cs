@@ -135,7 +135,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
             
-            if (typetype != null)
+            if (typetype == null)
             {
                 return null;
             }
