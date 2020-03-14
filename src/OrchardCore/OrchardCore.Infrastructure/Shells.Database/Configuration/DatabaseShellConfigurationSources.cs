@@ -31,7 +31,8 @@ namespace OrchardCore.Shells.Database.Configuration
             _options = configuration
                 .GetSection("OrchardCore")
                 .GetSection("OrchardCore.Shells.Database")
-                .Get<DatabaseShellsStorageOptions>();
+                .Get<DatabaseShellsStorageOptions>()
+                ?? new DatabaseShellsStorageOptions();
 
             _shellContextFactory = shellContextFactory;
 
