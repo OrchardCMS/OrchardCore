@@ -134,14 +134,18 @@ namespace OrchardCore.FileStorage.AzureBlob
             // simply pretend like we created the directory, unless there is already
             // a blob with the same path.
 
-            var blob = GetBlobReference(path);
+            var blobFile = GetBlobReference(path);
 
-            if (await blob.ExistsAsync())
+            if (await blobFile.ExistsAsync())
             {
                 throw new FileStoreException($"Cannot create directory because the path '{path}' already exists and is a file.");
             }
 
-            await CreateDirectoryAsync(path);
+            var blobDirectory = await GetBlobDirectoryReference(path);
+            if (blobDirectory == null)
+            {
+                await CreateDirectoryAsync(path);
+            }
 
             return true;
         }

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
@@ -42,6 +43,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+        private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IStringLocalizer<AccountController> S;
 
         public AccountController(
@@ -56,7 +58,8 @@ namespace OrchardCore.Users.Controllers
             IClock clock,
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
-            IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
+            IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
+            IEmailAddressValidator emailAddressValidator)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -69,6 +72,7 @@ namespace OrchardCore.Users.Controllers
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
             _externalLoginHandlers = externalLoginHandlers;
+            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             S = stringLocalizer;
         }
 
@@ -421,7 +425,7 @@ namespace OrchardCore.Users.Controllers
                     }
                     else
                     {
-                        var externalLoginViewModel = new RegisterExternalLoginViewModel();
+                        var externalLoginViewModel = new RegisterExternalLoginViewModel(_emailAddressValidator);
 
                         externalLoginViewModel.NoPassword = registrationSettings.NoPasswordForExternalUsers;
                         externalLoginViewModel.NoEmail = registrationSettings.NoEmailForExternalUsers;
