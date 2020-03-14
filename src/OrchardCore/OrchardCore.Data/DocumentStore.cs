@@ -14,13 +14,11 @@ namespace OrchardCore.Data
 
         private readonly Dictionary<Type, object> _loaded = new Dictionary<Type, object>();
 
-        private readonly List<Type> _beforeCommits = new List<Type>();
         private readonly List<Type> _afterCommitsSuccess = new List<Type>();
-        private readonly List<Type> _afterCommits = new List<Type>();
+        private readonly List<Type> _afterCommitsFailure = new List<Type>();
 
-        private DocumentStoreCommitDelegate _beforeCommit;
-        private DocumentStoreCommitDelegate _afterCommitSuccess;
-        private DocumentStoreCommitDelegate _afterCommit;
+        private DocumentStoreCommitSuccessDelegate _afterCommitSuccess;
+        private DocumentStoreCommitFailureDelegate _afterCommitFailure;
 
         public DocumentStore(ISession session)
         {
@@ -71,6 +69,13 @@ namespace OrchardCore.Data
                 return updateCache(document);
             });
 
+            AfterCommitFailure<T>(exception =>
+            {
+                throw new DocumentStoreExceptions.ConcurrencyException(
+                    $"The '{typeof(T).Name}' could not be persisted and cached as it has been changed by another process.",
+                    exception);
+            });
+
             return Task.CompletedTask;
         }
 
@@ -78,32 +83,22 @@ namespace OrchardCore.Data
         public void Cancel() => _session.Cancel();
 
         /// <inheritdoc />
-        public void BeforeCommit<T>(DocumentStoreCommitDelegate beforeCommit)
-        {
-            if (!_beforeCommits.Contains(typeof(T)))
-            {
-                _beforeCommits.Add(typeof(T));
-                _beforeCommit += beforeCommit;
-            }
-        }
-
-        /// <inheritdoc />
-        public void AfterCommitSuccess<T>(DocumentStoreCommitDelegate afterCommit)
+        public void AfterCommitSuccess<T>(DocumentStoreCommitSuccessDelegate afterCommitSuccess)
         {
             if (!_afterCommitsSuccess.Contains(typeof(T)))
             {
                 _afterCommitsSuccess.Add(typeof(T));
-                _afterCommitSuccess += afterCommit;
+                _afterCommitSuccess += afterCommitSuccess;
             }
         }
 
         /// <inheritdoc />
-        public void AfterCommit<T>(DocumentStoreCommitDelegate afterCommit)
+        public void AfterCommitFailure<T>(DocumentStoreCommitFailureDelegate afterCommitFailure)
         {
-            if (!_afterCommits.Contains(typeof(T)))
+            if (!_afterCommitsFailure.Contains(typeof(T)))
             {
-                _afterCommits.Add(typeof(T));
-                _afterCommit += afterCommit;
+                _afterCommitsFailure.Add(typeof(T));
+                _afterCommitFailure += afterCommitFailure;
             }
         }
 
@@ -117,11 +112,6 @@ namespace OrchardCore.Data
 
             try
             {
-                if (_beforeCommit != null)
-                {
-                    await _beforeCommit();
-                }
-
                 await _session.CommitAsync();
 
                 if (_afterCommitSuccess != null)
@@ -129,18 +119,15 @@ namespace OrchardCore.Data
                     await _afterCommitSuccess();
                 }
             }
-            catch (ConcurrencyException) // exception)
+            catch (ConcurrencyException exception)
             {
-                // Todo: Maybe better to have '_afterCommitFailure'.
-                // And then throw a custom 'ConcurrencyException'.
-                // Or let the callback doing what it wants.
-                //throw exception;
-            }
-            finally
-            {
-                if (_afterCommit != null)
+                if (_afterCommitFailure != null)
                 {
-                    await _afterCommit();
+                    await _afterCommitFailure(exception);
+                }
+                else
+                {
+                    throw (exception);
                 }
             }
         }

@@ -5,27 +5,22 @@ namespace OrchardCore.Data
     public interface ICommittableDocumentStore
     {
         /// <summary>
-        /// Allows to cancel the current scoped updating before calling <see cref="CommitAsync"/>.
+        /// Allows to cancel the current updating before calling <see cref="CommitAsync"/> at the end of the scope.
         /// </summary>
         void Cancel();
 
         /// <summary>
-        /// Registers a <see cref="DocumentStoreCommitDelegate"/> that will get called before <see cref="CommitAsync"/>.
+        /// Registers a <see cref="DocumentStoreCommitSuccessDelegate"/> that will get called after <see cref="CommitAsync"/> if it succeeded.
         /// </summary>
-        void BeforeCommit<T>(DocumentStoreCommitDelegate beforeCommit);
+        void AfterCommitSuccess<T>(DocumentStoreCommitSuccessDelegate afterCommit);
 
         /// <summary>
-        /// Registers a <see cref="DocumentStoreCommitDelegate"/> that will get called after <see cref="CommitAsync"/> if it is successful.
+        /// Registers a <see cref="DocumentStoreCommitFailureDelegate"/> that will get called after <see cref="CommitAsync"/> if it failed.
         /// </summary>
-        void AfterCommitSuccess<T>(DocumentStoreCommitDelegate afterCommit);
+        void AfterCommitFailure<T>(DocumentStoreCommitFailureDelegate afterCommit);
 
         /// <summary>
-        /// Registers a <see cref="DocumentStoreCommitDelegate"/> that will get called after <see cref="CommitAsync"/> even it is not successful
-        /// </summary>
-        void AfterCommit<T>(DocumentStoreCommitDelegate afterCommit);
-
-        /// <summary>
-        /// Calls the related <see cref="DocumentStoreCommitDelegate"/> before and after committing the data store/>.
+        /// Commits the related document store/>.
         /// </summary>
         Task CommitAsync();
     }

@@ -20,22 +20,19 @@ namespace OrchardCore.Roles.Services
     public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IDocumentStoreDistributedCache<RolesDocument> _distributedCache;
+        private readonly IDocumentManager<RolesDocument> _distributedCache;
         private readonly IStringLocalizer<RoleStore> S;
 
         private bool _updating;
 
         public RoleStore(
             IServiceProvider serviceProvider,
-            IDocumentStoreDistributedCache<RolesDocument> distributedCache,
+            IDocumentManager<RolesDocument> distributedCache,
             IStringLocalizer<RoleStore> stringLocalizer,
             ILogger<RoleStore> logger)
         {
             _serviceProvider = serviceProvider;
-
             _distributedCache = distributedCache;
-            _distributedCache.Options = new DistributedCacheEntryOptions();
-
             S = stringLocalizer;
             Logger = logger;
         }
