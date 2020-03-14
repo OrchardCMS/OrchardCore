@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;    
+using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
 
 namespace OrchardCore.Users.ViewModels
