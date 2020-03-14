@@ -305,11 +305,18 @@ namespace OrchardCore.FileStorage.AzureBlob
     internal static class BlogFileStoreExtensions
     {
         /// <summary>
-        /// Blob prefix requires a trailing slash.
+        /// Blob prefix requires a trailing slash except when loading the root of the container.
         /// </summary>
         internal static string NormalizePrefix(this BlobFileStore blobFileStore, string prefix)
         {
-            return prefix.Trim('/') + '/';
+            prefix = prefix.Trim('/') + '/';
+            if (prefix.Length == 1)
+            {
+                return String.Empty;
+            } else
+            {
+                return prefix;
+            }
         }
     }
 }
