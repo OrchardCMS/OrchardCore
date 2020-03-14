@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
+using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -22,6 +23,7 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly ISiteService _siteService;
         private readonly ILogger<ChangeEmailController> _logger;
+        private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IStringLocalizer<ChangeEmailController> S;
 
         public ChangeEmailController(
@@ -30,11 +32,13 @@ namespace OrchardCore.Users.Controllers
             ISiteService siteService,
             IDisplayHelper displayHelper,
             IStringLocalizer<ChangeEmailController> stringLocalizer,
-            ILogger<ChangeEmailController> logger)
+            ILogger<ChangeEmailController> logger,
+            IEmailAddressValidator emailAddressValidator)
         {
             _userService = userService;
             _userManager = userManager;
             _siteService = siteService;
+            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
 
             S = stringLocalizer;
             _logger = logger;
@@ -51,7 +55,7 @@ namespace OrchardCore.Users.Controllers
 
             var user = await _userService.GetAuthenticatedUserAsync(User);
 
-            return View(new ChangeEmailViewModel() { Email = ((User)user).Email });
+            return View(new ChangeEmailViewModel(_emailAddressValidator) { Email = ((User)user).Email });
         }
 
         [HttpPost]
