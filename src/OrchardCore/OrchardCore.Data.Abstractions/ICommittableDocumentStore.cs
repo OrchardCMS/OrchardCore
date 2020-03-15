@@ -2,6 +2,9 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Data
 {
+    /// <summary>
+    /// A committable and cancellable document store allowing to register delegates that get called after committing.
+    /// </summary>
     public interface ICommittableDocumentStore
     {
         /// <summary>

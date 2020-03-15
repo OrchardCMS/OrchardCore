@@ -33,8 +33,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 // MemoryDistributedCache needs to be registered as a singleton as it owns a MemoryCache instance.
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
 
-                /// A generic service to keep in sync an 'IDocumentStore' with a multi level distributed cache.
-                services.AddScoped(typeof(IDocumentManager<>), typeof(DocumentManager<>));
+                /// A generic service to keep in sync the 'IDocumentStore' with a multi level distributed cache.
+                services.AddScoped(typeof(IDocumentManagerOfT<>), typeof(DocumentManagerOfT<>));
             });
 
             return builder;

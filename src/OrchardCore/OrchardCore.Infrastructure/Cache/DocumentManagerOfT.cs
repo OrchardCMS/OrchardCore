@@ -13,9 +13,9 @@ using OrchardCore.Environment.Shell.Configuration;
 namespace OrchardCore.Infrastructure.Cache
 {
     /// <summary>
-    /// A generic service to keep in sync an <see cref="IDocumentStore"/> with a multi level distributed cache.
+    /// A generic service to keep in sync the <see cref="IDocumentStore"/> with a multi level distributed cache.
     /// </summary>
-    public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : Document, new()
+    public class DocumentManagerOfT<TDocument> : IDocumentManagerOfT<TDocument> where TDocument : Document, new()
     {
         private readonly IDocumentStore _documentStore;
         private readonly IDistributedCache _distributedCache;
@@ -27,7 +27,7 @@ namespace OrchardCore.Infrastructure.Cache
 
         private TDocument _scopedCache;
 
-        public DocumentManager(
+        public DocumentManagerOfT(
             IDocumentStore documentStore,
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
@@ -48,11 +48,11 @@ namespace OrchardCore.Infrastructure.Cache
             _options.CheckConsistency ??= true;
         }
 
-        public async Task<TDocument> GetMutableAsync()
+        public async Task<TDocument> GetMutableAsync(Func<TDocument> factory = null)
         {
-            var document = await _documentStore.GetMutableAsync<TDocument>();
+            var document = await _documentStore.GetMutableAsync(factory);
 
-            if (_memoryCache.TryGetValue<TDocument>(typeof(TDocument).FullName, out var cached) && document == cached)
+            if (_memoryCache.TryGetValue<TDocument>(_key, out var cached) && document == cached)
             {
                 throw new ArgumentException("Can't load for update a cached object");
             }
@@ -80,7 +80,7 @@ namespace OrchardCore.Infrastructure.Cache
 
         public Task UpdateAsync(TDocument document)
         {
-            if (_memoryCache.TryGetValue<TDocument>(typeof(TDocument).FullName, out var cached) && document == cached)
+            if (_memoryCache.TryGetValue<TDocument>(_key, out var cached) && document == cached)
             {
                 throw new ArgumentException("Can't update a cached object");
             }
