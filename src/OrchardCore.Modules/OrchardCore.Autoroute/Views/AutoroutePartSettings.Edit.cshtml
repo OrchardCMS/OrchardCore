@@ -49,35 +49,37 @@
     </div>
 </div>
 
-@* Always allowed, even if contained, as it might still have more container items within.*@
-<div class="form-group">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="AllowRouteContainedItems" checked="@Model.AllowRouteContainedItems">
-        <label class="custom-control-label" asp-for="AllowRouteContainedItems">@T["Allow contained item routing"]</label>
-        <span class="hint">— @T["Check to allow users to enable contained item routing, e.g. when the content type has a bag part."]</span>
+<fieldset>
+    <h5 class="form-group">@T["Container Settings"]<span class="hint"> — @T["Settings for parent or child content items."]</span></h5>
+    <div class="form-group">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="AllowRouteContainedItems" checked="@Model.AllowRouteContainedItems">
+            <label class="custom-control-label" asp-for="AllowRouteContainedItems">@T["Allow contained item routing"]</label>
+            <span class="hint">— @T["Check to allow users to enable routing of child content items. This setting must be applied to the parent content item."]</span>
+        </div>
     </div>
-</div>
 
-<div class="form-group">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="ManageContainedItemRoutes" checked="@Model.ManageContainedItemRoutes">
-        <label class="custom-control-label" asp-for="ManageContainedItemRoutes">@T["Manage contained item routes"]</label>
-        <span class="hint">— @T["Check to allow this part to configure routes when the content item is contained inside a container, e.g. when added to a content type contained inside a bag part."]</span>
+    <div class="form-group">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="ManageContainedItemRoutes" checked="@Model.ManageContainedItemRoutes">
+            <label class="custom-control-label" asp-for="ManageContainedItemRoutes">@T["Manage contained item routes"]</label>
+            <span class="hint">— @T["Check to allow this part to apply routes to child content items. This setting must be applied to the child content item."]</span>
+        </div>
     </div>
-</div>
 
-<div class="form-group d-flex">
-    <div class="d-flex custom-control custom-checkbox manage-contained-item-routes" style="@(Model.ManageContainedItemRoutes ? "" : "display: none")">
-        <input type="checkbox" class="custom-control-input" asp-for="AllowAbsolutePath" checked="@Model.AllowAbsolutePath">
-        <label class="custom-control-label" asp-for="AllowAbsolutePath">@T["Allow absolute path"]</label>
+    <div class="form-group d-flex">
+        <div class="d-flex custom-control custom-checkbox manage-contained-item-routes" style="@(Model.ManageContainedItemRoutes ? "" : "display: none")">
+            <input type="checkbox" class="custom-control-input" asp-for="AllowAbsolutePath" checked="@Model.AllowAbsolutePath">
+            <label class="custom-control-label" asp-for="AllowAbsolutePath">@T["Allow absolute path"]</label>
 
+        </div>
+        <div class="d-flex flex-column ml-2 pt-1">
+            <span class="hint">— @T["Check to allow users to enable absolute paths for child content items. When disabled the path is relative to the parents path."]</span>
+            <span class="hint ml-3">@T["When relative : https://mysite.com/my-parent/my-child-item."]</span>
+            <span class="hint ml-3">@T["When absolute : https://mysite.com/my-child-item."]</span>
+        </div>
     </div>
-    <div class="d-flex flex-column ml-2 pt-1">
-        <span class="hint">— @T["Check to allow users to enable absolute path routing for contained content items, when disabled path generation is relative to the containers path."]</span>
-        <span class="hint ml-3">@T["When relative : https://mysite.com/my-container/my-contained-item."]</span>
-        <span class="hint ml-3">@T["When absolute : https://mysite.com/my-contained-item."]</span>
-    </div>
-</div>
+</fieldset>
 
 <script at="Foot" depends-on="jquery">
     //<![CDATA[
