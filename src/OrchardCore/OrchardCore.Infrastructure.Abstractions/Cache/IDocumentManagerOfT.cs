@@ -7,7 +7,7 @@ namespace OrchardCore.Infrastructure.Cache
     /// <summary>
     /// A generic service to keep in sync a document store with a shared cache.
     /// </summary>
-    public interface IDocumentManagerOfT<TDocument> where TDocument : Document, new()
+    public interface IDocumentManager<TDocument> where TDocument : Document, new()
     {
         /// <summary>
         /// Loads a single document from the store or create a new one by using <see cref="ICacheableDocumentStore.GetMutableAsync"/>.

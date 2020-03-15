@@ -15,7 +15,7 @@ namespace OrchardCore.Infrastructure.Cache
     /// <summary>
     /// A generic service to keep in sync the <see cref="IDocumentStore"/> with a multi level distributed cache.
     /// </summary>
-    public class DocumentManagerOfT<TDocument> : IDocumentManagerOfT<TDocument> where TDocument : Document, new()
+    public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : Document, new()
     {
         private readonly IDocumentStore _documentStore;
         private readonly IDistributedCache _distributedCache;
@@ -27,7 +27,7 @@ namespace OrchardCore.Infrastructure.Cache
 
         private TDocument _scopedCache;
 
-        public DocumentManagerOfT(
+        public DocumentManager(
             IDocumentStore documentStore,
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,

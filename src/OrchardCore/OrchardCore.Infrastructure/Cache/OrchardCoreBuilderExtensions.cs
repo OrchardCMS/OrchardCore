@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
 
                 /// A generic service to keep in sync the 'IDocumentStore' with a multi level distributed cache.
-                services.AddScoped(typeof(IDocumentManagerOfT<>), typeof(DocumentManagerOfT<>));
+                services.AddScoped(typeof(IDocumentManager<>), typeof(DocumentManager<>));
             });
 
             return builder;

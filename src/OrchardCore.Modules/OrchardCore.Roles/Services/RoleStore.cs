@@ -18,14 +18,14 @@ namespace OrchardCore.Roles.Services
     public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IDocumentManagerOfT<RolesDocument> _documentManager;
+        private readonly IDocumentManager<RolesDocument> _documentManager;
         private readonly IStringLocalizer<RoleStore> S;
 
         private bool _updating;
 
         public RoleStore(
             IServiceProvider serviceProvider,
-            IDocumentManagerOfT<RolesDocument> documentManager,
+            IDocumentManager<RolesDocument> documentManager,
             IStringLocalizer<RoleStore> stringLocalizer,
             ILogger<RoleStore> logger)
         {
