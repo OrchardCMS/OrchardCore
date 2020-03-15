@@ -45,6 +45,8 @@ namespace OrchardCore.Lucene.Controllers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly dynamic New;
+        private readonly IStringLocalizer<AdminController> S;
+        private readonly IHtmlLocalizer<AdminController> H;
 
         public AdminController(
             ISession session,
@@ -60,8 +62,8 @@ namespace OrchardCore.Lucene.Controllers
             INotifier notifier,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            IStringLocalizer<AdminController> s,
-            IHtmlLocalizer<AdminController> h,
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
             ILogger<AdminController> logger)
         {
             _session = session;
@@ -78,14 +80,12 @@ namespace OrchardCore.Lucene.Controllers
             _siteService = siteService;
 
             New = shapeFactory;
-            S = s;
-            H = h;
+            S = stringLocalizer;
+            H = htmlLocalizer;
             Logger = logger;
         }
 
         public ILogger Logger { get; }
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
 
         public async Task<ActionResult> Index(AdminIndexViewModel model, PagerParameters pagerParameters)
         {

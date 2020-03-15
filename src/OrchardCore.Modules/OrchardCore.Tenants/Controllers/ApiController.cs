@@ -41,6 +41,8 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IClock _clock;
         private readonly INotifier _notifier;
         private readonly IEmailAddressValidator _emailAddressValidator;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public ApiController(
             IShellHost shellHost,
@@ -71,9 +73,6 @@ namespace OrchardCore.Tenants.Controllers
             S = stringLocalizer;
             H = htmlLocalizer;
         }
-
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
 
         [HttpPost]
         [Route("create")]

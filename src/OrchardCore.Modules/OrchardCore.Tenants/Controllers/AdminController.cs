@@ -38,6 +38,8 @@ namespace OrchardCore.Tenants.Controllers
         private readonly ISiteService _siteService;
 
         private readonly dynamic New;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             IShellHost shellHost,
@@ -69,9 +71,6 @@ namespace OrchardCore.Tenants.Controllers
             S = stringLocalizer;
             H = htmlLocalizer;
         }
-
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
         {
