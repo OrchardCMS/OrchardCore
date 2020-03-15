@@ -38,11 +38,26 @@ namespace OrchardCore.ContentManagement
         Task<ContentItem> GetAsync(string id);
 
         /// <summary>
+        /// Gets either the published container content item with the specified id, or if the json path supplied gets the contained content item. 
+        /// </summary>
+        /// <param name="id">The content item id to load</param>
+        /// <param name="jsonPath">The json path of the contained content item</param>
+        Task<ContentItem> GetAsync(string id, string jsonPath);
+
+        /// <summary>
         /// Gets the content item with the specified id and version
         /// </summary>
         /// <param name="id">The id content item id to load</param>
         /// <param name="options">The version option</param>
         Task<ContentItem> GetAsync(string id, VersionOptions options);
+
+        /// <summary>
+        /// Gets either the container content item with the specified id and version, or if the json path supplied gets the contained content item.
+        /// </summary>
+        /// <param name="id">The id content item id to load</param>
+        /// <param name="options">The version option</param>
+        /// <param name="jsonPath">The json path of the contained content item</param>
+        Task<ContentItem> GetAsync(string id, string jsonPath, VersionOptions options);
 
         /// <summary>
         /// Gets the published content items with the specified ids

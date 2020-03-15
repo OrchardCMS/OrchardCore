@@ -92,6 +92,27 @@ namespace OrchardCore.ContentManagement
             return GetAsync(contentItemId, VersionOptions.Published);
         }
 
+        public Task<ContentItem> GetAsync(string id, string jsonPath)
+        {
+            return GetAsync(id, jsonPath, VersionOptions.Latest);
+        }
+
+        public async Task<ContentItem> GetAsync(string id, string jsonPath, VersionOptions options)
+        {
+            var contentItem = await GetAsync(id, options);
+
+            // It represents a contained content item
+            if (!string.IsNullOrEmpty(jsonPath))
+            {
+                var root = contentItem.Content as JObject;
+                contentItem = root.SelectToken(jsonPath)?.ToObject<ContentItem>();
+
+                return contentItem;
+            }
+
+            return contentItem;
+        }
+
         public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false)
         {
             if (contentItemIds == null)
