@@ -23,7 +23,7 @@ namespace OrchardCore.Infrastructure.Cache
 
         private readonly string _key = typeof(TDocument).FullName;
         private readonly string _idKey = "ID_" + typeof(TDocument).FullName;
-        private readonly DistributedCacheEntryOptions _options;
+        private readonly DistributedDocumentOptions _options;
 
         private TDocument _scopedCache;
 
@@ -38,13 +38,14 @@ namespace OrchardCore.Infrastructure.Cache
             _memoryCache = memoryCache;
 
             var section = shellConfiguration.GetSection(_key);
-
             if (!section.Exists())
             {
                 section = shellConfiguration.GetSection(typeof(DistributedDocument).FullName);
             }
+            _options = section.Get<DistributedDocumentOptions>() ?? new DistributedDocumentOptions();
 
-            _options = section.Get<DistributedCacheEntryOptions>() ?? new DistributedCacheEntryOptions();
+            _options.CheckConcurrency ??= true;
+            _options.CheckConsistency ??= true;
         }
 
         public async Task<TDocument> GetMutableAsync()
@@ -77,7 +78,7 @@ namespace OrchardCore.Infrastructure.Cache
             return document;
         }
 
-        public Task UpdateAsync(TDocument document, bool checkConcurrency = true)
+        public Task UpdateAsync(TDocument document)
         {
             if (_memoryCache.TryGetValue<TDocument>(typeof(TDocument).FullName, out var cached) && document == cached)
             {
@@ -90,7 +91,7 @@ namespace OrchardCore.Infrastructure.Cache
             {
                 return SetInternalAsync(document);
             },
-            checkConcurrency);
+            _options.CheckConcurrency.Value);
         }
 
         private async Task<TDocument> GetInternalAsync()
@@ -170,7 +171,7 @@ namespace OrchardCore.Infrastructure.Cache
             await _distributedCache.SetAsync(_idKey, idData, _options);
 
             // Consistency: We may have been the last to update the cache but not with the last stored document.
-            if ((await _documentStore.GetImmutableAsync<TDocument>()).Identifier != document.Identifier)
+            if (_options.CheckConsistency.Value && (await _documentStore.GetImmutableAsync<TDocument>()).Identifier != document.Identifier)
             {
                 await _distributedCache.RemoveAsync(_idKey);
             }

@@ -22,6 +22,6 @@ namespace OrchardCore.Infrastructure.Cache
         /// <summary>
         /// Updates the store with the provided document and then updates the cache.
         /// </summary>
-        Task UpdateAsync(TDocument document, bool checkConcurrency = true);
+        Task UpdateAsync(TDocument document);
     }
 }
