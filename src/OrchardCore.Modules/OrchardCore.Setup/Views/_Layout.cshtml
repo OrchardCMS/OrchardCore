@@ -1,4 +1,17 @@
+@using Microsoft.Extensions.Configuration
+@using System.Globalization
+@using OrchardCore.Environment.Shell.Configuration
+
 @inject OrchardCore.IOrchardHelper Orchard
+@inject IShellConfiguration ShellConfiguration
+
+@{
+    var configurationSection = ShellConfiguration.GetSection("OrchardCore.Setup");
+    var currentCulture = Orchard.HttpContext.Request.Query.ContainsKey("ui-culture")
+        ? Orchard.HttpContext.Request.Query["ui-culture"].ToString()
+        : configurationSection["DefaultCulture"];
+    var supportedCultures = configurationSection.GetSection("SupportedCultures").Get<string[]>();
+}
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
@@ -13,6 +26,22 @@
 </head>
 <body>
     <div class="container">
+        @if (supportedCultures.Length > 1)
+        {
+            <select id="culturesList" class="form-control col-md-3 mt-2 mr-2 float-right" onchange="setLocalizationCookie()">
+                @foreach (var culture in supportedCultures)
+                {
+                    @if (culture == currentCulture)
+                    {
+                        <option value="@culture" selected>@CultureInfo.GetCultureInfo(culture).DisplayName</option>
+                    }
+                    else
+                    {
+                        <option value="@culture">@CultureInfo.GetCultureInfo(culture).DisplayName</option>
+                    }
+                }
+            </select>
+        }
 
         @RenderBody()
 
@@ -21,5 +50,22 @@
             @await RenderSectionAsync("Footer", required: false)
         </footer>
     </div>
+    <script>
+        function setLocalizationCookie() {
+            var culturesList = document.getElementById('culturesList');
+            var culture = culturesList.options[culturesList.selectedIndex].value
+            var url = window.location.href;
+
+            if (url.indexOf('?')) {
+                url = url.split('&culture=')[0] + '&';
+            }
+            else {
+                url += '?';
+            }
+
+            url += 'culture=' + culture + '&ui-culture=' + culture;
+            window.location =  url;
+        }
+    </script>
 </body>
 </html>
