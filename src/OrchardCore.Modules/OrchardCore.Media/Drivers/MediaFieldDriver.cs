@@ -20,6 +20,7 @@ namespace OrchardCore.Media.Drivers
     public class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaField>
     {
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
+        private readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public MediaFieldDisplayDriver(AttachedMediaFieldFileService attachedMediaFieldFileService,
@@ -30,8 +31,6 @@ namespace OrchardCore.Media.Drivers
             S = localizer;
             _logger = logger;
         }
-
-        public IStringLocalizer S { get; }
 
         public override IDisplayResult Display(MediaField field, BuildFieldDisplayContext context)
         {
