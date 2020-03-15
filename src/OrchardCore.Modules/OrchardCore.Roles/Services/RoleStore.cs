@@ -8,12 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Data;
 using OrchardCore.Infrastructure.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
 using OrchardCore.Security;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace OrchardCore.Roles.Services
 {

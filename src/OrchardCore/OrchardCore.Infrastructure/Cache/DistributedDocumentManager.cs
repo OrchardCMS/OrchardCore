@@ -30,17 +30,21 @@ namespace OrchardCore.Infrastructure.Cache
         public DistributedDocumentManager(
             IDocumentStore documentStore,
             IDistributedCache distributedCache,
-            IShellConfiguration shellConfiguration,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            IShellConfiguration shellConfiguration)
         {
             _documentStore = documentStore;
             _distributedCache = distributedCache;
-
-            _options = shellConfiguration.GetSection(_key)
-                .Get<DistributedCacheEntryOptions>()
-                ?? new DistributedCacheEntryOptions();
-
             _memoryCache = memoryCache;
+
+            var section = shellConfiguration.GetSection(_key);
+
+            if (!section.Exists())
+            {
+                section = shellConfiguration.GetSection(typeof(DistributedDocument).FullName);
+            }
+
+            _options = section.Get<DistributedCacheEntryOptions>() ?? new DistributedCacheEntryOptions();
         }
 
         public async Task<TDocument> GetMutableAsync()
