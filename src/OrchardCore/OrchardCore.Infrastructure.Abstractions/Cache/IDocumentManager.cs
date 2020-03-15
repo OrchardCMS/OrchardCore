@@ -5,9 +5,9 @@ using OrchardCore.Data;
 namespace OrchardCore.Infrastructure.Cache
 {
     /// <summary>
-    /// A generic service to keep in sync a multi level distributed cache with a given document store.
+    /// A generic service to keep in sync an <see cref="IDocumentStore"/> with a multi level distributed cache.
     /// </summary>
-    public interface IDocumentManager<TDocument> where TDocument : DistributedDocument, new()
+    public interface IDocumentManager<TDocument> where TDocument : Document, new()
     {
         /// <summary>
         /// Loads a single document from the store or create a new one by using <see cref="ICacheableDocumentStore.GetMutableAsync"/>.

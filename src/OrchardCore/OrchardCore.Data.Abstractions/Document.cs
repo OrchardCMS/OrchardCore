@@ -1,6 +1,6 @@
 namespace OrchardCore.Data
 {
-    public class DistributedDocument
+    public class Document
     {
         public string Identifier { get; set; }
     }

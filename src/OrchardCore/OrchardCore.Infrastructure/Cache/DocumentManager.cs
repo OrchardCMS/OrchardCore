@@ -13,9 +13,9 @@ using OrchardCore.Environment.Shell.Configuration;
 namespace OrchardCore.Infrastructure.Cache
 {
     /// <summary>
-    /// A generic service to keep in sync a multi level distributed cache with a given document store.
+    /// A generic service to keep in sync an <see cref="IDocumentStore"/> with a multi level distributed cache.
     /// </summary>
-    public class DistributedDocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : DistributedDocument, new()
+    public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : Document, new()
     {
         private readonly IDocumentStore _documentStore;
         private readonly IDistributedCache _distributedCache;
@@ -23,11 +23,11 @@ namespace OrchardCore.Infrastructure.Cache
 
         private readonly string _key = typeof(TDocument).FullName;
         private readonly string _idKey = "ID_" + typeof(TDocument).FullName;
-        private readonly DistributedDocumentOptions _options;
+        private readonly DocumentOptions _options;
 
         private TDocument _scopedCache;
 
-        public DistributedDocumentManager(
+        public DocumentManager(
             IDocumentStore documentStore,
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
@@ -40,9 +40,9 @@ namespace OrchardCore.Infrastructure.Cache
             var section = shellConfiguration.GetSection(_key);
             if (!section.Exists())
             {
-                section = shellConfiguration.GetSection(typeof(DistributedDocument).FullName);
+                section = shellConfiguration.GetSection(typeof(Document).FullName);
             }
-            _options = section.Get<DistributedDocumentOptions>() ?? new DistributedDocumentOptions();
+            _options = section.Get<DocumentOptions>() ?? new DocumentOptions();
 
             _options.CheckConcurrency ??= true;
             _options.CheckConsistency ??= true;
