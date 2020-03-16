@@ -161,6 +161,10 @@
                         </div>
                         <a href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
                         <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
+                        @if (!string.IsNullOrEmpty(entry.Description))
+                        {
+                            <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
+                        }
                         <div class="metadata">
                             @switch (entry.ShellSettings.State)
                             {

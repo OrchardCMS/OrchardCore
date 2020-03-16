@@ -13,6 +13,13 @@
         <span class="hint">@T["The name of the tenant."]</span>
     </div>
 
+    <div class="form-group" asp-validation-class-for="Description">
+        <label asp-for="Description">@T["Description"]</label>
+        <input asp-for="Description" class="form-control" autofocus />
+        <span asp-validation-for="Description" class="text-danger"></span>
+        <span class="hint">@T["The description of the tenant."]</span>
+    </div>
+
     <div class="form-group" asp-validation-class-for="RequestUrlPrefix">
         <label asp-for="RequestUrlPrefix">@T["Url Prefix"]</label>
         <input asp-for="RequestUrlPrefix" class="form-control" autofocus />

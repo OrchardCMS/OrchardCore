@@ -55,7 +55,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             if (!String.IsNullOrEmpty(_options.BasePath))
             {
-                _basePrefix = this.NormalizePrefix(_options.BasePath);
+                _basePrefix = NormalizePrefix(_options.BasePath);
             }
         }
 
@@ -95,7 +95,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             var results = new List<IFileStoreEntry>();
 
             var prefix = this.Combine(_basePrefix, path);
-            prefix = this.NormalizePrefix(prefix);
+            prefix = NormalizePrefix(prefix);
 
             var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
             await foreach (var blob in page)
@@ -274,7 +274,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         private async Task<BlobHierarchyItem> GetBlobDirectoryReference(string path)
         {
             var prefix = this.Combine(_basePrefix, path);
-            prefix = this.NormalizePrefix(prefix);
+            prefix = NormalizePrefix(prefix);
 
             // Directory exists if path contains any files.
             var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
@@ -300,16 +300,21 @@ namespace OrchardCore.FileStorage.AzureBlob
                 await placeholderBlob.UploadAsync(stream);
             }
         }
-    }
 
-    internal static class BlogFileStoreExtensions
-    {
         /// <summary>
-        /// Blob prefix requires a trailing slash.
+        /// Blob prefix requires a trailing slash except when loading the root of the container.
         /// </summary>
-        internal static string NormalizePrefix(this BlobFileStore blobFileStore, string prefix)
+        private string NormalizePrefix(string prefix)
         {
-            return prefix.Trim('/') + '/';
+            prefix = prefix.Trim('/') + '/';
+            if (prefix.Length == 1)
+            {
+                return String.Empty;
+            }
+            else
+            {
+                return prefix;
+            }
         }
     }
 }

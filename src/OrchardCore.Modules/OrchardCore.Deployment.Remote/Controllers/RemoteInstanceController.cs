@@ -19,6 +19,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly ISession _session;
         private readonly INotifier _notifier;
         private readonly RemoteInstanceService _service;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public RemoteInstanceController(
             RemoteInstanceService service,
@@ -36,9 +38,6 @@ namespace OrchardCore.Deployment.Remote.Controllers
             _notifier = notifier;
             _service = service;
         }
-
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index()
         {

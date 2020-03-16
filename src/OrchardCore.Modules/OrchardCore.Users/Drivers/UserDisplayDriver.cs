@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Email;
 using OrchardCore.Modules;
 using OrchardCore.Security.Services;
 using OrchardCore.Users.Handlers;
@@ -22,6 +23,7 @@ namespace OrchardCore.Users.Drivers
         private readonly IRoleService _roleService;
         private readonly IUserRoleStore<IUser> _userRoleStore;
         private readonly ILogger _logger;
+        private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IStringLocalizer<UserDisplayDriver> S;
 
         public UserDisplayDriver(
@@ -30,6 +32,7 @@ namespace OrchardCore.Users.Drivers
             IUserRoleStore<IUser> userRoleStore,
             ILogger<UserDisplayDriver> logger,
             IEnumerable<IUserEventHandler> handlers,
+            IEmailAddressValidator emailAddressValidator,
             IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
@@ -37,6 +40,7 @@ namespace OrchardCore.Users.Drivers
             _userRoleStore = userRoleStore;
             _logger = logger;
             Handlers = handlers;
+            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             S = stringLocalizer;
         }
 
@@ -69,7 +73,7 @@ namespace OrchardCore.Users.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
-            var model = new EditUserViewModel();
+            var model = new EditUserViewModel(_emailAddressValidator);
 
             if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
