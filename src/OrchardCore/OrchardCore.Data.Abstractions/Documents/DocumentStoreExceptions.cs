@@ -1,6 +1,6 @@
 using System;
 
-namespace OrchardCore.Data
+namespace OrchardCore.Data.Documents
 {
     public static class DocumentStoreExceptions
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Data
+namespace OrchardCore.Data.Documents
 {
     /// <summary>
     /// Allows to get documents from a shared cache while being able to update them to the store at the scope level.

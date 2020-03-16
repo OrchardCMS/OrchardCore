@@ -1,4 +1,4 @@
-namespace OrchardCore.Data
+namespace OrchardCore.Data.Documents
 {
     /// <summary>
     /// A cacheable and committable document store.

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
+using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;

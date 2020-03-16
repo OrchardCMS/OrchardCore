@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Infrastructure.Cache;
+using OrchardCore.Documents;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
 using OrchardCore.Security;

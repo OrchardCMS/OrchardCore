@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using YesSql;
 
-namespace OrchardCore.Data
+namespace OrchardCore.Data.Documents
 {
     /// <summary>
     /// A cacheable and committable document store using the <see cref="ISession"/>.
