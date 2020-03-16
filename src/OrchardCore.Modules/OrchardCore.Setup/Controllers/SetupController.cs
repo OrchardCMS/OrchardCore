@@ -95,12 +95,9 @@ namespace OrchardCore.Setup.Controllers
 
             var selectedProvider = model.DatabaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
 
-            if (!model.DatabaseConfigurationPreset)
+            if (!model.DatabaseConfigurationPreset && selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
             {
-                if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
-                {
-                    ModelState.AddModelError(nameof(model.ConnectionString), S["The connection string is mandatory for this provider."]);
-                }
+                ModelState.AddModelError(nameof(model.ConnectionString), S["The connection string is mandatory for this provider."]);
                 var aux = model.ConnectionString.Replace(" ", "");
                 var database = aux.Split(";").Where(i => i.StartsWith("database=", StringComparison.CurrentCultureIgnoreCase));
                 if (database.Count() != 1)
