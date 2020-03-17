@@ -403,6 +403,142 @@ namespace OrchardCore.ContentManagement
             }
         }
 
+        public async Task ImportAsync(ContentItem contentItem)
+        {
+            ContentItem existingItem = null;
+            if (!String.IsNullOrEmpty(contentItem.ContentItemVersionId))
+            {
+                existingItem = await GetVersionAsync(contentItem.ContentItemVersionId);
+            }
+
+            if (existingItem == null)
+            {
+                // The version does not exist in the current database.
+
+                // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
+                contentItem.Id = 0;
+
+                // The imported version will become the latest and published.
+                // We do this because any existing drafts would be orphans if an imported item is published.
+                contentItem.Published = true;
+                contentItem.Latest = true;
+
+                // Maintain modified and published dates as these will be reset by the Create Handlers
+                var modifiedUtc = contentItem.ModifiedUtc;
+                var publishedUtc = contentItem.PublishedUtc;
+                var owner = contentItem.Owner;
+                var author = contentItem.Author;
+
+                // Remove previous published or draft items or they will continue to be listed as published or draft.
+                await RemoveAsync(contentItem);
+
+                // Invoked create handlers.
+                var context = new CreateContentContext(contentItem);
+                await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
+                await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+
+                // TODO This is an issue because a scoped index provider may make requests to GetAsync
+                // for the published item, which will try to retrieve it from the _contentManagerSession
+                // But we cannot store in the session because the database Id is always 0, and that is used as the
+                // dictionary key. Any calls to from a scoped index provider to GetAsync may cause Dictionary key
+                // exceptions as the Id/Key is always 0.
+                // One solution might be to Flush the session after each item import, and clear the session cache.
+                //_contentManagerSession.Store(contentItem);
+                // The content item should be placed in the session store so that further calls
+                // to ContentManager.Get by a scoped index provider will resolve the imported item correctly.
+
+                // Invoke update handlers otherwise the Autoroute and Alias parts cannot guarantee unicity.
+                await UpdateAsync(contentItem);
+
+                // TODO for audit trail we may want to invoke Versioning events here.
+
+                // Invoke published handlers to add information to persistent stores
+                var publishContext = new PublishContentContext(contentItem, null);
+
+                await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), publishContext, _logger);
+                await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
+
+                // Restore values that may have been altered by handlers.
+                contentItem.ModifiedUtc = modifiedUtc;
+                contentItem.PublishedUtc = publishedUtc;
+
+                // There is a risk here that the owner or author does not exist in the importing system.
+                // We check that at least a value has been supplied, if not the owner property and author
+                // property would be left as the user who has run this import.
+                if (!String.IsNullOrEmpty(owner))
+                {
+                    contentItem.Owner = owner;
+                }
+                if (!String.IsNullOrEmpty(author))
+                {
+                    contentItem.Author = author;
+                }
+
+                // Re-enlist content item here in case of session queries.
+                _session.Save(contentItem);
+            }
+            else
+            {
+                // The version exists so we can merge the new properties.
+
+                var modifiedUtc = contentItem.ModifiedUtc;
+                var publishedUtc = contentItem.PublishedUtc;
+
+                // Remove previous published or draft items if necesary or they will continue to be listed as published or draft.
+                var evictLatest = false;
+                var evictPublished = false;
+
+                var importingLatest = contentItem.Latest;
+                var existingLatest = existingItem.Latest;
+
+                // If latest values do not match and importing latest is true then we must find and evict the previous latest
+                if (importingLatest != existingLatest && importingLatest == true)
+                {
+                    evictLatest = true;
+                }
+
+                var importingPublished = contentItem.Published;
+                var existingPublished = existingItem.Published;
+
+                // If published values do not match and importing latest is true then we must find and evict the previous latest
+                if (importingPublished != existingPublished && importingPublished == true)
+                {
+                    evictPublished = true;
+                }
+
+                if (evictLatest && evictPublished)
+                {
+                    await RemoveAsync(existingItem);
+                } else if (evictLatest)
+                {
+                    await DiscardDraftAsync(existingItem);
+                } else if (evictPublished)
+                {
+                    await UnpublishAsync(existingItem);
+                }
+
+                existingItem.Merge(contentItem);
+                existingItem.Latest = importingLatest;
+                existingItem.Published = importingPublished;
+
+                await UpdateAsync(contentItem);
+                if (importingPublished)
+                {
+                    // Invoke published handlers to add information to persistent stores
+                    var publishContext = new PublishContentContext(contentItem, null);
+
+                    await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), publishContext, _logger);
+                    await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
+
+                    // Restore values that may have been altered by handlers.
+                    contentItem.ModifiedUtc = modifiedUtc;
+                    contentItem.PublishedUtc = publishedUtc;
+                }
+
+                _session.Save(existingItem);
+            }
+        }
+
         public async Task UpdateAsync(ContentItem contentItem)
         {
             var context = new UpdateContentContext(contentItem);
