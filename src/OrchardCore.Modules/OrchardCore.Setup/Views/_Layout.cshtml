@@ -1,7 +1,7 @@
 @using Microsoft.Extensions.Configuration
 @using System.Globalization
 @using OrchardCore.Environment.Shell.Configuration
-
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject OrchardCore.IOrchardHelper Orchard
 @inject IShellConfiguration ShellConfiguration
 
@@ -26,22 +26,29 @@
 </head>
 <body>
     <div class="container">
-        @if (supportedCultures.Length > 1)
-        {
-            <select id="culturesList" class="form-control col-md-3 mt-2 mr-2 float-right" onchange="setLocalizationCookie()">
-                @foreach (var culture in supportedCultures)
+        <div class="row">
+            <div class="form-group col mt-2">
+                @if (supportedCultures.Length > 1)
                 {
-                    @if (culture == currentCulture)
-                    {
-                        <option value="@culture" selected>@CultureInfo.GetCultureInfo(culture).DisplayName</option>
-                    }
-                    else
-                    {
-                        <option value="@culture">@CultureInfo.GetCultureInfo(culture).DisplayName</option>
-                    }
+                <div class="float-right form-inline">
+                    <label for="culturesList" class="mr-2">@T["Change setup culture: "]</label>
+                    <select id="culturesList" class="form-control" onchange="setLocalizationCookie()">
+                        @foreach (var culture in supportedCultures)
+                        {
+                            @if (culture == currentCulture)
+                            {
+                                <option value="@culture" selected>@CultureInfo.GetCultureInfo(culture).DisplayName</option>
+                            }
+                            else
+                            {
+                                <option value="@culture">@CultureInfo.GetCultureInfo(culture).DisplayName</option>
+                            }
+                        }
+                    </select>
+                </div>
                 }
-            </select>
-        }
+            </div>
+        </div>
 
         @RenderBody()
 
@@ -54,9 +61,9 @@
         function setLocalizationCookie() {
             var culturesList = document.getElementById('culturesList');
             var culture = culturesList.options[culturesList.selectedIndex].value
-            var url = window.location.href;
+            var url = window.location.origin;
 
-            if (url.indexOf('?')) {
+            if (url.indexOf('?') > -1) {
                 url = url.split('&culture=')[0] + '&';
             }
             else {
@@ -64,7 +71,7 @@
             }
 
             url += 'culture=' + culture + '&ui-culture=' + culture;
-            window.location =  url;
+            window.location = url;
         }
     </script>
 </body>
