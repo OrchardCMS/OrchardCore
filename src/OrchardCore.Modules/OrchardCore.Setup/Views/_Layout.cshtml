@@ -1,4 +1,4 @@
-@using Microsoft.Extensions.Configuration
+﻿@using Microsoft.Extensions.Configuration
 @using System.Globalization
 @using OrchardCore.Environment.Shell.Configuration
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
@@ -64,13 +64,13 @@
             var url = window.location.origin;
 
             if (url.indexOf('?') > -1) {
-                url = url.split('&culture=')[0] + '&';
+                url = url.split('&ui-culture=')[0] + '&';
             }
             else {
                 url += '?';
             }
 
-            url += 'culture=' + culture + '&ui-culture=' + culture;
+            url += 'ui-culture=' + culture;
             window.location = url;
         }
     </script>
