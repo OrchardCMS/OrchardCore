@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using OrchardCore.Documents;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Cache.CacheContextProviders;
 
@@ -32,9 +31,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // MemoryDistributedCache needs to be registered as a singleton as it owns a MemoryCache instance.
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
-
-                /// Adds services to keep in sync the 'IDocumentStore' with a multi level distributed cache.
-                services.AddDocumentCaching();
             });
 
             return builder;

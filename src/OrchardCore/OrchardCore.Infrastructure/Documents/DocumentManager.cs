@@ -11,7 +11,7 @@ using OrchardCore.Data.Documents;
 namespace OrchardCore.Documents
 {
     /// <summary>
-    /// A generic service to keep in sync the <see cref="IDocumentStore"/> with a multi level distributed cache.
+    /// A generic service to keep in sync any <see cref="BaseDocument"/> between an <see cref="IDocumentStore"/> and a multi level cache.
     /// </summary>
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : BaseDocument, new()
     {
