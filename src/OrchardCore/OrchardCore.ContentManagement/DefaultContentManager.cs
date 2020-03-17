@@ -420,6 +420,10 @@ namespace OrchardCore.ContentManagement
 
                 // The imported version will become the latest and published.
                 // We do this because any existing drafts would be orphans if an imported item is published.
+
+                // TODO All deployment is now taking latest. so we need to allow for that.
+                // I think that logic can work, so long as it doesn't create orphans,
+                // it just makes here more complicated.
                 contentItem.Published = true;
                 contentItem.Latest = true;
 
@@ -428,6 +432,11 @@ namespace OrchardCore.ContentManagement
                 var publishedUtc = contentItem.PublishedUtc;
                 var owner = contentItem.Owner;
                 var author = contentItem.Author;
+
+                if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
+                {
+                    contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
+                }
 
                 // Remove previous published or draft items or they will continue to be listed as published or draft.
                 await RemoveAsync(contentItem);
@@ -459,8 +468,14 @@ namespace OrchardCore.ContentManagement
                 await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
 
                 // Restore values that may have been altered by handlers.
-                contentItem.ModifiedUtc = modifiedUtc;
-                contentItem.PublishedUtc = publishedUtc;
+                if (modifiedUtc.HasValue)
+                {
+                    contentItem.ModifiedUtc = modifiedUtc;
+                }
+                if (publishedUtc.HasValue)
+                {
+                    contentItem.PublishedUtc = publishedUtc;
+                }
 
                 // There is a risk here that the owner or author does not exist in the importing system.
                 // We check that at least a value has been supplied, if not the owner property and author
