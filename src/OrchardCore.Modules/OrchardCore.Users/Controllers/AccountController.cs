@@ -69,7 +69,6 @@ namespace OrchardCore.Users.Controllers
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
             _externalLoginHandlers = externalLoginHandlers;
-            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             S = stringLocalizer;
         }
 
