@@ -14,6 +14,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
@@ -42,6 +43,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+        private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IStringLocalizer<AccountController> S;
 
         public AccountController(
@@ -56,7 +58,8 @@ namespace OrchardCore.Users.Controllers
             IClock clock,
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
-            IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
+            IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
+            IEmailAddressValidator emailAddressValidator)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -69,6 +72,7 @@ namespace OrchardCore.Users.Controllers
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
             _externalLoginHandlers = externalLoginHandlers;
+            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             S = stringLocalizer;
         }
 
@@ -141,7 +145,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(Login));
         }
 
-        async Task<bool> AddConfirmEmailError(IUser user)
+        private async Task<bool> AddConfirmEmailError(IUser user)
         {
             var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
             if (registrationSettings.UsersMustValidateEmail == true)
@@ -153,12 +157,12 @@ namespace OrchardCore.Users.Controllers
                     return true;
                 }
             }
-            
+
             return false;
         }
-        
-        bool AddUserEnabledError(IUser user)
-        {           
+
+        private bool AddUserEnabledError(IUser user)
+        {
             var localUser = user as User;
 
             if (localUser == null || !localUser.IsEnabled)
@@ -166,7 +170,7 @@ namespace OrchardCore.Users.Controllers
                 ModelState.AddModelError(String.Empty, S["Your account is disabled. Please contact an administrator."]);
                 return true;
             }
-            
+
             return false;
         }
 
@@ -292,7 +296,6 @@ namespace OrchardCore.Users.Controllers
             }
             return RedirectToLocal(returnUrl);
         }
-
 
         [HttpPost]
         [AllowAnonymous]
@@ -422,7 +425,7 @@ namespace OrchardCore.Users.Controllers
                     }
                     else
                     {
-                        var externalLoginViewModel = new RegisterExternalLoginViewModel();
+                        var externalLoginViewModel = new RegisterExternalLoginViewModel(_emailAddressValidator);
 
                         externalLoginViewModel.NoPassword = registrationSettings.NoPasswordForExternalUsers;
                         externalLoginViewModel.NoEmail = registrationSettings.NoEmailForExternalUsers;
@@ -490,7 +493,6 @@ namespace OrchardCore.Users.Controllers
 
             if (info == null)
             {
-
                 _logger.LogWarning("Error loading external login info.");
                 return NotFound();
             }
@@ -572,7 +574,6 @@ namespace OrchardCore.Users.Controllers
                 _logger.LogWarning("Error loading external login info.");
                 return NotFound();
             }
-
 
             if (user == null)
             {
@@ -693,7 +694,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(ExternalLogins));
         }
 
-        async Task<string> GenerateUsername(ExternalLoginInfo info)
+        private async Task<string> GenerateUsername(ExternalLoginInfo info)
         {
             var now = new TimeSpan(_clock.UtcNow.Ticks) - new TimeSpan(DateTime.UnixEpoch.Ticks);
             var ret = string.Concat("u" + Convert.ToInt32(now.TotalSeconds).ToString());

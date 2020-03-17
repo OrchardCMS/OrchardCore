@@ -72,6 +72,9 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<ShapeRemovePropertyTag>("shape_remove_property");
             Factory.RegisterTag<ShapePagerTag>("shape_pager");
 
+            Factory.RegisterTag<HttpContextAddItemTag>("httpcontext_add_items");
+            Factory.RegisterTag<HttpContextRemoveItemTag>("httpcontext_remove_items");
+
             Factory.RegisterTag<HelperTag>("helper");
             Factory.RegisterTag<NamedHelperTag>("shape");
             Factory.RegisterTag<NamedHelperTag>("contentitem");
@@ -84,7 +87,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterBlock<HelperBlock>("block");
             Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
-            Factory.RegisterBlock<NamedHelperBlock>("scriptblock");
+            Factory.RegisterBlock<NamedHelperBlock>("scriptblock");            
 
             // Dynamic caching
             Factory.RegisterBlock<CacheBlock>("cache");
@@ -122,7 +125,6 @@ namespace OrchardCore.DisplayManagement.Liquid
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model, scopeAction: null);
                 await template.RenderAsync(page.Output, htmlEncoder, context);
             }
-
             finally
             {
                 context.ReleaseScope();
@@ -161,7 +163,9 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     internal class ShapeAccessor : DelegateAccessor
     {
-        public ShapeAccessor() : base(_getter) { }
+        public ShapeAccessor() : base(_getter)
+        {
+        }
 
         private static Func<object, string, object> _getter => (o, n) =>
         {
@@ -177,10 +181,16 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return shape.Items;
                 }
 
-                // Model.Content.MyNamedPart
-                // Model.Content.MyType__MyField
-                // Model.Content.MyType-MyField
-                return shape.Named(n.Replace("__", "-"));
+                // Resolve Model.Content.MyType-MyField-FieldType_Display__DisplayMode
+                var namedShaped = shape.Named(n);
+                if (namedShaped != null)
+                {
+                    return namedShaped;
+                }
+
+                // Resolve Model.Content.MyNamedPart
+                // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
+                return shape.NormalizedNamed(n.Replace("__", "-"));
             }
 
             return null;
@@ -203,7 +213,6 @@ namespace OrchardCore.DisplayManagement.Liquid
                 await context.EnterScopeAsync(viewContext, model, scopeAction);
                 return await template.RenderAsync(context, encoder);
             }
-
             finally
             {
                 context.ReleaseScope();
@@ -224,7 +233,6 @@ namespace OrchardCore.DisplayManagement.Liquid
                 await context.EnterScopeAsync(viewContext, model, scopeAction);
                 await template.RenderAsync(writer, encoder, context);
             }
-
             finally
             {
                 context.ReleaseScope();

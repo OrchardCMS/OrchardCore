@@ -22,8 +22,8 @@ namespace OrchardCore.Email.Drivers
         private readonly IAuthorizationService _authorizationService;
 
         public SmtpSettingsDisplayDriver(
-            IDataProtectionProvider dataProtectionProvider, 
-            IShellHost orchardHost, 
+            IDataProtectionProvider dataProtectionProvider,
+            IShellHost orchardHost,
             ShellSettings currentShellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)

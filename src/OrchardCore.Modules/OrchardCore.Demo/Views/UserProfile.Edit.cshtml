@@ -1,8 +1,13 @@
 @model OrchardCore.Demo.ViewModels.EditUserProfileViewModel
 
 <div class="form-group">
-    <label asp-for="Name">@T["Name"]</label>
-    <input asp-for="Name" type="text" class="form-control" placeholder="@T["Name"]" />
+    <label asp-for="FirstName">@T["First Name"]</label>
+    <input asp-for="FirstName" type="text" class="form-control" placeholder="@T["First Name"]" />
+</div>
+
+<div class="form-group">
+    <label asp-for="LastName">@T["Last Name"]</label>
+    <input asp-for="LastName" type="text" class="form-control" placeholder="@T["Last Name"]" />
 </div>
 
 <div class="form-group">

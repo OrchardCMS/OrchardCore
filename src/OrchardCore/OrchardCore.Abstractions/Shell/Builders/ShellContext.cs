@@ -22,7 +22,7 @@ namespace OrchardCore.Environment.Shell.Builders
         public IServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
-        /// Whether the shell is activated. 
+        /// Whether the shell is activated.
         /// </summary>
         public bool IsActivated { get; set; }
 
@@ -87,9 +87,9 @@ namespace OrchardCore.Environment.Shell.Builders
                 return;
             }
 
-            // When a tenant is changed and should be restarted, its shell context is replaced with a new one, 
-            // so that new request can't use it anymore. However some existing request might still be running and try to 
-            // resolve or use its services. We then call this method to count the remaining references and dispose it 
+            // When a tenant is changed and should be restarted, its shell context is replaced with a new one,
+            // so that new request can't use it anymore. However some existing request might still be running and try to
+            // resolve or use its services. We then call this method to count the remaining references and dispose it
             // when the number reached zero.
 
             lock (_synLock)
@@ -103,7 +103,6 @@ namespace OrchardCore.Environment.Shell.Builders
 
                 if (_dependents != null)
                 {
-
                     foreach (var dependent in _dependents)
                     {
                         if (dependent.TryGetTarget(out var shellContext))

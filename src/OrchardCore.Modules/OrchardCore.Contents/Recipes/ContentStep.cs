@@ -2,11 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using OrchardCore.Indexing;
-using YesSql;
 
 namespace OrchardCore.Contents.Recipes
 {

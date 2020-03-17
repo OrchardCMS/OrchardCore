@@ -7,7 +7,6 @@ namespace OrchardCore.Contents
 {
     public class Permissions : IPermissionProvider
     {
-
         // Note - in code you should demand PublishContent, EditContent, or DeleteContent
         // Do not demand the "Own" variations - those are applied automatically when you demand the main ones
 
@@ -25,7 +24,6 @@ namespace OrchardCore.Contents
         public static readonly Permission PreviewOwnContent = CommonPermissions.PreviewOwnContent;
         public static readonly Permission CloneContent = CommonPermissions.CloneContent;
         public static readonly Permission CloneOwnContent = CommonPermissions.CloneOwnContent;
-
 
         //public static readonly Permission MetaListContent = new Permission { ImpliedBy = new[] { EditOwnContent, PublishOwnContent, DeleteOwnContent } };
 
@@ -81,6 +79,5 @@ namespace OrchardCore.Contents
                 },
             };
         }
-
     }
 }

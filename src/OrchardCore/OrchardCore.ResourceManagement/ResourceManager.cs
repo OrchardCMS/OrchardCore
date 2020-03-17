@@ -370,7 +370,7 @@ namespace OrchardCore.ResourceManagement
                     throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
                 }
 
-                // Register any additional dependencies for the resource here, 
+                // Register any additional dependencies for the resource here,
                 // rather than in Combine as they are additive, and should not be Combined.
                 if (settings.Dependencies != null)
                 {
@@ -386,8 +386,8 @@ namespace OrchardCore.ResourceManagement
             {
                 requiredResources[i++] = new ResourceRequiredContext
                 {
-                    Resource = (ResourceDefinition) entry.Key,
-                    Settings = (RequireSettings) entry.Value,
+                    Resource = (ResourceDefinition)entry.Key,
+                    Settings = (RequireSettings)entry.Value,
                     FileVersionProvider = _fileVersionProvider
                 };
             }
@@ -412,8 +412,8 @@ namespace OrchardCore.ResourceManagement
             // (1) If a require exists for the resource, combine with it. Last settings in gets preference for its specified values.
             // (2) If no require already exists, form a new settings object based on the given one but with its own type/name.
             settings = allResources.Contains(resource)
-                ? ((RequireSettings) allResources[resource]).Combine(settings)
-                : new RequireSettings(_options) {Type = resource.Type, Name = resource.Name}.Combine(settings);
+                ? ((RequireSettings)allResources[resource]).Combine(settings)
+                : new RequireSettings(_options) { Type = resource.Type, Name = resource.Name }.Combine(settings);
 
             if (resource.Dependencies != null)
             {
@@ -685,7 +685,7 @@ namespace OrchardCore.ResourceManagement
 
             public override int GetHashCode()
             {
-                return HashCode.Combine(Type,  Name);
+                return HashCode.Combine(Type, Name);
             }
 
             public override string ToString() => "(" + Type + ", " + Name + ")";

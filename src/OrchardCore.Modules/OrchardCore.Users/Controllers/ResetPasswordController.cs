@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -33,11 +32,10 @@ namespace OrchardCore.Users.Controllers
             IUserService userService,
             UserManager<IUser> userManager,
             ISiteService siteService,
-            ISmtpService smtpService,
             IDisplayHelper displayHelper,
             IStringLocalizer<ResetPasswordController> stringLocalizer,
             ILogger<ResetPasswordController> logger,
-            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents) 
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents)
         {
             _userService = userService;
             _userManager = userManager;
@@ -162,6 +160,5 @@ namespace OrchardCore.Users.Controllers
                 return Redirect("~/");
             }
         }
-
     }
 }

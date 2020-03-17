@@ -606,7 +606,6 @@ namespace OrchardCore.ContentManagement
 
             await ReversedHandlers.InvokeAsync((handler, ccontexttx) => handler.RemovedAsync(context), context, _logger);
 
-
             if (publishedItem != null)
             {
                 publishedItem.Latest = true;

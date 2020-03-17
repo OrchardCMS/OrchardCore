@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -79,7 +78,6 @@ namespace OrchardCore.Roles.Controllers
             return View(model);
         }
 
-
         public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
@@ -103,7 +101,7 @@ namespace OrchardCore.Roles.Controllers
                 {
                     ModelState.AddModelError(string.Empty, S["Invalid role name."]);
                 }
-                
+
                 if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
                 {
                     ModelState.AddModelError(string.Empty, S["The role is already used."]);
@@ -131,7 +129,6 @@ namespace OrchardCore.Roles.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Delete(string id)

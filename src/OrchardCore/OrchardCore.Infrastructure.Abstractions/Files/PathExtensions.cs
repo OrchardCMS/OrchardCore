@@ -9,7 +9,7 @@ namespace System.IO
         public static readonly char[] PathSeparators = new[] { '/', '\\' };
         private const string CurrentDirectoryToken = ".";
         private const string ParentDirectoryToken = "..";
-     
+
         /// <summary>
         /// Combines two path parts
         /// </summary>

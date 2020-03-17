@@ -27,9 +27,9 @@ namespace OrchardCore.Workflows.Http.Activities
         }
 
         public override string Name => nameof(HttpRedirectTask);
-        
+
         public override LocalizedString DisplayText => S["Http Redirect Task"];
-        
+
         public override LocalizedString Category => S["HTTP"];
 
         public WorkflowExpression<string> Location

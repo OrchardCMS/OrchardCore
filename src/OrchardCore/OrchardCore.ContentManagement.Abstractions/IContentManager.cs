@@ -95,7 +95,6 @@ namespace OrchardCore.ContentManagement
         /// <param name="contentItem">The content item to clone</param>
         /// <returns>Clone of the item</returns>
         Task<ContentItem> CloneAsync(ContentItem contentItem);
-
     }
 
     public static class ContentManagerExtensions

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
@@ -7,7 +7,7 @@ using OrchardCore.Environment.Shell.Descriptor.Models;
 namespace OrchardCore.Environment.Shell.Descriptor.Settings
 {
     /// <summary>
-    /// Implements <see cref="IShellDescriptorManager"/> by returning a single tenant with all the available 
+    /// Implements <see cref="IShellDescriptorManager"/> by returning a single tenant with all the available
     /// extensions.
     /// </summary>
     public class AllFeaturesShellDescriptorManager : IShellDescriptorManager

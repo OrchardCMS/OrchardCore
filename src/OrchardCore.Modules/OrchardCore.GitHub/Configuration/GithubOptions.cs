@@ -20,7 +20,6 @@ namespace OrchardCore.GitHub.Configuration
             TokenEndpoint = GitHubDefaults.TokenEndpoint;
             UserInformationEndpoint = GitHubDefaults.UserInformationEndpoint;
 
-            
             ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
             ClaimActions.MapJsonKey("name", "login");
             ClaimActions.MapJsonKey(ClaimTypes.Email, "email", ClaimValueTypes.Email);

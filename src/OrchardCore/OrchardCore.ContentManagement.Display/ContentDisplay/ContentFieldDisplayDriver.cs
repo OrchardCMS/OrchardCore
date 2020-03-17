@@ -11,6 +11,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, IContentFieldDisplayDriver where TField : ContentField, new()
     {
+        private const string DisplayToken = "_Display";
+
         private ContentTypePartDefinition _typePartDefinition;
         private ContentPartFieldDefinition _partFieldDefinition;
 
@@ -28,6 +30,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 var fieldType = _partFieldDefinition.FieldDefinition.Name;
                 var fieldName = _partFieldDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
+                var displayMode = _partFieldDefinition.DisplayMode();
 
                 if (GetEditorShapeType(_partFieldDefinition) == shapeType)
                 {
@@ -65,17 +68,39 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
                             ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}");
 
-                            // [ContentType]__[PartName]__[FieldName], , e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
+                            // [ContentType]__[PartName]__[FieldName], e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
                             ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
 
-                            // [ContentType]__[FieldType], , e.g. Blog-TextField, LandingPage-TextField
+                            // [ContentType]__[FieldType], e.g. Blog-TextField, LandingPage-TextField
                             ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}");
                         }
                     }
                     else
                     {
-                        foreach (var displayType in displayTypes)
+                        if (!String.IsNullOrEmpty(displayMode))
                         {
+                            // [ShapeType]_[DisplayType]__[DisplayMode]_Display, e.g. TextField-Header.Display.Summary
+                            ctx.Shape.Metadata.Alternates.Add($"{fieldType}_{ctx.Shape.Metadata.DisplayType}__{displayMode}{DisplayToken}");
+                        }
+
+                        for (int i = 0; i < displayTypes.Length; i++)
+                        {
+                            var displayType = displayTypes[i];
+
+                            if (!String.IsNullOrEmpty(displayMode))
+                            {
+                                shapeType = $"{fieldType}__{displayMode}";
+
+                                if (displayType == "")
+                                {
+                                    displayType = DisplayToken;
+                                }
+                                else
+                                {
+                                    shapeType += DisplayToken;
+                                }
+                            }
+
                             // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
                             ctx.Shape.Metadata.Alternates.Add($"{fieldType}{displayType}__{shapeType}");
 
@@ -237,7 +262,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             var displayMode = context.PartFieldDefinition.DisplayMode();
             return !String.IsNullOrEmpty(displayMode)
-                ? shapeType + "_Display__" + displayMode
+                ? shapeType + DisplayToken + "__" + displayMode
                 : shapeType;
         }
 
@@ -245,7 +270,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             return GetDisplayShapeType(typeof(TField).Name, context);
         }
-
 
         private void BuildPrefix(ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, string htmlFieldPrefix)
         {

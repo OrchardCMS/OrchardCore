@@ -20,7 +20,6 @@ namespace OrchardCore.Google.Authentication.Configuration
         private readonly ILogger<GoogleOptionsConfiguration> _logger;
         private readonly string _tenantPrefix;
 
-
         public GoogleOptionsConfiguration(
             GoogleAuthenticationService googleAuthenticationService,
             IDataProtectionProvider dataProtectionProvider,

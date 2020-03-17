@@ -43,7 +43,6 @@ namespace OrchardCore.DisplayManagement.Handlers
                 );
         }
 
-
         /// <summary>
         /// Creates a dynamic proxy for the specified model. Properties are copied to the new object.
         /// </summary>
@@ -152,7 +151,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         public CombinedResult Combine(IEnumerable<IDisplayResult> results)
         {
-            return new CombinedResult( results );
+            return new CombinedResult(results);
         }
     }
 }

@@ -17,6 +17,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     public class PageTitleShapes : IShapeAttributeProvider
     {
         private IPageTitleBuilder _pageTitleBuilder;
+
         public IPageTitleBuilder Title
         {
             get
@@ -34,7 +35,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         public async Task<IHtmlContent> PageTitle(IHtmlHelper Html)
         {
             var siteSettings = await ShellScope.Services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
-            
+
             // We must return a page title so if the format setting is blank just use the current title unformatted
             if (String.IsNullOrWhiteSpace(siteSettings.PageTitleFormat))
             {

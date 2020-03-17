@@ -15,7 +15,7 @@ using YesSql;
 namespace OrchardCore.Environment.Shell.Data.Descriptors
 {
     /// <summary>
-    /// Implements <see cref="IShellDescriptorManager"/> by providing the list of features store in the database. 
+    /// Implements <see cref="IShellDescriptorManager"/> by providing the list of features store in the database.
     /// </summary>
     public class ShellDescriptorManager : IShellDescriptorManager
     {

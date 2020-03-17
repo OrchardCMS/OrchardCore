@@ -37,7 +37,6 @@ namespace OrchardCore.ReCaptcha.ActionFilters
                 case ReCaptchaMode.AlwaysShow:
                     isRobot = true;
                     break;
-
             }
 
             if (isRobot && !isValidCaptcha)

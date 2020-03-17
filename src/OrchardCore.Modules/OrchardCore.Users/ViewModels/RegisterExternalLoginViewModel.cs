@@ -1,13 +1,21 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.DependencyInjection;
-using MimeKit;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Email;
 
 namespace OrchardCore.Users.ViewModels
 {
     public class RegisterExternalLoginViewModel : IValidatableObject
     {
+        private readonly IEmailAddressValidator _emailAddressValidator;
+
+        public RegisterExternalLoginViewModel(IEmailAddressValidator emailAddressValidator)
+        {
+            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
+        }
+
         public bool NoUsername { get; set; }
         public bool NoEmail { get; set; }
         public bool NoPassword { get; set; }
@@ -32,7 +40,7 @@ namespace OrchardCore.Users.ViewModels
                     yield return new ValidationResult(S["Email is required!"], new[] { "Email" });
                 }
             }
-            else if (!MailboxAddress.TryParse(Email, out var emailAddress))
+            else if (!_emailAddressValidator.Validate(Email))
             {
                 yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
             }

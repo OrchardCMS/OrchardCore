@@ -9,8 +9,10 @@ namespace OrchardCore.OpenId.ViewModels
     public class OpenIdServerSettingsViewModel
     {
         public TokenFormat AccessTokenFormat { get; set; }
+
         [Url]
         public string Authority { get; set; }
+
         public StoreLocation? CertificateStoreLocation { get; set; }
         public StoreName? CertificateStoreName { get; set; }
         public string CertificateThumbprint { get; set; }
