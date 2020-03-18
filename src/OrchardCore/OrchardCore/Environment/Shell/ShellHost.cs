@@ -20,6 +20,8 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellHost : IShellHost, IShellDescriptorManagerEventHandler, IDisposable
     {
+        private const int ReloadShellMaxRetriesCount = 9;
+
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IRunningShellTable _runningShellTable;
@@ -165,7 +167,7 @@ namespace OrchardCore.Environment.Shell
             }
 
             var count = 0;
-            while (count < 9)
+            while (count < ReloadShellMaxRetriesCount)
             {
                 count++;
 
@@ -203,7 +205,7 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
-            throw new ShellExceptions.ConcurrencyException(
+            throw new ShellConcurrencyException(
                 $"Unable to reload the tenant '{settings.Name}' as too many concurrent processes are trying to do so.");
         }
 
