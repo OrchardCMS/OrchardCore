@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Shells.Azure.Services;
 
@@ -11,21 +13,40 @@ namespace OrchardCore.Shells.Azure.Configuration
 {
     public class BlobShellsSettingsSources : IShellsSettingsSources
     {
-        private const string _tenantsFileName = "tenants.json";
+        private const string _tenantsBlobName = "tenants.json";
 
         private readonly IShellsFileStore _shellsFileStore;
+        private readonly BlobShellStorageOptions _blobOptions;
 
-        public BlobShellsSettingsSources(IShellsFileStore shellsFileStore)
+        private readonly string _tenantsFileSystemName;
+
+        public BlobShellsSettingsSources(IShellsFileStore shellsFileStore,
+            BlobShellStorageOptions blobOptions,
+            IOptions<ShellOptions> shellOptions)
         {
             _shellsFileStore = shellsFileStore;
+            _blobOptions = blobOptions;
+            _tenantsFileSystemName = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, _tenantsBlobName);
         }
 
         public async Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            var fileInfo = await _shellsFileStore.GetFileInfoAsync(_tenantsFileName);
+            var fileInfo = await _shellsFileStore.GetFileInfoAsync(_tenantsBlobName);
+            if (fileInfo == null && _blobOptions.MigrateFromFiles)
+            {
+                if (await TryMigrateFromFileAsync())
+                {
+                    fileInfo = await _shellsFileStore.GetFileInfoAsync(_tenantsBlobName);
+                }
+                else
+                {
+                    return;
+                }
+            }
+
             if (fileInfo != null)
             {
-                var stream = await _shellsFileStore.GetFileStreamAsync(_tenantsFileName);
+                var stream = await _shellsFileStore.GetFileStreamAsync(_tenantsBlobName);
                 builder.AddJsonStream(stream);
             }
         }
@@ -34,11 +55,11 @@ namespace OrchardCore.Shells.Azure.Configuration
         {
             JObject tenantsSettings;
 
-            var fileInfo = await _shellsFileStore.GetFileInfoAsync(_tenantsFileName);
+            var fileInfo = await _shellsFileStore.GetFileInfoAsync(_tenantsBlobName);
 
             if (fileInfo != null)
             {
-                using (var stream = await _shellsFileStore.GetFileStreamAsync(_tenantsFileName))
+                using (var stream = await _shellsFileStore.GetFileStreamAsync(_tenantsBlobName))
                 {
                     using (var streamReader = new StreamReader(stream))
                     {
@@ -79,10 +100,25 @@ namespace OrchardCore.Shells.Azure.Configuration
                         await tenantsSettings.WriteToAsync(jsonWriter);
                         await jsonWriter.FlushAsync();
                         memoryStream.Position = 0;
-                        await _shellsFileStore.CreateFileFromStreamAsync(_tenantsFileName, memoryStream);
+                        await _shellsFileStore.CreateFileFromStreamAsync(_tenantsBlobName, memoryStream);
                     }
                 }
             }
+        }
+
+        private async Task<bool> TryMigrateFromFileAsync()
+        {
+            if (!File.Exists(_tenantsFileSystemName))
+            {
+                return false;
+            }
+
+            using (var file = File.OpenRead(_tenantsFileSystemName))
+            {
+                await _shellsFileStore.CreateFileFromStreamAsync(_tenantsBlobName, file);
+            }
+
+            return true;
         }
     }
 }

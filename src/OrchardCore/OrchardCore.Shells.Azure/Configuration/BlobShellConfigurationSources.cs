@@ -15,24 +15,40 @@ namespace OrchardCore.Shells.Azure.Configuration
     public class BlobShellConfigurationSources : IShellConfigurationSources
     {
         private readonly IShellsFileStore _shellsFileStore;
+        private readonly BlobShellStorageOptions _blobOptions;
         private readonly string _container;
+        private readonly string _fileStoreContainer;
 
         public BlobShellConfigurationSources(
-            IOptions<ShellOptions> shellOptions,
-            IShellsFileStore shellsFileStore)
+            IShellsFileStore shellsFileStore,
+            BlobShellStorageOptions blobOptions,
+            IOptions<ShellOptions> shellOptions)
         {
+            _shellsFileStore = shellsFileStore;
+            _blobOptions = blobOptions;
+
             // e.g., Sites.
             _container = shellOptions.Value.ShellsContainerName;
-            _shellsFileStore = shellsFileStore;
+
+            // e.g., App_Data/Sites
+            _fileStoreContainer = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName);
         }
 
         public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
-            var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
-            var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
+            var appSettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
+            var fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
+
+            if (fileInfo == null && _blobOptions.MigrateFromFiles)
+            {
+                if (await TryMigrateFromFileAsync(tenant, appSettings))
+                {
+                    fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
+                }
+            }
             if (fileInfo != null)
             {
-                var stream = await _shellsFileStore.GetFileStreamAsync(appsettings);
+                var stream = await _shellsFileStore.GetFileStreamAsync(appSettings);
                 builder.AddJsonStream(stream);
             }
         }
@@ -88,6 +104,22 @@ namespace OrchardCore.Shells.Azure.Configuration
                 }
             }
 
+        }
+
+        private async Task<bool> TryMigrateFromFileAsync(string tenant, string destFile)
+        {
+            var tenantFile = Path.Combine(_fileStoreContainer, tenant, "appsettings.json");
+            if (!File.Exists(tenantFile))
+            {
+                return false;
+            }
+
+            using (var file = File.OpenRead(tenantFile))
+            {
+                await _shellsFileStore.CreateFileFromStreamAsync(destFile, file);
+            }
+
+            return true;
         }
     }
 }

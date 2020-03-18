@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -23,15 +24,20 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
 
-            services.AddSingleton<IShellsFileStore>(serviceProvider =>
+            services.AddSingleton<IShellsFileStore>(sp =>
             {
-                var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-                var blobStorageOptions = configuration.GetSection("OrchardCore:OrchardCore.Shells.Azure").Get<BlobShellStorageOptions>();
+                var configuration = sp.GetRequiredService<IConfiguration>();
+                var blobOptions = configuration.GetSection("OrchardCore:OrchardCore.Shells.Azure").Get<BlobShellStorageOptions>();
+                if (blobOptions == null)
+                {
+                    throw new ArgumentNullException(nameof(BlobShellStorageOptions),
+                        "The 'OrchardCore.Shells.Azure' configuration section must be defined");
+                }
 
-                var clock = serviceProvider.GetRequiredService<IClock>();
-                var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
+                var clock = sp.GetRequiredService<IClock>();
+                var contentTypeProvider = sp.GetRequiredService<IContentTypeProvider>();
 
-                var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
+                var fileStore = new BlobFileStore(blobOptions, clock, contentTypeProvider);
 
                 return new BlobShellsFileStore(fileStore);
             });
@@ -39,24 +45,32 @@ namespace Microsoft.Extensions.DependencyInjection
             services.Replace(ServiceDescriptor.Singleton<IShellsSettingsSources>(sp =>
             {
                 var shellsFileStore = sp.GetRequiredService<IShellsFileStore>();
+                var configuration = sp.GetRequiredService<IConfiguration>();
+                var blobOptions = configuration.GetSection("OrchardCore:OrchardCore.Shells.Azure").Get<BlobShellStorageOptions>();
+                var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>();
 
-                return new BlobShellsSettingsSources(shellsFileStore);
+                return new BlobShellsSettingsSources(shellsFileStore, blobOptions, shellOptions);
             }));
 
             services.Replace(ServiceDescriptor.Singleton<IShellConfigurationSources>(sp =>
             {
-                var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>();
                 var shellsFileStore = sp.GetRequiredService<IShellsFileStore>();
+                var configuration = sp.GetRequiredService<IConfiguration>();
+                var blobOptions = configuration.GetSection("OrchardCore:OrchardCore.Shells.Azure").Get<BlobShellStorageOptions>();
+                var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>();
 
-                return new BlobShellConfigurationSources(shellOptions, shellsFileStore);
+                return new BlobShellConfigurationSources(shellsFileStore, blobOptions, shellOptions);
             }));
 
             services.Replace(ServiceDescriptor.Singleton<IShellsConfigurationSources>(sp =>
             {
                 var shellsFileStore = sp.GetRequiredService<IShellsFileStore>();
                 var environment = sp.GetRequiredService<IHostEnvironment>();
+                var configuration = sp.GetRequiredService<IConfiguration>();
+                var blobOptions = configuration.GetSection("OrchardCore:OrchardCore.Shells.Azure").Get<BlobShellStorageOptions>();
+                var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>();
 
-                return new BlobShellsConfigurationSources(shellsFileStore, environment);
+                return new BlobShellsConfigurationSources(shellsFileStore, environment, blobOptions, shellOptions);
             }));
 
             return builder;
