@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Builder
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.Extensions.Options
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
@@ -32,7 +32,7 @@
                         <select id="culturesList" class="form-control" onchange="setLocalizationCookie()">
                             @foreach (var culture in LocOptions.Value.SupportedUICultures)
                             {
-                                @if (culture.TwoLetterISOLanguageName == currentUICulture.TwoLetterISOLanguageName)
+                                @if (culture.Name == currentUICulture.Name)
                                 {
                                     <option value="@culture" selected>@(culture.DisplayName ?? culture.Name)</option>
                                 }
@@ -62,7 +62,7 @@
             var searchParams = new URLSearchParams(queryString);
 
             searchParams.set("ui-culture", culture);
-            window.location = window.location.origin  + '?' + searchParams.toString();
+            window.location = window.location.origin + '?' + searchParams.toString();
         }
     </script>
 </body>
