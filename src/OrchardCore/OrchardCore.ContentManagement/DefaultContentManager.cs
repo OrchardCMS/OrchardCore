@@ -418,15 +418,6 @@ namespace OrchardCore.ContentManagement
                 // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
                 contentItem.Id = 0;
 
-                // The imported version will become the latest and published.
-                // We do this because any existing drafts would be orphans if an imported item is published.
-
-                // TODO All deployment is now taking latest. so we need to allow for that.
-                // I think that logic can work, so long as it doesn't create orphans,
-                // it just makes here more complicated.
-                contentItem.Published = true;
-                contentItem.Latest = true;
-
                 // Maintain modified and published dates as these will be reset by the Create Handlers
                 var modifiedUtc = contentItem.ModifiedUtc;
                 var publishedUtc = contentItem.PublishedUtc;
@@ -439,7 +430,21 @@ namespace OrchardCore.ContentManagement
                 }
 
                 // Remove previous published or draft items or they will continue to be listed as published or draft.
-                await RemoveAsync(contentItem);
+                // When importing a new draft any existing drafts must be discarded.
+                // The importing draft wins.
+                if (contentItem.Latest && !contentItem.Published)
+                {
+                    await DiscardDraftAsync(contentItem);
+                }
+                else if (contentItem.Published)
+                {
+                    // When importing a published item existing drafts and existing published must be removed.
+                    // Otherwise an existing draft would become an orphan and if published would overwrite
+                    // the imported (which we assume is the version that wins) content.
+                    await RemoveAsync(contentItem);
+                }
+                // When neither imported or latest the operation will create a database record
+                // which will be part of the content item archive.
 
                 // Invoked create handlers.
                 var context = new CreateContentContext(contentItem);
@@ -461,11 +466,14 @@ namespace OrchardCore.ContentManagement
 
                 // TODO for audit trail we may want to invoke Versioning events here.
 
-                // Invoke published handlers to add information to persistent stores
-                var publishContext = new PublishContentContext(contentItem, null);
+                if (contentItem.Published)
+                {
+                    // Invoke published handlers to add information to persistent stores
+                    var publishContext = new PublishContentContext(contentItem, null);
 
-                await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), publishContext, _logger);
-                await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
+                    await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), publishContext, _logger);
+                    await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
+                }
 
                 // Restore values that may have been altered by handlers.
                 if (modifiedUtc.HasValue)
@@ -494,7 +502,7 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                // The version exists so we can merge the new properties.
+                // The version exists so we can merge the new properties to the same version.
 
                 var modifiedUtc = contentItem.ModifiedUtc;
                 var publishedUtc = contentItem.PublishedUtc;
@@ -546,8 +554,14 @@ namespace OrchardCore.ContentManagement
                     await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
 
                     // Restore values that may have been altered by handlers.
-                    contentItem.ModifiedUtc = modifiedUtc;
-                    contentItem.PublishedUtc = publishedUtc;
+                    if (modifiedUtc.HasValue)
+                    {
+                        contentItem.ModifiedUtc = modifiedUtc;
+                    }
+                    if (publishedUtc.HasValue)
+                    {
+                        contentItem.PublishedUtc = publishedUtc;
+                    }
                 }
 
                 _session.Save(existingItem);
