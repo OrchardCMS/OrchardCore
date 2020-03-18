@@ -62,17 +62,11 @@
         function setLocalizationCookie() {
             var culturesList = document.getElementById('culturesList');
             var culture = culturesList.options[culturesList.selectedIndex].value
-            var url = window.location.origin;
+            var queryString = window.location.search;
+            var searchParams = new URLSearchParams(queryString);
 
-            if (url.indexOf('?') > -1) {
-                url = url.split('&ui-culture=')[0] + '&';
-            }
-            else {
-                url += '?';
-            }
-
-            url += 'ui-culture=' + culture;
-            window.location = url;
+            searchParams.set("ui-culture", culture);
+            window.location = window.location.origin  + '?' + searchParams.toString();
         }
     </script>
 </body>
