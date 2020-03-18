@@ -1,14 +1,13 @@
-@using Microsoft.AspNetCore.Builder
+﻿@using Microsoft.AspNetCore.Builder
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.Extensions.Options
-@using System.Globalization; 
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject OrchardCore.IOrchardHelper Orchard
 @inject IOptions<RequestLocalizationOptions> LocOptions
 
 @{
-    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
-    var currentUICulture = requestCulture.RequestCulture.UICulture;
+    var requestCultureFeature = Context.Features.Get<IRequestCultureFeature>();
+    var currentUICulture = requestCultureFeature.RequestCulture.UICulture;
 }
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
