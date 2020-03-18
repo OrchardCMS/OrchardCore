@@ -57,9 +57,17 @@ namespace OrchardCore.Environment.Shell
 
             _configBuilderFactory = (tenant) =>
             {
-                var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
-                builder.AddConfiguration(_configuration.GetSection(tenant));
-                return builder.AddSources(tenant, _tenantConfigSources);
+                _semaphore.Wait();
+                try
+                {
+                    var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
+                    builder.AddConfiguration(_configuration.GetSection(tenant));
+                    return builder.AddSources(tenant, _tenantConfigSources);
+                }
+                finally
+                {
+                    _semaphore.Release();
+                }
             };
         }
 

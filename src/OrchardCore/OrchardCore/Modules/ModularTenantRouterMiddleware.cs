@@ -36,7 +36,7 @@ namespace OrchardCore.Modules
             _logger = logger;
         }
 
-        public Task Invoke(HttpContext httpContext)
+        public async Task Invoke(HttpContext httpContext)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -59,18 +59,18 @@ namespace OrchardCore.Modules
             // Do we need to rebuild the pipeline ?
             if (shellContext.Pipeline == null)
             {
-                InitializePipeline(shellContext);
+                await InitializePipelineAsync(shellContext);
             }
 
-            return shellContext.Pipeline.Invoke(httpContext);
+            await shellContext.Pipeline.Invoke(httpContext);
         }
 
-        private void InitializePipeline(ShellContext shellContext)
+        private async Task InitializePipelineAsync(ShellContext shellContext)
         {
-            var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, (name) => new SemaphoreSlim(1));
+            var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, _ => new SemaphoreSlim(1));
 
             // Building a pipeline for a given shell can't be done by two requests.
-            semaphore.Wait();
+            await semaphore.WaitAsync();
 
             try
             {
@@ -82,7 +82,6 @@ namespace OrchardCore.Modules
             finally
             {
                 semaphore.Release();
-                _semaphores.TryRemove(shellContext.Settings.Name, out semaphore);
             }
         }
 

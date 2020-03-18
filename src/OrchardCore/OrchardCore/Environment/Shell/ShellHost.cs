@@ -164,8 +164,11 @@ namespace OrchardCore.Environment.Shell
                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
             }
 
-            while (true)
+            var count = 0;
+            while (count < 9)
             {
+                count++;
+
                 if (_shellContexts.TryRemove(settings.Name, out var context))
                 {
                     _runningShellTable.Remove(settings);
@@ -199,6 +202,9 @@ namespace OrchardCore.Environment.Shell
                     return;
                 }
             }
+
+            throw new ShellExceptions.ConcurrencyException(
+                $"Unable to reload the tenant '{settings.Name}' as too many concurrent processes are trying to do so.");
         }
 
         /// <summary>
