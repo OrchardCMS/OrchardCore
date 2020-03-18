@@ -8,10 +8,7 @@
 
 @{
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
-
-    var currentCulture = CultureInfo.GetCultureInfo(Orchard.HttpContext.Request.Query.ContainsKey("ui-culture")
-        ? Orchard.HttpContext.Request.Query["ui-culture"].ToString()
-        : LocOptions.Value.DefaultRequestCulture.Culture.Name);
+    var currentUICulture = requestCulture.RequestCulture.UICulture;
 }
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
@@ -36,7 +33,7 @@
                         <select id="culturesList" class="form-control" onchange="setLocalizationCookie()">
                             @foreach (var culture in LocOptions.Value.SupportedUICultures)
                             {
-                                @if (culture.TwoLetterISOLanguageName == currentCulture.TwoLetterISOLanguageName)
+                                @if (culture.TwoLetterISOLanguageName == currentUICulture.TwoLetterISOLanguageName)
                                 {
                                     <option value="@culture" selected>@(culture.DisplayName ?? culture.Name)</option>
                                 }
