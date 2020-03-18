@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Builder
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.Extensions.Options
+@using System.Globalization; 
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject OrchardCore.IOrchardHelper Orchard
 @inject IOptions<RequestLocalizationOptions> LocOptions
@@ -8,9 +9,9 @@
 @{
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
 
-    var currentCulture = Orchard.HttpContext.Request.Query.ContainsKey("ui-culture")
+    var currentCulture = CultureInfo.GetCultureInfo(Orchard.HttpContext.Request.Query.ContainsKey("ui-culture")
         ? Orchard.HttpContext.Request.Query["ui-culture"].ToString()
-        : LocOptions.Value.DefaultRequestCulture.Culture.Name;
+        : LocOptions.Value.DefaultRequestCulture.Culture.Name);
 }
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
@@ -35,7 +36,7 @@
                         <select id="culturesList" class="form-control" onchange="setLocalizationCookie()">
                             @foreach (var culture in LocOptions.Value.SupportedUICultures)
                             {
-                                @if (culture.Name == currentCulture)
+                                @if (culture.TwoLetterISOLanguageName == currentCulture.TwoLetterISOLanguageName)
                                 {
                                     <option value="@culture" selected>@(culture.DisplayName ?? culture.Name)</option>
                                 }
