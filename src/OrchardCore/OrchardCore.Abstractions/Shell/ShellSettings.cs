@@ -33,8 +33,13 @@ namespace OrchardCore.Environment.Shell
         {
             _settings = new ShellConfiguration(settings._settings);
             _configuration = new ShellConfiguration(settings.Name, settings._configuration);
-
             Name = settings.Name;
+        }
+
+        public string Description
+        {
+            get => _settings["Description"];
+            set => _settings["Description"] = value;
         }
 
         public string Name { get; set; }
