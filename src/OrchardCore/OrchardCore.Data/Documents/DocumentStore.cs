@@ -71,7 +71,7 @@ namespace OrchardCore.Data.Documents
 
             AfterCommitFailure<T>(exception =>
             {
-                throw new DocumentStoreExceptions.ConcurrencyException(
+                throw new DocumentStoreConcurrencyException(
                     $"The '{typeof(T).Name}' could not be persisted and cached as it has been changed by another process.",
                     exception);
             });
