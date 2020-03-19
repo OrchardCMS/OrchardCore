@@ -55,7 +55,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             if (!String.IsNullOrEmpty(_options.BasePath))
             {
-                _basePrefix = this.NormalizePrefix(_options.BasePath);
+                _basePrefix = NormalizePrefix(_options.BasePath);
             }
         }
 
@@ -95,7 +95,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             var results = new List<IFileStoreEntry>();
 
             var prefix = this.Combine(_basePrefix, path);
-            prefix = this.NormalizePrefix(prefix);
+            prefix = NormalizePrefix(prefix);
 
             var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
             await foreach (var blob in page)
@@ -134,14 +134,18 @@ namespace OrchardCore.FileStorage.AzureBlob
             // simply pretend like we created the directory, unless there is already
             // a blob with the same path.
 
-            var blob = GetBlobReference(path);
+            var blobFile = GetBlobReference(path);
 
-            if (await blob.ExistsAsync())
+            if (await blobFile.ExistsAsync())
             {
                 throw new FileStoreException($"Cannot create directory because the path '{path}' already exists and is a file.");
             }
 
-            await CreateDirectoryAsync(path);
+            var blobDirectory = await GetBlobDirectoryReference(path);
+            if (blobDirectory == null)
+            {
+                await CreateDirectoryAsync(path);
+            }
 
             return true;
         }
@@ -270,7 +274,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         private async Task<BlobHierarchyItem> GetBlobDirectoryReference(string path)
         {
             var prefix = this.Combine(_basePrefix, path);
-            prefix = this.NormalizePrefix(prefix);
+            prefix = NormalizePrefix(prefix);
 
             // Directory exists if path contains any files.
             var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
@@ -296,16 +300,21 @@ namespace OrchardCore.FileStorage.AzureBlob
                 await placeholderBlob.UploadAsync(stream);
             }
         }
-    }
 
-    internal static class BlogFileStoreExtensions
-    {
         /// <summary>
-        /// Blob prefix requires a trailing slash.
+        /// Blob prefix requires a trailing slash except when loading the root of the container.
         /// </summary>
-        internal static string NormalizePrefix(this BlobFileStore blobFileStore, string prefix)
+        private string NormalizePrefix(string prefix)
         {
-            return prefix.Trim('/') + '/';
+            prefix = prefix.Trim('/') + '/';
+            if (prefix.Length == 1)
+            {
+                return String.Empty;
+            }
+            else
+            {
+                return prefix;
+            }
         }
     }
 }
