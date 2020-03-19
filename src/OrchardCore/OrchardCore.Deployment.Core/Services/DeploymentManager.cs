@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Deployment.Services;
@@ -24,31 +23,17 @@ namespace OrchardCore.Deployment.Core.Services
 
         public async Task ExecuteDeploymentPlanAsync(DeploymentPlan deploymentPlan, DeploymentPlanResult result)
         {
-            var orderedDeploymentSources = _deploymentSources
-                .Where(s => typeof(IOrderedDeploymentSource).IsAssignableFrom(s.GetType()))
-                .Select(s => (IOrderedDeploymentSource)s)
-                .OrderBy(s => s.Order)
-                .ToList();
-            var unorderedDeploymentSources = _deploymentSources
-                .Except(orderedDeploymentSources)
-                .Union(orderedDeploymentSources.Where(s => s.Order == 0));
+            var orderedDeploymentSources = new DeploymentSourceSortedList(_deploymentSources);
 
-            await ExecuteDeploymentPlanInternalAsync(orderedDeploymentSources.Where(s => s.Order < 0), deploymentPlan, result);
-            await ExecuteDeploymentPlanInternalAsync(unorderedDeploymentSources, deploymentPlan, result);
-            await ExecuteDeploymentPlanInternalAsync(orderedDeploymentSources.Where(s => s.Order > 0), deploymentPlan, result);
-
-            await result.FinalizeAsync();
-
-            async Task ExecuteDeploymentPlanInternalAsync(IEnumerable<IDeploymentSource> deploymentSources, DeploymentPlan deploymentPlan, DeploymentPlanResult result)
+            foreach (var source in orderedDeploymentSources)
             {
-                foreach (var source in deploymentSources)
+                foreach (var step in deploymentPlan.DeploymentSteps)
                 {
-                    foreach (var step in deploymentPlan.DeploymentSteps)
-                    {
-                        await source.ProcessDeploymentStepAsync(step, result);
-                    }
+                    await source.ProcessDeploymentStepAsync(step, result);
                 }
             }
+
+            await result.FinalizeAsync();
         }
 
         public async Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync()
@@ -69,17 +54,6 @@ namespace OrchardCore.Deployment.Core.Services
             {
                 // Don't trigger in parallel to avoid potential race conditions in the handlers
                 await deploymentTargetHandler.ImportFromFileAsync(deploymentPackage);
-            }
-        }
-
-        private async Task ExecuteDeploymentPlanInternalAsync(IEnumerable<IOrderedDeploymentSource> deploymentSources, DeploymentPlan deploymentPlan, DeploymentPlanResult result)
-        {
-            foreach (var source in deploymentSources)
-            {
-                foreach (var step in deploymentPlan.DeploymentSteps)
-                {
-                    await source.ProcessDeploymentStepAsync(step, result);
-                }
             }
         }
     }
