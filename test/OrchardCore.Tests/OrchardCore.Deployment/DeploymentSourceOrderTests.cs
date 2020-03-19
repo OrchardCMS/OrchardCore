@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Deployment.Core.Services;
+using OrchardCore.Recipes.Models;
 using Xunit;
 
 namespace OrchardCore.Tests.Deployment
@@ -15,11 +16,12 @@ namespace OrchardCore.Tests.Deployment
         public async Task ExecuteDeploymentPlan_ShouldRespect_DeployementSourceOrder()
         {
             var deploymentSources = new IDeploymentSource[] { new DeploymentSource1(), new DeploymentSource2() };
-            var deploymentManager = new DeploymentManager(deploymentSources, null, null);      
+            var deploymentManager = new DeploymentManager(deploymentSources, null, null);
+            var recipeDescriptor = new RecipeDescriptor();
 
             using (var fileBuilder = new TemporaryFileBuilder())
             {
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder);
+                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
                 var deploymentPlan = new DeploymentPlan();
 
                 deploymentPlan.DeploymentSteps.AddRange(new DeploymentStep[] { new DeploymentStep1(), new DeploymentStep2() });
