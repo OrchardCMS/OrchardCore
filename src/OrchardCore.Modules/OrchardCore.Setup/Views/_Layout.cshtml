@@ -27,7 +27,7 @@
                         <select id="culturesList" class="form-control" onchange="setLocalizationUrl()">
                             @foreach (var culture in LocOptions.Value.SupportedUICultures.OrderBy(x => x.DisplayName))
                             {
-                                <option value="@culture" selected="@(culture.Name == Orchard.CultureName())">@(culture.DisplayName ?? culture.Name)</option>
+                                <option value="@culture" selected="@(culture.Name == Orchard.CultureName())">@(culture.NativeName ?? culture.Name)</option>
                             }
                         </select>
                     </div>
