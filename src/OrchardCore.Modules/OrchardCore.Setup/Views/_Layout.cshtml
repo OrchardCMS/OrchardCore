@@ -1,14 +1,9 @@
 @using Microsoft.AspNetCore.Builder
-@using Microsoft.AspNetCore.Localization
 @using Microsoft.Extensions.Options
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject OrchardCore.IOrchardHelper Orchard
 @inject IOptions<RequestLocalizationOptions> LocOptions
 
-@{
-    var requestCultureFeature = Context.Features.Get<IRequestCultureFeature>();
-    var currentUICulture = requestCultureFeature.RequestCulture.UICulture;
-}
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
@@ -28,18 +23,11 @@
                 @if (LocOptions.Value.SupportedUICultures.Count() > 1)
                 {
                     <div class="float-right form-inline">
-                        <label for="culturesList" class="mr-2">@T["Change setup culture: "]</label>
-                        <select id="culturesList" class="form-control" onchange="setLocalizationCookie()">
+                        <label for="culturesList" class="mr-2">@T["Change setup culture"]: </label>
+                        <select id="culturesList" class="form-control" onchange="setLocalizationUrl()">
                             @foreach (var culture in LocOptions.Value.SupportedUICultures)
                             {
-                                @if (culture.Name == currentUICulture.Name)
-                                {
-                                    <option value="@culture" selected>@(culture.DisplayName ?? culture.Name)</option>
-                                }
-                                else
-                                {
-                                    <option value="@culture">@(culture.DisplayName ?? culture.Name)</option>
-                                }
+                                <option value="@culture" selected="@(culture.Name == Orchard.CultureName())">@(culture.DisplayName ?? culture.Name)</option>
                             }
                         </select>
                     </div>
@@ -55,7 +43,7 @@
         </footer>
     </div>
     <script>
-        function setLocalizationCookie() {
+        function setLocalizationUrl() {
             var culturesList = document.getElementById('culturesList');
             var culture = culturesList.options[culturesList.selectedIndex].value
             var queryString = window.location.search;
