@@ -110,11 +110,10 @@ namespace OrchardCore.Environment.Shell
         public async Task<ShellScope> GetScopeAsync(ShellSettings settings)
         {
             ShellScope scope = null;
-            ShellContext shellContext = null;
 
             while (scope == null)
             {
-                if (!_shellContexts.TryGetValue(settings.Name, out shellContext))
+                if (!_shellContexts.TryGetValue(settings.Name, out var shellContext))
                 {
                     shellContext = await GetOrCreateShellContextAsync(settings);
                 }
