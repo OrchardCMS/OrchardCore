@@ -231,11 +231,19 @@ namespace OrchardCore.Environment.Shell
                     .Distinct()
                     .ToArray();
 
-                _configBuilderFactory = (tenant) =>
+                _configBuilderFactory = async (tenant) =>
                 {
-                    var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
-                    builder.AddConfiguration(configuration.GetSection(tenant));
-                    return builder.AddSourcesAsync(tenant, _tenantConfigSources);
+                    await _semaphore.WaitAsync();
+                    try
+                    {
+                        var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
+                        builder.AddConfiguration(configuration.GetSection(tenant));
+                        return await builder.AddSourcesAsync(tenant, _tenantConfigSources);
+                    }
+                    finally
+                    {
+                        _semaphore.Release();
+                    }
                 };
 
                 _configuration = configuration;
