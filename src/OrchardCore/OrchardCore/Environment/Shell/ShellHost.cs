@@ -204,7 +204,7 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
-            throw new ShellConcurrencyException(
+            throw new ShellHostReloadException(
                 $"Unable to reload the tenant '{settings.Name}' as too many concurrent processes are trying to do so.");
         }
 
