@@ -50,7 +50,7 @@
             var searchParams = new URLSearchParams(queryString);
 
             searchParams.set("ui-culture", culture);
-            window.location = window.location.origin + '?' + searchParams.toString();
+            window.location = window.location.href.split('?')[0] + '?' + searchParams.toString();
         }
     </script>
 </body>
