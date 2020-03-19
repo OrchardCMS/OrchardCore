@@ -7,7 +7,7 @@ using YesSql;
 
 namespace OrchardCore.Workflows.Deployment
 {
-    public class AllWorkflowTypeDeploymentSource : DeploymentSourceBase
+    public class AllWorkflowTypeDeploymentSource : IDeploymentSource
     {
         private readonly ISession _session;
         private readonly IWorkflowTypeStore _workflowTypeStore;
@@ -17,7 +17,8 @@ namespace OrchardCore.Workflows.Deployment
             _workflowTypeStore = workflowTypeStore;
             _session = session;
         }
-        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allContentState = step as AllWorkflowTypeDeploymentStep;
 

@@ -1,11 +1,11 @@
-﻿using System.Text;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Deployment.Steps
 {
-    public class CustomFileDeploymentSource : DeploymentSourceBase
+    public class CustomFileDeploymentSource : IDeploymentSource
     {       
-        public override Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var customFile = step as CustomFileDeploymentStep;
 

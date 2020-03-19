@@ -48,9 +48,9 @@ namespace OrchardCore.Tests.Deployment
             }
         }
 
-        public class DeploymentSource1 : DeploymentSourceBase
+        public class DeploymentSource1 : IDeploymentSource
         {
-            public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+            public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
             {
                 var deploymentStep = step as DeploymentStep1;
 
@@ -66,11 +66,11 @@ namespace OrchardCore.Tests.Deployment
             }
         }
 
-        public class DeploymentSource2 : DeploymentSourceBase
+        public class DeploymentSource2 : IOrderedDeploymentSource
         {
-            public override int Order { get; } = -10;
+            public int Order => -10;
 
-            public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+            public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
             {
                 var deploymentStep = step as DeploymentStep2;
 

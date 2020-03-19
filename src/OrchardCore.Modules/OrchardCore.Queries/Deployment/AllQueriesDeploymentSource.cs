@@ -5,7 +5,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Queries.Deployment
 {
-    public class AllQueriesDeploymentSource : DeploymentSourceBase
+    public class AllQueriesDeploymentSource : IDeploymentSource
     {
         private readonly IQueryManager _queryManager;
 
@@ -13,7 +13,7 @@ namespace OrchardCore.Queries.Deployment
         {
             _queryManager = queryManager;
         }
-        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allQueriesState = step as AllQueriesDeploymentStep;
 

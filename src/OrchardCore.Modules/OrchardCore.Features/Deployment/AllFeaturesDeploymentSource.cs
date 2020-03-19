@@ -6,7 +6,7 @@ using OrchardCore.Features.Services;
 
 namespace OrchardCore.Features.Deployment
 {
-    public class AllFeaturesDeploymentSource : DeploymentSourceBase
+    public class AllFeaturesDeploymentSource : IOrderedDeploymentSource
     {
         private readonly IModuleService _moduleService;
 
@@ -15,9 +15,9 @@ namespace OrchardCore.Features.Deployment
             _moduleService = moduleService;
         }
 
-        public override int Order => -1000;
+        public int Order => -1000;
 
-        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var allFeaturesState = step as AllFeaturesDeploymentStep;
 

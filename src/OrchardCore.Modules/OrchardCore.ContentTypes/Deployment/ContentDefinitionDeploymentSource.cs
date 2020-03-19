@@ -6,7 +6,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.ContentTypes.Deployment
 {
-    public class ContentDefinitionDeploymentSource : DeploymentSourceBase
+    public class ContentDefinitionDeploymentSource : IOrderedDeploymentSource
     {
         private readonly IContentDefinitionStore _contentDefinitionStore;
 
@@ -15,9 +15,9 @@ namespace OrchardCore.ContentTypes.Deployment
             _contentDefinitionStore = contentDefinitionStore;
         }
 
-        public override int Order => -900;
+        public int Order => -900;
 
-        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             if (!(step is ContentDefinitionDeploymentStep contentDefinitionStep))
             {

@@ -24,15 +24,31 @@ namespace OrchardCore.Deployment.Core.Services
 
         public async Task ExecuteDeploymentPlanAsync(DeploymentPlan deploymentPlan, DeploymentPlanResult result)
         {
-            foreach (var source in _deploymentSources.OrderBy(s => s.Order))
-            {
-                foreach (var step in deploymentPlan.DeploymentSteps)
-                {
-                    await source.ProcessDeploymentStepAsync(step, result);
-                }
-            }
+            var orderedDeploymentSources = _deploymentSources
+                .Where(s => typeof(IOrderedDeploymentSource).IsAssignableFrom(s.GetType()))
+                .Select(s => (IOrderedDeploymentSource)s)
+                .OrderBy(s => s.Order)
+                .ToList();
+            var unorderedDeploymentSources = _deploymentSources
+                .Except(orderedDeploymentSources)
+                .Union(orderedDeploymentSources.Where(s => s.Order == 0));
+
+            await ExecuteDeploymentPlanInternalAsync(orderedDeploymentSources.Where(s => s.Order < 0), deploymentPlan, result);
+            await ExecuteDeploymentPlanInternalAsync(unorderedDeploymentSources, deploymentPlan, result);
+            await ExecuteDeploymentPlanInternalAsync(orderedDeploymentSources.Where(s => s.Order > 0), deploymentPlan, result);
 
             await result.FinalizeAsync();
+
+            async Task ExecuteDeploymentPlanInternalAsync(IEnumerable<IDeploymentSource> deploymentSources, DeploymentPlan deploymentPlan, DeploymentPlanResult result)
+            {
+                foreach (var source in deploymentSources)
+                {
+                    foreach (var step in deploymentPlan.DeploymentSteps)
+                    {
+                        await source.ProcessDeploymentStepAsync(step, result);
+                    }
+                }
+            }
         }
 
         public async Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync()
@@ -53,6 +69,17 @@ namespace OrchardCore.Deployment.Core.Services
             {
                 // Don't trigger in parallel to avoid potential race conditions in the handlers
                 await deploymentTargetHandler.ImportFromFileAsync(deploymentPackage);
+            }
+        }
+
+        private async Task ExecuteDeploymentPlanInternalAsync(IEnumerable<IOrderedDeploymentSource> deploymentSources, DeploymentPlan deploymentPlan, DeploymentPlanResult result)
+        {
+            foreach (var source in deploymentSources)
+            {
+                foreach (var step in deploymentPlan.DeploymentSteps)
+                {
+                    await source.ProcessDeploymentStepAsync(step, result);
+                }
             }
         }
     }

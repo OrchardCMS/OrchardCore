@@ -8,7 +8,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Lucene.Deployment
 {
-    public class LuceneIndexDeploymentSource : DeploymentSourceBase
+    public class LuceneIndexDeploymentSource : IDeploymentSource
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
@@ -16,7 +16,7 @@ namespace OrchardCore.Lucene.Deployment
         {
             _luceneIndexSettingsService = luceneIndexSettingsService;
         }
-        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var luceneIndexStep = step as LuceneIndexDeploymentStep;
 

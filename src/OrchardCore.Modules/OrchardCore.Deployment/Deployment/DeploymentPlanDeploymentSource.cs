@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Deployment.Deployment
 {
-    public class DeploymentPlanDeploymentSource : DeploymentSourceBase
+    public class DeploymentPlanDeploymentSource : IDeploymentSource
     {
         private readonly DeploymentPlanService _deploymentPlanService;
 
@@ -13,7 +13,7 @@ namespace OrchardCore.Deployment.Deployment
             _deploymentPlanService = deploymentPlanService;
         }
 
-        public override async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
+        public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
         {
             if (!(deploymentStep is DeploymentPlanDeploymentStep deploymentPlanStep))
             {

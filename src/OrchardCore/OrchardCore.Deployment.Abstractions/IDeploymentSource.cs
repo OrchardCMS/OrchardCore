@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Deployment
 {
@@ -7,8 +7,6 @@ namespace OrchardCore.Deployment
     /// </summary>
     public interface IDeploymentSource
     {
-        int Order { get; }
-
         Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result);
     }
 }

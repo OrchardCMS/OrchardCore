@@ -5,7 +5,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.AdminMenu.Deployment
 {
-    public class AdminMenuDeploymentSource : DeploymentSourceBase
+    public class AdminMenuDeploymentSource : IDeploymentSource
     {
         private readonly IAdminMenuService _adminMenuService;
 
@@ -14,7 +14,7 @@ namespace OrchardCore.AdminMenu.Deployment
             _adminMenuService = adminMenuervice;
         }
 
-        public override async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var AdminMenuState = step as AdminMenuDeploymentStep;
 
