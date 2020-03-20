@@ -10,22 +10,20 @@ using YesSql;
 
 namespace OrchardCore.Tests.Apis.ContentManagement
 {
-    public class ImportBlogPostTests
+    public class BlogPostUpdateDeploymentPlanTests
     {
         [Fact]
-        public async Task ShouldImportUpdatedContentItemVersion()
+        public async Task ShouldUpdateExistingContentItemVersion()
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
                 await context.InitializeAsync();
 
-
                 // Act
                 var recipe = context.MutateContentItem(context.OriginalBlogPost, jItem =>
                 {
-                    jItem["ContentItemVersionId"] = "updated";
-                    jItem["DisplayText"] = "updated";
+                    jItem["DisplayText"] = "existingVersion";
                 });
 
                 await context.PostRecipeAsync(recipe);
@@ -39,12 +37,9 @@ namespace OrchardCore.Tests.Apis.ContentManagement
                         var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                             x.ContentType == "BlogPost").ListAsync();
 
-                        Assert.Equal(2, blogPosts.Count());
-                        var original = blogPosts.First(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
-                        Assert.False(original.Latest);
-                        Assert.False(original.Published);
-                        var updated = blogPosts.First(x => x.ContentItemVersionId == "updated");
-                        Assert.Equal("updated", updated.DisplayText);
+                        Assert.Single(blogPosts);
+                        var originalVersion = blogPosts.First(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
+                        Assert.Equal("existingVersion", originalVersion.DisplayText);
                     });
                 }
             }

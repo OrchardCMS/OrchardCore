@@ -31,7 +31,21 @@ namespace OrchardCore.Contents.Recipes
             foreach (JObject token in model.Data)
             {
                 var contentItem = token.ToObject<ContentItem>();
-                await _contentManager.ImportAsync(contentItem);
+                ContentItem originalVersion = null;
+                if (!String.IsNullOrEmpty(contentItem.ContentItemVersionId))
+                {
+                    originalVersion = await _contentManager.GetVersionAsync(contentItem.ContentItemVersionId);
+                }
+
+                if (originalVersion == null)
+                {
+                    // The version does not exist in the current database.
+                    await _contentManager.CreateContentItemVersionAsync(contentItem);
+                } else
+                {
+                    // The version exists so we can merge (patch) the new properties to the same version.
+                    await _contentManager.UpdateContentItemVersionAsync(originalVersion, contentItem);
+                }
             }
         }
     }

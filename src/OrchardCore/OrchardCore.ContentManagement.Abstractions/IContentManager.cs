@@ -32,10 +32,17 @@ namespace OrchardCore.ContentManagement
         Task CreateAsync(ContentItem contentItem, VersionOptions options);
 
         /// <summary>
-        /// Imports (persists) a new content item and manages removing and updating existing published or draft items.
+        /// Creates (puts) a new content item and manages removing and updating existing published or draft items.
         /// </summary>
         /// <param name="contentItem"></param>
-        Task ImportAsync(ContentItem contentItem);
+        Task CreateContentItemVersionAsync(ContentItem contentItem);
+
+        /// <summary>
+        /// Updates (patches) a content item version.
+        /// </summary>
+        /// <param name="updatingVersion"></param>
+        /// <param name="updatedVersion"></param>
+        Task UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion);
 
         /// <summary>
         /// Gets the published content item with the specified id
