@@ -12,6 +12,7 @@ namespace OrchardCore.Tests.Apis.Context
         public static HttpClient DefaultTenantClient { get; }
 
         public HttpClient Client { get; private set; }
+        public string TenantName { get; private set; }
         public OrchardGraphQLClient GraphQLClient { get; private set; }
 
         static SiteContext()
@@ -57,6 +58,7 @@ namespace OrchardCore.Tests.Apis.Context
             lock (Site)
             {
                 Client = Site.CreateDefaultClient(url);
+                TenantName = tenantName;
             }
 
             if (permissionsContext != null)
