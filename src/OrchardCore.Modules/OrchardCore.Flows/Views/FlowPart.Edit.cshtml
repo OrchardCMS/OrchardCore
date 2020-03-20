@@ -18,15 +18,6 @@
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>
-<style>    
-    .toggleAll:after {
-        font-family: 'FontAwesome';  
-        content: "\f102";
-    }
-    .toggleAll.collapsed:after {
-        content: "\f103"; 
-    }
-</style>
 <div class="form-group">
     <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
