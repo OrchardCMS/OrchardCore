@@ -1,12 +1,11 @@
-@using Microsoft.AspNetCore.Builder
+﻿@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Http
 @using Microsoft.Extensions.Options
 @using Microsoft.AspNetCore.Http.Extensions
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject OrchardCore.IOrchardHelper Orchard
 @inject IOptions<RequestLocalizationOptions> LocOptions
-@{
-    var uriString = UriHelper.BuildAbsolute(Context.Request.Scheme, Context.Request.Host, Context.Request.PathBase, Context.Request.Path);
-}
+
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
@@ -27,10 +26,12 @@
                 {
                     <div class="float-right form-inline">
                         <label for="culturesList" class="mr-2">@T["Change setup culture: "]</label>
-                        <select id="culturesList" class="form-control" data-url="@uriString" onchange="setLocalizationUrl()">
+                        <select id="culturesList" class="form-control" onchange="setLocalizationUrl()">
                             @foreach (var culture in LocOptions.Value.SupportedUICultures.OrderBy(x => x.NativeName))
                             {
-                                <option value="@culture" selected="@(culture.Name == Orchard.CultureName())">@(culture.NativeName ?? culture.Name)</option>
+                                var uriString = UriHelper.BuildRelative(Context.Request.PathBase, Context.Request.Path, new QueryString().Add("ui-culture", culture.Name));
+                                
+                                <option value="@culture" data-url="@uriString" selected="@(culture.Name == Orchard.CultureName())">@(culture.NativeName ?? culture.Name)</option>
                             }
                         </select>
                     </div>
@@ -48,12 +49,7 @@
     <script>
         function setLocalizationUrl() {
             var culturesList = document.getElementById('culturesList');
-            var culture = culturesList.options[culturesList.selectedIndex].value
-            var queryString = window.location.search;
-            var searchParams = new URLSearchParams(queryString);
-
-            searchParams.set("ui-culture", culture);
-            window.location = culturesList.dataset.url + '?' + searchParams.toString();
+            window.location = culturesList.options[culturesList.selectedIndex].dataset.url;
         }
     </script>
 </body>
