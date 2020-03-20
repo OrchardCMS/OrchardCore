@@ -15,14 +15,16 @@ namespace OrchardCore.Setup
     public class Startup : StartupBase
     {
         private readonly string _defaultCulture;
-        private string[] _supportedCultures;
+        private string[] _supportedCultures = new string[] {
+            "ar", "cs", "da", "de", "el", "en", "es", "fa", "fi", "fr", "he", "hr", "hu", "id", "it", "ja", "ko", "lt", "mk", "nl", "pl", "pt", "ru", "sk", "sl", "sv", "tr", "uk", "vi", "zh-CN", "zh-TW"
+        };
 
         public Startup(IShellConfiguration shellConfiguration)
         {
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Setup");
 
             _defaultCulture = configurationSection["DefaultCulture"];
-            _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<string[]>();
+            _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<string[]>() ?? _supportedCultures;
         }
 
         public override void ConfigureServices(IServiceCollection services)
