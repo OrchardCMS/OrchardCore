@@ -61,7 +61,6 @@ namespace OrchardCore.DisplayManagement.Zones
                 {
                     htmlContents.Add(await DisplayAsync(item));
                 }
-
             }
 
             var htmlContentBuilder = new HtmlContentBuilder();
@@ -98,6 +97,5 @@ namespace OrchardCore.DisplayManagement.Zones
 
             return tabs;
         }
-
     }
 }

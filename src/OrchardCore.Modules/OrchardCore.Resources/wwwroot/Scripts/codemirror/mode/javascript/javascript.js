@@ -586,7 +586,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     }
 
     function maybeoperatorComma(type, value) {
-      if (type == ",") return cont(expression);
+      if (type == ",") return cont(maybeexpression);
       return maybeoperatorNoComma(type, value, false);
     }
 

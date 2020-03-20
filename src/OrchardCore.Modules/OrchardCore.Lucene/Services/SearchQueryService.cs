@@ -25,7 +25,7 @@ namespace OrchardCore.Lucene.Services
             var contentItemIds = new List<string>();
 
             await _luceneIndexManager.SearchAsync(indexName, searcher =>
-            {                
+            {
                 var collector = TopScoreDocCollector.Create(end, true);
 
                 searcher.Search(query, collector);

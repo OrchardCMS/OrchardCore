@@ -14,7 +14,6 @@ using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
-
     [Admin]
     public class RemoteClientController : Controller
     {
@@ -23,6 +22,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly ISession _session;
         private readonly INotifier _notifier;
         private readonly RemoteClientService _service;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public RemoteClientController(
             IDataProtectionProvider dataProtectionProvider,
@@ -43,9 +44,6 @@ namespace OrchardCore.Deployment.Remote.Controllers
             _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
         }
 
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
-
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
@@ -54,7 +52,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
 
             var remoteClientList = await _service.GetRemoteClientListAsync();
-            
+
             var model = new RemoteClientIndexViewModel
             {
                 RemoteClientList = remoteClientList

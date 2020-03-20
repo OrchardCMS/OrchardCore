@@ -91,6 +91,16 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return NotFound();
             }
 
+            if(!workflowType.IsEnabled)
+            {
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' is not enabled.", payload.WorkflowId);
+                }
+
+                return NotFound();
+            }
+
             // Get the activity record using the activity ID provided by the token.
             var startActivity = workflowType.Activities.FirstOrDefault(x => x.ActivityId == payload.ActivityId);
 

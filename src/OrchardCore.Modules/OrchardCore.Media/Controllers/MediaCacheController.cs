@@ -74,6 +74,5 @@ namespace OrchardCore.Media.Controllers
 
             return RedirectToAction("Index");
         }
-
     }
 }

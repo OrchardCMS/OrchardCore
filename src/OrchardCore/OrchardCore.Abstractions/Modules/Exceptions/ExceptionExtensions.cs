@@ -1,6 +1,6 @@
-﻿using System;
-using System.Security;
+using System;
 using System.Runtime.InteropServices;
+using System.Security;
 
 namespace OrchardCore.Modules
 {
@@ -8,7 +8,7 @@ namespace OrchardCore.Modules
     {
         public static bool IsFatal(this Exception ex)
         {
-            return 
+            return
                 ex is OutOfMemoryException ||
                 ex is SecurityException ||
                 ex is SEHException;

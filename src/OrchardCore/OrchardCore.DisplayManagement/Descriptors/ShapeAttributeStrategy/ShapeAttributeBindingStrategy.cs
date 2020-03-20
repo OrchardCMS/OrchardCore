@@ -121,22 +121,22 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
         private static object BindParameter(DisplayContext displayContext, ParameterInfo parameter)
         {
-            if (parameter.Name == "Shape")
+            if (String.Equals(parameter.Name, "Shape", StringComparison.OrdinalIgnoreCase))
             {
                 return displayContext.Value;
             }
 
-            if (parameter.Name == "DisplayAsync")
+            if (String.Equals(parameter.Name, "DisplayAsync", StringComparison.OrdinalIgnoreCase))
             {
                 return displayContext.DisplayAsync;
             }
 
-            if (parameter.Name == "New")
+            if (String.Equals(parameter.Name, "New", StringComparison.OrdinalIgnoreCase))
             {
                 return displayContext.ServiceProvider.GetService<IShapeFactory>();
             }
 
-            if (parameter.Name == "Html")
+            if (String.Equals(parameter.Name, "Html", StringComparison.OrdinalIgnoreCase))
             {
                 var viewContextAccessor = displayContext.ServiceProvider.GetRequiredService<ViewContextAccessor>();
                 var viewContext = viewContextAccessor.ViewContext;
@@ -144,12 +144,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 return MakeHtmlHelper(viewContext, viewContext.ViewData);
             }
 
-            if (parameter.Name == "DisplayContext")
+            if (String.Equals(parameter.Name, "DisplayContext", StringComparison.OrdinalIgnoreCase))
             {
                 return displayContext;
             }
 
-            if (parameter.Name == "Url" && typeof(IUrlHelper).IsAssignableFrom(parameter.ParameterType))
+            if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) && typeof(IUrlHelper).IsAssignableFrom(parameter.ParameterType))
             {
                 var viewContextAccessor = displayContext.ServiceProvider.GetRequiredService<ViewContextAccessor>();
                 var viewContext = viewContextAccessor.ViewContext;
@@ -158,12 +158,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 return urlHelperFactory.GetUrlHelper(viewContext);
             }
 
-            if (parameter.Name == "Output" && parameter.ParameterType == typeof(TextWriter))
+            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) && parameter.ParameterType == typeof(TextWriter))
             {
                 throw new InvalidOperationException("Output is no more a valid Shape method parameter. Return an IHtmlContent instead.");
             }
 
-            if (parameter.Name == "Output" && parameter.ParameterType == typeof(Action<object>))
+            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) && parameter.ParameterType == typeof(Action<object>))
             {
                 throw new InvalidOperationException("Output is no more a valid Shape method parameter. Return an IHtmlContent instead.");
             }

@@ -15,7 +15,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.Lucene
 {
     /// <summary>
-    /// This class provides services to update all the Lucene indices. It is non-rentrant so that calls 
+    /// This class provides services to update all the Lucene indices. It is non-rentrant so that calls
     /// from different components can be done simultaneously, e.g. from a background task, an event or a UI interaction.
     /// It also indexes one content item at a time and provides the result to all indices.
     /// </summary>
@@ -171,7 +171,7 @@ namespace OrchardCore.Lucene
                                 }
                             }
 
-                            // Update the document from the index if its lastIndexId is smaller than the current task id. 
+                            // Update the document from the index if its lastIndexId is smaller than the current task id.
                             foreach (var index in allIndices)
                             {
                                 if (index.Value >= task.Id || !settingsByIndex.TryGetValue(index.Key, out var settings))
@@ -198,7 +198,6 @@ namespace OrchardCore.Lucene
 
                                 updatedDocumentsByIndex[index.Key].Add(context.DocumentIndex);
                             }
-
                         }
                     }
 
@@ -216,7 +215,6 @@ namespace OrchardCore.Lucene
                         await _indexManager.StoreDocumentsAsync(index.Key, updatedDocumentsByIndex[index.Key]);
                     }
 
-
                     // Update task ids
                     lastTaskId = batch.Last().Id;
 
@@ -229,7 +227,6 @@ namespace OrchardCore.Lucene
                     }
 
                     _indexingState.Update();
-
                 });
             } while (batch.Length == BatchSize);
         }

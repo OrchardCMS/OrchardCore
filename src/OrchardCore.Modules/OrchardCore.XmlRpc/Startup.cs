@@ -1,8 +1,8 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 using OrchardCore.XmlRpc.Services;
 
 namespace OrchardCore.XmlRpc
@@ -27,7 +27,7 @@ namespace OrchardCore.XmlRpc
     }
 
     [Feature("OrchardCore.RemotePublishing")]
-    public class MetaWeblogStartup  : StartupBase
+    public class MetaWeblogStartup : StartupBase
     {
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {

@@ -98,6 +98,5 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
             return settings;
         }
-
     }
 }

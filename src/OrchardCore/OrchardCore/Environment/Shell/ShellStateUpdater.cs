@@ -132,7 +132,7 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
-        static bool IsRising(ShellFeatureState state)
+        private static bool IsRising(ShellFeatureState state)
         {
             return state.InstallState == ShellFeatureState.State.Rising ||
                    state.EnableState == ShellFeatureState.State.Rising;

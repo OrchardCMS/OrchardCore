@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using OrchardCore.Layers.Drivers;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Layers
 {

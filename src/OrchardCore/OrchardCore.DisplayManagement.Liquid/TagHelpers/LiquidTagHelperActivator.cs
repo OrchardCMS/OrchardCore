@@ -18,13 +18,16 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public static readonly LiquidTagHelperActivator None = new LiquidTagHelperActivator();
 
         private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activatorByFactory;
+
         private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters =
             new Dictionary<string, Action<ITagHelper, FluidValue>>(StringComparer.OrdinalIgnoreCase);
 
         private readonly Func<ViewContext, ITagHelper> _activatorByService;
         private readonly Action<object, object> _viewContextSetter;
 
-        public LiquidTagHelperActivator() { }
+        public LiquidTagHelperActivator()
+        {
+        }
 
         public LiquidTagHelperActivator(Type type)
         {
@@ -35,6 +38,15 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             foreach (var property in accessibleProperties)
             {
+                var setter = MakeFastPropertySetter(type, property);
+                var viewContextAttribute = property.GetCustomAttribute<ViewContextAttribute>();
+
+                if (viewContextAttribute != null && property.PropertyType == typeof(ViewContext))
+                {
+                    _viewContextSetter = (helper, context) => setter(helper, context);
+                    continue;
+                }
+
                 var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { property.Name };
                 var htmlAttribute = property.GetCustomAttribute<HtmlAttributeNameAttribute>();
 
@@ -48,16 +60,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
                 }
 
-                var setter = MakeFastPropertySetter(type, property);
-
                 foreach (var propertyName in allNames)
                 {
-                    if (propertyName == "ViewContext")
-                    {
-                        _viewContextSetter = (helper, context) => setter(helper, context);
-                        continue;
-                    }
-
                     _setters.Add(propertyName, (h, v) =>
                     {
                         object value = null;

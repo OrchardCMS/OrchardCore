@@ -25,7 +25,7 @@ namespace OrchardCore.Features.Deployment
             }
 
             var features = await _moduleService.GetAvailableFeaturesAsync();
-            
+
             result.Steps.Add(new JObject(
                 new JProperty("name", "Feature"),
                 new JProperty("enable", features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()),

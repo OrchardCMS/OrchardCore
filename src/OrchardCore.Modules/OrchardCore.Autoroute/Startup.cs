@@ -12,6 +12,7 @@ using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.Routing;
 using OrchardCore.Autoroute.Services;
 using OrchardCore.Autoroute.Settings;
+using OrchardCore.Autoroute.Sitemaps;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -25,6 +26,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Sitemaps.Services;
 using YesSql;
 using YesSql.Indexes;
 
@@ -80,6 +82,15 @@ namespace OrchardCore.Autoroute
 
             // The 1st segment prevents the transformer to be executed for the home.
             routes.MapDynamicControllerRoute<AutoRouteTransformer>("/{any}/{**slug}");
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Sitemaps")]
+    public class SitemapStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IRouteableContentTypeProvider, AutorouteContentTypeProvider>();
         }
     }
 }

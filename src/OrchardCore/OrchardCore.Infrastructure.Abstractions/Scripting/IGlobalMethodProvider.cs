@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace OrchardCore.Scripting
 {
@@ -15,4 +15,3 @@ namespace OrchardCore.Scripting
         IEnumerable<GlobalMethod> GetMethods();
     }
 }
-

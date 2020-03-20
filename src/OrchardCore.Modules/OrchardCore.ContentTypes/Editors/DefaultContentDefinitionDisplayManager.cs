@@ -43,7 +43,7 @@ namespace OrchardCore.ContentTypes.Editors
             Logger = logger;
         }
 
-        ILogger Logger { get; set; }
+        private ILogger Logger { get; set; }
 
         public async Task<dynamic> BuildTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, string groupId)
         {
@@ -99,7 +99,6 @@ namespace OrchardCore.ContentTypes.Editors
                 BindPlacementAsync(typeContext).GetAwaiter().GetResult();
 
                 _handlers.InvokeAsync((handler, contentTypeDefinition, typeContext) => handler.UpdateTypeEditorAsync(contentTypeDefinition, typeContext), contentTypeDefinition, typeContext, Logger).GetAwaiter().GetResult();
-
             });
 
             return contentTypeDefinitionShape;
@@ -187,7 +186,6 @@ namespace OrchardCore.ContentTypes.Editors
 
             await _handlers.InvokeAsync((handler, contentTypePartDefinition, partContext) => handler.BuildTypePartEditorAsync(contentTypePartDefinition, partContext), contentTypePartDefinition, partContext, Logger);
 
-
             return typePartDefinitionShape;
         }
 
@@ -203,7 +201,6 @@ namespace OrchardCore.ContentTypes.Editors
 
             _contentDefinitionManager.AlterTypeDefinition(contentTypePartDefinition.ContentTypeDefinition.Name, typeBuilder =>
             {
-
                 typeBuilder.WithPart(contentTypePartDefinition.Name, async typePartBuilder =>
                 {
                     typePartDefinitionShape.ContentPart = contentTypePartDefinition;
@@ -222,7 +219,6 @@ namespace OrchardCore.ContentTypes.Editors
 
                     await _handlers.InvokeAsync((handler, contentTypePartDefinition, partContext) => handler.UpdateTypePartEditorAsync(contentTypePartDefinition, partContext), contentTypePartDefinition, partContext, Logger);
                 });
-
             });
 
             return typePartDefinitionShape;

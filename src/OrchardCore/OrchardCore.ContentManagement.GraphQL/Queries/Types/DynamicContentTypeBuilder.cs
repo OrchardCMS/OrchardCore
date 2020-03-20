@@ -45,7 +45,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 if (_contentOptions.ShouldSkip(part)) continue;
 
-                if (_contentOptions.ShouldCollapse(part)) 
+                if (_contentOptions.ShouldCollapse(part))
                 {
                     foreach (var field in part.PartDefinition.Fields)
                     {

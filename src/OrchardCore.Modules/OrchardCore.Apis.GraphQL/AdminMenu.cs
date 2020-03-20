@@ -7,13 +7,13 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;
         }
 
-        public IStringLocalizer S { get; }
-        
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))

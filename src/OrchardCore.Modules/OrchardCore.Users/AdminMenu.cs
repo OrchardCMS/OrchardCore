@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Users.Drivers;
 
 namespace OrchardCore.Users
@@ -47,7 +47,7 @@ namespace OrchardCore.Users
     public class ChangeEmailAdminMenu : INavigationProvider
     {
         private readonly IStringLocalizer S;
- 
+
         public ChangeEmailAdminMenu(IStringLocalizer<ChangeEmailAdminMenu> localizer)
         {
             S = localizer;
@@ -77,7 +77,7 @@ namespace OrchardCore.Users
     public class RegistrationAdminMenu : INavigationProvider
     {
         private readonly IStringLocalizer S;
- 
+
         public RegistrationAdminMenu(IStringLocalizer<RegistrationAdminMenu> localizer)
         {
             S = localizer;

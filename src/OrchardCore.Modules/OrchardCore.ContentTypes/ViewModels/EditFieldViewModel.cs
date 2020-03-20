@@ -32,6 +32,5 @@ namespace OrchardCore.ContentTypes.ViewModels
         /// The display mode of the field
         /// </summary>
         public string DisplayMode { get; set; }
-
     }
 }

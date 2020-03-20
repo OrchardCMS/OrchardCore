@@ -9,7 +9,7 @@ namespace OrchardCore.Apis.GraphQL.Resolvers
     {
         private readonly Func<ResolveFieldContext, Task<TReturnType>> _resolver;
 
-        public LockedAsyncFieldResolver(Func<ResolveFieldContext, Task<TReturnType>> resolver) 
+        public LockedAsyncFieldResolver(Func<ResolveFieldContext, Task<TReturnType>> resolver)
         {
             _resolver = resolver;
         }

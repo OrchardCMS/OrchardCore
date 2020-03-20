@@ -1,4 +1,4 @@
-﻿using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Demo.Services
 {
