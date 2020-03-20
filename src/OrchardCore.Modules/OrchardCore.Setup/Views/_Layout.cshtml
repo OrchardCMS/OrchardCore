@@ -1,12 +1,13 @@
 @using Microsoft.AspNetCore.Builder
 @using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Http.Extensions
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject OrchardCore.IOrchardHelper Orchard
 @inject IOptions<RequestLocalizationOptions> LocOptions
 @{
-    var fullUri = Context.Request.Scheme + "://" + Context.Request.Host.ToUriComponent();
-    fullUri += Context.Request.PathBase.HasValue ? Context.Request.PathBase.ToUriComponent() : "";
-    fullUri += Context.Request.Path.ToUriComponent();
+    Uri currentUrl = new Uri(Context.Request.GetEncodedUrl());
+    var urlWithTenant = String.Format("{0}{1}{2}{3}", Context.Request.Scheme,
+                    Uri.SchemeDelimiter, currentUrl.Authority, currentUrl.AbsolutePath);
 }
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
@@ -28,7 +29,7 @@
                 {
                     <div class="float-right form-inline">
                         <label for="culturesList" class="mr-2">@T["Change setup culture: "]</label>
-                        <select id="culturesList" class="form-control" onchange="setLocalizationUrl()">
+                        <select id="culturesList" class="form-control" data-url="@urlWithTenant" onchange="setLocalizationUrl()">
                             @foreach (var culture in LocOptions.Value.SupportedUICultures.OrderBy(x => x.NativeName))
                             {
                                 <option value="@culture" selected="@(culture.Name == Orchard.CultureName())">@(culture.NativeName ?? culture.Name)</option>
@@ -54,7 +55,7 @@
             var searchParams = new URLSearchParams(queryString);
 
             searchParams.set("ui-culture", culture);
-            window.location = '@(fullUri)' + '?' + searchParams.toString();
+            window.location = culturesList.dataset.url + '?' + searchParams.toString();
         }
     </script>
 </body>
