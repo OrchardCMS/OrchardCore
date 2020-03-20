@@ -15,6 +15,7 @@ namespace OrchardCore.Contents.TagHelpers
     [HtmlTargetElement("a", Attributes = ContentLinkEdit)]
     [HtmlTargetElement("a", Attributes = ContentLinkRemove)]
     [HtmlTargetElement("a", Attributes = ContentLinkCreate)]
+    [HtmlTargetElement("a")]
     public class ContentLinkTagHelper : TagHelper
     {
         private const string ContentLinkAdmin = "admin-for";
@@ -148,6 +149,14 @@ namespace OrchardCore.Contents.TagHelpers
                 ApplyRouteValues(tagHelperContext, metadata.CreateRouteValues);
 
                 output.Attributes.SetAttribute("href", urlHelper.Action(metadata.CreateRouteValues["action"].ToString(), metadata.CreateRouteValues));
+            } else
+            {
+                var routeDictionary = new RouteValueDictionary();
+                ApplyRouteValues(tagHelperContext, routeDictionary);
+                if (routeDictionary.Keys.Contains("action"))
+                {
+                    output.Attributes.SetAttribute("href", urlHelper.Action(routeDictionary["action"].ToString(), routeDictionary));
+                }
             }
 
             // A self closing anchor tag will be rendered using the display text
