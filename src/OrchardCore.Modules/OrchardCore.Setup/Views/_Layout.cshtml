@@ -25,7 +25,7 @@
                 @if (LocOptions.Value.SupportedUICultures.Count() > 1)
                 {
                     <div class="float-right form-inline">
-                        <label for="culturesList" class="mr-2">@T["Change setup culture: "]</label>
+                        <label for="culturesList" class="mr-2">@T["Change language"]</label>
                         <select id="culturesList" class="form-control" onchange="setLocalizationUrl()">
                             @foreach (var culture in LocOptions.Value.SupportedUICultures.OrderBy(x => x.NativeName))
                             {
