@@ -3,7 +3,11 @@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject OrchardCore.IOrchardHelper Orchard
 @inject IOptions<RequestLocalizationOptions> LocOptions
-
+@{
+    var fullUri = Context.Request.Scheme + "://" + Context.Request.Host.ToUriComponent();
+    fullUri += Context.Request.PathBase.HasValue ? Context.Request.PathBase.ToUriComponent() : "";
+    fullUri += Context.Request.Path.ToUriComponent();
+}
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
@@ -50,7 +54,7 @@
             var searchParams = new URLSearchParams(queryString);
 
             searchParams.set("ui-culture", culture);
-            window.location = window.location.origin + '@(!String.IsNullOrWhiteSpace(Context.Request.PathBase.Value) ? Context.Request.PathBase.Value : "")' + '?' + searchParams.toString();
+            window.location = '@(fullUri)' + '?' + searchParams.toString();
         }
     </script>
 </body>
