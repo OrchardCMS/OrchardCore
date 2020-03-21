@@ -34,7 +34,14 @@
             return jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
         };
     });
-
+    function isDisplayedLeaf(e) {
+      if ($(e).is(":visible") && $(e).children().length === 1) {
+        return true;
+      }
+      return false;
+    }
+    var lastLeafFound = null;
+    var nbLeavesFound = 0;
     function hasChild(list) {
         var filter = $('#filter').val();
         list.children('li').each(function () {
@@ -44,6 +51,7 @@
                     hasChild($(this).find('ul :first').parent());
                 } else {
                     $(this).show();
+                    nbLeavesFound += 1;
                 }
             } else {
                 $(this).hide();
@@ -54,9 +62,14 @@
         var list = $('#adminMenu');
         var filter = $('#filter').val();
         if (filter) {
+            nbLeavesFound = 0;
             hasChild(list);
         } else {
             list.find("li").show();
+        }
+
+        if (nbLeavesFound == 1) {
+            $('#adminMenu li:visible> ul').show();
         }
         return false;
     });
