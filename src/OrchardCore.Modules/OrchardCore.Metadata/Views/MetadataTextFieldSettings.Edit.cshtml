@@ -3,18 +3,24 @@
 @using OrchardCore.Metadata.Models
 
 <div class="form-group">
-    <label asp-for="DescriptorAttibuteType">@T["Descriptor attribute"]</label>
-    <select asp-for="DescriptorAttibuteType" asp-items="Html.GetEnumSelectList<AttributeType>()" class="form-control"></select>
+    <div class="row col-sm-6">
+        <label asp-for="DescriptorAttibuteType">@T["Descriptor attribute"]</label>
+        <select asp-for="DescriptorAttibuteType" asp-items="Html.GetEnumSelectList<AttributeType>()" class="form-control"></select>
+    </div>
 </div>
 <div class="form-group">
-    <label asp-for="Descriptor">@T["Descriptor"]</label>
-    <input asp-for="Descriptor" class="form-control">
-    <span class="hint">@T["For example, og:title or description."]</span>
+    <div class="row col-sm-6">
+        <label asp-for="Descriptor">@T["Descriptor"]</label>
+        <input asp-for="Descriptor" class="form-control">
+        <span class="hint">@T["For example, og:title or description."]</span>
+    </div>
 </div>
 <div class="form-group">
-    <label asp-for="DefaultValue">@T["Default value"]</label>
-    <input asp-for="DefaultValue" class="form-control">
-    <span class="hint">@T["The default value of the field. Supports Liquid syntax to use the value of another field."]</span>
+    <div class="row col-sm-6">
+        <label asp-for="DefaultValue">@T["Default value"]</label>
+        <input asp-for="DefaultValue" class="form-control">
+        <span class="hint">@T["The default value of the field. Supports Liquid syntax to use the value of another field."]</span>
+    </div>
 </div>
 <div class="form-group">
     <div class="custom-control custom-checkbox">
@@ -24,12 +30,16 @@
     </div>
 </div>
 <div class="form-group">
-    <label asp-for="Hint">@T["Hint"]</label>
-    <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
-    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+    <div class="row col-sm-6">
+        <label asp-for="Hint">@T["Hint"]</label>
+        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+    </div>
 </div>
 <div class="form-group">
-    <label asp-for="MaxCharacterLength">@T["Recommended character length"]</label>
-    <input asp-for="MaxCharacterLength" class="form-control" />
-    <span class="hint">@T["A value of zero means there is no recommended length."]</span>
+    <div class="row col-sm-6">
+        <label asp-for="MaxCharacterLength">@T["Recommended character length"]</label>
+        <input asp-for="MaxCharacterLength" class="form-control" />
+        <span class="hint">@T["A value of zero means there is no recommended length."]</span>
+    </div>
 </div>

@@ -3,15 +3,14 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Metadata.Fields;
-using OrchardCore.Metadata.Settings;
 
-namespace OrchardCore.Metadata.Drivers
+namespace OrchardCore.Metadata.Settings
 {
     public class MetadataTextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MetadataTextField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<MetadataTextFieldSettings>("MetadataTextFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
+            return Initialize<MetadataTextFieldSettings>("MetadataTextFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
                 .Location("Content");
         }
 
@@ -21,7 +20,7 @@ namespace OrchardCore.Metadata.Drivers
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            context.Builder.MergeSettings(model);
+            context.Builder.WithSettings(model);
 
             return Edit(partFieldDefinition);
         }

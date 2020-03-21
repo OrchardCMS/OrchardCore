@@ -8,9 +8,6 @@
 <style asp-src="~/OrchardCore.Metadata/Styles/counter.min.css" debug-src="~/OrchardCore.Metadata/Styles/counter.css" at="Head"></style>
 <div class="form-group">
     <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
-    <input asp-for="Value" class="form-control" data-counter data-counter-max-length="@settings.MaxCharacterLength" dir="@culture.GetLanguageDirection()" />
-    @if (!String.IsNullOrEmpty(settings.Hint))
-    {
+    <textarea asp-for="Value" class="form-control content-preview-text" data-counter data-counter-max-length="@settings.MaxCharacterLength" dir="@culture.GetLanguageDirection()"></textarea>
     <span class="hint">@settings.Hint</span>
-    }
 </div>

@@ -6,6 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Drivers\MetadataPartDisplayDriver.cs" />
+    <Compile Remove="Handlers\MetadataPartHandler.cs" />
+    <Compile Remove="Models\SeoMetadataPartSettings.cs" />
+    <Compile Remove="Models\SocialMetadataPartSettings.cs" />
+    <Compile Remove="Settings\MetadataPartSettingsDisplayDriver.cs" />
+    <Compile Remove="ViewModels\MetadataPartSettingsViewModel.cs" />
+    <Compile Remove="ViewModels\MetadataPartViewModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
@@ -22,6 +32,11 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Liquid.Abstractions\OrchardCore.Liquid.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
+    <ProjectReference Include="..\OrchardCore.ContentFields\OrchardCore.ContentFields.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Handlers\" />
   </ItemGroup>
 
 </Project>

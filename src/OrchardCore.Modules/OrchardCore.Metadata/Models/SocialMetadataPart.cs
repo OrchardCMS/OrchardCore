@@ -12,7 +12,6 @@ namespace OrchardCore.Metadata.Models
         public MetadataTextField OpenGraphDescription { get; set; }
         public string OpenGraphImage { get; set; }
         public string OpenGraphVideo { get; set; }
-        public MetadataTextField OpenGraphImageAlt { get; set; }
         public MetadataTextField OpenGraphType { get; set; }
         public MetadataTextField TwitterCard { get; set; }
     }

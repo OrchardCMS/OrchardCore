@@ -1,16 +1,11 @@
-using System;
 using Fluid;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Metadata.Drivers;
 using OrchardCore.Metadata.Fields;
-using OrchardCore.Metadata.Handlers;
 using OrchardCore.Metadata.Models;
 using OrchardCore.Metadata.Settings;
 using OrchardCore.Modules;
@@ -30,11 +25,9 @@ namespace OrchardCore.Metadata
             services.AddScoped<IContentFieldDisplayDriver, MetadataTextFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MetadataTextFieldSettingsDriver>();
 
-            services.AddScoped<IContentPartDisplayDriver, MetadataPartDisplayDriver>();
-            services.AddSingleton<ContentPart, MetadataPart>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, MetadataPartSettingsDisplayDriver>();
+            services.AddSingleton<ContentPart, SeoMetadataPart >();
+            services.AddSingleton<ContentPart, SocialMetadataPart>();
             services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IContentPartHandler, MetadataPartHandler>();
         }
     }
 }

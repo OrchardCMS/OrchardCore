@@ -5,7 +5,7 @@ namespace OrchardCore.Metadata.Models
 {
     public class SeoMetadataPart : ContentPart
     {
-        public MetadataTextField MetaTitle { get; set; }
+        public MetadataTextField PageTitle { get; set; }
         public MetadataTextField MetaDescription { get; set; }
         public MetadataTextField MetaKeywords { get; set; }
     }

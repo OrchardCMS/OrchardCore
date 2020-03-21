@@ -15,14 +15,14 @@ namespace OrchardCore.Metadata.Drivers
 {
     public class MetadataTextFieldDisplayDriver : ContentFieldDisplayDriver<MetadataTextField>
     {
-        private readonly IStringLocalizer T;
+        private readonly IStringLocalizer S;
         private readonly IResourceManager _resourceManager;
 
 
-        public MetadataTextFieldDisplayDriver(IStringLocalizer<MetadataTextFieldDisplayDriver> stringLocalizer, IResourceManager resourceManager)
+        public MetadataTextFieldDisplayDriver(IStringLocalizer<MetadataTextFieldDisplayDriver> localizer, IResourceManager resourceManager)
         {
             _resourceManager = resourceManager;
-            T = stringLocalizer;
+            S = localizer;
         }
 
         public override IDisplayResult Display(MetadataTextField field, BuildFieldDisplayContext context)
@@ -52,6 +52,8 @@ namespace OrchardCore.Metadata.Drivers
                             Content = field.Value
                         });
                         break;
+                    case Models.AttributeType.notApplicable:
+                        break;
                     default:
                         _resourceManager.RegisterMeta(new MetaEntry
                         {
@@ -80,10 +82,10 @@ namespace OrchardCore.Metadata.Drivers
         {
             if (await updater.TryUpdateModelAsync(field, Prefix, f => f.Value))
             {
-                var settings = context.PartFieldDefinition.Settings.ToObject<MetadataTextFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<MetadataTextFieldSettings>();
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Value))
                 {
-                    updater.ModelState.AddModelError(Prefix, T["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
             }
 
