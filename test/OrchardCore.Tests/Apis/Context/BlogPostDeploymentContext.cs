@@ -1,15 +1,15 @@
-using System.Threading.Tasks;
-using OrchardCore.Environment.Shell;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Deployment.Remote.Services;
-using Newtonsoft.Json.Linq;
 using System;
-using OrchardCore.ContentManagement;
-using System.Net.Http;
 using System.IO;
 using System.IO.Compression;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement;
+using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -23,11 +23,11 @@ namespace OrchardCore.Tests.Apis.Context
         public ContentItem OriginalBlogPost { get; private set; }
         public string OriginalBlogPostVersionId { get; private set; }
 
-        static BlogPostDeploymentContext () 
+        static BlogPostDeploymentContext()
         {
-
             ShellHost = Site.Services.GetRequiredService<IShellHost>();
         }
+
         public override async Task InitializeAsync(PermissionsContext permissionsContext = null)
         {
             await base.InitializeAsync();

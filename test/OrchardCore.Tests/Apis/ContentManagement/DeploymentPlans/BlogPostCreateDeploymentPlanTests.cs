@@ -8,7 +8,7 @@ using OrchardCore.Tests.Apis.Context;
 using Xunit;
 using YesSql;
 
-namespace OrchardCore.Tests.Apis.ContentManagement
+namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
     public class BlogPostCreateDeploymentPlanTests
     {
@@ -56,18 +56,18 @@ namespace OrchardCore.Tests.Apis.ContentManagement
         {
             using (var context = new BlogPostDeploymentContext())
             {
-                // Setup
+                // Setup 
                 await context.InitializeAsync();
 
                 var content = await context.Client.PostAsJsonAsync("api/content?draft=true", context.OriginalBlogPost);
                 var draftContentItemVersionId = (await content.Content.ReadAsAsync<ContentItem>()).ContentItemVersionId;
- 
+
                 // Act
                 var recipe = context.MutateContentItem(context.OriginalBlogPost, jItem =>
-                {
-                    jItem["ContentItemVersionId"] = "newVersion";
-                    jItem["DisplayText"] = "newVersion";
-                });
+                    {
+                        jItem["ContentItemVersionId"] = "newVersion";
+                        jItem["DisplayText"] = "newVersion";
+                    });
 
                 await context.PostRecipeAsync(recipe);
 
@@ -96,5 +96,55 @@ namespace OrchardCore.Tests.Apis.ContentManagement
                 }
             }
         }
+
+        [Fact]
+        public async Task ShouldDiscardDraftThenCreateNewDraftContentItemVersion()
+        {
+            using (var context = new BlogPostDeploymentContext())
+            {
+                // Setup
+                await context.InitializeAsync();
+
+                var content = await context.Client.PostAsJsonAsync("api/content?draft=true", context.OriginalBlogPost);
+                var draftContentItemVersionId = (await content.Content.ReadAsAsync<ContentItem>()).ContentItemVersionId;
+
+                // Act
+                var recipe = context.MutateContentItem(context.OriginalBlogPost, jItem =>
+                {
+                    jItem["ContentItemVersionId"] = "newDraftVersion";
+                    jItem["DisplayText"] = "newDraftVersion";
+                    jItem["Published"] = false;
+                });
+
+                await context.PostRecipeAsync(recipe);
+
+                // Test
+                using (var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName))
+                {
+                    await shellScope.UsingAsync(async scope =>
+                    {
+                        var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                        var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                            x.ContentType == "BlogPost").ListAsync();
+
+                        Assert.Equal(3, blogPosts.Count());
+                        var originalVersion = blogPosts.First(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
+                        Assert.False(originalVersion.Latest);
+                        Assert.True(originalVersion.Published);
+                        var draftVersion = blogPosts.First(x => x.ContentItemVersionId == draftContentItemVersionId);
+                        Assert.False(draftVersion.Latest);
+                        Assert.False(draftVersion.Published);
+
+                        var newDraftVersion = blogPosts.First(x => x.ContentItemVersionId == "newDraftVersion");
+                        Assert.Equal("newDraftVersion", newDraftVersion.DisplayText);
+                        Assert.True(newDraftVersion.Latest);
+                        Assert.False(newDraftVersion.Published);
+                    });
+                }
+            }
+        }
+
+
+
     }
 }

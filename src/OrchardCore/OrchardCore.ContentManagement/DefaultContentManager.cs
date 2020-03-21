@@ -405,7 +405,6 @@ namespace OrchardCore.ContentManagement
 
         public async Task CreateContentItemVersionAsync(ContentItem contentItem)
         {
-
             // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
             contentItem.Id = 0;
 
@@ -420,12 +419,23 @@ namespace OrchardCore.ContentManagement
                 contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
             }
 
-            // Remove previous published or draft items or they will continue to be listed as published or draft.
-            // When importing a new draft any existing drafts must be discarded.
-            // The importing draft wins.
+            // Remove previous published or latest items or they will continue to be listed as published or latest.
+            // When importing a new draft the existing latest must be set to false. The creating version wins.
             if (contentItem.Latest && !contentItem.Published)
             {
-                await DiscardDraftAsync(contentItem);
+                var latestVersion = await _session.Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId == contentItem.ContentItemId && x.Latest)
+                    .FirstOrDefaultAsync();
+
+                if (latestVersion != null)
+                {
+                    var removeContext = new RemoveContentContext(latestVersion);
+
+                    await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
+                    latestVersion.Latest = false;
+                    _session.Save(latestVersion);
+                    await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), removeContext, _logger);
+                }
             }
             else if (contentItem.Published)
             {
@@ -622,7 +632,7 @@ namespace OrchardCore.ContentManagement
             contentItem.Latest = false;
             _session.Save(contentItem);
 
-            await ReversedHandlers.InvokeAsync((handler, ccontexttx) => handler.RemovedAsync(context), context, _logger);
+            await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), context, _logger);
 
             if (publishedItem != null)
             {

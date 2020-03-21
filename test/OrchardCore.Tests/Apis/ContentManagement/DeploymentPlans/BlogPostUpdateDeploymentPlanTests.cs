@@ -8,7 +8,7 @@ using OrchardCore.Tests.Apis.Context;
 using Xunit;
 using YesSql;
 
-namespace OrchardCore.Tests.Apis.ContentManagement
+namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
     public class BlogPostUpdateDeploymentPlanTests
     {
