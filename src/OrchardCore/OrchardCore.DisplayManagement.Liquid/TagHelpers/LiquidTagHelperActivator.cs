@@ -15,6 +15,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
     public class LiquidTagHelperActivator
     {
+        private  const string AspPrefix = "asp-";
+
         public static readonly LiquidTagHelperActivator None = new LiquidTagHelperActivator();
 
         private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activatorByFactory;
@@ -53,18 +55,19 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 {
                     allNames.Add(htmlAttribute.Name.ToPascalCaseDash());
 
-                    if (htmlAttribute.Name.StartsWith("asp-", StringComparison.Ordinal))
+                    if (htmlAttribute.Name.StartsWith(AspPrefix, StringComparison.Ordinal))
                     {
-                        allNames.Add(htmlAttribute.Name.Substring(4).ToPascalCaseDash());
+                        allNames.Add(htmlAttribute.Name.Substring(AspPrefix.Length).ToPascalCaseDash());
                     }
+                    
                     var dictonaryPrefix = htmlAttribute.DictionaryAttributePrefix;
                     if (dictonaryPrefix != null)
                     {
                         allNames.Add(dictonaryPrefix.ToPascalCaseDash());
 
-                        if (dictonaryPrefix.StartsWith("asp-", StringComparison.Ordinal))
+                        if (dictonaryPrefix.StartsWith(AspPrefix, StringComparison.Ordinal))
                         {
-                            allNames.Add(dictonaryPrefix.Substring(4).ToPascalCaseDash());
+                            allNames.Add(dictonaryPrefix.Substring(AspPrefix.Length).ToPascalCaseDash());
                         }
                     }
                 }

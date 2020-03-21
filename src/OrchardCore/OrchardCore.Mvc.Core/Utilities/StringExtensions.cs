@@ -470,6 +470,7 @@ namespace OrchardCore.Mvc.Utilities
             {
                 result.Append(upperAfterDelimiter);
             }
+            
             return result.ToString();
         }
     }

@@ -79,8 +79,7 @@ namespace OrchardCore.Demo.Controllers
                     storeModel.IsCompleted = model.IsCompleted;
                 }
                 _session.Save(storeModel);
-                await _session.CommitAsync();
-
+                
                 if (Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
@@ -104,7 +103,6 @@ namespace OrchardCore.Demo.Controllers
             if (storeModel != null)
             {
                 _session.Delete(storeModel);
-                await _session.CommitAsync();
 
                 return RedirectToAction("Index", "Todo");
             }
