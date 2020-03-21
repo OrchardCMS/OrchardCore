@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -23,7 +24,7 @@ namespace OrchardCore.Setup
         {
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Setup");
 
-            _defaultCulture = configurationSection["DefaultCulture"];
+            _defaultCulture = configurationSection["DefaultCulture"] ?? CultureInfo.InstalledUICulture.Name;
             _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<string[]>() ?? _supportedCultures;
         }
 
