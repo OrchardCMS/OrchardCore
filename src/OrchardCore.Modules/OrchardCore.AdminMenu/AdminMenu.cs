@@ -9,6 +9,7 @@ namespace OrchardCore.AdminMenu
     public class AdminMenu : INavigationProvider
     {
         private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProvider;
+        private readonly IStringLocalizer S;
 
         public AdminMenu(AdminMenuNavigationProvidersCoordinator adminMenuNavigationProvider,
             IStringLocalizer<AdminMenu> localizer)
@@ -16,8 +17,6 @@ namespace OrchardCore.AdminMenu
             _adminMenuNavigationProvider = adminMenuNavigationProvider;
             S = localizer;
         }
-
-        public IStringLocalizer S { get; }
 
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
