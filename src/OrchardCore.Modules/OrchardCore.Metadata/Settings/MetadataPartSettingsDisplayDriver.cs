@@ -20,7 +20,7 @@ namespace OrchardCore.Metadata.Settings
 
             return Initialize<MetadataPartSettingsViewModel>("MetadataPartSettings_Edit", model =>
             {
-                var settings = contentTypePartDefinition.Settings.ToObject<MetadataPartSettings>();
+                var settings = contentTypePartDefinition.Settings.ToObject<SocialMetadataPartSettings>();
 
                 model.SupportMetaKeywords = settings.SupportMetaKeywords;
                 model.SupportOpenGraph = settings.SupportOpenGraph;
@@ -44,9 +44,9 @@ namespace OrchardCore.Metadata.Settings
                 m => m.SupportTwitterCards,
                 m => m.SupportMetaKeywords);
 
-            context.Builder.WithSetting(nameof(MetadataPartSettings.SupportOpenGraph), model.SupportOpenGraph.ToString());
-            context.Builder.WithSetting(nameof(MetadataPartSettings.SupportTwitterCards), model.SupportTwitterCards.ToString());
-            context.Builder.WithSetting(nameof(MetadataPartSettings.SupportMetaKeywords), model.SupportMetaKeywords.ToString());
+            context.Builder.WithSetting(nameof(SocialMetadataPartSettings.SupportOpenGraph), model.SupportOpenGraph.ToString());
+            context.Builder.WithSetting(nameof(SocialMetadataPartSettings.SupportTwitterCards), model.SupportTwitterCards.ToString());
+            context.Builder.WithSetting(nameof(SocialMetadataPartSettings.SupportMetaKeywords), model.SupportMetaKeywords.ToString());
 
 
             return Edit(contentTypePartDefinition, context.Updater);

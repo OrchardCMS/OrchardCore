@@ -10,6 +10,6 @@ namespace OrchardCore.Metadata.ViewModels
         public bool SupportMetaKeywords { get; set; }
 
         [BindNever]
-        public MetadataPartSettings MetadataPartSettings { get; set; }
+        public SocialMetadataPartSettings MetadataPartSettings { get; set; }
     }
 }

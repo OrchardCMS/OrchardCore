@@ -32,6 +32,6 @@ namespace OrchardCore.Metadata.ViewModels
         public MetadataPart MetadataPart { get; set; }
 
         [BindNever]
-        public MetadataPartSettings Settings { get; set; }
+        public SocialMetadataPartSettings Settings { get; set; }
     }
 }
