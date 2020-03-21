@@ -66,7 +66,6 @@ namespace OrchardCore.Email.Controllers
 
                     return Redirect(Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId }));
                 }
-
             }
 
             return View(model);
