@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
@@ -27,8 +26,7 @@ namespace OrchardCore.Environment.Shell
             IConfiguration applicationConfiguration,
             IShellsConfigurationSources configurationSources,
             IShellConfigurationSources tenantConfigSources,
-            IShellsSettingsSources settingsSources,
-            IOptions<ShellOptions> options)
+            IShellsSettingsSources settingsSources)
         {
             _tenantConfigSources = tenantConfigSources;
             _settingsSources = settingsSources;

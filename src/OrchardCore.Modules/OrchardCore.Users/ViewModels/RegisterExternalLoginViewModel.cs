@@ -9,15 +9,10 @@ namespace OrchardCore.Users.ViewModels
 {
     public class RegisterExternalLoginViewModel : IValidatableObject
     {
-        private readonly IEmailAddressValidator _emailAddressValidator;
-
-        public RegisterExternalLoginViewModel(IEmailAddressValidator emailAddressValidator)
-        {
-            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
-        }
-
         public bool NoUsername { get; set; }
+
         public bool NoEmail { get; set; }
+
         public bool NoPassword { get; set; }
 
         public string UserName { get; set; }
@@ -32,7 +27,9 @@ namespace OrchardCore.Users.ViewModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
             var S = validationContext.GetService<IStringLocalizer<RegisterExternalLoginViewModel>>();
+
             if (string.IsNullOrWhiteSpace(Email))
             {
                 if (!NoEmail)
@@ -40,7 +37,7 @@ namespace OrchardCore.Users.ViewModels
                     yield return new ValidationResult(S["Email is required!"], new[] { "Email" });
                 }
             }
-            else if (!_emailAddressValidator.Validate(Email))
+            else if (!emailAddressValidator.Validate(Email))
             {
                 yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
             }
