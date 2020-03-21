@@ -15,7 +15,8 @@ namespace OrchardCore.Setup
 {
     public class Startup : StartupBase
     {
-        private readonly string _defaultCulture;
+        private readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
+
         private string[] _supportedCultures = new string[] {
             "ar", "cs", "da", "de", "el", "en", "es", "fa", "fi", "fr", "he", "hr", "hu", "id", "it", "ja", "ko", "lt", "mk", "nl", "pl", "pt", "ru", "sk", "sl", "sr-cyrl-rs", "sr-latn-rs", "sv", "tr", "uk", "vi", "zh-CN", "zh-TW"
         };
@@ -24,7 +25,7 @@ namespace OrchardCore.Setup
         {
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Setup");
 
-            _defaultCulture = configurationSection["DefaultCulture"] ?? CultureInfo.InstalledUICulture.Name;
+            _defaultCulture = configurationSection["DefaultCulture"] ?? _defaultCulture;
             _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<string[]>() ?? _supportedCultures;
         }
 
