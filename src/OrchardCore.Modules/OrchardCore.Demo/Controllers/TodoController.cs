@@ -1,116 +1,114 @@
-using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display;
 using OrchardCore.Demo.Models;
-using OrchardCore.Demo.Services;
-using OrchardCore.DisplayManagement;
-using OrchardCore.Environment.Cache;
-using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Demo.ViewModels;
 using YesSql;
 
 namespace OrchardCore.Demo.Controllers
 {
     public class TodoController : Controller
     {
-        ISession _session;
-        public TodoController(
-            ISession session)
+        private readonly ISession _session;
+        private readonly Entities.IIdGenerator _idGenerator;
+
+        public TodoController(ISession session, Entities.IIdGenerator idGenerator)
         {
             _session = session;
+            _idGenerator = idGenerator;
         }
+
         public async Task<IActionResult> Index()
         {
-            var list = (await _session.Query<TodoModel>().ListAsync()).ToList();
+            var list = (await _session.Query<TodoModel>().ListAsync())
+                .Select(m => new TodoViewModel()
+                {
+                    TodoId = m.TodoId,
+                    Text = m.Text,
+                    DueDate = m.DueDate,
+                    IsCompleted = m.IsCompleted
+                })
+                .ToList();
+
             return View(list);
         }
 
         public IActionResult Create()
         {
-            var instance = new TodoModel();
-            instance.DisplayMode = "Edit";
-            return View("Edit", instance);
+            var viewModel = new TodoViewModel();
+            viewModel.TodoId = _idGenerator.GenerateUniqueId();
+            viewModel.DisplayMode = "Edit";
+            return View("Edit", viewModel);
         }
 
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(string todoId)
         {
-            var list = (await _session.Query<TodoModel>().ListAsync()).ToList();
-            var storeModel = list.Where(c => c.Id == id).FirstOrDefault();
-            if (storeModel != null)
-            {
-                storeModel.DisplayMode = "Edit";
-                return View(storeModel);
-            }
-            else
+            var model = (await _session.Query<TodoModel>().ListAsync())
+                .Where(m => m.TodoId == todoId)
+                .FirstOrDefault();
+
+            if (model == null)
             {
                 return NotFound();
             }
+
+            var viewModel = new TodoViewModel()
+            {
+                TodoId = model.TodoId,
+                Text = model.Text,
+                DueDate = model.DueDate,
+                IsCompleted = model.IsCompleted,
+                DisplayMode = "Edit"
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(TodoModel model, string returnUrl = "")
+        public async Task<IActionResult> Update(TodoViewModel viewModel, string returnUrl = "")
         {
             if (ModelState.IsValid)
             {
-                var list = (await _session.Query<TodoModel>().ListAsync()).ToList();
-                var storeModel = list.Where(c => c.Id == model.Id).FirstOrDefault();
-                if (storeModel == null)
-                {
-                    if (list.Count == 0)
-                    {
-                        model.Id = "1";
-                    }
-                    else
-                    {
-                        model.Id = (list.Select(c => int.Parse(c.Id)).Max() + 1).ToString();
-                    }
+                var model = (await _session.Query<TodoModel>().ListAsync())
+                    .Where(m => m.TodoId == viewModel.TodoId)
+                    .FirstOrDefault();
 
-                    storeModel = model;
-                }
-                else
+                if (model == null)
                 {
-                    storeModel.Text = model.Text;
-                    storeModel.DueDate = model.DueDate;
-                    storeModel.IsCompleted = model.IsCompleted;
+                    model = new TodoModel() { TodoId = viewModel.TodoId };
                 }
-                _session.Save(storeModel);
-                
+
+                model.Text = viewModel.Text;
+                model.DueDate = viewModel.DueDate;
+                model.IsCompleted = viewModel.IsCompleted;
+
+                _session.Save(model);
+
                 if (Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
                 }
-                else
-                {
-                    return RedirectToAction("Index", "Todo");
-                }
-            }
-            else
-            {
-                return View(model);
-            }
-        }
-
-
-        public async Task<IActionResult> Delete(string id)
-        {
-            var list = (await _session.Query<TodoModel>().ListAsync()).ToList();
-            var storeModel = list.Where(c => c.Id == id).FirstOrDefault();
-            if (storeModel != null)
-            {
-                _session.Delete(storeModel);
 
                 return RedirectToAction("Index", "Todo");
             }
-            else
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> Delete(string todoId)
+        {
+            var model = (await _session.Query<TodoModel>().ListAsync())
+                .Where(m => m.TodoId == todoId)
+                .FirstOrDefault();
+
+            if (model == null)
             {
                 return NotFound();
             }
 
+            _session.Delete(model);
+
+             return RedirectToAction("Index", "Todo");
         }
     }
 }
