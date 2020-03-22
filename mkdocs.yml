@@ -14,12 +14,12 @@ theme:
     
 extra:
   social:
-    - type: 'leaf'
-      link: 'https://orchardcore.net'
-    - type: 'github-alt'
-      link: 'https://github.com/OrchardCMS/OrchardCore'
-    - type: 'twitter'
-      link: 'https://twitter.com/OrchardCMS'
+    - type: fontawesome/light/leaf
+      link: https://orchardcore.net
+    - type: fontawesome/brands/github-alt
+      link: https://github.com/OrchardCMS/OrchardCore
+    - type: fontawesome/brands/twitter
+      link: https://twitter.com/OrchardCMS
 
 # Repository
 repo_name: OrchardCMS/OrchardCore
