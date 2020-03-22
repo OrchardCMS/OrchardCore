@@ -702,8 +702,8 @@ ASP.NET Core MVC provides a set of tag helpers to render predefined HTML outputs
 Invokes the `form` tag helper of ASP.NET Core.
 
 ```liquid
-{% form action:"Create", controller: "Todo", method:"post" %}
-... ... ...
+{% form action:"Create", controller: "Todo", method: "post" %}
+    ... ... ...
 {% endform %}
 ```
 
@@ -712,7 +712,7 @@ Invokes the `form` tag helper of ASP.NET Core.
 Using `helper` invokes the `input` tag helper of ASP.NET Core and binds `Text` of the Model
 
 ```liquid
-{% helper "input", for: "Text", class:"form-control" %}
+{% helper "input", for: "Text", class: "form-control" %}
 ```
 
 ### `label`
@@ -728,7 +728,7 @@ Using `helper` invokes the `label` tag helper of ASP.NET Core and binds `Text` o
 Using `helper` invokes the `validation_summary` tag helper of ASP.NET Core with `div`  
 
 ```liquid
-{% helper "div", validation_summary:"All"%}
+{% helper "div", validation_summary: "All" %}
 ```
 
 ### `validation_for`
@@ -736,7 +736,7 @@ Using `helper` invokes the `validation_summary` tag helper of ASP.NET Core with 
 Using `helper` invokes the `validation_for` tag helper of ASP.NET Core with `span` and binds `Text` of the Model
 
 ```liquid
-{% helper "span", validation_for:"Text" %}
+{% helper "span", validation_for: "Text" %}
 ```
 
 ### `link`
@@ -763,23 +763,23 @@ Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [s
 
 Invokes the `a` content link tag helper from the `OrchardCore.Contents` package.
 
-### `route-*`
-Route data can be added using `route-*` to tag helper of ASP.NET Core that supports route data using `asp-route-*` attribute.
+### `route_*`
+Route data can be added using `route_*` to tag helper of ASP.NET Core that supports route data using `asp-route-*` attribute.
 
-In following example, `route-returnUrl` adds `returnUrl` to form action.
+In following example, `route_returnUrl` adds `returnUrl` to form action.
 
 ```liquid
-{% form action:"Update", method:"post",  route-returnUrl:Request.Query["returnurl"] %}
-... ... ...
+{% form action: "Update", method: "post",  route_returnUrl: Request.Query["returnurl"] %}
+    ... ... ...
 {% endform %}
 ```
 
-In following example, `route-id` adds `Model.Id` to hyperlink.
+In following example, `route-id` adds `Model.TodoId` to hyperlink.
 
 ```liquid
-{% a action:"Delete" , controller: "Todo", class:"btn btn-danger", route-id:Model.Id %}
-Delete
-{%enda%}
+{% a action: "Delete" , controller: "Todo", class: "btn btn-danger", route-todoid: Model.TodoId %}
+    Delete
+{% enda %}
 ```
 
 
