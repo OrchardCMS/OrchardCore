@@ -47,7 +47,7 @@ namespace OrchardCore.Demo
                             .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
 
                     )
-                    .Add(S["Todo(Liquid - Frontend)"], "0", item => item
+                    .Add(S["Todo (Liquid - Frontend)"], "0", item => item
                         .Action("Index", "Todo", new { area = "OrchardCore.Demo" })
                     )
                 );
