@@ -57,7 +57,7 @@ namespace OrchardCore.Tests.Apis.Context
             }
         }
 
-        public JObject MutateContentItem(ContentItem contentItem, Action<JObject> mutation)
+        public JObject GetContentStepRecipe(ContentItem contentItem, Action<JObject> mutation)
         {
             var jContentItem = JObject.FromObject(contentItem);
             mutation.Invoke(jContentItem);

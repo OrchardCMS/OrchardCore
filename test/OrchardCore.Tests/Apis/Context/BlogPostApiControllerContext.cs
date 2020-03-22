@@ -10,6 +10,7 @@ namespace OrchardCore.Tests.Apis.Context
         public static IShellHost ShellHost { get; private set; }
         public string BlogContentItemId { get; private set; }
         public ContentItem BlogPost { get; private set; }
+
         static BlogPostApiControllerContext()
         {
             ShellHost = Site.Services.GetRequiredService<IShellHost>();

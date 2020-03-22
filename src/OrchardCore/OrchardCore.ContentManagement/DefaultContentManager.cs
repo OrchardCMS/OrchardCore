@@ -513,6 +513,7 @@ namespace OrchardCore.ContentManagement
             var existingLatest = updatingVersion.Latest;
 
             // If latest values do not match and importing latest is true then we must find and evict the previous latest
+            // This is when there is a draft in the system
             if (importingLatest != existingLatest && importingLatest == true)
             {
                 discardLatest = true;
@@ -521,7 +522,9 @@ namespace OrchardCore.ContentManagement
             var importingPublished = updatedVersion.Published;
             var existingPublished = updatingVersion.Published;
 
-            // If published values do not match and importing latest is true then we must find and evict the previous latest
+            // If published values do not match and importing published is true then we must find and evict the previous published
+            // This is when the existing content item version is not published, but the importing version is set to published.
+            // For this to occur there must have been a draft made, and the mutation to published is being made on the draft.
             if (importingPublished != existingPublished && importingPublished == true)
             {
                 removePublished = true;
@@ -533,11 +536,36 @@ namespace OrchardCore.ContentManagement
             }
             else if (discardLatest)
             {
-                await DiscardDraftAsync(updatingVersion);
+                var latestVersion = await _session.Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId == updatingVersion.ContentItemId && x.Latest)
+                    .FirstOrDefaultAsync();
+
+                if (latestVersion != null)
+                {
+                    var removeContext = new RemoveContentContext(latestVersion);
+
+                    await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
+                    latestVersion.Latest = false;
+                    _session.Save(latestVersion);
+                    await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), removeContext, _logger);
+                }
             }
             else if (removePublished)
             {
-                await UnpublishAsync(updatingVersion);
+                var publishedVersion = await _session.Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId == updatingVersion.ContentItemId && x.Published)
+                    .FirstOrDefaultAsync();
+
+                if (publishedVersion != null)
+                {
+                    var removeContext = new RemoveContentContext(publishedVersion);
+
+                    await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
+                    publishedVersion.Published = false;
+                    publishedVersion.Latest = false;
+                    _session.Save(publishedVersion);
+                    await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), removeContext, _logger);
+                }
             }
 
             updatingVersion.Merge(updatedVersion);

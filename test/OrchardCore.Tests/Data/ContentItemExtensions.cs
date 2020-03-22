@@ -43,8 +43,6 @@ namespace OrchardCore.Tests.Data
             Assert.Equal(actual.Field?.Text, value);
         }
 
-
-
         [Fact] 
         public void MergeReflectsChangesToWellKnownProperties()
         {
@@ -109,7 +107,6 @@ namespace OrchardCore.Tests.Data
             // Test
             Assert.Equal(contentItem.Id, contentItem.Id);
         }
-
 
         [Fact]
         public void MergeReflectsChangesToElements()

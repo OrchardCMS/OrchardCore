@@ -21,10 +21,10 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.InitializeAsync();
 
                 // Act
-                var recipe = context.MutateContentItem(context.OriginalBlogPost, jItem =>
+                var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
                 {
-                    jItem["ContentItemVersionId"] = "newVersion";
-                    jItem["DisplayText"] = "newVersion";
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "newVersion";
+                    jItem[nameof(ContentItem.DisplayText)] = "new version";
                 });
 
                 await context.PostRecipeAsync(recipe);
@@ -39,13 +39,15 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                             x.ContentType == "BlogPost").ListAsync();
 
                         Assert.Equal(2, blogPosts.Count());
-                        var originalVersion = blogPosts.First(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
-                        Assert.False(originalVersion.Latest);
-                        Assert.False(originalVersion.Published);
-                        var newVersion = blogPosts.First(x => x.ContentItemVersionId == "newVersion");
-                        Assert.Equal("newVersion", newVersion.DisplayText);
-                        Assert.True(newVersion.Latest);
-                        Assert.True(newVersion.Published);
+
+                        var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
+                        Assert.False(originalVersion?.Latest);
+                        Assert.False(originalVersion?.Published);
+
+                        var newVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == "newVersion");
+                        Assert.Equal("new version", newVersion?.DisplayText);
+                        Assert.True(newVersion?.Latest);
+                        Assert.True(newVersion?.Published);
                     });
                 }
             }
@@ -63,10 +65,10 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 var draftContentItemVersionId = (await content.Content.ReadAsAsync<ContentItem>()).ContentItemVersionId;
 
                 // Act
-                var recipe = context.MutateContentItem(context.OriginalBlogPost, jItem =>
+                var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
                     {
-                        jItem["ContentItemVersionId"] = "newVersion";
-                        jItem["DisplayText"] = "newVersion";
+                        jItem[nameof(ContentItem.ContentItemVersionId)] = "new version";
+                        jItem[nameof(ContentItem.DisplayText)] = "new version";
                     });
 
                 await context.PostRecipeAsync(recipe);
@@ -81,17 +83,18 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                             x.ContentType == "BlogPost").ListAsync();
 
                         Assert.Equal(3, blogPosts.Count());
-                        var originalVersion = blogPosts.First(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
-                        Assert.False(originalVersion.Latest);
-                        Assert.False(originalVersion.Published);
-                        var draftVersion = blogPosts.First(x => x.ContentItemVersionId == draftContentItemVersionId);
-                        Assert.False(draftVersion.Latest);
-                        Assert.False(draftVersion.Published);
+                        var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
+                        Assert.False(originalVersion?.Latest);
+                        Assert.False(originalVersion?.Published);
 
-                        var newVersion = blogPosts.First(x => x.ContentItemVersionId == "newVersion");
-                        Assert.Equal("newVersion", newVersion.DisplayText);
-                        Assert.True(newVersion.Latest);
-                        Assert.True(newVersion.Published);
+                        var draftVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == draftContentItemVersionId);
+                        Assert.False(draftVersion?.Latest);
+                        Assert.False(draftVersion?.Published);
+
+                        var newVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == "new version");
+                        Assert.Equal("new version", newVersion.DisplayText);
+                        Assert.True(newVersion?.Latest);
+                        Assert.True(newVersion?.Published);
                     });
                 }
             }
@@ -109,11 +112,11 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 var draftContentItemVersionId = (await content.Content.ReadAsAsync<ContentItem>()).ContentItemVersionId;
 
                 // Act
-                var recipe = context.MutateContentItem(context.OriginalBlogPost, jItem =>
+                var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
                 {
-                    jItem["ContentItemVersionId"] = "newDraftVersion";
-                    jItem["DisplayText"] = "newDraftVersion";
-                    jItem["Published"] = false;
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "newDraftVersion";
+                    jItem[nameof(ContentItem.DisplayText)] = "new draft version";
+                    jItem[nameof(ContentItem.Published)] = false;
                 });
 
                 await context.PostRecipeAsync(recipe);
@@ -128,23 +131,22 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                             x.ContentType == "BlogPost").ListAsync();
 
                         Assert.Equal(3, blogPosts.Count());
-                        var originalVersion = blogPosts.First(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
-                        Assert.False(originalVersion.Latest);
-                        Assert.True(originalVersion.Published);
-                        var draftVersion = blogPosts.First(x => x.ContentItemVersionId == draftContentItemVersionId);
-                        Assert.False(draftVersion.Latest);
-                        Assert.False(draftVersion.Published);
 
-                        var newDraftVersion = blogPosts.First(x => x.ContentItemVersionId == "newDraftVersion");
-                        Assert.Equal("newDraftVersion", newDraftVersion.DisplayText);
-                        Assert.True(newDraftVersion.Latest);
-                        Assert.False(newDraftVersion.Published);
+                        var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
+                        Assert.False(originalVersion?.Latest);
+                        Assert.True(originalVersion?.Published);
+
+                        var draftVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == draftContentItemVersionId);
+                        Assert.False(draftVersion?.Latest);
+                        Assert.False(draftVersion?.Published);
+
+                        var newDraftVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == "newDraftVersion");
+                        Assert.Equal("new draft version", newDraftVersion?.DisplayText);
+                        Assert.True(newDraftVersion?.Latest);
+                        Assert.False(newDraftVersion?.Published);
                     });
                 }
             }
         }
-
-
-
     }
 }

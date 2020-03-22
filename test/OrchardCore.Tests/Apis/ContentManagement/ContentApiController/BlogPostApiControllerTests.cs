@@ -126,7 +126,6 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             }
         }
 
-
         [Fact]
         public async Task ShouldCreateAndPublishNewContentItem()
         {
