@@ -74,6 +74,8 @@ nav:
 #        - Data: docs/topics/data/README.md
 #        - Configuration: docs/topics/configuration/README.md
         - Workflows: docs/topics/workflows/README.md
+    - Learn: 
+        - Training: docs/learn/README.md
     - Reference: 
         - CMS Modules: 
             - Content Types: docs/reference/modules/ContentTypes/README.md
