@@ -1,20 +1,20 @@
 site_name: Orchard Core Documentation
 theme:
-  name: 'material'
-  logo: 'docs/assets/images/orchard-logo.png'
-  favicon: 'docs/assets/images/favicon.ico'
+  name: material
+  logo: docs/assets/images/orchard-logo.png
+  favicon: docs/assets/images/favicon.ico
   features:
     - instant
     - tabs
   palette:
-    primary: 'blue'
-    accent: 'light blue'
+    primary: blue
+    accent: light blue
   static_templates:
     - 404.html
     
 extra:
   social:
-    - icon: fontawesome/light/leaf
+    - icon: fontawesome/leaf
       link: https://orchardcore.net
     - icon: fontawesome/brands/github-alt
       link: https://github.com/OrchardCMS/OrchardCore
