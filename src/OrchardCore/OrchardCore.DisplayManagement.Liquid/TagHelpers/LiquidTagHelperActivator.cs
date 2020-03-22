@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Mvc.Utilities;
 
@@ -15,13 +16,13 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
     public class LiquidTagHelperActivator
     {
-        private  const string AspPrefix = "asp-";
+        private const string AspPrefix = "asp-";
 
         public static readonly LiquidTagHelperActivator None = new LiquidTagHelperActivator();
 
         private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activatorByFactory;
-        private readonly Dictionary<string, Action<ITagHelper, ModelExpressionProvider, ViewDataDictionary<dynamic>, string, FluidValue>> _setters =
-            new Dictionary<string, Action<ITagHelper, ModelExpressionProvider, ViewDataDictionary<dynamic>, string, FluidValue>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Action<ITagHelper, ModelExpressionProvider, ViewDataDictionary<object>, string, FluidValue>> _setters =
+            new Dictionary<string, Action<ITagHelper, ModelExpressionProvider, ViewDataDictionary<object>, string, FluidValue>>(StringComparer.OrdinalIgnoreCase);
 
         private readonly Func<ViewContext, ITagHelper> _activatorByService;
         private readonly Action<object, object> _viewContextSetter;
@@ -59,15 +60,15 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     {
                         allNames.Add(htmlAttribute.Name.Substring(AspPrefix.Length).ToPascalCaseDash());
                     }
-                    
-                    var dictonaryPrefix = htmlAttribute.DictionaryAttributePrefix;
-                    if (dictonaryPrefix != null)
-                    {
-                        allNames.Add(dictonaryPrefix.ToPascalCaseDash());
 
-                        if (dictonaryPrefix.StartsWith(AspPrefix, StringComparison.Ordinal))
+                    var dictionaryPrefix = htmlAttribute.DictionaryAttributePrefix;
+                    if (dictionaryPrefix != null)
+                    {
+                        allNames.Add(dictionaryPrefix.Replace('-', '_'));
+
+                        if (dictionaryPrefix.StartsWith(AspPrefix, StringComparison.Ordinal))
                         {
-                            allNames.Add(dictonaryPrefix.Substring(AspPrefix.Length).ToPascalCaseDash());
+                            allNames.Add(dictionaryPrefix.Substring(AspPrefix.Length).Replace('-', '_'));
                         }
                     }
                 }
@@ -98,25 +99,19 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                         }
                         else if (property.PropertyType == typeof(IDictionary<string, string>))
                         {
-                            IDictionary<string, string> dictValue = (IDictionary<string, string>)getter(h);
-                            if (!string.IsNullOrWhiteSpace(k))
-                            {
-                                dictValue[k] = v.ToStringValue();
-                            }
-                            value = dictValue;
+                            var dictionary = (IDictionary<string, string>)getter(h);
+                            dictionary[k] = v.ToStringValue();
+                            value = dictionary;
                         }
                         else if (property.PropertyType == typeof(IDictionary<string, object>))
                         {
-                            IDictionary<string, object> dictValue = (IDictionary<string, object>)getter(h);
-                            if (!string.IsNullOrWhiteSpace(k))
-                            {
-                                dictValue[k] = v.ToObjectValue();
-                            }
-                            value = dictValue;
+                            var dictionary = (IDictionary<string, object>)getter(h);
+                            dictionary[k] = v.ToObjectValue();
+                            value = dictionary;
                         }
                         else if (property.PropertyType == typeof(ModelExpression))
                         {
-                            value = mp.CreateModelExpression<dynamic>(vd, v.ToStringValue());
+                            value = mp.CreateModelExpression(vd, v.ToStringValue());
                         }
                         else
                         {
@@ -164,24 +159,43 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 tagHelper = _activatorByFactory(factory, context);
             }
 
-            var dictKeySeperator = new char[] { '-', '_' };
+            var expresionProvider = context.HttpContext.RequestServices.GetRequiredService<ModelExpressionProvider>();
 
-            var expresionProvider = context.HttpContext.RequestServices.GetService(typeof(ModelExpressionProvider)) as ModelExpressionProvider;
-
-            var viewData = new ViewDataDictionary<dynamic>(context.ViewData);
+            var viewData = context.ViewData as ViewDataDictionary<object>;
+            if (viewData == null)
+            {
+                viewData = new ViewDataDictionary<object>(context.ViewData);
+            }
 
             foreach (var name in arguments.Names)
             {
                 var propertyName = name.ToPascalCaseUnderscore();
-                var dictPropertyName = propertyName.LastIndexOfAny(dictKeySeperator) > -1 ? propertyName.Substring(0, propertyName.LastIndexOfAny(dictKeySeperator) + 1) : String.Empty;
-                var dictPropertyKey = propertyName.LastIndexOfAny(dictKeySeperator) > -1 ? propertyName.Substring(propertyName.LastIndexOfAny(dictKeySeperator) + 1) : String.Empty;
+                var dictionaryName = String.Empty;
+                var dictionaryKey = String.Empty;
+
+                if (!_setters.TryGetValue(propertyName, out var setter))
+                {
+                    var index = name.LastIndexOf('_');
+
+                    if (index > -1)
+                    {
+                        dictionaryName = name.Substring(0, index + 1);
+                        dictionaryKey = name.Substring(index + 1);
+
+                        if (dictionaryName.Length > 0 && dictionaryKey.Length > 0)
+                        {
+                            _setters.TryGetValue(dictionaryName, out setter);
+                        }
+                    }
+                }
+
                 var found = false;
 
-                if (_setters.TryGetValue(propertyName, out var setter) || (!string.IsNullOrWhiteSpace(dictPropertyName) && _setters.TryGetValue(dictPropertyName, out setter)))
+                if (setter != null)
                 {
                     try
                     {
-                        setter(tagHelper, expresionProvider, viewData, dictPropertyKey, arguments[name]);
+                        setter(tagHelper, expresionProvider, viewData, dictionaryKey, arguments[name]);
                         found = true;
                     }
                     catch (ArgumentException e)
