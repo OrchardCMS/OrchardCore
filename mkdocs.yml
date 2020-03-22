@@ -14,11 +14,11 @@ theme:
     
 extra:
   social:
-    - type: fontawesome/light/leaf
+    - icon: fontawesome/light/leaf
       link: https://orchardcore.net
-    - type: fontawesome/brands/github-alt
+    - icon: fontawesome/brands/github-alt
       link: https://github.com/OrchardCMS/OrchardCore
-    - type: fontawesome/brands/twitter
+    - icon: fontawesome/brands/twitter
       link: https://twitter.com/OrchardCMS
 
 # Repository
