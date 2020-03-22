@@ -3,8 +3,9 @@ theme:
   name: 'material'
   logo: 'docs/assets/images/orchard-logo.png'
   favicon: 'docs/assets/images/favicon.ico'
-  feature:
-    tabs: true
+  features:
+    - instant
+    - tabs
   palette:
     primary: 'blue'
     accent: 'light blue'
