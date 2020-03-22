@@ -774,7 +774,7 @@ In following example, `route_returnUrl` adds `returnUrl` to form action.
 {% endform %}
 ```
 
-In following example, `route-id` adds `Model.TodoId` to hyperlink.
+In following example, `route-todoid` adds `Model.TodoId` to hyperlink.
 
 ```liquid
 {% a action: "Delete" , controller: "Todo", class: "btn btn-danger", route-todoid: Model.TodoId %}
