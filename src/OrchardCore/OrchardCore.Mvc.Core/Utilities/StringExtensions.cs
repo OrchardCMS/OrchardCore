@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Mvc.Utilities
@@ -445,7 +444,7 @@ namespace OrchardCore.Mvc.Utilities
             var nextIsUpper = true;
             attribute = attribute.Trim();
             var result = new StringBuilder(attribute.Length);
-            var endsWithDelimiter = attribute.EndsWith(upperAfterDelimiter);
+
             foreach (var c in attribute)
             {
                 if (c == upperAfterDelimiter)
@@ -466,11 +465,6 @@ namespace OrchardCore.Mvc.Utilities
                 nextIsUpper = false;
             }
 
-            if (endsWithDelimiter)
-            {
-                result.Append(upperAfterDelimiter);
-            }
-            
             return result.ToString();
         }
     }
