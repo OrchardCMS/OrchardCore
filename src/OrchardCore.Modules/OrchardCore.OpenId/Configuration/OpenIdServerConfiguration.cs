@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
@@ -109,6 +108,7 @@ namespace OrchardCore.OpenId.Configuration
             options.IgnoreScopePermissions = true;
             options.Issuer = settings.Authority;
             options.UseRollingTokens = settings.UseRollingTokens;
+            options.UseReferenceTokens = settings.UseReferenceTokens;
 
             foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
             {
@@ -118,8 +118,7 @@ namespace OrchardCore.OpenId.Configuration
             if (settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT)
             {
                 options.AccessTokenHandler = new JwtSecurityTokenHandler();
-            }
-            options.UseReferenceTokens = IsUseReferenceTokens(settings.AccessTokenFormat, settings.UseReferenceTokens);
+            }           
 
             options.AuthorizationEndpointPath = settings.AuthorizationEndpointPath;
             options.LogoutEndpointPath = settings.LogoutEndpointPath;
@@ -184,15 +183,6 @@ namespace OrchardCore.OpenId.Configuration
 
         public void Configure(string name, OpenIddictValidationOptions options)
         {
-            if (SupportedValidationSchemes().Any(scheme => scheme.Equals(name)))
-            {
-                var serverSettings = GetServerSettingsAsync().GetAwaiter().GetResult();
-                if (serverSettings != null)
-                {
-                    options.UseReferenceTokens = IsUseReferenceTokens(serverSettings.AccessTokenFormat, serverSettings.UseReferenceTokens);
-                }
-            }
-
             // Ignore validation handler instances that don't correspond to the private instance managed by the OpenID module.
             if (!string.Equals(name, OpenIdConstants.Schemes.Userinfo))
             {
@@ -201,11 +191,12 @@ namespace OrchardCore.OpenId.Configuration
 
             options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
 
-            IEnumerable<string> SupportedValidationSchemes()
+            var serverSettings = GetServerSettingsAsync().GetAwaiter().GetResult();
+            if (serverSettings == null)
             {
-                yield return OpenIdConstants.Schemes.Userinfo;
-                yield return OpenIddictValidationDefaults.AuthenticationScheme;
+                return;
             }
+            options.UseReferenceTokens = serverSettings.UseReferenceTokens;
         }
 
         public void Configure(OpenIddictValidationOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
@@ -221,13 +212,6 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             return settings;
-        }
-
-        private bool IsUseReferenceTokens(OpenIdServerSettings.TokenFormat tokenFormat, bool useReferenceTokens)
-        {
-            return tokenFormat == OpenIdServerSettings.TokenFormat.JWT
-                    ? false
-                    : useReferenceTokens;
         }
     }
 }

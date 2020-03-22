@@ -29,10 +29,7 @@ namespace OrchardCore.OpenId.Recipes
             var model = context.Step.ToObject<OpenIdServerSettingsStepModel>();
 
             var settings = await _serverService.GetSettingsAsync();
-            settings.AccessTokenFormat = model.AccessTokenFormat;
-            settings.UseReferenceTokens = settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT
-                                           ? false
-                                           : model.UseReferenceTokens;
+            settings.AccessTokenFormat = model.AccessTokenFormat;            
             settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
 
             settings.CertificateStoreLocation = model.CertificateStoreLocation;
@@ -85,6 +82,7 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             settings.UseRollingTokens = model.UseRollingTokens;
+            settings.UseReferenceTokens = model.UseReferenceTokens;
 
             await _serverService.UpdateSettingsAsync(settings);
         }
