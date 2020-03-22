@@ -8,4 +8,4 @@ The health check endpoint is available at `/health/live` for each  tenant that n
 
 ## Extending health checks
 
-More information about health checks in ASP.NET Core can be found here: <https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-2.2>
+More information about health checks in ASP.NET Core can be found here: <https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks>
