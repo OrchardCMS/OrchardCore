@@ -21,7 +21,8 @@ namespace OrchardCore.Users.Services
         IUserPasswordStore<IUser>,
         IUserEmailStore<IUser>,
         IUserSecurityStampStore<IUser>,
-        IUserLoginStore<IUser>
+        IUserLoginStore<IUser>,
+        IUserLockoutStore<IUser>
     {
         private readonly ISession _session;
         private readonly IRoleService _roleService;
@@ -524,5 +525,87 @@ namespace OrchardCore.Users.Services
         }
 
         #endregion IUserClaimStore<IUser>
+
+        #region IUserLockoutStore<IUser>
+
+        public Task<int> GetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(((User)user).AccessFailedCount);
+        }
+
+        public Task<bool> GetLockoutEnabledAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(((User)user).LockoutEnabled);
+        }
+
+        public Task<DateTimeOffset?> GetLockoutEndDateAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(((User)user).LockoutEnd);
+        }
+
+        public Task<int> IncrementAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).AccessFailedCount++;
+
+            return Task.FromResult(((User)user).AccessFailedCount);
+        }
+
+        public Task ResetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).AccessFailedCount = 4;
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetLockoutEnabledAsync(IUser user, bool enabled, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).LockoutEnabled = enabled;
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetLockoutEndDateAsync(IUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).LockoutEnd = lockoutEnd;
+
+            return Task.CompletedTask;
+        }
+
+        #endregion IUserLockoutStore<IUser>
     }
 }
