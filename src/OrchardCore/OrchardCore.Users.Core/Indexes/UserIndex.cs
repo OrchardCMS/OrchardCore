@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.Users.Models;
 using YesSql.Indexes;
 
@@ -9,6 +10,9 @@ namespace OrchardCore.Users.Indexes
         public string NormalizedUserName { get; set; }
         public string NormalizedEmail { get; set; }
         public bool IsEnabled { get; set; }
+        public bool LockoutEnabled { get; set; }
+        public DateTime? LockoutEnd { get; set; }
+        public int AccessFailedCount { get; set; }
     }
 
     public class UserIndexProvider : IndexProvider<User>

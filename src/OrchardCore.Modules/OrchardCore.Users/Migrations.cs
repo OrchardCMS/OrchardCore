@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.Data.Migration;
 using OrchardCore.Users.Indexes;
 
@@ -46,6 +47,24 @@ namespace OrchardCore.Users
             );
 
             return 4;
+        }
+
+        public int UpdateFrom4()
+        {
+            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+                .AddColumn<bool>(nameof(UserIndex.LockoutEnabled), c => c.NotNull().WithDefault(false)));
+
+            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+                .AddColumn<DateTime>(nameof(UserIndex.LockoutEnd), c => c.Nullable()));
+
+            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+                .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
+
+            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+                .CreateIndex("IDX_UserIndex_LockoutEnabled", "LockoutEnabled")
+            );
+
+            return 5;
         }
     }
 }
