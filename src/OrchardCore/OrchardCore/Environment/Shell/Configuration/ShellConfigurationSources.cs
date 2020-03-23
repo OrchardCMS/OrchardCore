@@ -19,10 +19,12 @@ namespace OrchardCore.Environment.Shell.Configuration
             Directory.CreateDirectory(_container);
         }
 
-        public void AddSources(string tenant, IConfigurationBuilder builder)
+        public Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
             builder
                 .AddJsonFile(Path.Combine(_container, tenant, "appsettings.json"), optional: true);
+
+            return Task.CompletedTask;
         }
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
