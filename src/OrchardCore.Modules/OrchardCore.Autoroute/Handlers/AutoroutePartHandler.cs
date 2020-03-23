@@ -112,6 +112,13 @@ namespace OrchardCore.Autoroute.Handlers
             // Compute the Path only if it's empty
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
+                // Validate path is unique here as api services do not provide validation.
+                if (!await IsPathUniqueAsync(part.Path, part))
+                {
+                    part.Path = await GenerateUniquePathAsync(part.Path, part);
+                    part.Apply();
+                }
+
                 return;
             }
 

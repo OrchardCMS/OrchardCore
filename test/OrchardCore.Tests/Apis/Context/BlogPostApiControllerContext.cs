@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
 
@@ -8,8 +9,11 @@ namespace OrchardCore.Tests.Apis.Context
     public class BlogPostApiControllerContext : SiteContext
     {
         public static IShellHost ShellHost { get; private set; }
+
         public string BlogContentItemId { get; private set; }
         public ContentItem BlogPost { get; private set; }
+        public string CategoriesTaxonomyContentItemId { get; private set; }
+        public string TagsTaxonomyContentItemId { get; private set; }
 
         static BlogPostApiControllerContext()
         {
@@ -20,28 +24,23 @@ namespace OrchardCore.Tests.Apis.Context
         {
             await base.InitializeAsync();
 
-            var blogPostResult = await GraphQLClient
-                .Content
-                .Query("blogPost", builder =>
-                {
-                    builder
-                        .WithField("contentItemId");
-                });
+            var body = new ContentTypeQueryResourceBuilder("blogPost")
+                    .WithField("contentItemId").Build() +
+                 new ContentTypeQueryResourceBuilder("blog")
+                    .WithField("contentItemId").Build() +
+                 new ContentTypeQueryResourceBuilder("taxonomy")
+                    .WithField("contentItemId").Build();
 
-            var blogPostContentItemId = blogPostResult["data"]["blogPost"].First["contentItemId"].ToString();
+            var result = await GraphQLClient.Content.Query(body);
+
+            var blogPostContentItemId = result["data"]["blogPost"].First["contentItemId"].ToString();
 
             var content = await Client.GetAsync($"api/content/{blogPostContentItemId}");
             BlogPost = await content.Content.ReadAsAsync<ContentItem>();
 
-            var blogResult = await GraphQLClient
-                .Content
-                .Query("blog", builder =>
-                {
-                    builder
-                        .WithField("contentItemId");
-                });
+            BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
 
-            BlogContentItemId = blogResult["data"]["blog"].First["contentItemId"].ToString();
+            TagsTaxonomyContentItemId = result["data"]["taxonomy"][1]["contentItemId"].ToString();
         }
     }
 }

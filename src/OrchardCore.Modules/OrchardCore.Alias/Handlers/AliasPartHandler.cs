@@ -40,6 +40,13 @@ namespace OrchardCore.Alias.Handlers
             // Compute the Alias only if it's empty
             if (!String.IsNullOrEmpty(part.Alias))
             {
+                // Validate path is unique here as api services do not provide validation.
+                if (!await IsAliasUniqueAsync(part.Alias, part))
+                {
+                    part.Alias = await GenerateUniqueAliasAsync(part.Alias, part);
+                    part.Apply();
+                }
+
                 return;
             }
 
