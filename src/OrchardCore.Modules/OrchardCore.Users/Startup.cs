@@ -118,7 +118,12 @@ namespace OrchardCore.Users
 
             // Adds the default token providers used to generate tokens for reset passwords, change email
             // and change telephone number operations, and for two factor authentication token generation.
-            services.AddIdentity<IUser, IRole>().AddDefaultTokenProviders();
+            services.AddIdentity<IUser, IRole>(opt =>
+            {
+                opt.Lockout.AllowedForNewUsers = true;
+                opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+                opt.Lockout.MaxFailedAccessAttempts = 3;
+            }).AddDefaultTokenProviders();
 
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
             // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
