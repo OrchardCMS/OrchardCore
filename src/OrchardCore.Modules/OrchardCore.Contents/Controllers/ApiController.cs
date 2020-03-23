@@ -93,10 +93,6 @@ namespace OrchardCore.Content.Controllers
 
                 contentItem.Merge(model);
 
-                // Set published and latest values here or content manager may no-op.
-                contentItem.Published = false;
-                contentItem.Latest = true;
-
                 await _contentManager.UpdateAsync(contentItem);
 
                 if (!draft)

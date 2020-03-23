@@ -114,7 +114,7 @@ namespace OrchardCore.ContentManagement
                 contentItem.Data.Remove(nameof(contentItem.Author));
             }
 
-            // TODO confirm why the remaing properties are not copied over.
+            // Do not set these properties on the content item as they are the responsibility of the content manager.
             if (props.ContainsKey(nameof(contentItem.Published)))
             {
                 contentItem.Data.Remove(nameof(contentItem.Published));
