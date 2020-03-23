@@ -55,7 +55,7 @@ namespace OrchardCore.Users
                 .AddColumn<bool>(nameof(UserIndex.LockoutEnabled), c => c.NotNull().WithDefault(false)));
 
             SchemaBuilder.AlterTable(nameof(UserIndex), table => table
-                .AddColumn<DateTimeOffset>(nameof(UserIndex.LockoutEnd), c => c.Nullable()));
+                .AddColumn<DateTimeOffset?>(nameof(UserIndex.LockoutEnd), c => c.Nullable()));
 
             SchemaBuilder.AlterTable(nameof(UserIndex), table => table
                 .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));

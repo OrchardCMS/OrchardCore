@@ -577,7 +577,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            ((User)user).AccessFailedCount = 4;
+            ((User)user).AccessFailedCount = 0;
 
             return Task.CompletedTask;
         }
