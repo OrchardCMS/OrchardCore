@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
@@ -11,10 +11,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Users\OrchardCore.Users.csproj" />
 
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Menu\OrchardCore.Menu.csproj" />
   </ItemGroup>

@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OrchardCore.Apis.GraphQL.Client
 {
@@ -61,7 +61,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             // Field-level argument exists
             else if (queryValues is IDictionary<string, string>)
             {
-                ((IDictionary<string, string>) queryValues)
+                ((IDictionary<string, string>)queryValues)
                     .Add(fieldName.ToGraphQLStringFormat(), fieldValue);
             }
             else
@@ -104,7 +104,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             return this;
         }
 
-        internal string Build()
+        public string Build()
         {
             var sb = new StringBuilder(_contentType);
 
@@ -115,6 +115,11 @@ namespace OrchardCore.Apis.GraphQL.Client
                 for (var i = 0; i < _queries.Count; i++)
                 {
                     var query = _queries.ElementAt(i);
+
+                    if (i > 0)
+                    {
+                        sb.Append(' ');
+                    }
 
                     // Top-level argument
                     if (query.Value is string)
@@ -153,18 +158,35 @@ namespace OrchardCore.Apis.GraphQL.Client
                 sb.Append(')');
             }
 
-            sb.Append(" { ");
+            var hasFields = _keys.Count > 0 || _nested.Count > 0;
+
+            sb.Append(hasFields ? " { " : " {");
 
             sb.AppendJoin(' ', _keys);
 
-            foreach (var item in _nested)
+            if (_nested.Count > 0)
             {
-                sb.Append(item.Build());
+                if (_keys.Count > 0)
+                {
+                    sb.Append(' ');
+                }
+
+                var first = true;
+
+                foreach (var item in _nested)
+                {
+                    if (!first)
+                    {
+                        sb.Append(' ');
+                    }
+
+                    sb.Append(item.Build());
+                    first = false;
+                }
             }
 
-            sb.Append(" } ");
-
-            return sb.ToString().Trim();
+            sb.Append(hasFields ? " }" : "}");
+            return sb.ToString().TrimStart();
         }
     }
 }

@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Http;
-using OrchardCore.DisplayManagement.Theming;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using OrchardCore.DisplayManagement.Theming;
 
 namespace OrchardCore.Admin
 {

@@ -3,11 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
 using OrchardCore.GitHub.Configuration;
 using OrchardCore.GitHub.Drivers;
+using OrchardCore.GitHub.Recipes;
 using OrchardCore.GitHub.Services;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -29,6 +31,7 @@ namespace OrchardCore.GitHub
             services.AddSingleton<IGitHubAuthenticationService, GitHubAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GitHubAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuGitHubLogin>();
+            services.AddRecipeExecutionStep<GitHubAuthenticationSettingsStep>();
             // Register the options initializers required by the GitHub Handler.
             services.TryAddEnumerable(new[]
             {

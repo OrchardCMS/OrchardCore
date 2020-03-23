@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace OrchardCore.Queries.Sql.ViewModels
 {
     public class SqlQueryViewModel

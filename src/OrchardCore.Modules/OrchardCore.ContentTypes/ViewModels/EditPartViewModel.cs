@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Mvc.Utilities;
@@ -22,6 +21,7 @@ namespace OrchardCore.ContentTypes.ViewModels
         public string Name { get; set; }
 
         private string _displayName;
+
         [Required]
         public string DisplayName
         {

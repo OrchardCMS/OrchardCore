@@ -9,9 +9,11 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Drivers;
+using OrchardCore.Twitter.Recipes;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Signin.Configuration;
 using OrchardCore.Twitter.Signin.Drivers;
@@ -36,6 +38,8 @@ namespace OrchardCore.Twitter
             services.AddScoped<IDisplayDriver<ISite>, TwitterSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddSingleton<ITwitterSettingsService, TwitterSettingsService>();
+
+            services.AddRecipeExecutionStep<TwitterSettingsStep>();
 
             services.AddTransient<TwitterClientMessageHandler>();
 

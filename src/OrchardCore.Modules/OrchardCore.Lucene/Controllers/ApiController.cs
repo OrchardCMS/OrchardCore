@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using OrchardCore.Mvc.Utilities;
 using YesSql;
 
 namespace OrchardCore.Lucene.Controllers
@@ -35,7 +36,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             var luceneQuery = new LuceneQuery
@@ -63,7 +64,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             var luceneQuery = new LuceneQuery
@@ -78,7 +79,7 @@ namespace OrchardCore.Lucene.Controllers
 
             var result = await _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
 
-            return new ObjectResult(result);
+            return new ObjectResult(result.Items);
         }
     }
 }

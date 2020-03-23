@@ -1,10 +1,138 @@
 @model OrchardCore.Users.Models.LoginSettings
 
-<fieldset class="form-group" asp-validation-class-for="UseSiteTheme">
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+
+<div class="form-group" asp-validation-class-for="UseSiteTheme">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseSiteTheme" />
         <span asp-validation-for="UseSiteTheme"></span>
         <label class="custom-control-label" asp-for="UseSiteTheme">@T["Use site theme for login page"]</label>
         <span class="hint">— @T["Requires an active site theme."]</span>
     </div>
-</fieldset>
+</div>
+
+<div class="form-group" asp-validation-class-for="UseExternalProviderIfOnlyOneDefined">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="UseExternalProviderIfOnlyOneDefined" />
+        <span asp-validation-for="UseExternalProviderIfOnlyOneDefined"></span>
+        <label class="custom-control-label" asp-for="UseExternalProviderIfOnlyOneDefined">@T["Use external provider for login."]</label>
+        <span class="hint">— @T["If only one external provider is defined, auto challenge the provider to login. You should also configure registration options"]</span>
+    </div>
+</div>
+
+<div class="form-group" asp-validation-class-for="DisableLocalLogin">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="DisableLocalLogin" />
+        <span asp-validation-for="DisableLocalLogin"></span>
+        <label class="custom-control-label" asp-for="DisableLocalLogin">@T["Disable local password login."]</label>
+        <span class="hint">— @T["When selected, users are not allowed to login with username/password. Make sure there is at least one admin with linked account"]</span>
+    </div>
+</div>
+
+<div class="form-group" asp-validation-class-for="UseScriptToSyncRoles">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="UseScriptToSyncRoles" />
+        <span asp-validation-for="UseScriptToSyncRoles"></span>
+        <label class="custom-control-label" asp-for="UseScriptToSyncRoles">@T["Use a script to set user roles based on external provider claims"]</label>
+        <span class="hint">— @T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
+    </div>
+    <pre>
+*************************************************************************************************
+* context           : {user,loginProvider,claims[],currentRoles[],rolesToRemove[],rolesToAdd[]} *
+* ============================================================================================= *
+* -user             : {userName}                                                                *
+*  -userName        : String                                                                    *
+* -loginProvider    : String                                                                    *
+* -externalClaims   : [{subject,issuer,originalIssuer,properties[],type,value,valueType}]       *
+*  -subject         : String                                                                    *
+*  -issuer          : String                                                                    *
+*  -originalIssuer  : String                                                                    *
+*  -properties      : [{key,value}]                                                             *
+*   -key            : String                                                                    *
+*   -value          : String                                                                    *
+*  -type            : String                                                                    *
+*  -value           : String                                                                    *
+*  -valueType       : String                                                                    *
+* -rolesToAdd       : [String]                                                                  *
+* -rolesToRemove    : [String]                                                                  *
+* ============================================================================================= *
+*    Description                                                                                *
+* --------------------------------------------------------------------------------------------- *
+*    Use the loginProvider and externalClaims properties of the context variable to inspect     *
+*    who authenticated the user and with what claims. Check currentRoles property and apply     *
+*    your business logic to fill the rolesToAdd and rolesToRemove arrays in order to update     *
+*    the roles of the user                                                                      *
+*************************************************************************************************
+</pre>
+</div>
+
+<div class="form-group" asp-validation-class-for="SyncRolesScript">
+    <button type="button" class="btn btn-secondary mb-2" onclick="resetScript()">@T["Reset Script"]</button>
+    <textarea asp-for="SyncRolesScript" rows="1" class="form-control content-preview-text"></textarea>
+</div>
+
+<script at="Foot">
+    function resetScript(keepText) {
+        var editor = $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor');
+        if (!keepText) {
+            editor.doc.setValue(
+                '/* Uncomment to map AzureAD\n' +
+                'switch (context.loginProvider) {\n' +
+                '    case "AzureAD":\n' +
+                '        context.externalClaims.forEach(claim => {\n' +
+                '            if (claim.Type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {\n' +
+                '                switch (claim.Value) {\n' +
+                '                    case "Writer":\n' +
+                '                        context.rolesToAdd.push("Author");\n' +
+                '                        break;\n' +
+                '                    case "Admin":\n' +
+                '                        context.rolesToAdd.push("Administrator");\n' +
+                '                        break;\n' +
+                '                    default:\n' +
+                '                        log("Warning", "Role " + claim.Value + " was not handled");\n' +
+                '                        break;\n' +
+                '                }\n' +
+                '            }\n' +
+                '        });\n' +
+                '    default:\n' +
+                '        log("Warning", "Provider " + loginProvider + " was not handled");\n' +
+    	        '        break;\n' +
+                '}\n' +
+                '*/\n'
+            );
+        }
+    }
+    function toggleEditorState() {
+        var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncRoles)');
+        var editor = $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor');
+        if (syncRolesCheckbox.checked) {
+            editor.options.readOnly = false;
+        } else {
+            editor.options.readOnly = "nocursor";
+        }
+    }
+$(function () {
+    var textArea = document.getElementById('@Html.IdFor(x => x.SyncRolesScript)');
+    var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncRoles)');
+    if (textArea == null) {
+        return;
+    }
+    var editor = CodeMirror.fromTextArea(textArea, {
+        autoRefresh: true,
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        autoCloseTags: true,
+        mode: "javascript"
+    });
+    $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor', editor);
+    resetScript(editor.doc.lineCount() > 1);
+    syncRolesCheckbox.addEventListener("change", toggleEditorState);
+    toggleEditorState();
+});
+</script>

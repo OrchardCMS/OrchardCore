@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
@@ -10,15 +10,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Setup.Abstractions\OrchardCore.Setup.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Setup.Core\OrchardCore.Setup.Core.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
   </ItemGroup>
-
+  
 </Project>

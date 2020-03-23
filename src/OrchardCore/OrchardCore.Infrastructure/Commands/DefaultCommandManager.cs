@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,16 +10,15 @@ namespace OrchardCore.Environment.Commands
     {
         private readonly IEnumerable<ICommandHandler> _commandHandlers;
         private readonly CommandHandlerDescriptorBuilder _builder = new CommandHandlerDescriptorBuilder();
+        private readonly IStringLocalizer S;
 
         public DefaultCommandManager(IEnumerable<ICommandHandler> commandHandlers,
             IStringLocalizer<DefaultCommandManager> localizer)
         {
             _commandHandlers = commandHandlers;
 
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public async Task ExecuteAsync(CommandParameters parameters)
         {
@@ -36,10 +35,10 @@ namespace OrchardCore.Environment.Commands
                 var commandList = string.Join(",", GetCommandDescriptors().SelectMany(d => d.Names).ToArray());
                 if (matches.Any())
                 {
-                    throw new Exception(T["Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
+                    throw new Exception(S["Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
                         commandMatch, commandList]);
                 }
-                throw new Exception(T["No command found matching arguments \"{0}\". Commands available: {1}.",
+                throw new Exception(S["No command found matching arguments \"{0}\". Commands available: {1}.",
                     commandMatch, commandList]);
             }
         }
@@ -51,7 +50,7 @@ namespace OrchardCore.Environment.Commands
 
         private IEnumerable<Match> MatchCommands(CommandParameters parameters)
         {
-            // Commands are matched with arguments. first argument 
+            // Commands are matched with arguments. first argument
             // is the command others are arguments to the command.
             return _commandHandlers.SelectMany(h =>
                     MatchCommands(parameters, parameters.Arguments.Count(), _builder.Build(h.GetType()), h)).ToList();

@@ -10,24 +10,19 @@
     var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
-    var tenantPath = string.IsNullOrEmpty(ShellSettings.RequestUrlPrefix) ? string.Empty : "/" + ShellSettings.RequestUrlPrefix;
+    var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "LocalizationSetContentPickerAdmin", action = "SearchLocalizationSets", part = partName, field = fieldName });
     var vueElementId = $"LocalizedContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
 }
 
-<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
-<script asp-src="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.js" asp-name="vuemultiselect" at="Foot"></script>
-<style asp-src="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css"></style>
-<script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
-<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-wrapper.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-wrapper.js" asp-name="vue-multiselect-wrapper" at="Foot" depends-on="vuejs, vuemultiselect, sortable"></script>
-<style asp-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-wrapper.min.css" debug-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-wrapper.css"></style>
+<script asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-wrapper.js" at="Foot" depends-on="vuejs, vue-multiselect, sortable, vuedraggable"></script>
+<style asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-wrapper.min.css" debug-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-wrapper.css" depends-on="vue-multiselect"></style>
 
 <label asp-for="LocalizationSets">@Model.PartFieldDefinition.DisplayName()</label>
 
-<div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="LocalizationSetContentPicker" data-selected-items="@selectedItems" data-tenant-path="@tenantPath" data-search-url="ContentFields/SearchLocalizationSets?part=@partName&field=@fieldName" data-multiple="@multiple">
+<div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="LocalizationSetContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple">
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <ul class="list-group w-xl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
             <draggable v-model="arrayOfItems">
                 <li v-for="(item, i) in arrayOfItems"
@@ -41,9 +36,9 @@
                 </li>
             </draggable>
         </ul>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="w-xl-50">
             <input asp-for="LocalizationSets" type="hidden" v-model="selectedIds" />
             <vue-multiselect v-model="value" :options="options" track-by="id"
@@ -65,6 +60,6 @@
                 <span class="hint">@settings.Hint</span>
             }
         </div>
-    </fieldset>
+    </div>
 </div>
 <script at="Foot" depends-on="vue-multiselect-wrapper">initVueMultiselect(document.querySelector("#@vueElementId"))</script>

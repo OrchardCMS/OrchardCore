@@ -35,7 +35,7 @@ namespace OrchardCore.Diagnostics
 
                     if (context.Response.StatusCode < 200 || context.Response.StatusCode >= 400)
                     {
-                        if (_contentTypeProvider.TryGetContentType(context.Request.Path, out var contentType))
+                        if (_contentTypeProvider.TryGetContentType(context.Request.Path.Value, out var contentType))
                         {
                             var statusCodePagesFeature = context.Features.Get<IStatusCodePagesFeature>();
                             if (statusCodePagesFeature != null)

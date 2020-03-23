@@ -5,7 +5,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Google
 {
-    public class Permissions : IPermissionProvider
+    public class Permissions
     {
         public static readonly Permission ManageGoogleAuthentication
             = new Permission(nameof(ManageGoogleAuthentication), "Manage Google Authentication settings");
@@ -13,27 +13,52 @@ namespace OrchardCore.Google
         public static readonly Permission ManageGoogleAnalytics
             = new Permission(nameof(ManageGoogleAnalytics), "Manage Google Analytics settings");
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        public class GoogleAuthentication : IPermissionProvider
         {
-            return Task.FromResult(new[]
+            public Task<IEnumerable<Permission>> GetPermissionsAsync()
             {
-                ManageGoogleAuthentication,
-                ManageGoogleAnalytics
+                return Task.FromResult(new[]
+                {
+                    ManageGoogleAuthentication
+                }
+                .AsEnumerable());
             }
-            .AsEnumerable());
+
+            public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+            {
+                yield return new PermissionStereotype
+                {
+                    Name = "Administrator",
+                    Permissions = new[]
+                    {
+                        ManageGoogleAuthentication
+                    }
+                };
+            }
         }
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        public class GoogleAnalytics : IPermissionProvider
         {
-            yield return new PermissionStereotype
+            public Task<IEnumerable<Permission>> GetPermissionsAsync()
             {
-                Name = "Administrator",
-                Permissions = new[]
+                return Task.FromResult(new[]
                 {
-                    ManageGoogleAuthentication,
                     ManageGoogleAnalytics
                 }
-            };
+                .AsEnumerable());
+            }
+
+            public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+            {
+                yield return new PermissionStereotype
+                {
+                    Name = "Administrator",
+                    Permissions = new[]
+                    {
+                        ManageGoogleAnalytics
+                    }
+                };
+            }
         }
     }
 }

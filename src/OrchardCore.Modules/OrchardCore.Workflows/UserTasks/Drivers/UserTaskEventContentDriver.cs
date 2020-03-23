@@ -5,11 +5,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
@@ -22,15 +19,14 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
 {
     public class UserTaskEventContentDriver : ContentDisplayDriver
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IWorkflowStore _workflowStore;
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowManager _workflowManager;
         private readonly INotifier _notifier;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHtmlLocalizer H;
 
         public UserTaskEventContentDriver(
-            IContentDefinitionManager contentDefinitionManager, 
             IWorkflowStore workflowStore,
             IActivityLibrary activityLibrary,
             IWorkflowManager workflowManager,
@@ -38,17 +34,14 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             IHtmlLocalizer<UserTaskEventContentDriver> localizer,
             IHttpContextAccessor httpContextAccessor)
         {
-            _contentDefinitionManager = contentDefinitionManager;
             _workflowStore = workflowStore;
             _activityLibrary = activityLibrary;
             _workflowManager = workflowManager;
             _notifier = notifier;
             _httpContextAccessor = httpContextAccessor;
 
-            T = localizer;
+            H = localizer;
         }
-
-        private IHtmlLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentItem contentItem)
         {
@@ -59,7 +52,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                     model.Actions = actions;
                 }).Location("Actions:30"),
             };
-            
+
             return Combine(results.ToArray());
         }
 
@@ -67,15 +60,15 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var action = (string)httpContext.Request.Form["submit.Save"];
-            if (action?.StartsWith("user-task.") == true)
+            if (action?.StartsWith("user-task.", StringComparison.Ordinal) == true)
             {
                 action = action.Substring("user-task.".Length);
 
                 var availableActions = await GetUserTaskActionsAsync(model.ContentItemId);
 
-                if(!availableActions.Contains(action))
+                if (!availableActions.Contains(action))
                 {
-                    _notifier.Error(T["Not authorized to trigger '{0}'", action]);
+                    _notifier.Error(H["Not authorized to trigger '{0}'", action]);
                 }
                 else
                 {
@@ -84,9 +77,9 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                 }
             }
 
-            return await EditAsync(model, updater);
+            return Edit(model);
         }
-        
+
         private async Task<IList<string>> GetUserTaskActionsAsync(string contentItemId)
         {
             var workflows = await _workflowStore.ListByActivityNameAsync(nameof(UserTaskEvent), contentItemId);
@@ -105,7 +98,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
 
         private IEnumerable<string> GetUserTaskActions(WorkflowState workflowState, string activityId, IEnumerable<string> userRoles)
         {
-            if(workflowState.ActivityStates.TryGetValue(activityId, out var activityState))
+            if (workflowState.ActivityStates.TryGetValue(activityId, out var activityState))
             {
                 var activity = _activityLibrary.InstantiateActivity<UserTaskEvent>(nameof(UserTaskEvent), activityState);
 

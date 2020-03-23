@@ -1,7 +1,9 @@
+using OrchardCore.Users.Models;
+
 namespace OrchardCore.Users.ViewModels
 {
     public class SummaryAdminUserViewModel
     {
-        public IUser User { get; set; }
+        public User User { get; set; }
     }
 }

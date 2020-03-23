@@ -28,10 +28,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
         static PredicateQuery()
         {
-            foreach(var property in typeof(ContentItemIndex).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase))
+            foreach (var property in typeof(ContentItemIndex).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase))
             {
                 _contentItemIndexProperties[property.Name] = property.Name;
-            }            
+            }
         }
 
         public string NewQueryParameter(object value)
@@ -64,7 +64,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                 return Dialect.QuoteForColumnName(alias);
             }
 
-            var values = propertyPath.Split(new[] { '.' }, 2);
+            var values = propertyPath.Split('.', 2);
             if (values.Length == 1)
             {
                 if (_aliases.TryGetValue(string.Empty, out alias))

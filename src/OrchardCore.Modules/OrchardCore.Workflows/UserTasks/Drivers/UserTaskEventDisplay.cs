@@ -16,7 +16,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
 
         protected override void UpdateActivity(UserTaskEventViewModel model, UserTaskEvent activity)
         {
-            activity.Actions = model.Actions.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
+            activity.Actions = model.Actions.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
             activity.Roles = model.Roles;
         }
     }

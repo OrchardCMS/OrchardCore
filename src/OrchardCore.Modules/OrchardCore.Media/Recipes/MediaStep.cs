@@ -45,9 +45,13 @@ namespace OrchardCore.Media.Recipes
 
                 if (stream != null)
                 {
-                    using (stream)
-                    {
+                    try
+                    { 
                         await _mediaFileStore.CreateFileFromStreamAsync(file.TargetPath, stream, true);
+                    }
+                    finally
+                    {
+                        stream?.Dispose();
                     }
                 }
             }

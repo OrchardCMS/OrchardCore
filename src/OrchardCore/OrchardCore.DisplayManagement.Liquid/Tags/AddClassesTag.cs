@@ -23,7 +23,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                 if (classes.Type == FluidValues.String)
                 {
-                    var values = classes.ToStringValue().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var values = classes.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                     foreach (var value in values)
                     {

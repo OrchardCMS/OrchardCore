@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -19,40 +18,39 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
+        private readonly IStringLocalizer S;
 
         public TaxonomyFieldDisplayDriver(
             IContentManager contentManager,
-            IStringLocalizer<TaxonomyFieldDisplayDriver> s)
+            IStringLocalizer<TaxonomyFieldDisplayDriver> localizer)
         {
             _contentManager = contentManager;
-            S = s;
+            S = localizer;
         }
-
-        public IStringLocalizer S { get; }
 
         public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayTaxonomyFieldViewModel>("TaxonomyField", model =>
+            return Initialize<DisplayTaxonomyFieldViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(TaxonomyField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditTaxonomyFieldViewModel>("TaxonomyField_Edit", async model =>
+            return Initialize<EditTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
             {
                 var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
                 model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
 
-                if (model.Taxonomy != null )
+                if (model.Taxonomy != null)
                 {
                     var termEntries = new List<TermEntry>();
-                    PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
+                    TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
 
                     model.TermEntries = termEntries;
                     model.UniqueValue = termEntries.FirstOrDefault(x => x.Selected)?.ContentItemId;
@@ -89,38 +87,6 @@ namespace OrchardCore.Taxonomies.Drivers
             }
 
             return Edit(field, context);
-        }
-
-        /// <summary>
-        /// Populates a list of <see cref="TermEntry"/> with the hierarchy of terms.
-        /// The list is ordered so that roots appear right before their child terms.
-        private void PopulateTermEntries(List<TermEntry> termEntries, TaxonomyField field, IEnumerable<ContentItem> contentItems, int level)
-        {
-            foreach(var contentItem in contentItems)
-            {
-                var children = Array.Empty<ContentItem>();
-
-                if (contentItem.Content.Terms is JArray termsArray)
-                {
-                    children = termsArray.ToObject<ContentItem[]>();
-                }
-
-                var termEntry = new TermEntry
-                {
-                    Term = contentItem,
-                    ContentItemId = contentItem.ContentItemId,
-                    Selected = field.TermContentItemIds.Contains(contentItem.ContentItemId),
-                    Level = level,
-                    IsLeaf = children.Length == 0
-                };
-
-                termEntries.Add(termEntry);
-
-                if (children.Length > 0)
-                {
-                    PopulateTermEntries(termEntries, field, children, level + 1);
-                }
-            }
         }
     }
 }

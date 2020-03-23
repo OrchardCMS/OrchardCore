@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
@@ -50,7 +49,7 @@ namespace OrchardCore.Media.Services
         private const int DefaultMaxFileSize = 30_000_000;
 
         private const string DefaultAssetsPath = "Media";
-        private static readonly PathString DefaultAssetsRequestPath = new PathString("/media");
+        private static readonly string DefaultAssetsRequestPath = "/media";
 
         private readonly IShellConfiguration _shellConfiguration;
 

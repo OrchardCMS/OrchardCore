@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Queries
 {
@@ -8,6 +7,6 @@ namespace OrchardCore.Queries
     {
         string Name { get; }
         Query Create();
-        Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
+        Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
     }
 }

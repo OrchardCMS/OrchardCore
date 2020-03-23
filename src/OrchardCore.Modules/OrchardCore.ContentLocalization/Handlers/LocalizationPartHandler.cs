@@ -3,8 +3,8 @@ using System.Globalization;
 using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.Localization;
 
 namespace OrchardCore.ContentLocalization.Handlers
 {
@@ -21,7 +21,11 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             return context.ForAsync<CultureAspect>(cultureAspect =>
             {
-                cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
+                if (part.Culture != null)
+                {
+                    cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
+                }
+
                 return Task.CompletedTask;
             });
         }
@@ -62,6 +66,14 @@ namespace OrchardCore.ContentLocalization.Handlers
                 Culture = part.Culture.ToLowerInvariant()
             });
 
+            return Task.CompletedTask;
+        }
+
+        public override Task CloningAsync(CloneContentContext context, LocalizationPart part)
+        {
+            var clonedPart = context.CloneContentItem.As<LocalizationPart>();
+            clonedPart.LocalizationSet = string.Empty;
+            clonedPart.Apply();
             return Task.CompletedTask;
         }
     }

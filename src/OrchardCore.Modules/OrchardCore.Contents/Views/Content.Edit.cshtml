@@ -5,7 +5,7 @@
 
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 
-<div class="edit-container">
+<div class="edit-container @(Model.Sidebar != null ? "sidebar" : "")">
     <div class="edit-body">
         <div class="edit-item-primary">
             @if (Model.Content != null)
@@ -26,6 +26,8 @@
             }
         </div>
 
+        @if (Model.Actions != null)
+        {
         <div class="edit-item-secondary group">
             <div class="edit-item-actions form-group">
                 @await DisplayAsync(Model.Actions)
@@ -40,6 +42,7 @@
                 }
             </div>
         </div>
+        }
     </div>
     @if (Model.Sidebar != null)
     {
@@ -50,7 +53,10 @@
     }
 </div>
 
-@if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
+@if (Model.Actions != null)
 {
-    @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
+    @if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
+    {
+        @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
+    }
 }

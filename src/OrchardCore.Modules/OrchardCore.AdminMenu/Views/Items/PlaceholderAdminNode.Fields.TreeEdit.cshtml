@@ -3,20 +3,20 @@
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin"></style>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
 
-<script asp-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js" debug-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-name="vuejs" at="Foot"></script>
 <script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="admin"></script>
 <script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="admin"></script>
 
 <h5>@T["Placeholder"]</h5>
 
-<fieldset class="form-group" asp-validation-class-for="LinkText">
+<div class="form-group" asp-validation-class-for="LinkText">
     <label asp-for="LinkText">@T["Link Text"]</label>
     <input asp-for="LinkText" class="form-control" />
     <span asp-validation-for="LinkText"></span>
     <span class="hint">@T["The text of the menu item as it will be shown in the tree."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="IconClass">@T["Icon"]</label>
 
     <div class="input-group mb-3">
@@ -44,9 +44,7 @@
         </div>
     </div>
     <span class="hint">@T["Select an icon to display when this menu item is at the first level."]</span>
-</fieldset>
-
-
+</div>
 
 <div id="iconPickerVue">
     <div class="modal" id="iconPickerModal" tabindex="-1" role="dialog" aria-labelledby="iconPickerModal" aria-hidden="true">

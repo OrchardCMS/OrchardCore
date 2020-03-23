@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,12 +9,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
+    <PackageReference Include="Azure.Storage.Blobs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WindowsAzure.Storage" />
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

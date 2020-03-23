@@ -7,7 +7,6 @@ namespace OrchardCore.Contents.Workflows.ViewModels
     {
         public ContentTaskViewModel()
         {
-
         }
 
         public ContentTaskViewModel(T activity)

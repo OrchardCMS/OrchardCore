@@ -4,30 +4,34 @@
     ContentItem contentItem = Model.ContentItem;
 }
 
-<div class="properties">
-    @if (Model.Actions != null)
-    {
-        <div class="related float-right">
-            @await DisplayAsync(Model.Actions)
+<div class="row">
+    <div class="col-xl-6 col-sm-12 title">
+        <div class="custom-control custom-checkbox float-left">
+            <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
+            <label class="custom-control-label" for="itemIds-@contentItem.Id"></label>
         </div>
-    }
+        <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> - <small class="text-muted">@T["Widget"]</small>
+        @if (Model.Tags != null)
+        {
+            @await DisplayAsync(Model.Tags)
+        }
+        @if (Model.Header != null)
+        {
+            <div class="header">@await DisplayAsync(Model.Header)</div>
+        }
 
-    <div class="custom-control custom-checkbox float-left">
-        <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
-        <label class="custom-control-label" for="itemIds-@contentItem.Id">&nbsp;</label>
+        @if (Model.Meta != null)
+        {
+            <div class="metadata">@await DisplayAsync(Model.Meta)</div>
+        }
     </div>
 
-    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" />
-
-    @if (Model.Header != null)
+    @if (Model.Actions != null)
     {
-        <div class="header">@await DisplayAsync(Model.Header)</div>
-    }
-
-    @if (Model.Meta != null)
-    {
-        <div class="metadata">
-            @await DisplayAsync(Model.Meta)
+        <div class="col-xl-6 col-sm-12 related">
+            <div class="float-right">
+                @await DisplayAsync(Model.Actions)
+            </div>
         </div>
     }
 </div>

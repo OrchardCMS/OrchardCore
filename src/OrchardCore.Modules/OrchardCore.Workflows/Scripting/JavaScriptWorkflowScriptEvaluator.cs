@@ -43,7 +43,7 @@ namespace OrchardCore.Workflows.Evaluators
             var directive = $"js:{expression}";
             var expressionContext = new WorkflowExecutionScriptContext(workflowContext);
 
-            await _workflowContextHandlers.InvokeAsync(x => x.EvaluatingScriptAsync(expressionContext), _logger);
+            await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingScriptAsync(expressionContext), expressionContext, _logger);
 
             var methodProviders = scopedMethodProviders.Concat(expressionContext.ScopedMethodProviders);
             return (T)_scriptingManager.Evaluate(directive, null, null, methodProviders);

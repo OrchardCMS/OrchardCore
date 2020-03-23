@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Lists.Controllers
 {
@@ -21,7 +21,7 @@ namespace OrchardCore.Lists.Controllers
             Logger = logger;
         }
 
-        ILogger Logger { get; set; }
+        private ILogger Logger { get; set; }
 
         public async Task<IActionResult> Rsd(string contentItemId)
         {

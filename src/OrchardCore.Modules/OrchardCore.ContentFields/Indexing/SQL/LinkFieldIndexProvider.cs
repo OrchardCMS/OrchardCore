@@ -12,8 +12,15 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 {
     public class LinkFieldIndex : ContentFieldIndex
     {
+        // Maximum length that MySql can support in an index under utf8 collation.
+        public const int MaxUrlSize = 768;
+
+        public const int MaxTextSize = 768;
+
         public string Url { get; set; }
+        public string BigUrl { get; set; }
         public string Text { get; set; }
+        public string BigText { get; set; }
     }
 
     public class LinkFieldIndexProvider : ContentFieldIndexProvider
@@ -81,8 +88,10 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                             ContentType = contentItem.ContentType,
                             ContentPart = fieldDefinition.PartDefinition.Name,
                             ContentField = fieldDefinition.Name,
-                            Url = field.Url?.Substring(0, Math.Min(field.Url.Length, 4000)),
-                            Text = field.Text?.Substring(0, Math.Min(field.Text.Length, 4000))
+                            Url = field.Url?.Substring(0, Math.Min(field.Url.Length, LinkFieldIndex.MaxUrlSize)),
+                            BigUrl = field.Url,
+                            Text = field.Text?.Substring(0, Math.Min(field.Text.Length, LinkFieldIndex.MaxTextSize)),
+                            BigText = field.Text
                         });
                     }
 

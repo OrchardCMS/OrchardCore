@@ -1,4 +1,3 @@
-
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Records
 @using YesSql;
@@ -11,16 +10,16 @@
     var taxonomies = await Session.Query<ContentItem, ContentItemIndex>().Where(x => x.ContentType == "Taxonomy" && x.Latest).ListAsync();
 }
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="row col-md">
         <label asp-for="Hint">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
-</fieldset>
+</div>
 
 <div class="row">
-    <fieldset class="form-group col-sm-6">
+    <div class="form-group col-sm-6">
         <label asp-for="TaxonomyContentItemId">@T["Taxonomy"]</label>
         <select asp-for="TaxonomyContentItemId" class="form-control">
             @foreach (var taxonomy in taxonomies)
@@ -28,29 +27,29 @@
                 <option value="@taxonomy.ContentItemId">@taxonomy</option>
             }
         </select>
-    </fieldset>
+    </div>
 </div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="custom-control custom-checkbox">
         <input asp-for="Required" type="checkbox" class="custom-control-input" />
         <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
         <span class="hint">— @T["Whether at least one element is selected."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="custom-control custom-checkbox">
         <input asp-for="Unique" type="checkbox" class="custom-control-input" />
         <label class="custom-control-label" asp-for="Unique">@T["Unique"]</label>
-        <span class="hint">— @T["Whether only one element is selected."]</span>
+        <span class="hint">— @T["Whether only one element can be selected."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="custom-control custom-checkbox">
         <input asp-for="LeavesOnly" type="checkbox" class="custom-control-input" />
         <label class="custom-control-label" asp-for="LeavesOnly">@T["Leaves only"]</label>
         <span class="hint">— @T["Whether leaves are the only items that can be selected."]</span>
     </div>
-</fieldset>
+</div>

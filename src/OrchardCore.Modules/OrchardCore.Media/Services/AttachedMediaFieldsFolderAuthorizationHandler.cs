@@ -10,13 +10,13 @@ namespace OrchardCore.Media.Services
     /// <summary>
     /// Check if the path passed as resource is inside the AttachedMediaFieldsFolder
     /// and in case it is, It checks if the user has ManageAttachedMediaFieldsFolder permission
-    /// </summary>     
+    /// </summary>
     public class AttachedMediaFieldsFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
         private readonly IMediaFileStore _fileStore;
-        private string _pathSeparator;
+        private char _pathSeparator;
         private string _mediaFieldsFolder;
 
         public AttachedMediaFieldsFolderAuthorizationHandler(IServiceProvider serviceProvider,
@@ -46,11 +46,11 @@ namespace OrchardCore.Media.Services
                 return;
             }
 
-            _pathSeparator = _fileStore.Combine("a", "b").Contains("/") ? "/" : "\\";
+            _pathSeparator = _fileStore.Combine("a", "b").Contains('/') ? '/' : '\\';
 
             // ensure end trailing slash
             _mediaFieldsFolder = _fileStore.NormalizePath(_attachedMediaFieldFileService.MediaFieldsFolder)
-                                .TrimEnd(_pathSeparator.ToCharArray()) + _pathSeparator;
+                                .TrimEnd(_pathSeparator) + _pathSeparator;
 
             var path = context.Resource as string;
 
@@ -72,15 +72,15 @@ namespace OrchardCore.Media.Services
         {
             // ensure end trailing slash
             childPath = _fileStore.NormalizePath(childPath)
-                        .TrimEnd(_pathSeparator.ToCharArray()) + _pathSeparator;
+                        .TrimEnd(_pathSeparator) + _pathSeparator;
 
-            return childPath.Equals(_mediaFieldsFolder, StringComparison.InvariantCultureIgnoreCase);
+            return childPath.Equals(_mediaFieldsFolder);
         }
 
         private bool IsDescendantOfMediaFieldsFolder(string childPath)
         {
             childPath = _fileStore.NormalizePath(childPath);
-            return childPath.StartsWith(_mediaFieldsFolder, StringComparison.InvariantCultureIgnoreCase);
+            return childPath.StartsWith(_mediaFieldsFolder, StringComparison.Ordinal);
         }
     }
 }

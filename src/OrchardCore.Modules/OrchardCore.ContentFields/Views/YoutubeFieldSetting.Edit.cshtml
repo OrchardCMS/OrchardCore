@@ -6,21 +6,21 @@
 @{
 
 }
-<fieldset class="form-group">
+<div class="form-group">
     <div class="custom-control custom-checkbox">
         <input asp-for="Required" type="checkbox" class="custom-control-input">
         <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
         <span class="hint">— @T["Whether a value is required."]</span>
     </div>
-</fieldset>
-<fieldset class="form-group">
+</div>
+<div class="form-group">
     <div class="row col-sm-6">
         <label asp-for="Hint">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
-</fieldset>
-<fieldset class="form-group">
+</div>
+<div class="form-group">
     <div class="row col-sm-6">
         <label asp-for="Width">@T["Width"]</label>
         <input type="number" asp-for="Width" class="form-control" />
@@ -31,4 +31,4 @@
         <input type="number" asp-for="Height" class="form-control" />
         <span class="hint">@T["The height of the Videobox"]</span>
     </div>
-</fieldset>
+</div>

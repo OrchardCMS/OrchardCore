@@ -16,6 +16,8 @@ namespace OrchardCore.Google.Analytics
         private readonly IResourceManager _resourceManager;
         private readonly ISiteService _siteService;
 
+        private HtmlString _scriptsCache;
+
         public GoogleAnalyticsFilter(
             IResourceManager resourceManager,
             ISiteService siteService)
@@ -30,16 +32,23 @@ namespace OrchardCore.Google.Analytics
             if ((context.Result is ViewResult || context.Result is PageResult) &&
                 !AdminAttribute.IsApplied(context.HttpContext))
             {
-                var settings = (await _siteService.GetSiteSettingsAsync()).As<GoogleAnalyticsSettings>();
-                if (!string.IsNullOrWhiteSpace(settings?.TrackingID))
+                if (_scriptsCache == null)
                 {
-                    _resourceManager.RegisterHeadScript(new HtmlString($"<script async src=\"https://www.googletagmanager.com/gtag/js?id={settings.TrackingID}\"></script>"));
-                    _resourceManager.RegisterHeadScript(new HtmlString($"<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());gtag('config', '{settings.TrackingID}')</script>"));
+                    var settings = (await _siteService.GetSiteSettingsAsync()).As<GoogleAnalyticsSettings>();
+
+                    if (!string.IsNullOrWhiteSpace(settings?.TrackingID))
+                    {
+                        _scriptsCache = new HtmlString($"<script async src=\"https://www.googletagmanager.com/gtag/js?id={settings.TrackingID}\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());gtag('config', '{settings.TrackingID}')</script>");
+                    }
+                }
+
+                if (_scriptsCache != null)
+                {
+                    _resourceManager.RegisterHeadScript(_scriptsCache);
                 }
             }
+
             await next.Invoke();
         }
     }
-
-
 }

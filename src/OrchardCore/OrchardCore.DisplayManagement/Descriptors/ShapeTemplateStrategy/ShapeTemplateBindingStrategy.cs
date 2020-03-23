@@ -131,7 +131,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 return shapeContexts.Select(shapeContext => new { extensionDescriptor, shapeContext }).ToList();
             }).SelectMany(hits2 => hits2);
 
-
             foreach (var iter in hits)
             {
                 // templates are always associated with the namesake feature of module or theme
@@ -151,7 +150,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
                         .From(feature)
                         .BoundAs(
-                            hit.shapeContext.harvestShapeInfo.RelativePath, shapeDescriptor => displayContext =>
+                            hit.shapeContext.harvestShapeInfo.RelativePath, displayContext =>
                             {
                                 var viewEngine = displayContext.ServiceProvider
                                     .GetServices<IShapeTemplateViewEngine>()

@@ -14,7 +14,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
 
         private string FormatSql(string sql)
         {
-            return sql.Replace("\r\n", " ").Replace("\n", " ");
+            return sql.Replace("\r\n", " ").Replace('\n', ' ');
         }
 
         [Theory]
@@ -114,7 +114,6 @@ namespace OrchardCore.Tests.OrchardCore.Queries
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
-
 
         [Theory]
         [InlineData("select a order by b", "SELECT [a] ORDER BY [b];")]

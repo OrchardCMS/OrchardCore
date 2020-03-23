@@ -30,6 +30,5 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         [JsonExtensionData]
         public IDictionary<string, JToken> Filters { get; set; } = new Dictionary<string, JToken>();
-
     }
 }

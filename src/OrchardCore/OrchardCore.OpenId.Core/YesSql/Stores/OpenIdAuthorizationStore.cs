@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -601,7 +602,6 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 {
                     await _session.CommitAsync();
                 }
-
                 catch (Exception exception)
                 {
                     if (exceptions == null)
@@ -765,7 +765,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task UpdateAsync(TAuthorization authorization, CancellationToken cancellationToken)
+        public virtual async Task UpdateAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
             if (authorization == null)
             {
@@ -774,9 +774,19 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(authorization);
+            _session.Save(authorization, checkConcurrency: true);
 
-            return _session.CommitAsync();
+            try
+            {
+                await _session.CommitAsync();
+            }
+            catch (ConcurrencyException exception)
+            {
+                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
+                    .AppendLine("The authorization was concurrently updated and cannot be persisted in its current state.")
+                    .Append("Reload the authorization from the database and retry the operation.")
+                    .ToString(), exception);
+            }
         }
     }
 }

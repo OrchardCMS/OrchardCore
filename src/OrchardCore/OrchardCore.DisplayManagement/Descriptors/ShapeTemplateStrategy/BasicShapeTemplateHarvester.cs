@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
@@ -31,10 +32,10 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             }
         }
 
-        static string Adjust(string subPath, string fileName, string displayType)
+        private static string Adjust(string subPath, string fileName, string displayType)
         {
             var leader = "";
-            if (subPath.StartsWith("Views/") && subPath != "Views/Items")
+            if (subPath.StartsWith("Views/", StringComparison.Ordinal) && subPath != "Views/Items")
             {
                 leader = subPath.Substring("Views/".Length) + "_";
             }

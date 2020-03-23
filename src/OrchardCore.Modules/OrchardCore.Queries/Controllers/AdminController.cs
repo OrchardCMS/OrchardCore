@@ -6,18 +6,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.ViewModels;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Queries.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
@@ -26,18 +26,21 @@ namespace OrchardCore.Queries.Controllers
         private readonly IEnumerable<IQuerySource> _querySources;
         private readonly IDisplayManager<Query> _displayManager;
         private readonly ISession _session;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public AdminController(
             IDisplayManager<Query> displayManager,
             IAuthorizationService authorizationService,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
             IQueryManager queryManager,
             IEnumerable<IQuerySource> querySources,
-            ISession session)
+            ISession session,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _session = session;
             _displayManager = displayManager;
@@ -45,22 +48,17 @@ namespace OrchardCore.Queries.Controllers
             _siteService = siteService;
             _queryManager = queryManager;
             _querySources = querySources;
+            _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
             _notifier = notifier;
-
-            T = stringLocalizer;
             H = htmlLocalizer;
         }
-
-        public dynamic New { get; set; }
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
 
         public async Task<IActionResult> Index(QueryIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -73,6 +71,7 @@ namespace OrchardCore.Queries.Controllers
             }
 
             var queries = await _queryManager.ListQueriesAsync();
+            queries = queries.OrderBy(x => x.Name);
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -100,22 +99,32 @@ namespace OrchardCore.Queries.Controllers
 
             foreach (var query in results)
             {
-                model.Queries.Add(new QueryEntry {
+                model.Queries.Add(new QueryEntry
+                {
                     Query = query,
-                    Shape = await _displayManager.BuildDisplayAsync(query, this, "SummaryAdmin")
+                    Shape = await _displayManager.BuildDisplayAsync(query, _updateModelAccessor.ModelUpdater, "SummaryAdmin")
                 });
             }
 
             return View(model);
         }
 
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(QueriesIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
+        }
+
         public async Task<IActionResult> Create(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
-            
+
             var query = _querySources.FirstOrDefault(x => x.Name == id)?.Create();
 
             if (query == null)
@@ -125,7 +134,7 @@ namespace OrchardCore.Queries.Controllers
 
             var model = new QueriesCreateViewModel
             {
-                Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: true),
+                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true),
                 SourceName = id
             };
 
@@ -137,9 +146,9 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
-            
+
             var query = _querySources.FirstOrDefault(x => x.Name == model.SourceName)?.Create();
 
             if (query == null)
@@ -147,7 +156,7 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: this, isNew: true);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true);
 
             if (ModelState.IsValid)
             {
@@ -167,7 +176,7 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var query = await _queryManager.GetQueryAsync(id);
@@ -182,8 +191,8 @@ namespace OrchardCore.Queries.Controllers
                 SourceName = query.Source,
                 Name = query.Name,
                 Schema = query.Schema,
-                Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: false)
-            };   
+                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false)
+            };
 
             return View(model);
         }
@@ -193,17 +202,17 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
-            var query = await _queryManager.GetQueryAsync(model.Name);
+            var query = (await _queryManager.LoadQueryAsync(model.Name));
 
             if (query == null)
             {
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: this, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             if (ModelState.IsValid)
             {
@@ -224,10 +233,10 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
-            var query = await _queryManager.GetQueryAsync(id);
+            var query = await _queryManager.LoadQueryAsync(id);
 
             if (query == null)
             {

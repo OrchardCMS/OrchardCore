@@ -2,7 +2,7 @@
 @using OrchardCore.ContentManagement;
 @inject IContentManager ContentManager
 
-@{ 
+@{
     var matchAllQuery = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"{
   ""query"": {
     ""match_all"": { }
@@ -17,8 +17,8 @@
 <h1>@RenderTitleSegments(T["Lucene Query"])</h1>
 
 <form asp-action="Query" method="post">
-
-    <fieldset class="form-group">
+    <div asp-validation-summary="All"></div>
+    <div class="form-group">
         <label asp-for="IndexName">@T["Index"]</label>
         <select asp-for="IndexName" class="form-control">
             @foreach (var index in Model.Indices)
@@ -27,8 +27,7 @@
             }
         </select>
         <span class="hint">@T["The lucene index to search on"]</span>
-    </fieldset>
-
+    </div>
 
     <div class="form-group">
         <label asp-for="DecodedQuery">@T["Template"]</label>
@@ -48,11 +47,12 @@
     </div>
 </form>
 
-@if (Model.Elapsed != TimeSpan.Zero)
-{
-    <span class="text-muted">@T["Query executed in {0} ms", Model.Elapsed.TotalMilliseconds]</span>
-}
-
+<div class="form-group">
+    @if (Model.Elapsed != TimeSpan.Zero)
+    {
+        <p><span class="text-muted">@T["Found {0} result(s) in {1} ms", Model.Count.ToString(), Model.Elapsed.TotalMilliseconds.ToString()]</span></p>
+    }
+</div>
 @if (Model.Documents.Any())
 {
     var fieldNames = Model.Documents.SelectMany(d => d.Fields.Select(f => f.Name)).Distinct();
@@ -67,7 +67,7 @@
                 <th>#</th>
                 @foreach (var name in fieldNames)
                 {
-                <th>@name</th>
+                    <th>@name</th>
                 }
             </tr>
         </thead>
@@ -75,13 +75,13 @@
             @{ int row = 1; }
             @foreach (var document in Model.Documents)
             {
-            <tr>
-                <th scope="row">@(row++)</th>
-                @foreach (var name in fieldNames)
-                {
-                    <td>@(document.GetField(name)?.GetStringValue() ?? String.Empty)</td>
-                }
-            </tr>
+                <tr>
+                    <th scope="row">@(row++)</th>
+                    @foreach (var name in fieldNames)
+                    {
+                        <td>@(document.GetField(name)?.GetStringValue() ?? String.Empty)</td>
+                    }
+                </tr>
             }
         </tbody>
     </table>
