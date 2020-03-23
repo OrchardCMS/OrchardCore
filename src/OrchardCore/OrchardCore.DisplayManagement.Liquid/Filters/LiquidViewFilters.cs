@@ -12,6 +12,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 {
     public static class LiquidViewFilters
     {
+        private const int ShapeMaxRecursions = 3;
+
         private static readonly AsyncFilterDelegate _localizeDelegate = Localize;
         private static readonly AsyncFilterDelegate _htmlClassDelegate = HtmlClass;
         private static readonly AsyncFilterDelegate _newShapeDelegate = NewShape;
@@ -93,9 +95,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             {
                 if (shape == context.LocalScope.GetValue("Model")?.ToObjectValue())
                 {
-                    if (shape.Metadata.Recursion++ > 10)
+                    if (shape.Metadata.Recursions++ >= ShapeMaxRecursions)
                     {
-                        return new ValueTask<FluidValue>(new HtmlContentValue(HtmlString.Empty));
+                        return new ValueTask<FluidValue>(new HtmlContentValue(new HtmlString(
+                            $"<h3>The '{shape.Metadata.Type}' shape has been called recursively more than {ShapeMaxRecursions} times while invoking 'shape_stringify'.</h3>")));
                     }
                 }
 
@@ -126,9 +129,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             {
                 if (shape == context.LocalScope.GetValue("Model")?.ToObjectValue())
                 {
-                    if (shape.Metadata.Recursion++ > 10)
+                    if (shape.Metadata.Recursions++ >= ShapeMaxRecursions)
                     {
-                        return new ValueTask<FluidValue>(new HtmlContentValue(HtmlString.Empty));
+                        return new ValueTask<FluidValue>(new HtmlContentValue(new HtmlString(
+                            $"<h3>The '{shape.Metadata.Type}' shape has been called recursively more than {ShapeMaxRecursions} times while invoking 'shape_render'.</h3>")));
                     }
                 }
 

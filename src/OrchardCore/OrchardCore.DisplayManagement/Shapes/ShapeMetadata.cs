@@ -34,7 +34,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         public AlternatesCollection Alternates { get; set; }
         public bool IsCached => _cacheContext != null;
         public IHtmlContent ChildContent { get; set; }
-        public int Recursion { get; set; }
+        public int Recursions { get; set; }
 
 
         /// <summary>
