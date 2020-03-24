@@ -2,7 +2,7 @@ site_name: Orchard Core Documentation
 theme:
   name: material
   logo: docs/assets/images/orchard-logo.png
-  favicon: docs/assets/images/favicon.ico
+  favicon: docs/assets/images/favicon-blue.png
   features:
     - instant
     - tabs
