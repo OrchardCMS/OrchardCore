@@ -115,10 +115,10 @@ namespace OrchardCore.Environment.Commands
             await output.WriteLineAsync();
         }
 
-        private Task<ShellContext> CreateStandaloneEnvironmentAsync(string tenant)
+        private async Task<ShellContext> CreateStandaloneEnvironmentAsync(string tenant)
         {
             // Retrieve settings for speficified tenant.
-            var settingsList = _shellSettingsManager.LoadSettings();
+            var settingsList = await _shellSettingsManager.LoadSettingsAsync();
             if (settingsList.Any())
             {
                 var settings = settingsList.SingleOrDefault(s => string.Equals(s.Name, tenant, StringComparison.OrdinalIgnoreCase));
@@ -127,13 +127,13 @@ namespace OrchardCore.Environment.Commands
                     throw new Exception(S["Tenant {0} does not exist", tenant]);
                 }
 
-                return _orchardHost.CreateShellContextAsync(settings);
+                return await _orchardHost.CreateShellContextAsync(settings);
             }
             else
             {
                 // In case of an uninitialized site (no default settings yet), we create a default settings instance.
                 var settings = new ShellSettings { Name = ShellHelper.DefaultShellName, State = TenantState.Uninitialized };
-                return _orchardHost.CreateShellContextAsync(settings);
+                return await _orchardHost.CreateShellContextAsync(settings);
             }
         }
     }
