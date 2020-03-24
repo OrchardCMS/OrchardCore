@@ -79,6 +79,11 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
+            if (!IsDefaultShell())
+            {
+                return Forbid();
+            }
+
             var allSettings = _shellHost.GetAllSettings().OrderBy(s => s.Name);
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
@@ -201,6 +206,11 @@ namespace OrchardCore.Tenants.Controllers
         public async Task<IActionResult> Index(BulkActionViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return Forbid();
+            }
+
+            if (!IsDefaultShell())
             {
                 return Forbid();
             }
