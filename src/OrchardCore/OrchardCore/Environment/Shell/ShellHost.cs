@@ -153,7 +153,7 @@ namespace OrchardCore.Environment.Shell
             var features = _extensionManager.LoadFeaturesAsync();
 
             // Is there any tenant right now?
-            var allSettings = _shellSettingsManager.LoadSettings().Where(CanCreateShell).ToArray();
+            var allSettings = (await _shellSettingsManager.LoadSettingsAsync()).Where(CanCreateShell).ToArray();
             var defaultSettings = allSettings.FirstOrDefault(s => s.Name == ShellHelper.DefaultShellName);
             var otherSettings = allSettings.Except(new[] { defaultSettings }).ToArray();
 
