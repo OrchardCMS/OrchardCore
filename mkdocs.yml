@@ -36,6 +36,7 @@ markdown_extensions:
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
+  - pymdownx.snippets
   - pymdownx.superfences
   - toc:
       permalink: true
