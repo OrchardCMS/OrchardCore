@@ -38,7 +38,7 @@ namespace OrchardCore.Users.Controllers
             _userService = userService;
             _userManager = userManager;
             _siteService = siteService;
-            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
+            _emailAddressValidator = emailAddressValidator;
 
             S = stringLocalizer;
             _logger = logger;
