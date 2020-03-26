@@ -16,9 +16,6 @@
     // The Setup Layout is a standard MVC layout do that it doesn't use Shapes.
     Layout = "../_Layout.cshtml";
     var localTimeZone = Clock.GetSystemTimeZone();
-}
-
-@{
     var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName) ?? Model.Recipes.FirstOrDefault();
     var options = IdentityOptions.Value;
     var passwordOptions = new HtmlContentBuilder();
@@ -68,7 +65,6 @@
 
     var passwordTooltip = T["Password must have at least {0}.", passwordOptions];
 }
-
 <div class="form-group">
     @if (LocOptions.Value.SupportedUICultures.Count() > 1)
     {
@@ -76,7 +72,7 @@
         query.Remove("ui-culture");
         var queryString = QueryString.Create(query);
 
-        <div class="float-right form-inline mt-2">
+        <div class="float-right form-inline p-2">
             <label for="culturesList" class="mr-2">@T["Change language"]</label>
             <select id="culturesList" class="form-control" onchange="setLocalizationUrl()">
                 @foreach (var culture in LocOptions.Value.SupportedUICultures.OrderBy(x => x.NativeName))
@@ -89,11 +85,11 @@
         </div>
     }
 </div>
-
 <form asp-action="Index">
-    <h1>@T["Setup"]</h1>
-    <p class="lead">@T["Please answer a few questions to configure your site."]</p>
-
+    <div class="bg-light p-2">
+        <h1>@T["Setup"]</h1>
+        <p class="lead">@T["Please answer a few questions to configure your site."]</p>
+    </div>
     @if (defaultRecipe == null)
     {
         <div class="alert alert-danger" role="alert">
@@ -101,7 +97,7 @@
         </div>
     }
 
-    <div class="row">
+    <div class="row mt-2">
         <div class="form-group col-md-4" asp-validation-class-for="SiteName">
             <div>
                 <label asp-for="SiteName">@T["What is the name of your site?"]</label>
@@ -184,14 +180,12 @@
         <div class="row connectionString" asp-validation-class-for="ConnectionString">
             <div class="form-group col-md-12">
                 <label asp-for="ConnectionString">@T["Connection string"]</label>
-
                 <div class="input-group mb-2 mb-sm-0">
                     <input asp-for="ConnectionString" class="form-control pwd" type="password" required />
                     <div class="input-group-append reveal" title="@T["Show/hide connection string"]">
                         <button type="button" class="btn btn-secondary" tabindex="-1" aria-hidden="true"><i class="fa fa-eye-slash"></i></button>
                     </div>
                 </div>
-
                 <span asp-validation-for="ConnectionString" class="text-danger"></span>
                 <span id="connectionStringHint" class="text-muted form-text small"></span>
             </div>
@@ -212,7 +206,6 @@
                 <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
             </div>
         </div>
-
         <div class="row">
             <div class="form-group col-md-6" asp-validation-class-for="Password">
                 <label asp-for="Password">@T["Password"]</label>
@@ -228,9 +221,11 @@
             </div>
         </div>
     </fieldset>
-    <div class="form-group col-md-4">
-        <input type="hidden" asp-for="Secret" value="@Model.Secret" />
-        <button class="btn btn-primary" type="submit" id="SubmitButton">@T["Finish Setup"]</button>
+    <div class="row">
+        <div class="form-group col-md-4">
+            <input type="hidden" asp-for="Secret" value="@Model.Secret" />
+            <button class="btn btn-primary" type="submit" id="SubmitButton">@T["Finish Setup"]</button>
+        </div>
     </div>
 </form>
 <script src="~/OrchardCore.Setup/Scripts/setup.min.js" type="text/javascript"></script>
