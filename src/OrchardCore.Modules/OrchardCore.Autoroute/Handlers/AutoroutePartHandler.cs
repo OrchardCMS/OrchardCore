@@ -28,7 +28,6 @@ namespace OrchardCore.Autoroute.Handlers
         private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
         private readonly ISession _session;
-        private readonly ISlugService _slugService;
 
         public AutoroutePartHandler(
             IAutorouteEntries entries,
@@ -37,8 +36,7 @@ namespace OrchardCore.Autoroute.Handlers
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             ITagCache tagCache,
-            ISession session,
-            ISlugService slugService)
+            ISession session)
         {
             _entries = entries;
             _options = options.Value;
@@ -47,7 +45,6 @@ namespace OrchardCore.Autoroute.Handlers
             _siteService = siteService;
             _tagCache = tagCache;
             _session = session;
-            _slugService = slugService;
         }
 
         public override async Task PublishedAsync(PublishContentContext context, AutoroutePart part)
@@ -115,26 +112,7 @@ namespace OrchardCore.Autoroute.Handlers
             // Compute the Path only if it's empty
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
-                // Validate path here as api and content manager does not.
-                if (part.Path == "/")
-                {
-                    throw new Exception("Your permalink can't be set to the homepage.");
-                }
-
-                if (part.Path?.Length > AutoroutePartDisplay.MaxPathLength)
-                {
-                    part.Path = part.Path.Substring(0, AutoroutePartDisplay.MaxPathLength);
-                    part.Apply();
-                }
-
-                // Slugify removes diacritics which are valid in path, so we evaluate for invalid characters
-                // first, then we slugify if any invalid characters are found.
-                if (part.Path?.IndexOfAny(AutoroutePartDisplay.InvalidCharactersForPath) > -1 || part.Path?.IndexOf(' ') > -1)
-                {
-                    part.Path = _slugService.Slugify(part.Path);
-                    part.Apply();
-                }
-
+                // Validate path is unique here as api services do not provide validation.
                 if (!await IsPathUniqueAsync(part.Path, part))
                 {
                     part.Path = await GenerateUniquePathAsync(part.Path, part);

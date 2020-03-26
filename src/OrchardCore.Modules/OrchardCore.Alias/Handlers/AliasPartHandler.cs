@@ -40,13 +40,7 @@ namespace OrchardCore.Alias.Handlers
             // Compute the Alias only if it's empty
             if (!String.IsNullOrEmpty(part.Alias))
             {
-                // Validate path here as api and content manager does not.
-                if (part.Alias?.Length > AliasPartDisplayDriver.MaxAliasLength)
-                {
-                    part.Alias = part.Alias.Substring(0, AliasPartDisplayDriver.MaxAliasLength);
-                    part.Apply();
-                }
-
+                // Validate path is unique here as api services do not provide validation.
                 if (!await IsAliasUniqueAsync(part.Alias, part))
                 {
                     part.Alias = await GenerateUniqueAliasAsync(part.Alias, part);
