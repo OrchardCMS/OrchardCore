@@ -245,8 +245,9 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices((services, serviceProvider) =>
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
+                var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
 
-                var cookieName = "orchantiforgery_" + settings.Name;
+                var cookieName = "orchantiforgery_" + settings.Name + environment.ContentRootPath;
 
                 // If uninitialized, we use the host services.
                 if (settings.State == TenantState.Uninitialized)
