@@ -35,7 +35,6 @@ namespace OrchardCore.DisplayManagement.Shapes
         public bool IsCached => _cacheContext != null;
         public IHtmlContent ChildContent { get; set; }
 
-
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
