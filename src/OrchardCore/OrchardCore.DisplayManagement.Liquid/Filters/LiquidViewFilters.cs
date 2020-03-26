@@ -12,8 +12,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 {
     public static class LiquidViewFilters
     {
-        private const int ShapeMaxRecursions = 3;
-
         private static readonly AsyncFilterDelegate _localizeDelegate = Localize;
         private static readonly AsyncFilterDelegate _htmlClassDelegate = HtmlClass;
         private static readonly AsyncFilterDelegate _newShapeDelegate = NewShape;
@@ -93,15 +91,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             if (input.ToObjectValue() is IShape shape)
             {
-                if (shape == context.LocalScope.GetValue("Model")?.ToObjectValue())
-                {
-                    if (shape.Metadata.Recursions++ >= ShapeMaxRecursions)
-                    {
-                        return new ValueTask<FluidValue>(new HtmlContentValue(new HtmlString(
-                            $"<h3>The '{shape.Metadata.Type}' shape has been called recursively more than {ShapeMaxRecursions} times while invoking 'shape_stringify'.</h3>")));
-                    }
-                }
-
                 if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
                 {
                     return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_stringify'");
@@ -127,15 +116,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             if (input.ToObjectValue() is IShape shape)
             {
-                if (shape == context.LocalScope.GetValue("Model")?.ToObjectValue())
-                {
-                    if (shape.Metadata.Recursions++ >= ShapeMaxRecursions)
-                    {
-                        return new ValueTask<FluidValue>(new HtmlContentValue(new HtmlString(
-                            $"<h3>The '{shape.Metadata.Type}' shape has been called recursively more than {ShapeMaxRecursions} times while invoking 'shape_render'.</h3>")));
-                    }
-                }
-
                 if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
                 {
                     return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_render'");

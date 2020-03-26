@@ -347,6 +347,19 @@ namespace OrchardCore.DisplayManagement.Liquid
                 context.MemberAccessStrategy.Register(model.GetType());
             }
 
+            if (context.GetValue("Model")?.ToObjectValue() == model && model is IShape shape)
+            {
+                if (context.ShapeRecursions++ > LiquidTemplateContext.MaxShapeRecursions)
+                {
+                    throw new InvalidOperationException(
+                        $"The '{shape.Metadata.Type}' shape has been called recursively more than {LiquidTemplateContext.MaxShapeRecursions} times.");
+                }
+            }
+            else
+            {
+                context.ShapeRecursions = 0;
+            }
+
             context.SetValue("Model", model);
 
             scopeAction?.Invoke(context.LocalScope);
