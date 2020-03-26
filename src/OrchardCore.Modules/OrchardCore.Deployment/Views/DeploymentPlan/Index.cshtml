@@ -9,7 +9,7 @@
         </li>
     </ul>
     <form asp-action="Index" method="get" class="form-inline my-2 my-lg-0">
-        <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+        <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" placeholder="@T["Search"]" type="search" autofocus>
         <button type="submit" class="btn btn-secondary">@T["Search"]</button>
     </form>
 </nav>
