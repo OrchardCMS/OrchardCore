@@ -6,7 +6,7 @@ using YesSql;
 namespace OrchardCore.Data.Documents
 {
     /// <summary>
-    /// A cacheable and committable document store using the <see cref="ISession"/>.
+    /// An <see cref="IDocumentStore"/> using the <see cref="ISession"/>.
     /// </summary>
     public class DocumentStore : IDocumentStore
     {
@@ -19,6 +19,8 @@ namespace OrchardCore.Data.Documents
 
         private DocumentStoreCommitSuccessDelegate _afterCommitSuccess;
         private DocumentStoreCommitFailureDelegate _afterCommitFailure;
+
+        private bool _canceled;
 
         public DocumentStore(ISession session)
         {
@@ -80,7 +82,11 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public void Cancel() => _session.Cancel();
+        public void Cancel()
+        {
+            _canceled = true;
+            _session.Cancel();
+        }
 
         /// <inheritdoc />
         public void AfterCommitSuccess<T>(DocumentStoreCommitSuccessDelegate afterCommitSuccess)
@@ -114,7 +120,7 @@ namespace OrchardCore.Data.Documents
             {
                 await _session.CommitAsync();
 
-                if (_afterCommitSuccess != null)
+                if (!_canceled && _afterCommitSuccess != null)
                 {
                     await _afterCommitSuccess();
                 }
