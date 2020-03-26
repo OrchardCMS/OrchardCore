@@ -211,6 +211,23 @@ namespace OrchardCore.OpenId.Configuration
             // Don't allow the current tenant to choose the valid audiences, as this would
             // otherwise allow it to introspect tokens meant to be used with another tenant.
             options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
+
+            CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
+            {
+                var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
+                if (service == null)
+                {
+                    return;
+                }
+
+                var configuration = await GetServerSettingsAsync(service);
+                if (configuration == null)
+                {
+                    return;
+                }
+
+                options.UseReferenceTokens = configuration.UseReferenceTokens;
+            }).GetAwaiter().GetResult();
         }
 
         public void Configure(OpenIddictValidationOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

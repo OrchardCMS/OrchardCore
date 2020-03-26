@@ -116,6 +116,14 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
+            if (settings.UseReferenceTokens && settings.AccessTokenFormat != OpenIdServerSettings.TokenFormat.Encrypted)
+            {
+                results.Add(new ValidationResult(S["Reference tokens can only be enabled when using the Encrypted token format."], new[]
+                {
+                    nameof(settings.UseReferenceTokens)
+                }));
+            }
+
             if (settings.CertificateStoreLocation != null &&
                 settings.CertificateStoreName != null &&
                 !string.IsNullOrEmpty(settings.CertificateThumbprint))
