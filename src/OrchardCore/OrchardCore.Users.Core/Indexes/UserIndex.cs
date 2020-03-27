@@ -26,7 +26,10 @@ namespace OrchardCore.Users.Indexes
                     {
                         NormalizedUserName = user.NormalizedUserName,
                         NormalizedEmail = user.NormalizedEmail,
-                        IsEnabled = user.IsEnabled
+                        IsEnabled = user.IsEnabled,
+                        LockoutEnabled = user.LockoutEnabled,
+                        LockoutEnd = user.LockoutEnd,
+                        AccessFailedCount = user.AccessFailedCount
                     };
                 });
         }
