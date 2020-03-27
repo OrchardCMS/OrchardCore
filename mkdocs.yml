@@ -52,7 +52,8 @@ nav:
         - Recipes and Starter Themes: docs/getting-started/starter-recipes.md
         - Code Generation Templates: docs/getting-started/templates/README.md
         - Create a Theme: docs/getting-started/theme.md
-    - Glossary: docs/glossary/README.md
+    - Glossary: 
+        - Terms and Concepts: docs/glossary/README.md
     - How-to guides: 
         - Follow the Guides: docs/guides/README.md
         - Create a modular application: docs/guides/create-modular-application-mvc/README.md
@@ -143,5 +144,5 @@ nav:
             - Workflows: docs/reference/modules/Workflows/README.md
             - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
     - Resources: 
-        - Learning: docs/Resources/README.md
+        - Learning: docs/resources/README.md
     
