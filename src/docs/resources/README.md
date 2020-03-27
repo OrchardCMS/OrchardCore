@@ -1,4 +1,4 @@
-# Learn
+# Resources
 
 Many external resources are available in order to teach you how to develop with Orchard Core.
 
