@@ -65,7 +65,6 @@ namespace OrchardCore.Users
                 pattern: ChangePasswordPath,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePassword) }
             );
-
             routes.MapAreaControllerRoute(
                 name: "UsersLogOff",
                 areaName: "OrchardCore.Users",
@@ -104,6 +103,12 @@ namespace OrchardCore.Users
                 areaName: "OrchardCore.Users",
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPassword) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersUnlock",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Unlock/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Unlock) }
             );
 
             builder.UseAuthorization();

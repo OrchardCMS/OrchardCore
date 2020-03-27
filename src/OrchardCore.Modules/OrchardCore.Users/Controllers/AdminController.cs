@@ -422,5 +422,42 @@ namespace OrchardCore.Users.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Unlock(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Forbid();
+            }
+
+            var user = await _userManager.FindByIdAsync(id) as User;
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            await _userManager.ResetAccessFailedCountAsync(user);
+            var result = await _userManager.SetLockoutEnabledAsync(user, false);
+
+            if (result.Succeeded)
+            {
+                _notifier.Success(H["User unlocked successfully"]);
+            }
+            else
+            {
+                _session.Cancel();
+
+                _notifier.Error(H["Could not unlock the user"]);
+
+                foreach (var error in result.Errors)
+                {
+                    _notifier.Error(H[error.Description]);
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
