@@ -53,16 +53,23 @@ namespace OrchardCore.Contents.Recipes
 
                         throw new Exception(string.Join(',', result.Errors));
                     }
-                } else
+                }
+                else
                 {
-                    // TODO if we did a json diff here we could no-op if the item is the same.
-                    // because at the moment the recipe step will export a lot of unchanged documents as well.
-                    // and this makes updating existing content items a heavy process, that
-                    // is mostly unnecesary.
+                    // The version exists in the database.
+                    // We compare the two versions and skip importing it if they are the same.
+                    // We do this to prevent unnecessary sql updates, and because UpdateContentItemVersionAsync
+                    // will remove drafts of updated items to prevent orphans.
+                    // So it is important to only import changed items.
+                    var jOther = JObject.FromObject(originalVersion);
 
-                    // This particular code is only useful if and when people create recipes
-                    // manually to edit their content. Or export a recipe, then edit the content
-                    // without updating the content item version id.
+                    if (JToken.DeepEquals(token, jOther))
+                    {
+                        _logger.LogInformation("Importing '{ContentItemVersionId}' skipped as it is unchanged");
+                        continue;
+                    }
+
+                    // This code can only be reached if the recipe has been modified manually without updating the version id.
 
                     // The version exists so we can merge (patch) the new properties to the same version.
                     var result = await _contentManager.UpdateContentItemVersionAsync(originalVersion, contentItem);
