@@ -7,7 +7,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
-    public class BlogPostFailValidationDeploymentPlanTests
+    public class BlogPostValidateDeploymentPlanTests
     {
         [Fact]
         public async Task ShouldFailWhenAutoroutePathIsNotUnique()
