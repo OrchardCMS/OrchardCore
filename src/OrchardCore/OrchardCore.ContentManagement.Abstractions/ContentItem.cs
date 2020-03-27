@@ -61,7 +61,7 @@ namespace OrchardCore.ContentManagement
 
         /// <summary>
         /// The name of the user who first created this content item version
-        /// and owns content rigths.
+        /// and owns content rights.
         /// </summary>
         public string Owner { get; set; }
 

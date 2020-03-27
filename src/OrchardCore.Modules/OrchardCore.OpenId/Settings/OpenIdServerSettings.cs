@@ -29,6 +29,8 @@ namespace OrchardCore.OpenId.Settings
 
         public bool UseRollingTokens { get; set; }
 
+        public bool UseReferenceTokens { get; set; }
+
         public enum TokenFormat
         {
             Encrypted = 0,

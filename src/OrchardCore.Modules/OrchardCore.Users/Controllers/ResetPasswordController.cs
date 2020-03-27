@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -33,7 +32,6 @@ namespace OrchardCore.Users.Controllers
             IUserService userService,
             UserManager<IUser> userManager,
             ISiteService siteService,
-            ISmtpService smtpService,
             IDisplayHelper displayHelper,
             IStringLocalizer<ResetPasswordController> stringLocalizer,
             ILogger<ResetPasswordController> logger,
@@ -131,7 +129,7 @@ namespace OrchardCore.Users.Controllers
 
             await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.ResettingPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
-            if (ModelState.IsValid)
+            if (TryValidateModel(model) && ModelState.IsValid)
             {
                 if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key, message)))
                 {

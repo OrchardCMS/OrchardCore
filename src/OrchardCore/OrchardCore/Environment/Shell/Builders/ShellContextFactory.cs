@@ -70,6 +70,8 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogDebug("Creating described context for tenant '{TenantName}'", settings.Name);
             }
 
+            await settings.EnsureConfigurationAsync();
+
             var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
 

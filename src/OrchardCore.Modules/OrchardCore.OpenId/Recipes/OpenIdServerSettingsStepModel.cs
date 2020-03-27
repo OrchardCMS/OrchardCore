@@ -36,5 +36,7 @@ namespace OrchardCore.OpenId.Recipes
         public bool AllowImplicitFlow { get; set; }
 
         public bool UseRollingTokens { get; set; }
+
+        public bool UseReferenceTokens { get; set; }
     }
 }

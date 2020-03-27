@@ -38,6 +38,8 @@ namespace OrchardCore.Tenants.Controllers
         private readonly ISiteService _siteService;
 
         private readonly dynamic New;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             IShellHost shellHost,
@@ -70,11 +72,18 @@ namespace OrchardCore.Tenants.Controllers
             H = htmlLocalizer;
         }
 
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
-
         public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return Forbid();
+            }
+
+            if (!IsDefaultShell())
+            {
+                return Forbid();
+            }
+
             var allSettings = _shellHost.GetAllSettings().OrderBy(s => s.Name);
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
@@ -91,6 +100,7 @@ namespace OrchardCore.Tenants.Controllers
                 {
                     var entry = new ShellSettingsEntry
                     {
+                        Description = x["Description"],
                         Name = x.Name,
                         ShellSettings = x,
                         IsDefaultTenant = string.Equals(x.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
@@ -195,6 +205,16 @@ namespace OrchardCore.Tenants.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<IActionResult> Index(BulkActionViewModel model)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return Forbid();
+            }
+
+            if (!IsDefaultShell())
+            {
+                return Forbid();
+            }
+
             var allSettings = _shellHost.GetAllSettings();
 
             foreach (var tenantName in model.TenantNames ?? Enumerable.Empty<string>())
@@ -310,6 +330,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.State = TenantState.Uninitialized;
 
+                shellSettings["Description"] = model.Description;
                 shellSettings["ConnectionString"] = model.ConnectionString;
                 shellSettings["TablePrefix"] = model.TablePrefix;
                 shellSettings["DatabaseProvider"] = model.DatabaseProvider;
@@ -352,6 +373,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var model = new EditTenantViewModel
             {
+                Description = shellSettings["Description"],
                 Name = shellSettings.Name,
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
@@ -404,6 +426,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
+                shellSettings["Description"] = model.Description;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
 
