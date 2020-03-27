@@ -403,7 +403,21 @@ namespace OrchardCore.ContentManagement
             }
         }
 
-        public async Task CreateContentItemVersionAsync(ContentItem contentItem)
+        public async Task<ContentValidateResult> ValidateAsync(ContentItem contentItem)
+        {
+            var context = new ValidateContentContext(contentItem);
+
+            await Handlers.InvokeAsync((handler, context) => handler.ValidateAsync(context), context, _logger);
+
+            if (!context.ContentValidateResult.Succeeded)
+            {
+                _session.Cancel();
+            }
+
+            return context.ContentValidateResult;
+        }
+
+        public async Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem)
         {
             // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
             contentItem.Id = 0;
@@ -457,10 +471,13 @@ namespace OrchardCore.ContentManagement
             _session.Save(contentItem);
             _contentManagerSession.Store(contentItem);
 
-            // Invoke update handlers otherwise the Autoroute and Alias parts cannot guarantee unicity.
             await UpdateAsync(contentItem);
 
-            // TODO for audit trail we may want to invoke Versioning events here.
+            var result = await ValidateAsync(contentItem);
+            if (!result.Succeeded)
+            {
+                return result;
+            }
 
             if (contentItem.Published)
             {
@@ -495,9 +512,11 @@ namespace OrchardCore.ContentManagement
 
             // Re-enlist content item here in case of session queries.
             _session.Save(contentItem);
+
+            return result;
         }
 
-        public async Task UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion)
+        public async Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion)
         {
             // Replaces the id to force the current item to be updated
             updatingVersion.Id = updatedVersion.Id;
@@ -573,6 +592,14 @@ namespace OrchardCore.ContentManagement
             updatingVersion.Published = importingPublished;
 
             await UpdateAsync(updatingVersion);
+            var result = await ValidateAsync(updatingVersion);
+
+            // Session is cancelled now so previous updates to versions are cancelled also.
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+
             if (importingPublished)
             {
                 // Invoke published handlers to add information to persistent stores
@@ -593,6 +620,8 @@ namespace OrchardCore.ContentManagement
             }
 
             _session.Save(updatingVersion);
+
+            return result;
         }
 
         public async Task UpdateAsync(ContentItem contentItem)

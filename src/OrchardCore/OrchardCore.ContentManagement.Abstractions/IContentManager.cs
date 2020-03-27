@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Handlers;
 
 namespace OrchardCore.ContentManagement
 {
@@ -32,17 +33,26 @@ namespace OrchardCore.ContentManagement
         Task CreateAsync(ContentItem contentItem, VersionOptions options);
 
         /// <summary>
+        /// Validates a content item 
+        /// </summary>
+        /// <param name="contentItem"></param>
+        /// <returns>The validation <see cref="ContentValidateResult"/> result.</returns>
+        Task<ContentValidateResult> ValidateAsync(ContentItem contentItem);
+
+        /// <summary>
         /// Creates (puts) a new content item and manages removing and updating existing published or draft items.
         /// </summary>
         /// <param name="contentItem"></param>
-        Task CreateContentItemVersionAsync(ContentItem contentItem);
+        /// <returns>The validation <see cref="ContentValidateResult"/> result.</returns>
+        Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem);
 
         /// <summary>
         /// Updates (patches) a content item version.
         /// </summary>
         /// <param name="updatingVersion"></param>
         /// <param name="updatedVersion"></param>
-        Task UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion);
+        /// <returns>The validation <see cref="ContentValidateResult"/> result.</returns>
+        Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion);
 
         /// <summary>
         /// Gets the published content item with the specified id
@@ -146,6 +156,19 @@ namespace OrchardCore.ContentManagement
             }
 
             return results;
+        }
+
+        public static async Task<ContentValidateResult> UpdateValidateAndCreateAsync(this IContentManager contentManager, ContentItem contentItem, VersionOptions options)
+        {
+            await contentManager.UpdateAsync(contentItem);
+            var result = await contentManager.ValidateAsync(contentItem);
+
+            if (result.Succeeded)
+            {
+                await contentManager.CreateAsync(contentItem, options);
+            }
+
+            return result;
         }
     }
 

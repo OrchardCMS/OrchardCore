@@ -77,7 +77,7 @@ namespace OrchardCore.Tests.Apis.Context
             return recipe;
         }
 
-        public async Task PostRecipeAsync(JObject recipe)
+        public async Task<HttpResponseMessage> PostRecipeAsync(JObject recipe, bool ensureSuccess = true)
         {
             using (var zipStream = new MemoryStream())
             {
@@ -102,7 +102,12 @@ namespace OrchardCore.Tests.Apis.Context
                     requestContent.Add(new StringContent(RemoteDeploymentApiKey), nameof(ImportViewModel.ApiKey));
 
                     var response = await Client.PostAsync("OrchardCore.Deployment.Remote/ImportRemoteInstance/Import", requestContent);
-                    response.EnsureSuccessStatusCode();
+                    if (ensureSuccess)
+                    {
+                        response.EnsureSuccessStatusCode();
+                    }
+
+                    return response;
                 }
             }
         }

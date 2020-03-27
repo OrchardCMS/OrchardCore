@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Alias.Drivers;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
@@ -22,17 +23,39 @@ namespace OrchardCore.Alias.Handlers
         private readonly ITagCache _tagCache;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
+        private readonly IStringLocalizer S;
 
         public AliasPartHandler(
             IContentDefinitionManager contentDefinitionManager,
             ITagCache tagCache,
             ILiquidTemplateManager liquidTemplateManager,
-            ISession session)
+            ISession session,
+            IStringLocalizer<AliasPartHandler> stringLocalizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _tagCache = tagCache;
             _liquidTemplateManager = liquidTemplateManager;
             _session = session;
+            S = stringLocalizer;
+        }
+
+        public override async Task ValidateAsync(ValidateContentContext context, AliasPart part)
+        {
+            // Only validate the alias if it's not empty.
+            if (String.IsNullOrWhiteSpace(part.Alias))
+            {
+                return;
+            }
+
+            if (part.Alias.Length > AliasPartDisplayDriver.MaxAliasLength)
+            {
+                context.Fail(S[AliasPartDisplayDriver.DefaultMaxAliasLengthError, AliasPartDisplayDriver.DefaultMaxAliasLengthError]);
+            }
+
+            if (!await IsAliasUniqueAsync(part.Alias, part))
+            {
+                context.Fail(S[AliasPartDisplayDriver.DefaultUniqueAliasError]);
+            }
         }
 
         public async override Task UpdatedAsync(UpdateContentContext context, AliasPart part)
@@ -40,13 +63,6 @@ namespace OrchardCore.Alias.Handlers
             // Compute the Alias only if it's empty
             if (!String.IsNullOrEmpty(part.Alias))
             {
-                // Validate path is unique here as api services do not provide validation.
-                if (!await IsAliasUniqueAsync(part.Alias, part))
-                {
-                    part.Alias = await GenerateUniqueAliasAsync(part.Alias, part);
-                    part.Apply();
-                }
-
                 return;
             }
 

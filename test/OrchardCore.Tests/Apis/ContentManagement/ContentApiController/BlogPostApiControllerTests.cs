@@ -12,6 +12,9 @@ using System.Linq;
 using OrchardCore.Taxonomies.Fields;
 using YesSql.Services;
 using System.Collections.Generic;
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Autoroute.Drivers;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
 {
@@ -204,7 +207,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
         }
 
         [Fact]
-        public async Task ShouldCreateUniqueAutoroutePath()
+        public async Task ShouldFailValidationWhenAutoroutePathIsNotUnique()
         {
             using (var context = new BlogPostApiControllerContext())
             {
@@ -248,38 +251,24 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                     .Weld("BlogPost", blogFields);
 
                 // Act
-                var content = await context.Client.PostAsJsonAsync("api/content", contentItem);
-                var publishedContentItem = await content.Content.ReadAsAsync<ContentItem>();
+                var result = await context.Client.PostAsJsonAsync("api/content", contentItem);
+                var problemDetails = await result.Content.ReadAsAsync<ProblemDetails>();
 
                 // Test
-                using (var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName))
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+                Assert.Contains(AutoroutePartDisplay.DefaultUniquePathError, problemDetails.Detail);
+                using (var shellScope = await BlogPostApiControllerContext.ShellHost.GetScopeAsync(context.TenantName))
                 {
-                    var blogPostContentItemIds = new List<string>
-                    {
-                        context.BlogPost.ContentItemId,
-                        publishedContentItem.ContentItemId
-                    };
-
                     await shellScope.UsingAsync(async scope =>
                     {
                         var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                        var indexedBlogPostAutoroutes = await session
-                            .QueryIndex<AutoroutePartIndex>(x => x.ContentItemId.IsIn(blogPostContentItemIds))
-                            .ListAsync();
-
-                        Assert.Equal(2, indexedBlogPostAutoroutes.Count());
-
-                        var originalVersion = indexedBlogPostAutoroutes
-                            .FirstOrDefault(x => x.ContentItemId == context.BlogPost.ContentItemId);
-                        Assert.Equal("blog/post-1", originalVersion?.Path);
-
-                        var newAutoroutePartIndex = indexedBlogPostAutoroutes
-                            .FirstOrDefault(x => x.ContentItemId == publishedContentItem.ContentItemId);
-                        // Here we expect that the AutorouteHandler has verified the path is unique,
-                        // and when it is not, made it so.
-                        Assert.Equal("blog/post-2", publishedContentItem.As<AutoroutePart>().Path);
+                        var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                            x.ContentType == "BlogPost").ListAsync();
+                         
+                        Assert.Single(blogPosts);
                     });
                 }
+
             }
         }
 

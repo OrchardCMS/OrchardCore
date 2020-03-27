@@ -113,6 +113,30 @@ namespace OrchardCore.ContentManagement.Handlers
             }
         }
 
+        public override async Task ValidateAsync(ValidateContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                if (part != null)
+                {
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.ValidateAsync(context, part), context, part, Logger);
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.ValidateAsync(context, part), context, part, Logger);
+                }
+            }
+        }
+
         public override async Task CreatedAsync(CreateContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);

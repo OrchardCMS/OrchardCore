@@ -39,6 +39,13 @@ namespace OrchardCore.ContentManagement.Handlers
                 : Task.CompletedTask;
         }
 
+        Task IContentPartHandler.ValidateAsync(ValidateContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? ValidateAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
         Task IContentPartHandler.CreatedAsync(CreateContentContext context, ContentPart part)
         {
             return part is TPart tpart
@@ -157,6 +164,7 @@ namespace OrchardCore.ContentManagement.Handlers
         public virtual Task InitializingAsync(InitializingContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task InitializedAsync(InitializingContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task CreatingAsync(CreateContentContext context, TPart instance) => Task.CompletedTask;
+        public virtual Task ValidateAsync(ValidateContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task CreatedAsync(CreateContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task LoadingAsync(LoadContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task LoadedAsync(LoadContentContext context, TPart instance) => Task.CompletedTask;

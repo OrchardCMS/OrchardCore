@@ -29,6 +29,11 @@ namespace OrchardCore.ContentManagement.Handlers
             return Task.CompletedTask;
         }
 
+        public virtual Task ValidateAsync(ValidateContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
         public virtual Task CreatedAsync(CreateContentContext context)
         {
             return Task.CompletedTask;

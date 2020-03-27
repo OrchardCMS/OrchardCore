@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Environment.Shell;
@@ -35,6 +36,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 secondContentItem[nameof(ContentItem.ContentItemId)] = "secondcontentitemid";
                 secondContentItem[nameof(ContentItem.ContentItemVersionId)] = "secondcontentitemversionid";
                 secondContentItem[nameof(ContentItem.DisplayText)] = "second content item display text";
+                secondContentItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "new-path";
                 data.Add(secondContentItem);
 
                 await context.PostRecipeAsync(recipe);

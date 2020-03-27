@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Models;
@@ -28,6 +29,7 @@ namespace OrchardCore.Autoroute.Handlers
         private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
         private readonly ISession _session;
+        private readonly IStringLocalizer S;
 
         public AutoroutePartHandler(
             IAutorouteEntries entries,
@@ -36,7 +38,8 @@ namespace OrchardCore.Autoroute.Handlers
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             ITagCache tagCache,
-            ISession session)
+            ISession session,
+            IStringLocalizer<AutoroutePartHandler> stringLocalizer)
         {
             _entries = entries;
             _options = options.Value;
@@ -45,6 +48,7 @@ namespace OrchardCore.Autoroute.Handlers
             _siteService = siteService;
             _tagCache = tagCache;
             _session = session;
+            S = stringLocalizer;
         }
 
         public override async Task PublishedAsync(PublishContentContext context, AutoroutePart part)
@@ -107,18 +111,42 @@ namespace OrchardCore.Autoroute.Handlers
             return Task.CompletedTask;
         }
 
+        public override async Task ValidateAsync(ValidateContentContext context, AutoroutePart part)
+        {
+            // Only validate the path if it's not empty.
+            if (String.IsNullOrWhiteSpace(part.Path))
+            {
+                return;
+            }
+
+            if (part.Path == "/")
+            {
+                context.Fail(S[AutoroutePartDisplay.DefaultHomePageError]);
+            }
+
+            if (part.Path?.IndexOfAny(AutoroutePartDisplay.InvalidCharactersForPath) > -1 || part.Path?.IndexOf(' ') > -1)
+            {
+                var invalidCharactersForMessage = string.Join(", ", AutoroutePartDisplay.InvalidCharactersForPath.Select(c => $"\"{c}\""));
+                context.Fail(S[AutoroutePartDisplay.DefaultInvalidCharactersForPathError, invalidCharactersForMessage]);
+            }
+
+            if (part.Path?.Length > AutoroutePartDisplay.MaxPathLength)
+            {
+                context.Fail(S[AutoroutePartDisplay.DefaultMaxPathLengthError, AutoroutePartDisplay.MaxPathLength]);
+            }
+
+            if (!await IsPathUniqueAsync(part.Path, part))
+            {
+                context.Fail(S[AutoroutePartDisplay.DefaultUniquePathError]);
+            }
+
+        }
+
         public override async Task UpdatedAsync(UpdateContentContext context, AutoroutePart part)
         {
             // Compute the Path only if it's empty
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
-                // Validate path is unique here as api services do not provide validation.
-                if (!await IsPathUniqueAsync(part.Path, part))
-                {
-                    part.Path = await GenerateUniquePathAsync(part.Path, part);
-                    part.Apply();
-                }
-
                 return;
             }
 

@@ -36,8 +36,15 @@ namespace OrchardCore.Contents.Scripting
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     var contentItem = contentManager.NewAsync(contentType).GetAwaiter().GetResult();
                     contentItem.Merge(properties);
-                    contentManager.UpdateAndCreateAsync(contentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
-                    return contentItem;
+                    var result = contentManager.UpdateValidateAndCreateAsync(contentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
+                    if (result.Succeeded)
+                    {
+                        return contentItem;
+                    } else
+                    {
+                        // TODO is this the right way to handle global method errors.
+                        throw new Exception(string.Join(',', result.Errors));
+                    }
                 })
             };
 
@@ -49,6 +56,12 @@ namespace OrchardCore.Contents.Scripting
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     contentItem.Merge(properties, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
                     contentManager.UpdateAsync(contentItem).GetAwaiter().GetResult();
+                    var result = contentManager.ValidateAsync(contentItem).GetAwaiter().GetResult();
+                    if (!result.Succeeded)
+                    {
+                        // TODO is this the right way to handle global method errors.
+                        throw new Exception(string.Join(',', result.Errors));
+                    }
                 })
             };
 
