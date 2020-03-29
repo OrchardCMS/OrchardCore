@@ -29,7 +29,10 @@ namespace OrchardCore.Redis.Services
 
         public async Task TagAsync(string key, params string[] tags)
         {
-            await _redis.ConnectAsync();
+            if (!_redis.IsConnected)
+            {
+                await _redis.ConnectAsync();
+            }
 
             if (!_redis.IsConnected)
             {
@@ -44,7 +47,10 @@ namespace OrchardCore.Redis.Services
 
         public async Task<IEnumerable<string>> GetTaggedItemsAsync(string tag)
         {
-            await _redis.ConnectAsync();
+            if (!_redis.IsConnected)
+            {
+                await _redis.ConnectAsync();
+            }
 
             if (!_redis.IsConnected)
             {
@@ -63,7 +69,10 @@ namespace OrchardCore.Redis.Services
 
         public async Task RemoveTagAsync(string tag)
         {
-            await _redis.ConnectAsync();
+            if (!_redis.IsConnected)
+            {
+                await _redis.ConnectAsync();
+            }
 
             if (!_redis.IsConnected)
             {

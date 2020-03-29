@@ -18,12 +18,18 @@ namespace OrchardCore.Redis.Options
 
         public void Configure(KeyManagementOptions options)
         {
-            _redis.ConnectAsync().GetAwaiter().GetResult();
+            var redis = _redis;
 
-            if (_redis.IsConnected)
+            options.XmlRepository = new RedisXmlRepository(() =>
             {
-                options.XmlRepository = new RedisXmlRepository(() => _redis.Database, _tenant + ":DataProtection-Keys");
+                if (!redis.IsConnected)
+                {
+                    redis.ConnectAsync().GetAwaiter().GetResult();
+                }
+
+                return _redis.Database;
             }
+            , _tenant + ":DataProtection-Keys");
         }
     }
 }

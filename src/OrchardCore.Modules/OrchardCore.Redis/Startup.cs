@@ -1,7 +1,6 @@
 using System;
-using Microsoft.AspNetCore.Builder;
+using System.Linq;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,8 +18,29 @@ namespace OrchardCore.Redis
 {
     public class Startup : StartupBase
     {
+        private readonly string _tenant;
+        private readonly IShellConfiguration _configuration;
+        private readonly ILogger<RedisCacheStartup> _logger;
+
+        public Startup(ShellSettings shellSettings, IShellConfiguration configuration, ILogger<RedisCacheStartup> logger)
+        {
+            _tenant = shellSettings.Name;
+            _configuration = configuration;
+            _logger = logger;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
+            var configuration = _configuration.GetSection("OrchardCore.Redis").GetValue<string>("Configuration");
+
+            if (String.IsNullOrWhiteSpace(configuration))
+            {
+                _logger.LogError("Tenant '{TenantName}' does not have a valid Redis configuration.", _tenant);
+                return;
+            }
+
+            services.TryAddSingleton(typeof(RedisMarkerService));
+
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RedisOptions>, RedisOptionsSetup>());
 
             services.AddSingleton<IRedisService, RedisService>();
@@ -31,27 +51,23 @@ namespace OrchardCore.Redis
     public class RedisCacheStartup : StartupBase
     {
         private readonly string _tenant;
-        private readonly IShellConfiguration _configuration;
         private readonly ILogger<RedisCacheStartup> _logger;
 
-        public RedisCacheStartup(ShellSettings shellSettings, IShellConfiguration configuration, ILogger<RedisCacheStartup> logger)
+        public RedisCacheStartup(ShellSettings shellSettings, ILogger<RedisCacheStartup> logger)
         {
             _tenant = shellSettings.Name;
-            _configuration = configuration;
             _logger = logger;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>());
-
-            var configuration = _configuration.GetSection("OrchardCore.Redis").GetValue<string>("Configuration");
-
-            if (String.IsNullOrWhiteSpace(configuration))
+            if (services.LastOrDefault(d => d.ServiceType == typeof(RedisMarkerService)) == null)
             {
-                _logger.LogError("'Redis Cache' is not active on tenant '{TenantName}' as it does not have a valid Redis configuration.", _tenant);
+                _logger.LogError("'Redis Cache' is not active on tenant '{TenantName}' as there is no Redis configuration.", _tenant);
                 return;
             }
+
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>());
 
             services.AddStackExchangeRedisCache(o => { });
             services.AddTransient<ITagCache, RedisTagCache>();
@@ -61,9 +77,28 @@ namespace OrchardCore.Redis
     [Feature("OrchardCore.Redis.DataProtection")]
     public class RedisDataProtectionStartup : StartupBase
     {
+        private readonly string _tenant;
+        private readonly ILogger<RedisCacheStartup> _logger;
+
+        public RedisDataProtectionStartup(ShellSettings shellSettings, ILogger<RedisCacheStartup> logger)
+        {
+            _tenant = shellSettings.Name;
+            _logger = logger;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
+            if (services.LastOrDefault(d => d.ServiceType == typeof(RedisMarkerService)) == null)
+            {
+                _logger.LogError("'Redis DataProtection' is not active on tenant '{TenantName}' as there is no Redis configuration.", _tenant);
+                return;
+            }
+
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>());
         }
+    }
+
+    internal class RedisMarkerService
+    {
     }
 }
