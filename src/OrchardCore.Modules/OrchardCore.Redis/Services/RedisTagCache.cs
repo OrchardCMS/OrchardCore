@@ -22,7 +22,7 @@ namespace OrchardCore.Redis.Services
             ILogger<RedisTagCache> logger)
         {
             _redis = redis;
-            _prefix = shellSettings.Name + ':';
+            _prefix = shellSettings.Name + ":Tag:";
             _tagRemovedEventHandlers = tagRemovedEventHandlers;
             _logger = logger;
         }
@@ -38,7 +38,7 @@ namespace OrchardCore.Redis.Services
 
             foreach (var tag in tags)
             {
-                await _redis.Database.SetAddAsync(_prefix + ":Tag:" + tag, key);
+                await _redis.Database.SetAddAsync(_prefix + tag, key);
             }
         }
 
@@ -51,7 +51,7 @@ namespace OrchardCore.Redis.Services
                 return Enumerable.Empty<string>();
             }
 
-            var values = await _redis.Database.SetMembersAsync(_prefix + ":Tag:" + tag);
+            var values = await _redis.Database.SetMembersAsync(_prefix + tag);
 
             if (values == null || values.Length == 0)
             {
@@ -70,7 +70,7 @@ namespace OrchardCore.Redis.Services
                 return;
             }
 
-            var values = await _redis.Database.SetMembersAsync(_prefix + ":Tag:" + tag);
+            var values = await _redis.Database.SetMembersAsync(_prefix + tag);
 
             if (values == null || values.Length == 0)
             {
@@ -79,7 +79,7 @@ namespace OrchardCore.Redis.Services
 
             var set = values.Select(v => (string)v).ToArray();
 
-            await _redis.Database.KeyDeleteAsync(_prefix + ":Tag:" + tag);
+            await _redis.Database.KeyDeleteAsync(_prefix + tag);
 
             await _tagRemovedEventHandlers.InvokeAsync(x => x.TagRemovedAsync(tag, set), _logger);
         }
