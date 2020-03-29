@@ -1,33 +1,32 @@
 @model OrchardCore.ContentFields.Settings.LocalizationSetContentPickerFieldSettings
 @using OrchardCore.ContentManagement;
 
-
-<fieldset class="form-group">
+<div class="form-group">
     <div class="custom-control custom-checkbox">
         <input asp-for="Required" type="checkbox" class="custom-control-input">
         <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
         <span class="hint">— @T["Whether to ensure at least one element is selected."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="custom-control custom-checkbox">
         <input asp-for="Multiple" type="checkbox" class="custom-control-input">
         <label class="custom-control-label" asp-for="Multiple">@T["Allow multiple"]</label>
         <span class="hint">— @T["Whether to allow multiple elements to be selected."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="DisplayedContentTypes">@T["Content Types"]</label>
     <span class="hint">@T["The content types to display. Choose at least one."]</span>
     @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.DisplayedContentTypes, htmlName = Html.NameFor(m => m.DisplayedContentTypes) })
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="row col-sm-6">
         <label asp-for="Hint">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
-</fieldset>
+</div>

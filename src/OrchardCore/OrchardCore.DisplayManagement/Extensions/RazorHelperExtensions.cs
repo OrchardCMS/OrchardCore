@@ -1,5 +1,6 @@
 using System.Globalization;
 using OrchardCore;
+using OrchardCore.Localization;
 
 public static class RazorHelperExtensions
 {
@@ -9,7 +10,7 @@ public static class RazorHelperExtensions
     /// <returns><c>"rtl"</c> if the current culture is Left To Right, <c>"ltr"</c> otherwise.</returns>
     public static string CultureDir(this IOrchardHelper orchardHelper)
     {
-        return CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "rtl" : "ltr";
+        return CultureInfo.CurrentUICulture.GetLanguageDirection();
     }
 
     /// <summary>

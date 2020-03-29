@@ -10,25 +10,25 @@
     string id = Html.IdFor(m => m.Value);
 }
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="row col-sm-3">
         <label asp-for="Value">@name</label>
         <div class="input-group mb-2">
             @if (settings.Minimum.HasValue)
             {
-            <div class="input-group-prepend">
-                <div class="input-group-text">@min</div>
-            </div>
+                <div class="input-group-prepend">
+                    <div class="input-group-text">@min</div>
+                </div>
             }
             <input asp-for="Value" class="form-control content-preview-select" />
             @if (settings.Maximum.HasValue)
             {
-            <div class="input-group-append">
-                <div class="input-group-text">@max</div>
-            </div>
+                <div class="input-group-append">
+                    <div class="input-group-text">@max</div>
+                </div>
             }
             <input id="@(id)-range" class="form-control-range" type="range" min="@min" max="@max" step="@step" onchange="$('#@(id)').val(value);" />
         </div>
         <span class="hint">@settings.Hint</span>
     </div>
-</fieldset>
+</div>

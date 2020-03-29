@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.ViewModels
 {
-
     public class WorkflowTypeIndexViewModel
     {
         public IList<WorkflowTypeEntry> WorkflowTypes { get; set; }
@@ -23,8 +24,12 @@ namespace OrchardCore.Workflows.ViewModels
     public class WorkflowTypeIndexOptions
     {
         public string Search { get; set; }
+        public WorkflowTypeBulkAction BulkAction { get; set; }
         public WorkflowTypeOrder Order { get; set; }
         public WorkflowTypeFilter Filter { get; set; }
+
+        [BindNever]
+        public List<SelectListItem> WorkflowTypesBulkAction { get; set; }
     }
 
     public enum WorkflowTypeOrder

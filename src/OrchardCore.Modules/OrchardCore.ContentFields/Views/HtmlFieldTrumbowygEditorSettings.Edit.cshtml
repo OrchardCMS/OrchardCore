@@ -1,9 +1,4 @@
 @model OrchardCore.ContentFields.ViewModels.TrumbowygSettingsViewModel
-<style type="text/css">
-    .CodeMirror {
-        height: 100%;
-    }
-</style>
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-trumbowyg">
     <div class="form-group col-md-6">
         <div class="custom-control custom-checkbox">
@@ -22,11 +17,13 @@
 </div>
 
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script at="Foot">
     $(function () {
         var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Options)');
         var editor = CodeMirror.fromTextArea(optionsTexArea, {
+            autoRefresh: true,
             lineNumbers: false,
             matchBrackets: true,
             mode: { name: "javascript" }
@@ -66,6 +63,5 @@
         </text>
     }
 }
-    setTimeout(function() { editor.refresh(); },1);
 });
 </script>

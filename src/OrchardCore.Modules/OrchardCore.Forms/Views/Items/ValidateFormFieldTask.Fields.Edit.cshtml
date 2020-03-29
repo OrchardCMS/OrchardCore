@@ -1,16 +1,16 @@
 @using OrchardCore.Forms.Workflows.ViewModels;
 @model ValidateFormFieldTaskViewModel
 
-<fieldset class="form-group" asp-validation-class-for="FieldName">
+<div class="form-group" asp-validation-class-for="FieldName">
     <label asp-for="FieldName">@T["Field Name"]</label>
     <input type="text" asp-for="FieldName" class="form-control" />
     <span asp-validation-for="FieldName"></span>
     <span class="hint">@T["The name of the form field to validate."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="ErrorMessage">
+<div class="form-group" asp-validation-class-for="ErrorMessage">
     <label asp-for="ErrorMessage">@T["Error Message"]</label>
     <input type="text" asp-for="ErrorMessage" class="form-control" />
     <span asp-validation-for="ErrorMessage"></span>
     <span class="hint">@T["The validation error message to display."]</span>
-</fieldset>
+</div>

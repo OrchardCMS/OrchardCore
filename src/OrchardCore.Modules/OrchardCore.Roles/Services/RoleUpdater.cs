@@ -33,38 +33,21 @@ namespace OrchardCore.Roles.Services
 
         public ILogger Logger { get; set; }
 
-        void IFeatureEventHandler.Installing(IFeatureInfo feature)
-        {
-        }
+        Task IFeatureEventHandler.InstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
 
-        void IFeatureEventHandler.Installed(IFeatureInfo feature)
-        {
-            AddDefaultRolesForFeatureAsync(feature).GetAwaiter().GetResult();
-        }
+        Task IFeatureEventHandler.InstalledAsync(IFeatureInfo feature) => AddDefaultRolesForFeatureAsync(feature);
 
-        void IFeatureEventHandler.Enabling(IFeatureInfo feature)
-        {
-        }
+        Task IFeatureEventHandler.EnablingAsync(IFeatureInfo feature) => Task.CompletedTask;
 
-        void IFeatureEventHandler.Enabled(IFeatureInfo feature)
-        {
-        }
+        Task IFeatureEventHandler.EnabledAsync(IFeatureInfo feature) => Task.CompletedTask;
 
-        void IFeatureEventHandler.Disabling(IFeatureInfo feature)
-        {
-        }
+        Task IFeatureEventHandler.DisablingAsync(IFeatureInfo feature) => Task.CompletedTask;
 
-        void IFeatureEventHandler.Disabled(IFeatureInfo feature)
-        {
-        }
+        Task IFeatureEventHandler.DisabledAsync(IFeatureInfo feature) => Task.CompletedTask;
 
-        void IFeatureEventHandler.Uninstalling(IFeatureInfo feature)
-        {
-        }
+        Task IFeatureEventHandler.UninstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
 
-        void IFeatureEventHandler.Uninstalled(IFeatureInfo feature)
-        {
-        }
+        Task IFeatureEventHandler.UninstalledAsync(IFeatureInfo feature) => Task.CompletedTask;
 
         public async Task AddDefaultRolesForFeatureAsync(IFeatureInfo feature)
         {
@@ -90,7 +73,6 @@ namespace OrchardCore.Roles.Services
                 var stereotypes = permissionProvider.GetDefaultStereotypes();
                 foreach (var stereotype in stereotypes)
                 {
-
                     // turn those stereotypes into roles
                     var role = await _roleManager.FindByNameAsync(stereotype.Name);
                     if (role == null)
@@ -100,7 +82,7 @@ namespace OrchardCore.Roles.Services
                             Logger.LogInformation("Defining new role '{RoleName}' for permission stereotype", stereotype.Name);
                         }
 
-                        role = new Role { RoleName = stereotype.Name };
+                        role = new Role { RoleName = stereotype.Name, RoleDescription = stereotype.Name + " role" };
                         await _roleManager.CreateAsync(role);
                     }
 

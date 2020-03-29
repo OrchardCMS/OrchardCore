@@ -14,14 +14,14 @@ namespace OrchardCore.OpenId.Services
     public class OpenIdClientService : IOpenIdClientService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<OpenIdClientService> T;
+        private readonly IStringLocalizer<OpenIdClientService> S;
 
         public OpenIdClientService(
             ISiteService siteService,
             IStringLocalizer<OpenIdClientService> stringLocalizer)
         {
             _siteService = siteService;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public async Task<OpenIdClientSettings> GetSettingsAsync()
@@ -53,21 +53,21 @@ namespace OrchardCore.OpenId.Services
 
             if (settings.Authority == null)
             {
-                results.Add(new ValidationResult(T["The authority cannot be null or empty."], new[]
+                results.Add(new ValidationResult(S["The authority cannot be null or empty."], new[]
                 {
                     nameof(settings.Authority)
                 }));
             }
             else if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
             {
-                results.Add(new ValidationResult(T["The authority must be a valid absolute URL."], new[]
+                results.Add(new ValidationResult(S["The authority must be a valid absolute URL."], new[]
                 {
                     nameof(settings.Authority)
                 }));
             }
             else if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
             {
-                results.Add(new ValidationResult(T["The authority cannot contain a query string or a fragment."], new[]
+                results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                 {
                     nameof(settings.Authority)
                 }));
@@ -75,7 +75,7 @@ namespace OrchardCore.OpenId.Services
 
             if (string.IsNullOrEmpty(settings.ResponseType))
             {
-                results.Add(new ValidationResult(T["The response type cannot be null or empty."], new[]
+                results.Add(new ValidationResult(S["The response type cannot be null or empty."], new[]
                 {
                     nameof(settings.ResponseType)
                 }));
@@ -84,7 +84,7 @@ namespace OrchardCore.OpenId.Services
                 settings.ResponseType != OpenIdConnectResponseType.CodeIdTokenToken && settings.ResponseType != OpenIdConnectResponseType.CodeToken &&
                 settings.ResponseType != OpenIdConnectResponseType.IdToken && settings.ResponseType != OpenIdConnectResponseType.IdTokenToken)
             {
-                results.Add(new ValidationResult(T["Unknown response type ."], new[]
+                results.Add(new ValidationResult(S["Unknown response type ."], new[]
                 {
                     nameof(settings.ResponseType)
                 }));
@@ -92,7 +92,7 @@ namespace OrchardCore.OpenId.Services
 
             if (string.IsNullOrEmpty(settings.ResponseMode))
             {
-                results.Add(new ValidationResult(T["The response mode cannot be null or empty."], new[]
+                results.Add(new ValidationResult(S["The response mode cannot be null or empty."], new[]
                 {
                     nameof(settings.ResponseMode)
                 }));
@@ -100,13 +100,11 @@ namespace OrchardCore.OpenId.Services
             else if (settings.ResponseMode != OpenIdConnectResponseMode.FormPost && settings.ResponseMode != OpenIdConnectResponseMode.Fragment &&
                 settings.ResponseMode != OpenIdConnectResponseMode.Query)
             {
-                results.Add(new ValidationResult(T["Unknown response mode."], new[]
+                results.Add(new ValidationResult(S["Unknown response mode."], new[]
                 {
                     nameof(settings.ResponseMode)
                 }));
             }
-
-
 
             return Task.FromResult(results.ToImmutable());
         }

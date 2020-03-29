@@ -1,0 +1,9 @@
+@model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
+
+<fieldset class="form-group" asp-validation-class-for="Zones">
+    <div class="custom-control custom-checkbox">
+        <input asp-for="DisplayMenuFilter" class="custom-control-input" type="checkbox" />
+        <label asp-for="DisplayMenuFilter" class="custom-control-label">@T["Enable Admin Menu filter"]</label>
+    </div>
+    <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
+</fieldset>

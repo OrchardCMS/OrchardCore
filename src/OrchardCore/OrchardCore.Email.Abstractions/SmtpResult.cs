@@ -12,7 +12,7 @@ namespace OrchardCore.Email
         /// Returns an <see cref="SmtpResult"/>indicating a successful Smtp operation.
         /// </summary>
         public static SmtpResult Success { get; } = new SmtpResult { Succeeded = true };
-        
+
         /// <summary>
         /// An <see cref="IEnumerable{LocalizedString}"/> containing an errors that occurred during the Smtp operation.
         /// </summary>

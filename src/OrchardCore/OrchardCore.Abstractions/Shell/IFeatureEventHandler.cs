@@ -1,15 +1,17 @@
+using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions.Features;
+
 namespace OrchardCore.Environment.Shell
 {
     public interface IFeatureEventHandler
     {
-        void Installing(IFeatureInfo feature);
-        void Installed(IFeatureInfo feature);
-        void Enabling(IFeatureInfo feature);
-        void Enabled(IFeatureInfo feature);
-        void Disabling(IFeatureInfo feature);
-        void Disabled(IFeatureInfo feature);
-        void Uninstalling(IFeatureInfo feature);
-        void Uninstalled(IFeatureInfo feature);
+        Task InstallingAsync(IFeatureInfo feature);
+        Task InstalledAsync(IFeatureInfo feature);
+        Task EnablingAsync(IFeatureInfo feature);
+        Task EnabledAsync(IFeatureInfo feature);
+        Task DisablingAsync(IFeatureInfo feature);
+        Task DisabledAsync(IFeatureInfo feature);
+        Task UninstallingAsync(IFeatureInfo feature);
+        Task UninstalledAsync(IFeatureInfo feature);
     }
 }

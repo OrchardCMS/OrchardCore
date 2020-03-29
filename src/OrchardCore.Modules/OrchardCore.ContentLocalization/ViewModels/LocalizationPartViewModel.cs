@@ -19,7 +19,6 @@ namespace OrchardCore.ContentLocalization.ViewModels
 
         [BindNever]
         public IEnumerable<LocalizationLinksViewModel> ContentItemCultures { get; set; }
-
     }
 
     public class LocalizationLinksViewModel

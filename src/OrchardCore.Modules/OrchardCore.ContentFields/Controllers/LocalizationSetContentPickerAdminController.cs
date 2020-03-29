@@ -15,7 +15,6 @@ using YesSql.Services;
 
 namespace OrchardCore.ContentFields.Controllers
 {
-
     [RequireFeatures("OrchardCore.ContentLocalization")]
     [Admin]
     public class LocalizationSetContentPickerAdminController : Controller

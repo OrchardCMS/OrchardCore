@@ -23,6 +23,7 @@ namespace OrchardCore.Environment.Shell.Scope
 
         private readonly IServiceScope _serviceScope;
 
+        private readonly Dictionary<object, object> _items = new Dictionary<object, object>();
         private readonly List<Func<ShellScope, Task>> _beforeDispose = new List<Func<ShellScope, Task>>();
         private readonly HashSet<string> _deferredSignals = new HashSet<string>();
         private readonly List<Func<ShellScope, Task>> _deferredTasks = new List<Func<ShellScope, Task>>();
@@ -55,26 +56,78 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Retrieve the 'ShellContext' of the current shell scope.
         /// </summary>
-        public static ShellContext Context
-        {
-            get => Current?.ShellContext;
-        }
+        public static ShellContext Context => Current?.ShellContext;
 
         /// <summary>
         /// Retrieve the 'IServiceProvider' of the current shell scope.
         /// </summary>
-        public static IServiceProvider Services
-        {
-            get => Current?.ServiceProvider;
-        }
+        public static IServiceProvider Services => Current?.ServiceProvider;
 
         /// <summary>
         /// Retrieve the current shell scope from the async flow.
         /// </summary>
-        public static ShellScope Current
+        public static ShellScope Current => _current.Value;
+
+        /// <summary>
+        /// Sets a shared item to the current shell scope.
+        /// </summary>
+        public static void Set(object key, object value) => Current._items[key] = value;
+
+        /// <summary>
+        /// Gets a shared item from the current shell scope.
+        /// </summary>
+        public static object Get(object key) => Current._items.TryGetValue(key, out var value) ? value : null;
+
+        /// <summary>
+        /// Gets a shared item of a given type from the current shell scope.
+        /// </summary>
+        public static T Get<T>(object key) => Current._items.TryGetValue(key, out var value) ? value is T item ? item : default : default;
+
+        /// <summary>
+        /// Gets (or creates) a shared item of a given type from the current shell scope.
+        /// </summary>
+        public static T GetOrCreate<T>(object key, Func<T> factory)
         {
-            get => _current.Value;
+            if (!Current._items.TryGetValue(key, out var value) || !(value is T item))
+            {
+                Current._items[key] = item = factory();
+            }
+
+            return item;
         }
+
+        /// <summary>
+        /// Gets (or creates) a shared item of a given type from the current shell scope.
+        /// </summary>
+        public static T GetOrCreate<T>(object key) where T : class, new()
+        {
+            if (!Current._items.TryGetValue(key, out var value) || !(value is T item))
+            {
+                Current._items[key] = item = new T();
+            }
+
+            return item;
+        }
+
+        /// <summary>
+        /// Sets a shared feature to the current shell scope.
+        /// </summary>
+        public static void SetFeature<T>(T value) => Set(typeof(T), value);
+
+        /// <summary>
+        /// Gets a shared feature from the current shell scope.
+        /// </summary>
+        public static T GetFeature<T>() => Get<T>(typeof(T));
+
+        /// <summary>
+        /// Gets (or creates) a shared feature from the current shell scope.
+        /// </summary>
+        public static T GetOrCreateFeature<T>(Func<T> factory) => GetOrCreate(typeof(T), factory);
+
+        /// <summary>
+        /// Gets (or creates) a shared feature from the current shell scope.
+        /// </summary>
+        public static T GetOrCreateFeature<T>() where T : class, new() => GetOrCreate<T>(typeof(T));
 
         /// <summary>
         /// Creates a child scope from the current one.
@@ -209,7 +262,6 @@ namespace OrchardCore.Environment.Shell.Scope
                     ShellContext.IsActivated = true;
                 }
             }
-
             finally
             {
                 semaphore.Release();
@@ -227,7 +279,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Registers a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
         /// </summary>
-        private void BeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Add(callback);
+        private void BeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Insert(0, callback);
 
         /// <summary>
         /// Adds a Signal (if not already present) to be sent just after 'BeforeDisposeAsync()'.

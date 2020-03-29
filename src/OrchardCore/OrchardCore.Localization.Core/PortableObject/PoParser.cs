@@ -6,6 +6,9 @@ using System.Text;
 
 namespace OrchardCore.Localization.PortableObject
 {
+    /// <summary>
+    /// Represents a parser for portable objects.
+    /// </summary>
     public class PoParser
     {
         private static readonly Dictionary<char, char> _escapeTranslations = new Dictionary<char, char> {
@@ -14,6 +17,11 @@ namespace OrchardCore.Localization.PortableObject
             { 't', '\t' }
         };
 
+        /// <summary>
+        /// Parses a .po file.
+        /// </summary>
+        /// <param name="reader">The <see cref="TextReader"/>.</param>
+        /// <returns>A list of culture records.</returns>
         public IEnumerable<CultureDictionaryRecord> Parse(TextReader reader)
         {
             var entryBuilder = new DictionaryRecordBuilder();
@@ -149,7 +157,7 @@ namespace OrchardCore.Localization.PortableObject
                 {
                     case PoContext.MessageId:
                         {
-                            // If the MessageId has been set to an empty string and now gets set again 
+                            // If the MessageId has been set to an empty string and now gets set again
                             // before flushing the values should be reset.
                             if (string.IsNullOrEmpty(MessageId))
                             {

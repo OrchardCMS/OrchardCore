@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
@@ -23,18 +24,31 @@ namespace OrchardCore.Environment.Shell
 
             var allHostsAndPrefix = GetAllHostsAndPrefix(settings);
 
+            var settingsByHostAndPrefix = new Dictionary<string, ShellSettings>();
+
             foreach (var hostAndPrefix in allHostsAndPrefix)
             {
                 _hasStarMapping = _hasStarMapping || hostAndPrefix.StartsWith('*');
-                _shellsByHostAndPrefix = _shellsByHostAndPrefix.SetItem(hostAndPrefix, settings);
+                settingsByHostAndPrefix.TryAdd(hostAndPrefix, settings);
+            }
+
+            lock (this)
+            {
+                _shellsByHostAndPrefix = _shellsByHostAndPrefix.SetItems(settingsByHostAndPrefix);
             }
         }
 
         public void Remove(ShellSettings settings)
         {
-            var allHostsAndPrefix = GetAllHostsAndPrefix(settings);
+            var allHostsAndPrefix = _shellsByHostAndPrefix
+                .Where(kv => kv.Value.Name == settings.Name)
+                .Select(kv => kv.Key)
+                .ToArray();
 
-            _shellsByHostAndPrefix = _shellsByHostAndPrefix.RemoveRange(allHostsAndPrefix);
+            lock (this)
+            {
+                _shellsByHostAndPrefix = _shellsByHostAndPrefix.RemoveRange(allHostsAndPrefix);
+            }
 
             if (_default == settings)
             {

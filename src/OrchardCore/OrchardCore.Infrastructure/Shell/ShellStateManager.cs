@@ -1,13 +1,13 @@
-using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell.State;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell.State;
 using YesSql;
 
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// Stores <see cref="ShellState"/> in the database. 
+    /// Stores <see cref="ShellState"/> in the database.
     /// </summary>
     public class ShellStateManager : IShellStateManager
     {
@@ -20,7 +20,7 @@ namespace OrchardCore.Environment.Shell
             Logger = logger;
         }
 
-        ILogger Logger { get; set; }
+        private ILogger Logger { get; set; }
 
         public async Task<ShellState> GetShellStateAsync()
         {

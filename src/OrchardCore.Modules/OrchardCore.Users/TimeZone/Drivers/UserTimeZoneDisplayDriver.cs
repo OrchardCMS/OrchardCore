@@ -40,7 +40,7 @@ namespace OrchardCore.Users.TimeZone.Drivers
 
                 // Remove the cache entry, don't update it, as the form might still fail validation for other reasons.
                 await _userTimeZoneService.UpdateUserTimeZoneAsync(user);
-            }            
+            }
 
             return await EditAsync(userTimeZone, context);
         }

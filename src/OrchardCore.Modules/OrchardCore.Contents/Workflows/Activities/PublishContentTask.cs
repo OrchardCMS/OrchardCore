@@ -16,18 +16,28 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(PublishContentTask);
-        public override LocalizedString DisplayText => T["Publish Content Task"];
-        public override LocalizedString Category => T["Content"];
+
+        public override LocalizedString DisplayText => S["Publish Content Task"];
+
+        public override LocalizedString Category => S["Content"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Published"]);
+            return Outcomes(S["Published"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var content = await GetContentAsync(workflowContext);
-            await ContentManager.PublishAsync(content.ContentItem);
+            var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.DraftRequired);
+            if (contentItem != null)
+            {
+                await ContentManager.PublishAsync(contentItem);
+            }
+            else
+            {
+                await ContentManager.PublishAsync(content.ContentItem);
+            }
             return Outcomes("Published");
         }
     }

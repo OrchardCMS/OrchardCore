@@ -1,6 +1,6 @@
-using OrchardCore.Taxonomies.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Taxonomies.Fields;
 
 namespace OrchardCore.Taxonomies.ViewModels
 {

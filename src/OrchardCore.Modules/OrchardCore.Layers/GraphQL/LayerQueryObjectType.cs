@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using GraphQL.Types;
@@ -22,14 +23,15 @@ namespace OrchardCore.Layers.GraphQL
             Field(layer => layer.Rule).Description("The rule that activates the layer.");
             Field(layer => layer.Description).Description("The description of the layer.");
 
-            Field<ListGraphType<LayerWidgetQueryObjectType>>()
+            Field<ListGraphType<LayerWidgetQueryObjectType>, IEnumerable<ContentItem>>()
                 .Name("widgets")
                 .Description("The widgets for this layer.")
                 .Argument<PublicationStatusGraphType, PublicationStatusEnum>("status", "publication status of the widgets")
-                .ResolveAsync(async ctx => {
+                .ResolveLockedAsync(async ctx =>
+                {
                     var context = (GraphQLContext)ctx.UserContext;
                     var layerService = context.ServiceProvider.GetService<ILayerService>();
-                    
+
                     var filter = GetVersionFilter(ctx.GetArgument<PublicationStatusEnum>("status"));
                     var widgets = await layerService.GetLayerWidgetsAsync(filter);
 

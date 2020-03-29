@@ -143,7 +143,7 @@ namespace OrchardCore.Tests.Shell
 
         public static IFeatureInfo AddStartup(ShellBlueprint shellBlueprint, Type startupType)
         {
-            var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, null, null, false);
+            var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, null, null, false, false);
             shellBlueprint.Dependencies.Add(startupType, new NonCompiledFeatureEntry(featureInfo));
 
             return featureInfo;
@@ -182,22 +182,33 @@ namespace OrchardCore.Tests.Shell
         }
 
         private interface ITestSingleton { }
+
         private interface ITestTransient { }
+
         private interface ITestScoped { }
 
         private class TestSingleton : ITestSingleton { }
+
         private class TestTransient : ITestTransient { }
+
         private class TestScoped : ITestScoped { }
 
         private interface ITwoHostSingletonsOfTheSameType { }
+
         private class FirstHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
+
         private class SecondHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
+
         private class ShellSingletonOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+
         private class ShellTransientOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+
         private class ShellScopedOfTheSametype : ITwoHostSingletonsOfTheSameType { }
 
         private interface IHostSingletonAndScopedOfTheSameType { }
+
         private class HostSingletonOfTheSameTypeAsScoped : IHostSingletonAndScopedOfTheSameType { }
+
         private class HostScopedOfTheSameTypeAsSingleton : IHostSingletonAndScopedOfTheSameType { }
 
         private class ServicesOfTheSameTypeStartup : StartupBase

@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
@@ -153,6 +153,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       } else if (ch == "#") {
         stream.skipToEnd();
         return ret("error", "error");
+      } else if (ch == "<" && stream.match("!--") || ch == "-" && stream.match("->")) {
+        stream.skipToEnd();
+        return ret("comment", "comment");
       } else if (isOperatorChar.test(ch)) {
         if (ch != ">" || !state.lexical || state.lexical.type != ">") {
           if (stream.eat("=")) {
@@ -548,7 +551,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
     function parenExpr(type) {
       if (type != "(") return pass();
-      return cont(pushlex(")"), expression, expect(")"), poplex);
+      return cont(pushlex(")"), maybeexpression, expect(")"), poplex);
     }
 
     function expressionInner(type, value, noComma) {
@@ -583,7 +586,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     }
 
     function maybeoperatorComma(type, value) {
-      if (type == ",") return cont(expression);
+      if (type == ",") return cont(maybeexpression);
       return maybeoperatorNoComma(type, value, false);
     }
 

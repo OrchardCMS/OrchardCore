@@ -14,14 +14,17 @@ namespace OrchardCore.ResourceManagement
             { "script", "script" },
             { "stylesheet", "link" }
         };
+
         private static readonly Dictionary<string, string> _filePathAttributes = new Dictionary<string, string> {
             { "script", "src" },
             { "link", "href" }
         };
+
         private static readonly Dictionary<string, Dictionary<string, string>> _resourceAttributes = new Dictionary<string, Dictionary<string, string>> {
             { "script", new Dictionary<string, string> { {"type", "text/javascript"} } },
             { "stylesheet", new Dictionary<string, string> { {"type", "text/css"}, {"rel", "stylesheet"} } }
         };
+
         private static readonly Dictionary<string, TagRenderMode> _fileTagRenderModes = new Dictionary<string, TagRenderMode> {
             { "script", TagRenderMode.Normal },
             { "link", TagRenderMode.SelfClosing },

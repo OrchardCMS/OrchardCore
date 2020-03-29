@@ -7,12 +7,12 @@ namespace OrchardCore.Roles
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -21,8 +21,8 @@ namespace OrchardCore.Roles
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Security"], security => security
-                        .Add(T["Roles"], "10", installed => installed
+            builder.Add(S["Security"], security => security
+                        .Add(S["Roles"], "10", installed => installed
                             .Action("Index", "Admin", "OrchardCore.Roles")
                             .Permission(Permissions.ManageRoles)
                             .LocalNav()

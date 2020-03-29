@@ -6,12 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
@@ -19,12 +17,14 @@ using OrchardCore.Settings;
 namespace OrchardCore.AdminMenu.Controllers
 {
     [Admin]
-    public class MenuController : Controller, IUpdateModel
+    public class MenuController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IAdminMenuService _adminMenuService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public MenuController(
             IAuthorizationService authorizationService,
@@ -32,7 +32,6 @@ namespace OrchardCore.AdminMenu.Controllers
             ISiteService siteService,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            IStringLocalizer<MenuController> stringLocalizer,
             IHtmlLocalizer<MenuController> htmlLocalizer,
             ILogger<MenuController> logger)
         {
@@ -41,22 +40,17 @@ namespace OrchardCore.AdminMenu.Controllers
             _siteService = siteService;
             New = shapeFactory;
             _notifier = notifier;
-
-            T = stringLocalizer;
             H = htmlLocalizer;
             Logger = logger;
         }
 
-        public IStringLocalizer T { get; }
-        public IHtmlLocalizer H { get; }
         public ILogger Logger { get; }
-        public dynamic New { get; }
 
         public async Task<IActionResult> List(AdminMenuListOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -96,7 +90,6 @@ namespace OrchardCore.AdminMenu.Controllers
                 _notifier.Error(H["Error when retrieving the list of admin menus"]);
             }
 
-
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
             routeData.Values.Add("Options.Search", options.Search);
@@ -113,12 +106,11 @@ namespace OrchardCore.AdminMenu.Controllers
             return View(model);
         }
 
-
         public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new AdminMenuCreateViewModel();
@@ -131,7 +123,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -150,7 +142,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
@@ -175,7 +167,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
@@ -205,7 +197,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
@@ -219,7 +211,6 @@ namespace OrchardCore.AdminMenu.Controllers
 
             var removed = await _adminMenuService.DeleteAsync(adminMenu);
 
-
             if (removed == 1)
             {
                 _notifier.Success(H["Admin menu deleted successfully"]);
@@ -232,13 +223,12 @@ namespace OrchardCore.AdminMenu.Controllers
             return RedirectToAction(nameof(List));
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Toggle(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
@@ -257,6 +247,5 @@ namespace OrchardCore.AdminMenu.Controllers
 
             return RedirectToAction(nameof(List));
         }
-
     }
 }

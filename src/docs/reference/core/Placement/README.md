@@ -1,10 +1,13 @@
 # OrchardCore.DisplayManagement
 
-This article is about DisplayManagement and placement files.
+This article is about Display management and placement files.
 
 ## Placement files
 
-Any extension can contain an optional `placement.json` file providing custom placement logic.
+Any module or theme can contain an optional `placement.json` file providing custom placement logic.
+
+!!! note
+    The `placement.json` file must be added at the root of a module or a theme.
 
 ### Format
 
@@ -21,10 +24,8 @@ In the following example, we describe the placement for the `TextField` and `Par
 
 A placement rule contains two sets of data:
 
-- Filters
-  - Defines what specific shapes are targeted.
-- Placement information
-  - The placement information to apply when the filter is matched.
+- **Filters** - defines what specific shapes are targeted.
+- **Placement information** - the placement information to apply when the filter is matched.
 
 Currently you can filter shapes by:
 
@@ -70,8 +71,8 @@ Placement information consists of:
 
 Fields have a custom differentiator as their shape is used in many places.  
 It is built using the `Part` it's contained in, and the name of the field.  
-For instance, if a field named `MyField` would be added to an `Article` content type, its differentiator would be `Article.MyField`.  
-If a field named `City` was added to an `Address` part then its differentiator would be `Address.City`.
+For instance, if a field named `MyField` would be added to an `Article` content type, its differentiator would be `Article-MyField`.  
+If a field named `City` was added to an `Address` part then its differentiator would be `Address-City`.
 
 ## Shapes
 
@@ -180,6 +181,6 @@ Result:
 3 days ago
 ```
 
-## Shape differenciators
+## Shape differentiators
 
-You can find information about shape differenciators in the [Templates documentation](../../OrchardCore.Modules/OrchardCore.Templates/#content-field-differentiator)
+You can find information about shape differentiators in the [Templates documentation](../../modules/Templates/#content-field-differentiator)

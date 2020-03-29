@@ -1,50 +1,51 @@
 @model QueriesIndexViewModel
-
-<div class="row">
-    <div class="form-group col mb-n1">
-        <h1>@RenderTitleSegments(T["Queries"])</h1>
-    </div>
-    <div class="form-group col mb-n1">
-        <div class="dropdown float-right order-md-1">
-            <button type="button" class="btn btn-primary float-right" role="button" data-toggle="modal" data-target="#modalAddQuery">@T["Add Query"]</button>
+@{
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.Queries.Count - 1;
+}
+<h1>@RenderTitleSegments(T["Queries"])</h1>
+<form asp-action="Index" method="post">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            <div class="input-group input-group-sm filter-options">
+                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+            </div>
         </div>
-    </div>
-</div>
-<form asp-action="Index" method="get">
-    <div class="card mb-3">
-        <div class="card-body bg-light p-3">
-            <div class="input-group input-group-sm w-lg-50">
-                <div class="input-group-prepend">
-                    <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-                </div>
-                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" autofocus="autofocus" />
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
-                </div>
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                <button type="button" class="btn btn-primary float-right" role="button" data-toggle="modal" data-target="#modalAddQuery">@T["Add Query"]</button>
             </div>
         </div>
     </div>
-</form>
-
-<form asp-action="Index">
     @* the form is necessary to generate and antiforgery token for the delete action *@
-    @if (Model.Queries.Any())
-    {
-        <ul class="list-group">
+    <ul class="list-group">
+        <li class="list-group-item bg-light">
+            <div class="row">
+                <div class="form-group col-xl-4 mb-xl-n1">
+                    <label id="items" for="select-all">@T.Plural(Model.Queries.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                    <label id="selected-items" class="text-muted" for="select-all"></label>
+                </div>
+            </div>
+        </li>
+        @if (Model.Queries.Any())
+        {
             @foreach (var entry in Model.Queries)
             {
                 <li class="list-group-item">
                     @await DisplayAsync(entry.Shape)
                 </li>
             }
-        </ul>
-    }
-    else
-    {
-        <div class="alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> There are no queries for the moment."]
-        </div>
-    }
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info" role="alert">
+                    @T["<strong>Nothing here!</strong> There are no queries for the moment."]
+                </div>
+            </li>
+        }
+    </ul>
 </form>
 
 @await DisplayAsync(Model.Pager)
@@ -84,3 +85,11 @@
         </div>
     </div>
 </div>
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        $(".filter-options input").on("change", function () {
+            $("[name='submit.Filter']").click();
+        });
+    });
+</script>

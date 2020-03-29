@@ -58,12 +58,18 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="card-columns">
+                <div class="form-group">
+                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
+                </div>
+                <div id="cards" class="row">
                     @foreach (var thumbnail in Model.Thumbnails)
                     {
                         thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
                         thumbnail.Value.Type = thumbnail.Key;
-                        @await DisplayAsync(thumbnail.Value)
+
+                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
+                            @await DisplayAsync(thumbnail.Value)
+                        </div>
                     }
                 </div>
             </div>
@@ -84,19 +90,20 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="card-columns">
+                <div class="row">
                     @foreach (var target in await DeploymentTargetManager.GetDeploymentTargetsAsync())
                     {
                         var routeWithId = new RouteValueDictionary(target.Route);
                         routeWithId["id"] = Model.DeploymentPlan.Id;
-
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">@target.Name</h4>
-                                <p>@target.Description</p>
-                            </div>
-                            <div class="card-footer text-muted text-xs-right">
-                                <a class="btn btn-primary btn-sm" href="@Url.RouteUrl(routeWithId)" itemprop="UnsafeUrl">@T["Select"]</a>
+                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
+                            <div class="card w-100 mb-3">
+                                <div class="card-body">
+                                    <h4 class="card-title">@target.Name</h4>
+                                    <p>@target.Description</p>
+                                </div>
+                                <div class="card-footer text-muted text-xs-right">
+                                    <a class="btn btn-primary btn-sm" href="@Url.RouteUrl(routeWithId)" itemprop="UnsafeUrl">@T["Select"]</a>
+                                </div>
                             </div>
                         </div>
                     }
@@ -108,3 +115,33 @@
         </div>
     </div>
 </div>
+<script at="Foot" type="text/javascript">
+    function replaceDiacritics(str) {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    $(function () {
+        var searchBox = $('#search-box');
+
+        // On each keypress filter the list of cards
+        searchBox.keyup(function (e) {
+            var search = replaceDiacritics($(this).val().toLowerCase());
+            if (search == '') {
+                searchBox.val('');
+                $('.card-item').attr('style', 'display:flex !important');
+            }
+            else {
+                $('.card-item').each(function () {
+                    var filter = replaceDiacritics($(this).children().children().first().html().toLowerCase());
+                    var found = filter.indexOf(search) > -1;
+                    if (found) {
+                        $(this).attr('style', 'display:flex !important');
+                    }
+                    else {
+                        $(this).attr('style', 'display:none !important');
+                    }
+                });
+            }
+        });
+    })
+</script>

@@ -13,7 +13,7 @@
 <script asp-name="bootstrap-slider" depends-on="admin" asp-src="~/OrchardCore.Resources/Scripts/bootstrap-slider.min.js" debug-src="~/OrchardCore.Resources/Scripts/bootstrap-slider.js" at="Foot"></script>
 <style asp-name="bootstrap-slider" asp-src="~/OrchardCore.Resources/Styles/bootstrap-slider.min.css" debug-src="~/OrchardCore.Resources/Styles/bootstrap-slider.css"></style>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="row col-sm-2">
         <label asp-for="Value">@name</label>
         <div class="input-group mb-2">
@@ -36,7 +36,7 @@
         </div>
         <span class="hint">@settings.Hint</span>
     </div>
-</fieldset>
+</div>
 <script at="Foot">
     $('#@(id)-slider').bootstrapSlider({ tooltip: 'always' }).on('slide', function (ev) {
         $('#@(id)').val(ev.value);

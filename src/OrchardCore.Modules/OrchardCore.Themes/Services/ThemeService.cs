@@ -18,25 +18,24 @@ namespace OrchardCore.Themes.Services
         private readonly ILogger _logger;
         private readonly INotifier _notifier;
         private readonly ISiteThemeService _siteThemeService;
+        private readonly IHtmlLocalizer<ThemeService> H;
 
         public ThemeService(
             IExtensionManager extensionManager,
             IShellFeaturesManager shellFeaturesManager,
             ISiteThemeService siteThemeService,
             ILogger<ThemeService> logger,
-            IHtmlLocalizer<AdminMenu> htmlLocalizer,
+            IHtmlLocalizer<ThemeService> htmlLocalizer,
             INotifier notifier)
         {
             _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
             _siteThemeService = siteThemeService;
-            
+
             _logger = logger;
             _notifier = notifier;
-            T = htmlLocalizer;
+            H = htmlLocalizer;
         }
-
-        public IHtmlLocalizer T { get; }
 
         public async Task DisableThemeFeaturesAsync(string themeName)
         {
@@ -44,7 +43,7 @@ namespace OrchardCore.Themes.Services
             while (themeName != null)
             {
                 if (themes.Contains(themeName))
-                    throw new InvalidOperationException(T["The theme \"{0}\" is already in the stack of themes that need features disabled.", themeName].ToString());
+                    throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features disabled.", themeName].ToString());
                 var theme = _extensionManager.GetExtension(themeName);
                 if (theme == null)
                     break;
@@ -75,7 +74,7 @@ namespace OrchardCore.Themes.Services
             while (themeName != null)
             {
                 if (themes.Contains(themeName))
-                    throw new InvalidOperationException(T["The theme \"{0}\" is already in the stack of themes that need features enabled.", themeName].ToString());
+                    throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features enabled.", themeName].ToString());
                 themes.Push(themeName);
 
                 var extensionInfo = _extensionManager.GetExtension(themeName);
@@ -92,7 +91,7 @@ namespace OrchardCore.Themes.Services
                 await EnableFeaturesAsync(new[] { themeId }, true);
             }
         }
-        
+
         /// <summary>
         /// Enables a list of features.
         /// </summary>
@@ -116,7 +115,7 @@ namespace OrchardCore.Themes.Services
             var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
             foreach (var enabledFeature in enabledFeatures)
             {
-                _notifier.Success(T["{0} was enabled.", enabledFeature.Name]);
+                _notifier.Success(H["{0} was enabled.", enabledFeature.Name]);
             }
         }
 
@@ -143,8 +142,8 @@ namespace OrchardCore.Themes.Services
             var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);
             foreach (var feature in features)
             {
-                _notifier.Success(T["{0} was disabled.", feature.Name]);
+                _notifier.Success(H["{0} was disabled.", feature.Name]);
             }
-        }        
+        }
     }
 }

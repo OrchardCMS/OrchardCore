@@ -56,7 +56,7 @@ The newly created website should be able to run, and look like this:
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>netcoreapp3.0</TargetFramework>
+  <TargetFramework>netcoreapp3.1</TargetFramework>
   <PreserveCompilationReferences>true</PreserveCompilationReferences>
 </PropertyGroup>
 ```
@@ -67,9 +67,12 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.0.0-rc1-10004" />
+  <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.0.0-rc1-10004" />
 </ItemGroup>
 ```
+
+!!! hint "Nightly builds"
+    If you are using the nightly builds of Orchard Core (MyGet feed) then you should use the package `OrchardCore.Application.Cms.Core.Targets` instead.
 
 This will add the packages from Orchard Core CMS
 
@@ -86,7 +89,7 @@ public void ConfigureServices(IServiceCollection services)
     `AddRazorPages` must not be called directly as `services.AddOrchardCms()` already invokes it internally.
 
 - Edit the `Startup.cs` file `Configure`
-- Remove everything after `app.UseStaticFiles();` and replace it by `app.UserOrchardCore();` like this:
+- Remove everything after `app.UseStaticFiles();` and replace it by `app.UseOrchardCore();` like this:
 
 ```cs
    ...
@@ -138,7 +141,7 @@ Orchard comes pre-configured with a set of composable elements of data managemen
 !!! hint "For developers"
     A Content Part is analogous to a partial class, where each Content Parts are then aggregated to define a Content Type. Content Fields are analogous to custom properties that are added to the Content Type.
 
-Let's create a new content type named `Blog Post` and add some necessary content parts to it: 
+Let's create a new content type named `Blog Post` and add some necessary content parts to it:
 
 - From the running website, open the url `/admin`.
 - In the login screen, enter the user credentials that were used during the setup.
@@ -160,7 +163,7 @@ Let's create a new content type named `Blog Post` and add some necessary content
 
 - Then click __Save__
 
-You can notice an __Edit__ button in front of each content part. This lets us define some settings that might be available for each of them, only for this type. 
+You can notice an __Edit__ button in front of each content part. This lets us define some settings that might be available for each of them, only for this type.
 
 - On the `MarkdownBody` part, click __Edit__.
 - Select __`Wysiwyg editor`__ as the type of editor to use, then click __Save__:
@@ -309,7 +312,7 @@ We can now update the Razor Page to use the alias instead of the content item id
 @inject OrchardCore.IOrchardHelper Orchard
 
 @{
-    var blogPost = await Orchard.GetContentItemByAliasAsync($"alias:{Slug}");
+    var blogPost = await Orchard.GetContentItemByHandleAsync($"alias:{Slug}");
 }
 
 ...
@@ -321,6 +324,9 @@ We can now update the Razor Page to use the alias instead of the content item id
 }
 ```
 
+!!! waring "Release packages"
+    If you are not using the latest MyGet packages then this method is called `GetContentItemByAliasAsync(string alias)`.
+
 The changes consist in using the `slug` name in both the route and the local property, and also use a new method to load a content item with an alias.
 
 - Open the page `/blogpost/new-day` which should display the exact same result, but using a more SEO and user friendly url.
@@ -329,7 +335,7 @@ The changes consist in using the `slug` name in both the route and the local pro
 
 !!! warning "Skip on dev"
     This step is unnecessary if you use the packages from the MyGet feed, or tge source code from the __dev__ branch. If you still follow these steps you'll notice the configuration is already defined.
-    
+
 The __Alias Part__ provides some custom settings in order to let it be generated automatically. In our case we want it to be generated from the __Title__, automatically. To provide such patterns the CMS uses a templating language named __Liquid__, together with some custom functions to manipulate content items properties.
 
 - Edit the content definition of Blog Post, and for the __Alias Part__ click on __Edit__.

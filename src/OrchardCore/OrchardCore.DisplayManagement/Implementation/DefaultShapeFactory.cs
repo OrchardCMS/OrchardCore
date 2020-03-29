@@ -14,7 +14,6 @@ namespace OrchardCore.DisplayManagement.Implementation
         private readonly IThemeManager _themeManager;
         private ShapeTable _scopedShapeTable;
 
-
         public DefaultShapeFactory(
             IEnumerable<IShapeFactoryEvents> events,
             IShapeTableManager shapeTableManager,
@@ -25,7 +24,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             _themeManager = themeManager;
         }
 
-        public dynamic New { get { return this; } }
+        public dynamic New => this;
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
@@ -137,5 +136,4 @@ namespace OrchardCore.DisplayManagement.Implementation
             return createdContext.Shape;
         }
     }
-
 }

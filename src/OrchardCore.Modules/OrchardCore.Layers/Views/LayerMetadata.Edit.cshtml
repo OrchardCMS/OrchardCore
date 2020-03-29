@@ -1,27 +1,28 @@
 @model OrchardCore.Layers.ViewModels.LayerMetadataEditViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Title">
+<div class="form-group" asp-validation-class-for="Title">
     <label asp-for="Title">@T["Title"]</label>
     <input asp-for="Title" class="form-control" type="text" />
     <span asp-validation-for="Title"></span>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="LayerMetadata.RenderTitle" checked="@Model.LayerMetadata.RenderTitle">
         <label class="custom-control-label" asp-for="LayerMetadata.RenderTitle">@T["Render title"]</label>
         <span class="hint">— @T["If checked, the title will be rendered with the widget."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="LayerMetadata.Layer">@T["The layer the widget should be associated with."]</label>
     <select asp-for="LayerMetadata.Layer" class="form-control">
         @foreach (var layer in Model.Layers)
         {
-            <option value="@layer.Name" selected="@(Model.LayerMetadata.Layer == layer.Name)">@layer.Name</option>}
+            <option value="@layer.Name" selected="@(Model.LayerMetadata.Layer == layer.Name)">@layer.Name</option>
+}
     </select>
-</fieldset>
+</div>
 
 <input asp-for="LayerMetadata.Zone" type="hidden" />
 <input asp-for="LayerMetadata.Position" type="hidden" />

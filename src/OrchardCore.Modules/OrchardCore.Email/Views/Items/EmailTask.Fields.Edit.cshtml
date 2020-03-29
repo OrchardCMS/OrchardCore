@@ -1,32 +1,39 @@
 @using OrchardCore.Email.Workflows.ViewModels;
 @model EmailTaskViewModel
 
-<fieldset class="form-group" asp-validation-class-for="SenderExpression">
+<div class="form-group" asp-validation-class-for="AuthorExpression">
+    <label asp-for="AuthorExpression">@T["From"]</label>
+    <input type="text" asp-for="AuthorExpression" class="form-control code" />
+    <span asp-validation-for="AuthorExpression"></span>
+    <span class="hint">@T["The author's email address that defines who the email is from. Leave blank to use the configured email address. With Liquid support."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="SenderExpression">
     <label asp-for="SenderExpression">@T["Sender"]</label>
     <input type="text" asp-for="SenderExpression" class="form-control code" />
     <span asp-validation-for="SenderExpression"></span>
-    <span class="hint">@T["The sender's email address. Leave blank to use the configured email address. With Liquid support."]</span>
-</fieldset>
+    <span class="hint">@T["The sender's email address. Required if not the same as the From email address. With Liquid support."]</span>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="RecipientsExpression">
+<div class="form-group" asp-validation-class-for="RecipientsExpression">
     <label asp-for="RecipientsExpression">@T["Recipients"]</label>
     <input type="text" asp-for="RecipientsExpression" class="form-control code" />
     <span asp-validation-for="RecipientsExpression"></span>
     <span class="hint">@T["The comma-separated list of recipient email addresses. With Liquid support."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="SubjectExpression">
+<div class="form-group" asp-validation-class-for="SubjectExpression">
     <label asp-for="SubjectExpression">@T["Subject"]</label>
     <input type="text" asp-for="SubjectExpression" class="form-control code" />
     <span asp-validation-for="SubjectExpression"></span>
     <span class="hint">@T["The subject of the email message. With Liquid support."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Body">@T["Body"]</label>
     <textarea asp-for="Body" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The body of the email message. With Liquid support."]</span>
-</fieldset>
+</div>
 
 <div class="form-group">
     <div class="custom-control custom-checkbox">

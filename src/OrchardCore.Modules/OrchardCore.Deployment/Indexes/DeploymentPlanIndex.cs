@@ -1,4 +1,4 @@
-﻿using YesSql.Indexes;
+using YesSql.Indexes;
 
 namespace OrchardCore.Deployment.Indexes
 {

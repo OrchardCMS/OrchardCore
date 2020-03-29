@@ -11,19 +11,22 @@ namespace OrchardCore.Workflows.Activities
 {
     public class CommitTransactionTask : TaskActivity
     {
+        private readonly IStringLocalizer<CommitTransactionTask> S;
+
         public CommitTransactionTask(IStringLocalizer<CommitTransactionTask> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        private IStringLocalizer T { get; }
         public override string Name => nameof(CommitTransactionTask);
-        public override LocalizedString DisplayText => T["Commit Transaction Task"];
-        public override LocalizedString Category => T["Primitives"];
+
+        public override LocalizedString DisplayText => S["Commit Transaction Task"];
+
+        public override LocalizedString Category => S["Primitives"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

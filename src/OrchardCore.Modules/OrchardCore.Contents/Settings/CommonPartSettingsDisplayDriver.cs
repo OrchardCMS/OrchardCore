@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.ViewModels;
@@ -12,13 +11,6 @@ namespace OrchardCore.Lists.Settings
 {
     public class CommonPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
-        public CommonPartSettingsDisplayDriver(IStringLocalizer<CommonPartSettingsDisplayDriver> localizer)
-        {
-            TS = localizer;
-        }
-
-        public IStringLocalizer TS { get; }
-
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
             if (!String.Equals(nameof(CommonPart), contentTypePartDefinition.PartDefinition.Name))
@@ -31,7 +23,6 @@ namespace OrchardCore.Lists.Settings
                 var settings = contentTypePartDefinition.GetSettings<CommonPartSettings>();
                 model.DisplayDateEditor = settings.DisplayDateEditor;
                 model.DisplayOwnerEditor = settings.DisplayOwnerEditor;
-
             }).Location("Content");
         }
 
