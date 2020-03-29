@@ -1,8 +1,6 @@
 using System;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using StackExchange.Redis;
 

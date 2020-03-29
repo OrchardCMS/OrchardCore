@@ -22,12 +22,12 @@ namespace OrchardCore.Redis.Options
 
             options.XmlRepository = new RedisXmlRepository(() =>
             {
-                if (!redis.IsConnected)
+                if (redis.Database == null)
                 {
                     redis.ConnectAsync().GetAwaiter().GetResult();
                 }
 
-                return _redis.Database;
+                return redis.Database;
             }
             , _tenant + ":DataProtection-Keys");
         }

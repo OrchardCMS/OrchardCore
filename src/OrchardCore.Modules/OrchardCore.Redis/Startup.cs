@@ -39,11 +39,10 @@ namespace OrchardCore.Redis
                 return;
             }
 
-            services.TryAddSingleton(typeof(RedisMarkerService));
-
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RedisOptions>, RedisOptionsSetup>());
 
             services.AddSingleton<IRedisService, RedisService>();
+            services.AddScoped<IModularTenantEvents, RedisTenantEvents>();
         }
     }
 
@@ -61,7 +60,7 @@ namespace OrchardCore.Redis
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.LastOrDefault(d => d.ServiceType == typeof(RedisMarkerService)) == null)
+            if (services.LastOrDefault(d => d.ServiceType == typeof(IRedisService)) == null)
             {
                 _logger.LogError("'Redis Cache' is not active on tenant '{TenantName}' as there is no Redis configuration.", _tenant);
                 return;
@@ -88,7 +87,7 @@ namespace OrchardCore.Redis
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.LastOrDefault(d => d.ServiceType == typeof(RedisMarkerService)) == null)
+            if (services.LastOrDefault(d => d.ServiceType == typeof(IRedisService)) == null)
             {
                 _logger.LogError("'Redis DataProtection' is not active on tenant '{TenantName}' as there is no Redis configuration.", _tenant);
                 return;
@@ -96,9 +95,5 @@ namespace OrchardCore.Redis
 
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>());
         }
-    }
-
-    internal class RedisMarkerService
-    {
     }
 }

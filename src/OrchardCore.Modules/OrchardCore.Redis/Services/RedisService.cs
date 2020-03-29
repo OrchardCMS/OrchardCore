@@ -15,7 +15,6 @@ namespace OrchardCore.Redis.Services
         private readonly ILogger _logger;
 
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
-        private bool _initialized;
 
         public RedisService(ShellSettings shellSettings, IOptions<RedisOptions> options, ILogger<RedisService> logger)
         {
@@ -24,13 +23,12 @@ namespace OrchardCore.Redis.Services
             _logger = logger;
         }
 
-        public bool IsConnected => Connection?.IsConnected ?? false;
         public IConnectionMultiplexer Connection { get; private set; }
         public IDatabase Database { get; private set; }
 
         public async Task ConnectAsync()
         {
-            if (_initialized)
+            if (Database != null)
             {
                 return;
             }
@@ -39,7 +37,7 @@ namespace OrchardCore.Redis.Services
 
             try
             {
-                if (!_initialized)
+                if (Database == null)
                 {
                     Connection = await ConnectionMultiplexer.ConnectAsync(_options.Value.ConfigurationOptions);
                     Database = Connection.GetDatabase();
@@ -51,7 +49,6 @@ namespace OrchardCore.Redis.Services
             }
             finally
             {
-                _initialized = true;
                 _semaphore.Release();
             }
         }
