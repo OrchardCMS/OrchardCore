@@ -17,28 +17,13 @@ namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
     {
-        private readonly IContentManager _contentManager;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-
-        public TaxonomyPartDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager,
-            IServiceProvider serviceProvider
-            )
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-            _serviceProvider = serviceProvider;
-            _contentManager = contentManager;
-        }
         public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
         {
             var hasItems = part.Terms.Any();
             return Initialize<TaxonomyPartViewModel>(hasItems ? "TaxonomyPart" : "TaxonomyPart_Empty", m =>
             {
-                m.Terms = TermDriverHelper.PopulateTermEntries(part.Terms, context);
+                m.ContentItem = part.ContentItem;
                 m.TaxonomyPart = part;
-                m.BuildPartDisplayContext = context;
             })
             .Location("Detail", "Content:5");
         }

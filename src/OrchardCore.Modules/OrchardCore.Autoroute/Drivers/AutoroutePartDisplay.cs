@@ -105,7 +105,6 @@ namespace OrchardCore.Autoroute.Drivers
                     model.Path = "";
                 }
 
-
                 var httpContext = _httpContextAccessor.HttpContext;
 
                 if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, Permissions.SetHomepage))
@@ -138,15 +137,18 @@ namespace OrchardCore.Autoroute.Drivers
             }
 
             // This can only validate the path if the Autoroute is not managing content item routes or the path is absolute.
-            if (autoroute.Path != null && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && autoroute.Absolute)))
+            if (!String.IsNullOrEmpty(autoroute.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && autoroute.Absolute)))
             {
                 var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path).ListAsync();
                 if (possibleConflicts.Any())
                 {
                     var hasConflict = false;
-                    if (possibleConflicts.Any(x => x.ContentItemId != autoroute.ContentItem.ContentItemId) &&
-                        possibleConflicts.Any(x => x.ContainedContentItemId != autoroute.ContentItem.ContentItemId))
-                    {
+                    // This logic is different to the check in the handler as here we checking
+                    if (possibleConflicts.Any(x => x.ContentItemId != autoroute.ContentItem.ContentItemId) ||
+                        possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != autoroute.ContentItem.ContentItemId))
+                        //if (possibleConflicts.Any(x => x.ContentItemId != autoroute.ContentItem.ContentItemId) &&
+                        //    possibleConflicts.Any(x => x.ContainedContentItemId != autoroute.ContentItem.ContentItemId))
+                        {
                         hasConflict = true;
                     }
                     if (hasConflict)

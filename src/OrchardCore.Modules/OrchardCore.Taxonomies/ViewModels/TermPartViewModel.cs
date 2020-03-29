@@ -1,16 +1,17 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement;
-using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Taxonomies.Models;
 
 namespace OrchardCore.Taxonomies.ViewModels
 {
     public class TermPartViewModel
     {
-        public TermPart TermPart { get; set; }
+        public string TermContentItemId => ContentItem.ContentItemId;
+        public string TaxonomyContentItemId {get; set;}
         public IEnumerable<ContentItem> ContentItems { get; set; }
-        public BuildDisplayContext Context { get; set; }
-        public List<TermEntryViewModel> Terms { get; set; }
         public dynamic Pager { get; set; }
+
+        [BindNever]
+        public ContentItem ContentItem { get; set; }
     }
 }

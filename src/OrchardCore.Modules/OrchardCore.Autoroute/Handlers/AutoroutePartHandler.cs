@@ -329,10 +329,8 @@ namespace OrchardCore.Autoroute.Handlers
                 var versionedPath = $"{unversionedPath}-{version++}";
                 if (IsRelativePathUnique(entries, versionedPath, context))
                 {
-                    var entryIndex = entries.FindIndex(e => e.ContainedContentItemId == context.ContentItem.ContentItemId);
-                    var entry = entries[entryIndex];
+                    var entry = entries.FirstOrDefault(e => e.ContainedContentItemId == context.ContentItem.ContentItemId);
                     entry.Path = versionedPath;
-                    entries[entryIndex] = entry;
 
                     return versionedPath;
                 }
@@ -423,7 +421,7 @@ namespace OrchardCore.Autoroute.Handlers
             var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == path).ListAsync();
             if (possibleConflicts.Any())
             {
-                if (possibleConflicts.Any(x => x.ContentItemId != contentItemId) &&
+                if (possibleConflicts.Any(x => x.ContentItemId != contentItemId) ||
                     possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != contentItemId))
                 {
                     isUnique = false;
@@ -431,8 +429,6 @@ namespace OrchardCore.Autoroute.Handlers
             }
 
             return isUnique;
-
-            //return (await _session.QueryIndex<AutoroutePartIndex>(o => o.ContentItemId != contentItemId && o.Path == path).CountAsync()) == 0;
         }
     }
 }

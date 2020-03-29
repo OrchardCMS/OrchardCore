@@ -12,6 +12,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -52,6 +53,7 @@ namespace OrchardCore.Taxonomies
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IShapeTableProvider, TermShapes>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
             // Taxonomy Part

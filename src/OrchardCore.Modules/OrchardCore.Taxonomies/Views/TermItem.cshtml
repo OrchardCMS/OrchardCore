@@ -1,21 +1,23 @@
 @model dynamic
-@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @{
     TagBuilder tag = Tag(Model, "li");
 
-    var termContent = await ContentItemDisplayManager.BuildDisplayAsync(Model.Term, Model.BuildDisplayContext.Updater, "Summary", Model.BuildDisplayContext.GroupId);
+    // Morphing the shape to keep Model untouched
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "TermContentItem";
 
-    tag.InnerHtml.AppendHtml(await DisplayAsync(termContent));
-}
+    tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 
-@if (Model.Terms.Count > 0)
-{
-    tag.InnerHtml.AppendHtml("<ul>");
-
-    @foreach (var item in Model.Terms)
+    if ((bool)Model.HasItems)
     {
-        tag.InnerHtml.AppendHtml(await DisplayAsync(await New.TermItem(item)));
+        tag.InnerHtml.AppendHtml("<ul>");
+
+        @foreach (var item in Model.Items)
+        {
+            tag.InnerHtml.AppendHtml(await DisplayAsync(item));
+        }
+        tag.InnerHtml.AppendHtml("</ul>");
     }
-    tag.InnerHtml.AppendHtml("</ul>");
 }
+
 @tag

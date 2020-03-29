@@ -1,0 +1,6 @@
+<ul class="list-group list-group-flush {{ Model.Classes | join: " " }}">
+    {% for item in Model.Items %}
+        {% shape_add_classes item "list-group-item border-0 pb-0" %}
+        {{ item | shape_render }}
+    {% endfor %}
+</ul>

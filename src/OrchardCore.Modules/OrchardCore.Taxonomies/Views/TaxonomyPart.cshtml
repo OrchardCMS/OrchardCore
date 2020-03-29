@@ -1,6 +1,8 @@
 @model TaxonomyPartViewModel
-@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-
-<section class="taxonomy">
-    @await DisplayAsync(await New.Term(Model))
+@using OrchardCore.Mvc.Utilities;
+@{
+    var name = ( "taxonomy-" + Model.TaxonomyPart.TermContentType).HtmlClassify();
+}
+<section class="taxonomy @name">
+    <shape type="term" TaxonomyContentItemId="@Model.TaxonomyContentItemId" />
 </section>

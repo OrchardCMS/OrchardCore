@@ -1,6 +1,6 @@
 namespace OrchardCore.ContentManagement.Routing
 {
-    public struct AutorouteEntry
+    public class AutorouteEntry
     {
         public AutorouteEntry(string contentItemId, string path, string containedContentItemId = null, string jsonPath = null)
         {

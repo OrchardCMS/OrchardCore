@@ -44,12 +44,9 @@ namespace OrchardCore.Taxonomies.Drivers
                 {
                     var siteSettings = await _siteService.GetSiteSettingsAsync();
                     var pager = await GetPagerAsync(context.Updater, siteSettings.PageSize);
-                    var jTerms = model.Content.Terms as JArray;
-
-                    m.TermPart = part;
+                    m.TaxonomyContentItemId = part.TaxonomyContentItemId;
+                    m.ContentItem = part.ContentItem;
                     m.ContentItems = (await QueryTermItemsAsync(part, pager)).ToArray();
-                    m.Context = context;
-                    m.Terms = TermDriverHelper.PopulateTermEntries(jTerms?.ToObject<List<ContentItem>>(), context);
                     m.Pager = await context.New.PagerSlim(pager);
                 })
                 .Location("Detail", "Content:5"));

@@ -1,11 +1,11 @@
 @model dynamic
-@if (Model.Terms.Count > 0)
+@if ((bool)Model.HasItems)
 {
     TagBuilder tag = Tag(Model, "ul");
 
-    @foreach (var item in Model.Terms)
+    foreach (var item in Model.Items)
     {
-        tag.InnerHtml.AppendHtml(await DisplayAsync(await New.TermItem(item)));
+        tag.InnerHtml.AppendHtml(await DisplayAsync(item));
     }
 
     @tag

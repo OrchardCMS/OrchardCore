@@ -603,7 +603,21 @@
                   "Position": "0"
                 }
               }
-            }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+				"ContentTypePartSettings": {
+				  "Position": "2"
+				},
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ManageContainedItemRoutes": true
+                }
+              }
+            }			
           ]
         },
         {
@@ -629,6 +643,20 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+				"ContentTypePartSettings": {
+				  "Position": "2"
+				},
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ManageContainedItemRoutes": true
                 }
               }
             }
@@ -978,7 +1006,13 @@
                 "DisplayText": "Earth",
                 "TitlePart": {
                   "Title": "Earth"
-                }
+                },
+				"AutoroutePart": {
+				  "Path": "earth"
+				},
+				"TermPart": {
+				  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
+				}
               },
               {
                 "ContentItemId": "[js: variables('explorationTagContentItemId')]",
@@ -986,7 +1020,13 @@
                 "DisplayText": "Exploration",
                 "TitlePart": {
                   "Title": "Exploration"
-                }
+                },
+				"AutoroutePart": {
+				  "Path": "exploration"
+				},
+				"TermPart": {
+				  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
+				}
               },
               {
                 "ContentItemId": "[js: variables('spaceTagContentItemId')]",
@@ -994,11 +1034,21 @@
                 "DisplayText": "Space",
                 "TitlePart": {
                   "Title": "Space"
-                }
+                },
+				"AutoroutePart": {
+				  "Path": "space"
+				},
+				"TermPart": {
+				  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
+				}
               }
             ],
             "TermContentType": "Tag"
-          }
+          },
+		  "AutoroutePart": {
+			"Path": "tags",
+			"RouteContainedItems": true
+		  }
         },
         {
           "ContentItemId": "[js: variables('categoriesContentItemId')]",
@@ -1025,11 +1075,21 @@
                 },
                 "TitlePart": {
                   "Title": "Travel"
-                }
+                },
+                "AutoroutePart": {
+                  "Path": "travel"
+                },
+				"TermPart": {
+				  "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]"
+				}
               }
             ],
             "TermContentType": "Category"
-          }
+          },
+		  "AutoroutePart": {
+			"Path": "categories",
+			"RouteContainedItems": true
+		  }
         },
         {
           "ContentType": "Blog",
