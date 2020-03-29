@@ -81,7 +81,7 @@ namespace OrchardCore.DynamicCache.Services
 
             // Lazy load to prevent cyclic dependency
             var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
-            tagCache.Tag(cacheKey, context.Tags.ToArray());
+            await tagCache.TagAsync(cacheKey, context.Tags.ToArray());
         }
 
         private async Task<string> GetCacheKey(CacheContext context)

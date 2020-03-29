@@ -370,7 +370,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
 
-                var directory = Directory.CreateDirectory(Path.Combine(
+                // The 'FileSystemXmlRepository' will create the directory, but only if it is not overridden.
+                var directory = new DirectoryInfo(Path.Combine(
                     options.Value.ShellsApplicationDataPath,
                     options.Value.ShellsContainerName,
                     settings.Name, "DataProtection-Keys"));

@@ -35,7 +35,7 @@ namespace OrchardCore.Environment.Cache
             _logger = logger;
         }
 
-        public void Tag(string key, params string[] tags)
+        public Task TagAsync(string key, params string[] tags)
         {
             foreach (var tag in tags)
             {
@@ -46,20 +46,22 @@ namespace OrchardCore.Environment.Cache
                     set.Add(key);
                 }
             }
+
+            return Task.CompletedTask;
         }
 
-        public IEnumerable<string> GetTaggedItems(string tag)
+        public Task<IEnumerable<string>> GetTaggedItemsAsync(string tag)
         {
             HashSet<string> set;
             if (_dictionary.TryGetValue(tag, out set))
             {
                 lock (set)
                 {
-                    return set;
+                    return Task.FromResult(set.AsEnumerable());
                 }
             }
 
-            return Enumerable.Empty<string>();
+            return Task.FromResult(Enumerable.Empty<string>());
         }
 
         public Task RemoveTagAsync(string tag)
