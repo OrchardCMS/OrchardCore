@@ -17,9 +17,10 @@ namespace OrchardCore.Environment.Shell.Configuration
             _tenants = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "tenants.json");
         }
 
-        public void AddSources(IConfigurationBuilder builder)
+        public Task AddSourcesAsync(IConfigurationBuilder builder)
         {
             builder.AddJsonFile(_tenants, optional: true);
+            return Task.CompletedTask;
         }
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)

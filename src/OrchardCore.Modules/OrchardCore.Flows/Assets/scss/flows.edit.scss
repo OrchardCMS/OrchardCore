@@ -75,9 +75,18 @@
     }
 }
 
-
 [dir="rtl"] .btn-widget-add-below {
     >  .btn-group {
         right: calc(-14px + 50%);
     }
+}
+
+.toggleAll:after {
+    font-family: 'Font Awesome 5 Solid';
+    content: "\f102";
+    display: none;
+}
+
+.toggleAll.collapsed:after {
+    content: "\f103";
 }

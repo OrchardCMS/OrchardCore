@@ -18,21 +18,21 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
 
         public ImportController(
             IDeploymentManager deploymentManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IHtmlLocalizer<ImportController> h
+            IHtmlLocalizer<ImportController> localizer
         )
         {
             _deploymentManager = deploymentManager;
             _authorizationService = authorizationService;
             _notifier = notifier;
 
-            H = h;
+            H = localizer;
         }
-        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index()
         {

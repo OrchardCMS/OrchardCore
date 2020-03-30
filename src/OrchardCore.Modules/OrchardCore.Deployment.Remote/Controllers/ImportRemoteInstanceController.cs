@@ -19,20 +19,19 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly RemoteClientService _remoteClientService;
         private readonly IDeploymentManager _deploymentManager;
         private readonly IDataProtector _dataProtector;
+        private readonly IHtmlLocalizer H;
 
         public ImportRemoteInstanceController(
             IDataProtectionProvider dataProtectionProvider,
             RemoteClientService remoteClientService,
             IDeploymentManager deploymentManager,
-            IHtmlLocalizer<ExportRemoteInstanceController> h)
+            IHtmlLocalizer<ExportRemoteInstanceController> localizer)
         {
             _deploymentManager = deploymentManager;
             _remoteClientService = remoteClientService;
             _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
-            H = h;
+            H = localizer;
         }
-
-        public IHtmlLocalizer H { get; }
 
         /// <remarks>
         /// We ignore the AFT as the service is called from external applications (they can't have valid ones) and
