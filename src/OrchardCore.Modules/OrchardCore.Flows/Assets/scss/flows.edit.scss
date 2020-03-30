@@ -82,8 +82,9 @@
 }
 
 .toggleAll:after {
-    font-family: 'FontAwesome';
+    font-family: 'Font Awesome 5 Solid';
     content: "\f102";
+    display: none;
 }
 
 .toggleAll.collapsed:after {

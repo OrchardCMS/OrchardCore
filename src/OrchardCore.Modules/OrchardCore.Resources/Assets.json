@@ -239,6 +239,12 @@
       "node_modules/@fortawesome/fontawesome-free/webfonts/*"
     ],
     "output": "wwwroot/Vendor/fontawesome-free/webfonts/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/fontawesome/js/config.js"
+    ],
+    "output": "wwwroot/Scripts/fontawesome-config.js"
   }
-
 ]
