@@ -42,7 +42,7 @@ namespace OrchardCore.Redis
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RedisOptions>, RedisOptionsSetup>());
 
             services.AddSingleton<IRedisService, RedisService>();
-            services.AddScoped<IModularTenantEvents, RedisTenantEvents>();
+            services.AddSingleton(sp => sp.GetRequiredService<IRedisService>() as IModularTenantEvents);
         }
     }
 

@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using StackExchange.Redis;
 
 namespace OrchardCore.Redis.Services
 {
-    public class RedisService : IRedisService, IDisposable
+    public class RedisService : ModularTenantEvents, IRedisService, IDisposable
     {
         private readonly string _tenant;
         private readonly IOptions<RedisOptions> _options;
@@ -25,6 +26,8 @@ namespace OrchardCore.Redis.Services
 
         public IConnectionMultiplexer Connection { get; private set; }
         public IDatabase Database { get; private set; }
+
+        public override Task ActivatingAsync() => ConnectAsync();
 
         public async Task ConnectAsync()
         {
