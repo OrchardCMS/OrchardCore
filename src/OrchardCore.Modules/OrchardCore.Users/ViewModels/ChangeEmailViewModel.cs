@@ -9,17 +9,11 @@ namespace OrchardCore.Users.ViewModels
 {
     public class ChangeEmailViewModel : IValidatableObject
     {
-        private readonly IEmailAddressValidator _emailAddressValidator;
-
-        public ChangeEmailViewModel(IEmailAddressValidator emailAddressValidator)
-        {
-            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
-        }
-
         public string Email { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
             var S = validationContext.GetService<IStringLocalizer<ChangeEmailViewModel>>();
             if (string.IsNullOrWhiteSpace(Email))
             {
