@@ -19,7 +19,7 @@ namespace OrchardCore.Users.ViewModels
             {
                 yield return new ValidationResult(S["Email is required."], new[] { nameof(Email) });
             }
-            else if (!_emailAddressValidator.Validate(Email))
+            else if (!emailAddressValidator.Validate(Email))
             {
                 yield return new ValidationResult(S["Invalid Email."], new[] { nameof(Email) });
             }
