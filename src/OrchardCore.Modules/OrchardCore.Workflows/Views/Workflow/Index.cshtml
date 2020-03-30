@@ -182,7 +182,13 @@
         });
 
         itemsCheckboxes.on("click", function () {
-            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            var itemsCount = $(":checkbox[name='itemIds']").length;
+            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
             displayActionsOrFilters();
         });
     });

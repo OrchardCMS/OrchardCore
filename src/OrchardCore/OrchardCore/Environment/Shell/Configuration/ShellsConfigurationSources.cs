@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -16,12 +17,14 @@ namespace OrchardCore.Environment.Shell.Configuration
             _appsettings = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "appsettings");
         }
 
-        public void AddSources(IConfigurationBuilder builder)
+        public Task AddSourcesAsync(IConfigurationBuilder builder)
         {
             builder
                 .AddEnvironmentVariables()
                 .AddJsonFile($"{_appsettings}.json", optional: true)
                 .AddJsonFile($"{_appsettings}.{_environment}.json", optional: true);
+
+            return Task.CompletedTask;
         }
     }
 }

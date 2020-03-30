@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MimeKit;
+using OrchardCore.Email;
 
 namespace OrchardCore.Users.ViewModels
 {
@@ -30,9 +31,10 @@ namespace OrchardCore.Users.ViewModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
             var S = validationContext.GetService<IStringLocalizer<EditUserViewModel>>();
 
-            if (!string.IsNullOrEmpty(Email) && !MailboxAddress.TryParse(Email, out var emailAddress))
+            if (!string.IsNullOrEmpty(Email) && !emailAddressValidator.Validate(Email))
             {
                 yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
             }

@@ -11,9 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
-using MimeKit;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
@@ -40,6 +40,9 @@ namespace OrchardCore.Tenants.Controllers
         private readonly ShellSettings _currentShellSettings;
         private readonly IClock _clock;
         private readonly INotifier _notifier;
+        private readonly IEmailAddressValidator _emailAddressValidator;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public ApiController(
             IShellHost shellHost,
@@ -52,6 +55,7 @@ namespace OrchardCore.Tenants.Controllers
             IClock clock,
             INotifier notifier,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
+            IEmailAddressValidator emailAddressValidator,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
@@ -65,13 +69,10 @@ namespace OrchardCore.Tenants.Controllers
             _databaseProviders = databaseProviders;
             _currentShellSettings = currentShellSettings;
             _notifier = notifier;
-
+            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             S = stringLocalizer;
             H = htmlLocalizer;
         }
-
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
 
         [HttpPost]
         [Route("create")]
@@ -161,7 +162,7 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest();
             }
 
-            if (!MailboxAddress.TryParse(model.Email, out var emailAddress))
+            if (!_emailAddressValidator.Validate(model.Email))
             {
                 return BadRequest(S["Invalid email."]);
             }
@@ -268,7 +269,7 @@ namespace OrchardCore.Tenants.Controllers
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipeDescriptor,
                 SiteTimeZone = model.SiteTimeZone,
-                DatabaseProvider = selectedProvider.Name,
+                DatabaseProvider = selectedProvider.Value,
                 DatabaseConnectionString = connectionString,
                 DatabaseTablePrefix = tablePrefix
             };

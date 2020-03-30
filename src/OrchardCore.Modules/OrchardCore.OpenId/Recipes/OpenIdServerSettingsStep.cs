@@ -82,6 +82,7 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             settings.UseRollingTokens = model.UseRollingTokens;
+            settings.UseReferenceTokens = model.UseReferenceTokens;
 
             await _serverService.UpdateSettingsAsync(settings);
         }

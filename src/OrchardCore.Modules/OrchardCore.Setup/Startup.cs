@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -15,8 +16,10 @@ namespace OrchardCore.Setup
 {
     public class Startup : StartupBase
     {
-        private readonly string _defaultCulture;
-        private string[] _supportedCultures;
+        private readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
+        private string[] _supportedCultures = new string[] {
+            "ar", "cs", "da", "de", "el", "en", "es", "fa", "fi", "fr", "he", "hr", "hu", "id", "it", "ja", "ko", "lt", "mk", "nl", "pl", "pt", "ru", "sk", "sl", "sr-cyrl-rs", "sr-latn-rs", "sv", "tr", "uk", "vi", "zh-CN", "zh-TW"
+        };
         private readonly IShellConfiguration _shellConfiguration;
         private readonly IConfiguration _configuration;
 
@@ -25,8 +28,8 @@ namespace OrchardCore.Setup
             _shellConfiguration =shellConfiguration;
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Setup");
             _configuration = configuration;
-            _defaultCulture = configurationSection["DefaultCulture"];
-            _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<string[]>();
+            _defaultCulture = configurationSection["DefaultCulture"] ?? _defaultCulture;
+            _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<string[]>() ?? _supportedCultures;
         }
 
         public override void ConfigureServices(IServiceCollection services)

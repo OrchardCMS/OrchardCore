@@ -7,12 +7,12 @@ namespace OrchardCore.Media
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;
         }
-
-        public IStringLocalizer S { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -36,12 +36,12 @@ namespace OrchardCore.Media
 
     public class MediaCacheAdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+        
         public MediaCacheAdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;
         }
-
-        public IStringLocalizer S { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -40,13 +40,10 @@ namespace OrchardCore.Media.Azure
 
                 try
                 {
-                    var storageAccount = CloudStorageAccount.Parse(_options.ConnectionString);
-                    var blobClient = storageAccount.CreateCloudBlobClient();
+                    var _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
+                    var response = await _blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
 
-                    var blobContainer = blobClient.GetContainerReference(_options.ContainerName);
-                    var result = await blobContainer.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Off, new BlobRequestOptions(), new OperationContext());
-
-                    _logger.LogDebug("Azure Media Storage container {ContainerName} created: {Result}.", _options.ContainerName, result);
+                    _logger.LogDebug("Azure Media Storage container {ContainerName} created.", _options.ContainerName);
                 }
                 catch (Exception e)
                 {

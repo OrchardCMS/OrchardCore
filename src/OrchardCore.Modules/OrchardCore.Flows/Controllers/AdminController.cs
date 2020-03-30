@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -24,7 +23,6 @@ namespace OrchardCore.Flows.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IShapeFactory shapeFactory,
             ILogger<AdminController> logger,
-            IHtmlLocalizer<AdminController> localizer,
             IUpdateModelAccessor updateModelAccessor)
         {
             _contentItemDisplayManager = contentItemDisplayManager;
@@ -32,11 +30,8 @@ namespace OrchardCore.Flows.Controllers
             _shapeFactory = shapeFactory;
             _updateModelAccessor = updateModelAccessor;
 
-            T = localizer;
             Logger = logger;
         }
-
-        public IHtmlLocalizer T { get; }
 
         public ILogger Logger { get; set; }
 
