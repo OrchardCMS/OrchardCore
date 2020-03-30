@@ -7,7 +7,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Environment.Cache
 {
     /// <summary>
-    /// This component is a singleton that holds all the existing signal token for a tenant.
+    /// This component is a singleton that holds all the existing signal tokens for a tenant.
     /// </summary>
     public class Signal : ModularTenantEvents, ISignal
     {
@@ -27,12 +27,13 @@ namespace OrchardCore.Environment.Cache
                     var cancellationTokenSource = new CancellationTokenSource();
                     var changeToken = new CancellationChangeToken(cancellationTokenSource.Token);
                     return new ChangeTokenInfo(changeToken, cancellationTokenSource);
-                }).ChangeToken;
+                })
+                .ChangeToken;
         }
 
         public void SignalToken(string key)
         {
-            if (_changeTokens.TryRemove(key, out ChangeTokenInfo changeTokenInfo))
+            if (_changeTokens.TryRemove(key, out var changeTokenInfo))
             {
                 changeTokenInfo.TokenSource.Cancel();
             }

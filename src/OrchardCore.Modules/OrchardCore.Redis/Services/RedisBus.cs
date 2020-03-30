@@ -15,6 +15,7 @@ namespace OrchardCore.Redis.Services
         private readonly string _hostName;
         private readonly string _channelPrefix;
         private readonly string _messagePrefix;
+        private readonly ILogger _logger;
 
         public RedisBus(IRedisService redis, ShellSettings shellSettings, ILogger<RedisBus> logger)
         {
@@ -22,10 +23,8 @@ namespace OrchardCore.Redis.Services
             _hostName = Dns.GetHostName() + ':' + Process.GetCurrentProcess().Id;
             _channelPrefix = shellSettings.Name + ':';
             _messagePrefix = _hostName + '/';
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         public async Task SubscribeAsync(string channel, Action<string, string> handler)
         {
@@ -52,7 +51,7 @@ namespace OrchardCore.Redis.Services
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "'Unable to subscribe to the channel {ChannelName}'.", _channelPrefix + channel);
+                _logger.LogError(e, "'Unable to subscribe to the channel {ChannelName}'.", _channelPrefix + channel);
             }
         }
 
@@ -69,7 +68,7 @@ namespace OrchardCore.Redis.Services
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "'Unable to publish to the channel {ChannelName}'.", _channelPrefix + channel);
+                _logger.LogError(e, "'Unable to publish to the channel {ChannelName}'.", _channelPrefix + channel);
             }
         }
     }

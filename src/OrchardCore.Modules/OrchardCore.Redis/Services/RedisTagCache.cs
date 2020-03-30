@@ -13,7 +13,7 @@ namespace OrchardCore.Redis.Services
         private readonly IRedisService _redis;
         private readonly string _prefix;
         private readonly IEnumerable<ITagRemovedEventHandler> _tagRemovedEventHandlers;
-        private readonly ILogger<RedisTagCache> _logger;
+        private readonly ILogger _logger;
 
         public RedisTagCache(
             IRedisService redis,
