@@ -319,7 +319,7 @@ namespace OrchardCore.Environment.Shell.Scope
 
                 foreach (var key in _deferredSignals)
                 {
-                    signal.SignalToken(key);
+                    await signal.SignalTokenAsync(key);
                 }
             }
 

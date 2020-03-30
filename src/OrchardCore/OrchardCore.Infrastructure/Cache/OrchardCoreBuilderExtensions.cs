@@ -1,8 +1,10 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using OrchardCore.Distributed;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Cache.CacheContextProviders;
 using OrchardCore.Infrastructure.Cache;
+using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -15,8 +17,23 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(services =>
             {
+                services.AddSingleton<ISignal>(sp =>
+                {
+                    var messageBus = sp.GetService<IMessageBus>();
+
+                    if (messageBus == null)
+                    {
+                        return new Signal();
+                    }
+                    else
+                    {
+                        return new DistributedSignal(messageBus);
+                    }
+                });
+
+                services.AddSingleton(sp => (IModularTenantEvents)sp.GetRequiredService<ISignal>());
+
                 services.AddTransient<ITagCache, DefaultTagCache>();
-                services.AddSingleton<ISignal, Signal>();
                 services.AddScoped<ICacheContextManager, CacheContextManager>();
                 services.AddScoped<ICacheScopeManager, CacheScopeManager>();
 

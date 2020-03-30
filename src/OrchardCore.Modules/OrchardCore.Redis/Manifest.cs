@@ -25,7 +25,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Redis.Bus",
     Name = "Redis Bus",
-    Description = "Message bus using Redis.",
+    Description = "Makes the Signal service distributed.",
     Dependencies = new[] { "OrchardCore.Redis" },
     Category = "Distributed"
 )]

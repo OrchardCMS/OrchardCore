@@ -74,7 +74,7 @@ namespace OrchardCore.Redis
         }
     }
 
-    [Feature("OrchardCore.Distributed.Redis.Bus")]
+    [Feature("OrchardCore.Redis.Bus")]
     public class RedisBusStartup : StartupBase
     {
         private readonly string _tenant;
