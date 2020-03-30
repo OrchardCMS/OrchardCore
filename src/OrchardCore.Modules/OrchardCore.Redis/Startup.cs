@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Distributed;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -70,6 +71,30 @@ namespace OrchardCore.Redis
 
             services.AddStackExchangeRedisCache(o => { });
             services.AddTransient<ITagCache, RedisTagCache>();
+        }
+    }
+
+    [Feature("OrchardCore.Distributed.Redis.Bus")]
+    public class RedisBusStartup : StartupBase
+    {
+        private readonly string _tenant;
+        private readonly ILogger<RedisCacheStartup> _logger;
+
+        public RedisBusStartup(ShellSettings shellSettings, ILogger<RedisCacheStartup> logger)
+        {
+            _tenant = shellSettings.Name;
+            _logger = logger;
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            if (services.LastOrDefault(d => d.ServiceType == typeof(IRedisService)) == null)
+            {
+                _logger.LogError("'Redis Bus' is not active on tenant '{TenantName}' as there is no Redis configuration.", _tenant);
+                return;
+            }
+
+            services.AddSingleton<IMessageBus, RedisBus>();
         }
     }
 

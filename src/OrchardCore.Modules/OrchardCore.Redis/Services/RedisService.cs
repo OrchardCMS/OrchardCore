@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using StackExchange.Redis;
 
@@ -11,15 +10,13 @@ namespace OrchardCore.Redis.Services
 {
     public class RedisService : ModularTenantEvents, IRedisService, IDisposable
     {
-        private readonly string _tenant;
         private readonly IOptions<RedisOptions> _options;
         private readonly ILogger _logger;
 
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
-        public RedisService(ShellSettings shellSettings, IOptions<RedisOptions> options, ILogger<RedisService> logger)
+        public RedisService(IOptions<RedisOptions> options, ILogger<RedisService> logger)
         {
-            _tenant = shellSettings.Name;
             _options = options;
             _logger = logger;
         }
@@ -48,7 +45,7 @@ namespace OrchardCore.Redis.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Tenant '{TenantName}' is unable to connect to Redis.", _tenant);
+                _logger.LogError(e, "Unable to connect to Redis.");
             }
             finally
             {
