@@ -57,7 +57,7 @@ namespace OrchardCore.Redis
             {
                 services.AddStackExchangeRedisCache(o => { });
                 services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>());
-                services.AddTransient<ITagCache, RedisTagCache>();
+                services.AddScoped<ITagCache, RedisTagCache>();
             }
         }
     }

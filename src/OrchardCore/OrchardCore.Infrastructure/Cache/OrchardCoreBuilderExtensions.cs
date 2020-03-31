@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<ISignal>());
 
-                services.AddTransient<ITagCache, DefaultTagCache>();
+                services.AddScoped<ITagCache, DefaultTagCache>();
                 services.AddScoped<ICacheContextManager, CacheContextManager>();
                 services.AddScoped<ICacheScopeManager, CacheScopeManager>();
 
