@@ -82,7 +82,9 @@ namespace OrchardCore.OpenId
                     // protected by antiforgery checks, that are enforced with or without this setting being changed.
                     // 2020-03-23; Moved the SameSiteNode.None here, this will require that the site runs on HTTPS;
                     if (cookieContext.CookieName.StartsWith("orchauth_"))
+                    {
                         cookieContext.CookieOptions.SameSite = SameSiteMode.None;
+                    }
                 };
             });
         }
@@ -92,7 +94,7 @@ namespace OrchardCore.OpenId
             var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
             if (!httpContextAccessor.HttpContext.Request.IsHttps)
             {
-                _logger.LogCritical("OpenId module requires a site that runs on Https, Http sites may not function correctly.");
+                _logger.LogCritical("OpenId module requires a site that runs on https.");
             }
 
             // Application
