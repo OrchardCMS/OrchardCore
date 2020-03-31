@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Localization.Core.DataAnnotations
+namespace OrchardCore.Localization.DataAnnotations
 {
     /// <summary>
     /// This is just a marker class to allow the POExtractor to extract the default error messages for data annotations attributes.
