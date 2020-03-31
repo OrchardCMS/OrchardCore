@@ -18,7 +18,7 @@ namespace OrchardCore.Environment.Shell
     /// tenant is removed, but are necessary to match an incoming request, even if they are not initialized.
     /// Each <see cref="ShellContext"/> is activated (its service provider is built) on the first request.
     /// </summary>
-    public class ShellHost : IShellHost, IShellDescriptorManagerEventHandler, IDisposable
+    public class ShellHost : IShellHost, IDisposable
     {
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
@@ -293,7 +293,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// A feature is enabled / disabled, the tenant needs to be restarted
         /// </summary>
-        Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
+        public Task Changed(ShellDescriptor descriptor, string tenant)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
