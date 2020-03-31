@@ -41,3 +41,8 @@ function refreshDescription(target) {
     $("#RecipeName").val(recipeName);
     $("#recipeButton").attr("title", recipeDescription);
 }
+
+function setLocalizationUrl() {
+    var culturesList = document.getElementById('culturesList');
+    window.location = culturesList.options[culturesList.selectedIndex].dataset.url;
+}
