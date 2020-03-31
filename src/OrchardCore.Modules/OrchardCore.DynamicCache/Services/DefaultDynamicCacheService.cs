@@ -11,7 +11,7 @@ using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache.Services
 {
-    public class DefaultDynamicCacheService : IDynamicCacheService, ITagRemovedEventHandler
+    public class DefaultDynamicCacheService : IDynamicCacheService
     {
         private readonly ICacheContextManager _cacheContextManager;
         private readonly IDynamicCache _dynamicCache;
