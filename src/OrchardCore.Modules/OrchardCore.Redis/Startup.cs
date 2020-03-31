@@ -13,6 +13,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Redis.Options;
 using OrchardCore.Redis.Services;
+using StackExchange.Redis;
 
 namespace OrchardCore.Redis
 {
@@ -31,14 +32,18 @@ namespace OrchardCore.Redis
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (String.IsNullOrWhiteSpace(_configuration["OrchardCore.Redis:Configuration"]))
+            try
             {
-                _logger.LogError("'Redis' is not active on tenant '{TenantName}' as there is no Redis configuration.", _tenant);
+                var options = ConfigurationOptions.Parse(_configuration["OrchardCore.Redis:Configuration"]);
+                services.Configure<RedisOptions>(o => o.ConfigurationOptions = options);
+            }
+            catch
+            {
+                _logger.LogError("'Redis' is not active on tenant '{TenantName}' as there is no valid Redis configuration.", _tenant);
                 return;
             }
 
             services.AddSingleton<IRedisService, RedisService>();
-            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RedisOptions>, RedisOptionsSetup>());
             services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IRedisService>());
         }
     }
@@ -120,7 +125,7 @@ namespace OrchardCore.Redis
         {
             if (services.FirstOrDefault(d => d.ServiceType == typeof(IRedisService)) == null)
             {
-                logger.LogError(feature + " is not active on tenant '{TenantName}' as there is no Redis configuration.", tenant);
+                logger.LogError(feature + " is not active on tenant '{TenantName}' as there is no valid Redis configuration.", tenant);
                 return false;
             }
 
