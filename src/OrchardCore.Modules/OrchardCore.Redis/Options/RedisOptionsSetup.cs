@@ -1,5 +1,3 @@
-using System;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
 using StackExchange.Redis;
@@ -10,15 +8,11 @@ namespace OrchardCore.Redis.Options
     {
         private readonly IShellConfiguration _shellConfiguration;
 
-        public RedisOptionsSetup(IShellConfiguration shellConfiguration)
-        {
-            _shellConfiguration = shellConfiguration;
-        }
+        public RedisOptionsSetup(IShellConfiguration shellConfiguration) => _shellConfiguration = shellConfiguration;
 
         public void Configure(RedisOptions options)
         {
-            var configuration = _shellConfiguration.GetSection("OrchardCore.Redis").GetValue<string>("Configuration") ?? String.Empty;
-
+            var configuration = _shellConfiguration["OrchardCore.Redis:Configuration"];
             options.ConfigurationOptions = ConfigurationOptions.Parse(configuration);
         }
     }
