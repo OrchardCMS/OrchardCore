@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Distributed;
@@ -34,8 +33,8 @@ namespace OrchardCore.Redis
         {
             try
             {
-                var options = ConfigurationOptions.Parse(_configuration["OrchardCore.Redis:Configuration"]);
-                services.Configure<RedisOptions>(redisOptions => redisOptions.ConfigurationOptions = options);
+                var configurationOptions = ConfigurationOptions.Parse(_configuration["OrchardCore.Redis:Configuration"]);
+                services.Configure<RedisOptions>(options => options.ConfigurationOptions = configurationOptions);
             }
             catch (Exception e)
             {
@@ -56,7 +55,7 @@ namespace OrchardCore.Redis
             if (services.Any(d => d.ServiceType == typeof(IRedisService)))
             {
                 services.AddStackExchangeRedisCache(o => { });
-                services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>());
+                services.AddTransient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>();
                 services.AddScoped<ITagCache, RedisTagCache>();
             }
         }
@@ -81,7 +80,7 @@ namespace OrchardCore.Redis
         {
             if (services.Any(d => d.ServiceType == typeof(IRedisService)))
             {
-                services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>());
+                services.AddTransient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>();
             }
         }
     }
