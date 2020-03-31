@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Localization.DataAnnotations;
+using OrchardCore.Localization.Extensions;
 
 namespace OrchardCore.Localization.PortableObject
 {
@@ -199,8 +201,22 @@ namespace OrchardCore.Localization.PortableObject
 
                     if (dictionary != null)
                     {
-                        // Extract translation with context
                         var key = CultureDictionaryRecord.GetKey(name, context);
+
+                        // Extract translation from data annotations attributes
+                        if (context == typeof(LocalizedDataAnnotationsMvcOptions).FullName)
+                        {
+                            var dataAnnotationKeys = dictionary.GetDataAnnotationKeys();
+                            var dataAnnotationKey = dataAnnotationKeys.Where(k => k.Contains(name)).SingleOrDefault();
+                            if (dataAnnotationKey != null)
+                            {
+                                translation = dictionary[dataAnnotationKey];
+
+                                return translation;
+                            }
+                        }
+
+                        // Extract translation with context
                         translation = dictionary[key, count];
 
                         if (context != null && translation == null)
