@@ -35,7 +35,7 @@ namespace OrchardCore.Redis
             try
             {
                 var options = ConfigurationOptions.Parse(_configuration["OrchardCore.Redis:Configuration"]);
-                services.Configure<RedisOptions>(o => o.ConfigurationOptions = options);
+                services.Configure<RedisOptions>(redisOptions => redisOptions.ConfigurationOptions = options);
             }
             catch (Exception e)
             {
@@ -53,14 +53,12 @@ namespace OrchardCore.Redis
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (!services.Any(d => d.ServiceType == typeof(IRedisService)))
+            if (services.Any(d => d.ServiceType == typeof(IRedisService)))
             {
-                return;
+                services.AddStackExchangeRedisCache(o => { });
+                services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>());
+                services.AddTransient<ITagCache, RedisTagCache>();
             }
-
-            services.AddStackExchangeRedisCache(o => { });
-            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>());
-            services.AddTransient<ITagCache, RedisTagCache>();
         }
     }
 
@@ -69,12 +67,10 @@ namespace OrchardCore.Redis
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (!services.Any(d => d.ServiceType == typeof(IRedisService)))
+            if (services.Any(d => d.ServiceType == typeof(IRedisService)))
             {
-                return;
+                services.AddSingleton<IMessageBus, RedisBus>();
             }
-
-            services.AddSingleton<IMessageBus, RedisBus>();
         }
     }
 
@@ -83,12 +79,10 @@ namespace OrchardCore.Redis
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (!services.Any(d => d.ServiceType == typeof(IRedisService)))
+            if (services.Any(d => d.ServiceType == typeof(IRedisService)))
             {
-                return;
+                services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>());
             }
-
-            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>());
         }
     }
 }
