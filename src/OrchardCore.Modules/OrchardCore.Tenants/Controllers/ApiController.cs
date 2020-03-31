@@ -269,7 +269,7 @@ namespace OrchardCore.Tenants.Controllers
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipeDescriptor,
                 SiteTimeZone = model.SiteTimeZone,
-                DatabaseProvider = selectedProvider.Name,
+                DatabaseProvider = selectedProvider.Value,
                 DatabaseConnectionString = connectionString,
                 DatabaseTablePrefix = tablePrefix
             };

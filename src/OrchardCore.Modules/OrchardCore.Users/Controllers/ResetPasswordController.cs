@@ -129,7 +129,7 @@ namespace OrchardCore.Users.Controllers
 
             await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.ResettingPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
-            if (ModelState.IsValid)
+            if (TryValidateModel(model) && ModelState.IsValid)
             {
                 if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key, message)))
                 {
