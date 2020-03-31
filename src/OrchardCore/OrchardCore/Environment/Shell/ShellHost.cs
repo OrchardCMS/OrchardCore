@@ -18,7 +18,7 @@ namespace OrchardCore.Environment.Shell
     /// all <see cref="ShellSettings"/> that we also need to register in the <see cref="IRunningShellTable"/> to serve incoming requests.
     /// For each <see cref="ShellContext"/> a service container and then a request pilpeline are only built on the first matching request.
     /// </summary>
-    public class ShellHost : IShellHost, IShellDescriptorManagerEventHandler, IDisposable
+    public class ShellHost : IShellHost, IDisposable
     {
         private const int ReloadShellMaxRetriesCount = 9;
 
@@ -144,7 +144,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// A feature is enabled / disabled, the tenant needs to be released so that a new shell will be built.
         /// </summary>
-        Task IShellDescriptorManagerEventHandler.ChangedAsync(ShellDescriptor descriptor, ShellSettings settings)
+        public Task ChangedAsync(ShellDescriptor descriptor, ShellSettings settings)
             => ReleaseShellContextAsync(settings);
 
         /// <summary>
