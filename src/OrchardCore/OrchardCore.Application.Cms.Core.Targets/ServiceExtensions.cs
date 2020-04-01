@@ -29,9 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 .AddTheming()
                 .AddLiquidViews()
-
-                .AddCaching()
-                .AddDocumentManagement();
+                .AddCaching();
 
             // OrchardCoreBuilder is not available in OrchardCore.ResourceManagement as it has to
             // remain independent from OrchardCore.
