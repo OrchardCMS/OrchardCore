@@ -1,22 +1,21 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject OrchardCore.IOrchardHelper Orchard
+
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Orchard Setup</title>
+    <title>@T["Orchard Setup"]</title>
+    <link type="image/x-icon" rel="shortcut icon" href="~/OrchardCore.Setup/favicon.ico" />
     <link type="text/css" rel="stylesheet" href="~/OrchardCore.Setup/Styles/setup.min.css" />
     <link type="text/css" rel="stylesheet" href="~/OrchardCore.Resources/Styles/font-awesome.min.css" />
     @await RenderSectionAsync("Header", required: false)
 </head>
 <body>
     <div class="container">
-
         @RenderBody()
-
-        <hr />
         <footer>
             @await RenderSectionAsync("Footer", required: false)
         </footer>

@@ -33,7 +33,8 @@ namespace OrchardCore.Content.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.GetApiContent) ||
+                !await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
                 return this.ChallengeOrForbid();
             }

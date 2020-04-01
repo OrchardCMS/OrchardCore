@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Environment.Shell
@@ -14,13 +15,9 @@ namespace OrchardCore.Environment.Shell
             };
         }
 
-        public IEnumerable<ShellSettings> LoadSettings()
+        public Task<IEnumerable<ShellSettings>> LoadSettingsAsync()
         {
-            yield return new ShellSettings()
-            {
-                Name = "Default",
-                State = Models.TenantState.Running
-            };
+            return Task.FromResult((new ShellSettings[] { CreateDefaultSettings() }).AsEnumerable());
         }
 
         public Task<ShellSettings> LoadSettingsAsync(string tenant) => Task.FromResult(CreateDefaultSettings());
