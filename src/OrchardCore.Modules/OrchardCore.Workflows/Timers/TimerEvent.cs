@@ -33,6 +33,12 @@ namespace OrchardCore.Workflows.Timers
             set => SetProperty(value);
         }
 
+        public DateTime? StartAtUtc
+        {
+            get => GetProperty<DateTime?>();
+            set => SetProperty(value);
+        }
+
         private DateTime? StartedUtc
         {
             get => GetProperty<DateTime?>();
@@ -64,7 +70,7 @@ namespace OrchardCore.Workflows.Timers
         {
             if (StartedUtc == null)
             {
-                StartedUtc = _clock.UtcNow;
+                StartedUtc = StartAtUtc ?? _clock.UtcNow;
             }
 
             var schedule = CrontabSchedule.Parse(CronExpression);
