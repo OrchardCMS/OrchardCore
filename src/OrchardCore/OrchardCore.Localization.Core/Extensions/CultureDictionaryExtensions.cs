@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OrchardCore.Localization.Core.DataAnnotations;
+using OrchardCore.Localization.DataAnnotations;
 
 namespace OrchardCore.Localization.Extensions
 {
