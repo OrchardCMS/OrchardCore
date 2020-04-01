@@ -77,6 +77,8 @@ CH~3~CH~2~OH
 
 text~a\ subscript~
 
+~~Delete me~~
+
 ## Snippets
 
 --8<-- "src/docs/samples/snippet1.md"
