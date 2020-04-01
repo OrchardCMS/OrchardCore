@@ -5,7 +5,7 @@ using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell
 {
-    public interface IShellHost
+    public interface IShellHost : IShellDescriptorManagerEventHandler
     {
         /// <summary>
         /// Ensure that all the <see cref="ShellContext"/> are pre-created and available to process requests.

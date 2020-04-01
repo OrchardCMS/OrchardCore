@@ -77,14 +77,25 @@ namespace OrchardCore.Users.Controllers
             if (!string.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
             {
                 ModelState.AddModelError("Email", S["Invalid email."]);
-            }
 
+                // Check if user with same email already exists
+                var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
+
+                if (userWithEmail != null)
+                {
+                    ModelState.AddModelError("Email", S["A user with the same email already exists."]);
+                }
+            }
+            
             ViewData["ReturnUrl"] = returnUrl;
 
-            // If we get a user, redirect to returnUrl
-            if (await this.RegisterUser(model, S["Confirm your account"], _logger) != null)
+            if (TryValidateModel(model) && ModelState.IsValid)
             {
-                return RedirectToLocal(returnUrl);
+                // If we get a user, redirect to returnUrl
+                if (await this.RegisterUser(model, S["Confirm your account"], _logger) != null)
+                {
+                    return RedirectToLocal(returnUrl);
+                }
             }
 
             // If we got this far, something failed, redisplay form

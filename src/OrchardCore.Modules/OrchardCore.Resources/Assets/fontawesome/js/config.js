@@ -1,0 +1,1 @@
+FontAwesomeConfig = { searchPseudoElements: true };

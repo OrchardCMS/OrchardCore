@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
@@ -26,7 +27,7 @@ namespace OrchardCore.Setup
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Setup");
 
             _defaultCulture = configurationSection["DefaultCulture"] ?? _defaultCulture;
-            _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<string[]>() ?? _supportedCultures;
+            _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<List<string>>()?.ToArray() ?? _supportedCultures;
         }
 
         public override void ConfigureServices(IServiceCollection services)
