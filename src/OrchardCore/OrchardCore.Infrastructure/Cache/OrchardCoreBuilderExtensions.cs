@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(services =>
             {
-                services.AddTransient<ITagCache, DefaultTagCache>();
+                services.AddScoped<ITagCache, DefaultTagCache>();
                 services.AddSingleton<ISignal, Signal>();
                 services.AddScoped<ICacheContextManager, CacheContextManager>();
                 services.AddScoped<ICacheScopeManager, CacheScopeManager>();

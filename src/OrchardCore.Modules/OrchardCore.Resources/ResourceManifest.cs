@@ -194,7 +194,13 @@ namespace OrchardCore.Resources
                 .SetVersion("5.12.1");
 
             manifest
+                .DefineScript("font-awesome-config")
+                .SetUrl("~/OrchardCore.Resources/Scripts/fontawesome-config.js")
+                .SetVersion("5.12.1");
+
+            manifest
                 .DefineScript("font-awesome")
+                .SetDependencies("font-awesome-config")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/js/all.js")
                 .SetCdnIntegrity("sha384-ZbbbT1gw3joYkKRqh0kWyRp32UAvdqkpbLedQJSlnI8iLQcFVxaGyrOgOJiDQTTR", "sha384-3sw2Z4++FLFBQnFshhl4I/wZ0edKqvce1WFw3eHVlzBtK6zw/tCTCwsJAaUx/+T5")
