@@ -27,9 +27,6 @@ namespace OrchardCore.Workflows.Timers
 
         public override LocalizedString Category => S["Background"];
 
-        // The 'TimerEvent' can't create a new workflow instance if an existing one is already halted on a timer activity.
-        public override bool IsExclusive => true;
-
         public string CronExpression
         {
             get => GetProperty(() => "*/5 * * * *");

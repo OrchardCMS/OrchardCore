@@ -18,11 +18,6 @@ namespace OrchardCore.Workflows.Activities
         bool HasEditor { get; }
 
         /// <summary>
-        /// Whether a starting activity can create a new workflow instance if an existing one is already halted on this type of activity.
-        /// </summary>
-        bool IsExclusive { get; }
-
-        /// <summary>
         /// List of possible outcomes when the activity is executed.
         /// </summary>
         IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext);

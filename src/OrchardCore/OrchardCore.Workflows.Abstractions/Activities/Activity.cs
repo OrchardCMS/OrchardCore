@@ -18,7 +18,6 @@ namespace OrchardCore.Workflows.Activities
         public abstract LocalizedString DisplayText { get; }
         public abstract LocalizedString Category { get; }
         public virtual bool HasEditor => true;
-        public virtual bool IsExclusive => false;
 
         public abstract IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
 
