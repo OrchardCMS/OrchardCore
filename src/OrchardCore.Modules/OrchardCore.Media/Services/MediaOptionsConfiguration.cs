@@ -42,6 +42,9 @@ namespace OrchardCore.Media.Services
             ".mpg",
             ".ogv", // (Ogg)
             ".3gp", // (3GPP)
+
+            // Web
+            ".webmanifest",
         };
 
         private const int DefaultMaxBrowserCacheDays = 30;
