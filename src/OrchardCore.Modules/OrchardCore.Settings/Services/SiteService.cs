@@ -21,8 +21,8 @@ namespace OrchardCore.Settings.Services
         /// </summary>
         public async Task<ISite> LoadSiteSettingsAsync()
         {
-            var site = await DocumentManager.GetMutableAsync(GetDefaultSettings);
-            return site;
+            // Await as we can't cast 'Task<SiteSettings>' to 'Task<ISite>'.
+            return await DocumentManager.GetMutableAsync(GetDefaultSettings);
         }
 
         /// <summary>
@@ -30,8 +30,8 @@ namespace OrchardCore.Settings.Services
         /// </summary>
         public async Task<ISite> GetSiteSettingsAsync()
         {
-            var site = await DocumentManager.GetImmutableAsync(GetDefaultSettings);
-            return site;
+            // Await as we can't cast 'Task<SiteSettings>' to 'Task<ISite>'.
+            return await DocumentManager.GetImmutableAsync(GetDefaultSettings);
         }
 
         /// <summary>
