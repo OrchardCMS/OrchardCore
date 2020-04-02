@@ -40,17 +40,17 @@ namespace OrchardCore.Roles.Services
         public IQueryable<IRole> Roles => GetRolesAsync().GetAwaiter().GetResult().Roles.AsQueryable();
 
         /// <summary>
-        /// Loads the document from the store (or create a new one) for updating and that should not be cached.
+        /// Loads the roles document from the store (or create a new one) for updating and that should not be cached.
         /// </summary>
         private Task<RolesDocument> LoadRolesAsync() => _documentManager.GetMutableAsync();
 
         /// <summary>
-        /// Gets the document from the cache (or create a new one) for sharing and that should not be updated.
+        /// Gets the roles document from the cache (or create a new one) for sharing and that should not be updated.
         /// </summary>
         private Task<RolesDocument> GetRolesAsync() => _documentManager.GetImmutableAsync();
 
         /// <summary>
-        /// Updates the database with the provided document and keeps in sync the cache.
+        /// Updates the store with the provided roles document and then updates the cache.
         /// </summary>
         private Task UpdateRolesAsync(RolesDocument roles)
         {

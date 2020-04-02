@@ -2,14 +2,13 @@ using MessagePack;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Data.Documents;
-using OrchardCore.Entities;
 
 namespace OrchardCore.Documents
 {
     /// <summary>
-    /// A <see cref="BaseDocument"/> being an <see cref="IEntity"/> that is serializable by 'MessagePack'.
+    /// A <see cref="BaseDocument"/> being an <see cref="IDocumentEntity"/> that is serializable by 'MessagePack'.
     /// </summary>
-    public abstract class DocumentEntity : BaseDocument, IEntity, IMessagePackSerializationCallbackReceiver
+    public abstract class DocumentEntity : BaseDocument, IDocumentEntity
     {
         [IgnoreMember]
         public JObject Properties { get; set; } = new JObject();

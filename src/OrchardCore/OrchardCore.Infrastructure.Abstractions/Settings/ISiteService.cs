@@ -8,17 +8,17 @@ namespace OrchardCore.Settings
     public interface ISiteService
     {
         /// <summary>
-        /// Returns the site settings of the current tenant for update.
+        /// Loads the site settings document from the store (or create a new one) for updating and that should not be cached.
         /// </summary>
         Task<ISite> LoadSiteSettingsAsync();
 
         /// <summary>
-        /// Returns the site settings of the current tenant in read-only.
+        /// Gets the site settings document from the cache (or create a new one) for sharing and that should not be updated.
         /// </summary>
         Task<ISite> GetSiteSettingsAsync();
 
         /// <summary>
-        /// Persists the changes to the site settings.
+        /// Updates the store with the provided site settings document and then updates the cache.
         /// </summary>
         Task UpdateSiteSettingsAsync(ISite site);
     }

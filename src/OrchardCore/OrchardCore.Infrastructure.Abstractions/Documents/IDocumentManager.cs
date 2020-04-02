@@ -10,12 +10,12 @@ namespace OrchardCore.Documents
     public interface IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
         /// <summary>
-        /// Loads a single document (or create a new one) for updating and that should not be cached.
+        /// Loads a single document from the store (or create a new one) for updating and that should not be cached.
         /// </summary>
         Task<TDocument> GetMutableAsync(Func<TDocument> factory = null);
 
         /// <summary>
-        /// Gets a single document (or create a new one) for sharing and that should not be updated.
+        /// Gets a single document from the cache (or create a new one) for sharing and that should not be updated.
         /// </summary>
         Task<TDocument> GetImmutableAsync(Func<TDocument> factory = null);
 
