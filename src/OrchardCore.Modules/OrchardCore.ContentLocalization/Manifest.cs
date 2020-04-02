@@ -20,7 +20,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.ContentLocalization.ContentCulturePicker",
     Name = "Content Culture Picker",
     Description = "Provides a culture picker shape for the frontend.",
-    Dependencies = new[] { "OrchardCore.ContentLocalization" },
+    Dependencies = new[] { "OrchardCore.ContentLocalization", "OrchardCore.Autoroute" },
     Category = "Internationalization"
 )]
 
