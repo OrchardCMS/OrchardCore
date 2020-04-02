@@ -18,14 +18,14 @@ It is not intended to support shared configuration between local development and
 ## Azure Shells Configuration Provider
 
 The Azure Shells Configuration provider uses an Azure Blob Storage Container to store the `tenants.json` and related tenant `appsettings.json` 
-files in a similar hierachy to that of the default `App_Data` configuration.
+files in a similar heirachy to that of the default `App_Data` configuration.
 
 The root of the Azure Blob Container includes a `tenants.json` file, and optionally can include a `appsettings.json` file.
 
-Each shell, or tenant has a directory under the `Sites` folder, named for the tenant, with an individual `appsettings.json file.
+Each shell, or tenant has a directory under the `Sites` folder, named for the tenant, with an individual `appsettings.json` file.
 
-The hierachy is seperated into single files, and is useful if you need to manage the tenants `appsettings.json` independently from Orchard Core
-For example, you may prefer to provide Azure Blob Storage keys for each tenant for the Azure Media Storage feature.
+The heirachy is seperated into single files, and is useful if you need to manage the tenants `appsettings.json` independently from Orchard Core.
+For example, you may prefer to provide different Azure Blob Storage keys, for each tenant when using the Azure Media Storage feature.
 
 The Azure Shells Configuration supports a root `appsettings.json` and `appsettings.Environment.json` file.
 
@@ -73,7 +73,7 @@ namespace OrchardCore.Cms.Web
 
 ## Database Shells Configuration Provider
 
-The Database Shells Configuration provider uses any supported SQL Database to store all the tenant related configuration
+The Database Shells Configuration provider uses any supported database to store all the tenant related configuration
 as part of a single json document.
 
 The Database Shells Configuration provider does not support a site `appsettings.json` and `appsettings.Environment.json` file.
@@ -117,7 +117,7 @@ namespace OrchardCore.Cms.Web
 
 ## Migrate From Files
 
-The `MigratFromFiles` option is available for both the Azure Shells and Database Shells Configuration providers
+The `MigrateFromFiles` option is available for both the Azure Shells and Database Shells Configuration providers
 to assist migrating from an existing `App_Data` configuration.
 
 When enabled the Shell Configuration provider will first check to see if a configuration exists for a given tenant
@@ -128,7 +128,7 @@ and migrate it to the storage platform of choice.
 
 ## Enviroment Options
 
-To disabled a provider in Development, or different environments inject the `IHostEnvironment` 
+To disable a provider in Development, or different environments, inject the `IHostEnvironment` 
 
 ```
 namespace OrchardCore.Cms.Web
