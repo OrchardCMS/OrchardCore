@@ -1,24 +1,11 @@
 using Microsoft.AspNetCore.Routing;
-using Newtonsoft.Json;
-using OrchardCore.Data.Documents;
-using OrchardCore.Entities;
+using OrchardCore.Documents;
 
 namespace OrchardCore.Settings
 {
     // When updating class also update SiteSettingsDeploymentSource and SettingsStep.
-    public class SiteSettings : Entity, ISite, IDocument
+    public class SiteSettings : DocumentEntity, ISite
     {
-        /// <summary>
-        /// The <see cref="IDocument.Identifier"/>.
-        /// </summary>
-        public string Identifier { get; set; }
-
-        /// <summary>
-        /// True if the object can't be used to update the database.
-        /// </summary>
-        [JsonIgnore]
-        public bool IsReadonly { get; set; }
-
         public string BaseUrl { get; set; }
         public string Calendar { get; set; }
         public int MaxPagedCount { get; set; }
