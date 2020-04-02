@@ -13,9 +13,5 @@ namespace OrchardCore.Liquid
         }
 
         public IServiceProvider Services { get; }
-
-        public bool IsInitialized { get; set; }
-
-        public int ShapeRecursions { get; set; }
     }
 }
