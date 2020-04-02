@@ -13,7 +13,7 @@ namespace OrchardCore.Setup.Options
         public string AdminUsername { get; set; }
         public string AdminEmail { get; set; }
         public string AdminPassword { get; set; }
-        public bool CreateDatabase { get; set; }
+        //public bool CreateDatabase { get; set; }
         public string DatabaseProvider { get; set; }
         public string DatabaseName { get; set; }
         public string DatabaseConnectionString { get; set; }
@@ -51,7 +51,7 @@ namespace OrchardCore.Setup.Options
             }
 
             if (String.IsNullOrWhiteSpace(DatabaseConnectionString))
-            {
+            { 
                 yield return new ValidationResult(T["The field {0} is not provided", "Database ConnectionString"], new[] { nameof(DatabaseConnectionString) });
             }
 
@@ -70,10 +70,10 @@ namespace OrchardCore.Setup.Options
                 yield return new ValidationResult(T["The field {0} is not provided", "Site TimeZone"], new[] { nameof(SiteTimeZone) });
             }
 
-            if(CreateDatabase && String.IsNullOrWhiteSpace(DatabaseName))
-            {
-                yield return new ValidationResult(T["The field {0} is not provided", "DatabaseName"], new[] { nameof(DatabaseName) });
-            }
+            //if(CreateDatabase && String.IsNullOrWhiteSpace(DatabaseName))
+            //{
+            //    yield return new ValidationResult(T["The field {0} is not provided", "DatabaseName"], new[] { nameof(DatabaseName) });
+            //}
         }
     }
 }

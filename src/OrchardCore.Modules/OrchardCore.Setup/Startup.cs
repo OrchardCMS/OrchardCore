@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
@@ -21,15 +22,13 @@ namespace OrchardCore.Setup
             "ar", "cs", "da", "de", "el", "en", "es", "fa", "fi", "fr", "he", "hr", "hu", "id", "it", "ja", "ko", "lt", "mk", "nl", "pl", "pt", "ru", "sk", "sl", "sr-cyrl-rs", "sr-latn-rs", "sv", "tr", "uk", "vi", "zh-CN", "zh-TW"
         };
         private readonly IShellConfiguration _shellConfiguration;
-        private readonly IConfiguration _configuration;
 
         public Startup(IShellConfiguration shellConfiguration, IConfiguration configuration)
         {
-            _shellConfiguration =shellConfiguration;
+            _shellConfiguration = shellConfiguration;
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Setup");
-            _configuration = configuration;
             _defaultCulture = configurationSection["DefaultCulture"] ?? _defaultCulture;
-            _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<string[]>() ?? _supportedCultures;
+            _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<List<string>>()?.ToArray() ?? _supportedCultures;
         }
 
         public override void ConfigureServices(IServiceCollection services)

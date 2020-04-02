@@ -1,27 +1,30 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using OrchardCore.Users;
+using OrchardCore.Security;
+using OrchardCore.Security.Services;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Trivest.Connect.Security.Recipes
+namespace OrchardCore.Users.Recipes
 {
     public class UsersRecipeStep : IRecipeStepHandler
     {
-        private readonly IUserService _userService;
+        private readonly UserManager<IUser> _userManager;
+        private readonly RoleManager<IRole> _roleManager;
         private readonly ILogger _logger;
 
-        public UsersRecipeStep(IUserService userService, ILogger<UsersRecipeStep> logger)
+        public UsersRecipeStep(UserManager<IUser> userManager, RoleManager<IRole> roleManager, ILogger<UsersRecipeStep> logger)
         {
             _logger = logger;
-            _userService = userService;
+
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -33,35 +36,68 @@ namespace Trivest.Connect.Security.Recipes
 
             var models = context.Step.ToObject<UsersModel>();
 
+            var roles = _roleManager.Roles.Select(r => r.RoleName);
+            var rolesToCreate = models.Users.SelectMany(u => u.Roles).Distinct().Except(roles);
+
+            try
+            {
+                // Make sure the roles exist
+                foreach (var roleToCreate in rolesToCreate)
+                {
+                    var role = new Role()
+                    {
+                        RoleName = roleToCreate,
+                        NormalizedRoleName = _roleManager.KeyNormalizer.NormalizeName(roleToCreate)
+                    };
+                    await _roleManager.CreateAsync(role);
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to initialize roles");
+            }
+
+            // Create or update the users
             foreach (var model in models.Users)
             {
-                var user = await _userService.GetUserAsync(model.UserName) as User;
-                if (user == null)
+                try
                 {
-                    user = new User()
+                    var user = await _userManager.FindByNameAsync(model.UserName) as User;
+                    if (user == null)
                     {
-                        UserName = model.UserName,
-                        Email = model.Email,
-                        EmailConfirmed = true,
-                        RoleNames = model.Roles
-                    };
+                        user = new User()
+                        {
+                            UserName = model.UserName,
+                            NormalizedUserName = _userManager.NormalizeName(model.UserName),
+                            Email = model.Email,
+                            NormalizedEmail = _userManager.NormalizeEmail(model.Email),
+                            EmailConfirmed = true
+                        };
 
-                    bool valid = true;
+                        await _userManager.CreateAsync(user, model.Password);
+                        _logger.LogInformation("User created: {UserName}", model.UserName);
 
-                    await _userService.CreateUserAsync(user, model.Password, (key, message) =>
+                        await _userManager.UpdateSecurityStampAsync(user);
+                    }
+                    else
                     {
-                        valid = false;
-                        _logger.LogError("Failed to create user: {0}", model.UserName);
-                    });
+                        var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                        await _userManager.ResetPasswordAsync(user, resetPasswordToken, model.Password);
+                        _logger.LogInformation("Password updated for user: {UserName}", model.UserName);
 
-                    if (valid)
+                        await _userManager.SetEmailAsync(user, model.Email);
+                        _logger.LogInformation("Email updated for user: {UserName}", model.UserName);
+                    }
+
+                    foreach (var roleName in model.Roles)
                     {
-                        _logger.LogInformation("User created: {0}", model.UserName);
+                        await _userManager.AddToRoleAsync(user, roleName);
+                        _logger.LogInformation("Assigned Role: {RoleName} to User: {UserName}", roleName, model.UserName);
                     }
                 }
-                else
+                catch(Exception ex)
                 {
-                    _logger.LogInformation("User: {0} allready exists", model.UserName);
+                    _logger.LogError(ex, "Failed to create or update user");
                 }
             }
         }
