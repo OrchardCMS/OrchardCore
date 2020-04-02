@@ -134,12 +134,8 @@ namespace OrchardCore.Workflows.Services
             // Start new workflows.
             foreach (var workflowType in workflowTypesToStart)
             {
-                // The 'TimerEvent' is a one minute signal and in fact this is the timer activity that checks if it has expired.
-                // So, because a timer event can't occur again before it has previously expired, if there is already a workflow
-                // instance that is halted on a timer activity, we should not start a new instance, we just have to resume it.
-
-                // If this is a singleton workflow and there's already an instance, then skip.
-                if ((workflowType.IsSingleton || name == TimerEvent.EventName) && haltedWorkflows.Any(x => x.WorkflowTypeId == workflowType.WorkflowTypeId))
+                // If this is a singleton workflow or if the activity is exclusive, and there's already an instance, then skip.
+                if ((workflowType.IsSingleton || activity.IsExclusive) && haltedWorkflows.Any(x => x.WorkflowTypeId == workflowType.WorkflowTypeId))
                 {
                     continue;
                 }
