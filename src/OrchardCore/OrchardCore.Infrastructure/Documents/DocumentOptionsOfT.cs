@@ -2,7 +2,7 @@ using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Documents
 {
-    public class DocumentOptions<TDocument> where TDocument : BaseDocument, new()
+    public class DocumentOptions<TDocument> where TDocument : IDocument, new()
     {
         public DocumentOptions(IDocumentOptionsFactory factory)
         {

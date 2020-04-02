@@ -1,13 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
-using OrchardCore.Data;
-using OrchardCore.Environment.Cache;
+using OrchardCore.Documents;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
-using YesSql;
 
 namespace OrchardCore.Settings.Services
 {
@@ -16,56 +12,32 @@ namespace OrchardCore.Settings.Services
     /// </summary>
     public class SiteService : ISiteService
     {
-        private const string SiteCacheKey = "SiteService";
-
-        private readonly ISignal _signal;
-        private readonly IMemoryCache _memoryCache;
         private readonly IClock _clock;
 
-        public SiteService(
-            ISignal signal,
-            IMemoryCache memoryCache,
-            IClock clock)
-        {
-            _signal = signal;
-            _memoryCache = memoryCache;
-            _clock = clock;
-        }
-
-        /// <inheritdoc/>
-        public IChangeToken ChangeToken => _signal.GetToken(SiteCacheKey);
+        public SiteService(IClock clock) => _clock = clock;
 
         /// <summary>
-        /// Returns the document from the database to be updated.
+        /// Loads the document from the store (or create a new one) for updating and that should not be cached.
         /// </summary>
         public async Task<ISite> LoadSiteSettingsAsync()
         {
-            return await SessionHelper.LoadForUpdateAsync(GetDefaultSettings);
+            var site = await DocumentManager.GetMutableAsync(GetDefaultSettings);
+            return site;
         }
 
         /// <summary>
-        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// Gets the document from the cache (or create a new one) for sharing and that should not be updated.
         /// </summary>
         public async Task<ISite> GetSiteSettingsAsync()
         {
-            if (!_memoryCache.TryGetValue<SiteSettings>(SiteCacheKey, out var site))
-            {
-                var sessionHelper = SessionHelper;
-
-                // First get a new token.
-                var changeToken = ChangeToken;
-
-                // The cache is always updated with the actual persisted data.
-                site = await sessionHelper.GetForCachingAsync(GetDefaultSettings);
-
-                // Prevent data from being updated.
-                site.IsReadonly = true;
-
-                _memoryCache.Set(SiteCacheKey, site, changeToken);
-            }
-
+            var site = await DocumentManager.GetImmutableAsync(GetDefaultSettings);
             return site;
         }
+
+        /// <summary>
+        /// Updates the database with the provided document and then keeps in sync the cache.
+        /// </summary>
+        public Task UpdateSiteSettingsAsync(ISite site) => DocumentManager.UpdateAsync(site as SiteSettings);
 
         private SiteSettings GetDefaultSettings()
         {
@@ -81,24 +53,6 @@ namespace OrchardCore.Settings.Services
             };
         }
 
-        /// <inheritdoc/>
-        public Task UpdateSiteSettingsAsync(ISite site)
-        {
-            if (site.IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
-            }
-
-            // Persists new data.
-            Session.Save(site);
-
-            // Invalidates the cache after the session is committed.
-            _signal.DeferredSignalToken(SiteCacheKey);
-
-            return Task.CompletedTask;
-        }
-
-        private ISession Session => ShellScope.Services.GetRequiredService<ISession>();
-        private ISessionHelper SessionHelper => ShellScope.Services.GetRequiredService<ISessionHelper>();
+        private IDocumentManager<SiteSettings> DocumentManager => ShellScope.Services.GetRequiredService<IDocumentManager<SiteSettings>>();
     }
 }

@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class OrchardCoreBuilderExtensions
     {
         /// <summary>
-        /// Adds tenant level services to keep in sync any <see cref="BaseDocument"/> between an <see cref="IDocumentStore"/> and a multi level cache.
+        /// Adds tenant level services to keep in sync any <see cref="IDocument"/> between an <see cref="IDocumentStore"/> and a multi level cache.
         /// </summary>
         public static OrchardCoreBuilder AddDocumentManagement(this OrchardCoreBuilder builder)
         {

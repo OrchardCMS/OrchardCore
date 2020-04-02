@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="MailKit" />
-    <PackageReference Include="MessagePack" />
   </ItemGroup>
   
   <ItemGroup>
