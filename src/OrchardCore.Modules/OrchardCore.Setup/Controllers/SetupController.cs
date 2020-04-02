@@ -206,6 +206,11 @@ namespace OrchardCore.Setup.Controllers
             {
                 model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
             }
+
+            if (!String.IsNullOrEmpty(_shellSettings["Description"]))
+            {
+                model.Description = _shellSettings["Description"];
+            }
         }
 
         private async Task<bool> IsTokenValid(string token)

@@ -1,11 +1,5 @@
-@using Microsoft.AspNetCore.Builder
-@using Microsoft.AspNetCore.Http
-@using Microsoft.AspNetCore.Http.Extensions
-@using Microsoft.Extensions.Options
-@using Microsoft.Extensions.Primitives
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject OrchardCore.IOrchardHelper Orchard
-@inject IOptions<RequestLocalizationOptions> LocOptions
 
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
@@ -13,49 +7,18 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>@T["Orchard Setup"]</title>
+    <link type="image/x-icon" rel="shortcut icon" href="~/OrchardCore.Setup/favicon.ico" />
     <link type="text/css" rel="stylesheet" href="~/OrchardCore.Setup/Styles/setup.min.css" />
     <link type="text/css" rel="stylesheet" href="~/OrchardCore.Resources/Styles/font-awesome.min.css" />
     @await RenderSectionAsync("Header", required: false)
 </head>
 <body>
     <div class="container">
-        <div class="row">
-            <div class="form-group col mt-2">
-                @if (LocOptions.Value.SupportedUICultures.Count() > 1)
-                {
-                    var query = new Dictionary<string, StringValues>(Context.Request.Query);
-                    query.Remove("ui-culture");
-                    var queryString = QueryString.Create(query);
-
-                    <div class="float-right form-inline">
-                        <label for="culturesList" class="mr-2">@T["Change language"]</label>
-                        <select id="culturesList" class="form-control" onchange="setLocalizationUrl()">
-                            @foreach (var culture in LocOptions.Value.SupportedUICultures.OrderBy(x => x.NativeName))
-                            {
-                                var uriString = UriHelper.BuildRelative(Context.Request.PathBase, Context.Request.Path, queryString.Add("ui-culture", culture.Name));
-
-                                <option value="@culture" data-url="@uriString" selected="@(culture.Name == Orchard.CultureName())">@(culture.NativeName ?? culture.Name)</option>
-                            }
-                        </select>
-                    </div>
-                }
-            </div>
-        </div>
-
         @RenderBody()
-
-        <hr />
         <footer>
             @await RenderSectionAsync("Footer", required: false)
         </footer>
     </div>
-    <script>
-        function setLocalizationUrl() {
-            var culturesList = document.getElementById('culturesList');
-            window.location = culturesList.options[culturesList.selectedIndex].dataset.url;
-        }
-    </script>
 </body>
 </html>
