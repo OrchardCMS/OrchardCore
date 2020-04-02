@@ -10,7 +10,6 @@ using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Timers;
 
 namespace OrchardCore.Workflows.Services
 {
