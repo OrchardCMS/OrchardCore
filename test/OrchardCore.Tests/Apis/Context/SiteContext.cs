@@ -27,7 +27,9 @@ namespace OrchardCore.Tests.Apis.Context
 
             var createModel = new Tenants.ViewModels.CreateApiViewModel
             {
-                DatabaseProvider = "Sqlite",
+                DatabaseProvider = "SqlConnection",
+                ConnectionString = "Data Source=.;Initial Catalog=OCTests;Integrated Security=True",
+                TablePrefix = "a" + Guid.NewGuid().ToString().Replace("-", ""),
                 RecipeName = "Blog",
                 Name = tenantName,
                 RequestUrlPrefix = tenantName
@@ -44,7 +46,8 @@ namespace OrchardCore.Tests.Apis.Context
             var setupModel = new Tenants.ViewModels.SetupApiViewModel
             {
                 SiteName = "Test Site",
-                DatabaseProvider = "Sqlite",
+                ConnectionString = "Data Source=.;Initial Catalog=OCTests;Integrated Security=True",
+                TablePrefix = "a" + Guid.NewGuid().ToString().Replace("-", ""),
                 RecipeName = "Blog",
                 UserName = "admin",
                 Password = "Password01_",
