@@ -60,13 +60,14 @@ namespace OrchardCore.Autoroute.Drivers
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
                 var homeRoute = siteSettings.HomeRoute;
 
-                if(homeRoute != null && homeRoute.TryGetValue(_options.ContainedContentItemIdKey, out var containedContentItemId))
+                if (homeRoute != null && homeRoute.TryGetValue(_options.ContainedContentItemIdKey, out var containedContentItemId))
                 {
                     if (string.Equals(autoroutePart.ContentItem.ContentItemId, containedContentItemId.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         model.IsHomepage = true;
                     }
-                } else if (string.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[_options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
+                }
+                else if (string.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[_options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     model.IsHomepage = true;
                 }
@@ -146,9 +147,7 @@ namespace OrchardCore.Autoroute.Drivers
                     // This logic is different to the check in the handler as here we checking
                     if (possibleConflicts.Any(x => x.ContentItemId != autoroute.ContentItem.ContentItemId) ||
                         possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != autoroute.ContentItem.ContentItemId))
-                        //if (possibleConflicts.Any(x => x.ContentItemId != autoroute.ContentItem.ContentItemId) &&
-                        //    possibleConflicts.Any(x => x.ContainedContentItemId != autoroute.ContentItem.ContentItemId))
-                        {
+                    {
                         hasConflict = true;
                     }
                     if (hasConflict)

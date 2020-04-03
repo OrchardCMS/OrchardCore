@@ -608,16 +608,16 @@
               "PartName": "AutoroutePart",
               "Name": "AutoroutePart",
               "Settings": {
-				"ContentTypePartSettings": {
-				  "Position": "2"
-				},
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                },
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
                   "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
                   "ManageContainedItemRoutes": true
                 }
               }
-            }			
+            }           
           ]
         },
         {
@@ -650,9 +650,9 @@
               "PartName": "AutoroutePart",
               "Name": "AutoroutePart",
               "Settings": {
-				"ContentTypePartSettings": {
-				  "Position": "2"
-				},
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                },
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
                   "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
@@ -727,7 +727,7 @@
                   "Multiple": false
                 }
               }  
-            },   			
+            },              
             {
               "FieldName": "TaxonomyField",
               "Name": "Tags",
@@ -1007,12 +1007,12 @@
                 "TitlePart": {
                   "Title": "Earth"
                 },
-				"AutoroutePart": {
-				  "Path": "earth"
-				},
-				"TermPart": {
-				  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
-				}
+                "AutoroutePart": {
+                  "Path": "earth"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
+                }
               },
               {
                 "ContentItemId": "[js: variables('explorationTagContentItemId')]",
@@ -1021,12 +1021,12 @@
                 "TitlePart": {
                   "Title": "Exploration"
                 },
-				"AutoroutePart": {
-				  "Path": "exploration"
-				},
-				"TermPart": {
-				  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
-				}
+                "AutoroutePart": {
+                  "Path": "exploration"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
+                }
               },
               {
                 "ContentItemId": "[js: variables('spaceTagContentItemId')]",
@@ -1035,20 +1035,20 @@
                 "TitlePart": {
                   "Title": "Space"
                 },
-				"AutoroutePart": {
-				  "Path": "space"
-				},
-				"TermPart": {
-				  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
-				}
+                "AutoroutePart": {
+                  "Path": "space"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
+                }
               }
             ],
             "TermContentType": "Tag"
           },
-		  "AutoroutePart": {
-			"Path": "tags",
-			"RouteContainedItems": true
-		  }
+          "AutoroutePart": {
+            "Path": "tags",
+            "RouteContainedItems": true
+          }
         },
         {
           "ContentItemId": "[js: variables('categoriesContentItemId')]",
@@ -1079,17 +1079,17 @@
                 "AutoroutePart": {
                   "Path": "travel"
                 },
-				"TermPart": {
-				  "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]"
-				}
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]"
+                }
               }
             ],
             "TermContentType": "Category"
           },
-		  "AutoroutePart": {
-			"Path": "categories",
-			"RouteContainedItems": true
-		  }
+          "AutoroutePart": {
+            "Path": "categories",
+            "RouteContainedItems": true
+          }
         },
         {
           "ContentType": "Blog",

@@ -1,23 +1,18 @@
 @model dynamic
 @{
-    TagBuilder tag = Tag(Model, "li");
-
     // Morphing the shape to keep Model untouched
     Model.Metadata.Alternates.Clear();
     Model.Metadata.Type = "TermContentItem";
-
-    tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
-
-    if ((bool)Model.HasItems)
-    {
-        tag.InnerHtml.AppendHtml("<ul>");
-
-        @foreach (var item in Model.Items)
-        {
-            tag.InnerHtml.AppendHtml(await DisplayAsync(item));
-        }
-        tag.InnerHtml.AppendHtml("</ul>");
-    }
 }
-
-@tag
+<li>
+    @await DisplayAsync(Model)
+    @if ((bool)Model.HasItems)
+    {
+        <ul>
+            @foreach (var item in Model.Items)
+            {
+                @await DisplayAsync(item)
+            }
+        </ul>
+    }
+</li>
