@@ -1,0 +1,32 @@
+@model AddPartsViewModel
+@{
+    int i = 0;
+}
+<h1>@T["Add Parts To \"{0}\"", Model.Type.DisplayName]</h1>
+
+@T["Choose the Parts to add to this Content Type."]
+
+<form asp-action="AddPartsTo">
+    @Html.ValidationSummary()
+    <fieldset class="form-group">
+        <ul class="list-group">
+            @foreach (var partSelection in Model.PartSelections)
+            {
+                <li class="list-group-item">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" asp-for="PartSelections[i].IsSelected">
+                        <label class="custom-control-label" asp-for="PartSelections[i].IsSelected">@partSelection.PartDisplayName</label>
+                        <span class="hint">— @partSelection.PartDescription</span>
+                    </div>
+                    <input asp-for="PartSelections[i].IsSelected" type="hidden" />
+                    <input asp-for="PartSelections[i].PartName" type="hidden" />
+                </li>
+                i++;
+            }
+        </ul>
+    </fieldset>
+    <fieldset class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary">@T["Cancel"]</a>
+    </fieldset>
+</form>

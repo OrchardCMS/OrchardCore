@@ -1,0 +1,6 @@
+@model ActivityViewModel<MissingActivity>
+
+<header>
+    <h4><i class="fa fa-exclamation-circle"></i>@T["Missing Activity"]</h4>
+</header>
+<span>@T["<em>{0}</em> is no longer available.", Model.Activity.MissingActivityRecord.Name]</span>

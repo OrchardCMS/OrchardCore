@@ -1,0 +1,16 @@
+﻿@using OrchardCore.OpenId.ViewModels
+@model AuthorizeViewModel
+
+<div class="jumbotron">
+    <h1>@T["Authorization"]</h1>
+    
+    <p class="lead text-left">@T["Do you want to grant <strong>{0}</strong> access to your data? (scopes requested: {1})", @Model.ApplicationName, @Model.Scope]</p>
+
+    <form method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="RequestId" name="request_id" />
+        <input class="btn btn-lg btn-success" name="submit.Accept" type="submit" value="Yes" />
+        <input class="btn btn-lg btn-danger" name="submit.Deny" type="submit" value="No" />
+    </form>
+</div>

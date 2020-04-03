@@ -1,0 +1,10 @@
+@model OrchardCore.ContentFields.ViewModels.DisplayNumericFieldViewModel
+@using OrchardCore.Mvc.Utilities
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+<div class="field field-type-numericfield field-name-@name">
+    @Model.Value
+</div>

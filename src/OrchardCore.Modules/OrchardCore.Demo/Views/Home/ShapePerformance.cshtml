@@ -1,0 +1,164 @@
+@* This page compares the performance of View Components and shapes *@
+
+
+@using OrchardCore.DisplayManagement
+
+@{ 
+    var iterations = 100;
+}
+
+<h4>Rendering a "Fake" shape @iterations times using different ways to instantiate the shapes</h4>
+
+VIEW COMPONENTS
+@{
+    var sw = new System.Diagnostics.Stopwatch();
+    sw.Start();
+
+    var buffer = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+}
+
+@for (int i = 0; i < iterations; i++)
+{
+    buffer.AppendHtml(await Component.InvokeAsync("Fake", new { value = i.ToString() }));
+}
+
+@sw.Elapsed.TotalMilliseconds ms
+
+<br/>
+SHAPES (Arguments)
+
+@{
+    buffer = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+    sw.Restart();
+}
+
+@for (int i = 0; i < iterations; i++)
+{
+    buffer.AppendHtml(await DisplayAsync(await New.Fake(Value: i.ToString())));
+}
+
+@sw.Elapsed.TotalMilliseconds ms
+
+<br />
+SHAPES (Method call)
+
+@{
+    buffer = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+    sw.Restart();
+}
+
+@for (int i = 0; i < iterations; i++)
+{
+    buffer.AppendHtml(await DisplayAsync((await New.Fake()).Value(i.ToString())));
+}
+
+@sw.Elapsed.TotalMilliseconds ms
+
+
+<br />
+SHAPES (Dynamic Proxy - Dynamic View Model)
+
+@{
+    buffer = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+    sw.Restart();
+}
+
+@for (int i = 0; i < iterations; i++)
+{
+    var proxy = await Factory.CreateAsync<OrchardCore.Demo.Models.FakeShape>("Fake", f => f.Value = "666");
+    
+    buffer.AppendHtml(await DisplayAsync(proxy));
+}
+
+@sw.Elapsed.TotalMilliseconds ms
+
+<br />
+SHAPES (Dynamic Proxy - Strong Typed View Model)
+
+@{
+    buffer = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+    sw.Restart();
+}
+
+@for (int i = 0; i < iterations; i++)
+{
+    var proxy = await Factory.CreateAsync<OrchardCore.Demo.Models.FakeShape>("Fake__Typed", f => f.Value = "666");
+
+    buffer.AppendHtml(await DisplayAsync(proxy));
+}
+
+@sw.Elapsed.TotalMilliseconds ms
+
+<br />
+SHAPES (Custom Strong Typed View Model)
+
+@{
+    buffer = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+    sw.Restart();
+}
+
+@for (int i = 0; i < iterations; i++)
+{
+    var instance = new OrchardCore.Demo.Models.CustomViewModel();
+    instance.Value = "666";
+    instance.Metadata.Type = "Fake";
+
+    buffer.AppendHtml(await DisplayAsync(instance));
+}
+
+@sw.Elapsed.TotalMilliseconds ms
+
+<br />
+SHAPES (Reuse instance)
+
+@{
+    buffer = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+    sw.Restart();
+
+    var shape = (await New.Fake()).Value("666");
+
+}
+
+@for (int i = 0; i < iterations; i++)
+{
+    buffer.AppendHtml(await DisplayAsync(shape));
+}
+
+@sw.Elapsed.TotalMilliseconds ms
+
+
+<br />
+SHAPES (Just instantiation)
+
+@{
+    buffer = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+    sw.Restart();
+
+}
+
+@for (int i = 0; i < iterations; i++)
+{
+    shape = (await New.Fake()).Value(i.ToString());
+    buffer.AppendHtml("666");
+}
+
+@sw.Elapsed.TotalMilliseconds ms
+
+<br />
+SHAPES (Cached)
+
+@{
+    buffer = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+    sw.Restart();
+
+}
+
+@for (int i = 0; i < iterations; i++)
+{
+    shape = (await New.Fake()).Value(i.ToString());
+    shape.Metadata.Cache("fake");
+
+    buffer.AppendHtml(await DisplayAsync(shape));
+}
+
+@sw.Elapsed.TotalMilliseconds ms

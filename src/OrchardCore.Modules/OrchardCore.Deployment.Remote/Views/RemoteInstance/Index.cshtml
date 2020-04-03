@@ -1,0 +1,39 @@
+﻿@model RemoteInstanceIndexViewModel
+
+<h1>@RenderTitleSegments(T["Remote Instances"])</h1>
+
+<nav class="admin-toolbar">
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Remote Instance"]</a>
+        </li>
+    </ul>
+</nav>
+
+<form asp-action="Index"> @* the form is necessary to generate and antiforgery token for the delete action *@
+    @if (Model.RemoteInstanceList.RemoteInstances.Any())
+    { 
+        <ul class="list-group">
+            @foreach (var entry in Model.RemoteInstanceList.RemoteInstances)
+            {
+                <li class="list-group-item">
+                    <div class="properties">
+                        <div class="related">
+                            <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="Delete" asp-route-id="@entry.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                        </div>
+                        <h5>@entry.Name</h5>
+                        <span class="remote-instance-url">@entry.Url</span>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            @T["<strong>Nothing here!</strong> There are no remote instances for the moment."]
+        </div>
+    }
+</form>
+

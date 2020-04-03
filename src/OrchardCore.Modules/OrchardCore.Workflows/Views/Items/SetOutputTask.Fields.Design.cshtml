@@ -1,0 +1,6 @@
+@model ActivityViewModel<SetOutputTask>
+
+<header>
+    <h4><i class="fa fa-plug"></i>@Model.Activity.GetTitleOrDefault(() => T["Output via {0}", Model.Activity.OutputName])</h4>
+</header>
+<span>@T["<em>{0}</em> = <em>{1}</em>", Model.Activity.OutputName, Model.Activity.Value]</span>

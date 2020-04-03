@@ -1,0 +1,10 @@
+{
+    "folders":
+    [
+        {
+            "follow_symlinks": true,
+            "path": "."
+        }
+    ],
+    "solution_file": "./OrchardCore.sln"
+}

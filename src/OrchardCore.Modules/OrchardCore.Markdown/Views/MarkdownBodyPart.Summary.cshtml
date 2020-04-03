@@ -1,0 +1,4 @@
+@using OrchardCore.Mvc.Utilities;
+@model OrchardCore.Markdown.ViewModels.MarkdownBodyPartViewModel
+
+@Html.Raw(Model.Html.RemoveTags(true).Ellipsize(200))

@@ -1,0 +1,71 @@
+// todo: move these rules to theAdmin and check their effect on the different modules.
+// The lack of a height:100% attribute on these tags makes difficult for children to fill all of their parent's available space
+// Maybe not needed anymore when theAdmin implements flexbox.
+html, body, .ta-wrapper {
+    height: 100%;
+    margin-bottom: 0px;
+    overflow: auto;
+}
+
+.ta-content {
+    height: calc(100% - 59px);
+    margin-bottom: 0px;
+}
+
+.fade-in-pager {
+    opacity: 0.001;
+    transition: opacity 0.2s 0.2s;
+    -moz-transition: opacity 0.2s 0.2s;
+    -webkit-transition: opacity 0.2s 0.2s;
+    -o-transition: opacity 0.2s 0.2s;
+    -ms-transition: opacity 0.2s 0.2s;
+    -khtml-transition: opacity 0.2s 0.2s;
+}
+
+.disabled-tree {
+    background-color: #f5f5f5;
+    
+    .tree-name-link {
+        color: #808080;
+    }
+}
+
+.disabled-tree, .disabled-admin-node {
+    background-color: #f5f5f5;
+    color: #808080;
+}
+
+#menu {
+    list-style: none;
+    padding-left: 0;
+}
+
+#menu li {
+    list-style: none;
+    cursor: move;
+    background-color: white;
+}
+
+.card-columns {
+    column-count: 1;
+
+    .card.admin-node-thumbnail {
+        .card-body {
+            height: 160px;
+            overflow: hidden;
+        }
+    }
+}
+
+
+@media only screen and ( min-width: 768px ) {
+    .card-columns {
+        column-count: 2;
+
+        .card.admin-node-thumbnail {
+            .card-body {
+                height: 200px;
+            }
+        }
+    }
+}

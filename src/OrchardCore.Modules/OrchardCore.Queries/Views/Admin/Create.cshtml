@@ -1,0 +1,20 @@
+@model QueriesCreateViewModel
+
+<h1>@RenderTitleSegments(T["New {0} query", Model.SourceName])</h1>
+<form asp-action="Create" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
+    @Html.ValidationSummary()
+    @if (Model.Editor.Content != null)
+    {
+        @await DisplayAsync(Model.Editor.Content)
+    }
+    
+    @if (Model.Editor.Content != null)
+    {
+        <fieldset class="form-group">
+            @await DisplayAsync(Model.Editor.Actions)
+        </fieldset>
+    }
+
+    <input type="hidden" asp-for="SourceName" />
+
+</form>

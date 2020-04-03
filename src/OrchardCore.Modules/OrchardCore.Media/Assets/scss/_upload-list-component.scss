@@ -1,0 +1,25 @@
+.upload-list {
+    margin-bottom: 8px;
+
+    .header {
+        height: 40px;
+        padding: 6px 20px;
+        background-color: rgba(0,0,0,0.03);
+        border: solid 1px #e9ecef;
+        border-radius: 2px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: #666;
+    }
+
+    .toggle-button {
+        padding: 5px 8px;
+        margin-top: -3px;
+        float: right;
+    }
+
+    .card-body {
+        border: solid 1px #e9ecef;
+        padding: 0;
+    }
+}

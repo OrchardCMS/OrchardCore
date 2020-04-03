@@ -1,0 +1,6 @@
+@model ActivityViewModel<HttpRequestEvent>
+@using OrchardCore.Workflows.Http.Activities
+<header>
+    <h4><i class="fa fa-bolt"></i>@Model.Activity.GetTitleOrDefault(() => T["Handle Incoming HTTP Request"])</h4>
+</header>
+<span>@T["<em>{0}</em>", Model.Activity.HttpMethod]</span>

@@ -1,0 +1,33 @@
+@using OrchardCore.Mvc.Utilities;
+@using OrchardCore.ContentManagement
+
+@{
+
+    Model.Classes.Add("content-item");
+    ContentItem contentItem = Model.ContentItem;
+    var contentTypeClassName = contentItem.ContentType.HtmlClassify();
+    Model.Classes.Add(contentTypeClassName);
+
+    var tag = Tag(Model, "article");
+}
+
+<h1>@RenderTitleSegments(contentItem.DisplayText)</h1>
+
+<article>
+    <header>
+        @await DisplayAsync(Model.Header)
+        @if (Model.Meta != null)
+        {
+            <div class="metadata">
+                @await DisplayAsync(Model.Meta)
+            </div>
+        }
+    </header>
+    @await DisplayAsync(Model.Content)
+    @if (Model.Footer != null)
+    {
+        <footer>
+            @await DisplayAsync(Model.Footer)
+        </footer>
+    }
+</article>

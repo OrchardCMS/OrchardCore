@@ -1,0 +1,5 @@
+#ignore all files
+*/*
+
+#except release
+!/.build/release/*

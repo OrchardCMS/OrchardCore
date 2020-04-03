@@ -1,0 +1,31 @@
+[
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/admin-menu.scss"
+    ],
+    "output": "wwwroot/Styles/admin-menu.css"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/fontawesome-iconpicker.css",
+      "Assets/scss/admin-menu-icon-picker.scss"
+    ],
+    "output": "wwwroot/Styles/admin-menu-icon-picker.css"
+  },
+  {
+    "inputs": [
+      "Assets/js/jquery.mjs.nestedSortable.js",
+      "Assets/js/resizeTableBody.js"
+    ],
+    "output": "wwwroot/Scripts/admin-menu.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/fontawesome-iconpicker.js",
+      "Assets/js/AdminNodeIconPicker.js"
+    ],
+    "output": "wwwroot/Scripts/admin-menu-icon-picker.js"
+  }
+]

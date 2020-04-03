@@ -1,0 +1,49 @@
+@using Microsoft.Extensions.DependencyInjection;
+
+@* Adding meta tags *@
+<meta asp-name="foo" content="bar" />
+<meta asp-name="foo" content="baz" />
+
+@* Inline definition of resources and dependencies *@
+<script asp-name="blitz" asp-src="blitz.min.js" debug-src="blitz.js"></script>
+<script asp-name="baz" asp-src="baz.min.js?v=1.0" debug-src="baz.js?v=1.0" version="1.0"></script>
+<script asp-name="baz" asp-src="baz.min.js?v=2.0" debug-src="baz.js?v=2.0" version="2.0"></script>
+<script asp-name="foo" asp-src="foo.min.js?v=1.0" debug-src="foo.js?v=1.0" depends-on="baz:1.0" version="1.0"></script>
+<script asp-name="foo" asp-src="foo.min.js?v=2.0" debug-src="foo.js?v=2.0" depends-on="baz, blitz" version="2.0"></script>
+<script asp-name="foo" asp-src="foo.min.js?v=3.0" debug-src="foo.js?v=3.0" depends-on="baz" version="3.0"></script>
+
+@* Injecting named resources *@
+<script asp-name="foo" version="2.0" at="Head"></script>
+
+@* Injecting custom scripts urls *@
+<script asp-src="bar.min.js" debug-src="bar.js" at="Head" data-foo="bar"></script>
+<script asp-src="bottom.min.js" debug-src="bottom.js" debug="false" at="Foot" condition="!IE"></script>
+
+@* Injecting custom stylesheets *@
+<style asp-src="bar.min.css" debug-src="bar.css"></style>
+
+@* Adding custom links *@
+<link asp-src="http://example.com/feed" rel="alternate" type="application/rss+xml" />
+
+@* Adding custom script *@
+<script at="Foot">document.write('<!-- some script -->');</script>
+
+<div class="jumbotron">
+    <p>This page lets you create a new content item. Type any text, you will be redirected to a view displaying the newly created content item.</p>
+</div>
+
+<form asp-action="Index">
+    <input name="text"/>
+    <button type="submit">GO!!!</button>
+</form>
+
+<zone name="Footer">A</zone>
+<zone name="Footer" position=""><b>B</b></zone>
+<zone name="Footer" position="before">C</zone>
+
+<div>
+    Logged user: @User?.Identity?.Name
+</div>
+<div>
+    Tenant: @(Context.RequestServices.GetService<OrchardCore.Environment.Shell.ShellSettings>().Name)
+</div>

@@ -1,0 +1,16 @@
+@using OrchardCore.Workflows.UserTasks.Activities;
+@model ActivityViewModel<UserTaskEvent>
+
+<header>
+    <h4><i class="fa fa-user-circle"></i>@Model.Activity.GetTitleOrDefault(() => T["User Task"])</h4>
+</header>
+
+@if (Model.Activity.Actions.Any())
+{
+    <span>@T["Request any user action of <em>{0}</em>", string.Join(", ", Model.Activity.Actions)]</span><br />
+    <span>@T["Required roles: <em>{0}</em>", Model.Activity.Roles.Any() ? new LocalizedHtmlString("RequiredRoles", string.Join(", ", Model.Activity.Roles)) : T["Any"]]</span>
+}
+else
+{
+    <span>@T["No user actions specified"]</span>
+}

@@ -1,0 +1,7 @@
+@model ActivityViewModel<TimerEvent>
+@using OrchardCore.Workflows.Timers
+
+<header>
+    <h4><i class="fa fa-clock-o"></i>@Model.Activity.GetTitleOrDefault(() => T["Timer"])</h4>
+</header>
+<span>@T["<em>{0}</em>", Model.Activity.CronExpression]</span>

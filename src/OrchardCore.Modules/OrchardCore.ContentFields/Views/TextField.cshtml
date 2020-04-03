@@ -1,0 +1,10 @@
+@model OrchardCore.ContentFields.ViewModels.DisplayTextFieldViewModel
+@using OrchardCore.Mvc.Utilities
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+<div class="field field-type-textfield field-name-@name">
+    @Model.Text
+</div>

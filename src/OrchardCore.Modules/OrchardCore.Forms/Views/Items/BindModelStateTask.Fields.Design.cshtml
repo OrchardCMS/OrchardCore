@@ -1,0 +1,5 @@
+@model ActivityViewModel<BindModelStateTask>
+
+<header>
+    <h4><i class="fa fa-clone"></i>@Model.Activity.GetTitleOrDefault(() => T["Bind Form Model State"])</h4>
+</header>

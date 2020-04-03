@@ -1,0 +1,20 @@
+@model EditTypeViewModel
+@using OrchardCore.ContentManagement.Metadata.Settings;
+@{
+    var settings = Model.TypeDefinition.GetSettings<ContentTypeSettings>();
+}
+<div class="properties">
+    <a asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name">@Model.DisplayName</a>
+    <div class="related">
+        @if (settings.Creatable)
+        {
+            <a asp-route-area="OrchardCore.Contents" asp-route-action="Create" asp-route-id="@Model.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-success btn-sm" role="button">@T["Create New {0}", Model.DisplayName]</a>
+        }
+        <a asp-route-action="List" asp-route-area="OrchardCore.Contents" asp-route-contentTypeId="@Model.Name" class="btn btn-secondary btn-sm" role="button">@T["List Items"]</a>
+        <a asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(settings.Stereotype))
+    {
+        <span class="badge badge-info badge-pill" title="Stereotype">@settings.Stereotype</span>
+    }
+</div>

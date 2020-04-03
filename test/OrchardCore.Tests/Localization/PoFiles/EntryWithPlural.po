@@ -1,0 +1,5 @@
+msgid "book"
+msgid_plural "books"
+msgstr[0] "kniha"
+msgstr[1] "knihy"
+msgstr[2] "knih"

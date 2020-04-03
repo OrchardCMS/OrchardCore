@@ -1,0 +1,196 @@
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.Modules;
+@model FeaturesViewModel
+
+@{
+}
+<div class="row">
+    <div class="form-group col mb-n1">
+        <h1>@RenderTitleSegments(T["Features"])</h1>
+    </div>
+    <div class="form-group col mb-n1">
+        <div class="dropdown float-right order-md-1">
+            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                @T["Bulk Actions"]
+            </button>
+            <div class="dropdown-menu" aria-labelledby="bulk-action-menu-button">
+                <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Disable)">@T["Disable"]</a>
+                <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Enable)">@T["Enable"]</a>
+                <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Toggle)">@T["Toggle"]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form autocomplete="off">
+    <div class="card mb-3">
+        <div class="card-body bg-light p-3">
+            <div class="form-group mb-n1">
+                <div class="input-group input-group-sm w-lg-50">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+                    </div>
+                    <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form asp-action="Features" method="post">
+    <input name="BulkAction" type="hidden" />
+    <input type="submit" name="submit.BulkAction" class="d-none" />
+    @{
+        var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).OrderBy(o => o.Key).ToArray();
+        foreach (var featureGroup in featureGroups)
+        {
+            if (!featureGroup.Any(x => Model.IsAllowed(x.Descriptor)))
+            {
+                continue;
+            }
+            var categoryName = featureGroup.First().Descriptor.Category ?? T["Uncategorized"].Value;
+            var categoryClassName = string.Format("category {0}", Html.Encode(categoryName.ToString()));
+            if (featureGroup == featureGroups.First())
+            {
+                categoryClassName += " first";
+            }
+            if (featureGroup == featureGroups.Last())
+            {
+                categoryClassName += " last";
+            }
+
+            <div class="feature-group">
+                @{
+                    var features = featureGroup.OrderBy(f => f.Descriptor.Name);
+                    var categoryFeatureNames = String.Join(" ", features.Select(f => f.Descriptor.Name));
+                }
+                <h4 class="mb-2 mt-3" data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h4>
+                <ul class="list-group" data-filter-value="@categoryName @categoryFeatureNames">
+                    @{
+                        foreach (var feature in features)
+                        {
+                            if (!Model.IsAllowed(feature.Descriptor))
+                            {
+                                continue;
+                            }
+
+                            //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
+                            var featureId = feature.Descriptor.Id;
+                            var featureName = feature.Descriptor.Name;
+                            var featureState = feature.IsEnabled ? "enabled" : "disabled";
+
+                            var dependencies = (from d in feature.FeatureDependencies
+                                                select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
+                            var missingDependencies = feature.FeatureDependencies
+                            .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
+                            var showDisable = !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
+                            var showEnable = Model.IsAllowed(feature.Descriptor) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
+
+                            <li class="list-group-item" data-filter-value="@categoryName @featureName">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        @* Display the checkbox ?*@
+                                        @if ((showEnable && !feature.IsEnabled) || (showDisable && feature.IsEnabled))
+                                        {
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id">
+                                                <label class="custom-control-label h6" for="@feature.Descriptor.Id">@featureName</label>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <h6>@featureName</h6>
+                                        }
+
+                                        <p class="text-muted">@feature.Descriptor.Description</p>
+                                        <div>
+                                            @if (feature.FeatureDependencies != null && feature.FeatureDependencies.Any())
+                                            {
+                                                @foreach (var d in dependencies)
+                                                {
+                                                    <span class="badge badge-info">
+                                                        @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
+                                                    </span>
+                                                }
+                                                @foreach (var d in missingDependencies)
+                                                {
+                                                    <span class="badge badge-warning">
+                                                        @d
+                                                    </span>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        @if (showEnable && !feature.IsEnabled)
+                                        {
+                                            <a asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+                                        }
+                                        @if (showDisable && feature.IsEnabled)
+                                        {
+                                            var confirmationMessage = T["Are you sure you want to disable this feature? Continue?"];
+                                            if (feature.DependentFeatures.Any())
+                                            {
+                                                var dependentFeatures = new HtmlString($"<ul>{String.Join("", feature.DependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
+                                                confirmationMessage = T["Disabling this feature will also disable the following dependent features:{0}Continue?", dependentFeatures];
+                                            }
+                                            <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok="@T["Yes"]" data-cancel="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+                                        }
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    }
+                </ul>
+                <div id="list-alert" class="alert alert-info d-none" role="alert">
+                    @T["<strong>Nothing here!</strong> Your search returned no results."]
+                </div>
+            </div>
+        }
+    }
+</form>
+<script at="Foot" type="text/javascript">
+    $(function () {
+        var searchBox = $('#search-box');
+
+        // On each keypress filter the list of features
+        searchBox.keyup(function (e) {
+            var search = $(this).val().toLowerCase();
+            var elementsToFilter = $("[data-filter-value]");
+
+            // On ESC, clear the search box and display all features
+            if (e.keyCode == 27 || search == '') {
+                searchBox.val('');
+                elementsToFilter.toggle(true);
+            }
+            else {
+                elementsToFilter.each(function () {
+                    var text = $(this).data('filter-value').toLowerCase();
+                    var found = text.indexOf(search) > -1;
+                    $(this).toggle(found);
+                });
+
+                var visible = $('.list-group > li:visible');
+                if (visible.length == 0) {
+                    $('#list-alert').removeClass("d-none");
+                }
+                else {
+                    $('#list-alert').addClass("d-none");
+                }
+            }
+        });
+
+        //prevent posting form on pressing enter key
+        searchBox.keypress(function (e) {
+            var key = e.charCode || e.keyCode || 0;
+            if (key == 13) {
+                return false;
+            }
+        });
+
+        $(".dropdown-menu a").on('click', function () {
+            $("[name='BulkAction']").val($(this).data('action'));
+            $("[name='submit.BulkAction']").click();
+        });
+    });
+</script>

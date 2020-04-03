@@ -1,0 +1,11 @@
+@using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement.Models
+
+@inject IContentManager ContentManager
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var bodyAspect = await ContentManager.PopulateAspectAsync<BodyAspect>(contentItem);
+}
+
+@Html.Raw(bodyAspect.Body)

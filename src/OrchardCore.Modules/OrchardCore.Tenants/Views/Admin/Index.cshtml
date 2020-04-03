@@ -1,0 +1,178 @@
+@model AdminIndexViewModel
+@using System.Collections.Generic
+@using System.Net
+@using OrchardCore.Environment.Shell
+@using OrchardCore.Environment.Shell.Models
+
+@{
+    var originalPathBase = Context.Features.Get<ShellContextFeature>().OriginalPathBase.ToString();
+}
+
+@functions
+{
+    public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry, string originalPathBase)
+    {
+        ShellSettings tenantShellSettings = shellSettingsEntry.ShellSettings;
+        var requestHostInfo = Context.Request.Host;
+
+        var tenantUrlHost = tenantShellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHostInfo.Host;
+        if (requestHostInfo.Port.HasValue)
+        {
+            tenantUrlHost += ":" + requestHostInfo.Port;
+        }
+
+        var result = $"{Context.Request.Scheme}://{tenantUrlHost}{originalPathBase}";
+
+        if (!string.IsNullOrEmpty(tenantShellSettings.RequestUrlPrefix))
+        {
+            result += "/" + tenantShellSettings.RequestUrlPrefix;
+        }
+
+        if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
+        {
+            result += "?token=" + WebUtility.UrlEncode(shellSettingsEntry.Token);
+        }
+
+        return result;
+    }
+}
+
+<div class="row">
+    <div class="form-group col mb-n1">
+        <h1>@RenderTitleSegments(T["Tenants"])</h1>
+    </div>
+    <div class="form-group col mb-n1">
+        <div class="dropdown float-right order-md-1">
+            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                @T["Bulk Actions"]
+            </button>
+            <div class="dropdown-menu" aria-labelledby="bulk-action-menu-button">
+                <a class="dropdown-item" href="#" data-action="disable">@T["Disable"]</a>
+                <a class="dropdown-item" href="#" data-action="enable">@T["Enable"]</a>
+            </div>
+            <a asp-route-action="Create" class="btn btn-sm btn-primary float-rights" role="button">@T["Add Tenant"]</a>
+        </div>
+    </div>
+</div>
+<form asp-action="Index" method="get">
+    <fieldset class="filter-options">
+        <div class="card mb-3">
+            <div class="card-body bg-light p-3">
+                <div class="row">
+                    <div class="form-group col-xl-3 mb-xl-n1">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Keyword"]</span>
+                            </div>
+                            <input id="search-box" asp-for="Options.Search" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-3 mb-n1">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+                            </div>
+                            <select id="filterResults" class="form-control" asp-for="Options.Filter">
+                                <option value="@TenantsFilter.All.ToString()">@T["All states"]</option>
+                                <option value="@TenantsFilter.Running.ToString()">@T["Running"]</option>
+                                <option value="@TenantsFilter.Disabled.ToString()">@T["Disabled"]</option>
+                                <option value="@TenantsFilter.Uninitialized.ToString()">@T["Uninitialized"]</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-3 mb-n1">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Sort by"]</span>
+                            </div>
+                            <select id="orderResults" class="form-control" asp-for="Options.OrderBy">
+                                <option value="@TenantsOrder.Name.ToString()">@T["Name"]</option>
+                                <option value="@TenantsOrder.State.ToString()">@T["State"]</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-3 mb-xl-n1">
+                        <div class="input-group input-group-sm">
+                            <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</form>
+<form asp-action="Index" method="post">
+    <input name="BulkAction" type="hidden" />
+    <input type="submit" name="submit.BulkAction" class="d-none" />
+    @if (Model.ShellSettingsEntries.Count > 0)
+    {
+        <ul class="list-group">
+            @foreach (var entry in Model.ShellSettingsEntries)
+            {
+                <li class="list-group-item">
+                    <div class="custom-control custom-checkbox float-left">
+                        <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
+                        <label class="custom-control-label" for="tenantNames-@entry.Name">&nbsp;</label>
+                    </div>
+                    <div class="properties">
+                        <div class="related">
+                            <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
+                            {
+                                <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+                            }
+                            @if (entry.ShellSettings.State == TenantState.Disabled)
+                            {
+                                <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+                            }
+                            @if (entry.ShellSettings.State == TenantState.Uninitialized)
+                            {
+                                <a class="btn btn-info btn-sm" id="btn-setup-@entry.Name" href="@GetTenantUrl(entry, originalPathBase)">@T["Setup"]</a>
+                            }
+                            <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
+                        </div>
+                        <a href="@GetTenantUrl(entry, originalPathBase)">@entry.Name</a>
+                        <code class="hint">@entry.ShellSettings.RequestUrlHost@originalPathBase/@entry.ShellSettings.RequestUrlPrefix</code>
+                        <div class="metadata">
+                            @switch (entry.ShellSettings.State)
+                            {
+                                case TenantState.Disabled:
+                                    <span class="badge badge-danger">@T["Disabled"]</span>
+                                    break;
+                                case TenantState.Initializing:
+                                    <span class="badge badge-info">@T["Initializing"]</span>
+                                    break;
+                                case TenantState.Invalid:
+                                    <span class="badge badge-warning">@T["Invalid"]</span>
+                                    break;
+                                case TenantState.Running:
+                                    <span class="badge badge-success">@T["Running"]</span>
+                                    break;
+                                case TenantState.Uninitialized:
+                                    <span class="badge badge-secondary">@T["Uninitialized"]</span>
+                                    break;
+                            }
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            @T["<strong>Nothing here!</strong> Your search returned no results."]
+        </div>
+    }
+</form>
+
+@await DisplayAsync(Model.Pager)
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        $(".dropdown-menu a").on('click', function () {
+            $("[name='BulkAction']").val($(this).data('action'));
+            $("[name='submit.BulkAction']").click();
+        });
+    });
+</script>

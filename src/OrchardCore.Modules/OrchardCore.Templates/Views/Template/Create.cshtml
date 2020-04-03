@@ -1,0 +1,69 @@
+@model TemplateViewModel
+@{    
+    var returnUrl = ViewData["returnUrl"]?.ToString();
+}
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+<script asp-src="~/OrchardCore.Templates/templatepreview.edit.js" at="Foot"></script>
+
+<h1>@RenderTitleSegments(T["Create Template"])</h1>
+
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Create" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
+    <div class="form-group" asp-validation-class-for="Name">
+        <label asp-for="Name">@T["Name"]</label>
+        <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
+        <input asp-for="Name" class="form-control" autofocus/>
+        <span class="hint">@T["The name of the template."]</span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="Description">
+        <label asp-for="Description">@T["Description"]</label>
+        <input asp-for="Description" class="form-control" autofocus />
+        <span class="hint">@T["The description of the template."]</span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="Content">
+        <label asp-for="Content">@T["Content"]</label>
+        <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+        <span class="hint">@T["The Liquid template."]</span>
+    </div>
+
+    <fieldset>
+        <div class="form-group">
+            <div class="btn-group">
+                <button type="submit" name="submit" class="btn btn-secondary">@T["Save"]</button>
+                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">@T["Toggle Dropdown"]</span>
+                </button>
+                <div class="dropdown-menu">
+                    <button class="dropdown-item" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
+                </div>
+            </div>
+
+            @if (Url.IsLocalUrl(returnUrl))
+            {                
+                <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
+            }
+            <a class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
+
+        </div>
+    </fieldset>
+</form>
+
+<script at="Foot">
+
+    $(function () {
+        initializeTemplatePreview(
+            document.getElementById('@Html.IdFor(x => x.Name)'),
+            document.getElementById('@Html.IdFor(x => x.Content)'));
+    });
+
+</script>

@@ -1,0 +1,10 @@
+@model dynamic
+
+<div class="card">
+    <div class="card-body">
+        @await DisplayAsync(Model.Content)
+    </div>
+    <div class="card-footer text-muted text-xs-right">
+        <a class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Step" asp-route-id="@Model.DeploymentPlan.Id" asp-route-type="@Model.Type">@T["Add"]</a>
+    </div>
+</div>

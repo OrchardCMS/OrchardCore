@@ -1,0 +1,8 @@
+@model ContentItemViewModel
+@using OrchardCore.ContentManagement
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    Title.AddSegment(Html.Raw(Html.Encode(contentItem.DisplayText)));
+}
+

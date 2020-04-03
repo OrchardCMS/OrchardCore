@@ -1,0 +1,80 @@
+@model ListContentTypesViewModel
+
+<div class="row">
+    <div class="form-group col mb-n1">
+        <h1>@RenderTitleSegments(T["Content Types"])</h1>
+    </div>
+    <div class="form-group col mb-n1">
+        <a asp-route-action="Create" id="btnCreate" class="btn btn-primary float-right" role="button">@T["Create new type"]</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body bg-light p-3">
+        <div class="input-group input-group-sm w-lg-50">
+            <div class="input-group-prepend">
+                <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+            </div>
+            <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus" />
+        </div>
+    </div>
+</div>
+
+<ul id="content-types" class="list-group">
+    @foreach (var type in Model.Types)
+    {
+        <li class="list-group-item" data-filter-value="@type.DisplayName" data-type-name="@type.Name">
+            @Html.DisplayFor(m => type)
+        </li>
+    }
+</ul>
+<div id="list-alert" class="alert alert-info d-none" role="alert">
+    @T["<strong>Nothing here!</strong> Your search returned no results."]
+</div>
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        var searchBox = $('#search-box');
+
+        // On each keypress filter the list of types
+        searchBox.keyup(function (e) {
+            var search = $(this).val().toLowerCase();
+
+            var elementsToFilter = $("[data-filter-value]");
+
+            // On ESC, clear the search box and display all types
+            if (e.keyCode == 27 || search == '') {
+                searchBox.val('');
+                elementsToFilter.toggle(true);
+            } else {
+                elementsToFilter.each(function () {
+                    var text = $(this).data('filter-value').toLowerCase();
+                    var found = text.indexOf(search) > -1;
+                    $(this).toggle(found);
+                });
+
+                // We display an alert if a search is not found
+                var visible = $('#content-types > li:visible');
+                if (visible.length == 0) {
+                    $('#list-alert').removeClass("d-none");
+                }
+                else {
+                    $('#list-alert').addClass("d-none");
+                }
+            }
+
+            // On Enter, redirect to the edit page if the type exists or the create page with a suggestion
+            if (e.keyCode == 13) {
+                var visibleRows = $("[data-type-name]:visible");
+                if (visibleRows.length > 0) {
+                    var editLink = $(".related a:last", visibleRows[0]);
+                    location.href = editLink.attr("href");
+                } else {
+                    var primaryButton = $("#btnCreate");
+                    location.href = primaryButton.attr("href") + "?suggestion=" + search;
+                }
+                return;
+            }
+        });
+    });
+</script>

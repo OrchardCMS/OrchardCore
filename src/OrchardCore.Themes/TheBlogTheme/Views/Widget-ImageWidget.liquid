@@ -1,0 +1,6 @@
+<article class="{{ Model.Classes | join: " " }}">
+    <figure class="figure">
+        <img src="{{ Model.ContentItem.Content.Image.Media.Paths[0] | asset_url }}" class="figure-img img-fluid rounded" alt="{{ Model.ContentItem.Content.Image.Caption.Text }}" />
+        <figcaption class="figure-caption">{{ Model.ContentItem.Content.Image.Caption.Text }}</figcaption>
+    </figure>
+</article>

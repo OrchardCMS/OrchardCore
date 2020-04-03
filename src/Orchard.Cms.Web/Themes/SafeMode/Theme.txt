@@ -1,8 +1,0 @@
-﻿Name: Safe Mode
-AntiForgery: enabled
-Author: The Orchard Team
-Website: http://orchardproject.net
-Version: 2.0.x
-OrchardVersion: 2.0.x
-Description: Test
-FeatureDescription: Test

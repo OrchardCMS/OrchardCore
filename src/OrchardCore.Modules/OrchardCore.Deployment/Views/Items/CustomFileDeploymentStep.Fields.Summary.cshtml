@@ -1,0 +1,9 @@
+@model ShapeViewModel<CustomFileDeploymentStep>
+
+@{
+    string fileName = Model.Value.FileName;
+    string fileContent = Model.Value.FileContent;
+}
+
+<h5>@T["Custom File"]</h5>
+<code>@fileName</code>

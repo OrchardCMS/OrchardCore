@@ -1,0 +1,36 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--
+    This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build" such that any
+    Module that references it will embedd in its assembly all assets files and mapping infos.
+  -->
+
+  <PropertyGroup>
+    <ModuleAssetExcludes>Assets.*;Assets\**;**\*.props;**\*.targets</ModuleAssetExcludes>
+    <ModuleDefaultAssetExcludes>$(ModuleAssetExcludes);**\node_modules\**;node_modules\**</ModuleDefaultAssetExcludes>
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\jspm_packages\**;jspm_packages\**</ModuleDefaultAssetExcludes>
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\bower_components\**;bower_components\**</ModuleDefaultAssetExcludes>
+    <ModuleType Condition="'$(ModuleType)' == ''">Module</ModuleType>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EnableDefaultRazorGenerateItems>false</EnableDefaultRazorGenerateItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(ModuleNoneIncludes)" Exclude="$(ModuleNoneExcludes)" />
+    <EmbeddedResource Include="**\*" Exclude="$(ModuleDefaultAssetExcludes);$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    <RazorGenerate Include="@(EmbeddedResource->WithMetadataValue('Extension', '.cshtml'))" />
+  </ItemGroup>
+
+  <!-- Adds a custom .props file to the generated module package -->
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Package.Build.props" Pack="true">
+      <PackagePath>build\$(TargetFramework)\$(AssemblyName).props</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

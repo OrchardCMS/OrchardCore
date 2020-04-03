@@ -1,0 +1,22 @@
+@model ActivityViewModel<NotifyTask>
+@using OrchardCore.DisplayManagement.Notify
+@{
+    string className = "info-circle";
+
+    switch (Model.Activity.NotificationType)
+    {
+        case NotifyType.Error:
+            className = "exclamation-circle";
+            break;
+        case NotifyType.Success:
+            className = "check-circle";
+            break;
+        case NotifyType.Warning:
+            className = "warning";
+            break;
+    }
+}
+<header>
+    <h4><i class="fa fa-@className"></i>@Model.Activity.GetTitleOrDefault(() => T["{0} Notification", Model.Activity.NotificationType])</h4>
+</header>
+<em>&quot;@Model.Activity.Message&quot;</em>

@@ -1,0 +1,9 @@
+@model dynamic
+@using OrchardCore.ContentManagement;
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+}
+
+<h1>@RenderTitleSegments(contentItem.DisplayText)</h1>
+@await DisplayAsync(Model)

@@ -111,9 +111,8 @@ csx
 AppPackages/
 
 # Others
-sql/
 *.Cache
-!Orchard.Environment.Cache
+!OrchardCore.Environment.Cache
 ClientBin/
 [Ss]tyle[Cc]op.*
 ~$*
@@ -166,8 +165,10 @@ build/
 /buildazure
 /buildtasks
 /artifacts
+site/
 *.sln.cache
-src/Orchard.Web/Media/*
+src/OrchardCore.Modules/**/launchSettings.json
+src/OrchardCore.Themes/**/launchSettings.json
 log.xml
 profiling/
 *.orig
@@ -183,6 +184,23 @@ nuget.exe
 !lib/*/*.*
 
 #exclude node modules
-node_modules/*
+node_modules/
 
 wwwroot
+Localization
+!src/OrchardCore.Modules/**/wwwroot
+!src/OrchardCore.Themes/**/wwwroot
+!src/OrchardCore.Modules/**/Localization
+!src/OrchardCore.Themes/**/Localization
+!src/Templates/**/content/**
+src/Templates/**/content/**/[Bb]in/
+src/Templates/**/content/**/[Oo]bj/
+.template.config/
+/OrchardCore.sln.GhostDoc.xml
+
+# Rider
+/.idea
+
+# BenchmarkDotNet artifacts
+BenchmarkDotNet.Artifacts
+

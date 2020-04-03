@@ -1,0 +1,41 @@
+@{
+    // Morphing the shape to keep Model untouched
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "NavigationItemText";
+    Model.Metadata.Alternates.Add("NavigationItemText_Id__" + Model.Id);
+
+    TagBuilder tag;
+
+    if (Model.HasItems)
+    {
+        // Label
+        tag = new TagBuilder("label");
+        tag.AddCssClass("item-label");
+        tag.Attributes["data-toggle"] = "collapse";
+        tag.Attributes["data-target"] = "#m" + Model.GetHashCode().ToString();
+        tag.Attributes["aria-expanded"] = "false";
+        tag.Attributes["aria-controls"] = "m" + Model.GetHashCode().ToString();
+        tag.Attributes["role"] = "button";
+
+        if ((bool)Model.Selected)
+        {
+            tag.Attributes["aria-expanded"] = "true";
+        }
+        else {
+            tag.Attributes["aria-expanded"] = "false";
+        }
+
+        tag.TagRenderMode = TagRenderMode.Normal;
+        tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+
+        tag.InnerHtml.AppendHtml(Html.Raw($"<button class=\"btn-nostyle\"><span class=\"collapse-icon\"><i class=\"fas fa-chevron-{(Orchard.CultureDir() == "ltr" ? "right" : "left")} fa-xs chevron\"></i></span></button>"));
+    }
+    else
+    {
+        tag = Tag(Model, "a");
+        tag.AddCssClass("item-label d-flex");
+        tag.Attributes["href"] = Model.Href ?? "#";
+        tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+    }
+}
+@tag

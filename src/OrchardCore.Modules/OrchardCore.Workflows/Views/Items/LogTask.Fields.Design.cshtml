@@ -1,0 +1,27 @@
+@model ActivityViewModel<LogTask>
+@using Microsoft.Extensions.Logging
+
+@{
+    string className = "info-circle";
+
+    switch (Model.Activity.LogLevel)
+    {
+        case LogLevel.Error:
+        case LogLevel.Critical:
+            className = "exclamation-circle";
+            break;
+        case LogLevel.Warning:
+            className = "exclamation-triangle";
+            break;
+        case LogLevel.Debug:
+            className = "bug";
+            break;
+        case LogLevel.Trace:
+            className = "info";
+            break;
+    }
+}
+<header>
+    <h4><i class="fa fa-@className"></i>@Model.Activity.GetTitleOrDefault(() => T["Log"])</h4>
+</header>
+<span>@Model.Activity.LogLevel</span> <em>&quot;@Model.Activity.Text&quot;</em>

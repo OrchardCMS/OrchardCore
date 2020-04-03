@@ -1,0 +1,32 @@
+@{
+    int level = (int)Model.Level;
+    TagBuilder tag = Tag(Model, "li");
+
+    if ((bool)Model.HasItems)
+    {
+        tag.AddCssClass("dropdown");
+    }
+
+    // Morphing the shape to keep Model untouched
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "MenuItemLink";
+
+    tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+
+    if ((bool)(Model.HasItems))
+    {
+        TagBuilder parentTag = Tag(Model, "ul");
+        parentTag.AddCssClass("dropdown-menu");
+
+        foreach (var item in Model.Items)
+        {
+            item.Level = level + 1;
+            item.ParentTag = parentTag;
+            parentTag.InnerHtml.AppendHtml(await DisplayAsync(item));
+        }
+
+        tag.InnerHtml.AppendHtml(parentTag);
+    }
+}
+
+@tag

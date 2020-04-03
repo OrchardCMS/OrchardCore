@@ -1,0 +1,16 @@
+@model SummaryAdminUserViewModel
+@using OrchardCore.Entities
+@using OrchardCore.Users.Models
+@{
+    var user = Model.User as User;
+}
+<a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+<a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+<a asp-action="EditPassword" asp-route-id="@user.Id" class="btn btn-secondary btn-sm">@T["Edit Password"]</a>
+@if (!user.EmailConfirmed && Site.As<RegistrationSettings>().UsersMustValidateEmail)
+{
+    <form method="post" class="d-inline-block">
+        <input name="id" type="hidden" value="@user.Id" />
+        <button asp-action="SendVerificationEmail" asp-controller="Registration" class="btn btn-info btn-sm">@T["Send verification email"]</button>
+    </form>
+}

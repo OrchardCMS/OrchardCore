@@ -1,0 +1,32 @@
+@using OrchardCore.ContentManagement
+@using OrchardCore.Flows.Models
+@using OrchardCore.Flows.ViewModels
+@using OrchardCore.Forms.Models;
+@using OrchardCore.Mvc.Utilities
+
+@model FlowPartViewModel
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@{
+    var formPart = Model.FlowPart.ContentItem.As<FormPart>();
+}
+
+<form class="flow flow-form" action="@formPart.Action" method="@formPart.Method">
+    @Html.AntiForgeryToken()
+    @foreach (var widget in Model.FlowPart.Widgets)
+    {
+        var widgetContent = await ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId);
+        var flowMetadata = widget.As<FlowMetadata>();
+
+        if (flowMetadata != null)
+        {
+            widgetContent.Classes.Add("form-group");
+            widgetContent.Classes.Add("widget");
+            widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
+            widgetContent.Classes.Add("widget-align-" + flowMetadata.Alignment.ToString().ToLowerInvariant());
+            widgetContent.Classes.Add("widget-size-" + flowMetadata.Size);
+        }
+
+        @await DisplayAsync(widgetContent)
+    }
+</form>

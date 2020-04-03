@@ -1,0 +1,76 @@
+﻿/*
+  Available display shapes:
+      Parts_Contents_Publish
+      Parts_Contents_Publish_Summary
+      Parts_Contents_Publish_SummaryAdmin
+*/
+
+{
+  "Content_PublishButton": [
+    {
+      "place": "Actions:5" // Same as in the driver
+    }
+  ],
+  "Content_SaveButton": [
+    {
+      "place": "Actions:6" // Move the save button after the publish
+    }
+  ],
+  "Parts_Contents_Publish": [
+    {
+      "displayType": "Detail",
+      "place": "Content:5"
+    }
+  ],
+  "Parts_Contents_Publish_SummaryAdmin": [
+    {
+      "displayType": "SummaryAdmin",
+      "place": "Actions:5"
+    }
+  ],
+  "Parts_Contents_Clone_SummaryAdmin": [
+    {
+      "displayType": "SummaryAdmin",
+      "place": "Actions:6"
+    }
+  ]
+  //,
+  //"TextField_Edit": [
+  //  {
+  //    "displayType": "Edit",
+  //    "differentiator": "BillingAddress.City",
+  //    "place": "Content:60"
+  //  },
+  //  {
+  //    "displayType": "Edit",
+  //    "differentiator": "BillingAddress.Street",
+  //    "place": "Content:50"
+  //  }
+  //]
+
+}
+/*
+
+  Place("Content_PublishButton", "Sidebar:24");
+  Place("Content_SaveButton, "Sidebar:23");
+  if(DisplayType == "Detail") {
+    Place("Parts_Contents_Publish", "Content:5");
+  }
+  else if(DisplayType == "SummaryAdmin") {
+    Place("Parts_Contents_Publish_SummaryAdmin", "Actions:5");
+    Place("Parts_Contents_Clone_SummaryAdmin", "Actions:6");
+  }
+
+    <Place Content_PublishButton="Sidebar:24"/>
+    <Place />
+    <Match DisplayType="Detail">
+        <Place Parts_Contents_Publish="Content:5"/>
+    </Match>
+    <Match DisplayType="SummaryAdmin">
+        <Place Parts_Contents_Publish_SummaryAdmin="Actions:5"
+               Parts_Contents_Clone_SummaryAdmin="Actions:6"/>
+    </Match>
+</Placement>
+
+
+*/

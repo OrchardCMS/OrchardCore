@@ -1,0 +1,10 @@
+@model OrchardCore.Markdown.ViewModels.MarkdownFieldViewModel
+@using OrchardCore.Mvc.Utilities
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+<div class="field field-type-markdownfield field-name-@name">
+    @Html.Raw(Model.Html)
+</div>

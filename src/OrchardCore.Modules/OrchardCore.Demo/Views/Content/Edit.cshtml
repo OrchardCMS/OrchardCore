@@ -1,0 +1,10 @@
+﻿@*TODO: Replace by display name*@
+<h1>@RenderTitleSegments(T["Edit {0}", (string)Model.ContentItem.ContentType])</h1>
+
+<form asp-action="Edit" method="post">
+    @Html.ValidationSummary()
+    @await DisplayAsync(Model)
+
+    <input type="hidden" name="ContentItemId" value="@Model.ContentItem.ContentItemId"/>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

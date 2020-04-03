@@ -1,0 +1,14 @@
+@model ContentTaskViewModel<UnpublishContentTask>
+
+<header>
+    <h4><i class="fa fa-cloud-upload"></i>@Model.Activity.GetTitleOrDefault(() => T["Unpublish Content"])</h4>
+</header>
+
+@if (string.IsNullOrWhiteSpace(Model.Activity.Content?.Expression))
+{
+    <span>@T["Unpublish content provided via the <em>Content</em> input argument"]</span>
+}
+else
+{
+    <span>@T["Unpublish content using expression: <em>{0}</em>", Model.Activity.Content.Expression]</span>
+}

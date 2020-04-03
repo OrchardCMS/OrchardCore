@@ -1,0 +1,5 @@
+@model ActivityViewModel<ValidateAntiforgeryTokenTask>
+
+<header>
+    <h4><i class="fa fa-shield-alt"></i>@Model.Activity.GetTitleOrDefault(() => T["Validate Antiforgery Token"])</h4>
+</header>

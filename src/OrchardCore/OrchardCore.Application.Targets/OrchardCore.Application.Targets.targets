@@ -1,0 +1,31 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- 
+    This file is packaged with "OrchardCore.Application.Targets.nupkg" in "./build" such that any
+    Application that references it will embedd in its assembly a list of the referenced modules.
+  -->
+
+  <Target Name="ResolveModuleProjectReferences" AfterTargets="AfterResolveReferences">
+    <MSBuild
+      Targets="GetModuleProjectName"
+      BuildInParallel="$(BuildInParallel)"
+      Projects="@(_MSBuildProjectReferenceExistent)"
+      Condition="'@(_MSBuildProjectReferenceExistent)' != ''"
+      SkipNonexistentTargets="true"
+      ContinueOnError="true">
+
+      <Output ItemName="ModuleProjectNames" TaskParameter="TargetOutputs" />
+    </MSBuild>
+
+    <ItemGroup>
+      <ModuleNames Include="@(ModulePackageNames);@(ModuleProjectNames)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleNameAttribute" Condition="'@(ModuleNames)' != ''">
+        <_Parameter1>%(ModuleNames.Identity)</_Parameter1>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
+
+</Project>

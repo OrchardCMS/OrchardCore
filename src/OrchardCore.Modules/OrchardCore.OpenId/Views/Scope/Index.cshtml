@@ -1,0 +1,32 @@
+@model OpenIdScopeIndexViewModel
+@using OrchardCore.OpenId.ViewModels;
+
+<h1>@RenderTitleSegments(T["Scopes"])</h1>
+
+<nav class="admin-toolbar">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add a scope"]</a>
+        </li>
+    </ul>
+</nav>
+
+@using (Html.BeginForm())
+{
+    <ul class="list-group">
+        @foreach (var entry in Model.Scopes)
+        {
+            <li class="list-group-item">
+                <div class="properties">
+                    <div class="related float-xs-right">
+                        <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                        <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Id" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+                    </div>
+                    @entry.DisplayName (@entry.Name)
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+@await DisplayAsync(Model.Pager)

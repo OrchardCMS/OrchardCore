@@ -1,0 +1,8 @@
+@{
+    // Morphing the shape to keep Model untouched
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "NavigationItemText";
+    Model.Metadata.Alternates.Add("NavigationItemText_Id__" + Model.Id);
+}
+
+<a href="@(Model.Href ?? "#")">@await DisplayAsync(Model)</a>

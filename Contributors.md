@@ -18,3 +18,5 @@ their names indented and be marked with a '-'
 * Lombiq (@LombiqTechnologies)
   - Benedek Farkas
   - Zoltán Lehóczky (@Piedone)
+
+* Antoine Griffard (@agriffard)

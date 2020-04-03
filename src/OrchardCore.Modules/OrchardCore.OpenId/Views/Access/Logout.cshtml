@@ -1,0 +1,16 @@
+@using OrchardCore.OpenId.ViewModels
+@model LogoutViewModel
+
+<div class="jumbotron">
+    <h1>@T["Log out"]</h1>
+    
+    <p class="lead text-left">@T["Are you sure you want to log out?"]</p>
+
+    <form method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="RequestId" name="request_id" />
+        <input class="btn btn-lg btn-success" name="submit.Accept" type="submit" value="Yes" />
+        <input class="btn btn-lg btn-danger" name="submit.Deny" type="submit" value="No" />
+    </form>
+</div>

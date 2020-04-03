@@ -1,0 +1,45 @@
+@model DeploymentPlanIndexViewModel
+
+<h1>@RenderTitleSegments(T["Deployment Plans"])</h1>
+
+<nav class="admin-toolbar">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Deployment Plan"]</a>
+        </li>
+    </ul>
+        <form asp-action="Index" method="get" class="form-inline my-2 my-lg-0">
+            <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+            <button type="submit" class="btn btn-secondary">@T["Search"]</button>
+        </form>
+</nav>
+
+<form asp-action="Index">
+    @* the form is necessary to generate and antiforgery token for the delete action *@
+
+    @if (Model.DeploymentPlans.Any())
+    {
+        <ul class="list-group">
+            @foreach (var entry in Model.DeploymentPlans)
+            {
+                <li class="list-group-item">
+                    <div class="properties">
+                        <div class="related">
+                            <a asp-action="Edit" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="Delete" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                        </div>
+                        <a asp-action="Display" asp-route-id="@entry.DeploymentPlan.Id">@entry.DeploymentPlan.Name</a>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            @T["<strong>Nothing here!</strong> There are no deployment plans for the moment."]
+        </div>
+    }
+</form>
+
+@await DisplayAsync(Model.Pager)

@@ -1,0 +1,40 @@
+﻿@using OrchardCore.Flows.Models
+@model FlowMetadata
+
+<div class="btn-group btn-group-sm" data-toggle="buttons" role="group">
+    <label class="btn btn-secondary @(Model.Alignment == FlowAlignment.Left ? "active" : null)">
+        <input asp-for="Alignment" type="radio" autocomplete="off" value="Left"><i class="fa fa-align-left" aria-hidden="true"></i>
+    </label>
+    <label class="btn btn-secondary @(Model.Alignment == FlowAlignment.Center ? "active" : null)">
+        <input asp-for="Alignment" type="radio" autocomplete="off" value="Center"><i class="fa fa-align-center" aria-hidden="true"></i>
+    </label>
+    <label class="btn btn-secondary @(Model.Alignment == FlowAlignment.Right ? "active" : null)">
+        <input asp-for="Alignment" type="radio" autocomplete="off" value="Right"><i class="fa fa-align-right" aria-hidden="true"></i>
+    </label>
+    <label class="btn btn-secondary @(Model.Alignment == FlowAlignment.Justify ? "active" : null)">
+        <input asp-for="Alignment" type="radio" autocomplete="off" value="Justify"><i class="fa fa-align-justify" aria-hidden="true"></i>
+    </label>
+</div>
+
+<div class="btn-group btn-group-sm" data-toggle="buttons" role="group">
+    <label class="btn btn-secondary @(Model.Size == 25 ? "active" : null)">
+        <input asp-for="Size" type="radio" autocomplete="off" value="25">@T["25%"]
+    </label>
+    <label class="btn btn-secondary @(Model.Size == 33 ? "active" : null)">
+        <input asp-for="Size" type="radio" autocomplete="off" value="33">@T["33%"]
+    </label>
+    <label class="btn btn-secondary @(Model.Size == 50 ? "active" : null)">
+        <input asp-for="Size" type="radio" autocomplete="off" value="50">@T["50%"]
+    </label>
+    <label class="btn btn-secondary @(Model.Size == 66 ? "active" : null)">
+        <input asp-for="Size" type="radio" autocomplete="off" value="66">@T["66%"]
+    </label>
+    <label class="btn btn-secondary @(Model.Size == 75 ? "active" : null)">
+        <input asp-for="Size" type="radio" autocomplete="off" value="75">@T["75%"]
+    </label>
+    <label class="btn btn-secondary @(Model.Size == 100 ? "active" : null)">
+        <input asp-for="Size" type="radio" autocomplete="off" value="100">@T["100%"]
+    </label>
+</div>
+
+

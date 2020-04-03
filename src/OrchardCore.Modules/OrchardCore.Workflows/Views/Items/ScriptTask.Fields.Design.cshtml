@@ -1,0 +1,5 @@
+@model ActivityViewModel<ScriptTask>
+
+<header>
+    <h4><i class="fa fa-cog"></i>@Model.Activity.GetTitleOrDefault(() => T["Script"])</h4>
+</header>

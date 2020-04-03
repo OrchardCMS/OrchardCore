@@ -1,0 +1,97 @@
+@{
+    TagBuilder tag = Tag(Model, "li");
+
+    // Morphing the shape to keep Model untouched
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "NavigationItemLink";
+    Model.Metadata.Alternates.Add("NavigationItemLink_Id__" + Model.Id);
+
+    if ((bool)Model.Selected)
+    {
+        tag.AddCssClass("active");
+    }
+
+    // Render sub-items (MenuItem)
+    if (Model.HasItems)
+    {
+        tag.AddCssClass("has-items");
+        tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+
+        if ((bool)Model.Selected)
+        {
+            tag.InnerHtml.AppendHtml("<ul id=\"m" + Model.GetHashCode() + "\" class=\"collapse show\" >");
+        }
+        else
+        {
+            tag.InnerHtml.AppendHtml("<ul id=\"m" + Model.GetHashCode() + "\" class=\"collapse\" >");
+        }
+
+        foreach (var item in Model)
+        {
+            tag.InnerHtml.AppendHtml(await DisplayAsync(item));
+        }
+        tag.InnerHtml.AppendHtml("</ul>");
+    }
+    else
+    {
+        tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+    }
+}
+
+@tag
+
+
+@*@{
+        TagBuilder tag = Tag(Model, "li");
+
+        // Morphing the shape to keep Model untouched
+        Model.Metadata.Alternates.Clear();
+        Model.Metadata.Type = "NavigationItemLink";
+
+        // Render sub-items (MenuItem)
+        if (Model.HasItems)
+        {
+            tag.AddCssClass("has-children");
+
+            var id = "id" + Model.GetHashCode();
+
+            if (Model.Level == 1)
+            {
+                // Radio
+                var radio = new TagBuilder("input");
+                radio.Attributes["type"] = "radio";
+                radio.Attributes["id"] = id;
+                radio.Attributes["name"] = "top";
+                radio.TagRenderMode = TagRenderMode.SelfClosing;
+                tag.InnerHtml.AppendHtml(radio);
+            }
+            else
+            {
+                // Checkbox
+                var checkbox = new TagBuilder("input");
+                checkbox.Attributes["type"] = "checkbox";
+                checkbox.Attributes["id"] = id;
+                checkbox.TagRenderMode = TagRenderMode.SelfClosing;
+                tag.InnerHtml.AppendHtml(checkbox);
+            }
+
+            // Label
+            var label = new TagBuilder("label");
+            label.Attributes["for"] = id;
+            label.InnerHtml.AppendHtml("<span>" + Model.Text + "</span>");
+            label.TagRenderMode = TagRenderMode.Normal;
+            tag.InnerHtml.AppendHtml(label);
+
+            tag.InnerHtml.AppendHtml("<ul>");
+            foreach (var item in Model)
+            {
+                tag.InnerHtml.AppendHtml(await DisplayAsync(item));
+            }
+            tag.InnerHtml.AppendHtml("</ul>");
+        }
+        else
+        {
+            tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+        }
+    }
+    @tag*@

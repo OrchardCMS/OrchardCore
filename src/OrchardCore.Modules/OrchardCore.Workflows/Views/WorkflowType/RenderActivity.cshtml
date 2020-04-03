@@ -1,0 +1,7 @@
+﻿@{
+    // Don't render the theme
+    Layout = "";
+    Model.EditorShape.Metadata.Alternates.Add($"Activity__{Model.Name}");
+}
+
+@await DisplayAsync(Model.EditorShape)

@@ -1,0 +1,32 @@
+@using OrchardCore.Workflows.Models
+@using OrchardCore.Workflows.Activities
+@{
+    var activityRecord = (ActivityRecord)Model.ActivityRecord;
+    var activity = (IActivity)Model.Activity;
+    var activityEvent = activity as IEvent;
+    var isEvent = activityEvent != null;
+    var isStart = activityRecord.IsStart;
+    var cssClass = isStart ? "activity-start" : isEvent ? "activity-event" : "activity-task";
+    var hasEditor = activity.HasEditor;
+    var activityType = isEvent ? "Event" : "Task";
+    var activityTypeClass = isEvent ? "fa-bolt" : "fa-caret-right";
+}
+<div class="activity @cssClass" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowTypeId}-{activityRecord.ActivityId}")" data-activity-id="@activityRecord.ActivityId" data-activity-start="@isStart.ToString().ToLower()" data-activity-type="@activityType" data-activity-has-editor="@hasEditor.ToString().ToLower()" data-placement="bottom">
+    @await DisplayAsync(Model.Content)
+    @if (isEvent)
+    {
+        <div class="clearfix">
+            <div class="float-right">
+                <i class="fa @activityTypeClass"></i>
+            </div>
+        </div>
+    }
+    <div class="activity-commands">
+        <a class="btn btn-outline-secondary activity-start-action" href="#" data-toggle="button" title="@T["Startup task"]"><i class="fa fa-power-off"></i></a>
+        @if (hasEditor)
+        {
+            <a class="btn btn-primary activity-edit-action" asp-action="Edit" asp-controller="Activity" asp-route-workflowtypeid="@Model.WorkflowTypeId" asp-route-activityid="@activityRecord.ActivityId" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true" title="@T["Edit"]"><i class="fa fa-pencil"></i></a>
+        }
+        <a class="btn btn-danger activity-delete-action" href="#" title="@T["Delete"]"><i class="fa fa-trash"></i></a>
+    </div>
+</div>

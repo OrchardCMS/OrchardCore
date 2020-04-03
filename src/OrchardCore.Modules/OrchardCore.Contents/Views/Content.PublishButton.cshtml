@@ -1,0 +1,23 @@
+@*@if (Authorizer.Authorize(Permissions.PublishContent, (IContent)Model.ContentItem)) {*@
+@{
+    var returnUrl = Context.Request.Query["returnUrl"];
+}
+@if (String.IsNullOrWhiteSpace(returnUrl))
+{
+    <button type="submit" name="submit.Publish" class="publish-button btn btn-success" value="submit.Publish">@T["Publish"]</button>
+}
+else
+{
+    <div class="btn-group">
+        <button class="publish-button btn btn-success" type="submit" name="submit.Publish" value="submit.Publish">@T["Publish"]</button>
+        <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="sr-only">@T["Toggle Dropdown"]</span>
+        </button>
+        <div class="dropdown-menu">
+            <button class="dropdown-item" type="submit" name="submit.Publish" value="submit.PublishAndContinue">@T["and continue"]</button>
+        </div>
+    </div>
+}
+
+@* } *@
+

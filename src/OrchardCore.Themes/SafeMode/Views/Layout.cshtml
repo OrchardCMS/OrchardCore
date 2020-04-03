@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Orchard</title>
+    @await RenderSectionAsync("Header", required: false)
+</head>
+<body>
+    <h1>SAFE MODE</h1>
+    @await RenderBodyAsync()
+
+    <hr />
+    <footer>
+        @await RenderSectionAsync("Footer", required: false)
+        <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+    </footer>
+</body>
+</html>

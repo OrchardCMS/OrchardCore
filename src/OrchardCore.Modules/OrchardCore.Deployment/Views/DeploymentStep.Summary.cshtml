@@ -1,0 +1,20 @@
+@model dynamic
+    
+<div class="properties">
+    <div class="related">
+        <a asp-action="Edit" 
+           asp-controller="Step" 
+           asp-route-id="@Model.DeploymentPlanId" 
+           asp-route-stepId="@Model.DeploymentStep.Id" 
+           class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+        <a asp-action="Delete" 
+           asp-controller="Step" 
+           asp-route-id="@Model.DeploymentPlanId" 
+           asp-route-stepId="@Model.DeploymentStep.Id" 
+           class="btn btn-danger btn-sm" 
+           itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+    </div>
+
+    @await DisplayAsync(Model.Content)
+</div>

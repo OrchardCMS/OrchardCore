@@ -1,0 +1,15 @@
+@model OrchardCore.Flows.ViewModels.BagPartSettingsViewModel
+
+<fieldset class="form-group">
+    <label asp-for="ContainedContentTypes">@T["Contained Content Types"]</label>
+    <span class="hint">@T["The content types that this bag can contain, e.g. Slide for a Slide Show."]</span>
+    @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-sm-6">
+        <label asp-for="DisplayType">@T["Display Type"]</label>
+        <input asp-for="DisplayType" placeholder="Summary" class="form-control medium" />
+        <span class="hint">@T["The display type to use when rendering the content items. Default is Summary."]</span>
+    </div>
+</fieldset>

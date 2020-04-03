@@ -1,0 +1,20 @@
+@using OrchardCore.Feeds.Models
+@using OrchardCore.ResourceManagement
+@using OrchardCore.ContentManagement
+
+@inject IResourceManager ResourceManager
+@inject IContentManager ContentManager
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var feedMetadata = await ContentManager.PopulateAspectAsync<FeedMetadata>(contentItem);
+    ResourceManager.RegisterLink(new LinkEntry
+    {
+        Rel = "alternate",
+        Type = "application/rss+xml",
+        Title = contentItem.DisplayText,
+        Href = String.IsNullOrWhiteSpace(feedMetadata.FeedProxyUrl)
+            ? Url.Action("Index", "Feed", new { area = "OrchardCore.Feeds", ContentItemId = contentItem.ContentItemId }, Context.Request.Scheme)
+            : feedMetadata.FeedProxyUrl
+    });
+}

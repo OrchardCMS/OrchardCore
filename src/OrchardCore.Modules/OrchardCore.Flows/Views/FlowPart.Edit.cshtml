@@ -1,0 +1,88 @@
+@using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.Flows.ViewModels;
+
+@model FlowPartEditViewModel
+
+@inject IContentManager ContentManager
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@{
+    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
+}
+
+<script asp-name="jQuery-ui" at="Foot"></script>
+
+<fieldset class="form-group">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder">
+        @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
+        @foreach (var widget in Model.FlowPart.Widgets)
+        {
+            var prefix = Guid.NewGuid().ToString("n");
+            <div class="widget-template">
+                @{
+                    dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
+
+                    widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
+                    widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
+                    widgetEditor.TargetId = widgetTemplatePlaceholderId;
+
+                    widgetEditor.Metadata.Alternates.Add("Widget_Edit__Flow");
+                }
+
+                @await DisplayAsync(widgetEditor)
+
+                @{ this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix; }
+                <input type="hidden" asp-for="Prefixes" value="@prefix" />
+                <input type="hidden" asp-for="ContentTypes" value="@widget.ContentType" />
+            </div>
+        }
+    </div>
+
+    <div class="btn-group ">
+        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            @T["Add Widget"]
+        </button>
+        <div class="dropdown-menu">
+            @foreach (var type in widgetContentTypes)
+            {
+                <a class="dropdown-item add-widget  btn-sm"
+                   data-target-id="@widgetTemplatePlaceholderId"
+                   data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
+                   data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
+                   data-widget-type="@type.Name"
+                   data-flowmetadata="true"
+                   href="javascript:;">@type.DisplayName</a>
+            }
+        </div>
+    </div>
+
+
+    @if (Context.Items["FlowPart.Edit"] == null)
+    {
+        Context.Items["FlowPart.Edit"] = new object();
+        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
+
+        @foreach (var type in widgetContentTypes)
+        {
+            // Render a mock widget so that its resources are included in the page
+            var contentItem = await ContentManager.NewAsync(type.Name);
+            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
+        }
+
+        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
+    }
+
+    <script at="Foot">
+        $("#@widgetTemplatePlaceholderId").sortable({
+            handle: ".widget-editor-header",
+            cursor: "move",
+            stop: function (event, ui) {
+                $(document).trigger('contentpreview:render');
+            }
+        });
+    </script>
+</fieldset>

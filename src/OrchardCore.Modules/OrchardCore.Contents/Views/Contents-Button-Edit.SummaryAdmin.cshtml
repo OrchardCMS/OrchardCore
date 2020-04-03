@@ -1,0 +1,15 @@
+﻿@using OrchardCore.ContentManagement
+@inject IContentManager ContentManager
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+}
+
+<a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+
+@if (hasPublished)
+{
+    <a display-for="@contentItem" class="btn btn-success btn-sm" itemprop="">@T["View"]</a>
+}

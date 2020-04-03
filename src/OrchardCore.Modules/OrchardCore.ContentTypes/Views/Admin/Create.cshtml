@@ -1,0 +1,49 @@
+@model CreateTypeViewModel
+
+<h1>@RenderTitleSegments(T["New Content Type"])</h1>
+
+<form asp-action="Create">
+    @Html.ValidationSummary()
+
+    <fieldset class="form-group">
+        <label asp-for="DisplayName">@T["Display Name"]</label>
+        <input asp-for="DisplayName" class="form-control w-md-25" autofocus />
+        <span class="hint">@T["Name of the type as it will be displayed on screens."]</span>
+    </fieldset>
+
+    <fieldset class="form-group">
+        <label asp-for="Name">@T["Technical Name"]</label>
+        <input asp-for="Name" class="form-control w-md-25" />
+        <span class="hint">@T["Technical name of the type."]</span>
+    </fieldset>
+
+    <fieldset class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Create"]</button>
+    </fieldset>
+</form>
+
+<script at="Foot" type="text/javascript">
+//<![CDATA[
+    $(function(){
+        var $name = $("#@Html.IdFor(m => m.Name)");
+        var $displayName = $("#@Html.IdFor(m => m.DisplayName)");
+
+        var nameAltered;
+        $name.keypress(function() {
+            nameAltered = true;
+        });
+
+        var compute = function() {
+            // stop processing automatically if altered by the user
+            if(nameAltered) {
+                return true;
+            }
+
+            $name.val(getTechnicalName($displayName.val()));
+        };
+
+        $displayName.keyup(compute);
+        $displayName.blur(compute);
+    })
+//]]>
+</script>
