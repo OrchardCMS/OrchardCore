@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Records;
@@ -55,13 +54,13 @@ namespace OrchardCore.Taxonomies.Drivers
             return Task.FromResult<IDisplayResult>(null);
         }
 
-        private async Task<IEnumerable<ContentItem>> QueryTermItemsAsync(TermPart listPart, PagerSlim pager)
+        private async Task<IEnumerable<ContentItem>> QueryTermItemsAsync(TermPart termPart, PagerSlim pager)
         {
             if (pager.Before != null)
             {
                 var beforeValue = new DateTime(long.Parse(pager.Before));
                 var query = _session.Query<ContentItem>()
-                    .With<TaxonomyIndex>(x => x.TermContentItemId == listPart.ContentItem.ContentItemId)
+                    .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(beforeValue, null))
                     .OrderBy(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
@@ -91,7 +90,7 @@ namespace OrchardCore.Taxonomies.Drivers
             {
                 var afterValue = new DateTime(long.Parse(pager.After));
                 var query = _session.Query<ContentItem>()
-                    .With<TaxonomyIndex>(x => x.TermContentItemId == listPart.ContentItem.ContentItemId)
+                    .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(null, afterValue))
                     .OrderByDescending(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
@@ -118,7 +117,7 @@ namespace OrchardCore.Taxonomies.Drivers
             else
             {
                 var query = _session.Query<ContentItem>()
-                    .With<TaxonomyIndex>(x => x.TermContentItemId == listPart.ContentItem.ContentItemId)
+                    .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(null, null))
                     .OrderByDescending(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
