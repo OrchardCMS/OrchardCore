@@ -455,13 +455,13 @@ namespace OrchardCore.ContentManagement
                 // Query for versions that may be evicted.
                 var publishedLatestVersions = versions.Where(x => x.Latest && x.Published);
                 var reducedContentItems = batchedContentItems.Except(publishedLatestVersions);
-                var possibleEvictionIds = reducedContentItems.Select(x => x.ContentItemId);
+                var evictionIds = reducedContentItems.Select(x => x.ContentItemId);
 
-                var possibleEvictionVersions = await _session.Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId.IsIn(possibleEvictionIds) && (x.Latest || x.Published))
+                var evictionVersions = await _session.Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId.IsIn(evictionIds) && (x.Latest || x.Published))
                     .ListAsync();
 
-                foreach (var version in possibleEvictionVersions)
+                foreach (var version in evictionVersions)
                 {
                     await LoadAsync(version);
                 }
@@ -477,7 +477,7 @@ namespace OrchardCore.ContentManagement
                     if (originalVersion == null)
                     {
                         // The version does not exist in the current database.
-                        var result = await CreateContentItemVersionAsync(importingItem, possibleEvictionVersions.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase)));
+                        var result = await CreateContentItemVersionAsync(importingItem, evictionVersions.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase)));
                         if (!result.Succeeded)
                         {
                             if (_logger.IsEnabled(LogLevel.Error))
@@ -504,7 +504,7 @@ namespace OrchardCore.ContentManagement
                             continue;
                         }
 
-                        var result = await UpdateContentItemVersionAsync(originalVersion, importingItem, possibleEvictionVersions.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase)));
+                        var result = await UpdateContentItemVersionAsync(originalVersion, importingItem, evictionVersions.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase)));
                         if (!result.Succeeded)
                         {
                             if (_logger.IsEnabled(LogLevel.Error))
