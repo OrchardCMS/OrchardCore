@@ -55,6 +55,12 @@ namespace OrchardCore.ContentManagement
         Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion);
 
         /// <summary>
+        /// Imports content items.
+        /// </summary>
+        /// <param name="contentItems"></param>
+        Task ImportAsync(IEnumerable<ContentItem> contentItems);
+
+        /// <summary>
         /// Gets the published content item with the specified id
         /// </summary>
         /// <param name="id">The content item id to load</param>

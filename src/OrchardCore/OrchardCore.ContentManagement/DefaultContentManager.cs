@@ -19,6 +19,8 @@ namespace OrchardCore.ContentManagement
 {
     public class DefaultContentManager : IContentManager
     {
+        private const int _importBatchSize = 500;
+
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly ILogger _logger;
@@ -417,211 +419,108 @@ namespace OrchardCore.ContentManagement
             return context.ContentValidateResult;
         }
 
-        public async Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem)
+        public Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem)
         {
-            // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
-            contentItem.Id = 0;
-
-            // Maintain modified and published dates as these will be reset by the Create Handlers
-            var modifiedUtc = contentItem.ModifiedUtc;
-            var publishedUtc = contentItem.PublishedUtc;
-            var owner = contentItem.Owner;
-            var author = contentItem.Author;
-
-            if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
-            {
-                contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
-            }
-
-            // Remove previous published or latest items or they will continue to be listed as published or latest.
-            // When importing a new draft the existing latest must be set to false. The creating version wins.
-            if (contentItem.Latest && !contentItem.Published)
-            {
-                var latestVersion = await _session.Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId == contentItem.ContentItemId && x.Latest)
-                    .FirstOrDefaultAsync();
-
-                if (latestVersion != null)
-                {
-                    var removeContext = new RemoveContentContext(latestVersion);
-
-                    await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
-                    latestVersion.Latest = false;
-                    _session.Save(latestVersion);
-                    await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), removeContext, _logger);
-                }
-            }
-            else if (contentItem.Published)
-            {
-                // When importing a published item existing drafts and existing published must be removed.
-                // Otherwise an existing draft would become an orphan and if published would overwrite
-                // the imported (which we assume is the version that wins) content.
-                await RemoveAsync(contentItem);
-            }
-            // When neither imported or latest the operation will create a database record
-            // which will be part of the content item archive.
-
-            // Invoked create handlers.
-            var context = new CreateContentContext(contentItem);
-            await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
-            await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
-
-            // The content item should be placed in the session store so that further calls
-            // to ContentManager.Get by a scoped index provider will resolve the imported item correctly.
-            _session.Save(contentItem);
-            _contentManagerSession.Store(contentItem);
-
-            await UpdateAsync(contentItem);
-
-            var result = await ValidateAsync(contentItem);
-            if (!result.Succeeded)
-            {
-                return result;
-            }
-
-            if (contentItem.Published)
-            {
-                // Invoke published handlers to add information to persistent stores
-                var publishContext = new PublishContentContext(contentItem, null);
-
-                await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), publishContext, _logger);
-                await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
-            }
-
-            // Restore values that may have been altered by handlers.
-            if (modifiedUtc.HasValue)
-            {
-                contentItem.ModifiedUtc = modifiedUtc;
-            }
-            if (publishedUtc.HasValue)
-            {
-                contentItem.PublishedUtc = publishedUtc;
-            }
-
-            // There is a risk here that the owner or author does not exist in the importing system.
-            // We check that at least a value has been supplied, if not the owner property and author
-            // property would be left as the user who has run this import.
-            if (!String.IsNullOrEmpty(owner))
-            {
-                contentItem.Owner = owner;
-            }
-            if (!String.IsNullOrEmpty(author))
-            {
-                contentItem.Author = author;
-            }
-
-            // Re-enlist content item here in case of session queries.
-            _session.Save(contentItem);
-
-            return result;
+            return CreateContentItemVersionAsync(contentItem, null);
         }
 
-        public async Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion)
+        public Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion)
         {
-            // Replaces the id to force the current item to be updated
-            updatingVersion.Id = updatedVersion.Id;
+            return UpdateContentItemVersionAsync(updatedVersion, updatedVersion);
+        }
 
-            var modifiedUtc = updatedVersion.ModifiedUtc;
-            var publishedUtc = updatedVersion.PublishedUtc;
+        public async Task ImportAsync(IEnumerable<ContentItem> contentItems)
+        {
+            var skip = 0;
+            var take = _importBatchSize;
 
-            // Remove previous published or draft items if necesary or they will continue to be listed as published or draft.
-            var discardLatest = false;
-            var removePublished = false;
+            var batchedContentItems = contentItems.Skip(skip).Take(take);
 
-            var importingLatest = updatedVersion.Latest;
-            var existingLatest = updatingVersion.Latest;
-
-            // If latest values do not match and importing latest is true then we must find and evict the previous latest
-            // This is when there is a draft in the system
-            if (importingLatest != existingLatest && importingLatest == true)
+            while (batchedContentItems.Any())
             {
-                discardLatest = true;
-            }
+                // Preload all the versions for this batch from the database.
+                var versionIds = batchedContentItems
+                    .Where(x => !String.IsNullOrEmpty(x.ContentItemVersionId))
+                    .Select(x => x.ContentItemVersionId);
 
-            var importingPublished = updatedVersion.Published;
-            var existingPublished = updatingVersion.Published;
+                var versions = await _session
+                    .Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(versionIds))
+                    .ListAsync();
 
-            // If published values do not match and importing published is true then we must find and evict the previous published
-            // This is when the existing content item version is not published, but the importing version is set to published.
-            // For this to occur there must have been a draft made, and the mutation to published is being made on the draft.
-            if (importingPublished != existingPublished && importingPublished == true)
-            {
-                removePublished = true;
-            }
-
-            if (discardLatest && removePublished)
-            {
-                await RemoveAsync(updatingVersion);
-            }
-            else if (discardLatest)
-            {
-                var latestVersion = await _session.Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId == updatingVersion.ContentItemId && x.Latest)
-                    .FirstOrDefaultAsync();
-
-                if (latestVersion != null)
+                foreach (var version in versions)
                 {
-                    var removeContext = new RemoveContentContext(latestVersion);
-
-                    await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
-                    latestVersion.Latest = false;
-                    _session.Save(latestVersion);
-                    await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), removeContext, _logger);
+                    await LoadAsync(version);
                 }
-            }
-            else if (removePublished)
-            {
-                var publishedVersion = await _session.Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId == updatingVersion.ContentItemId && x.Published)
-                    .FirstOrDefaultAsync();
 
-                if (publishedVersion != null)
+                // Query for versions that may be evicted.
+                var publishedLatestVersions = versions.Where(x => x.Latest && x.Published);
+                var reducedContentItems = batchedContentItems.Except(publishedLatestVersions);
+                var possibleEvictionIds = reducedContentItems.Select(x => x.ContentItemId);
+
+                var possibleEvictionVersions = await _session.Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId.IsIn(possibleEvictionIds) && (x.Latest || x.Published))
+                    .ListAsync();
+
+                foreach (var version in possibleEvictionVersions)
                 {
-                    var removeContext = new RemoveContentContext(publishedVersion);
-
-                    await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
-                    publishedVersion.Published = false;
-                    publishedVersion.Latest = false;
-                    _session.Save(publishedVersion);
-                    await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), removeContext, _logger);
+                    await LoadAsync(version);
                 }
-            }
 
-            updatingVersion.Merge(updatedVersion);
-            updatingVersion.Latest = importingLatest;
-            updatingVersion.Published = importingPublished;
-
-            await UpdateAsync(updatingVersion);
-            var result = await ValidateAsync(updatingVersion);
-
-            // Session is cancelled now so previous updates to versions are cancelled also.
-            if (!result.Succeeded)
-            {
-                return result;
-            }
-
-            if (importingPublished)
-            {
-                // Invoke published handlers to add information to persistent stores
-                var publishContext = new PublishContentContext(updatedVersion, null);
-
-                await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), publishContext, _logger);
-                await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
-
-                // Restore values that may have been altered by handlers.
-                if (modifiedUtc.HasValue)
+                foreach (var importingItem in batchedContentItems)
                 {
-                    updatedVersion.ModifiedUtc = modifiedUtc;
+                    ContentItem originalVersion = null;
+                    if (!String.IsNullOrEmpty(importingItem.ContentItemVersionId))
+                    {
+                        originalVersion = versions.FirstOrDefault(x => String.Equals(x.ContentItemVersionId, importingItem.ContentItemVersionId, StringComparison.OrdinalIgnoreCase));
+                    }
+
+                    if (originalVersion == null)
+                    {
+                        // The version does not exist in the current database.
+                        var result = await CreateContentItemVersionAsync(importingItem, possibleEvictionVersions.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase)));
+                        if (!result.Succeeded)
+                        {
+                            if (_logger.IsEnabled(LogLevel.Error))
+                            {
+                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem?.ContentItemVersionId, string.Join(',', result.Errors));
+                            }
+
+                            throw new Exception(string.Join(',', result.Errors));
+                        }
+                    }
+                    else
+                    {
+                        // The version exists in the database.
+                        // We compare the two versions and skip importing it if they are the same.
+                        // We do this to prevent unnecessary sql updates, and because UpdateContentItemVersionAsync
+                        // will remove drafts of updated items to prevent orphans.
+                        // So it is important to only import changed items.
+                        var jImporting = JObject.FromObject(importingItem);
+                        var jOriginal = JObject.FromObject(originalVersion);
+
+                        if (JToken.DeepEquals(jImporting, jOriginal))
+                        {
+                            _logger.LogInformation("Importing '{ContentItemVersionId}' skipped as it is unchanged");
+                            continue;
+                        }
+
+                        var result = await UpdateContentItemVersionAsync(originalVersion, importingItem, possibleEvictionVersions.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase)));
+                        if (!result.Succeeded)
+                        {
+                            if (_logger.IsEnabled(LogLevel.Error))
+                            {
+                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem.ContentItemVersionId, string.Join(',', result.Errors));
+                            }
+
+                            throw new Exception(string.Join(',', result.Errors));
+                        }
+                    }
                 }
-                if (publishedUtc.HasValue)
-                {
-                    updatedVersion.PublishedUtc = publishedUtc;
-                }
+
+                skip += _importBatchSize;
+                take += _importBatchSize;
+                batchedContentItems = batchedContentItems.Skip(skip).Take(take);
             }
-
-            _session.Save(updatingVersion);
-
-            return result;
         }
 
         public async Task UpdateAsync(ContentItem contentItem)
@@ -713,6 +612,261 @@ namespace OrchardCore.ContentManagement
 
             _session.Save(context.CloneContentItem);
             return context.CloneContentItem;
+        }
+
+
+        private async Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions = null)
+        {
+            // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
+            contentItem.Id = 0;
+
+            // Maintain modified and published dates as these will be reset by the Create Handlers
+            var modifiedUtc = contentItem.ModifiedUtc;
+            var publishedUtc = contentItem.PublishedUtc;
+            var owner = contentItem.Owner;
+            var author = contentItem.Author;
+
+            if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
+            {
+                contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
+            }
+
+            // Remove previous published or latest items or they will continue to be listed as published or latest.
+            // When importing a new draft the existing latest must be set to false. The creating version wins.
+            if (contentItem.Latest && !contentItem.Published)
+            {
+                await RemoveLatestVersionAsync(contentItem, evictionVersions);
+            }
+            else if (contentItem.Published)
+            {
+                // When importing a published item existing drafts and existing published must be removed.
+                // Otherwise an existing draft would become an orphan and if published would overwrite
+                // the imported (which we assume is the version that wins) content.
+                await RemoveVersionsAsync(contentItem, evictionVersions);
+            }
+            // When neither imported or latest the operation will create a database record
+            // which will be part of the content item archive.
+
+            // Invoked create handlers.
+            var context = new CreateContentContext(contentItem);
+            await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
+            await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+
+            // The content item should be placed in the session store so that further calls
+            // to ContentManager.Get by a scoped index provider will resolve the imported item correctly.
+            _session.Save(contentItem);
+            _contentManagerSession.Store(contentItem);
+
+            await UpdateAsync(contentItem);
+
+            var result = await ValidateAsync(contentItem);
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+
+            if (contentItem.Published)
+            {
+                // Invoke published handlers to add information to persistent stores
+                var publishContext = new PublishContentContext(contentItem, null);
+
+                await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), publishContext, _logger);
+                await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
+            }
+
+            // Restore values that may have been altered by handlers.
+            if (modifiedUtc.HasValue)
+            {
+                contentItem.ModifiedUtc = modifiedUtc;
+            }
+            if (publishedUtc.HasValue)
+            {
+                contentItem.PublishedUtc = publishedUtc;
+            }
+
+            // There is a risk here that the owner or author does not exist in the importing system.
+            // We check that at least a value has been supplied, if not the owner property and author
+            // property would be left as the user who has run this import.
+            if (!String.IsNullOrEmpty(owner))
+            {
+                contentItem.Owner = owner;
+            }
+            if (!String.IsNullOrEmpty(author))
+            {
+                contentItem.Author = author;
+            }
+
+            // Re-enlist content item here in case of session queries.
+            _session.Save(contentItem);
+
+            return result;
+        }
+
+        private async Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion, IEnumerable<ContentItem> evictionVersions = null)
+        {
+            // Replaces the id to force the current item to be updated
+            updatingVersion.Id = updatedVersion.Id;
+
+            var modifiedUtc = updatedVersion.ModifiedUtc;
+            var publishedUtc = updatedVersion.PublishedUtc;
+
+            // Remove previous published or draft items if necesary or they will continue to be listed as published or draft.
+            var discardLatest = false;
+            var removePublished = false;
+
+            var importingLatest = updatedVersion.Latest;
+            var existingLatest = updatingVersion.Latest;
+
+            // If latest values do not match and importing latest is true then we must find and evict the previous latest
+            // This is when there is a draft in the system
+            if (importingLatest != existingLatest && importingLatest == true)
+            {
+                discardLatest = true;
+            }
+
+            var importingPublished = updatedVersion.Published;
+            var existingPublished = updatingVersion.Published;
+
+            // If published values do not match and importing published is true then we must find and evict the previous published
+            // This is when the existing content item version is not published, but the importing version is set to published.
+            // For this to occur there must have been a draft made, and the mutation to published is being made on the draft.
+            if (importingPublished != existingPublished && importingPublished == true)
+            {
+                removePublished = true;
+            }
+
+            if (discardLatest && removePublished)
+            {
+                await RemoveVersionsAsync(updatingVersion, evictionVersions);
+            }
+            else if (discardLatest)
+            {
+                await RemoveLatestVersionAsync(updatingVersion, evictionVersions);
+            }
+            else if (removePublished)
+            {
+                await RemovePublishedVersionAsync(updatingVersion, evictionVersions);
+            }
+
+            updatingVersion.Merge(updatedVersion);
+            updatingVersion.Latest = importingLatest;
+            updatingVersion.Published = importingPublished;
+
+            await UpdateAsync(updatingVersion);
+            var result = await ValidateAsync(updatingVersion);
+
+            // Session is cancelled now so previous updates to versions are cancelled also.
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+
+            if (importingPublished)
+            {
+                // Invoke published handlers to add information to persistent stores
+                var publishContext = new PublishContentContext(updatingVersion, null);
+
+                await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), publishContext, _logger);
+                await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
+
+                // Restore values that may have been altered by handlers.
+                if (modifiedUtc.HasValue)
+                {
+                    updatedVersion.ModifiedUtc = modifiedUtc;
+                }
+                if (publishedUtc.HasValue)
+                {
+                    updatedVersion.PublishedUtc = publishedUtc;
+                }
+            }
+
+            _session.Save(updatingVersion);
+
+            return result;
+        }
+
+        private async Task RemoveLatestVersionAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions)
+        {
+            ContentItem latestVersion;
+            if (evictionVersions == null)
+            {
+                latestVersion = await _session.Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId == contentItem.ContentItemId && x.Latest)
+                    .FirstOrDefaultAsync();
+            }
+            else
+            {
+                latestVersion = evictionVersions.FirstOrDefault(x => x.Latest && String.Equals(x.ContentItemId, contentItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (latestVersion != null)
+            {
+                var publishedVersion = evictionVersions.FirstOrDefault(x => x.Published && String.Equals(x.ContentItemId, contentItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+
+                var removeContext = new RemoveContentContext(contentItem, publishedVersion == null);
+
+                await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
+                latestVersion.Latest = false;
+                _session.Save(latestVersion);
+                await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), removeContext, _logger);
+            }
+        }
+
+        private async Task RemovePublishedVersionAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions)
+        {
+            ContentItem publishedVersion;
+            if (evictionVersions == null)
+            {
+                publishedVersion = await _session.Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId == contentItem.ContentItemId && x.Published)
+                    .FirstOrDefaultAsync();
+            }
+            else
+            {
+                publishedVersion = evictionVersions.FirstOrDefault(x => x.Published && String.Equals(x.ContentItemId, contentItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (publishedVersion != null)
+            {
+                var removeContext = new RemoveContentContext(contentItem, true);
+
+                await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
+                publishedVersion.Published = false;
+                _session.Save(publishedVersion);
+                await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), removeContext, _logger);
+            }
+        }
+
+        private async Task RemoveVersionsAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions)
+        {
+            IEnumerable<ContentItem> activeVersions;
+            if (evictionVersions != null)
+            {
+                activeVersions = await _session.Query<ContentItem, ContentItemIndex>()
+                    .Where(x =>
+                        x.ContentItemId == contentItem.ContentItemId &&
+                        (x.Published || x.Latest)).ListAsync();
+            }
+            else
+            {
+                activeVersions = evictionVersions.Where(x => (x.Latest || x.Published) && String.Equals(x.ContentItemId, contentItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (activeVersions.Any())
+            {
+                var removeContext = new RemoveContentContext(contentItem, true);
+
+                await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
+
+                foreach (var version in activeVersions)
+                {
+                    version.Published = false;
+                    version.Latest = false;
+                    _session.Save(version);
+                }
+
+                await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), removeContext, _logger);
+            }
         }
     }
 }
