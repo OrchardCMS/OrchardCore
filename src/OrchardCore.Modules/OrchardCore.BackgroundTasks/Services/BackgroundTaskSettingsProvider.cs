@@ -12,7 +12,7 @@ namespace OrchardCore.BackgroundTasks.Services
             _backgroundTaskManager = backgroundTaskManager;
         }
 
-        public IChangeToken ChangeToken => AlwaysHasChangedToken.Singleton;
+        public IChangeToken ChangeToken => _backgroundTaskManager.ChangeToken;
 
         public async Task<BackgroundTaskSettings> GetSettingsAsync(IBackgroundTask task)
         {

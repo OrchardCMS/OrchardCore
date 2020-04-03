@@ -30,7 +30,7 @@ namespace OrchardCore.Environment.Cache
 
         public void SignalToken(string key)
         {
-            if (_changeTokens.TryRemove(key, out ChangeTokenInfo changeTokenInfo))
+            if (_changeTokens.TryRemove(key, out var changeTokenInfo))
             {
                 changeTokenInfo.TokenSource.Cancel();
             }
