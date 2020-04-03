@@ -27,6 +27,9 @@ namespace OrchardCore.BackgroundTasks.Services
             await _documentManager.UpdateAsync(document);
         }
 
+        /// <summary>
+        /// Updates the store with the provided background task settings and then updates the cache.
+        /// </summary>
         public async Task UpdateAsync(string name, BackgroundTaskSettings settings)
         {
             var document = await LoadDocumentAsync();
