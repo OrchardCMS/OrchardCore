@@ -796,12 +796,12 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                latestVersion = evictionVersions.FirstOrDefault(x => x.Latest && String.Equals(x.ContentItemId, contentItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+                latestVersion = evictionVersions.FirstOrDefault(x => x.Latest);
             }
 
             if (latestVersion != null)
             {
-                var publishedVersion = evictionVersions.FirstOrDefault(x => x.Published && String.Equals(x.ContentItemId, contentItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+                var publishedVersion = evictionVersions.FirstOrDefault(x => x.Published);
 
                 var removeContext = new RemoveContentContext(contentItem, publishedVersion == null);
 
@@ -823,7 +823,7 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                publishedVersion = evictionVersions.FirstOrDefault(x => x.Published && String.Equals(x.ContentItemId, contentItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+                publishedVersion = evictionVersions.FirstOrDefault(x => x.Published);
             }
 
             if (publishedVersion != null)
@@ -849,7 +849,7 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                activeVersions = evictionVersions.Where(x => (x.Latest || x.Published) && String.Equals(x.ContentItemId, contentItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+                activeVersions = evictionVersions.Where(x => x.Latest || x.Published);
             }
 
             if (activeVersions.Any())
