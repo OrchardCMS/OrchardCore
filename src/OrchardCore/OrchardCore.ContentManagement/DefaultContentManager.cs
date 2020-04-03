@@ -614,7 +614,6 @@ namespace OrchardCore.ContentManagement
             return context.CloneContentItem;
         }
 
-
         private async Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions = null)
         {
             // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
