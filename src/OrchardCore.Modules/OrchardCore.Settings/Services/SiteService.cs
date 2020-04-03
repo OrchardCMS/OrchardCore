@@ -17,7 +17,7 @@ namespace OrchardCore.Settings.Services
         public SiteService(IClock clock) => _clock = clock;
 
         /// <summary>
-        /// Loads the site settings document from the store (or create a new one) for updating and that should not be cached.
+        /// Loads the site settings from the store for updating and that should not be cached.
         /// </summary>
         public async Task<ISite> LoadSiteSettingsAsync()
         {
@@ -26,7 +26,7 @@ namespace OrchardCore.Settings.Services
         }
 
         /// <summary>
-        /// Gets the site settings document from the cache (or create a new one) for sharing and that should not be updated.
+        /// Gets the site settings from the cache for sharing and that should not be updated.
         /// </summary>
         public async Task<ISite> GetSiteSettingsAsync()
         {
@@ -35,7 +35,7 @@ namespace OrchardCore.Settings.Services
         }
 
         /// <summary>
-        /// Updates the store with the provided site settings document and then updates the cache.
+        /// Updates the store with the provided site settings and then updates the cache.
         /// </summary>
         public Task UpdateSiteSettingsAsync(ISite site) => DocumentManager.UpdateAsync(site as SiteSettings);
 
