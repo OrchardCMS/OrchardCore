@@ -57,12 +57,8 @@ namespace OrchardCore.Environment.Commands
 
                 return CommandReturnCodes.Ok;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                if (ex.IsFatal())
-                {
-                    throw;
-                }
                 if (ex is TargetInvocationException &&
                     ex.InnerException != null)
                 {
