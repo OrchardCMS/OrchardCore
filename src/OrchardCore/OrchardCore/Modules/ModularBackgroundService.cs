@@ -78,9 +78,9 @@ namespace OrchardCore.Modules
                     await WaitAsync(pollingDelay, stoppingToken);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                Logger.LogError(e, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
+                Logger.LogError(ex, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
             }
         }
 
@@ -128,9 +128,9 @@ namespace OrchardCore.Modules
 
                             Logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
-                        catch (Exception e)
+                        catch (Exception ex) when (!ex.IsFatal())
                         {
-                            Logger.LogError(e, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            Logger.LogError(ex, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
                     });
                 }
@@ -197,9 +197,9 @@ namespace OrchardCore.Modules
                                 settings = await settingsProvider.GetSettingsAsync(task);
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception ex) when (!ex.IsFatal())
                         {
-                            Logger.LogError(e, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            Logger.LogError(ex, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
 
                         settings = settings ?? task.GetDefaultSettings();
