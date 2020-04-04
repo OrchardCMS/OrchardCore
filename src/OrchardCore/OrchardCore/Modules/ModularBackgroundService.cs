@@ -19,8 +19,8 @@ namespace OrchardCore.Modules
 {
     internal class ModularBackgroundService : BackgroundService
     {
-        private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
-        private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan PollingTime = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
 
         private readonly ConcurrentDictionary<string, BackgroundTaskScheduler> _schedulers =
             new ConcurrentDictionary<string, BackgroundTaskScheduler>();
@@ -202,7 +202,7 @@ namespace OrchardCore.Modules
                             Logger.LogError(ex, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
 
-                        settings = settings ?? task.GetDefaultSettings();
+                        settings ??= task.GetDefaultSettings();
 
                         if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule))
                         {
