@@ -41,9 +41,6 @@ namespace OrchardCore.BackgroundTasks.Services
             _signal.DeferredSignalToken(ChangeTokenKey);
         }
 
-        /// <summary>
-        /// Updates the store with the provided background task settings and then updates the cache.
-        /// </summary>
         public async Task UpdateAsync(string name, BackgroundTaskSettings settings)
         {
             var document = await LoadDocumentAsync();
