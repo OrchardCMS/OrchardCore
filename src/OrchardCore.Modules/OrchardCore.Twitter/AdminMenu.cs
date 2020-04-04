@@ -27,7 +27,7 @@ namespace OrchardCore.Twitter
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Twitter"], "18", settings => settings
+                        .Add(S["Twitter"], S["Twitter"], settings => settings
                         .AddClass("twitter").Id("twitter")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Twitter })
                             .Permission(Permissions.ManageTwitter)
@@ -57,9 +57,9 @@ namespace OrchardCore.Twitter
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder.Add(S["Security"], security => security
-                        .Add(S["Twitter"], "15", settings => settings
+                        .Add(S["Twitter"], S["Twitter"], settings => settings
                         .AddClass("twitter").Id("twitter")
-                        .Add(S["Sign in with Twitter"], "15", client => client
+                        .Add(S["Sign in with Twitter"], S["Sign in with Twitter"], client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Signin })
                             .Permission(Permissions.ManageTwitterSignin)
                             .LocalNav())
