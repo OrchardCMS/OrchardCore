@@ -86,3 +86,29 @@
         <span class="hint">@T["Determines whether scripts and stylesheets load in their debuggable or minified form."]</span>
     </div>
 </div>
+
+<div class="form-group" asp-validation-class-for="Meta">
+    <label asp-for="Meta">@T["Meta"]</label>
+    <input asp-for="Meta" class="form-control" />
+    <span asp-validation-for="Meta"></span>
+    <span class="hint">@T["The meta added in the head."]</span>
+</div>
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-mode-css" at="Foot"></script>
+<script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script at="Foot">
+    $(function () {
+        var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Meta)');
+        var editor = CodeMirror.fromTextArea(optionsTexArea, {
+            autoRefresh: true,
+            lineNumbers: false,
+            lineWrapping: true,
+            matchBrackets: true,
+            mode: { name: "htmlmixed" }
+        });
+    });
+</script>
