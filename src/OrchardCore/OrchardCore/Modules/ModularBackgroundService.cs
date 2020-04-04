@@ -47,7 +47,7 @@ namespace OrchardCore.Modules
         {
             stoppingToken.Register(() =>
             {
-                Logger.LogError("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
+                Logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
 
             while (GetRunningShells().Count() < 1)
