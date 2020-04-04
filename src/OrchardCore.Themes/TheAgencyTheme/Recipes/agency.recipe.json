@@ -957,7 +957,7 @@
           },
           "HtmlWidget": {
             "Content": {
-              "Html": "[file:text('Snippets/footer.liquid')]"
+              "Html": "[file:text('Snippets/footer.html')]"
             }
           }
         }
