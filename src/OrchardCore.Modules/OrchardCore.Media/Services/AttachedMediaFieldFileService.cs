@@ -54,7 +54,7 @@ namespace OrchardCore.Media.Services
         {
             if (items == null)
             {
-                throw new System.ArgumentNullException(nameof(items));
+                throw new ArgumentNullException(nameof(items));
             }
 
             await EnsureGlobalDirectoriesAsync();
