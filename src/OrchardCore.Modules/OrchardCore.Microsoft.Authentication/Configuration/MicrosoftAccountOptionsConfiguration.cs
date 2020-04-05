@@ -39,7 +39,9 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
 
             if (_microsoftAccountService.ValidateSettings(settings).Any())
+            {
                 return;
+            }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(MicrosoftAccountDefaults.AuthenticationScheme, builder =>

@@ -38,7 +38,9 @@ namespace OrchardCore.GitHub.Configuration
             }
 
             if (_githubAuthenticationService.ValidateSettings(settings).Any())
+            {
                 return;
+            }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(GitHubDefaults.AuthenticationScheme, builder =>

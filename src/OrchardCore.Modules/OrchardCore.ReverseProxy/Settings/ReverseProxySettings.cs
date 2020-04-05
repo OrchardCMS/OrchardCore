@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.HttpOverrides;
 
 namespace OrchardCore.ReverseProxy.Settings

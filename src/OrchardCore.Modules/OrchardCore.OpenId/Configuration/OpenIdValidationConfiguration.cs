@@ -36,7 +36,6 @@ namespace OrchardCore.OpenId.Configuration
             ILogger<OpenIdValidationConfiguration> logger,
             IOpenIdValidationService validationService,
             IRunningShellTable runningShellTable,
-            IServiceProvider serviceProvider,
             IShellHost shellHost,
             ShellSettings shellSettings)
         {
