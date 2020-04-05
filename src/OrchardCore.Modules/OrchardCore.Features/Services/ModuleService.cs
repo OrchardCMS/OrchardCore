@@ -15,7 +15,7 @@ namespace OrchardCore.Features.Services
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<ModuleService> H;
+        private readonly IHtmlLocalizer H;
 
         public ModuleService(
                 IExtensionManager extensionManager,

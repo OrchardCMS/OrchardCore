@@ -27,8 +27,8 @@ namespace OrchardCore.ContentTypes.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
-        private readonly IHtmlLocalizer<AdminController> H;
-        private readonly IStringLocalizer<AdminController> S;
+        private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 

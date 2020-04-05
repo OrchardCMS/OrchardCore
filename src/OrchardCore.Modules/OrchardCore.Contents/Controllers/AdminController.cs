@@ -39,8 +39,8 @@ namespace OrchardCore.Contents.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
-        private readonly IHtmlLocalizer<AdminController> H;
-        private readonly IStringLocalizer<AdminController> S;
+        private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly dynamic New;
         private readonly ILogger _logger;

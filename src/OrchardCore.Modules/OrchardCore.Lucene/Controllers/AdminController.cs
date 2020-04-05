@@ -45,8 +45,8 @@ namespace OrchardCore.Lucene.Controllers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly dynamic New;
-        private readonly IStringLocalizer<AdminController> S;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
 
         public AdminController(

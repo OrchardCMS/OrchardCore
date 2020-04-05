@@ -16,7 +16,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ISitemapCacheProvider _sitemapCacheProvider;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<SitemapCacheController> H;
+        private readonly IHtmlLocalizer H;
 
         public SitemapCacheController(
             IAuthorizationService authorizationService,

@@ -95,7 +95,6 @@ namespace OrchardCore.Tests.Workflows
             return new JavaScriptWorkflowScriptEvaluator(
                 scriptingManager,
                 workflowContextHandlers.Resolve(),
-                new Mock<IStringLocalizer<JavaScriptWorkflowScriptEvaluator>>().Object,
                 new Mock<ILogger<JavaScriptWorkflowScriptEvaluator>>().Object
             );
         }

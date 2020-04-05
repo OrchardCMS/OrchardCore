@@ -23,7 +23,7 @@ namespace OrchardCore.Features.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _shellSettings;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             IExtensionManager extensionManager,

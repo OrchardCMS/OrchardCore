@@ -16,7 +16,7 @@ namespace OrchardCore.Themes.Services
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly INotifier _notifier;
         private readonly ISiteThemeService _siteThemeService;
-        private readonly IHtmlLocalizer<ThemeService> H;
+        private readonly IHtmlLocalizer H;
 
         public ThemeService(
             IExtensionManager extensionManager,

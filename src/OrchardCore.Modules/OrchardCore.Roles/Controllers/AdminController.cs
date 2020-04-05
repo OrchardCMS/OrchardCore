@@ -28,7 +28,7 @@ namespace OrchardCore.Roles.Controllers
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IRoleService _roleService;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             IAuthorizationService authorizationService,
