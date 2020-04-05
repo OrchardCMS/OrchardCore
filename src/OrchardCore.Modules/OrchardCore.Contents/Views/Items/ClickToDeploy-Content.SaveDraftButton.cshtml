@@ -1,0 +1,38 @@
+@{
+    var returnUrl = Context.Request.Query["returnUrl"];
+    string submitValue = "submit.SaveAndContinue";
+}
+@if (String.IsNullOrWhiteSpace(returnUrl))
+{
+    submitValue = "submit.Save";
+    string contentItemId = Context.Request.RouteValues["contentItemId"]?.ToString();
+    if (!String.IsNullOrEmpty(contentItemId))
+    {
+        <div class="btn-group">
+            <button class="primaryAction btn btn-primary" type="submit" name="submit.Save" value="submit.Save">@T["Save Draft"]</button>
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">@T["Toggle Dropdown"]</span>
+            </button>
+            <div class="dropdown-menu">
+                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#modalClickToDeployTargets" data-submit-name="submit.Save" data-submit-value="@submitValue" data-latest="true">@T["and deploy"]</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <button class="primaryAction btn btn-primary" type="submit" name="submit.Save" value="submit.Save">@T["Save Draft"]</button>
+    }
+}
+else
+{
+    <div class="btn-group">
+        <button class="btn btn-primary" type="submit" name="submit.Save" value="submit.Save">@T["Save Draft"]</button>
+        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="sr-only">@T["Toggle Dropdown"]</span>
+        </button>
+        <div class="dropdown-menu">
+            <button class="dropdown-item" type="submit" name="submit.Save" value="submit.SaveAndContinue">@T["and continue"]</button>
+            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#modalClickToDeployTargets" data-submit-name="submit.Save" data-submit-value="@submitValue" data-latest="true">@T["and deploy"]</button>
+        </div>
+    </div>
+}

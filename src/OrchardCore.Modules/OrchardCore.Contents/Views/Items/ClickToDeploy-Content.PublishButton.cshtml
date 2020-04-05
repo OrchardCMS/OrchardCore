@@ -1,0 +1,41 @@
+@*@if (Authorizer.Authorize(Permissions.PublishContent, (IContent)Model.ContentItem)) {*@
+@{
+    var returnUrl = Context.Request.Query["returnUrl"];
+    string submitValue = "submit.PublishAndContinue";
+}
+@if (String.IsNullOrWhiteSpace(returnUrl))
+{
+    submitValue = "submit.Publish";
+    string contentItemId = Context.Request.RouteValues["contentItemId"]?.ToString();
+    if (!String.IsNullOrEmpty(contentItemId))
+    {
+        <div class="btn-group">
+            <button type="submit" name="submit.Publish" class="publish-button btn btn-success" value="submit.Publish">@T["Publish"]</button>
+            <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">@T["Toggle Dropdown"]</span>
+            </button>
+            <div class="dropdown-menu">
+                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#modalClickToDeployTargets" data-submit-name="submit.Publish" data-submit-value="@submitValue">@T["and deploy"]</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <button type="submit" name="submit.Publish" class="publish-button btn btn-success" value="submit.Publish">@T["Publish"]</button>
+    }
+}
+else
+{
+    <div class="btn-group">
+        <button class="publish-button btn btn-success" type="submit" name="submit.Publish" value="submit.Publish">@T["Publish"]</button>
+        <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="sr-only">@T["Toggle Dropdown"]</span>
+        </button>
+        <div class="dropdown-menu">
+            <button class="dropdown-item" type="submit" name="submit.Publish" value="submit.PublishAndContinue">@T["and continue"]</button>
+            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#modalClickToDeployTargets" data-submit-name="submit.Publish" data-submit-value="@submitValue">@T["and deploy"]</button>
+        </div>
+    </div>
+}
+
+@* } *@

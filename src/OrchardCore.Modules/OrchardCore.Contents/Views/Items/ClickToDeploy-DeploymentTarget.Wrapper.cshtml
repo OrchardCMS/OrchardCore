@@ -1,0 +1,8 @@
+@Model.Metadata.ChildContent
+
+@* Inject the modal window only once per page *@
+@if (!Context.Items.ContainsKey("ClickToDeploy_Modal__DeploymentTarget"))
+{
+    Context.Items["ClickToDeploy_Modal__DeploymentTarget"] = new object();
+    @await DisplayAsync(await New.ClickToDeploy_Modal__DeploymentTarget())
+}

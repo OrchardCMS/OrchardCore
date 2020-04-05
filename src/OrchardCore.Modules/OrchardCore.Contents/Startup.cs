@@ -229,6 +229,11 @@ namespace OrchardCore.Contents
             services.AddTransient<IDeploymentSource, ContentDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
+
+            services.AddTransient<IDeploymentSource, ClickToDeployContentDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ClickToDeployContentDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ClickToDeployContentDeploymentStepDriver>();
+            services.AddScoped<IShapeTableProvider, ClickToDeployContentShapes>();
         }
     }
 

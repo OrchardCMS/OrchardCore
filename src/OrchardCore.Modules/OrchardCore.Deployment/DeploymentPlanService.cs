@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.Deployment.Indexes;
 using YesSql;
 
-namespace OrchardCore.Deployment
+namespace OrchardCore.Deployment.Services
 {
-    public class DeploymentPlanService
+    public class DeploymentPlanService : IDeploymentPlanService
     {
         private readonly YesSql.ISession _session;
         private readonly IHttpContextAccessor _httpContextAccessor;
