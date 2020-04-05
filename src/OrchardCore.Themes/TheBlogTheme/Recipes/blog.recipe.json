@@ -746,7 +746,22 @@
               "Name": "Subtitle",
               "Settings": {
                 "ContentPartFieldSettings": {
-                  "DisplayName": "Subtitle"
+                  "DisplayName": "Subtitle",
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Banner Image",
+                  "Position": "0"
+                },
+                "MediaFieldSettings": {
+                  "Required": false,
+                  "Multiple": false
                 }
               }
             }
@@ -1129,6 +1144,11 @@
           "Article": {
             "Subtitle": {
               "Text": "This is what I do."
+            },
+            "Image": {
+              "Paths": [
+                "about-bg.jpg"
+              ]
             }
           }
         },
@@ -1157,6 +1177,10 @@
     {
       "name": "media",
       "Files": [
+        {
+          "TargetPath": "about-bg.jpg",
+          "SourcePath": "../wwwroot/img/about-bg.jpg"
+        },
         {
           "TargetPath": "home-bg.jpg",
           "SourcePath": "../wwwroot/img/home-bg.jpg"
