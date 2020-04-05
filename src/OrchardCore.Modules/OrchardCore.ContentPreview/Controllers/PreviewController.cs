@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentPreview.Models;
@@ -29,7 +28,6 @@ namespace OrchardCore.ContentPreview.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentManagerSession contentManagerSession,
-            ILogger<PreviewController> logger,
             IAuthorizationService authorizationService,
             IClock clock,
             IUpdateModelAccessor updateModelAccessor)
@@ -40,10 +38,7 @@ namespace OrchardCore.ContentPreview.Controllers
             _contentManager = contentManager;
             _contentManagerSession = contentManagerSession;
             _updateModelAccessor = updateModelAccessor;
-            Logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         public IActionResult Index()
         {

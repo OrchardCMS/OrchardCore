@@ -47,6 +47,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly dynamic New;
         private readonly IStringLocalizer<AdminController> S;
         private readonly IHtmlLocalizer<AdminController> H;
+        private readonly ILogger _logger;
 
         public AdminController(
             ISession session,
@@ -82,10 +83,8 @@ namespace OrchardCore.Lucene.Controllers
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; }
 
         public async Task<ActionResult> Index(AdminIndexViewModel model, PagerParameters pagerParameters)
         {
@@ -199,7 +198,7 @@ namespace OrchardCore.Lucene.Controllers
                 catch (Exception e)
                 {
                     _notifier.Error(H["An error occurred while creating the index"]);
-                    Logger.LogError(e, "An error occurred while creating an index");
+                    _logger.LogError(e, "An error occurred while creating an index");
                     return View(model);
                 }
 
@@ -216,7 +215,7 @@ namespace OrchardCore.Lucene.Controllers
                 catch (Exception e)
                 {
                     _notifier.Error(H["An error occurred while editing the index"]);
-                    Logger.LogError(e, "An error occurred while editing an index");
+                    _logger.LogError(e, "An error occurred while editing an index");
                     return View(model);
                 }
 
@@ -290,7 +289,7 @@ namespace OrchardCore.Lucene.Controllers
             catch (Exception e)
             {
                 _notifier.Error(H["An error occurred while deleting the index."]);
-                Logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
+                _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
             }
 
             return RedirectToAction("Index");
@@ -365,7 +364,7 @@ namespace OrchardCore.Lucene.Controllers
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "Error while executing query");
+                    _logger.LogError(e, "Error while executing query");
                     ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query : {0}", e.Message]);
                 }
 

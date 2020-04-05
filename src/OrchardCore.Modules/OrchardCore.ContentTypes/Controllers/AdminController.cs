@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -39,7 +38,6 @@ namespace OrchardCore.ContentTypes.Controllers
             IContentDefinitionManager contentDefinitionManager,
             IAuthorizationService authorizationService,
             ISession session,
-            ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             INotifier notifier,
@@ -53,12 +51,10 @@ namespace OrchardCore.ContentTypes.Controllers
             _contentDefinitionManager = contentDefinitionManager;
             _updateModelAccessor = updateModelAccessor;
 
-            Logger = logger;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
 
-        public ILogger Logger { get; }
         public Task<ActionResult> Index()
         {
             return List();

@@ -17,6 +17,7 @@ namespace OrchardCore.Contents.Indexing
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
         private readonly IEnumerable<IContentPartIndexHandler> _partIndexHandlers;
         private readonly IEnumerable<IContentFieldIndexHandler> _fieldIndexHandlers;
+        private readonly ILogger _logger;
 
         public ContentItemIndexCoordinator(
             IContentDefinitionManager contentDefinitionManager,
@@ -29,10 +30,8 @@ namespace OrchardCore.Contents.Indexing
             _contentPartFactory = contentPartFactory;
             _partIndexHandlers = partIndexHandlers;
             _fieldIndexHandlers = fieldIndexHandlers;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; }
 
         public async Task BuildIndexAsync(BuildIndexContext context)
         {
@@ -60,7 +59,7 @@ namespace OrchardCore.Contents.Indexing
 
                 await _partIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, context, typePartIndexSettings) =>
                     handler.BuildIndexAsync(part, contentTypePartDefinition, context, typePartIndexSettings),
-                        part, contentTypePartDefinition, context, typePartIndexSettings, Logger);
+                        part, contentTypePartDefinition, context, typePartIndexSettings, _logger);
 
                 foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                 {
@@ -73,7 +72,7 @@ namespace OrchardCore.Contents.Indexing
 
                     await _fieldIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings) =>
                         handler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings),
-                            part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings, Logger);
+                            part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings, _logger);
                 }
             }
 
