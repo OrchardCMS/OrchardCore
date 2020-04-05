@@ -17,7 +17,6 @@ using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
-using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -32,7 +31,6 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly IDataProtectionProvider _dataProtectorProvider;
         private readonly ISetupService _setupService;
         private readonly ShellSettings _currentShellSettings;
@@ -49,14 +47,12 @@ namespace OrchardCore.Tenants.Controllers
             IDataProtectionProvider dataProtectorProvider,
             ISetupService setupService,
             IClock clock,
-            IEnumerable<IRecipeHarvester> recipeHarvesters,
             IEmailAddressValidator emailAddressValidator,
             IStringLocalizer<AdminController> stringLocalizer)
         {
             _dataProtectorProvider = dataProtectorProvider;
             _setupService = setupService;
             _clock = clock;
-            _recipeHarvesters = recipeHarvesters;
             _shellHost = shellHost;
             _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;

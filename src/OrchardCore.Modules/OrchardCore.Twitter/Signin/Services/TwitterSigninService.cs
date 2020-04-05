@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Signin.Settings;
 
@@ -12,14 +11,11 @@ namespace OrchardCore.Twitter.Signin.Services
     {
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<TwitterSigninService> T;
-        private readonly ShellSettings _shellSettings;
 
         public TwitterSigninService(
             ISiteService siteService,
-            ShellSettings shellSettings,
             IStringLocalizer<TwitterSigninService> stringLocalizer)
         {
-            _shellSettings = shellSettings;
             _siteService = siteService;
             T = stringLocalizer;
         }
