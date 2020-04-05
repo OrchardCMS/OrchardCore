@@ -15,7 +15,6 @@ using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Routing;
 using YesSql;
@@ -26,7 +25,6 @@ namespace OrchardCore.ContentTypes.Controllers
     {
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ShellSettings _settings;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
@@ -39,7 +37,6 @@ namespace OrchardCore.ContentTypes.Controllers
             IContentDefinitionDisplayManager contentDefinitionDisplayManager,
             IContentDefinitionService contentDefinitionService,
             IContentDefinitionManager contentDefinitionManager,
-            ShellSettings settings,
             IAuthorizationService authorizationService,
             ISession session,
             ILogger<AdminController> logger,
@@ -54,7 +51,6 @@ namespace OrchardCore.ContentTypes.Controllers
             _authorizationService = authorizationService;
             _contentDefinitionService = contentDefinitionService;
             _contentDefinitionManager = contentDefinitionManager;
-            _settings = settings;
             _updateModelAccessor = updateModelAccessor;
 
             Logger = logger;
