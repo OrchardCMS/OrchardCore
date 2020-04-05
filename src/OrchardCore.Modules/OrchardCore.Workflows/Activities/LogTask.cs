@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.Activities
     {
         private readonly ILogger _logger;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<LogTask> S;
+        private readonly IStringLocalizer S;
 
         public LogTask(ILogger<LogTask> logger, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<LogTask> localizer)
         {

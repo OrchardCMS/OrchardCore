@@ -23,7 +23,7 @@ namespace OrchardCore.Roles.Services
         private readonly ISessionHelper _sessionHelper;
         private readonly IScopedDistributedCache _scopedDistributedCache;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IStringLocalizer<RoleStore> S;
+        private readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public RoleStore(

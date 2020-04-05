@@ -25,7 +25,7 @@ namespace OrchardCore.Users.Controllers
         private readonly INotifier _notifier;
         private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer<RegistrationController> S;
+        private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
 
         public RegistrationController(

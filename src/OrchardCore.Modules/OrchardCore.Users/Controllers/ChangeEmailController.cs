@@ -19,7 +19,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<ChangeEmailController> S;
+        private readonly IStringLocalizer S;
 
         public ChangeEmailController(
             IUserService userService,

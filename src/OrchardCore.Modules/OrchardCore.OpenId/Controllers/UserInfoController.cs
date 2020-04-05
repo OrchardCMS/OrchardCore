@@ -17,7 +17,7 @@ namespace OrchardCore.OpenId.Controllers
     [OpenIdController, SkipStatusCodePages]
     public class UserInfoController : Controller
     {
-        private readonly IStringLocalizer<UserInfoController> S;
+        private readonly IStringLocalizer S;
 
         public UserInfoController(IStringLocalizer<UserInfoController> localizer)
         {

@@ -26,7 +26,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         private readonly ReCaptchaSettings _settings;
         private readonly ILogger _logger;
         private readonly ILocalizationService _localizationService;
-        private readonly IStringLocalizer<ReCaptchaTagHelper> S;
+        private readonly IStringLocalizer S;
 
         public ReCaptchaTagHelper(IOptions<ReCaptchaSettings> optionsAccessor, IResourceManager resourceManager, ILocalizationService localizationService, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaTagHelper> logger, IStringLocalizer<ReCaptchaTagHelper> localizer)
         {

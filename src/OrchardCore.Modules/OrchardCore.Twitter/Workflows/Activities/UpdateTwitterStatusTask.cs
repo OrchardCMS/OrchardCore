@@ -13,7 +13,7 @@ namespace OrchardCore.Twitter.Workflows.Activities
     {
         private readonly TwitterClient _twitterClient;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<UpdateTwitterStatusTask> S;
+        private readonly IStringLocalizer S;
 
         public UpdateTwitterStatusTask(
             TwitterClient twitterClient,

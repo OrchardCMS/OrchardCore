@@ -37,7 +37,7 @@ namespace OrchardCore.Lists.RemotePublishing
         private readonly IMembershipService _membershipService;
         private readonly IEnumerable<IMetaWeblogDriver> _metaWeblogDrivers;
         private readonly ISession _session;
-        private readonly IStringLocalizer<MetaWeblogHandler> S;
+        private readonly IStringLocalizer S;
 
         public MetaWeblogHandler(
             IContentManager contentManager,

@@ -40,7 +40,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer<WorkflowController> S;
+        private readonly IStringLocalizer S;
 
         public WorkflowController(
             ISiteService siteService,
