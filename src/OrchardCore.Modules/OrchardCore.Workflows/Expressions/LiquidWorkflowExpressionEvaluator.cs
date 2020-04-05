@@ -16,7 +16,7 @@ namespace OrchardCore.Workflows.Expressions
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IEnumerable<IWorkflowExecutionContextHandler> _workflowContextHandlers;
-        private readonly ILogger<LiquidWorkflowExpressionEvaluator> _logger;
+        private readonly ILogger _logger;
 
         public LiquidWorkflowExpressionEvaluator(
             ILiquidTemplateManager liquidTemplateManager,

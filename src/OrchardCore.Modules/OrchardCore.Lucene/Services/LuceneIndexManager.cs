@@ -29,7 +29,7 @@ namespace OrchardCore.Lucene
     public class LuceneIndexManager : IDisposable
     {
         private readonly IClock _clock;
-        private readonly ILogger<LuceneIndexManager> _logger;
+        private readonly ILogger _logger;
         private readonly string _rootPath;
         private bool _disposing;
         private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);

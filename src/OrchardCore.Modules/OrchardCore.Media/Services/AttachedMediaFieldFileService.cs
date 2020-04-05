@@ -19,7 +19,7 @@ namespace OrchardCore.Media.Services
     {
         private readonly IMediaFileStore _fileStore;
         private readonly IStringLocalizer<AttachedMediaFieldFileService> T;
-        private readonly ILogger<AttachedMediaFieldFileService> _logger;
+        private readonly ILogger _logger;
 
         public AttachedMediaFieldFileService(IMediaFileStore fileStore,
             IStringLocalizer<AttachedMediaFieldFileService> stringLocalizer,

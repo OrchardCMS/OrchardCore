@@ -15,7 +15,7 @@ namespace OrchardCore.Workflows.Evaluators
     {
         private readonly IScriptingManager _scriptingManager;
         private readonly IEnumerable<IWorkflowExecutionContextHandler> _workflowContextHandlers;
-        private readonly ILogger<JavaScriptWorkflowScriptEvaluator> _logger;
+        private readonly ILogger _logger;
 
         public JavaScriptWorkflowScriptEvaluator(
             IScriptingManager scriptingManager,

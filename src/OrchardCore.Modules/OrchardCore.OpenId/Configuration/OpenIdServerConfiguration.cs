@@ -31,7 +31,7 @@ namespace OrchardCore.OpenId.Configuration
         IConfigureNamedOptions<OpenIddictValidationOptions>,
         IConfigureNamedOptions<JwtBearerOptions>
     {
-        private readonly ILogger<OpenIdServerConfiguration> _logger;
+        private readonly ILogger _logger;
         private readonly IRunningShellTable _runningShellTable;
         private readonly ShellSettings _shellSettings;
         private readonly IOpenIdServerService _serverService;

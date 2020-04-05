@@ -18,7 +18,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
     {
         private readonly IMicrosoftAccountService _microsoftAccountService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<MicrosoftAccountOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public MicrosoftAccountOptionsConfiguration(
             IMicrosoftAccountService microsoftAccountService,

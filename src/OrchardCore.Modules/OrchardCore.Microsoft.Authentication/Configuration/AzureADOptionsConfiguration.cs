@@ -18,7 +18,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         IConfigureNamedOptions<AzureADOptions>
     {
         private readonly IAzureADService _azureADService;
-        private readonly ILogger<AzureADOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public AzureADOptionsConfiguration(
             IAzureADService loginService,

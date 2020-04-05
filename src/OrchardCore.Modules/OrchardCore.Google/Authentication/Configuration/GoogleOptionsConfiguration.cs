@@ -16,7 +16,7 @@ namespace OrchardCore.Google.Authentication.Configuration
     {
         private readonly GoogleAuthenticationService _googleAuthenticationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<GoogleOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public GoogleOptionsConfiguration(
             GoogleAuthenticationService googleAuthenticationService,

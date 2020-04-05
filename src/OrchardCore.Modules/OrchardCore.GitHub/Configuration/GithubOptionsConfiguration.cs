@@ -17,7 +17,7 @@ namespace OrchardCore.GitHub.Configuration
     {
         private readonly IGitHubAuthenticationService _githubAuthenticationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<GitHubOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public GitHubOptionsConfiguration(
             IGitHubAuthenticationService githubAuthenticationService,

@@ -20,7 +20,7 @@ namespace OrchardCore.Workflows.Services
         private readonly IWorkflowStore _workflowStore;
         private readonly IWorkflowIdGenerator _workflowIdGenerator;
         private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;
-        private readonly ILogger<WorkflowManager> _logger;
+        private readonly ILogger _logger;
         private readonly ILogger<MissingActivity> _missingActivityLogger;
         private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
         private readonly IClock _clock;

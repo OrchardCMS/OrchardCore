@@ -24,7 +24,7 @@ namespace OrchardCore.Setup.Controllers
         private readonly IShellHost _shellHost;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IClock _clock;
-        private readonly ILogger<SetupController> _logger;
+        private readonly ILogger _logger;
         private readonly IStringLocalizer S;
         private readonly IEmailAddressValidator _emailAddressValidator;
 
