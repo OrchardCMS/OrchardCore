@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -20,7 +19,6 @@ namespace OrchardCore.Workflows.Expressions
 
         public LiquidWorkflowExpressionEvaluator(
             ILiquidTemplateManager liquidTemplateManager,
-            IStringLocalizer<LiquidWorkflowExpressionEvaluator> localizer,
             IEnumerable<IWorkflowExecutionContextHandler> workflowContextHandlers,
             ILogger<LiquidWorkflowExpressionEvaluator> logger
         )
@@ -28,10 +26,7 @@ namespace OrchardCore.Workflows.Expressions
             _liquidTemplateManager = liquidTemplateManager;
             _workflowContextHandlers = workflowContextHandlers;
             _logger = logger;
-            T = localizer;
         }
-
-        private IStringLocalizer T { get; }
 
         public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext)
         {

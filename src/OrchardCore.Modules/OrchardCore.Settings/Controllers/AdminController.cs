@@ -16,6 +16,7 @@ namespace OrchardCore.Settings.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             ISiteService siteService,
@@ -32,8 +33,6 @@ namespace OrchardCore.Settings.Controllers
             _updateModelAccessor = updateModelAccessor;
             H = h;
         }
-
-        private IHtmlLocalizer H { get; set; }
 
         public async Task<IActionResult> Index(string groupId)
         {

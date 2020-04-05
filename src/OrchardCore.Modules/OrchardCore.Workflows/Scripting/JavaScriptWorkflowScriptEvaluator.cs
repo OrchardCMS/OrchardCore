@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
@@ -20,17 +19,13 @@ namespace OrchardCore.Workflows.Evaluators
         public JavaScriptWorkflowScriptEvaluator(
             IScriptingManager scriptingManager,
             IEnumerable<IWorkflowExecutionContextHandler> workflowContextHandlers,
-            IStringLocalizer<JavaScriptWorkflowScriptEvaluator> localizer,
             ILogger<JavaScriptWorkflowScriptEvaluator> logger
         )
         {
             _scriptingManager = scriptingManager;
             _workflowContextHandlers = workflowContextHandlers;
             _logger = logger;
-            T = localizer;
         }
-
-        private IStringLocalizer T { get; }
 
         public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, params IGlobalMethodProvider[] scopedMethodProviders)
         {
