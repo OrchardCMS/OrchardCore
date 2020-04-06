@@ -98,7 +98,8 @@
 
 <script at="Foot">
     function toggleWidgets(){
-        $('.toggleAll').toggleClass('collapsed');
+        $(this).find('i').toggleClass('fa-angle-double-up fa-angle-double-down');
+        $('.toggleAll').toggleClass('collapsed');        
         $('.widget.widget-editor.card').toggleClass('collapsed');
     }
 
