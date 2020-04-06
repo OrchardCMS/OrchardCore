@@ -9,6 +9,7 @@
     var hasDraft = contentItem.HasDraft();
     var features = await ShellFeaturesManager.GetEnabledFeaturesAsync();
     bool deploymentEnabled = false;
+    //TODO there must be a better way of doing this. Also Ordinal.IgnoreCase maybe? are they case sensitive, I think so.
     if (features.Any(x => x.Id == "OrchardCore.Deployment"))
     {
         deploymentEnabled = true;
