@@ -50,7 +50,19 @@
         <a asp-action="Clone" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Clone"]</a>
         @if (deploymentEnabled)
         {
-            <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-contentItemId="@contentItem.ContentItemId" >@T["Deploy"]</button>
+            if (hasDraft)
+            {
+                <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId" data-latest=@Boolean.TrueString>@T["Export Draft"]</button>
+                if (hasPublished)
+                {
+                    <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Export Published"]</button>
+                }
+            }
+            else
+            {
+                <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Export"]</button>
+            }
+
         }
     </div>
 </div>

@@ -52,7 +52,7 @@
                 $(function () {
                     $('#modalClickToDeployActionTargets').on('show.bs.modal', function (event) {
                         var button = $(event.relatedTarget) // Button that triggered the modal
-                        var contentItemId = button.data('contentItemId');
+                        var contentItemId = button.data('content-item-id');
                         var latest = button.data('latest');
 
                         $('.click-to-deploy').on('click', function () {
@@ -74,7 +74,7 @@
                                 }
                                 deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.ContentItemId\" + value=\"" + contentItemId + "\"/>"));
                                 if (latest) {
-                                    deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.Latest\" + value=\"True\"/>"));
+                                    deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.Latest\" + value=\"" + latest + "\"/>"));
                                 }
                                 $("body").append(deployForm);
                                 deployForm.submit();
