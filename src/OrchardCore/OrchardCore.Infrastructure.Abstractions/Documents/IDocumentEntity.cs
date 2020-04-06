@@ -9,6 +9,6 @@ namespace OrchardCore.Documents
     /// </summary>
     public interface IDocumentEntity : IDocument, IEntity, IMessagePackSerializationCallbackReceiver
     {
-        public string JsonProperties { get; set; }
+        string JsonProperties { get; set; }
     }
 }

@@ -5,6 +5,6 @@ namespace OrchardCore.Data.Documents
         /// <summary>
         /// The unique identifier of the document.
         /// </summary>
-        public string Identifier { get; set; }
+        string Identifier { get; set; }
     }
 }

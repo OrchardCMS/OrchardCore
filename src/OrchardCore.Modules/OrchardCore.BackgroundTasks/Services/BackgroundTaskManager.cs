@@ -37,7 +37,7 @@ namespace OrchardCore.BackgroundTasks.Services
             document.Settings.Remove(name);
             await _documentManager.UpdateAsync(document);
 
-            // Still uses a change token that is checked by the 'ModularBackgroundService'.
+            // Checked by the 'ModularBackgroundService'.
             _signal.DeferredSignalToken(ChangeTokenKey);
         }
 
@@ -47,7 +47,7 @@ namespace OrchardCore.BackgroundTasks.Services
             document.Settings[name] = settings;
             await _documentManager.UpdateAsync(document);
 
-            // Still uses a change token that is checked by the 'ModularBackgroundService'.
+            // Checked by the 'ModularBackgroundService'.
             _signal.DeferredSignalToken(ChangeTokenKey);
         }
     }

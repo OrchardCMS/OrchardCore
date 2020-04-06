@@ -31,7 +31,7 @@ namespace OrchardCore.Queries.Services
             existing.Queries.Remove(name);
             await _documentManager.UpdateAsync(existing);
 
-            // Still uses a change token that is checked by the 'SchemaService' used for 'GraphQL'.
+            // Checked by the GraphQL 'SchemaService'.
             _signal.DeferredSignalToken(ChangeTokenKey);
         }
 
@@ -71,7 +71,7 @@ namespace OrchardCore.Queries.Services
             existing.Queries[query.Name] = query;
             await _documentManager.UpdateAsync(existing);
 
-            // Still uses a change token that is checked by the 'SchemaService' used for 'GraphQL'.
+            // Checked by the GraphQL 'SchemaService'.
             _signal.DeferredSignalToken(ChangeTokenKey);
         }
 
