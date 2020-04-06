@@ -46,6 +46,22 @@ namespace OrchardCore.Contents.Deployment
                         }
                     }
                 });
+
+            builder.Describe("Contents_SummaryAdmin__Button__Actions")
+                .OnDisplaying(async displaying =>
+                {
+                    if (await _deploymentPlanService.DoesUserHavePermissionsAsync())
+                    {
+                        var deploymentPlans = await _deploymentPlanService.GetAllDeploymentPlansAsync();
+                        var clickToDeployPlan = deploymentPlans.FirstOrDefault(x => x.DeploymentSteps.Any(x => x.Name == nameof(ClickToDeployContentDeploymentStep)));
+
+                        if (clickToDeployPlan != null)
+                        {
+                            displaying.Shape.Metadata.Wrappers.Add("ClickToDeploy_Wrapper__ActionDeploymentTarget");
+                        }
+                    }
+                });
+
         }
     }
 }

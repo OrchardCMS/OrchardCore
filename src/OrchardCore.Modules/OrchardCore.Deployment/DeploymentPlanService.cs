@@ -13,6 +13,7 @@ namespace OrchardCore.Deployment.Services
         private readonly YesSql.ISession _session;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+        // TODO this would now need to be memory cached.
         private Dictionary<string, DeploymentPlan> _deploymentPlans;
 
         public DeploymentPlanService(

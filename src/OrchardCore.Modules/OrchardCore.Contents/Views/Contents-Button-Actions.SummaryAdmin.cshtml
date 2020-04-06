@@ -1,11 +1,18 @@
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata
 @inject IContentManager ContentManager
+@inject OrchardCore.Environment.Shell.IShellFeaturesManager ShellFeaturesManager;
 
 @{
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
     var hasDraft = contentItem.HasDraft();
+    var features = await ShellFeaturesManager.GetEnabledFeaturesAsync();
+    bool deploymentEnabled = false;
+    if (features.Any(x => x.Id == "OrchardCore.Deployment"))
+    {
+        deploymentEnabled = true;
+    }
 }
 
 <div class="btn-group">
@@ -40,5 +47,9 @@
         TODO: User permissions to display or not display.
         *@
         <a asp-action="Clone" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Clone"]</a>
+        @if (deploymentEnabled)
+        {
+            <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-contentItemId="@contentItem.ContentItemId" >@T["Deploy"]</button>
+        }
     </div>
 </div>
