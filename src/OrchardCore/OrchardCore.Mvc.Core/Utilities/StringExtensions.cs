@@ -408,7 +408,7 @@ namespace OrchardCore.Mvc.Utilities
 
         public static string ReplaceLastOccurrence(this string source, string find, string replace)
         {
-            int place = source.LastIndexOf(find);
+            var place = source.LastIndexOf(find, StringComparison.Ordinal);
             return source.Remove(place, find.Length).Insert(place, replace);
         }
 
