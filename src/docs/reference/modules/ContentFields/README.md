@@ -4,19 +4,26 @@ This module provides common content fields.
 
 ## Available Fields
 
-| Name | Properties | Shape Type | Shape Class |
-| --- | --- | --- | --- |
-| `BooleanField` | `Value (bool)` | `BooleanField` | `DisplayBooleanFieldViewModel` |
-| `ContentPickerField` | `ContentItemIds (string[])` | `ContentPickerField` | `DisplayContentPickerFieldViewModel` |
-| `LocalizationSetContentPickerField` | `LocalizationSets (string[])` | `LocalizationSetContentPickerField` | `DisplayLocalizationSetContentPickerFieldViewModel` |
-| `DateField` | `Value (DateTime?)` | `DateField` | `DisplayDateFieldViewModel` |
-| `DateTimeField` | `Value (DateTime?)` | `DateTimeField` | `DisplayDateTimeFieldViewModel` |
-| `HtmlField` | `Html (string)` | `HtmlField` | `DisplayHtmlFieldViewModel` |
-| `LinkField` | `Url (string), Text (string)` | `LinkField` | `DisplayLinkFieldViewModel` |
-| `NumericField` | `Value (decimal?)` | `NumericField` | `DisplayNumericFieldViewModel` |
-| `TextField` | `Text (string)` | `TextField` | `DisplayTextFieldViewModel` |
-| `TimeField` | `Value (TimeSpan?)` | `TimeField` | `DisplayTimeFieldViewModel` |
-| `YoutubeField` | `EmbeddedAddress (string), RawAddress (string)` | `YoutubeField` | `YoutubeFieldDisplayViewModel` |
+| Name | Properties |
+| --- | --- |
+| `BooleanField` | `Value (bool)` |
+| `ContentPickerField` | `ContentItemIds (string[])` |
+| `DateField` | `Value (DateTime?)` |
+| `DateTimeField` | `Value (DateTime?)` |
+| `HtmlField` | `Html (string)` | `HtmlField` |
+| `LinkField` | `Url (string), Text (string)` |
+| `LocalizationSetContentPickerField` | `LocalizationSets (string[])` |
+| `MarkdownField` | `Markdown (string)` |
+| `MediaField` | `Paths (string[])` |
+| `NumericField` | `Value (decimal?)` |
+| `TaxonomyField` | `TaxonomyContentItemId (string), TaxonomyContentItemId (string[])` |
+| `TextField` | `Text (string)` |
+| `TimeField` | `Value (TimeSpan?)` |
+| `YoutubeField` | `EmbeddedAddress (string), RawAddress (string)` |
+
+!!! note
+    Each field is rendered by a corresponding `Shape Type` that is using its own a Display view model.  
+    Ex: `BooleanField` is rendered by a shape type called `BooleanField` with a `DisplayBooleanFieldViewModel`.
 
 ## Usage
 
