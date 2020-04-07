@@ -13,8 +13,10 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
+using OrchardCore.Setup.Events;
 using OrchardCore.Tenants.Controllers;
 using OrchardCore.Tenants.Services;
+using OrchardCore.Tenants.Workflows.Handlers;
 
 namespace OrchardCore.Tenants
 {
@@ -78,6 +80,8 @@ namespace OrchardCore.Tenants
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<ISetupEventHandler, SetupEventHandler>();
+
             services.AddSingleton<ITenantFileProvider>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();

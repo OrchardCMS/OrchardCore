@@ -52,8 +52,8 @@ namespace OrchardCore.Setup.Services
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             ILogger<SetupService> logger,
             IStringLocalizer<SetupService> stringLocalizer,
-            IHostApplicationLifetime applicationLifetime
-            )
+            IHostApplicationLifetime applicationLifetime,
+            ISetupEventHandler handler)
         {
             _shellHost = shellHost;
             _applicationName = hostingEnvironment.ApplicationName;
@@ -62,7 +62,10 @@ namespace OrchardCore.Setup.Services
             _logger = logger;
             S = stringLocalizer;
             _applicationLifetime = applicationLifetime;
+            Handler = handler;
         }
+
+        public ISetupEventHandler Handler { get; private set; }
 
         /// <inheridoc />
         public async Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync()
@@ -88,6 +91,8 @@ namespace OrchardCore.Setup.Services
                 {
                     context.ShellSettings.State = initialState;
                 }
+                
+                await Handler.Setup(context.SiteName, context.AdminUsername, context.AdminEmail, context.AdminPassword, context.DatabaseProvider, context.DatabaseConnectionString, context.DatabaseTablePrefix, context.SiteTimeZone, (e, m) => _logger.LogError(m));
 
                 return executionId;
             }

@@ -1,0 +1,5 @@
+@model OrchardCore.Tenants.Workflows.ViewModels.TenantEventViewModel<OrchardCore.Tenants.Workflows.Activities.TenantSetupEvent>
+
+<header>
+    <h4><i class="fa fa-check"></i>@Model.Activity.GetTitleOrDefault(() => T["Tenant Setup"])</h4>
+</header>

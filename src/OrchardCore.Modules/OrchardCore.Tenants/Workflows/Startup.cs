@@ -15,6 +15,7 @@ namespace OrchardCore.Tenants.Workflows
             services.AddActivity<EnableTenantTask, EnableTenantTaskDisplay>();
             services.AddActivity<CreateTenantTask, CreateTenantTaskDisplay>();
             services.AddActivity<SetupTenantTask, SetupTenantTaskDisplay>();
+            services.AddActivity<TenantSetupEvent, TenantSetupEventDisplay>();
         }
     }
 }
