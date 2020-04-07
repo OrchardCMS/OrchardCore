@@ -23,7 +23,7 @@ namespace OrchardCore.Google
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Google"], "16", settings => settings
+                        .Add(S["Google"], S["Google"], settings => settings
                         .AddClass("google").Id("google")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAuthentication })
                             .Permission(Permissions.ManageGoogleAuthentication)
