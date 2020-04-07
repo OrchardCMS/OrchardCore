@@ -1,25 +1,26 @@
 # Content Fields (`OrchardCore.ContentFields`)
 
-This module provides common content fields.
+This module provides common content fields.  
+Some fields are available in their specific module.
 
 ## Available Fields
 
 | Name | Properties |
 | --- | --- |
-| `BooleanField` | `Value (bool)` |
-| `ContentPickerField` | `ContentItemIds (string[])` |
-| `DateField` | `Value (DateTime?)` |
-| `DateTimeField` | `Value (DateTime?)` |
-| `HtmlField` | `Html (string)` | `HtmlField` |
-| `LinkField` | `Url (string), Text (string)` |
-| `LocalizationSetContentPickerField` | `LocalizationSets (string[])` |
-| `MarkdownField` | `Markdown (string)` |
-| `MediaField` | `Paths (string[])` |
-| `NumericField` | `Value (decimal?)` |
-| `TaxonomyField` | `TaxonomyContentItemId (string), TaxonomyContentItemId (string[])` |
-| `TextField` | `Text (string)` |
-| `TimeField` | `Value (TimeSpan?)` |
-| `YoutubeField` | `EmbeddedAddress (string), RawAddress (string)` |
+| `BooleanField` | `bool Value` |
+| `ContentPickerField` | `string[] ContentItemIds` |
+| `DateField` | `DateTime? Value` |
+| `DateTimeField` | `DateTime? Value` |
+| `HtmlField` | `string Html` |
+| `LinkField` | `string Url, string Text` |
+| `LocalizationSetContentPickerField` | `string[] LocalizationSets` |
+| `MarkdownField` | `string Markdown` |
+| `MediaField` | `string[] Paths` |
+| `NumericField` | `decimal? Value` |
+| `TaxonomyField` | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
+| `TextField` | `string Text` |
+| `TimeField` | `TimeSpan? Value` |
+| `YoutubeField` | `string EmbeddedAddress, string RawAddress` |
 
 !!! note
     Each field is rendered by a corresponding `Shape Type` that is using its own a Display view model.  
