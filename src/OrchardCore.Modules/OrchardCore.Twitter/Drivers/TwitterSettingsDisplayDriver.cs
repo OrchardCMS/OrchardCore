@@ -7,7 +7,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
-using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.ViewModels;
 
@@ -22,7 +21,6 @@ namespace OrchardCore.Twitter.Drivers
         private readonly ShellSettings _shellSettings;
 
         public TwitterSettingsDisplayDriver(
-            ITwitterSettingsService twitterService,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,

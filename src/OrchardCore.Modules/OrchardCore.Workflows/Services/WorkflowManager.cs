@@ -19,10 +19,8 @@ namespace OrchardCore.Workflows.Services
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IWorkflowStore _workflowStore;
         private readonly IWorkflowIdGenerator _workflowIdGenerator;
-        private readonly Resolver<IEnumerable<IWorkflowExecutionContextHandler>> _workflowContextHandlers;
         private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;
-        private readonly ILogger<WorkflowManager> _logger;
-        private readonly ILogger<WorkflowExecutionContext> _workflowContextLogger;
+        private readonly ILogger _logger;
         private readonly ILogger<MissingActivity> _missingActivityLogger;
         private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
         private readonly IClock _clock;
@@ -33,10 +31,8 @@ namespace OrchardCore.Workflows.Services
             IWorkflowTypeStore workflowTypeRepository,
             IWorkflowStore workflowRepository,
             IWorkflowIdGenerator workflowIdGenerator,
-            Resolver<IEnumerable<IWorkflowExecutionContextHandler>> workflowContextHandlers,
             Resolver<IEnumerable<IWorkflowValueSerializer>> workflowValueSerializers,
             ILogger<WorkflowManager> logger,
-            ILogger<WorkflowExecutionContext> workflowContextLogger,
             ILogger<MissingActivity> missingActivityLogger,
             IStringLocalizer<MissingActivity> missingActivityLocalizer,
             IClock clock
@@ -46,10 +42,8 @@ namespace OrchardCore.Workflows.Services
             _workflowTypeStore = workflowTypeRepository;
             _workflowStore = workflowRepository;
             _workflowIdGenerator = workflowIdGenerator;
-            _workflowContextHandlers = workflowContextHandlers;
             _workflowValueSerializers = workflowValueSerializers;
             _logger = logger;
-            _workflowContextLogger = workflowContextLogger;
             _missingActivityLogger = missingActivityLogger;
             _missingActivityLocalizer = missingActivityLocalizer;
             _clock = clock;
@@ -86,7 +80,7 @@ namespace OrchardCore.Workflows.Services
             var output = await DeserializeAsync(state.Output);
             var lastResult = await DeserializeAsync(state.LastResult);
             var executedActivities = state.ExecutedActivities;
-            return new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery, _workflowContextHandlers.Resolve(), _workflowContextLogger);
+            return new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery);
         }
 
         public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JObject properties)

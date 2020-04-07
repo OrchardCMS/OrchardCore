@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -35,22 +33,20 @@ namespace OrchardCore.Lists.RemotePublishing
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
-        private readonly HtmlEncoder _htmlEncoder;
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IMembershipService _membershipService;
         private readonly IEnumerable<IMetaWeblogDriver> _metaWeblogDrivers;
         private readonly ISession _session;
-        private readonly IStringLocalizer<MetaWeblogHandler> S;
+        private readonly IStringLocalizer S;
 
-        public MetaWeblogHandler(IContentManager contentManager,
+        public MetaWeblogHandler(
+            IContentManager contentManager,
             IAuthorizationService authorizationService,
             IMembershipService membershipService,
             ISession session,
-            HtmlEncoder htmlEncoder,
             IContentDefinitionManager contentDefinitionManager,
             IMediaFileStore mediaFileStore,
             IEnumerable<IMetaWeblogDriver> metaWeblogDrivers,
-            ILogger<MetaWeblogHandler> logger,
             IStringLocalizer<MetaWeblogHandler> localizer)
         {
             _contentManager = contentManager;
@@ -58,14 +54,10 @@ namespace OrchardCore.Lists.RemotePublishing
             _authorizationService = authorizationService;
             _metaWeblogDrivers = metaWeblogDrivers;
             _session = session;
-            _htmlEncoder = htmlEncoder;
             _mediaFileStore = mediaFileStore;
             _membershipService = membershipService;
-            Logger = logger;
             S = localizer;
         }
-
-        private ILogger Logger { get; }
 
         public void SetCapabilities(XElement options)
         {

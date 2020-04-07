@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
@@ -10,15 +9,11 @@ namespace OrchardCore.Twitter
     [Feature(TwitterConstants.Features.Twitter)]
     public class AdminMenu : INavigationProvider
     {
-        private readonly ShellDescriptor _shellDescriptor;
         private readonly IStringLocalizer S;
 
-        public AdminMenu(
-            IStringLocalizer<AdminMenu> localizer,
-            ShellDescriptor shellDescriptor)
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;
-            _shellDescriptor = shellDescriptor;
         }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
@@ -41,15 +36,11 @@ namespace OrchardCore.Twitter
     [Feature(TwitterConstants.Features.Signin)]
     public class AdminMenuSignin : INavigationProvider
     {
-        private readonly ShellDescriptor _shellDescriptor;
         private readonly IStringLocalizer S;
 
-        public AdminMenuSignin(
-            IStringLocalizer<AdminMenuSignin> localizer,
-            ShellDescriptor shellDescriptor)
+        public AdminMenuSignin(IStringLocalizer<AdminMenuSignin> localizer)
         {
             S = localizer;
-            _shellDescriptor = shellDescriptor;
         }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)

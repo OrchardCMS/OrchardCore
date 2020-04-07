@@ -4,9 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using OrchardCore.DisplayManagement;
-using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -22,23 +19,19 @@ namespace OrchardCore.Users.Controllers
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
         private readonly ISiteService _siteService;
-        private readonly ILogger<ChangeEmailController> _logger;
-        private readonly IStringLocalizer<ChangeEmailController> S;
+        private readonly IStringLocalizer S;
 
         public ChangeEmailController(
             IUserService userService,
             UserManager<IUser> userManager,
             ISiteService siteService,
-            IDisplayHelper displayHelper,
-            IStringLocalizer<ChangeEmailController> stringLocalizer,
-            ILogger<ChangeEmailController> logger)
+            IStringLocalizer<ChangeEmailController> stringLocalizer)
         {
             _userService = userService;
             _userManager = userManager;
             _siteService = siteService;
 
             S = stringLocalizer;
-            _logger = logger;
         }
 
         [HttpGet]

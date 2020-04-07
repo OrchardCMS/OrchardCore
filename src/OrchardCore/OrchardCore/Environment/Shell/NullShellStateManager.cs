@@ -6,12 +6,12 @@ namespace OrchardCore.Environment.Shell
 {
     public class NullShellStateManager : IShellStateManager
     {
+        private readonly ILogger _logger;
+
         public NullShellStateManager(ILogger<NullShellStateManager> logger)
         {
-            Logger = logger;
+            _logger = logger;
         }
-
-        private ILogger Logger { get; set; }
 
         public Task<ShellState> GetShellStateAsync()
         {
@@ -20,9 +20,9 @@ namespace OrchardCore.Environment.Shell
 
         public Task UpdateEnabledStateAsync(ShellFeatureState featureState, ShellFeatureState.State value)
         {
-            if (Logger.IsEnabled(LogLevel.Debug))
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("Feature '{FeatureName}' EnableState changed from '{FeatureState}' to '{FeatureState}'",
+                _logger.LogDebug("Feature '{FeatureName}' EnableState changed from '{FeatureState}' to '{FeatureState}'",
                              featureState.Id, featureState.EnableState, value);
             }
 
@@ -31,9 +31,9 @@ namespace OrchardCore.Environment.Shell
 
         public Task UpdateInstalledStateAsync(ShellFeatureState featureState, ShellFeatureState.State value)
         {
-            if (Logger.IsEnabled(LogLevel.Debug))
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("Feature '{FeatureName}' InstallState changed from '{FeatureState}' to '{FeatureState}'", featureState.Id, featureState.InstallState, value);
+                _logger.LogDebug("Feature '{FeatureName}' InstallState changed from '{FeatureState}' to '{FeatureState}'", featureState.Id, featureState.InstallState, value);
             }
 
             return Task.CompletedTask;

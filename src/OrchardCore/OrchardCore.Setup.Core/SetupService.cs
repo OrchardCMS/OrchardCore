@@ -28,7 +28,7 @@ namespace OrchardCore.Setup.Services
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer<SetupService> S;
+        private readonly IStringLocalizer S;
         private readonly IHostApplicationLifetime _applicationLifetime;
         private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;

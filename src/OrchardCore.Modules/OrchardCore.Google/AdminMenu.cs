@@ -10,15 +10,11 @@ namespace OrchardCore.Google
     [Feature(GoogleConstants.Features.GoogleAuthentication)]
     public class GoogleAuthenticationAdminMenu : INavigationProvider
     {
-        private readonly ShellDescriptor _shellDescriptor;
         private readonly IStringLocalizer S;
 
-        public GoogleAuthenticationAdminMenu(
-            IStringLocalizer<GoogleAuthenticationAdminMenu> localizer,
-            ShellDescriptor shellDescriptor)
+        public GoogleAuthenticationAdminMenu(IStringLocalizer<GoogleAuthenticationAdminMenu> localizer)
         {
             S = localizer;
-            _shellDescriptor = shellDescriptor;
         }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)

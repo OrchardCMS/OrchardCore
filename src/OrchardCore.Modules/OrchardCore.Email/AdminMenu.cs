@@ -8,7 +8,7 @@ namespace OrchardCore.Email
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer<AdminMenu> S;
+        private readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

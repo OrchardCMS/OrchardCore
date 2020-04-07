@@ -10,15 +10,11 @@ namespace OrchardCore.Microsoft.Authentication
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
     public class AdminMenuMicrosoftAccount : INavigationProvider
     {
-        private readonly ShellDescriptor _shellDescriptor;
         private readonly IStringLocalizer S;
 
-        public AdminMenuMicrosoftAccount(
-            IStringLocalizer<AdminMenuMicrosoftAccount> localizer,
-            ShellDescriptor shellDescriptor)
+        public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> localizer)
         {
             S = localizer;
-            _shellDescriptor = shellDescriptor;
         }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)

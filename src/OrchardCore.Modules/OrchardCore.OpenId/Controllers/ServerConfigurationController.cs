@@ -25,7 +25,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer<ServerConfigurationController> H;
+        private readonly IHtmlLocalizer H;
 
         public ServerConfigurationController(
             IAuthorizationService authorizationService,
