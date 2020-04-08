@@ -690,7 +690,7 @@ Input
 {% endzone %}
 ```
 
-The content of this block can then be reused from the Layout using the `{{ Model.Header | shape_render }}` code.
+The content of this block can then be reused from the Layout using the `{% render_section "Header" %}` code.
 
 ## Tag Helper tags
 
