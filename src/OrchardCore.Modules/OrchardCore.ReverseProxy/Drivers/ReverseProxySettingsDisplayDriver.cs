@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -19,15 +18,11 @@ namespace OrchardCore.ReverseProxy.Drivers
 
         public ReverseProxySettingsDisplayDriver(
             IShellHost shellHost,
-            ShellSettings shellSettings,
-            IHtmlLocalizer<ReverseProxySettingsDisplayDriver> stringLocalizer)
+            ShellSettings shellSettings)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            T = stringLocalizer;
         }
-
-        private IHtmlLocalizer T { get; }
 
         public override IDisplayResult Edit(ReverseProxySettings section, BuildEditorContext context)
         {

@@ -22,7 +22,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer<AdminController> S;
+        private readonly IStringLocalizer S;
 
         public AdminController(
             IMediaFileStore mediaFileStore,

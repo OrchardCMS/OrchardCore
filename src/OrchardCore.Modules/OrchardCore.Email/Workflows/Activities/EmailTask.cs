@@ -13,7 +13,7 @@ namespace OrchardCore.Email.Workflows.Activities
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<EmailTask> S;
+        private readonly IStringLocalizer S;
 
         public EmailTask(
             ISmtpService smtpService,

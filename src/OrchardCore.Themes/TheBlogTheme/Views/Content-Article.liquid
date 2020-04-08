@@ -1,7 +1,12 @@
 {% zone "Header" %}
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
-    <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/about-bg.jpg" | href }}')">
+    {% assign imagePath = Model.ContentItem.Content.Article.Image.Paths.first %}
+    {% if imagePath == nil %}
+        <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/about-bg.jpg" | href }}')">
+    {% else %}
+        <header class="masthead" style="background-image: url('{{ imagePath | asset_url }}')">
+    {% endif %}
         <div class="overlay"></div>
         <div class="container">
             <div class="row">
@@ -15,7 +20,6 @@
         </div>
     </header>
 {% endzone %}
-
 
 {{ Model.Content.ContentsMetadata.Value }}
 {{ Model.Content.ContentsMetadata | shape_render }}

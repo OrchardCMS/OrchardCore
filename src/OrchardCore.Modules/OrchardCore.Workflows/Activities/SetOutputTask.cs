@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows.Activities
     public class SetOutputTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer<SetOutputTask> S;
+        private readonly IStringLocalizer S;
 
         public SetOutputTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<SetOutputTask> localizer)
         {

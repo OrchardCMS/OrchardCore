@@ -1,22 +1,30 @@
 # Content Fields (`OrchardCore.ContentFields`)
 
-This module provides common content fields.
+This module provides common content fields.  
+Some fields are available in their specific module.
 
 ## Available Fields
 
-| Name | Properties | Shape Type | Shape Class |
-| --- | --- | --- | --- |
-| `BooleanField` | `Value (bool)` | `BooleanField` | `DisplayBooleanFieldViewModel` |
-| `ContentPickerField` | `ContentItemIds (string[])` | `ContentPickerField` | `DisplayContentPickerFieldViewModel` |
-| `LocalizationSetContentPickerField` | `LocalizationSets (string[])` | `LocalizationSetContentPickerField` | `DisplayLocalizationSetContentPickerFieldViewModel` |
-| `DateField` | `Value (DateTime?)` | `DateField` | `DisplayDateFieldViewModel` |
-| `DateTimeField` | `Value (DateTime?)` | `DateTimeField` | `DisplayDateTimeFieldViewModel` |
-| `HtmlField` | `Html (string)` | `HtmlField` | `DisplayHtmlFieldViewModel` |
-| `LinkField` | `Url (string), Text (string)` | `LinkField` | `DisplayLinkFieldViewModel` |
-| `NumericField` | `Value (decimal?)` | `NumericField` | `DisplayNumericFieldViewModel` |
-| `TextField` | `Text (string)` | `TextField` | `DisplayTextFieldViewModel` |
-| `TimeField` | `Value (TimeSpan?)` | `TimeField` | `DisplayTimeFieldViewModel` |
-| `YoutubeField` | `EmbeddedAddress (string), RawAddress (string)` | `YoutubeField` | `YoutubeFieldDisplayViewModel` |
+| Name | Properties |
+| --- | --- |
+| `BooleanField` | `bool Value` |
+| `ContentPickerField` | `string[] ContentItemIds` |
+| `DateField` | `DateTime? Value` |
+| `DateTimeField` | `DateTime? Value` |
+| `HtmlField` | `string Html` |
+| `LinkField` | `string Url, string Text` |
+| `LocalizationSetContentPickerField` | `string[] LocalizationSets` |
+| `MarkdownField` | `string Markdown` |
+| `MediaField` | `string[] Paths` |
+| `NumericField` | `decimal? Value` |
+| `TaxonomyField` | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
+| `TextField` | `string Text` |
+| `TimeField` | `TimeSpan? Value` |
+| `YoutubeField` | `string EmbeddedAddress, string RawAddress` |
+
+!!! note
+    Each field is rendered by a corresponding `Shape Type` that is using its own a Display view model.  
+    Ex: `BooleanField` is rendered by a shape type called `BooleanField` with a `DisplayBooleanFieldViewModel`.
 
 ## Usage
 

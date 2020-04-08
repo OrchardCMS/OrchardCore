@@ -13,7 +13,7 @@ namespace OrchardCore.Workflows.Timers
     {
         public static string EventName => nameof(TimerEvent);
         private readonly IClock _clock;
-        private readonly IStringLocalizer<TimerEvent> S;
+        private readonly IStringLocalizer S;
 
         public TimerEvent(IClock clock, IStringLocalizer<TimerEvent> localizer)
         {

@@ -8,7 +8,6 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
-using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
@@ -16,7 +15,6 @@ namespace OrchardCore.Deployment.Remote.Controllers
     public class RemoteInstanceController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISession _session;
         private readonly INotifier _notifier;
         private readonly RemoteInstanceService _service;
         private readonly IStringLocalizer S;
@@ -25,13 +23,11 @@ namespace OrchardCore.Deployment.Remote.Controllers
         public RemoteInstanceController(
             RemoteInstanceService service,
             IAuthorizationService authorizationService,
-            ISession session,
             IStringLocalizer<RemoteInstanceController> stringLocalizer,
             IHtmlLocalizer<RemoteInstanceController> htmlLocalizer,
             INotifier notifier
             )
         {
-            _session = session;
             _authorizationService = authorizationService;
             S = stringLocalizer;
             H = htmlLocalizer;
