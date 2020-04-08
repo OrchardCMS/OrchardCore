@@ -351,10 +351,10 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             if (context.GetValue("Model")?.ToObjectValue() == model && model is IShape shape)
             {
-                if (contextInternal.ShapeRecursions++ > LiquidTemplateContext.MaxShapeRecursions)
+                if (contextInternal.ShapeRecursions++ > LiquidTemplateContextInternal.MaxShapeRecursions)
                 {
                     throw new InvalidOperationException(
-                        $"The '{shape.Metadata.Type}' shape has been called recursively more than {LiquidTemplateContext.MaxShapeRecursions} times.");
+                        $"The '{shape.Metadata.Type}' shape has been called recursively more than {LiquidTemplateContextInternal.MaxShapeRecursions} times.");
                 }
             }
             else
@@ -384,6 +384,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     internal class LiquidTemplateContextInternal : LiquidTemplateContext
     {
+        public const int MaxShapeRecursions = 3;
+
         public LiquidTemplateContextInternal(IServiceProvider services) : base(services) { }
 
         public bool IsInitialized { get; set; }
