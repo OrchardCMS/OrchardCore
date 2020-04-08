@@ -102,7 +102,7 @@ namespace OrchardCore.Workflows.Services
             return Task.FromResult(context);
         }
 
-        public async Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null)
+        public async Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false)
         {
             var activity = _activityLibrary.GetActivityByName(name);
 
@@ -127,8 +127,8 @@ namespace OrchardCore.Workflows.Services
             // Start new workflows.
             foreach (var workflowType in workflowTypesToStart)
             {
-                // If this is a singleton workflow and there's already an instance, then skip.
-                if (workflowType.IsSingleton && haltedWorkflows.Any(x => x.WorkflowTypeId == workflowType.WorkflowTypeId))
+                // If this is a singleton workflow or if the event is exclusive, and there's already an instance, then skip.
+                if ((workflowType.IsSingleton || isExclusive) && haltedWorkflows.Any(x => x.WorkflowTypeId == workflowType.WorkflowTypeId))
                 {
                     continue;
                 }

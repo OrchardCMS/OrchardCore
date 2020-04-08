@@ -68,8 +68,6 @@ namespace OrchardCore.Workflows.Timers
 
         private bool IsExpired()
         {
-            var startedUtc = StartedUtc;
-
             if (StartedUtc == null)
             {
                 StartedUtc = StartAtUtc ?? _clock.UtcNow;
