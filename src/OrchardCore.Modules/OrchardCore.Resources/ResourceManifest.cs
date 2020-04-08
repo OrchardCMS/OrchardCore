@@ -194,11 +194,6 @@ namespace OrchardCore.Resources
                 .SetVersion("5.13.0");
 
             manifest
-                .DefineScript("font-awesome-config")
-                .SetUrl("~/OrchardCore.Resources/Scripts/fontawesome-config.js")
-                .SetVersion("5.13.0");
-
-            manifest
                 .DefineScript("font-awesome")
                 .SetDependencies("font-awesome-config")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.js")
