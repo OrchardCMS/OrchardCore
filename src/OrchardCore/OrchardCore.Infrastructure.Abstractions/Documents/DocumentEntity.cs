@@ -8,7 +8,7 @@ namespace OrchardCore.Documents
     /// <summary>
     /// A <see cref="BaseDocument"/> being an <see cref="IDocumentEntity"/> that is serializable by 'MessagePack'.
     /// </summary>
-    public abstract class DocumentEntity : BaseDocument, IDocumentEntity
+    public class DocumentEntity : BaseDocument, IDocumentEntity
     {
         [IgnoreMember]
         public JObject Properties { get; set; } = new JObject();

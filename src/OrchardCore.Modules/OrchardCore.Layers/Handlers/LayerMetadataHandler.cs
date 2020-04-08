@@ -1,48 +1,48 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.Environment.Cache;
+using OrchardCore.Data.Documents;
+using OrchardCore.Documents;
 using OrchardCore.Layers.Models;
 
 namespace OrchardCore.Layers.Handlers
 {
     public class LayerMetadataHandler : ContentHandlerBase
     {
-        public const string LayerChangeToken = "OrchardCore.Layers:LayerMetadata";
+        public const string LayerIdentifier = "OrchardCore.Layers:LayerMetadata";
 
-        private readonly ISignal _signal;
+        private readonly IVolatilePropertiesService _properties;
 
-        public LayerMetadataHandler(ISignal signal)
+        public LayerMetadataHandler(IVolatilePropertiesService properties)
         {
-            _signal = signal;
+            _properties = properties;
         }
 
         public override Task PublishedAsync(PublishContentContext context)
         {
-            SignalLayerChanged(context.ContentItem);
-            return Task.CompletedTask;
+            return UpdateLayerIdentifierAsync(context.ContentItem);
         }
 
         public override Task RemovedAsync(RemoveContentContext context)
         {
-            SignalLayerChanged(context.ContentItem);
-            return Task.CompletedTask;
+            return UpdateLayerIdentifierAsync(context.ContentItem);
         }
 
         public override Task UnpublishedAsync(PublishContentContext context)
         {
-            SignalLayerChanged(context.ContentItem);
-            return Task.CompletedTask;
+            return UpdateLayerIdentifierAsync(context.ContentItem);
         }
 
-        private void SignalLayerChanged(ContentItem contentItem)
+        private Task UpdateLayerIdentifierAsync(ContentItem contentItem)
         {
             var layerMetadata = contentItem.As<LayerMetadata>();
 
-            if (layerMetadata != null)
+            if (layerMetadata == null)
             {
-                _signal.DeferredSignalToken(LayerChangeToken);
+                return Task.CompletedTask;
             }
+
+            return _properties.SetAsync(LayerIdentifier, new BaseDocument() { Identifier = IdGenerator.GenerateId() });
         }
     }
 }

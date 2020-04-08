@@ -5,7 +5,7 @@ using OrchardCore.Data.Documents;
 namespace OrchardCore.Documents
 {
     /// <summary>
-    /// A generic service to keep in sync any <see cref="IDocument"/> between a document store and a shared cache.
+    /// A generic service to keep in sync any single <see cref="IDocument"/> between a document store and a shared cache.
     /// </summary>
     public interface IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {

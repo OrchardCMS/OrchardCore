@@ -13,12 +13,14 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.Documents;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Scripting;
+using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Layers.Services
 {
@@ -29,10 +31,10 @@ namespace OrchardCore.Layers.Services
         private readonly IUpdateModelAccessor _modelUpdaterAccessor;
         private readonly IScriptingManager _scriptingManager;
         private readonly IMemoryCache _memoryCache;
-        private readonly ISignal _signal;
         private readonly IThemeManager _themeManager;
         private readonly IAdminThemeService _adminThemeService;
         private readonly ILayerService _layerService;
+        private readonly IVolatilePropertiesService _properties;
 
         public LayerFilter(
             ILayerService layerService,
@@ -40,11 +42,10 @@ namespace OrchardCore.Layers.Services
             IContentItemDisplayManager contentItemDisplayManager,
             IUpdateModelAccessor modelUpdaterAccessor,
             IScriptingManager scriptingManager,
-            IServiceProvider serviceProvider,
             IMemoryCache memoryCache,
-            ISignal signal,
             IThemeManager themeManager,
-            IAdminThemeService adminThemeService)
+            IAdminThemeService adminThemeService,
+            IVolatilePropertiesService properties)
         {
             _layerService = layerService;
             _layoutAccessor = layoutAccessor;
@@ -52,9 +53,9 @@ namespace OrchardCore.Layers.Services
             _modelUpdaterAccessor = modelUpdaterAccessor;
             _scriptingManager = scriptingManager;
             _memoryCache = memoryCache;
-            _signal = signal;
             _themeManager = themeManager;
             _adminThemeService = adminThemeService;
+            _properties = properties;
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
@@ -73,11 +74,21 @@ namespace OrchardCore.Layers.Services
                     return;
                 }
 
-                var widgets = await _memoryCache.GetOrCreateAsync("OrchardCore.Layers.LayerFilter:AllWidgets", entry =>
+                var layerIdentifier = (await _properties.GetAsync<BaseDocument>(LayerMetadataHandler.LayerIdentifier));
+
+                if (!_memoryCache.TryGetValue<WidgetsDocument>("OrchardCore.Layers.LayerFilter:AllWidgets", out var document)
+                    || document.Identifier != layerIdentifier.Identifier)
                 {
-                    entry.AddExpirationToken(_signal.GetToken(LayerMetadataHandler.LayerChangeToken));
-                    return _layerService.GetLayerWidgetsMetadataAsync(x => x.Published);
-                });
+                    document = new WidgetsDocument()
+                    {
+                        Identifier = layerIdentifier.Identifier,
+                        Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)
+                    };
+
+                    _memoryCache.Set("OrchardCore.Layers.LayerFilter:AllWidgets", document);
+                }
+
+                var widgets = document.Widgets;
 
                 var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
 
@@ -147,5 +158,10 @@ namespace OrchardCore.Layers.Services
 
             await next.Invoke();
         }
+    }
+
+    internal class WidgetsDocument : BaseDocument
+    {
+        public IEnumerable<Models.LayerMetadata> Widgets { get; set; }
     }
 }

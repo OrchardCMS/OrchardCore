@@ -289,7 +289,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             // Clear the cache after the session is committed.
-            _signal.DeferredSignalToken(LayerMetadataHandler.LayerChangeToken);
+            _signal.DeferredSignalToken(LayerMetadataHandler.LayerIdentifier);
 
             if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {

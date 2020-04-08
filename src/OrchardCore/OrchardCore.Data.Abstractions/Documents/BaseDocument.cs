@@ -1,6 +1,6 @@
 namespace OrchardCore.Data.Documents
 {
-    public abstract class BaseDocument : IDocument
+    public class BaseDocument : IDocument
     {
         /// <summary>
         /// The <see cref="IDocument.Identifier"/>.

@@ -11,7 +11,7 @@ using OrchardCore.Data.Documents;
 namespace OrchardCore.Documents
 {
     /// <summary>
-    /// A generic service to keep in sync any <see cref="IDocument"/> between an <see cref="IDocumentStore"/> and a multi level cache.
+    /// A generic service to keep in sync any single <see cref="IDocument"/> between an <see cref="IDocumentStore"/> and a multi level cache.
     /// </summary>
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
@@ -21,6 +21,7 @@ namespace OrchardCore.Documents
         private readonly DocumentOptions _options;
 
         private TDocument _scopedCache;
+        private TDocument _scopedMutable;
 
         public DocumentManager(
             IDocumentStore documentStore,
@@ -36,16 +37,45 @@ namespace OrchardCore.Documents
 
         public async Task<TDocument> GetMutableAsync(Func<TDocument> factory = null)
         {
-            var document = await _documentStore.GetMutableAsync(factory);
+            TDocument document = null;
 
-            if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
+            if (_documentStore != null)
             {
-                throw new ArgumentException("Can't load for update a cached object");
+                document = await _documentStore.GetMutableAsync(factory);
+
+                if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
+                {
+                    throw new ArgumentException("Can't load for update a cached object");
+                }
+
+                document.Identifier = null;
+
+                return document;
             }
+
+            // When there is a null document store, we deserialize the document from the distributed cache
+            // so that it can be safely updated, and we hold a scoped cache as done by the document store.
+
+            if (_scopedMutable != null)
+            {
+                return _scopedMutable;
+            }
+
+            var data = await _distributedCache.GetAsync(_options.CacheKey);
+
+            if (data != null)
+            {
+                using (var stream = new MemoryStream(data))
+                {
+                    document = await DeserializeAsync(stream);
+                }
+            }
+
+            document ??= factory?.Invoke() ?? new TDocument();
 
             document.Identifier = null;
 
-            return document;
+            return _scopedMutable = document;
         }
 
         public async Task<TDocument> GetImmutableAsync(Func<TDocument> factory = null)
@@ -54,7 +84,14 @@ namespace OrchardCore.Documents
 
             if (document == null)
             {
-                document = await _documentStore.GetImmutableAsync(factory);
+                if (_documentStore != null)
+                {
+                    document = await _documentStore.GetImmutableAsync(factory);
+                }
+                else
+                {
+                    document = factory?.Invoke() ?? new TDocument();
+                }
 
                 await SetInternalAsync(document);
             }
@@ -70,6 +107,11 @@ namespace OrchardCore.Documents
             }
 
             document.Identifier ??= IdGenerator.GenerateId();
+
+            if (_documentStore == null)
+            {
+                return SetInternalAsync(document);
+            }
 
             return _documentStore.UpdateAsync(document, document =>
             {
@@ -154,19 +196,22 @@ namespace OrchardCore.Documents
             await _distributedCache.SetAsync(_options.CacheKey, data, _options);
             await _distributedCache.SetAsync(_options.CacheIdKey, idData, _options);
 
+            _memoryCache.Set(_options.CacheKey, document, new MemoryCacheEntryOptions()
+            {
+                AbsoluteExpiration = _options.AbsoluteExpiration,
+                AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow,
+                SlidingExpiration = _options.SlidingExpiration
+            });
+
+            if (_documentStore == null)
+            {
+                return;
+            }
+
             // Consistency: We may have been the last to update the cache but not with the last stored document.
             if (_options.CheckConsistency.Value && (await _documentStore.GetImmutableAsync<TDocument>()).Identifier != document.Identifier)
             {
                 await _distributedCache.RemoveAsync(_options.CacheIdKey);
-            }
-            else
-            {
-                _memoryCache.Set(_options.CacheKey, document, new MemoryCacheEntryOptions()
-                {
-                    AbsoluteExpiration = _options.AbsoluteExpiration,
-                    AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow,
-                    SlidingExpiration = _options.SlidingExpiration
-                });
             }
         }
 
