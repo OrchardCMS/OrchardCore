@@ -34,7 +34,7 @@ The following properties are available on the `DisplayTaxonomyFieldViewModel` cl
 
 ### GetTaxonomyTermAsync
 
-Returns a the term from its content item id and taxonomy.
+Returns a term from its content item id and taxonomy.
 
 ```csharp
 @foreach(var termId in Model.TermContentItemIds)
