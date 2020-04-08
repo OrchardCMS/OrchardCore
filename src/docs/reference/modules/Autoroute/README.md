@@ -89,7 +89,7 @@ The `AutoroutePart` supports routing of these _container_ types.
 
 ### Configuration
 
-To enabled routing of _contained_ content items the `AutoroutePart` must be configured correctly.
+To enable routing of _contained_ content items the `AutoroutePart` must be configured correctly.
 
 - Add the `AutoroutePart` to the _container or parent_ content type definition.
 - Enable `Allow Route Contained Items` on the `AutoroutePart Settings`.
@@ -104,7 +104,7 @@ By default when the `AutoroutePart` is added to a _container_ content item and `
 For example :
 `https://www.mysite.com/categories/47twnxzx9hs5k3dyn9j1mc5rny-travel`
 
-To configure a friendly slug for the child content items add the `AutoroutePart` to the content type definition for those content types.
+To configure a friendly slug for the child content items, add the `AutoroutePart` to the content type definition for those content types.
 
 You are then able to use the `Liquid` pattern to generate a friendly slug.
 
