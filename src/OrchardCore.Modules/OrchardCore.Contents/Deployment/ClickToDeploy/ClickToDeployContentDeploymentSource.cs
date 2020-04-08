@@ -1,12 +1,10 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.ModelBinding;
-using YesSql;
 
-namespace OrchardCore.Contents.Deployment
+namespace OrchardCore.Contents.Deployment.ClickToDeploy
 {
     public class ClickToDeployContentDeploymentSource : IDeploymentSource
     {
@@ -39,7 +37,7 @@ namespace OrchardCore.Contents.Deployment
 
             if (!string.IsNullOrEmpty(model.ContentItemId))
             {
-                var contentItem = await _contentManager.GetAsync(model.ContentItemId, model.Latest ? VersionOptions.Latest : VersionOptions.Published );
+                var contentItem = await _contentManager.GetAsync(model.ContentItemId, model.Latest ? VersionOptions.Latest : VersionOptions.Published);
                 if (contentItem != null)
                 {
                     var objectData = JObject.FromObject(contentItem);

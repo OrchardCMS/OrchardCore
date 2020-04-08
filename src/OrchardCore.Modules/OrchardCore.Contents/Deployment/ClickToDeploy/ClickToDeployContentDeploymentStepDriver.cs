@@ -2,7 +2,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Contents.Deployment
+namespace OrchardCore.Contents.Deployment.ClickToDeploy
 {
     public class ClickToDeployContentDeploymentStepDriver : DisplayDriver<DeploymentStep, ClickToDeployContentDeploymentStep>
     {

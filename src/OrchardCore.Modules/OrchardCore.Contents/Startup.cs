@@ -14,6 +14,7 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Deployment;
+using OrchardCore.Contents.Deployment.ClickToDeploy;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
 using OrchardCore.Contents.Handlers;
@@ -41,6 +42,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Models;
@@ -229,6 +231,16 @@ namespace OrchardCore.Contents
             services.AddTransient<IDeploymentSource, ContentDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Contents.ClickToDeploy")]
+    public class ClickToDeployStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, ClickToDeployAdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, ClickToDeploySettingsDisplayDriver>();
 
             services.AddTransient<IDeploymentSource, ClickToDeployContentDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ClickToDeployContentDeploymentStep>());

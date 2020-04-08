@@ -48,6 +48,15 @@ namespace OrchardCore.Deployment.Services
             return result;
         }
 
+        public async Task<bool> DoesUserHaveExportPermissionAsync()
+        {
+            var user = _httpContextAccessor.HttpContext.User;
+
+            var result = await _authorizationService.AuthorizeAsync(user, Permissions.Export);
+
+            return result;
+        }
+
         public async Task<IEnumerable<string>> GetAllDeploymentPlanNamesAsync()
         {
             var deploymentPlans = await GetDeploymentPlans();

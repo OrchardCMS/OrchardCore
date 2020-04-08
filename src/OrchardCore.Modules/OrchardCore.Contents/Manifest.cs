@@ -25,3 +25,11 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[] { "OrchardCore.Contents" },
     Category = "Content Management"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Contents.ClickToDeploy",
+    Name = "Click to Deploy Content",
+    Description = "Adds a deploy action to the content item list.",
+    Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
+    Category = "Content Management"
+)]

@@ -1,91 +1,90 @@
-@using OrchardCore.Deployment.Services
+
 @using Microsoft.AspNetCore.Routing
+@using OrchardCore.Contents.Deployment.ClickToDeploy
+@using OrchardCore.Entities
+@using OrchardCore.Deployment.Services
 @inject IDeploymentManager DeploymentTargetManager
 @inject IDeploymentPlanService DeploymentPlanService
 @{
-    var hasPermissions = await DeploymentPlanService.DoesUserHavePermissionsAsync();
-    if (hasPermissions)
+    var hasPermission = await DeploymentPlanService.DoesUserHaveExportPermissionAsync();
+    var clickToDeploySettings = Site.As<ClickToDeploySettings>();
+    if (hasPermission)
     {
-        var deploymentPlans = await DeploymentPlanService.GetAllDeploymentPlansAsync();
-        var clickToDeployPlan = deploymentPlans.FirstOrDefault(x => x.DeploymentSteps.Any(x => x.Name == nameof(ClickToDeployContentDeploymentStep)));
-        if (clickToDeployPlan != null)
-        {
-            <div class="modal fade" id="modalClickToDeployActionTargets" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">@T["Available Targets"]</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                @foreach (var target in await DeploymentTargetManager.GetDeploymentTargetsAsync())
-                                {
-                                    var routeWithId = new RouteValueDictionary(target.Route);
-                                    routeWithId["id"] = clickToDeployPlan.Id;
-                                    var returnUrl = Context.Request.Query["returnUrl"];
-                                    routeWithId["returnUrl"] = FullRequestPath;
-                                    <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
-                                        <div class="card w-100 mb-3">
-                                            <div class="card-body">
-                                                <h4 class="card-title">@target.Name</h4>
-                                                <p>@target.Description</p>
-                                            </div>
-                                            <div class="card-footer text-muted text-xs-right">
-                                                <button type="button" class="click-to-deploy text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
-                                            </div>
+        <div class="modal fade" id="modalClickToDeployActionTargets" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@T["Available Targets"]</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            @foreach (var target in await DeploymentTargetManager.GetDeploymentTargetsAsync())
+                            {
+                                var routeWithId = new RouteValueDictionary(target.Route);
+                                routeWithId["id"] = clickToDeploySettings.ClickToDeployPlanId;
+                                var returnUrl = Context.Request.Query["returnUrl"];
+                                routeWithId["returnUrl"] = FullRequestPath;
+                                <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
+                                    <div class="card w-100 mb-3">
+                                        <div class="card-body">
+                                            <h4 class="card-title">@target.Name</h4>
+                                            <p>@target.Description</p>
+                                        </div>
+                                        <div class="card-footer text-muted text-xs-right">
+                                            <button type="button" class="click-to-deploy text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
                                         </div>
                                     </div>
-                                }
-                            </div>
+                                </div>
+                            }
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
-                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <script at="Foot" depends-on="jQuery">
-                $(function () {
-                    $('#modalClickToDeployActionTargets').on('show.bs.modal', function (event) {
-                        var button = $(event.relatedTarget) // Button that triggered the modal
-                        var contentItemId = button.data('content-item-id');
-                        var latest = button.data('latest');
+        <script at="Foot" depends-on="jQuery">
+            $(function () {
+                $('#modalClickToDeployActionTargets').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget) // Button that triggered the modal
+                    var contentItemId = button.data('content-item-id');
+                    var latest = button.data('latest');
 
-                        $('.click-to-deploy').on('click', function () {
-                            var targetButton = this;
+                    $('.click-to-deploy').on('click', function () {
+                        var targetButton = this;
 
-                            //TODO move this to a confirm dialog
-                            var magicToken = $("input[name=__RequestVerificationToken]").first();
-                            if (magicToken) {
-                                var hrefParts = $(targetButton).data("target-url").split("?");
-                                var deployForm = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
-                                deployForm.append(magicToken.clone());
-                                if (hrefParts.length > 1) {
-                                    var queryParts = hrefParts[1].split("&");
-                                    for (var i = 0; i < queryParts.length; i++) {
-                                        var queryPartKVP = queryParts[i].split("=");
-                                        //trusting hrefs in the page here
-                                        deployForm.append($("<input type=\"hidden\" name=\"" + decodeURIComponent(queryPartKVP[0]) + "\" value=\"" + decodeURIComponent(queryPartKVP[1]) + "\" />"));
-                                    }
+                        //TODO move this to a confirm dialog
+                        var magicToken = $("input[name=__RequestVerificationToken]").first();
+                        if (magicToken) {
+                            var hrefParts = $(targetButton).data("target-url").split("?");
+                            var deployForm = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
+                            deployForm.append(magicToken.clone());
+                            if (hrefParts.length > 1) {
+                                var queryParts = hrefParts[1].split("&");
+                                for (var i = 0; i < queryParts.length; i++) {
+                                    var queryPartKVP = queryParts[i].split("=");
+                                    //trusting hrefs in the page here
+                                    deployForm.append($("<input type=\"hidden\" name=\"" + decodeURIComponent(queryPartKVP[0]) + "\" value=\"" + decodeURIComponent(queryPartKVP[1]) + "\" />"));
                                 }
-                                deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.ContentItemId\" + value=\"" + contentItemId + "\"/>"));
-                                if (latest) {
-                                    deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.Latest\" + value=\"" + latest + "\"/>"));
-                                }
-                                $("body").append(deployForm);
-                                deployForm.submit();
                             }
-                        })
+                            deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.ContentItemId\" + value=\"" + contentItemId + "\"/>"));
+                            if (latest) {
+                                deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.Latest\" + value=\"" + latest + "\"/>"));
+                            }
+                            $("body").append(deployForm);
+                            deployForm.submit();
+                        }
                     })
-                    $('#modalClickToDeployActionTargets').on('hide.bs.modal', function () {
-                        $('.click-to-deploy').off('click');
-                    })
-                });
-            </script>
-        }
+                })
+                $('#modalClickToDeployActionTargets').on('hide.bs.modal', function () {
+                    $('.click-to-deploy').off('click');
+                })
+            });
+        </script>
     }
 }

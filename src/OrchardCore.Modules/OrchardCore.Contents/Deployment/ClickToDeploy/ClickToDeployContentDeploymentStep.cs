@@ -1,6 +1,6 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Contents.Deployment
+namespace OrchardCore.Contents.Deployment.ClickToDeploy
 {
     /// <summary>
     /// Adds selected content items to a <see cref="DeploymentPlanResult"/>.

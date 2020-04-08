@@ -1,7 +1,10 @@
+@using Microsoft.AspNetCore.Authorization
 @using OrchardCore.ContentManagement
-@using OrchardCore.ContentManagement.Metadata
+@using OrchardCore.Entities 
+@using OrchardCore.Environment.Shell 
+@inject IAuthorizationService AuthorizationService
 @inject IContentManager ContentManager
-@inject OrchardCore.Environment.Shell.IShellFeaturesManager ShellFeaturesManager;
+@inject IShellFeaturesManager ShellFeaturesManager
 
 @{
     ContentItem contentItem = Model.ContentItem;
@@ -10,7 +13,8 @@
     var features = await ShellFeaturesManager.GetEnabledFeaturesAsync();
     bool deploymentEnabled = false;
     //TODO there must be a better way of doing this. Also Ordinal.IgnoreCase maybe? are they case sensitive, I think so.
-    if (features.Any(x => x.Id == "OrchardCore.Deployment"))
+    
+    if (Site.As<ClickToDeploySettings>().ClickToDeployPlanId != 0 && features.Any(x => x.Id == "OrchardCore.Contents.ClickToDeploy") && await AuthorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export))
     {
         deploymentEnabled = true;
     }
@@ -52,17 +56,16 @@
         {
             if (hasDraft)
             {
-                <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId" data-latest=@Boolean.TrueString>@T["Export Draft"]</button>
+                <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId" data-latest=@Boolean.TrueString>@T["Deploy Draft"]</button>
                 if (hasPublished)
                 {
-                    <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Export Published"]</button>
+                    <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Deploy Published"]</button>
                 }
             }
             else
             {
-                <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Export"]</button>
+                <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Deploy"]</button>
             }
-
         }
     </div>
 </div>
