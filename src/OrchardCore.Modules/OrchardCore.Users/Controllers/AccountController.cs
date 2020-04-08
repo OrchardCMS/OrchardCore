@@ -42,7 +42,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
-        private readonly IStringLocalizer<AccountController> S;
+        private readonly IStringLocalizer S;
 
         public AccountController(
             IUserService userService,

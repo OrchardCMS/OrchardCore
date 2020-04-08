@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Lucene.ViewModels
 {
     public class LuceneIndexDeploymentStepViewModel

@@ -20,7 +20,7 @@ namespace OrchardCore.OpenId.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<OpenIdValidationService> S;
+        private readonly IStringLocalizer S;
 
         public OpenIdValidationService(
             ShellDescriptor shellDescriptor,

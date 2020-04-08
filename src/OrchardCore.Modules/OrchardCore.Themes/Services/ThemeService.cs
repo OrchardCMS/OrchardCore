@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -15,16 +14,14 @@ namespace OrchardCore.Themes.Services
     {
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly ILogger _logger;
         private readonly INotifier _notifier;
         private readonly ISiteThemeService _siteThemeService;
-        private readonly IHtmlLocalizer<ThemeService> H;
+        private readonly IHtmlLocalizer H;
 
         public ThemeService(
             IExtensionManager extensionManager,
             IShellFeaturesManager shellFeaturesManager,
             ISiteThemeService siteThemeService,
-            ILogger<ThemeService> logger,
             IHtmlLocalizer<ThemeService> htmlLocalizer,
             INotifier notifier)
         {
@@ -32,7 +29,6 @@ namespace OrchardCore.Themes.Services
             _shellFeaturesManager = shellFeaturesManager;
             _siteThemeService = siteThemeService;
 
-            _logger = logger;
             _notifier = notifier;
             H = htmlLocalizer;
         }

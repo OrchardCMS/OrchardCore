@@ -20,6 +20,7 @@ namespace OrchardCore.Environment.Shell
         private readonly IShellStateManager _stateManager;
         private readonly IExtensionManager _extensionManager;
         private readonly IEnumerable<IFeatureEventHandler> _featureEventHandlers;
+        private readonly ILogger _logger;
 
         public ShellStateUpdater(
             ShellSettings settings,
@@ -32,16 +33,14 @@ namespace OrchardCore.Environment.Shell
             _stateManager = stateManager;
             _extensionManager = extensionManager;
             _featureEventHandlers = featureEventHandlers;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         public async Task ApplyChanges()
         {
-            if (Logger.IsEnabled(LogLevel.Information))
+            if (_logger.IsEnabled(LogLevel.Information))
             {
-                Logger.LogInformation("Applying changes for for tenant '{TenantName}'", _settings.Name);
+                _logger.LogInformation("Applying changes for for tenant '{TenantName}'", _settings.Name);
             }
 
             var loadedFeatures = await _extensionManager.LoadFeaturesAsync();
@@ -81,27 +80,27 @@ namespace OrchardCore.Environment.Shell
             // lower enabled states in reverse order
             foreach (var entry in allEntries.Reverse().Where(entry => entry.FeatureState.EnableState == ShellFeatureState.State.Falling))
             {
-                if (Logger.IsEnabled(LogLevel.Information))
+                if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    Logger.LogInformation("Disabling feature '{FeatureName}'", entry.Feature.FeatureInfo.Id);
+                    _logger.LogInformation("Disabling feature '{FeatureName}'", entry.Feature.FeatureInfo.Id);
                 }
 
-                await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), entry.Feature.FeatureInfo, Logger);
+                await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), entry.Feature.FeatureInfo, _logger);
                 await _stateManager.UpdateEnabledStateAsync(entry.FeatureState, ShellFeatureState.State.Down);
-                await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisabledAsync(featureInfo), entry.Feature.FeatureInfo, Logger);
+                await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisabledAsync(featureInfo), entry.Feature.FeatureInfo, _logger);
             }
 
             // lower installed states in reverse order
             foreach (var entry in allEntries.Reverse().Where(entry => entry.FeatureState.InstallState == ShellFeatureState.State.Falling))
             {
-                if (Logger.IsEnabled(LogLevel.Information))
+                if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    Logger.LogInformation("Uninstalling feature '{FeatureName}'", entry.Feature.FeatureInfo.Id);
+                    _logger.LogInformation("Uninstalling feature '{FeatureName}'", entry.Feature.FeatureInfo.Id);
                 }
 
-                await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.UninstallingAsync(featureInfo), entry.Feature.FeatureInfo, Logger);
+                await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.UninstallingAsync(featureInfo), entry.Feature.FeatureInfo, _logger);
                 await _stateManager.UpdateInstalledStateAsync(entry.FeatureState, ShellFeatureState.State.Down);
-                await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.UninstalledAsync(featureInfo), entry.Feature.FeatureInfo, Logger);
+                await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.UninstalledAsync(featureInfo), entry.Feature.FeatureInfo, _logger);
             }
 
             // raise install and enabled states in order
@@ -109,25 +108,25 @@ namespace OrchardCore.Environment.Shell
             {
                 if (entry.FeatureState.InstallState == ShellFeatureState.State.Rising)
                 {
-                    if (Logger.IsEnabled(LogLevel.Information))
+                    if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Installing feature '{FeatureName}'", entry.Feature.FeatureInfo.Id);
+                        _logger.LogInformation("Installing feature '{FeatureName}'", entry.Feature.FeatureInfo.Id);
                     }
 
-                    await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstallingAsync(featureInfo), entry.Feature.FeatureInfo, Logger);
+                    await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstallingAsync(featureInfo), entry.Feature.FeatureInfo, _logger);
                     await _stateManager.UpdateInstalledStateAsync(entry.FeatureState, ShellFeatureState.State.Up);
-                    await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstalledAsync(featureInfo), entry.Feature.FeatureInfo, Logger);
+                    await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstalledAsync(featureInfo), entry.Feature.FeatureInfo, _logger);
                 }
                 if (entry.FeatureState.EnableState == ShellFeatureState.State.Rising)
                 {
-                    if (Logger.IsEnabled(LogLevel.Information))
+                    if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Enabling feature '{FeatureName}'", entry.Feature.FeatureInfo.Id);
+                        _logger.LogInformation("Enabling feature '{FeatureName}'", entry.Feature.FeatureInfo.Id);
                     }
 
-                    await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnablingAsync(featureInfo), entry.Feature.FeatureInfo, Logger);
+                    await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnablingAsync(featureInfo), entry.Feature.FeatureInfo, _logger);
                     await _stateManager.UpdateEnabledStateAsync(entry.FeatureState, ShellFeatureState.State.Up);
-                    await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnabledAsync(featureInfo), entry.Feature.FeatureInfo, Logger);
+                    await _featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnabledAsync(featureInfo), entry.Feature.FeatureInfo, _logger);
                 }
             }
         }

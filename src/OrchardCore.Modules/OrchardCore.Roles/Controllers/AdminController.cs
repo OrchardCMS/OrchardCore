@@ -8,14 +8,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
-using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Roles.Controllers
@@ -25,14 +23,12 @@ namespace OrchardCore.Roles.Controllers
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer S;
-        private readonly ISiteService _siteService;
-        private readonly IShapeFactory _shapeFactory;
         private readonly RoleManager<IRole> _roleManager;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IRoleService _roleService;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -40,8 +36,6 @@ namespace OrchardCore.Roles.Controllers
             ISession session,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
-            ISiteService siteService,
-            IShapeFactory shapeFactory,
             RoleManager<IRole> roleManager,
             IRoleService roleService,
             INotifier notifier,
@@ -54,8 +48,6 @@ namespace OrchardCore.Roles.Controllers
             _typeFeatureProvider = typeFeatureProvider;
             _permissionProviders = permissionProviders;
             _roleManager = roleManager;
-            _shapeFactory = shapeFactory;
-            _siteService = siteService;
             S = stringLocalizer;
             _authorizationService = authorizationService;
             _session = session;

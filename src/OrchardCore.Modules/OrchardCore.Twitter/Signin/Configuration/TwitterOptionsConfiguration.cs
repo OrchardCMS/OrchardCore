@@ -23,7 +23,7 @@ namespace OrchardCore.Twitter.Signin.Configuration
         private readonly ITwitterSettingsService _twitterService;
         private readonly ITwitterSigninService _twitterSigninService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<TwitterOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
         private readonly string _tenantPrefix;
 
         public TwitterOptionsConfiguration(

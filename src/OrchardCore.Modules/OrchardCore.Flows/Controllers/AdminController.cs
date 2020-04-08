@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
@@ -22,18 +21,13 @@ namespace OrchardCore.Flows.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IShapeFactory shapeFactory,
-            ILogger<AdminController> logger,
             IUpdateModelAccessor updateModelAccessor)
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
             _shapeFactory = shapeFactory;
             _updateModelAccessor = updateModelAccessor;
-
-            Logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string targetId, bool flowmetadata, string parentContentType, string partName)
         {

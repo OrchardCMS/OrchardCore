@@ -6,12 +6,14 @@ using OrchardCore.Modules.Manifest;
     Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
+
 [assembly: Feature(
     Id = "OrchardCore.XmlRpc",
     Name = "XML-RPC",
     Description = "The XML-RPC module enables creation of contents from client applications such as Open Live Writer.",
     Category = "Infrastructure"
 )]
+
 [assembly: Feature(
     Id = "OrchardCore.RemotePublishing",
     Name = "Remote Publishing",

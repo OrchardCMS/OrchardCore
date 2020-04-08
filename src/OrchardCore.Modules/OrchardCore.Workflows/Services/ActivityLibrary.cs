@@ -15,7 +15,7 @@ namespace OrchardCore.Workflows.Services
         private readonly Lazy<IDictionary<string, IActivity>> _activityDictionary;
         private readonly Lazy<IList<LocalizedString>> _activityCategories;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<ActivityLibrary> _logger;
+        private readonly ILogger _logger;
 
         public ActivityLibrary(IOptions<WorkflowOptions> workflowOptions, IServiceProvider serviceProvider, ILogger<ActivityLibrary> logger)
         {

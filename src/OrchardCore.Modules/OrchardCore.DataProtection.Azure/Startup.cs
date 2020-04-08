@@ -18,7 +18,7 @@ namespace OrchardCore.DataProtection.Azure
         private readonly IShellConfiguration _configuration;
         private readonly ShellOptions _shellOptions;
         private readonly ShellSettings _shellSettings;
-        private readonly ILogger<Startup> _logger;
+        private readonly ILogger _logger;
 
         public Startup(
             IShellConfiguration configuration,

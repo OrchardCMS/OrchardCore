@@ -14,7 +14,7 @@ namespace OrchardCore.Autoroute.Settings
     public class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer<AutoroutePartSettingsDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public AutoroutePartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AutoroutePartSettingsDisplayDriver> localizer)
         {
