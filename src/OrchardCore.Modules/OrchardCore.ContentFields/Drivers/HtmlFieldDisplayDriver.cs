@@ -15,7 +15,7 @@ namespace OrchardCore.ContentFields.Fields
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IStringLocalizer<HtmlFieldDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlFieldDisplayDriver> localizer, HtmlEncoder htmlEncoder)
         {

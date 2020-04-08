@@ -14,7 +14,7 @@ namespace OrchardCore.Environment.Shell
         private readonly IExtensionManager _extensionManager;
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly IShellDescriptorManager _shellDescriptorManager;
-        private readonly ILogger<ShellFeaturesManager> _logger;
+        private readonly ILogger _logger;
 
         public FeatureDependencyNotificationHandler FeatureDependencyNotification { get; set; }
 

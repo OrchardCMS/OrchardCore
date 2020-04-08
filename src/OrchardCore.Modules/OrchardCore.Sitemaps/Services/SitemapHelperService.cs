@@ -18,7 +18,7 @@ namespace OrchardCore.Sitemaps.Services
 
         private readonly ISlugService _slugService;
         private readonly ISitemapManager _sitemapManager;
-        private readonly IStringLocalizer<SitemapHelperService> S;
+        private readonly IStringLocalizer S;
 
         public SitemapHelperService(
             ISlugService slugService,

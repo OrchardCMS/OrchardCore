@@ -21,7 +21,7 @@ namespace OrchardCore.Alias.Drivers
         public const string DefaultUniqueAliasError = "Your alias is already in use.";
 
         private readonly ISession _session;
-        private readonly IStringLocalizer<AliasPartDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public AliasPartDisplayDriver(
             ISession session,

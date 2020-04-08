@@ -15,7 +15,7 @@ namespace OrchardCore.Html
     public class Migrations : DataMigration
     {
         private readonly ISession _session;
-        private readonly ILogger<Migrations> _logger;
+        private readonly ILogger _logger;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(

@@ -16,7 +16,7 @@ namespace OrchardCore.Markdown.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IStringLocalizer<MarkdownBodyPartDisplay> S;
+        private readonly IStringLocalizer S;
 
         public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<MarkdownBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
         {

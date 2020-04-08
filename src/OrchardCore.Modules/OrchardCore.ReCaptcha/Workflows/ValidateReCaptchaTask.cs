@@ -13,7 +13,7 @@ namespace OrchardCore.ReCaptcha.Workflows
     {
         private readonly ReCaptchaService _reCaptchaService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer<ValidateReCaptchaTask> S;
+        private readonly IStringLocalizer S;
 
         public ValidateReCaptchaTask(
             ReCaptchaService reCaptchaService,

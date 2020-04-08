@@ -24,7 +24,7 @@ namespace OrchardCore.Infrastructure.Cache
 
                 if (data == null)
                 {
-                    return default(T);
+                    return default;
                 }
 
                 value = Deserialize<T>(data);

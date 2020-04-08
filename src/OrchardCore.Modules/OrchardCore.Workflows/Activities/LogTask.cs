@@ -10,9 +10,9 @@ namespace OrchardCore.Workflows.Activities
 {
     public class LogTask : TaskActivity
     {
-        private readonly ILogger<LogTask> _logger;
+        private readonly ILogger _logger;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<LogTask> S;
+        private readonly IStringLocalizer S;
 
         public LogTask(ILogger<LogTask> logger, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<LogTask> localizer)
         {

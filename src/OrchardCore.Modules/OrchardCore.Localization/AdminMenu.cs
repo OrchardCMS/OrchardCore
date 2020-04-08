@@ -11,7 +11,7 @@ namespace OrchardCore.Localization
     /// </summary>
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer<AdminMenu> S;
+        private readonly IStringLocalizer S;
 
         /// <summary>
         /// Creates a new instance of the <see cref="AdminMenu"/>.
