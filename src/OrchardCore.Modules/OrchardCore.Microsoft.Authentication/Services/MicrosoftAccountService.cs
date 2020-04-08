@@ -12,7 +12,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
     public class MicrosoftAccountService : IMicrosoftAccountService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<MicrosoftAccountService> S;
+        private readonly IStringLocalizer S;
 
         public MicrosoftAccountService(
             ISiteService siteService,

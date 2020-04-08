@@ -18,9 +18,9 @@
     "postinstall": "run-s install:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.8.7",
-    "@babel/preset-env": "^7.8.7",
-    "@babel/preset-flow": "7.8.3",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-flow": "7.9.0",
     "es6-promise": "4.2.8",
     "file-system": "2.2.2",
     "glob": "^7.1.6",

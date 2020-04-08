@@ -11,7 +11,7 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class HtmlFieldTrumbowygEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
     {
-        private readonly IStringLocalizer<HtmlFieldTrumbowygEditorSettingsDriver> S;
+        private readonly IStringLocalizer S;
 
         public HtmlFieldTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlFieldTrumbowygEditorSettingsDriver> localizer)
         {

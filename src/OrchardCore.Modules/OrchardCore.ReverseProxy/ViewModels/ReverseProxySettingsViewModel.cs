@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.ReverseProxy.ViewModels
 {
     public class ReverseProxySettingsViewModel

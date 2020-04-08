@@ -54,7 +54,7 @@ namespace OrchardCore.ContentFields.Fields
                 var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
 
                 var urlToValidate = field.Url;
-                var indexAnchor = urlToValidate.IndexOf("#");
+                var indexAnchor = urlToValidate.IndexOf('#');
                 if (indexAnchor > -1)
                 {
                     urlToValidate = urlToValidate.Substring(0, indexAnchor);

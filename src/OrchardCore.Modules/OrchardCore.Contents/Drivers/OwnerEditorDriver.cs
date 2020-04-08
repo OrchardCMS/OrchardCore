@@ -17,7 +17,7 @@ namespace OrchardCore.Contents.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userService;
-        private readonly IStringLocalizer<OwnerEditorDriver> S;
+        private readonly IStringLocalizer S;
 
         public OwnerEditorDriver(IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,

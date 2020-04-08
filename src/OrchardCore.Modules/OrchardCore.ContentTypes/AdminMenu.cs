@@ -26,7 +26,7 @@ namespace OrchardCore.ContentTypes
             var adminControllerName = typeof(AdminController).ControllerName();
 
             builder.Add(S["Content"], content => content
-                .Add(S["Content Definition"], "2", contentDefinition => contentDefinition
+                .Add(S["Content Definition"], S["Content Definition"], contentDefinition => contentDefinition
                     .Add(S["Content Types"], "1", contentTypes => contentTypes
                         .Action(nameof(AdminController.List), adminControllerName, new { area = "OrchardCore.ContentTypes" })
                         .Permission(Permissions.ViewContentTypes)

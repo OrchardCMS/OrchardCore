@@ -40,7 +40,7 @@ namespace OrchardCore.Localization.PortableObject
                 index += 1;
             }
 
-            if (baseName.Length > index && baseName.IndexOf("Areas.", index) == index)
+            if (baseName.Length > index && baseName.IndexOf("Areas.", index, StringComparison.Ordinal) == index)
             {
                 index += "Areas.".Length;
             }

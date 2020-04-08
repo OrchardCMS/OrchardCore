@@ -20,7 +20,7 @@ namespace OrchardCore.Media.Azure
     [Feature("OrchardCore.Media.Azure.Storage")]
     public class Startup : Modules.StartupBase
     {
-        private readonly ILogger<Startup> _logger;
+        private readonly ILogger _logger;
         private readonly IShellConfiguration _configuration;
 
         public Startup(ILogger<Startup> logger, IShellConfiguration configuration)
