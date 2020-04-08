@@ -56,8 +56,6 @@ or
 
 The `AutoroutePart` supports routing of content items which are children of a parent content item.
 
-### Container and Contained Definitions
-
 ### Container Definition
 
 A _container_ content item is a parent content item, which _contains_ child content items.
