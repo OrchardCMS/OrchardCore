@@ -11,16 +11,15 @@ namespace OrchardCore.Environment.Shell
     public class ShellStateCoordinator : IShellDescriptorManagerEventHandler
     {
         private readonly IShellStateManager _stateManager;
+        private readonly ILogger _logger;
 
         public ShellStateCoordinator(
             IShellStateManager stateManager,
             ILogger<ShellStateCoordinator> logger)
         {
             _stateManager = stateManager;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         async Task IShellDescriptorManagerEventHandler.ChangedAsync(ShellDescriptor descriptor, ShellSettings settings)
         {
@@ -72,9 +71,9 @@ namespace OrchardCore.Environment.Shell
 
                 while (shellState.Features.Any(FeatureIsChanging))
                 {
-                    if (Logger.IsEnabled(LogLevel.Information))
+                    if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Adding pending task 'ApplyChanges' for tenant '{TenantName}'", scope.ShellContext.Settings.Name);
+                        _logger.LogInformation("Adding pending task 'ApplyChanges' for tenant '{TenantName}'", scope.ShellContext.Settings.Name);
                     }
 
                     await shellStateUpdater.ApplyChanges();
