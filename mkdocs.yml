@@ -44,6 +44,7 @@ markdown_extensions:
   - pymdownx.smartsymbols
   - pymdownx.snippets:
       check_paths: true
+  - pymdownx.superfences
   - pymdownx.tabbed
   - pymdownx.tasklist
   - pymdownx.tilde
