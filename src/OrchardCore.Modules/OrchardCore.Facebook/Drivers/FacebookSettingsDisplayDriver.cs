@@ -83,7 +83,7 @@ namespace OrchardCore.Facebook.Drivers
                         settings.FBInitParams = model.FBInitParams;
                     settings.Version = model.Version;
 
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
 

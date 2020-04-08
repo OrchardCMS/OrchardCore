@@ -88,7 +88,7 @@ namespace OrchardCore.Twitter.Drivers
                     settings.ConsumerSecret = protector.Protect(model.APISecretKey);
                     settings.AccessToken = model.AccessToken;
                     settings.AccessTokenSecret = protector.Protect(model.AccessTokenSecret);
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);

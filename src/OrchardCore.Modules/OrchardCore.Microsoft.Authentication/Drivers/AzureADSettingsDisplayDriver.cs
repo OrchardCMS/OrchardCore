@@ -66,7 +66,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     settings.AppId = model.AppId;
                     settings.TenantId = model.TenantId;
                     settings.CallbackPath = model.CallbackPath;
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);
