@@ -16,7 +16,7 @@ namespace OrchardCore.Workflows.Http.Activities
     public class HttpRequestTask : TaskActivity
     {
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<HttpRequestTask> S;
+        private readonly IStringLocalizer S;
 
         public HttpRequestTask(
             IStringLocalizer<HttpRequestTask> localizer,

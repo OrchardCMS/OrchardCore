@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.AdminMenu.ViewModels
 {
     public class AdminMenuListOptions

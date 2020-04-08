@@ -20,7 +20,7 @@ namespace OrchardCore.Email.Services
         private static readonly char[] EmailsSeparator = new char[] { ',', ';', ' ' };
         
         private readonly SmtpSettings _options;
-        private readonly ILogger<SmtpService> _logger;
+        private readonly ILogger _logger;
         private readonly IStringLocalizer S;
 
         public SmtpService(

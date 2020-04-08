@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Microsoft.Authentication.Services;
@@ -19,16 +18,13 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         IConfigureNamedOptions<AzureADOptions>
     {
         private readonly IAzureADService _azureADService;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<AzureADOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public AzureADOptionsConfiguration(
             IAzureADService loginService,
-            IDataProtectionProvider dataProtectionProvider,
             ILogger<AzureADOptionsConfiguration> logger)
         {
             _azureADService = loginService;
-            _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
         }
 
