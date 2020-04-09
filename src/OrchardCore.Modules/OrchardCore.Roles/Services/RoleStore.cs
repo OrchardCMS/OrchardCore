@@ -19,7 +19,8 @@ namespace OrchardCore.Roles.Services
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IDocumentManager<RolesDocument> _documentManager;
-        private readonly IStringLocalizer<RoleStore> S;
+        private readonly IStringLocalizer S;
+        private readonly ILogger _logger;
 
         private bool _updating;
 
@@ -32,10 +33,8 @@ namespace OrchardCore.Roles.Services
             _serviceProvider = serviceProvider;
             _documentManager = documentManager;
             S = stringLocalizer;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; }
 
         public IQueryable<IRole> Roles => GetRolesAsync().GetAwaiter().GetResult().Roles.AsQueryable();
 
@@ -91,7 +90,7 @@ namespace OrchardCore.Roles.Services
             }
 
             var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
-            await roleRemovedEventHandlers.InvokeAsync((handler, roleToRemove) => handler.RoleRemovedAsync(roleToRemove.RoleName), roleToRemove, Logger);
+            await roleRemovedEventHandlers.InvokeAsync((handler, roleToRemove) => handler.RoleRemovedAsync(roleToRemove.RoleName), roleToRemove, _logger);
 
             var roles = await LoadRolesAsync();
             roleToRemove = roles.Roles.FirstOrDefault(r => r.RoleName == roleToRemove.RoleName);
