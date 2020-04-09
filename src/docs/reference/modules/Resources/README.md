@@ -307,6 +307,26 @@ The following example demonstrates how to inject a custom script in the footer s
 </script>
 ```
 
+#### Custom styles
+
+The following example demonstrates how to inject a custom style in the head section.
+
+``` liquid tab="Liquid"
+{% styleblock at: "Head" %}
+    .my-class {
+        /* some style */
+    }
+{% endstyleblock %}
+```
+
+``` html tab="Razor"
+<style at="Head">
+    .my-class {
+        /* some style */
+    }
+</style>
+```
+
 #### Meta tags
 
 ``` liquid tab="Liquid"
