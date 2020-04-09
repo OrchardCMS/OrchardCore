@@ -1,6 +1,6 @@
 Contributors
 --------------
-This is the official list of the Orchard project contributors.
+This is the official list of the Orchard Core contributors.
 Names of the original copyright holders (individuals or organizations)
 should be listed with a '*' in the first column. People who have 
 contributed from an organization can be listed under the organization
@@ -20,3 +20,41 @@ their names indented and be marked with a '-'
   - Zoltán Lehóczky (@Piedone)
 
 * Antoine Griffard (@agriffard)
+
+* Jean-Thierry Kéchichian (@jtkech)
+
+* Jasmin Savard (@Skrypt)
+
+* Dean Marcussen (@deanmarcussen)
+
+* Hisham Bin Ateya (@hishamco)
+
+* Alexander Bocharov (@alexbocharov)
+
+* Matias Molleja (@matiasmolleja)
+
+* Kévin Chalet (@kevinchalet)
+
+* Michael Petrinolis (@MichaelPetrinolis)
+
+* Jean-Philippe Tissot(@jptissot)
+
+* andy (@infofromca)
+
+* Carl Woodhouse (@carlwoodhouse)
+
+* Lukas Kabrt (@lukaskabrt)
+
+* Siyamand Ayubi (@siyamandayubi)
+
+* Peter Davis (@petedavis)
+
+* Peter Davis (@petedavis)
+
+* Niraj Soni (@ns8482e)
+
+* Niraj Soni (@ns8482e)
+
+* Matthijs Krempel (@MatthijsKrempel)
+
+* Himanshu Swami (@hswami)
