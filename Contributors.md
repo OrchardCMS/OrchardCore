@@ -12,7 +12,8 @@ their names indented and be marked with a '-'
 * Nick Mayne (@Jetski5822)
 
 * Microsoft
-  - Sébastien Ros (@sebastrienros)
+  - Sébastien Ros (@sebastienros)
+  - Bertand Le Roy (@bleroy)
   - Taylor Mullen (@NTaylorMullen)
 
 * Lombiq (@LombiqTechnologies)
