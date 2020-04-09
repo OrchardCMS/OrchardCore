@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
@@ -24,11 +23,16 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<IChangeToken> BuildAsync(ISchema schema)
+        public Task<string> GetIdentifierAsync()
+        {
+            var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+            return queryManager.GetIdentifierAsync();
+        }
+
+        public async Task BuildAsync(ISchema schema)
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
 
-            var changeToken = queryManager.ChangeToken;
             var queries = await queryManager.ListQueriesAsync();
 
             foreach (var query in queries.OfType<LuceneQuery>())
@@ -58,8 +62,6 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     schema.Query.AddField(BuildSchemaBasedFieldType(query, querySchema));
                 }
             }
-
-            return changeToken;
         }
 
         private FieldType BuildSchemaBasedFieldType(LuceneQuery query, JToken schema)
@@ -134,12 +136,12 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
         private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, LuceneQuery query)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
-            
+
             if (typetype == null)
             {
                 return null;
             }
-            
+
             var fieldType = new FieldType
             {
                 Arguments = new QueryArguments(
@@ -164,7 +166,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 }),
                 Type = typetype.Type
             };
-            
+
             return fieldType;
         }
     }

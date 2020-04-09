@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
@@ -37,14 +36,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             S = localizer;
         }
 
-        public Task<IChangeToken> BuildAsync(ISchema schema)
+        // Todo: get an identifier from the contentDefinitionManager and that is never null.
+        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+
+        public Task BuildAsync(ISchema schema)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
 
             var contentDefinitionManager = serviceProvider.GetService<IContentDefinitionManager>();
             var contentTypeBuilders = serviceProvider.GetServices<IContentTypeBuilder>().ToList();
-
-            var changeToken = contentDefinitionManager.ChangeToken;
 
             foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
             {
@@ -87,7 +87,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 builder.Clear();
             }
 
-            return Task.FromResult(changeToken);
+            return Task.CompletedTask;
         }
     }
 }

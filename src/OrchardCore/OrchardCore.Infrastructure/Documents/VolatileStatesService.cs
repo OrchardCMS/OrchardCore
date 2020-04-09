@@ -40,9 +40,9 @@ namespace OrchardCore.Documents
             document.Properties.Remove(key);
             await _documentManager.UpdateAsync(document);
         }
-    }
 
-    public class VolatileDocument : DocumentEntity
-    {
+        public class VolatileDocument : DocumentEntity
+        {
+        }
     }
 }

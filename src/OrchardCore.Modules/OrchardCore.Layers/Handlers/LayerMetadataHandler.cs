@@ -42,6 +42,7 @@ namespace OrchardCore.Layers.Handlers
                 return Task.CompletedTask;
             }
 
+            // Checked by the 'LayerFilter'.
             return _states.SetAsync(StateKey, new Document() { Identifier = IdGenerator.GenerateId() });
         }
     }

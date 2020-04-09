@@ -2,37 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Documents;
-using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.Queries.Services
 {
     public class QueryManager : IQueryManager
     {
-        private const string ChangeTokenKey = nameof(QueryManager);
-
-        private readonly ISignal _signal;
         private readonly IDocumentManager<QueriesDocument> _documentManager;
         private IEnumerable<IQuerySource> _querySources;
 
-        public QueryManager(ISignal signal, IDocumentManager<QueriesDocument> documentManager, IEnumerable<IQuerySource> querySources)
+        public QueryManager(IDocumentManager<QueriesDocument> documentManager, IEnumerable<IQuerySource> querySources)
         {
-            _signal = signal;
             _documentManager = documentManager;
             _querySources = querySources;
         }
 
-        public IChangeToken ChangeToken => _signal.GetToken(ChangeTokenKey);
+        public async Task<string> GetIdentifierAsync() => (await GetDocumentAsync()).Identifier;
 
         public async Task DeleteQueryAsync(string name)
         {
             var existing = await LoadDocumentAsync();
             existing.Queries.Remove(name);
             await _documentManager.UpdateAsync(existing);
-
-            // Checked by the GraphQL 'SchemaService'.
-            _signal.DeferredSignalToken(ChangeTokenKey);
         }
 
         public async Task<Query> LoadQueryAsync(string name)
@@ -70,9 +61,6 @@ namespace OrchardCore.Queries.Services
             existing.Queries.Remove(name);
             existing.Queries[query.Name] = query;
             await _documentManager.UpdateAsync(existing);
-
-            // Checked by the GraphQL 'SchemaService'.
-            _signal.DeferredSignalToken(ChangeTokenKey);
         }
 
         /// <summary>

@@ -44,9 +44,9 @@ namespace OrchardCore.Documents
 
             await _documentManager.UpdateAsync(document);
         }
-    }
 
-    public class PersistentDocument : DocumentEntity
-    {
+        public class PersistentDocument : DocumentEntity
+        {
+        }
     }
 }

@@ -78,10 +78,10 @@ namespace OrchardCore.Layers.Services
 
                 var layerMetadataState = await _states.GetAsync<Document>(LayerMetadataHandler.StateKey);
 
-                if (!_memoryCache.TryGetValue<WidgetsDocument>(WidgetsKey, out var widgetsDocument)
+                if (!_memoryCache.TryGetValue<WidgetsCacheEntry>(WidgetsKey, out var widgetsDocument)
                     || widgetsDocument.Identifier != layerMetadataState.Identifier)
                 {
-                    widgetsDocument = new WidgetsDocument()
+                    widgetsDocument = new WidgetsCacheEntry()
                     {
                         Identifier = layerMetadataState.Identifier,
                         Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)
@@ -161,7 +161,7 @@ namespace OrchardCore.Layers.Services
             await next.Invoke();
         }
 
-        internal class WidgetsDocument : Document
+        internal class WidgetsCacheEntry : Document
         {
             public IEnumerable<LayerMetadata> Widgets { get; set; }
         }

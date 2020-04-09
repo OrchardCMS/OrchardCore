@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
@@ -27,11 +26,16 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<IChangeToken> BuildAsync(ISchema schema)
+        public Task<string> GetIdentifierAsync()
+        {
+            var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+            return queryManager.GetIdentifierAsync();
+        }
+
+        public async Task BuildAsync(ISchema schema)
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
 
-            var changeToken = queryManager.ChangeToken;
             var queries = await queryManager.ListQueriesAsync();
 
             foreach (var query in queries.OfType<SqlQuery>())
@@ -56,8 +60,6 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     schema.Query.AddField(BuildSchemaBasedFieldType(schema, query, querySchema));
                 }
             }
-
-            return changeToken;
         }
 
         private FieldType BuildSchemaBasedFieldType(ISchema schema, SqlQuery query, JToken querySchema)
