@@ -4,7 +4,7 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Roles.Models
 {
-    public class RolesDocument : BaseDocument
+    public class RolesDocument : Document
     {
         public List<Role> Roles { get; set; } = new List<Role>();
     }

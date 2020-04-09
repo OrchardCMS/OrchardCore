@@ -17,8 +17,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<IDocumentOptionsFactory, DocumentOptionsFactory>();
                 services.AddTransient(typeof(DocumentOptions<>));
 
-                services.AddScoped<IPersistentPropertiesService, PersistentPropertiesService>();
-                services.AddScoped<IVolatilePropertiesService, VolatilePropertiesService>();
+                services.AddScoped<IPersistentStates, PersistentStatesService>();
+                services.AddScoped<IVolatileStates, VolatileStatesService>();
             });
         }
     }

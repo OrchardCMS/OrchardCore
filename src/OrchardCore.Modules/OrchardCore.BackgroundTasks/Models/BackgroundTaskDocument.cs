@@ -3,7 +3,7 @@ using OrchardCore.Data.Documents;
 
 namespace OrchardCore.BackgroundTasks.Models
 {
-    public class BackgroundTaskDocument : BaseDocument
+    public class BackgroundTaskDocument : Document
     {
         public Dictionary<string, BackgroundTaskSettings> Settings { get; } = new Dictionary<string, BackgroundTaskSettings>();
     }

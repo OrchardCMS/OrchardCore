@@ -6,9 +6,9 @@ using OrchardCore.Data.Documents;
 namespace OrchardCore.Documents
 {
     /// <summary>
-    /// A <see cref="BaseDocument"/> being an <see cref="IDocumentEntity"/> that is serializable by 'MessagePack'.
+    /// A <see cref="Document"/> being an <see cref="IDocumentEntity"/> that is serializable by 'MessagePack'.
     /// </summary>
-    public class DocumentEntity : BaseDocument, IDocumentEntity
+    public class DocumentEntity : Document, IDocumentEntity
     {
         [IgnoreMember]
         public JObject Properties { get; set; } = new JObject();

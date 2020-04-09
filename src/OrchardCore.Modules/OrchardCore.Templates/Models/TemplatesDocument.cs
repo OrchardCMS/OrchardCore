@@ -4,7 +4,7 @@ using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Templates.Models
 {
-    public class TemplatesDocument : BaseDocument
+    public class TemplatesDocument : Document
     {
         public Dictionary<string, Template> Templates { get; } = new Dictionary<string, Template>(StringComparer.OrdinalIgnoreCase);
     }

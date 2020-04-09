@@ -22,6 +22,7 @@ namespace OrchardCore.Documents
 
         private TDocument _scopedCache;
         private TDocument _scopedMutable;
+        protected bool _isVolatile;
 
         public DocumentManager(
             IDocumentStore documentStore,
@@ -39,43 +40,43 @@ namespace OrchardCore.Documents
         {
             TDocument document = null;
 
-            if (_documentStore != null)
+            if (_isVolatile)
             {
-                document = await _documentStore.GetMutableAsync(factory);
+                // For volatile data, we deserialize the document from the distributed cache so that it can
+                // be safely updated, and we hold a scoped cache as it would be done by the document store.
 
-                if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
+                if (_scopedMutable != null)
                 {
-                    throw new ArgumentException("Can't load for update a cached object");
+                    return _scopedMutable;
                 }
+
+                var data = await _distributedCache.GetAsync(_options.CacheKey);
+
+                if (data != null)
+                {
+                    using (var stream = new MemoryStream(data))
+                    {
+                        document = await DeserializeAsync(stream);
+                    }
+                }
+
+                document ??= factory?.Invoke() ?? new TDocument();
 
                 document.Identifier = null;
 
-                return document;
+                return _scopedMutable = document;
             }
 
-            // When there is a null document store, we deserialize the document from the distributed cache
-            // so that it can be safely updated, and we hold a scoped cache as done by the document store.
+            document = await _documentStore.GetMutableAsync(factory);
 
-            if (_scopedMutable != null)
+            if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
             {
-                return _scopedMutable;
+                throw new ArgumentException("Can't load for update a cached object");
             }
-
-            var data = await _distributedCache.GetAsync(_options.CacheKey);
-
-            if (data != null)
-            {
-                using (var stream = new MemoryStream(data))
-                {
-                    document = await DeserializeAsync(stream);
-                }
-            }
-
-            document ??= factory?.Invoke() ?? new TDocument();
 
             document.Identifier = null;
 
-            return _scopedMutable = document;
+            return document;
         }
 
         public async Task<TDocument> GetImmutableAsync(Func<TDocument> factory = null)
@@ -84,13 +85,13 @@ namespace OrchardCore.Documents
 
             if (document == null)
             {
-                if (_documentStore != null)
+                if (_isVolatile)
                 {
-                    document = await _documentStore.GetImmutableAsync(factory);
+                    document = factory?.Invoke() ?? new TDocument();
                 }
                 else
                 {
-                    document = factory?.Invoke() ?? new TDocument();
+                    document = await _documentStore.GetImmutableAsync(factory);
                 }
 
                 await SetInternalAsync(document);
@@ -108,9 +109,15 @@ namespace OrchardCore.Documents
 
             document.Identifier ??= IdGenerator.GenerateId();
 
-            if (_documentStore == null)
+            if (_isVolatile)
             {
-                return SetInternalAsync(document);
+                // Still update the cache after committing.
+                _documentStore.AfterCommitSuccess<TDocument>(() =>
+                {
+                    return SetInternalAsync(document);
+                });
+
+                return Task.CompletedTask;
             }
 
             return _documentStore.UpdateAsync(document, document =>
@@ -203,7 +210,7 @@ namespace OrchardCore.Documents
                 SlidingExpiration = _options.SlidingExpiration
             });
 
-            if (_documentStore == null)
+            if (_isVolatile)
             {
                 return;
             }

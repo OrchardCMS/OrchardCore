@@ -9,13 +9,13 @@ namespace OrchardCore.Layers.Handlers
 {
     public class LayerMetadataHandler : ContentHandlerBase
     {
-        public const string LayerIdentifier = "OrchardCore.Layers:LayerMetadata";
+        public const string StateKey = "OrchardCore.Layers:LayerMetadata";
 
-        private readonly IVolatilePropertiesService _properties;
+        private readonly IVolatileStates _states;
 
-        public LayerMetadataHandler(IVolatilePropertiesService properties)
+        public LayerMetadataHandler(IVolatileStates states)
         {
-            _properties = properties;
+            _states = states;
         }
 
         public override Task PublishedAsync(PublishContentContext context)
@@ -42,7 +42,7 @@ namespace OrchardCore.Layers.Handlers
                 return Task.CompletedTask;
             }
 
-            return _properties.SetAsync(LayerIdentifier, new BaseDocument() { Identifier = IdGenerator.GenerateId() });
+            return _states.SetAsync(StateKey, new Document() { Identifier = IdGenerator.GenerateId() });
         }
     }
 }

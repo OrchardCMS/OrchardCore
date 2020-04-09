@@ -9,7 +9,7 @@ namespace OrchardCore.Documents
 {
     public class DocumentOptionsFactory : IDocumentOptionsFactory
     {
-        private static readonly string _baseFullName = typeof(BaseDocument).FullName;
+        private static readonly string _baseFullName = typeof(Document).FullName;
 
         private readonly IShellConfiguration _shellConfiguration;
 
