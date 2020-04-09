@@ -50,10 +50,6 @@ their names indented and be marked with a '-'
 
 * Peter Davis (@petedavis)
 
-* Peter Davis (@petedavis)
-
-* Niraj Soni (@ns8482e)
-
 * Niraj Soni (@ns8482e)
 
 * Matthijs Krempel (@MatthijsKrempel)
