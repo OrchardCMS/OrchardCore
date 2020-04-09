@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Admin.ViewModels
 {
     public class AdminSettingsViewModel

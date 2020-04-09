@@ -13,7 +13,7 @@ namespace OrchardCore.Facebook.Widgets.Settings
     public class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public FacebookPluginPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer)
         {

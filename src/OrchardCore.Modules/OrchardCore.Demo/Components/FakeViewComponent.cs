@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OrchardCore.Demo.Components

@@ -25,7 +25,7 @@ namespace OrchardCore.Users
 
             builder.Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
                     .AddClass("security").Id("security")
-                        .Add(S["Users"], "5", installed => installed
+                        .Add(S["Users"], S["Users"], installed => installed
                             .Action("Index", "Admin", "OrchardCore.Users")
                             .Permission(Permissions.ManageUsers)
                             .LocalNav()
