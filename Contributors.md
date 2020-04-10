@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-78-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-79-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -111,6 +111,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="http://www.fizzylogic.nl"><img src="https://avatars3.githubusercontent.com/u/1550763?v=4" width="100px;" alt=""/><br /><sub><b>Willem Meints</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=wmeints" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/torbjokv"><img src="https://avatars1.githubusercontent.com/u/554713?v=4" width="100px;" alt=""/><br /><sub><b>Torbjørn Kvåle</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=torbjokv" title="Code">💻</a></td>
   </tr>
 </table>
 

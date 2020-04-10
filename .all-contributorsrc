@@ -721,6 +721,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "torbjokv",
+      "name": "Torbjørn Kvåle",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/554713?v=4",
+      "profile": "https://github.com/torbjokv",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
