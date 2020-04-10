@@ -200,7 +200,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://OrchardSkills.com"><img src="https://avatars1.githubusercontent.com/u/59172485?v=4" width="100px;" alt=""/><br /><sub><b>Orchard Skills</b></sub></a><br /><a href="#video-OrchardSkills" title="Videos">📹</a></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://github.com/sfmskywalker"><img src="https://avatars0.githubusercontent.com/u/938393?v=4" width="100px;" alt=""/><br /><sub><b>Sipke Schoorstra</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=sfmskywalker" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/sfmskywalker"><img src="https://avatars0.githubusercontent.com/u/938393?v=4" width="100px;" alt=""/><br /><sub><b>Sipke Schoorstra</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=sfmskywalker" title="Code">💻</a> <a href="#blog-sfmskywalker" title="Blogposts">📝</a></td>
   </tr>
 </table>
 
