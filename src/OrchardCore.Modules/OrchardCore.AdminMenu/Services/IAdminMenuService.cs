@@ -18,7 +18,7 @@ namespace OrchardCore.AdminMenu
         Task<Models.AdminMenuList> GetAdminMenuListAsync();
 
         /// <summary>
-        /// Updates the store with the provided admin menus and then updates the cache.
+        /// Persist an admin menu
         /// </summary>
         /// <param name="tree"></param>
         /// <returns></returns>
