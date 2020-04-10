@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-53-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-54-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -78,6 +78,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/Craige"><img src="https://avatars0.githubusercontent.com/u/469311?v=4" width="100px;" alt=""/><br /><sub><b>Craige Leeder</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=Craige" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/rserj"><img src="https://avatars1.githubusercontent.com/u/13991195?v=4" width="100px;" alt=""/><br /><sub><b>Rustem</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=rserj" title="Code">💻</a></td>
     <td align="center"><a href="https://www.zeta.com.au/"><img src="https://avatars3.githubusercontent.com/u/379390?v=4" width="100px;" alt=""/><br /><sub><b>Claire Botman</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=planetClaire" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.dockaltech.com"><img src="https://avatars0.githubusercontent.com/u/26497457?v=4" width="100px;" alt=""/><br /><sub><b>Mark Dockal, Jr.</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=mdockal" title="Code">💻</a></td>
   </tr>
 </table>
 
