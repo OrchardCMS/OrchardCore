@@ -16,7 +16,7 @@ namespace OrchardCore.Templates.Services
         public Task<TemplatesDocument> LoadTemplatesDocumentAsync() => _documentManager.GetMutableAsync();
 
         /// <summary>
-        /// Gets the background task document from the cache for sharing and that should not be updated.
+        /// Gets the templates document from the cache for sharing and that should not be updated.
         /// </summary>
         public Task<TemplatesDocument> GetTemplatesDocumentAsync() => _documentManager.GetImmutableAsync();
 
