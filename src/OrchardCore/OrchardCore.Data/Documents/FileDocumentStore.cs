@@ -73,9 +73,7 @@ namespace OrchardCore.Data.Documents
             return Task.CompletedTask;
         }
 
-        // Need to be called explicitly.
-        public void Cancel() => _canceled = true;
-
+        public void Cancel() => throw new NotImplementedException();
         public void AfterCommitSuccess<T>(DocumentStoreCommitSuccessDelegate afterCommitSuccess) => throw new NotImplementedException();
         public void AfterCommitFailure<T>(DocumentStoreCommitFailureDelegate afterCommitFailure) => throw new NotImplementedException();
         public Task CommitAsync() => throw new NotImplementedException();

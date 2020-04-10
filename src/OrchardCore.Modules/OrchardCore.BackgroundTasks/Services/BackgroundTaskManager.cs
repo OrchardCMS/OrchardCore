@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.BackgroundTasks.Models;
 using OrchardCore.Documents;
-using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.BackgroundTasks.Services
 {
@@ -9,7 +8,7 @@ namespace OrchardCore.BackgroundTasks.Services
     {
         private readonly IDocumentManager<BackgroundTaskDocument> _documentManager;
 
-        public BackgroundTaskManager(ISignal signal, IDocumentManager<BackgroundTaskDocument> documentManager)
+        public BackgroundTaskManager(IDocumentManager<BackgroundTaskDocument> documentManager)
         {
             _documentManager = documentManager;
         }
