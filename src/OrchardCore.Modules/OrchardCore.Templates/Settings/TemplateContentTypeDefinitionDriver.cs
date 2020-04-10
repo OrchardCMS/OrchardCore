@@ -40,6 +40,13 @@ namespace OrchardCore.Templates.Settings
                         Key = $"{stereotype}_Summary__{contentTypeDefinition.Name}",
                         Description = S["Template for a {0} content item in summary views", contentTypeDefinition.DisplayName]
                     });
+
+                model.ContentSettingsEntries.Add(
+                    new ContentSettingsEntry
+                    {
+                        Key = $"{stereotype}_Contained__{contentTypeDefinition.Name}",
+                        Description = S["Template for a {0} content item contained in bagpart views", contentTypeDefinition.DisplayName]
+                    });
             }).Location("Content");
         }
     }
