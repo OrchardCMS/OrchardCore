@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-46-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-47-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -69,6 +69,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://lombiq.com/"><img src="https://avatars3.githubusercontent.com/u/1976647?v=4" width="100px;" alt=""/><br /><sub><b>Zoltán Lehóczky</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=Piedone" title="Code">💻</a></td>
     <td align="center"><a href="https://articles.runtings.co.uk/"><img src="https://avatars2.githubusercontent.com/u/1038062?v=4" width="100px;" alt=""/><br /><sub><b>Matthew Harris</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=rtpHarry" title="Code">💻</a></td>
     <td align="center"><a href="http://peterkeating.co.uk"><img src="https://avatars1.githubusercontent.com/u/651190?v=4" width="100px;" alt=""/><br /><sub><b>Peter Keating</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=peterkeating" title="Code">💻</a></td>
+    <td align="center"><a href="http://twitter.com/_nemke_"><img src="https://avatars3.githubusercontent.com/u/350314?v=4" width="100px;" alt=""/><br /><sub><b>Nemanja Đorđević</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=neman" title="Code">💻</a></td>
   </tr>
 </table>
 

@@ -423,6 +423,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "neman",
+      "name": "Nemanja Đorđević",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/350314?v=4",
+      "profile": "http://twitter.com/_nemke_",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
