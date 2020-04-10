@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-77-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-78-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -108,6 +108,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/KeithRaven"><img src="https://avatars3.githubusercontent.com/u/9599649?v=4" width="100px;" alt=""/><br /><sub><b>Keith Raven</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=KeithRaven" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/AidosMarcos"><img src="https://avatars0.githubusercontent.com/u/30325304?v=4" width="100px;" alt=""/><br /><sub><b>Marcos Aidos</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=AidosMarcos" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/zisiszaverdas"><img src="https://avatars3.githubusercontent.com/u/17565187?v=4" width="100px;" alt=""/><br /><sub><b>zisiszaverdas</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=zisiszaverdas" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="http://www.fizzylogic.nl"><img src="https://avatars3.githubusercontent.com/u/1550763?v=4" width="100px;" alt=""/><br /><sub><b>Willem Meints</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=wmeints" title="Code">💻</a></td>
   </tr>
 </table>
 

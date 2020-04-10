@@ -712,6 +712,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "wmeints",
+      "name": "Willem Meints",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1550763?v=4",
+      "profile": "http://www.fizzylogic.nl",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
