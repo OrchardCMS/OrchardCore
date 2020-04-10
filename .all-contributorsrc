@@ -595,6 +595,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "stevetayloruk",
+      "name": "Steve Taylor",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5065543?v=4",
+      "profile": "http://stevetaylor.me.uk",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
