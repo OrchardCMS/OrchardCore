@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "agriffard",
+      "name": "Antoine Griffard",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/703248?v=4",
+      "profile": "http://antoinegriffard.com",
+      "contributions": [
+        "test",
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "OrchardCore",
+  "projectOwner": "OrchardCMS",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
