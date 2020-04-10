@@ -1,6 +1,6 @@
 {
   "projectName": "OrchardCore",
-  "projectOwner": "The Orchard Team",
+  "projectOwner": "OrchardCMS",
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
@@ -26,13 +26,8 @@
       "profile": "http://antoinegriffard.com",
       "contributions": [
         "code",
-        "bug",
-        "blog",
-        "content",
-        "question",
         "review",
-        "translation",
-        "tutorial"
+        "translation"
       ]
     },
     {
@@ -77,7 +72,8 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/3237266?v=4",
       "profile": "http://www.hishambinateya.com",
       "contributions": [
-        "code"
+        "code",
+        "translation"
       ]
     },
     {
