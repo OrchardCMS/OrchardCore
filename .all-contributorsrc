@@ -622,6 +622,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "jpiquot",
+      "name": "Jérôme Piquot",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/6775094?v=4",
+      "profile": "http://www.fiveforty.fr",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
