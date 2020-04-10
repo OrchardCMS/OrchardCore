@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -24,6 +24,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/matiasmolleja"><img src="https://avatars1.githubusercontent.com/u/2589629?v=4" width="100px;" alt=""/><br /><sub><b>Matias Molleja</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=matiasmolleja" title="Code">💻</a></td>
     <td align="center"><a href="https://kevinchalet.com/"><img src="https://avatars1.githubusercontent.com/u/6998306?v=4" width="100px;" alt=""/><br /><sub><b>Kévin Chalet</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=kevinchalet" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/MichaelPetrinolis"><img src="https://avatars2.githubusercontent.com/u/9623255?v=4" width="100px;" alt=""/><br /><sub><b>Michael Petrinolis</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=MichaelPetrinolis" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/jptissot"><img src="https://avatars2.githubusercontent.com/u/4681586?v=4" width="100px;" alt=""/><br /><sub><b>Jean-Philippe Tissot</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=jptissot" title="Code">💻</a></td>
   </tr>
 </table>
 
