@@ -90,6 +90,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "kevinchalet",
+      "name": "Kévin Chalet",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/6998306?v=4",
+      "profile": "https://kevinchalet.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
