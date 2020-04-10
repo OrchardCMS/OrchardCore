@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
-using OrchardCore.Environment.Cache;
+using OrchardCore.Data.Documents;
 
 namespace OrchardCore.ContentManagement
 {
@@ -17,7 +16,6 @@ namespace OrchardCore.ContentManagement
     {
         private const string CacheKey = nameof(ContentDefinitionManager);
 
-        private readonly ISignal _signal;
         private readonly IContentDefinitionStore _contentDefinitionStore;
         private readonly IMemoryCache _memoryCache;
 
@@ -28,19 +26,15 @@ namespace OrchardCore.ContentManagement
         private readonly Dictionary<string, ContentPartDefinition> _scopedPartDefinitions = new Dictionary<string, ContentPartDefinition>();
 
         public ContentDefinitionManager(
-            ISignal signal,
             IContentDefinitionStore contentDefinitionStore,
             IMemoryCache memoryCache)
         {
-            _signal = signal;
             _contentDefinitionStore = contentDefinitionStore;
             _memoryCache = memoryCache;
 
             _cachedTypeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>());
             _cachedPartDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>());
         }
-
-        public IChangeToken ChangeToken => _signal.GetToken(CacheKey);
 
         public ContentTypeDefinition LoadTypeDefinition(string name)
         {
@@ -68,9 +62,12 @@ namespace OrchardCore.ContentManagement
                 throw new ArgumentException("Argument cannot be null or empty", nameof(name));
             }
 
+            var document = GetContentDefinitionRecord();
+            CheckDocumentIdentifier(document);
+
             return _cachedTypeDefinitions.GetOrAdd(name, n =>
             {
-                var contentTypeDefinitionRecord = GetContentDefinitionRecord()
+                var contentTypeDefinitionRecord = document
                     .ContentTypeDefinitionRecords
                     .FirstOrDefault(x => x.Name == name);
 
@@ -92,9 +89,12 @@ namespace OrchardCore.ContentManagement
 
         public ContentPartDefinition GetPartDefinition(string name)
         {
+            var document = GetContentDefinitionRecord();
+            CheckDocumentIdentifier(document);
+
             return _cachedPartDefinitions.GetOrAdd(name, n =>
             {
-                return Build(GetContentDefinitionRecord()
+                return Build(document
                     .ContentPartDefinitionRecords
                     .FirstOrDefault(x => x.Name == name));
             });
@@ -304,55 +304,46 @@ namespace OrchardCore.ContentManagement
             return source == null ? null : new ContentFieldDefinition(source.Name);
         }
 
-        public Task<int> GetTypesHashAsync()
-        {
-            return Task.FromResult(GetContentDefinitionRecord().Serial);
-        }
+        public async Task<string> GetTypesHashAsync() => (await _contentDefinitionStore.GetContentDefinitionAsync()).Identifier;
 
         /// <summary>
-        /// Returns the document from the store to be updated.
+        /// Loads the document from the store for updating and that should not be cached.
         /// </summary>
-        private ContentDefinitionRecord LoadContentDefinitionRecord() =>
-            _contentDefinitionStore.LoadContentDefinitionAsync().GetAwaiter().GetResult();
+        private ContentDefinitionRecord LoadContentDefinitionRecord() => _contentDefinitionStore.LoadContentDefinitionAsync().GetAwaiter().GetResult();
 
-        private ContentDefinitionRecord GetContentDefinitionRecord()
-        {
-            if (!_memoryCache.TryGetValue<ContentDefinitionRecord>(CacheKey, out var record))
-            {
-                var changeToken = ChangeToken;
-
-                var typeDefinitions = _cachedTypeDefinitions;
-                var partDefinitions = _cachedPartDefinitions;
-
-                // Using local vars prevents the lambda from holding a ref on this scoped service.
-                changeToken.RegisterChangeCallback((state) =>
-                {
-                    typeDefinitions.Clear();
-                    partDefinitions.Clear();
-                },
-                state: null);
-
-                record = _contentDefinitionStore.GetContentDefinitionAsync().GetAwaiter().GetResult();
-
-                _memoryCache.Set(CacheKey, record, changeToken);
-            }
-
-            return record;
-        }
+        /// <summary>
+        /// Gets the document from the cache for sharing and that should not be updated.
+        /// </summary>
+        private ContentDefinitionRecord GetContentDefinitionRecord() => _contentDefinitionStore.GetContentDefinitionAsync().GetAwaiter().GetResult();
 
         private void UpdateContentDefinitionRecord()
         {
             var contentDefinitionRecord = LoadContentDefinitionRecord();
 
-            contentDefinitionRecord.Serial++;
             _contentDefinitionStore.SaveContentDefinitionAsync(contentDefinitionRecord).GetAwaiter().GetResult();
-
-            // Cache invalidation at the end of the scope.
-            _signal.DeferredSignalToken(CacheKey);
 
             // If multiple updates in the same scope, types and parts may need to be rebuilt.
             _scopedTypeDefinitions.Clear();
             _scopedPartDefinitions.Clear();
+        }
+
+        /// <summary>
+        /// Checks the document identifier and then clears the cached built definitions if it has changed.
+        /// </summary>
+        private void CheckDocumentIdentifier(ContentDefinitionRecord document)
+        {
+            if (!_memoryCache.TryGetValue<Document>(CacheKey, out var cacheEntry) || cacheEntry.Identifier != document.Identifier)
+            {
+                cacheEntry = new Document()
+                {
+                    Identifier = document.Identifier,
+                };
+
+                _cachedTypeDefinitions.Clear();
+                _cachedPartDefinitions.Clear();
+
+                _memoryCache.Set(CacheKey, cacheEntry);
+            }
         }
     }
 }

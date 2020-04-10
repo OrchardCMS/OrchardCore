@@ -36,8 +36,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             S = localizer;
         }
 
-        // Todo: get an identifier from the contentDefinitionManager and that is never null.
-        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+        public Task<string> GetIdentifierAsync()
+        {
+            var contentDefinitionManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IContentDefinitionManager>();
+            return contentDefinitionManager.GetTypesHashAsync();
+        }
 
         public Task BuildAsync(ISchema schema)
         {

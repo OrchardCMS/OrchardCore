@@ -14,6 +14,8 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddScoped(typeof(IDocumentManager<>), typeof(DocumentManager<>));
                 services.AddScoped(typeof(IVolatileDocumentManager<>), typeof(VolatileDocumentManager<>));
+                services.AddScoped(typeof(IDocumentManager<,>), typeof(DocumentManager<,>));
+
                 services.AddSingleton<IDocumentOptionsFactory, DocumentOptionsFactory>();
                 services.AddTransient(typeof(DocumentOptions<>));
 

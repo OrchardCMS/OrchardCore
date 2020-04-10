@@ -81,7 +81,7 @@ namespace OrchardCore.Data.Documents
             return Task.CompletedTask;
         }
 
-        /// <inheritdoc />
+        // Need to be called explicitly.
         public void Cancel()
         {
             _canceled = true;

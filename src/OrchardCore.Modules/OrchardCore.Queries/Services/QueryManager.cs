@@ -69,7 +69,7 @@ namespace OrchardCore.Queries.Services
         public Task<QueriesDocument> LoadDocumentAsync() => _documentManager.GetMutableAsync();
 
         /// <summary>
-        /// Gets the background task document from the cache for sharing and that should not be updated.
+        /// Gets the queries document from the cache for sharing and that should not be updated.
         /// </summary>
         public Task<QueriesDocument> GetDocumentAsync() => _documentManager.GetImmutableAsync();
 

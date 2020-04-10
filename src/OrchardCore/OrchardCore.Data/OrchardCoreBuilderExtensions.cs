@@ -125,6 +125,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 });
 
                 services.AddScoped<IDocumentStore, DocumentStore>();
+                services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
 
                 // This service will be removed in a future version.
                 services.AddScoped<ISessionHelper, SessionHelper>();

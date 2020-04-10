@@ -76,21 +76,20 @@ namespace OrchardCore.Layers.Services
                     return;
                 }
 
-                var layerMetadataState = await _states.GetAsync<Document>(LayerMetadataHandler.StateKey);
+                var layerState = await _states.GetAsync<Document>(LayerMetadataHandler.StateKey);
 
-                if (!_memoryCache.TryGetValue<WidgetsCacheEntry>(WidgetsKey, out var widgetsDocument)
-                    || widgetsDocument.Identifier != layerMetadataState.Identifier)
+                if (!_memoryCache.TryGetValue<CacheEntry>(WidgetsKey, out var cacheEntry) || cacheEntry.Identifier != layerState.Identifier)
                 {
-                    widgetsDocument = new WidgetsCacheEntry()
+                    cacheEntry = new CacheEntry()
                     {
-                        Identifier = layerMetadataState.Identifier,
+                        Identifier = layerState.Identifier,
                         Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)
                     };
 
-                    _memoryCache.Set(WidgetsKey, widgetsDocument);
+                    _memoryCache.Set(WidgetsKey, cacheEntry);
                 }
 
-                var widgets = widgetsDocument.Widgets;
+                var widgets = cacheEntry.Widgets;
 
                 var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
 
@@ -161,7 +160,7 @@ namespace OrchardCore.Layers.Services
             await next.Invoke();
         }
 
-        internal class WidgetsCacheEntry : Document
+        internal class CacheEntry : Document
         {
             public IEnumerable<LayerMetadata> Widgets { get; set; }
         }

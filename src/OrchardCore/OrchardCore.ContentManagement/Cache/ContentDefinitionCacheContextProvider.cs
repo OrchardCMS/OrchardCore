@@ -23,8 +23,8 @@ namespace OrchardCore.ContentManagement.Cache
             {
                 var hash = await _contentDefinitionManager.GetTypesHashAsync();
 
-                // Add a hash based on the content definition record serial number.
-                entries.Add(new CacheContextEntry("types", hash.ToString(CultureInfo.InvariantCulture)));
+                // Add a hash based on the content definition document identifier.
+                entries.Add(new CacheContextEntry("types", hash));
 
                 return;
             }
