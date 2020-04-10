@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
 
@@ -83,7 +82,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
         /// </summary>
         public static readonly string CacheKeyPrefix = nameof(DynamicCacheTagHelper);
 
-        private const string CachePriorityAttributeName = "priority";
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
         private readonly DynamicCacheTagHelperService _dynamicCacheTagHelperService;
@@ -100,17 +98,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
             HtmlEncoder = htmlEncoder;
             _dynamicCacheTagHelperService = dynamicCacheTagHelperService;
         }
-
-        /// <summary>
-        /// Gets the <see cref="IMemoryCache"/> instance used to cache entries.
-        /// </summary>
-        protected IMemoryCache MemoryCache { get; }
-
-        /// <summary>
-        /// Gets or sets the <see cref="CacheItemPriority"/> policy for the cache entry.
-        /// </summary>
-        [HtmlAttributeName(CachePriorityAttributeName)]
-        public CacheItemPriority? Priority { get; set; }
 
         /// <inheritdoc />
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
