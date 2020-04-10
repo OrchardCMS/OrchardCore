@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-58-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-59-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -85,6 +85,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/barthamark"><img src="https://avatars3.githubusercontent.com/u/8542607?v=4" width="100px;" alt=""/><br /><sub><b>Márk Bartha</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=barthamark" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/aodl"><img src="https://avatars1.githubusercontent.com/u/14985227?v=4" width="100px;" alt=""/><br /><sub><b>Alex Lorimer</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=aodl" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.zumey.com"><img src="https://avatars0.githubusercontent.com/u/11973801?v=4" width="100px;" alt=""/><br /><sub><b>Arjan Noordende</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=anoordende" title="Code">💻</a></td>
   </tr>
 </table>
 
