@@ -12,10 +12,8 @@ namespace OrchardCore.Environment.Shell
     {
         public static IServiceCollection AddHostingShellServices(this IServiceCollection services)
         {
-            // Register the type as it's implementing two interfaces which can be resolved independently
-            services.AddSingleton<ShellHost>();
-            services.AddSingleton<IShellHost>(sp => sp.GetRequiredService<ShellHost>());
-            services.AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ShellHost>());
+            services.AddSingleton<IShellHost, ShellHost>();
+            services.AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<IShellHost>());
 
             {
                 // Use a single default site by default, i.e. if WithTenants hasn't been called before

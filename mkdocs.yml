@@ -140,9 +140,11 @@ nav:
             - Roles: docs/reference/modules/Roles/README.md
             - Scripting: docs/reference/modules/Scripting/README.md
             - Setup: docs/reference/modules/Setup/README.md
+            - Shells: docs/reference/core/Shells/README.md
             - Tenants: docs/reference/modules/Tenants/README.md
             - Workflows: docs/reference/modules/Workflows/README.md
             - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
     - Resources: 
         - Learning: docs/resources/README.md
+        - Workshops: docs/resources/workshops/README.md
     
