@@ -649,6 +649,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "davidhayden",
+      "name": "David Hayden",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/96801?v=4",
+      "profile": "https://www.davidhayden.me",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
