@@ -108,7 +108,6 @@ When auto setup is enabled, it will look for the following configuration variabl
 | `DatabaseConnectionString` | The connection string. |
 | `DatabaseTablePrefix` | The database table prefix. |
 | 'RecipeName' | The name of the recipe to configure the site with. |
-| 'CreateDatabase' | Indicate with true or false if the database should be created automatically. |
 
 It will then perform the Setup of the site, without the need for user input.
 
@@ -126,8 +125,7 @@ Example configuration;
       "DatabaseName": "OrchardCore",
       "DatabaseConnectionString": "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=orchardcore;EntityAdminDatabase=postgres;Pooling=true;",
       "DatabaseTablePrefix": "OrchardCore_",
-      "RecipeName": "Agency",
-      "CreateDatabase": "true"
+      "RecipeName": "Agency"
     }
   }
 }

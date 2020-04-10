@@ -21,22 +21,17 @@ namespace OrchardCore.Setup
 {
     public class AutoSetupStartupFilter : IStartupFilter
     {
-        private readonly IServiceProvider _provider;
-        private readonly IShellHost _shellHost;
         private readonly ILogger _logger;
         private readonly IStringLocalizer T;
 
-        public AutoSetupStartupFilter(IServiceProvider provider, IShellHost shellHost, IStringLocalizer<AutoSetupStartupFilter> stringLocalizer, ILogger<AutoSetupStartupFilter> logger)
+        public AutoSetupStartupFilter(IShellHost shellHost, IStringLocalizer<AutoSetupStartupFilter> stringLocalizer, ILogger<AutoSetupStartupFilter> logger)
         {
             T = stringLocalizer;
-            _provider = provider;
-            _shellHost = shellHost;
             _logger = logger;
         }
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
-            var shellServices = ShellScope.Context.ServiceProvider;
             var scopedServices = ShellScope.Services;
             var settings = ShellScope.Context.Settings;
             var state = ShellScope.Context.Settings.State;
@@ -45,13 +40,13 @@ namespace OrchardCore.Setup
 
             if (siteIsUninitialized)
             {
-                var optionsAccessor = shellServices.GetRequiredService<IOptions<AutoSetupOptions>>();
+                var optionsAccessor = scopedServices.GetRequiredService<IOptions<AutoSetupOptions>>();
                 var options = optionsAccessor.Value;
 
                 if (options != null)
                 {
                     _logger.LogInformation("AutoSetup is initializing the site");
-                    var validationContext = new ValidationContext(options, _provider, null);
+                    var validationContext = new ValidationContext(options, scopedServices, null);
                     var validationErrors = options.Validate(validationContext);
 
                     if (validationErrors.Any())
@@ -68,11 +63,6 @@ namespace OrchardCore.Setup
                         var setupService = scopedServices.GetRequiredService<ISetupService>();
 
                         var setupContext = GetSetupContext(options, setupService, settings);
-
-                        //if (options.CreateDatabase)
-                        //{
-                        //    CreateDatabase(scope, options, setupContext);
-                        //}
 
                         setupService.SetupAsync(setupContext)
                             .GetAwaiter()
@@ -129,36 +119,6 @@ namespace OrchardCore.Setup
             };
 
             return setupContext;
-        }
-
-        private void CreateDatabase(IServiceScope scope, AutoSetupOptions options, SetupContext setupContext)
-        {
-            switch (options.DatabaseProvider)
-            {
-                case "Postgres":
-                    var connectionStringBuilder = new Npgsql.NpgsqlConnectionStringBuilder(options.DatabaseConnectionString);
-                    connectionStringBuilder.Database = connectionStringBuilder["EntityAdminDatabase"].ToString();
-                    var connection = new Npgsql.NpgsqlConnection(connectionStringBuilder.ConnectionString);
-                    connection.Open();
-                    try
-                    {
-                        var cmd = connection.CreateCommand();
-                        cmd.CommandText = $"CREATE DATABASE {options.DatabaseName};";
-                        cmd.ExecuteNonQuery();
-                    }
-                    catch (DbException)
-                    {
-                        if (connection.State == ConnectionState.Open)
-                            connection.Close();
-                    }
-                    break;
-                case "Sqlite":
-                    // no need to create a database
-                    break;
-                default:
-                    setupContext.Errors.Add("CreateDatabaseError", $"Unable to create database. Provider; {options.DatabaseProvider} is not supported");
-                    break;
-            }
         }
     }
 }

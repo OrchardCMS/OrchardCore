@@ -23,7 +23,7 @@ namespace OrchardCore.Setup
         };
         private readonly IShellConfiguration _shellConfiguration;
 
-        public Startup(IShellConfiguration shellConfiguration, IConfiguration configuration)
+        public Startup(IShellConfiguration shellConfiguration)
         {
             _shellConfiguration = shellConfiguration;
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Setup");
