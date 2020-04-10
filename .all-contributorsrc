@@ -847,6 +847,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "JoeBerkley",
+      "name": "Joe Berkley",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/11716107?v=4",
+      "profile": "https://etchuk.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
