@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-56-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-58-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -17,7 +17,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/jtkech"><img src="https://avatars1.githubusercontent.com/u/8586360?v=4" width="100px;" alt=""/><br /><sub><b>Jean-Thierry Kéchichian</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=jtkech" title="Code">💻</a> <a href="https://github.com/OrchardCMS/OrchardCore/pulls?q=is%3Apr+reviewed-by%3Ajtkech" title="Reviewed Pull Requests">👀</a></td>
     <td align="center"><a href="https://github.com/Skrypt"><img src="https://avatars0.githubusercontent.com/u/3228637?v=4" width="100px;" alt=""/><br /><sub><b>Jasmin Savard</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Skrypt" title="Code">💻</a> <a href="https://github.com/OrchardCMS/OrchardCore/pulls?q=is%3Apr+reviewed-by%3ASkrypt" title="Reviewed Pull Requests">👀</a></td>
     <td align="center"><a href="https://www.theappspajamas.com"><img src="https://avatars1.githubusercontent.com/u/13782679?v=4" width="100px;" alt=""/><br /><sub><b>Dean Marcussen</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=deanmarcussen" title="Code">💻</a> <a href="https://github.com/OrchardCMS/OrchardCore/pulls?q=is%3Apr+reviewed-by%3Adeanmarcussen" title="Reviewed Pull Requests">👀</a></td>
-    <td align="center"><a href="http://www.hishambinateya.com"><img src="https://avatars3.githubusercontent.com/u/3237266?v=4" width="100px;" alt=""/><br /><sub><b>Hisham Bin Ateya</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=hishamco" title="Code">💻</a> <a href="#translation-hishamco" title="Translation">🌍</a> <a href="https://github.com/OrchardCMS/OrchardCore/pulls?q=is%3Apr+reviewed-by%3Ahishamco" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="http://www.hishambinateya.com"><img src="https://avatars3.githubusercontent.com/u/3237266?v=4" width="100px;" alt=""/><br /><sub><b>Hisham Bin Ateya</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=hishamco" title="Code">💻</a> <a href="https://github.com/OrchardCMS/OrchardCore/pulls?q=is%3Apr+reviewed-by%3Ahishamco" title="Reviewed Pull Requests">👀</a> <a href="#translation-hishamco" title="Translation">🌍</a></td>
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/alexbocharov"><img src="https://avatars3.githubusercontent.com/u/7753794?v=4" width="100px;" alt=""/><br /><sub><b>Alexander Bocharov</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=alexbocharov" title="Code">💻</a></td>
@@ -81,6 +81,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://www.dockaltech.com"><img src="https://avatars0.githubusercontent.com/u/26497457?v=4" width="100px;" alt=""/><br /><sub><b>Mark Dockal, Jr.</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mdockal" title="Code">💻</a></td>
     <td align="center"><a href="http://whereslou.com"><img src="https://avatars3.githubusercontent.com/u/1693989?v=4" width="100px;" alt=""/><br /><sub><b>Louis DeJardin</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=lodejard" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/domonkosgabor"><img src="https://avatars3.githubusercontent.com/u/8035074?v=4" width="100px;" alt=""/><br /><sub><b>Gábor Domonkos</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=domonkosgabor" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/barthamark"><img src="https://avatars3.githubusercontent.com/u/8542607?v=4" width="100px;" alt=""/><br /><sub><b>Márk Bartha</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=barthamark" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/aodl"><img src="https://avatars1.githubusercontent.com/u/14985227?v=4" width="100px;" alt=""/><br /><sub><b>Alex Lorimer</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=aodl" title="Code">💻</a></td>
   </tr>
 </table>
 

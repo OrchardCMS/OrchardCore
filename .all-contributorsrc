@@ -78,8 +78,8 @@
       "profile": "http://www.hishambinateya.com",
       "contributions": [
         "code",
-        "translation",
-        "review"
+        "review",
+        "translation"
       ]
     },
     {
@@ -520,6 +520,24 @@
       "name": "Gábor Domonkos",
       "avatar_url": "https://avatars3.githubusercontent.com/u/8035074?v=4",
       "profile": "https://github.com/domonkosgabor",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "barthamark",
+      "name": "Márk Bartha",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/8542607?v=4",
+      "profile": "https://github.com/barthamark",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "aodl",
+      "name": "Alex Lorimer",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/14985227?v=4",
+      "profile": "https://github.com/aodl",
       "contributions": [
         "code"
       ]
