@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-21-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-22-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -36,6 +36,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/MatthijsKrempel"><img src="https://avatars2.githubusercontent.com/u/1598506?v=4" width="100px;" alt=""/><br /><sub><b>Matthijs Krempel</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=MatthijsKrempel" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/hswami"><img src="https://avatars2.githubusercontent.com/u/3248104?v=4" width="100px;" alt=""/><br /><sub><b>Himanshu Swami</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=hswami" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/jrestall"><img src="https://avatars2.githubusercontent.com/u/6826786?v=4" width="100px;" alt=""/><br /><sub><b>James Restall</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=jrestall" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="http://jersiovic.webs.com"><img src="https://avatars3.githubusercontent.com/u/4950766?v=4" width="100px;" alt=""/><br /><sub><b>Sergio Navarro</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=jersiovic" title="Code">💻</a></td>
   </tr>
 </table>
 
