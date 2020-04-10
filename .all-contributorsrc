@@ -1,0 +1,24 @@
+{
+  "projectName": "OrchardCore",
+  "projectOwner": "The Orchard Team",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "Contributors.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "sebastienros",
+      "name": "Sébastien Ros",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1165805?v=4",
+      "profile": "http://about.me/sebastienros",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
