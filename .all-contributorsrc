@@ -126,6 +126,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "carlwoodhouse",
+      "name": "Carl Woodhouse",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/465424?v=4",
+      "profile": "https://carlwoodhouse.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
