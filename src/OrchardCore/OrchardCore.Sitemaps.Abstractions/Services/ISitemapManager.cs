@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Services
@@ -36,11 +35,5 @@ namespace OrchardCore.Sitemaps.Services
         /// Build all the sitemap route entries.
         /// </summary>
         Task BuildAllSitemapRouteEntriesAsync();
-
-        /// <summary>
-        /// Gets a change token that is set when the sitemap document has changed.
-        /// </summary>
-        IChangeToken ChangeToken { get; }
-
     }
 }

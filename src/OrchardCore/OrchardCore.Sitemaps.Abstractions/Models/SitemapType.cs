@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Sitemaps.Models
 {
@@ -17,12 +16,6 @@ namespace OrchardCore.Sitemaps.Models
         /// Name of sitemap.
         /// </summary>
         public string Name { get; set; }
-
-        /// <summary>
-        /// When readonly this sitemap cannot be updated.
-        /// </summary>
-        [JsonIgnore]
-        public bool IsReadonly { get; set; }
 
         /// <summary>
         /// When false sitemap will not be included in routing.
