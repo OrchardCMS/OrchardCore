@@ -270,6 +270,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "scleaver",
+      "name": "Seth Cleaver",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/2867511?v=4",
+      "profile": "https://github.com/scleaver",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
