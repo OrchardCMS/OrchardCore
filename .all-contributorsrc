@@ -820,6 +820,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "bleroy",
+      "name": "Bertrand Le Roy",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1165609?v=4",
+      "profile": "http://bertrandleroy.net",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
