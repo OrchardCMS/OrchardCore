@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-63-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-64-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -90,6 +90,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://talkdotnet.wordpress.com"><img src="https://avatars3.githubusercontent.com/u/1651587?v=4" width="100px;" alt=""/><br /><sub><b>Ryan Gunn</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Icidis" title="Code">💻</a></td>
     <td align="center"><a href="http://js231sp.com/"><img src="https://avatars0.githubusercontent.com/u/2471785?v=4" width="100px;" alt=""/><br /><sub><b>Dario Alvarez</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=DariuS231" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/urbanit"><img src="https://avatars0.githubusercontent.com/u/1871551?v=4" width="100px;" alt=""/><br /><sub><b>Sotiris Roussos</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=urbanit" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/timlunev"><img src="https://avatars2.githubusercontent.com/u/14817393?v=4" width="100px;" alt=""/><br /><sub><b>Tymur Lunov</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=timlunev" title="Code">💻</a></td>
   </tr>
 </table>
 
