@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-98-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-99-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -135,6 +135,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://doncorleone.github.io/CV/"><img src="https://avatars2.githubusercontent.com/u/937055?v=4" width="100px;" alt=""/><br /><sub><b>Don Corleone</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=DonCorleone" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/CarlHA"><img src="https://avatars1.githubusercontent.com/u/1239536?v=4" width="100px;" alt=""/><br /><sub><b>Carl Abrahams</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=CarlHA" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/AkosLukacs"><img src="https://avatars2.githubusercontent.com/u/844331?v=4" width="100px;" alt=""/><br /><sub><b>Ákos Lukács</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=AkosLukacs" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="http://www.johnrom.com"><img src="https://avatars3.githubusercontent.com/u/1881482?v=4" width="100px;" alt=""/><br /><sub><b>John Rom</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=johnrom" title="Code">💻</a></td>
   </tr>
 </table>
 

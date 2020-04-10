@@ -901,6 +901,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "johnrom",
+      "name": "John Rom",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1881482?v=4",
+      "profile": "http://www.johnrom.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
