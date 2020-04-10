@@ -18,6 +18,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "agriffard",
+      "name": "Antoine Griffard",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/703248?v=4",
+      "profile": "http://antoinegriffard.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
