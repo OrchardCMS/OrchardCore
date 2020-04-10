@@ -795,6 +795,15 @@
       ]
     },
     {
+      "login": "johnrom",
+      "name": "John Rom",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1881482?v=4",
+      "profile": "http://www.johnrom.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
       "login": "jackliDev",
       "name": "jackli",
       "avatar_url": "https://avatars3.githubusercontent.com/u/39414376?v=4",
@@ -898,15 +907,6 @@
       "name": "Ákos Lukács",
       "avatar_url": "https://avatars2.githubusercontent.com/u/844331?v=4",
       "profile": "https://github.com/AkosLukacs",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "johnrom",
-      "name": "John Rom",
-      "avatar_url": "https://avatars3.githubusercontent.com/u/1881482?v=4",
-      "profile": "http://www.johnrom.com",
       "contributions": [
         "code"
       ]
