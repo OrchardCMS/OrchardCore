@@ -49,7 +49,7 @@ to build the display shapes for the  content items, then `DisplayAsync` is used 
 ``` liquid tab="Liquid"
 <section class="flow">
     {% for item in Model.ContentItems %}
-        {{ item | shape_build_display: "Detail" | shape_render }}
+        {{ item | shape_build_display: "Contained" | shape_render }}
     {% endfor %}
 </section>
 ```
@@ -63,7 +63,7 @@ to build the display shapes for the  content items, then `DisplayAsync` is used 
 <section class="flow">
     @foreach (var item in Model.BagPart.ContentItems)
     {
-        var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.BuildPartDisplayContext.Updater, Model.Settings.DisplayType ?? "Detail", Model.BuildPartDisplayContext.GroupId);
+        var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.BuildPartDisplayContext.Updater, Model.Settings.DisplayType ?? "Contained", Model.BuildPartDisplayContext.GroupId);
 
         @await DisplayAsync(itemContent)
     }
@@ -82,7 +82,7 @@ In the first example we have an alternate specifying the Content Type `MyBag` an
 
 In the second example we have an alternate for the Content Type `MyBag`, and the Named BagPart `MyNamedBagPart`
 
-The templates and alternate names for the Content Items contained in a BagPart are the same as standard Content Items.
+`Content_Contained` is used as a fallback template for Content Items contained in a BagPart. Alternates can be provided by a template named `Content_Contained__[ContentType]`.
 
 !!! note
     More alternates are available. You can examine these using the `ConsoleLog` Razor Helper or `console_log` liquid filter.
