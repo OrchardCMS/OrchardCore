@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
@@ -40,8 +41,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             _resourceManager = resourceManager;
         }
 
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
+            output.SuppressOutput();
+
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
                 // Include custom script
@@ -126,6 +129,14 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
                 }
+
+                var childContent = await output.GetChildContentAsync();
+                if (!childContent.IsEmptyOrWhiteSpace)
+                {
+                    // Inline content definition
+                    _resourceManager.InlineManifest.DefineStyle(Name)
+                        .SetInnerContent(childContent.GetContent());
+                }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
@@ -187,8 +198,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCulture(Culture);
                 }
             }
-
-            output.TagName = null;
         }
     }
 }
