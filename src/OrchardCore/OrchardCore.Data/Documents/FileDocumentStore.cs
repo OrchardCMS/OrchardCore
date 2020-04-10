@@ -18,7 +18,6 @@ namespace OrchardCore.Data.Documents
     public class FileDocumentStore : IFileDocumentStore
     {
         private readonly string _tenantPath;
-        private bool _canceled;
 
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
@@ -61,11 +60,6 @@ namespace OrchardCore.Data.Documents
 
             documentStore.AfterCommitSuccess<T>(async () =>
             {
-                if (_canceled)
-                {
-                    return;
-                }
-
                 await SaveDocumentAsync(document);
                 await updateCache(document);
             });
