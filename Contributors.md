@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-26-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-27-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -43,6 +43,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://www.ideliverable.com"><img src="https://avatars0.githubusercontent.com/u/2872984?v=4" width="100px;" alt=""/><br /><sub><b>Chris Payne</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=paynecrl97" title="Code">💻</a></td>
     <td align="center"><a href="http://www.codinlab.fr"><img src="https://avatars0.githubusercontent.com/u/7600804?v=4" width="100px;" alt=""/><br /><sub><b>Thierry Fleury</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=TFleury" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/jameshawkins"><img src="https://avatars3.githubusercontent.com/u/1388327?v=4" width="100px;" alt=""/><br /><sub><b>James Hawkins</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=jameshawkins" title="Code">💻</a></td>
+    <td align="center"><a href="https://lombiq.com"><img src="https://avatars2.githubusercontent.com/u/11962192?v=4" width="100px;" alt=""/><br /><sub><b>Lombiq Technologies</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=LombiqTechnologies" title="Code">💻</a></td>
   </tr>
 </table>
 

@@ -243,6 +243,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "LombiqTechnologies",
+      "name": "Lombiq Technologies",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/11962192?v=4",
+      "profile": "https://lombiq.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
