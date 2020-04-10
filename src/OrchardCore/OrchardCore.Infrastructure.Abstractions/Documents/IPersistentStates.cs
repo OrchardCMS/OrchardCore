@@ -13,12 +13,12 @@ namespace OrchardCore.Documents
         Task<T> GetAsync<T>(string name) where T : new();
 
         /// <summary>
-        /// Sets a persistent state of a given type.
+        /// Sets a persistent state once the ambient session is committed.
         /// </summary>
         Task SetAsync<T>(string name, T value) where T : new();
 
         /// <summary>
-        /// Removes a persistent state.
+        /// Removes a persistent state once the ambient session is committed.
         /// </summary>
         Task RemoveAsync(string name);
     }

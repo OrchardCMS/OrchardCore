@@ -13,12 +13,12 @@ namespace OrchardCore.Documents
         Task<T> GetAsync<T>(string key) where T : new();
 
         /// <summary>
-        /// Sets a volatile state of a given type.
+        /// Sets a volatile state once the ambient session is committed.
         /// </summary>
         Task SetAsync<T>(string key, T value) where T : new();
 
         /// <summary>
-        /// Removes a volatile state.
+        /// Removes a volatile state once the ambient session is committed.
         /// </summary>
         Task RemoveAsync(string key);
     }

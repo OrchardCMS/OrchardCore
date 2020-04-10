@@ -21,7 +21,7 @@ namespace OrchardCore.Documents
         private readonly DocumentOptions _options;
 
         private TDocument _scopedCache;
-        private TDocument _scopedMutable;
+        private TDocument _volatileCache;
         protected bool _isVolatile;
 
         public DocumentManager(
@@ -40,38 +40,23 @@ namespace OrchardCore.Documents
         {
             TDocument document = null;
 
-            if (_isVolatile)
+            if (!_isVolatile)
             {
-                // For volatile data, we deserialize the document from the distributed cache so that it can
-                // be safely updated, and we hold a scoped cache as it would be done by the document store.
+                document = await _documentStore.GetMutableAsync(factory);
 
-                if (_scopedMutable != null)
+                if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
                 {
-                    return _scopedMutable;
+                    throw new ArgumentException("Can't load for update a cached object");
                 }
-
-                var data = await _distributedCache.GetAsync(_options.CacheKey);
-
-                if (data != null)
-                {
-                    using (var stream = new MemoryStream(data))
-                    {
-                        document = await DeserializeAsync(stream);
-                    }
-                }
-
-                document ??= factory?.Invoke() ?? new TDocument();
-
-                document.Identifier = null;
-
-                return _scopedMutable = document;
             }
-
-            document = await _documentStore.GetMutableAsync(factory);
-
-            if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
+            else
             {
-                throw new ArgumentException("Can't load for update a cached object");
+                if (_volatileCache != null)
+                {
+                    return _volatileCache;
+                }
+
+                _volatileCache = document = await GetFromDistributedCacheAsync() ?? factory?.Invoke() ?? new TDocument();
             }
 
             document.Identifier = null;
@@ -85,13 +70,13 @@ namespace OrchardCore.Documents
 
             if (document == null)
             {
-                if (_isVolatile)
+                if (!_isVolatile)
                 {
-                    document = factory?.Invoke() ?? new TDocument();
+                    document = await _documentStore.GetImmutableAsync(factory);
                 }
                 else
                 {
-                    document = await _documentStore.GetImmutableAsync(factory);
+                    document = factory?.Invoke() ?? new TDocument();
                 }
 
                 await SetInternalAsync(document);
@@ -109,22 +94,22 @@ namespace OrchardCore.Documents
 
             document.Identifier ??= IdGenerator.GenerateId();
 
-            if (_isVolatile)
+            if (!_isVolatile)
             {
-                // Still update the cache after committing.
-                _documentStore.AfterCommitSuccess<TDocument>(() =>
+                return _documentStore.UpdateAsync(document, document =>
                 {
                     return SetInternalAsync(document);
-                });
-
-                return Task.CompletedTask;
+                },
+                _options.CheckConcurrency.Value);
             }
 
-            return _documentStore.UpdateAsync(document, document =>
+            // Still update the cache after committing.
+            _documentStore.AfterCommitSuccess<TDocument>(() =>
             {
                 return SetInternalAsync(document);
-            },
-            _options.CheckConcurrency.Value);
+            });
+
+            return Task.CompletedTask;
         }
 
         private async Task<TDocument> GetInternalAsync()
@@ -161,16 +146,11 @@ namespace OrchardCore.Documents
                 }
             }
 
-            var data = await _distributedCache.GetAsync(_options.CacheKey);
+            document = await GetFromDistributedCacheAsync();
 
-            if (data == null)
+            if (document == null)
             {
                 return null;
-            }
-
-            using (var stream = new MemoryStream(data))
-            {
-                document = await DeserializeAsync(stream);
             }
 
             if (document.Identifier != id)
@@ -190,6 +170,46 @@ namespace OrchardCore.Documents
 
         private async Task SetInternalAsync(TDocument document)
         {
+            await UpdateDistributedCacheAsync(document);
+
+            _memoryCache.Set(_options.CacheKey, document, new MemoryCacheEntryOptions()
+            {
+                AbsoluteExpiration = _options.AbsoluteExpiration,
+                AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow,
+                SlidingExpiration = _options.SlidingExpiration
+            });
+
+            if (!_isVolatile)
+            {
+                // Consistency: We may have been the last to update the cache but not with the last stored document.
+                if (_options.CheckConsistency.Value && (await _documentStore.GetImmutableAsync<TDocument>()).Identifier != document.Identifier)
+                {
+                    await _distributedCache.RemoveAsync(_options.CacheIdKey);
+                }
+            }
+        }
+
+        private async Task<TDocument> GetFromDistributedCacheAsync()
+        {
+            TDocument document = null;
+
+            var data = await _distributedCache.GetAsync(_options.CacheKey);
+
+            if (data == null)
+            {
+                return document;
+            }
+
+            using (var stream = new MemoryStream(data))
+            {
+                document = await DeserializeAsync(stream);
+            }
+
+            return document;
+        }
+
+        private async Task UpdateDistributedCacheAsync(TDocument document)
+        {
             byte[] data;
 
             using (var stream = new MemoryStream())
@@ -202,30 +222,12 @@ namespace OrchardCore.Documents
 
             await _distributedCache.SetAsync(_options.CacheKey, data, _options);
             await _distributedCache.SetAsync(_options.CacheIdKey, idData, _options);
-
-            _memoryCache.Set(_options.CacheKey, document, new MemoryCacheEntryOptions()
-            {
-                AbsoluteExpiration = _options.AbsoluteExpiration,
-                AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow,
-                SlidingExpiration = _options.SlidingExpiration
-            });
-
-            if (_isVolatile)
-            {
-                return;
-            }
-
-            // Consistency: We may have been the last to update the cache but not with the last stored document.
-            if (_options.CheckConsistency.Value && (await _documentStore.GetImmutableAsync<TDocument>()).Identifier != document.Identifier)
-            {
-                await _distributedCache.RemoveAsync(_options.CacheIdKey);
-            }
         }
 
-        private static Task SerializeAsync(Stream stream, TDocument document) =>
+        internal static Task SerializeAsync(Stream stream, TDocument document) =>
             MessagePackSerializer.SerializeAsync(stream, document, ContractlessStandardResolver.Options);
 
-        private static ValueTask<TDocument> DeserializeAsync(Stream stream) =>
+        internal static ValueTask<TDocument> DeserializeAsync(Stream stream) =>
             MessagePackSerializer.DeserializeAsync<TDocument>(stream, ContractlessStandardResolver.Options);
     }
 }

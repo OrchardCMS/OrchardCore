@@ -288,7 +288,7 @@ namespace OrchardCore.Layers.Controllers
                 }
             }
 
-            // Update the state after the session is committed.
+            // The state will be updated once the ambient session is committed.
             await _states.SetAsync(LayerMetadataHandler.StateKey, new Data.Documents.Document() { Identifier = IdGenerator.GenerateId() });
 
             if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
