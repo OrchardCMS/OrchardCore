@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-15-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-16-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -30,6 +30,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/lukaskabrt"><img src="https://avatars2.githubusercontent.com/u/2894161?v=4" width="100px;" alt=""/><br /><sub><b>Lukas Kabrt</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=lukaskabrt" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/siyamandayubi"><img src="https://avatars3.githubusercontent.com/u/13226009?v=4" width="100px;" alt=""/><br /><sub><b>siyamandayubi</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=siyamandayubi" title="Code">💻</a></td>
   </tr>
 </table>
 
