@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-38-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-39-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -59,6 +59,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://www.quartz-scheduler.net/"><img src="https://avatars1.githubusercontent.com/u/171892?v=4" width="100px;" alt=""/><br /><sub><b>Marko Lahma</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=lahma" title="Code">💻</a></td>
     <td align="center"><a href="http://www.endlessmountainsolutions.com"><img src="https://avatars0.githubusercontent.com/u/1848585?v=4" width="100px;" alt=""/><br /><sub><b>Jeff Olmstead</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=jeffolmstead" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/duncanhoggan"><img src="https://avatars3.githubusercontent.com/u/6050438?v=4" width="100px;" alt=""/><br /><sub><b>Duncan Hoggan</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=duncanhoggan" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/netwavebe"><img src="https://avatars2.githubusercontent.com/u/3008547?v=4" width="100px;" alt=""/><br /><sub><b>Steven Spits</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=netwavebe" title="Code">💻</a></td>
   </tr>
 </table>
 
