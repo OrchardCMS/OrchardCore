@@ -369,6 +369,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "douwinga",
+      "name": "David Ouwinga",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/11961383?v=4",
+      "profile": "http://www.davidouwinga.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
