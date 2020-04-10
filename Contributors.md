@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-94-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-95-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -131,6 +131,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/LewisGoldstone"><img src="https://avatars1.githubusercontent.com/u/9220107?v=4" width="100px;" alt=""/><br /><sub><b>Lewis Goldstone</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=LewisGoldstone" title="Code">💻</a></td>
     <td align="center"><a href="https://etchuk.com"><img src="https://avatars2.githubusercontent.com/u/11716107?v=4" width="100px;" alt=""/><br /><sub><b>Joe Berkley</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=JoeBerkley" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/Garpo001"><img src="https://avatars3.githubusercontent.com/u/4099702?v=4" width="100px;" alt=""/><br /><sub><b>Gert Smith</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Garpo001" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/Eilon"><img src="https://avatars3.githubusercontent.com/u/202643?v=4" width="100px;" alt=""/><br /><sub><b>Eilon Lipton</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Eilon" title="Code">💻</a></td>
   </tr>
 </table>
 
