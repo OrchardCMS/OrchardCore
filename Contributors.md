@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-145-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-146-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -196,6 +196,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/nicholaspei"><img src="https://avatars2.githubusercontent.com/u/506043?v=4" width="100px;" alt=""/><br /><sub><b>nicholaspei</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=nicholaspei" title="Code">💻</a></td>
     <td align="center"><a href="http://welovearticle.com"><img src="https://avatars3.githubusercontent.com/u/12979622?v=4" width="100px;" alt=""/><br /><sub><b>spike</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=xiaolizi007" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/websitewill"><img src="https://avatars2.githubusercontent.com/u/19608705?v=4" width="100px;" alt=""/><br /><sub><b>websitewill</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=websitewill" title="Code">💻</a></td>
+    <td align="center"><a href="http://larremp.com"><img src="https://avatars0.githubusercontent.com/u/27111713?v=4" width="100px;" alt=""/><br /><sub><b>Larrem Panganiban</b></sub></a><br /><a href="#eventOrganizing-larremp" title="Event Organizing">📋</a></td>
   </tr>
 </table>
 
