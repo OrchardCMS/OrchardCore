@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-71-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-72-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -102,6 +102,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://www.davidhayden.me"><img src="https://avatars1.githubusercontent.com/u/96801?v=4" width="100px;" alt=""/><br /><sub><b>David Hayden</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=davidhayden" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/cocoke"><img src="https://avatars3.githubusercontent.com/u/6980626?v=4" width="100px;" alt=""/><br /><sub><b>Corentin Kerman</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=cocoke" title="Code">💻</a></td>
   </tr>
 </table>
 

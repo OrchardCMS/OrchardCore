@@ -658,6 +658,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "cocoke",
+      "name": "Corentin Kerman",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/6980626?v=4",
+      "profile": "https://github.com/cocoke",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
