@@ -324,6 +324,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "lahma",
+      "name": "Marko Lahma",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/171892?v=4",
+      "profile": "http://www.quartz-scheduler.net/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
