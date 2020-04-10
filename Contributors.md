@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-41-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-42-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -62,6 +62,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/netwavebe"><img src="https://avatars2.githubusercontent.com/u/3008547?v=4" width="100px;" alt=""/><br /><sub><b>Steven Spits</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=netwavebe" title="Code">💻</a></td>
     <td align="center"><a href="http://qbit.cnblogs.com"><img src="https://avatars1.githubusercontent.com/u/15613121?v=4" width="100px;" alt=""/><br /><sub><b>Tony Han</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=hyzx86" title="Code">💻</a></td>
     <td align="center"><a href="http://www.davidouwinga.com"><img src="https://avatars1.githubusercontent.com/u/11961383?v=4" width="100px;" alt=""/><br /><sub><b>David Ouwinga</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=douwinga" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/Tsjerno"><img src="https://avatars0.githubusercontent.com/u/41969645?v=4" width="100px;" alt=""/><br /><sub><b>Henk Schoemaker</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=Tsjerno" title="Code">💻</a></td>
   </tr>
 </table>
 
