@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-32-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-33-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -51,6 +51,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/scleaver"><img src="https://avatars3.githubusercontent.com/u/2867511?v=4" width="100px;" alt=""/><br /><sub><b>Seth Cleaver</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=scleaver" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/psijkof"><img src="https://avatars1.githubusercontent.com/u/25638593?v=4" width="100px;" alt=""/><br /><sub><b>Sijmen Koffeman</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=psijkof" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/giannik"><img src="https://avatars1.githubusercontent.com/u/1516981?v=4" width="100px;" alt=""/><br /><sub><b>yiannis kyriazidis</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=giannik" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/wazowsk1"><img src="https://avatars3.githubusercontent.com/u/10253291?v=4" width="100px;" alt=""/><br /><sub><b>Wazowski</b></sub></a><br /><a href="https://github.com/The Orchard Team/OrchardCore/commits?author=wazowsk1" title="Code">💻</a></td>
   </tr>
 </table>
 
