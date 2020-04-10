@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-88-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-89-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -123,6 +123,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/matperron"><img src="https://avatars2.githubusercontent.com/u/35510490?v=4" width="100px;" alt=""/><br /><sub><b>Mathieu Perron</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=matperron" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/jackliDev"><img src="https://avatars3.githubusercontent.com/u/39414376?v=4" width="100px;" alt=""/><br /><sub><b>jackli</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=jackliDev" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/gyanendrarijal"><img src="https://avatars1.githubusercontent.com/u/8038760?v=4" width="100px;" alt=""/><br /><sub><b>gyanendrarijal</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=gyanendrarijal" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/choXberg"><img src="https://avatars1.githubusercontent.com/u/836852?v=4" width="100px;" alt=""/><br /><sub><b>Christian Hofmeister</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=choXberg" title="Code">💻</a></td>
   </tr>
 </table>
 
