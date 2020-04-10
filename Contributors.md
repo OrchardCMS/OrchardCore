@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-152-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-153-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -205,6 +205,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/Flarescape"><img src="https://avatars1.githubusercontent.com/u/1375119?v=4" width="100px;" alt=""/><br /><sub><b>Sebastian Satzinger</b></sub></a><br /><a href="#translation-Flarescape" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/Tearion"><img src="https://avatars3.githubusercontent.com/u/16781740?v=4" width="100px;" alt=""/><br /><sub><b>tearion</b></sub></a><br /><a href="#translation-Tearion" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/Habbni"><img src="https://avatars0.githubusercontent.com/u/13678304?v=4" width="100px;" alt=""/><br /><sub><b>habbni</b></sub></a><br /><a href="#translation-Habbni" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/EternityTeam"><img src="https://avatars3.githubusercontent.com/u/14150259?v=4" width="100px;" alt=""/><br /><sub><b>Eternity</b></sub></a><br /><a href="#translation-EternityTeam" title="Translation">🌍</a></td>
   </tr>
 </table>
 
