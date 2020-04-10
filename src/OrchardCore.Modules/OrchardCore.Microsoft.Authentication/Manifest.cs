@@ -4,8 +4,8 @@ using OrchardCore.Microsoft.Authentication;
 [assembly: Module(
     Name = "Microsoft Authentication",
     Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Website = "https://orchardcore.net",
+    Version = "1.0.0-rc2",
     Category = "Microsoft Authentication"
 )]
 [assembly: Feature(

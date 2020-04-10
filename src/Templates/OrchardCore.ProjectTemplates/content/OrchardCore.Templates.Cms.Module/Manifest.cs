@@ -3,7 +3,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Module(
     Name = "OrchardCore.Templates.Cms.Module",
     Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
+    Website = "https://orchardcore.net",
     Version = "0.0.1",
     Description = "OrchardCore.Templates.Cms.Module",
 #if (AddPart)

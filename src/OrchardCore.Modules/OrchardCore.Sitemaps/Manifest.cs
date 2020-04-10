@@ -4,7 +4,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Sitemaps",
     Author = "The Orchard Team",
     Website = "http://orchardproject.net",
-    Version = "2.0.0"
+    Version = "1.0.0-rc2"
 )]
 
 [assembly: Feature(
