@@ -333,6 +333,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "jeffolmstead",
+      "name": "Jeff Olmstead",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1848585?v=4",
+      "profile": "http://www.endlessmountainsolutions.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
