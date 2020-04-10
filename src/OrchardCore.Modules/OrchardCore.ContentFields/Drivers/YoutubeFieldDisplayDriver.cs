@@ -84,6 +84,11 @@ namespace OrchardCore.ContentFields.Fields
                         field.RawAddress = model.RawAddress;
                         field.EmbeddedAddress = model.EmbeddedAddress;
                     }
+                    else
+                    {
+                        field.RawAddress = null;
+                        field.EmbeddedAddress = null;
+                    }
                 }
             }
 
