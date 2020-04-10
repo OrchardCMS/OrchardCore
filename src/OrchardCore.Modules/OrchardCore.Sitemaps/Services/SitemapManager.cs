@@ -31,7 +31,6 @@ namespace OrchardCore.Sitemaps.Services
             existing.Sitemaps.Remove(sitemapId);
 
             await _documentManager.UpdateAsync(existing);
-
             BuildAllSitemapRouteEntries(existing);
 
             return;
@@ -71,7 +70,6 @@ namespace OrchardCore.Sitemaps.Services
             existing.Sitemaps[sitemapId] = sitemap;
 
             await _documentManager.UpdateAsync(existing);
-
             BuildAllSitemapRouteEntries(existing);
 
             return;
