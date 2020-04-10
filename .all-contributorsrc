@@ -559,6 +559,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Icidis",
+      "name": "Ryan Gunn",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1651587?v=4",
+      "profile": "http://talkdotnet.wordpress.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7

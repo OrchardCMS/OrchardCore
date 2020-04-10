@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-60-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-61-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -87,6 +87,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/aodl"><img src="https://avatars1.githubusercontent.com/u/14985227?v=4" width="100px;" alt=""/><br /><sub><b>Alex Lorimer</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=aodl" title="Code">💻</a></td>
     <td align="center"><a href="http://www.zumey.com"><img src="https://avatars0.githubusercontent.com/u/11973801?v=4" width="100px;" alt=""/><br /><sub><b>Arjan Noordende</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=anoordende" title="Code">💻</a></td>
     <td align="center"><a href="http://twitter.com/NTaylorMullen"><img src="https://avatars3.githubusercontent.com/u/2008729?v=4" width="100px;" alt=""/><br /><sub><b>N. Taylor Mullen</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=NTaylorMullen" title="Code">💻</a></td>
+    <td align="center"><a href="http://talkdotnet.wordpress.com"><img src="https://avatars3.githubusercontent.com/u/1651587?v=4" width="100px;" alt=""/><br /><sub><b>Ryan Gunn</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Icidis" title="Code">💻</a></td>
   </tr>
 </table>
 
