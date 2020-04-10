@@ -414,6 +414,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "peterkeating",
+      "name": "Peter Keating",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/651190?v=4",
+      "profile": "http://peterkeating.co.uk",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
