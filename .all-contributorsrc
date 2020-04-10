@@ -766,6 +766,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "nschonni",
+      "name": "Nick Schonning",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/1297909?v=4",
+      "profile": "https://github.com/nschonni",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
