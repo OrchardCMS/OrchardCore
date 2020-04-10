@@ -31,7 +31,8 @@
         "content",
         "question",
         "review",
-        "translation"
+        "translation",
+        "tutorial"
       ]
     },
     {
