@@ -784,6 +784,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "matperron",
+      "name": "Mathieu Perron",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/35510490?v=4",
+      "profile": "https://github.com/matperron",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
