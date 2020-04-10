@@ -1343,6 +1343,15 @@
       "contributions": [
         "video"
       ]
+    },
+    {
+      "login": "sfmskywalker",
+      "name": "Sipke Schoorstra",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/938393?v=4",
+      "profile": "https://github.com/sfmskywalker",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
