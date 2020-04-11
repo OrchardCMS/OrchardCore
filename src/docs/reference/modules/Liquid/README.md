@@ -484,8 +484,10 @@ Adds alternates to a shape.
 Input
 
 ```liquid
-{% shape_add_alternates my_shape "alternate1", "alternate2" %}
 {% shape_add_alternates my_shape "alternate1 alternate2" %}
+
+{% assign my_alternates = "alternate1,alternate2" | split: "," %}
+{% shape_add_alternates my_shape my_alternates %}
 ```
 
 ### `shape_clear_wrappers`
@@ -505,8 +507,10 @@ Adds wrappers to a shape.
 Input
 
 ```liquid
-{% shape_add_wrappers my_shape "wrapper1", "wrapper2" %}
 {% shape_add_wrappers my_shape "wrapper1 wrapper2" %}
+
+{% assign my_wrappers = "wrapper1,wrapper2" | split: "," %}
+{% shape_add_wrappers my_shape my_wrappers %}
 ```
 
 ### `shape_clear_classes`
@@ -527,7 +531,9 @@ Input
 
 ```liquid
 {% shape_add_classes my_shape "class1 class2" %}
-{% shape_add_classes my_shape "class1", "class2" %}
+
+{% assign my_classes "class1,class2" | split: "," %}
+{% shape_add_classes my_shape my_classes %}
 ```
 
 ### `shape_clear_attributes`
@@ -691,7 +697,7 @@ Input
 {% endzone %}
 ```
 
-The content of this block can then be reused from the Layout using the `{{ Model.Header | shape_render }}` code.
+The content of this block can then be reused from the Layout using the `{% render_section "Header" %}` code.
 
 ## Tag Helper tags
 

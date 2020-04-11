@@ -187,7 +187,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             if (!shapeTable.Descriptors.TryGetValue(shapeType, out var shapeDescriptor))
             {
                 // Check if not a fundamental type.
-                var index = shapeType.IndexOf("__");
+                var index = shapeType.IndexOf("__", StringComparison.Ordinal);
 
                 if (index > 0)
                 {
@@ -280,7 +280,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         private static bool TryGetParentShapeTypeName(ref string shapeTypeScan)
         {
-            var delimiterIndex = shapeTypeScan.LastIndexOf("__");
+            var delimiterIndex = shapeTypeScan.LastIndexOf("__", StringComparison.Ordinal);
             if (delimiterIndex > 0)
             {
                 shapeTypeScan = shapeTypeScan.Substring(0, delimiterIndex);

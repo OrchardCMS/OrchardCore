@@ -10,8 +10,6 @@ namespace OrchardCore.ContentManagement.Cache
 {
     public class ContentDefinitionCacheContextProvider : ICacheContextProvider
     {
-        private const string TypesPrefix = "type";
-
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public ContentDefinitionCacheContextProvider(IContentDefinitionManager contentDefinitionManager)

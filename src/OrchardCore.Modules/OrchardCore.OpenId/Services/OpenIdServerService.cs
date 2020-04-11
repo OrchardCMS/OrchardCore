@@ -25,12 +25,12 @@ namespace OrchardCore.OpenId.Services
     public class OpenIdServerService : IOpenIdServerService
     {
         private readonly IDataProtector _dataProtector;
-        private readonly ILogger<OpenIdServerService> _logger;
+        private readonly ILogger _logger;
         private readonly IMemoryCache _memoryCache;
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<OpenIdServerService> S;
+        private readonly IStringLocalizer S;
 
         public OpenIdServerService(
             IDataProtectionProvider dataProtectionProvider,

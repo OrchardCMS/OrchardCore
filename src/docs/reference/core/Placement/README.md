@@ -184,3 +184,17 @@ Result:
 ## Shape differentiators
 
 You can find information about shape differentiators in the [Templates documentation](../../modules/Templates/#content-field-differentiator)
+
+## Tabs
+
+If you want to place a part in a different tab, you use the `#` character in order to specify the tab in which it will be rendered.
+
+```json
+{
+  "TitlePart_Edit": [
+    {
+      "place": "Parts#MyTab:0"
+    }
+  ]
+}
+```

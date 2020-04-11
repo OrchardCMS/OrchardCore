@@ -7,7 +7,7 @@ namespace OrchardCore.Localization.DataAnnotations
     /// </summary>
     internal sealed class DataAnnotationsDefaultErrorMessages
     {
-        private IStringLocalizer<DataAnnotationsDefaultErrorMessages> S = null;
+        private readonly IStringLocalizer S = null;
 
         private DataAnnotationsDefaultErrorMessages()
         {
