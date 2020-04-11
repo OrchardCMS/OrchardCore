@@ -75,6 +75,7 @@ namespace OrchardCore.Taxonomies
                     }
 
                     termShape.TaxonomyContentItem = taxonomyContentItem;
+                    termShape.TaxonomyName = taxonomyContentItem.DisplayText;
 
                     var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
                     if (taxonomyPart == null)
@@ -82,24 +83,27 @@ namespace OrchardCore.Taxonomies
                         return;
                     }
 
-                    // When a TermContentItemId is provided render the inherited heirachy inside the taxonomy.
+                    // When a TermContentItemId is provided render the term and its child terms.
+                    var level = 0;
                     List<ContentItem> termItems = null;
                     string termContentItemId = termShape.TermContentItemId;
                     if (!String.IsNullOrEmpty(termContentItemId))
                     {
-                        var termContentItem = await orchardHelper.GetTaxonomyTermAsync(taxonomyContentItem.ContentItemId, termContentItemId);
+                        level = FindTerm(taxonomyContentItem.Content.TaxonomyPart.Terms as JArray, termContentItemId, level, out var termContentItem);
+                        
                         if (termContentItem == null)
                         {
                             return;
                         }
-                        termShape.TermName = taxonomyContentItem.DisplayText;
 
-                        termItems = await orchardHelper.GetInheritedTermsAsync(taxonomyContentItem.ContentItemId, termContentItemId);
+                        termItems = new List<ContentItem>
+                        {
+                            termContentItem
+                        };
                     }
                     else
                     {
                         termItems = taxonomyPart.Terms;
-                        termShape.TermName = taxonomyContentItem.DisplayText;
                     }
 
                     if (termItems == null)
@@ -107,11 +111,11 @@ namespace OrchardCore.Taxonomies
                         return;
                     }
 
-                    string differentiator = FormatName((string)termShape.TermName);
+                    string differentiator = FormatName((string)termShape.TaxonomyName);
 
                     if (!String.IsNullOrEmpty(differentiator))
                     {
-                        // Term__[TermName] e.g. Term-Categories, Term-Travel
+                        // Term__[Differentiator] e.g. Term-Categories, Term-Tags
                         termShape.Metadata.Alternates.Add("Term__" + differentiator);
                         termShape.Differentiator = differentiator;
                         termShape.Classes.Add(("term-" + differentiator).HtmlClassify());
@@ -120,7 +124,7 @@ namespace OrchardCore.Taxonomies
                     termShape.Classes.Add(("term-" + taxonomyPart.TermContentType).HtmlClassify());
 
                     var encodedContentType = EncodeAlternateElement(taxonomyPart.TermContentType);
-                    // Term__[TaxonomyContentType] e.g. Term-Category, Term-Tag
+                    // Term__[ContentType] e.g. Term-Category, Term-Tag
                     termShape.Metadata.Alternates.Add("Term__" + encodedContentType);
 
                     // The first level of term item shapes is created.
@@ -136,7 +140,8 @@ namespace OrchardCore.Taxonomies
 
                         var shape = await shapeFactory.CreateAsync("TermItem", Arguments.From(new
                         {
-                            Level = 0,
+                            Level = level,
+                            Term = termShape,
                             TermContentItem = termContentItem,
                             Terms = childTerms ?? Array.Empty<ContentItem>(),
                             TaxonomyContentItem = taxonomyContentItem,
@@ -152,6 +157,7 @@ namespace OrchardCore.Taxonomies
                 .OnDisplaying(async context =>
                 {
                     dynamic termItem = context.Shape;
+                    var termShape = termItem.Term;
                     int level = termItem.Level;
                     ContentItem taxonomyContentItem = termItem.TaxonomyContentItem;
                     var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
@@ -174,6 +180,7 @@ namespace OrchardCore.Taxonomies
                                 TaxonomyContentItem = taxonomyContentItem,
                                 Differentiator = differentiator,
                                 TermContentItem = termContentItem,
+                                Term = termShape,
                                 Terms = childTerms ?? Array.Empty<ContentItem>()
                             }));
 
@@ -194,15 +201,13 @@ namespace OrchardCore.Taxonomies
 
                     if (!String.IsNullOrEmpty(differentiator))
                     {
-                        // TermItem__[TermName] e.g. TermItem-Categories, TermItem-Travel
-                        // TermItem__[TermName]__level__[level] e.g. TermItem-Categories-level-2
-                        // TermItem__[TermName]__level__[level] e.g. TermItem-Travel-level-1
+                        // TermItem__[Differentiator] e.g. TermItem-Categories, TermItem-Travel
+                        // TermItem__[Differentiator]__level__[level] e.g. TermItem-Categories-level-2
                         termItem.Metadata.Alternates.Add("TermItem__" + differentiator);
                         termItem.Metadata.Alternates.Add("TermItem__" + differentiator + "__level__" + level);
 
-                        // TermItem__[TermName]__[ContentType] e.g. TermItem-Categories-Category, TermItem-Travel-Category
-                        // TermItem__[TermName]__[ContentType]__level__[level] e.g. TermItem-Categories-Category-level-2
-                        // TermItem__[TermName]__[ContentType]__level__[level] e.g. TermItem-Travel-Category-level-1
+                        // TermItem__[Differentiator]__[ContentType] e.g. TermItem-Categories-Category
+                        // TermItem__[Differentiator]__[ContentType]__level__[level] e.g. TermItem-Categories-Category-level-2
                         termItem.Metadata.Alternates.Add("TermItem__" + differentiator + "__" + encodedContentType);
                         termItem.Metadata.Alternates.Add("TermItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
                     }
@@ -228,21 +233,46 @@ namespace OrchardCore.Taxonomies
 
                     if (!String.IsNullOrEmpty(differentiator))
                     {
-                        // TermContentItem__[TermName] e.g. The taxonomy root : TermContentItem-Categories
-                        // TermContentItem__[TermName] e.g. The term : TermContentItem-Travel
+                        // TermContentItem__[Differentiator] e.g. TermContentItem-Categories
                         termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator);
-                        // TermContentItem__[TermName]__level__[level] e.g. TermContentItem-Categories-level-2
-                        // TermContentItem__[TermName]__level__[level] e.g. TermContentItem-Travel-level-1
+                        // TermContentItem__[Differentiator]__level__[level] e.g. TermContentItem-Categories-level-2
                         termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__level__" + level);
 
-                        // TermContentItem__[TermName]__[ContentType] e.g. TermContentItem-Categories-Category
-                        // TermContentItem__[TermName]__[ContentType] e.g. TermContentItem-Travel-Category
-                        // TermContentItem__[TermName]__[ContentType] e.g. TermContentItem-Categories-Category-level-2
-                        // TermContentItem__[TermName]__[ContentType] e.g. TermContentItem-Travel-Category-level-1
+                        // TermContentItem__[Differentiator]__[ContentType] e.g. TermContentItem-Categories-Category
+                        // TermContentItem__[Differentiator]__[ContentType] e.g. TermContentItem-Categories-Category-level-2
                         termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__" + encodedContentType);
                         termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
                     }
                 });
+        }
+
+        internal static int FindTerm(JArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
+        {
+            foreach (JObject term in termsArray)
+            {
+                var contentItemId = term.GetValue("ContentItemId").ToString();
+
+                if (contentItemId == termContentItemId)
+                {
+                    contentItem = term.ToObject<ContentItem>();
+                    return level;
+                }
+
+                if (term.GetValue("Terms") is JArray children)
+                {
+                    level += 1;
+                    level = FindTerm(children, termContentItemId, level, out var foundContentItem);
+
+                    if (foundContentItem != null)
+                    {
+                        contentItem = foundContentItem;
+                        return level;
+                    }
+                }
+            }
+            contentItem = null;
+
+            return level;
         }
 
         /// <summary>
