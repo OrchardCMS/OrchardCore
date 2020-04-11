@@ -246,7 +246,7 @@ namespace OrchardCore.Taxonomies
                 });
         }
 
-        internal static int FindTerm(JArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
+        private int FindTerm(JArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
         {
             foreach (JObject term in termsArray)
             {
