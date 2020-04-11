@@ -18,7 +18,7 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
-        private readonly IStringLocalizer<TaxonomyFieldDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public TaxonomyFieldTagsDisplayDriver(
             IContentManager contentManager,

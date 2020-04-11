@@ -17,7 +17,6 @@ namespace OrchardCore.Queries.Sql
         private ParseTree _tree;
         private static LanguageData language = new LanguageData(new SqlGrammar());
         private Stack<FormattingModes> _modes;
-        private Stack<ISqlBuilder> _sqlBuilders = new Stack<ISqlBuilder>();
 
         private string _limit;
         private string _offset;

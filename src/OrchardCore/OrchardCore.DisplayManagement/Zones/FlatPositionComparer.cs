@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.DisplayManagement.Zones
 {
@@ -86,12 +85,19 @@ namespace OrchardCore.DisplayManagement.Zones
         private static string NormalizeKnownPartitions(string partition)
         {
             if (partition.Length < 5) // known partitions are long
+            {
                 return partition;
+            }
 
             if (string.Compare(partition, "before", StringComparison.OrdinalIgnoreCase) == 0)
+            {
                 return "-9999";
+            }
+
             if (string.Compare(partition, "after", StringComparison.OrdinalIgnoreCase) == 0)
+            {
                 return "9999";
+            }
 
             return partition;
         }

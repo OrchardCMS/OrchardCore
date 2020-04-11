@@ -23,7 +23,8 @@ namespace OrchardCore.Roles.Services
         private readonly ISessionHelper _sessionHelper;
         private readonly IScopedDistributedCache _scopedDistributedCache;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IStringLocalizer<RoleStore> S;
+        private readonly IStringLocalizer S;
+        private readonly ILogger _logger;
 
         public RoleStore(
             ISession session,
@@ -38,10 +39,8 @@ namespace OrchardCore.Roles.Services
             _scopedDistributedCache = scopedDistributedCache;
             _serviceProvider = serviceProvider;
             S = stringLocalizer;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; }
 
         public void Dispose()
         {
@@ -104,7 +103,7 @@ namespace OrchardCore.Roles.Services
             }
 
             var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
-            await roleRemovedEventHandlers.InvokeAsync((handler, roleToRemove) => handler.RoleRemovedAsync(roleToRemove.RoleName), roleToRemove, Logger);
+            await roleRemovedEventHandlers.InvokeAsync((handler, roleToRemove) => handler.RoleRemovedAsync(roleToRemove.RoleName), roleToRemove, _logger);
 
             var roles = await LoadRolesAsync();
             roleToRemove = roles.Roles.FirstOrDefault(r => r.RoleName == roleToRemove.RoleName);

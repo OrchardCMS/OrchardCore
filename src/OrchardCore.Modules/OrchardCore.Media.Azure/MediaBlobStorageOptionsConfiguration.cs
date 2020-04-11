@@ -72,7 +72,7 @@ namespace OrchardCore.Media.Azure
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e, "Unable to parse Azure Media Storage ase path.");
+                _logger.LogCritical(e, "Unable to parse Azure Media Storage base path.");
                 throw e;
             }
         }

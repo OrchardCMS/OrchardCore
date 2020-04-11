@@ -32,7 +32,7 @@ namespace OrchardCore.Lucene
     public class LuceneIndexManager : IDisposable
     {
         private readonly IClock _clock;
-        private readonly ILogger<LuceneIndexManager> _logger;
+        private readonly ILogger _logger;
         private readonly string _rootPath;
         private bool _disposing;
         private readonly ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
@@ -59,7 +59,7 @@ namespace OrchardCore.Lucene
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
-
+            Directory.CreateDirectory(_rootPath);
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _luceneIndexSettingsService = luceneIndexSettingsService;
 

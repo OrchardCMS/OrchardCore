@@ -1,5 +1,3 @@
-// ReSharper disable ForCanBeConvertedToForeach
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -173,12 +171,12 @@ namespace OrchardCore.ResourceManagement
             var type = settings.Type;
 
             var stream = ResourceManifests.SelectMany(x => x.GetResources(type));
-            var resource = FindMatchingResource(stream, settings, type, name);
+            var resource = FindMatchingResource(stream, settings, name);
 
             if (resource == null && _dynamicManifest != null)
             {
                 stream = _dynamicManifest.GetResources(type);
-                resource = FindMatchingResource(stream, settings, type, name);
+                resource = FindMatchingResource(stream, settings, name);
             }
 
             if (resolveInlineDefinitions && resource == null)
@@ -198,7 +196,6 @@ namespace OrchardCore.ResourceManagement
         private ResourceDefinition FindMatchingResource(
             IEnumerable<KeyValuePair<string, IList<ResourceDefinition>>> stream,
             RequireSettings settings,
-            string type,
             string name)
         {
             Version lower = null;

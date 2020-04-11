@@ -1,23 +1,18 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lucene.Net.Search;
-using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Lucene.Services
 {
     public class SearchQueryService : ISearchQueryService
     {
         private readonly LuceneIndexManager _luceneIndexManager;
-        private readonly IContentManager _contentManager;
 
         private static HashSet<string> IdSet = new HashSet<string>(new string[] { "ContentItemId" });
 
-        public SearchQueryService(
-            IContentManager contentManager,
-            LuceneIndexManager luceneIndexManager)
+        public SearchQueryService(LuceneIndexManager luceneIndexManager)
         {
             _luceneIndexManager = luceneIndexManager;
-            _contentManager = contentManager;
         }
 
         public async Task<IList<string>> ExecuteQueryAsync(Query query, string indexName, int start, int end)

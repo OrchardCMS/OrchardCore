@@ -29,6 +29,7 @@ namespace OrchardCore.Lucene
         private readonly LuceneIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
         private readonly ISiteService _siteService;
+        private readonly ILogger _logger;
 
         public LuceneIndexingService(
             IShellHost shellHost,
@@ -47,11 +48,8 @@ namespace OrchardCore.Lucene
             _indexManager = indexManager;
             _indexingTaskManager = indexingTaskManager;
             _siteService = siteService;
-
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; }
 
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
@@ -157,7 +155,7 @@ namespace OrchardCore.Lucene
                                 if (contentItem != null)
                                 {
                                     publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
-                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), Logger);
+                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
                                 }
                             }
 
@@ -167,7 +165,7 @@ namespace OrchardCore.Lucene
                                 if (contentItem != null)
                                 {
                                     latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
-                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), Logger);
+                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
                                 }
                             }
 

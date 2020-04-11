@@ -136,7 +136,7 @@ namespace OrchardCore.Users
             services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
-
+                
                 // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
                 // set by the pipeline and comming from the request 'PathBase' which already ends with the
                 // tenant prefix but may also start by a path related e.g to a virtual folder.
@@ -149,7 +149,8 @@ namespace OrchardCore.Users
                 // protected by antiforgery checks, that are enforced with or without this setting being changed.
                 // 2019-12-10; Removed, since https://github.com/aspnet/Announcements/issues/390
                 // 2020-02-17; Reenabled since we have compensation logic for backwardscompatibility
-                options.Cookie.SameSite = SameSiteMode.None;
+                // 2020-03-23; Moved the SameSiteNode.None to the Startup of the OIDC Server
+                options.Cookie.SameSite = SameSiteMode.Strict;
             });
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();

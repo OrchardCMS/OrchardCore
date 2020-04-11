@@ -22,6 +22,7 @@ namespace OrchardCore.Recipes.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
+        private readonly ILogger _logger;
 
         private VariablesMethodProvider _variablesMethodProvider;
         private ConfigurationMethodProvider _configurationMethodProvider;
@@ -35,14 +36,12 @@ namespace OrchardCore.Recipes.Services
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _recipeEventHandlers = recipeEventHandlers;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment, CancellationToken cancellationToken)
         {
-            await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutingAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, Logger);
+            await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutingAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
 
             try
             {
@@ -87,7 +86,7 @@ namespace OrchardCore.Recipes.Services
 
                                             if (cancellationToken.IsCancellationRequested)
                                             {
-                                                Logger.LogError("Recipe interrupted by cancellation token.");
+                                                _logger.LogError("Recipe interrupted by cancellation token.");
                                                 return null;
                                             }
 
@@ -134,13 +133,13 @@ namespace OrchardCore.Recipes.Services
                     }
                 }
 
-                await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, Logger);
+                await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
 
                 return executionId;
             }
             catch (Exception)
             {
-                await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.ExecutionFailedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, Logger);
+                await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.ExecutionFailedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
 
                 throw;
             }
@@ -164,20 +163,20 @@ namespace OrchardCore.Recipes.Services
 
                 foreach (var recipeStepHandler in recipeStepHandlers)
                 {
-                    if (Logger.IsEnabled(LogLevel.Information))
+                    if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Executing recipe step '{RecipeName}'.", recipeStep.Name);
+                        _logger.LogInformation("Executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
 
-                    await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutingAsync(recipeStep), recipeStep, Logger);
+                    await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutingAsync(recipeStep), recipeStep, _logger);
 
                     await recipeStepHandler.ExecuteAsync(recipeStep);
 
-                    await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutedAsync(recipeStep), recipeStep, Logger);
+                    await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutedAsync(recipeStep), recipeStep, _logger);
 
-                    if (Logger.IsEnabled(LogLevel.Information))
+                    if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
+                        _logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
                 }
             });
