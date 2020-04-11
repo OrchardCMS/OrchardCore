@@ -18,16 +18,19 @@ namespace OrchardCore.Autoroute.Routing
             _options = options.Value;
         }
 
-        public override ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
+        public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
         {
-            if (_entries.TryGetContentItemId(httpContext.Request.Path.Value, out var contentItemId))
+            var contentItemId = await _entries.TryGetContentItemIdAsync(httpContext.Request.Path.Value);
+
+            if (contentItemId == null)
             {
-                var routeValues = new RouteValueDictionary(_options.GlobalRouteValues);
-                routeValues[_options.ContentItemIdKey] = contentItemId;
-                return new ValueTask<RouteValueDictionary>(routeValues);
+                return null;
             }
 
-            return new ValueTask<RouteValueDictionary>((RouteValueDictionary)null);
+            var routeValues = new RouteValueDictionary(_options.GlobalRouteValues);
+            routeValues[_options.ContentItemIdKey] = contentItemId;
+
+            return routeValues;
         }
     }
 }

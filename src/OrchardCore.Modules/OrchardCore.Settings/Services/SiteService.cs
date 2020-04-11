@@ -53,6 +53,6 @@ namespace OrchardCore.Settings.Services
             };
         }
 
-        private IDocumentManager<SiteSettings> DocumentManager => ShellScope.Services.GetRequiredService<IDocumentManager<SiteSettings>>();
+        private static IDocumentManager<SiteSettings> DocumentManager => ShellScope.Services.GetRequiredService<IDocumentManager<SiteSettings>>();
     }
 }

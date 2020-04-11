@@ -88,7 +88,7 @@ namespace OrchardCore.Lucene
             await DocumentManager.UpdateAsync(document);
         }
 
-        private IDocumentManager<LuceneIndexSettingsDocument> DocumentManager =>
+        private static IDocumentManager<LuceneIndexSettingsDocument> DocumentManager =>
             ShellScope.Services.GetRequiredService<IDocumentManager<LuceneIndexSettingsDocument>>();
     }
 }

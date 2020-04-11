@@ -26,11 +26,7 @@ namespace OrchardCore.Autoroute.Services
                     alias = "/" + alias;
                 }
 
-                string contentItemId;
-                if (_autorouteEntries.TryGetContentItemId(alias, out contentItemId))
-                {
-                    return Task.FromResult(contentItemId);
-                }
+                return _autorouteEntries.TryGetContentItemIdAsync(alias);
             }
 
             return Task.FromResult<string>(null);

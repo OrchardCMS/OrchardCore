@@ -51,7 +51,7 @@ namespace OrchardCore.Autoroute.Handlers
         {
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
-                _entries.AddEntry(part.ContentItem.ContentItemId, part.Path);
+                await _entries.AddEntryAsync(part.ContentItem.ContentItemId, part.Path);
             }
 
             if (part.SetHomepage)
@@ -81,30 +81,26 @@ namespace OrchardCore.Autoroute.Handlers
             await RemoveTagAsync(part);
         }
 
-        public override Task UnpublishedAsync(PublishContentContext context, AutoroutePart part)
+        public override async Task UnpublishedAsync(PublishContentContext context, AutoroutePart part)
         {
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
-                _entries.RemoveEntry(part.ContentItem.ContentItemId, part.Path);
+                await _entries.RemoveEntryAsync(part.ContentItem.ContentItemId, part.Path);
 
                 // Evict any dependent item from cache
-                return RemoveTagAsync(part);
+                await RemoveTagAsync(part);
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task RemovedAsync(RemoveContentContext context, AutoroutePart part)
+        public override async Task RemovedAsync(RemoveContentContext context, AutoroutePart part)
         {
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
-                _entries.RemoveEntry(part.ContentItem.ContentItemId, part.Path);
+                await _entries.RemoveEntryAsync(part.ContentItem.ContentItemId, part.Path);
 
                 // Evict any dependent item from cache
-                return RemoveTagAsync(part);
+                await RemoveTagAsync(part);
             }
-
-            return Task.CompletedTask;
         }
 
         public override async Task UpdatedAsync(UpdateContentContext context, AutoroutePart part)

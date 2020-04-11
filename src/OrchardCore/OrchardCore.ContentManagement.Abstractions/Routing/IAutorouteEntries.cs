@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.ContentManagement.Routing
 {
     public interface IAutorouteEntries
     {
-        bool TryGetContentItemId(string path, out string contentItemId);
-        bool TryGetPath(string contentItemId, out string path);
-        void AddEntries(IEnumerable<AutorouteEntry> entries);
-        void RemoveEntries(IEnumerable<AutorouteEntry> entries);
+        Task<string> TryGetContentItemIdAsync(string path);
+        Task<string> TryGetPathAsync(string contentItemId);
+        Task AddEntriesAsync(IEnumerable<AutorouteEntry> entries);
+        Task RemoveEntriesAsync(IEnumerable<AutorouteEntry> entries);
     }
 }

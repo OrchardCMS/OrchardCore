@@ -42,12 +42,7 @@ namespace OrchardCore.ContentLocalization.Services
             else
             {
                 // try to get from autorouteEntries
-                _autorouteEntries.TryGetContentItemId(url.Value, out contentItemId);
-            }
-
-            if (string.IsNullOrEmpty(contentItemId))
-            {
-                return null;
+                contentItemId = await _autorouteEntries.TryGetContentItemIdAsync(url.Value);
             }
 
             return contentItemId;

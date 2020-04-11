@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -27,7 +26,6 @@ using OrchardCore.Modules;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sitemaps.Services;
-using YesSql;
 using YesSql.Indexes;
 
 namespace OrchardCore.Autoroute
@@ -74,12 +72,6 @@ namespace OrchardCore.Autoroute
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var entries = serviceProvider.GetRequiredService<IAutorouteEntries>();
-            var session = serviceProvider.GetRequiredService<ISession>();
-
-            var autoroutes = session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync().GetAwaiter().GetResult();
-            entries.AddEntries(autoroutes.Select(x => new AutorouteEntry { ContentItemId = x.ContentItemId, Path = x.Path }));
-
             // The 1st segment prevents the transformer to be executed for the home.
             routes.MapDynamicControllerRoute<AutoRouteTransformer>("/{any}/{**slug}");
         }
