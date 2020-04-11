@@ -1,9 +1,41 @@
 @model OrchardCore.Alias.Settings.AliasPartSettingsViewModel
+@using OrchardCore.Alias.Settings
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
 
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<div class="form-group row">
+    <div class="col-sm-6">
+        <label asp-for="Options">@T["Options"]</label>
+        <select asp-for="Options" class="form-control">
+            <option value="@AliasPartOptions.Editable" selected="@(Model.Options == AliasPartOptions.Editable)">@T["Alias is editable"]</option>
+            <option value="@AliasPartOptions.GeneratedDisabled" selected="@(Model.Options == AliasPartOptions.GeneratedDisabled)">@T["Alias is generated and input is disabled"]</option>
+        </select>
+    </div>
+</div>
 <div class="form-group row">
     <div class="col-lg">
         <label asp-for="Pattern">@T["Pattern"]</label>
-        <input asp-for="Pattern" class="form-control" />
+        <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
         <span class="hint">@T["The pattern used to render the alias of this content type."]</span>
     </div>
 </div>
+
+<script at="Foot" depends-on="jquery">
+    //<![CDATA[
+    $(function () {
+        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+    });
+    //]]>
+</script>

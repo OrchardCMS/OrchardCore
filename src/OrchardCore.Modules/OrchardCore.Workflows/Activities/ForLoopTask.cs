@@ -10,18 +10,19 @@ namespace OrchardCore.Workflows.Activities
     public class ForLoopTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+        private readonly IStringLocalizer S;
 
         public ForLoopTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ForLoopTask> localizer)
         {
             _scriptEvaluator = scriptEvaluator;
-            T = localizer;
+            S = localizer;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(ForLoopTask);
-        public override LocalizedString DisplayText => T["For Loop Task"];
-        public override LocalizedString Category => T["Control Flow"];
+
+        public override LocalizedString DisplayText => S["For Loop Task"];
+
+        public override LocalizedString Category => S["Control Flow"];
 
         /// <summary>
         /// An expression evaluating to the start value.
@@ -70,7 +71,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Iterate"], T["Done"]);
+            return Outcomes(S["Iterate"], S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

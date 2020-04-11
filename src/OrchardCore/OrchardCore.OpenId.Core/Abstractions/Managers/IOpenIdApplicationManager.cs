@@ -15,12 +15,10 @@ namespace OrchardCore.OpenId.Abstractions.Managers
     /// </summary>
     public interface IOpenIdApplicationManager : IOpenIddictApplicationManager
     {
-        Task AddToRoleAsync(object application, string role, CancellationToken cancellationToken = default);
-        Task<object> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken = default);
+        ValueTask<object> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken = default);
         ValueTask<string> GetPhysicalIdAsync(object application, CancellationToken cancellationToken = default);
         ValueTask<ImmutableArray<string>> GetRolesAsync(object application, CancellationToken cancellationToken = default);
-        Task<bool> IsInRoleAsync(object application, string role, CancellationToken cancellationToken = default);
-        Task<ImmutableArray<object>> ListInRoleAsync(string role, CancellationToken cancellationToken = default);
-        Task RemoveFromRoleAsync(object application, string role, CancellationToken cancellationToken = default);
+        ValueTask<ImmutableArray<object>> ListInRoleAsync(string role, CancellationToken cancellationToken = default);
+        ValueTask SetRolesAsync(object application, ImmutableArray<string> roles, CancellationToken cancellationToken = default);
     }
 }

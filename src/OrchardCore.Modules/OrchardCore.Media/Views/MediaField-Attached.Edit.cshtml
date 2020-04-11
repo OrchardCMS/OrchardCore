@@ -21,7 +21,7 @@
 
 <div class="mediafield-editor" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
     <div class="media-field">
-        <fieldset class="form-group">
+        <div class="form-group">
             <label asp-for="Paths">@Model.PartFieldDefinition.DisplayName()</label>
             @if (!string.IsNullOrWhiteSpace(settings.Hint))
             {
@@ -46,19 +46,15 @@
                     <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
                 </div>
             </nav>
-
-        </fieldset>
+        </div>
         <upload-list id-of-upload-input-field="@mediaFieldId"></upload-list>
-        <fieldset class="form-group">
+        <div class="form-group">
             <media-field-thumbs-container :media-items="mediaItems"
                                           :thumb-size="thumbSize"
                                           :selected-media="selectedMedia">
             </media-field-thumbs-container>
-        </fieldset>
+        </div>
     </div>
 </div>
 
-
 <partial name="Shared/MediaFieldEditLocalization.cshtml" />
-
-

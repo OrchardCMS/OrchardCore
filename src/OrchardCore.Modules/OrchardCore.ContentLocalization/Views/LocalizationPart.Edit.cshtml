@@ -19,7 +19,7 @@
                 @if (!Model.ContentItemCultures.Any())
                 {
                     <p>@T["Your site does not have any cultures. Current System culture is {1} | {0}", CultureInfo.InstalledUICulture.Name, CultureInfo.InstalledUICulture.DisplayName]</p>
-                    <p><a asp-route-area="OrchardCore.Settings" asp-controller="Admin" asp-action="Index" asp-route-groupId = "localization">T["Add or remove supported cultures for the site"]</a></p>
+                    <p><a asp-route-area="OrchardCore.Settings" asp-controller="Admin" asp-action="Index" asp-route-groupId = "localization">@T["Add or remove supported cultures for the site"]</a></p>
                 }
                 else
                 {
@@ -47,5 +47,4 @@
             </div>
         </div>
     </div>
-
 </div>

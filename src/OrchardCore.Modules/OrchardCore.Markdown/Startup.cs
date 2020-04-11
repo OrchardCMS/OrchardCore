@@ -2,7 +2,6 @@ using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
@@ -30,16 +29,18 @@ namespace OrchardCore.Markdown
         public override void ConfigureServices(IServiceCollection services)
         {
             // Markdown Part
-            services.AddContentPart<MarkdownBodyPart>();
-            services.AddScoped<IContentPartDisplayDriver, MarkdownBodyPartDisplay>();
+            services.AddContentPart<MarkdownBodyPart>()
+                .UseDisplayDriver<MarkdownBodyPartDisplay>()
+                .AddHandler<MarkdownBodyPartHandler>();
+
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
-            services.AddScoped<IContentPartHandler, MarkdownBodyPartHandler>();
 
             // Markdown Field
-            services.AddContentField<MarkdownField>();
-            services.AddScoped<IContentFieldDisplayDriver, MarkdownFieldDisplayDriver>();
+            services.AddContentField<MarkdownField>()
+                .UseDisplayDriver<MarkdownFieldDisplayDriver>();
+
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
 

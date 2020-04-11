@@ -2,15 +2,19 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Controllers;
 using OrchardCore.Workflows.Deployment;
 using OrchardCore.Workflows.Drivers;
 using OrchardCore.Workflows.Evaluators;
@@ -26,6 +30,13 @@ namespace OrchardCore.Workflows
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddIdGeneration();
@@ -64,37 +75,42 @@ namespace OrchardCore.Workflows
             services.AddActivity<ScriptTask, ScriptTaskDisplay>();
             services.AddActivity<LogTask, LogTaskDisplay>();
 
+            services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplay>();
+
             services.AddRecipeExecutionStep<WorkflowTypeStep>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var activityControllerName = typeof(ActivityController).ControllerName();
             routes.MapAreaControllerRoute(
                 name: "AddActivity",
                 areaName: "OrchardCore.Workflows",
-                pattern: "Admin/Workflows/Types/{workflowTypeId}/Activity/{activityName}/Add",
-                defaults: new { controller = "Activity", action = "Create" }
+                pattern: _adminOptions.AdminUrlPrefix + "/Workflows/Types/{workflowTypeId}/Activity/{activityName}/Add",
+                defaults: new { controller = activityControllerName, action = nameof(ActivityController.Create) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "EditActivity",
                 areaName: "OrchardCore.Workflows",
-                pattern: "Admin/Workflows/Types/{workflowTypeId}/Activity/{activityId}/Edit",
-                defaults: new { controller = "Activity", action = "Edit" }
+                pattern: _adminOptions.AdminUrlPrefix + "/Workflows/Types/{workflowTypeId}/Activity/{activityId}/Edit",
+                defaults: new { controller = activityControllerName, action = nameof(ActivityController.Edit) }
             );
 
+            var workflowControllerName = typeof(WorkflowController).ControllerName();
             routes.MapAreaControllerRoute(
                 name: "Workflows",
                 areaName: "OrchardCore.Workflows",
-                pattern: "Admin/Workflows/Types/{workflowTypeId}/Instances/{action}",
-                defaults: new { controller = "Workflow", action = "Index" }
+                pattern: _adminOptions.AdminUrlPrefix + "/Workflows/Types/{workflowTypeId}/Instances/{action}",
+                defaults: new { controller = workflowControllerName, action = nameof(WorkflowController.Index) }
             );
 
+            var workflowTypeControllerName = typeof(WorkflowTypeController).ControllerName();
             routes.MapAreaControllerRoute(
                 name: "WorkflowTypes",
                 areaName: "OrchardCore.Workflows",
-                pattern: "Admin/Workflows/Types/{action}/{id?}",
-                defaults: new { controller = "WorkflowType", action = "Index" }
+                pattern: _adminOptions.AdminUrlPrefix + "/Workflows/Types/{action}/{id?}",
+                defaults: new { controller = workflowTypeControllerName, action = nameof(WorkflowTypeController.Index) }
             );
         }
     }

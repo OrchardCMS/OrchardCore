@@ -10,18 +10,19 @@ namespace OrchardCore.Workflows.Activities
     public class CorrelateTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+        private readonly IStringLocalizer S;
 
         public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CorrelateTask> localizer)
         {
             _scriptEvaluator = scriptEvaluator;
-            T = localizer;
+            S = localizer;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(CorrelateTask);
-        public override LocalizedString DisplayText => T["Correlate Task"];
-        public override LocalizedString Category => T["Primitives"];
+
+        public override LocalizedString DisplayText => S["Correlate Task"];
+
+        public override LocalizedString Category => S["Primitives"];
 
         public WorkflowExpression<string> Value
         {
@@ -31,7 +32,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

@@ -4,10 +4,10 @@
     var settings = Model.PartFieldDefinition.GetSettings<TimeFieldSettings>();
 }
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="row col-md-4 col-lg-2">
         <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
         <input asp-for="Value" type="time" class="form-control content-preview-select" required="@settings.Required" />
         <span class="hint">@settings.Hint</span>
     </div>
-</fieldset>
+</div>

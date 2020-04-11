@@ -1,6 +1,6 @@
 @model dynamic
 
-<zone name="Title"><h1>@RenderTitleSegments(T["Create User"])</h1></zone>
+<h1>@RenderTitleSegments(T["Create User"])</h1>
 
 <form asp-action="Create" method="post" enctype="multipart/form-data">
     @Html.ValidationSummary()

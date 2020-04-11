@@ -11,20 +11,21 @@ namespace OrchardCore.Workflows.Activities
     /// </summary>
     public class MissingActivity : Activity
     {
-        private readonly ILogger<MissingActivity> _logger;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer S;
 
         public MissingActivity(IStringLocalizer<MissingActivity> localizer, ILogger<MissingActivity> logger, ActivityRecord missingActivityRecord)
         {
-            T = localizer;
+            S = localizer;
             _logger = logger;
             MissingActivityRecord = missingActivityRecord;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(MissingActivity);
-        public override LocalizedString DisplayText => T["Missing Activity"];
-        public override LocalizedString Category => T["Exceptions"];
+
+        public override LocalizedString DisplayText => S["Missing Activity"];
+
+        public override LocalizedString Category => S["Exceptions"];
 
         public ActivityRecord MissingActivityRecord { get; }
 

@@ -4,7 +4,7 @@ using System.Globalization;
 namespace OrchardCore.Localization
 {
     /// <summary>
-    /// This class provides the pluralization rules based on the Unicode Common Locale Data Repository.
+    /// Provides pluralization rules based on the Unicode Common Locale Data Repository.
     /// c.f. http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
     /// c.f. https://github.com/unicode-org/cldr/blob/master/common/supplemental/plurals.xml
     /// </summary>
@@ -39,20 +39,12 @@ namespace OrchardCore.Localization
             AddRule(new[] { "ar" }, n => (n == 0 ? 0 : n == 1 ? 1 : n == 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5));
         }
 
-        private static void AddRule(string[] cultures, PluralizationRuleDelegate rule)
-        {
-            foreach (var culture in cultures)
-            {
-                Rules.Add(culture, rule);
-            }
-        }
-
+        /// <inheritdocs />
         public int Order => 0;
 
-        bool IPluralRuleProvider.TryGetRule(CultureInfo culture, out PluralizationRuleDelegate rule)
+        /// <inheritdocs />
+        public bool TryGetRule(CultureInfo culture, out PluralizationRuleDelegate rule)
         {
-            rule = null;
-
             var cultureForPlural = GetBaseCulture(culture);
 
             if (Rules.TryGetValue(cultureForPlural.Name, out rule))
@@ -63,19 +55,24 @@ namespace OrchardCore.Localization
             return false;
         }
 
+        private static void AddRule(string[] cultures, PluralizationRuleDelegate rule)
+        {
+            foreach (var culture in cultures)
+            {
+                Rules.Add(culture, rule);
+            }
+        }
 
-        /// <summary>
-        /// Get the base culture of the provided culture.
-        /// e.g., zh-Hans-CN -> zh-Hans -> zh
-        /// </summary>
+        /// <example>zh-Hans-CN -> zh-Hans -> zh</example>
         private CultureInfo GetBaseCulture(CultureInfo culture)
         {
             var returnCulture = culture;
-            // we stop at "" (Invariant Language)
-            while (returnCulture.Parent.Name != "")
+
+            while (returnCulture.Parent.Name != "") // Stop at Invariant culture
             {
                 returnCulture = returnCulture.Parent;
             }
+
             return returnCulture;
         }
     }

@@ -11,6 +11,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     public class ValidateFormTask : TaskActivity
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IStringLocalizer S;
 
         public ValidateFormTask(
             IUpdateModelAccessor updateModelAccessor,
@@ -18,20 +19,20 @@ namespace OrchardCore.Forms.Workflows.Activities
         )
         {
             _updateModelAccessor = updateModelAccessor;
-            T = localizer;
+            S = localizer;
         }
 
         public override string Name => nameof(ValidateFormTask);
-        public override LocalizedString DisplayText => T["Validate Form Task"];
-        public override LocalizedString Category => T["Validation"];
+
+        public override LocalizedString DisplayText => S["Validate Form Task"];
+
+        public override LocalizedString Category => S["Validation"];
+
         public override bool HasEditor => false;
-
-        private IStringLocalizer T { get; set; }
-
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Valid"], T["Invalid"]);
+            return Outcomes(S["Valid"], S["Invalid"]);
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

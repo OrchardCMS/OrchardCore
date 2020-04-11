@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -30,7 +31,7 @@ namespace OrchardCore.Mvc.RazorPages
         {
             // Check if the page belongs to an enabled module.
             var relativePath = context.ActionDescriptor.RelativePath;
-            var found = _paths.Any(p => relativePath.StartsWith(p)) ? true : false;
+            var found = _paths.Any(p => relativePath.StartsWith(p, StringComparison.Ordinal)) ? true : false;
             context.PageApplicationModel.Filters.Add(new ModularPageViewEnginePathFilter(found));
         }
     }

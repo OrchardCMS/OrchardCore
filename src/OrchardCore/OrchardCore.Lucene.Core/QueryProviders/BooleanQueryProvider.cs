@@ -18,6 +18,7 @@ namespace OrchardCore.Lucene.QueryProviders
             foreach (var property in query.Properties())
             {
                 var occur = Occur.MUST;
+                bool isProps = false;
 
                 switch (property.Name.ToLowerInvariant())
                 {
@@ -32,33 +33,35 @@ namespace OrchardCore.Lucene.QueryProviders
                         occur = Occur.SHOULD;
                         break;
                     case "boost":
-                        boolQuery.Boost = query.Value<float>();
+                        boolQuery.Boost = property.Value.Value<float>();
+                        isProps = true;
                         break;
                     case "minimum_should_match":
-                        boolQuery.MinimumNumberShouldMatch = query.Value<int>();
+                        boolQuery.MinimumNumberShouldMatch = property.Value.Value<int>();
+                        isProps = true;
                         break;
                     default: throw new ArgumentException($"Invalid property '{property.Name}' in boolean query");
                 }
 
-                switch (property.Value.Type)
+                if (!isProps)
                 {
-                    case JTokenType.Object:
-
-                        boolQuery.Add(builder.CreateQueryFragment(context, (JObject)property.Value), occur);
-
-                        break;
-                    case JTokenType.Array:
-                        foreach (var item in ((JArray)property.Value))
-                        {
-                            if (item.Type != JTokenType.Object)
+                    switch (property.Value.Type)
+                    {
+                        case JTokenType.Object:
+                            boolQuery.Add(builder.CreateQueryFragment(context, (JObject)property.Value), occur);
+                            break;
+                        case JTokenType.Array:
+                            foreach (var item in ((JArray)property.Value))
                             {
-                                throw new ArgumentException($"Invalid value in boolean query");
+                                if (item.Type != JTokenType.Object)
+                                {
+                                    throw new ArgumentException($"Invalid value in boolean query");
+                                }
+                                boolQuery.Add(builder.CreateQueryFragment(context, (JObject)item), occur);
                             }
-                            boolQuery.Add(builder.CreateQueryFragment(context, (JObject)item), occur);
-                        }
-                        break;
-                    default: throw new ArgumentException($"Invalid value in boolean query");
-
+                            break;
+                        default: throw new ArgumentException($"Invalid value in boolean query");
+                    }
                 }
             }
 

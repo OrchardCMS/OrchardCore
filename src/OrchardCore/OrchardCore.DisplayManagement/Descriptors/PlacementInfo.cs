@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public bool IsLayoutZone()
         {
-            return Location.StartsWith("/");
+            return Location.StartsWith('/');
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             var location = Location;
 
             // Strip the Layout marker
-            if(IsLayoutZone())
+            if (IsLayoutZone())
             {
                 location = location.Substring(1);
             }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+using System.Collections.Specialized;
 using OrchardCore.Lists.Models;
 
 namespace OrchardCore.Lists.ViewModels
@@ -9,5 +9,6 @@ namespace OrchardCore.Lists.ViewModels
         public NameValueCollection ContentTypes { get; set; }
         public string[] ContainedContentTypes { get; set; }
         public int PageSize { get; set; }
+        public bool EnableOrdering { get; set; }
     }
 }

@@ -1,0 +1,90 @@
+@model OrchardCore.Sitemaps.ViewModels.ListSitemapCacheViewModel
+
+<h1>@RenderTitleSegments(T["Sitemaps Cache"])</h1>
+
+<form autocomplete="off">
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            <div class="input-group input-group-sm filter-options">
+                <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+            </div>
+        </div>
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                <a asp-route-action="PurgeAll" class="btn btn-sm btn-danger float-right" data-title="@T["Purge All"]" data-message="@T["Are you sure you want to purge the entire sitemap cache?"]" itemprop="RemoveUrl UnsafeUrl">@T["Purge All"]</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form asp-action="List">
+    @* the form is necessary to generate and antiforgery token for the purge action *@
+
+    @if (Model.CachedFileNames.Any())
+    {
+        <ul id="cache-entries" class="list-group">
+            @for (var i = 0; i < Model.CachedFileNames.Length; i++)
+            {
+                <li class="list-group-item" data-cacheentry="@Model.CachedFileNames[i]">
+                    <div class="properties">
+                        <div class="related">
+                            <a asp-action="Purge" asp-route-cacheFileName="@Model.CachedFileNames[i]" class="btn btn-sm btn-danger float-right" data-title="@T["Purge"]" data-message="@T["Are you sure you want to purge this sitemap?"]" itemprop="RemoveUrl UnsafeUrl">@T["Purge"]</a>
+                        </div>
+                        @Model.CachedFileNames[i]
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div id="none-alert" class="alert alert-info" role="alert">
+            @T["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."]
+        </div>
+    }
+
+    <div id="search-alert" class="alert alert-info d-none" role="alert">
+        @T["<strong>Nothing here!</strong> Your search returned no results."]
+    </div>
+</form>
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        var searchBox = $('#search-box');
+
+        // On each keypress filter the list of cache entries
+        searchBox.keyup(function (e) {
+            var search = $(this).val().toLowerCase();
+            // On ESC, clear the search box and display all cache entries
+            if (e.keyCode == 27 || search == '') {
+                searchBox.val('');
+                $('#cache-entries > li').toggle(true);
+                var visible = $('#cache-entries > li:visible');
+                if (visible.length == 0) {
+                    $('#search-alert').removeClass("d-none");
+                    $('#none-alert').addClass("d-none");
+                }
+                else {
+                    $('#search-alert').addClass("d-none");
+                }
+            }
+            else {
+                $('#cache-entries > li').each(function () {
+                    var cacheEntry = $(this).data('cacheentry').toLowerCase();
+                    var found = cacheEntry.indexOf(search) > -1;
+                    $(this).toggle(found);
+                });
+
+                // We display an alert if a search is not found
+                var visible = $('#cache-entries > li:visible');
+                if (visible.length == 0) {
+                    $('#search-alert').removeClass("d-none");
+                    $('#none-alert').addClass("d-none");
+                }
+                else {
+                    $('#search-alert').addClass("d-none");
+                }
+            }
+        });
+    })
+</script>

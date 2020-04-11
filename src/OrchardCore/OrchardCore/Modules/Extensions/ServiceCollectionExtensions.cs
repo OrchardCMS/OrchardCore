@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
@@ -26,6 +27,7 @@ using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
+using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -36,6 +38,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             // If an instance of OrchardCoreBuilder exists reuse it,
             // so we can call AddOrchardCore several times.
             var builder = services
@@ -54,6 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 AddRouting(builder);
                 AddAntiForgery(builder);
+                AddSameSiteCookieBackwardsCompatibility(builder);
                 AddAuthentication(builder);
                 AddDataProtection(builder);
 
@@ -62,6 +70,19 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             return builder;
+        }
+
+        /// <summary>
+        /// Adds OrchardCore services to the host service collection and let the app change
+        /// the default behavior and set of features through a configure action.
+        /// </summary>
+        public static IServiceCollection AddOrchardCore(this IServiceCollection services, Action<OrchardCoreBuilder> configure)
+        {
+            var builder = services.AddOrchardCore();
+
+            configure?.Invoke(builder);
+
+            return services;
         }
 
         private static void AddDefaultServices(IServiceCollection services)
@@ -73,7 +94,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddLocalization();
 
             // For performance, prevents the 'ResourceManagerStringLocalizer' from being used.
+            // Also support pluralization.
             services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+            services.AddSingleton<IHtmlLocalizerFactory, NullHtmlLocalizerFactory>();
 
             services.AddWebEncoders();
 
@@ -223,15 +246,22 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices((services, serviceProvider) =>
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
+                var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
 
-                var cookieName = "orchantiforgery_" + settings.Name;
+                var cookieName = "orchantiforgery_" + HttpUtility.UrlEncode(settings.Name + environment.ContentRootPath);
 
                 // If uninitialized, we use the host services.
                 if (settings.State == TenantState.Uninitialized)
                 {
                     // And delete a cookie that may have been created by another instance.
                     var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-                    httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieName);
+
+                    // Use case when creating a container in a deferred task.
+                    if (!httpContextAccessor.HttpContext.Response.HasStarted)
+                    {
+                        httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieName);
+                    }
+
                     return;
                 }
 
@@ -251,6 +281,71 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Adds backwards compatibility to the handling of SameSite cookies.
+        /// </summary>
+        private static void AddSameSiteCookieBackwardsCompatibility(OrchardCoreBuilder builder)
+        {
+            builder.ConfigureServices(services =>
+                {
+                    services.Configure<CookiePolicyOptions>(options =>
+                    {
+                        options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+                        options.OnAppendCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
+                        options.OnDeleteCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
+                    });
+                })
+                .Configure(app =>
+                {
+                    app.UseCookiePolicy();
+                });
+        }
+
+        private static void CheckSameSiteBackwardsCompatiblity(HttpContext httpContext, CookieOptions options)
+        {
+            var userAgent = httpContext.Request.Headers["User-Agent"].ToString();
+
+            if (options.SameSite == SameSiteMode.None)
+            {
+                if (string.IsNullOrEmpty(userAgent))
+                {
+                    return;
+                }
+
+                // Cover all iOS based browsers here. This includes:
+                // - Safari on iOS 12 for iPhone, iPod Touch, iPad
+                // - WkWebview on iOS 12 for iPhone, iPod Touch, iPad
+                // - Chrome on iOS 12 for iPhone, iPod Touch, iPad
+                // All of which are broken by SameSite=None, because they use the iOS networking stack
+                if (userAgent.Contains("CPU iPhone OS 12") || userAgent.Contains("iPad; CPU OS 12"))
+                {
+                    options.SameSite = AspNetCore.Http.SameSiteMode.Unspecified;
+                    return;
+                }
+
+                // Cover Mac OS X based browsers that use the Mac OS networking stack. This includes:
+                // - Safari on Mac OS X.
+                // This does not include:
+                // - Chrome on Mac OS X
+                // Because they do not use the Mac OS networking stack.
+                if (userAgent.Contains("Macintosh; Intel Mac OS X 10_14") &&
+                    userAgent.Contains("Version/") && userAgent.Contains("Safari"))
+                {
+                    options.SameSite = AspNetCore.Http.SameSiteMode.Unspecified;
+                    return;
+                }
+
+                // Cover Chrome 50-69, because some versions are broken by SameSite=None, 
+                // and none in this range require it.
+                // Note: this covers some pre-Chromium Edge versions, 
+                // but pre-Chromium Edge does not require SameSite=None.
+                if (userAgent.Contains("Chrome/5") || userAgent.Contains("Chrome/6"))
+                {
+                    options.SameSite = AspNetCore.Http.SameSiteMode.Unspecified;
+                }
+            }
+        }
+
+        /// <summary>
         /// Adds host and tenant level authentication services and configuration.
         /// </summary>
         private static void AddAuthentication(OrchardCoreBuilder builder)
@@ -263,10 +358,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // IAuthenticationSchemeProvider is already registered at the host level.
                 // We need to register it again so it is taken into account at the tenant level
-                // because it holds a reference to an underlying dictionary, responsible of storing 
+                // because it holds a reference to an underlying dictionary, responsible of storing
                 // the registered schemes which need to be distinct for each tenant.
                 services.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
-
             })
             .Configure(app =>
             {
@@ -284,7 +378,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
 
-                var directory = Directory.CreateDirectory(Path.Combine(
+                // The 'FileSystemXmlRepository' will create the directory, but only if it is not overridden.
+                var directory = new DirectoryInfo(Path.Combine(
                     options.Value.ShellsApplicationDataPath,
                     options.Value.ShellsContainerName,
                     settings.Name, "DataProtection-Keys"));
@@ -297,22 +392,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddDataProtection()
                     .PersistKeysToFileSystem(directory)
                     .SetApplicationName(settings.Name)
+                    .AddKeyManagementOptions(o => o.XmlEncryptor = o.XmlEncryptor ?? new NullXmlEncryptor())
                     .Services;
-
-                // Retrieve the implementation type of the newly startup filter registered as a singleton
-                var startupFilterType = collection.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter))?.GetImplementationType();
-
-                if (startupFilterType != null)
-                {
-                    // Remove any previously registered data protection startup filters.
-                    var descriptors = services.Where(s => s.ServiceType == typeof(IStartupFilter) &&
-                        (s.GetImplementationType() == startupFilterType)).ToArray();
-
-                    foreach (var descriptor in descriptors)
-                    {
-                        services.Remove(descriptor);
-                    }
-                }
 
                 // Remove any previously registered options setups.
                 services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();

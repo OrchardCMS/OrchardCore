@@ -30,7 +30,10 @@ namespace OrchardCore.Workflows.Services
         /// <param name="name">The type of the event to trigger, e.g. ContentPublishedEvent.</param>
         /// <param name="input">An object containing context for the event.</param>
         /// <param name="correlationId">Optionally specify a application-specific value to associate the workflow instance with. For example, a content item ID.</param>
-        Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null);
+        /// <param name="isExclusive">
+        /// If true, a new workflow instance is not created if an existing one is already halted on a starting activity related to this event. False by default.
+        /// </param>
+        Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false);
 
         /// <summary>
         /// Starts a new workflow using the specified workflow definition.

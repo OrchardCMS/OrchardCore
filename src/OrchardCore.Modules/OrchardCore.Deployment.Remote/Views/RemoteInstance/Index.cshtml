@@ -1,6 +1,6 @@
 @model RemoteInstanceIndexViewModel
 
-<zone name="Title"><h1>@RenderTitleSegments(T["Remote Instances"])</h1></zone>
+<h1>@RenderTitleSegments(T["Remote Instances"])</h1>
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav">
@@ -12,7 +12,7 @@
 
 <form asp-action="Index"> @* the form is necessary to generate and antiforgery token for the delete action *@
     @if (Model.RemoteInstanceList.RemoteInstances.Any())
-    { 
+    {
         <ul class="list-group">
             @foreach (var entry in Model.RemoteInstanceList.RemoteInstances)
             {
@@ -36,4 +36,3 @@
         </div>
     }
 </form>
-

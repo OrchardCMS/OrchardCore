@@ -5,7 +5,6 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -23,33 +22,31 @@ namespace OrchardCore.Recipes.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
+        private readonly ILogger _logger;
 
         private VariablesMethodProvider _variablesMethodProvider;
+        private ConfigurationMethodProvider _configurationMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
 
         public RecipeExecutor(IEnumerable<IRecipeEventHandler> recipeEventHandlers,
                               ShellSettings shellSettings,
                               IShellHost shellHost,
-                              ILogger<RecipeExecutor> logger,
-                              IStringLocalizer<RecipeExecutor> localizer)
+                              ILogger<RecipeExecutor> logger)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _recipeEventHandlers = recipeEventHandlers;
-            Logger = logger;
-            T = localizer;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; set; }
-        public IStringLocalizer T { get; set; }
 
         public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment, CancellationToken cancellationToken)
         {
-            await _recipeEventHandlers.InvokeAsync(x => x.RecipeExecutingAsync(executionId, recipeDescriptor), Logger);
+            await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutingAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
 
             try
             {
                 _environmentMethodProvider = new ParametersMethodProvider(environment);
+                _configurationMethodProvider = new ConfigurationMethodProvider(_shellSettings.ShellConfiguration);
 
                 var result = new RecipeResult { ExecutionId = executionId };
 
@@ -89,7 +86,7 @@ namespace OrchardCore.Recipes.Services
 
                                             if (cancellationToken.IsCancellationRequested)
                                             {
-                                                Logger.LogError("Recipe interrupted by cancellation token.");
+                                                _logger.LogError("Recipe interrupted by cancellation token.");
                                                 return null;
                                             }
 
@@ -127,7 +124,6 @@ namespace OrchardCore.Recipes.Services
                                                     var innerExecutionId = Guid.NewGuid().ToString();
                                                     await ExecuteAsync(innerExecutionId, descriptor, environment, cancellationToken);
                                                 }
-
                                             }
                                         }
                                     }
@@ -137,13 +133,13 @@ namespace OrchardCore.Recipes.Services
                     }
                 }
 
-                await _recipeEventHandlers.InvokeAsync(x => x.RecipeExecutedAsync(executionId, recipeDescriptor), Logger);
+                await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
 
                 return executionId;
             }
             catch (Exception)
             {
-                await _recipeEventHandlers.InvokeAsync(x => x.ExecutionFailedAsync(executionId, recipeDescriptor), Logger);
+                await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.ExecutionFailedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
 
                 throw;
             }
@@ -160,26 +156,27 @@ namespace OrchardCore.Recipes.Services
                 var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
                 var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
                 scriptingManager.GlobalMethodProviders.Add(_environmentMethodProvider);
+                scriptingManager.GlobalMethodProviders.Add(_configurationMethodProvider);
 
                 // Substitutes the script elements by their actual values
                 EvaluateScriptNodes(recipeStep, scriptingManager);
 
                 foreach (var recipeStepHandler in recipeStepHandlers)
                 {
-                    if (Logger.IsEnabled(LogLevel.Information))
+                    if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Executing recipe step '{RecipeName}'.", recipeStep.Name);
+                        _logger.LogInformation("Executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
 
-                    await _recipeEventHandlers.InvokeAsync(e => e.RecipeStepExecutingAsync(recipeStep), Logger);
+                    await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutingAsync(recipeStep), recipeStep, _logger);
 
                     await recipeStepHandler.ExecuteAsync(recipeStep);
 
-                    await _recipeEventHandlers.InvokeAsync(e => e.RecipeStepExecutedAsync(recipeStep), Logger);
+                    await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutedAsync(recipeStep), recipeStep, _logger);
 
-                    if (Logger.IsEnabled(LogLevel.Information))
+                    if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
+                        _logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
                 }
             });
@@ -225,7 +222,7 @@ namespace OrchardCore.Recipes.Services
                     var value = node.Value<string>();
 
                     // Evaluate the expression while the result is another expression
-                    while (value.StartsWith("[") && value.EndsWith("]"))
+                    while (value.StartsWith('[') && value.EndsWith(']'))
                     {
                         value = value.Trim('[', ']');
                         value = (scriptingManager.Evaluate(value, context.RecipeDescriptor.FileProvider, context.RecipeDescriptor.BasePath, null) ?? "").ToString();

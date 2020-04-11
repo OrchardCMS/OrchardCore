@@ -1,5 +1,5 @@
 .widget-container {
-    @extend .container;
+    @include make-container;
 }
 
 .widget-image-widget img {
@@ -21,59 +21,22 @@
 .widget-align-justify {
     text-align: justify;
 }
-
-.widget-size-25 {
-    @extend .col-sm-3;
+.widget-size-100{
+    @include make-col-ready;
+    @include make-col(12);
 }
-
-.widget-size-33 {
-    @extend .col-sm-4;
-}
-
-.widget-size-50 {
-    @extend .col-sm-6;
-}
-
-.widget-size-66 {
-    @extend .col-sm-8;
-}
-
-.widget-size-75 {
-    @extend .col-sm-9;
-}
-
-.widget-size-100 {
-    @extend .col-sm-12;
-}
-
-.widget {
-    .widget-size-25 {
-        @extend .col-md-3;
-        @extend .col-12;
+@each $wsize in (25, 33, 50, 66, 75) {
+    .widget-size-#{$wsize} {
+        @extend .widget-size-100;
+        @include media-breakpoint-up(sm) {
+            @include make-col($wsize*12/100);
+        }
     }
 
-    .widget-size-33 {
-        @extend .col-md-4;
-        @extend .col-12;
-    }
-
-    .widget-size-50 {
-        @extend .col-md-6;
-        @extend .col-12;
-    }
-
-    .widget-size-66 {
-        @extend .col-md-8;
-        @extend .col-12;
-    }
-
-    .widget-size-75 {
-        @extend .col-md-9;
-        @extend .col-12;
-    }
-
-    .widget-size-100 {
-        @extend .col-md-12;
-        @extend .col-12;
+    .widget .widget-size-#{$wsize} {
+        @extend .widget-size-#{$wsize};
+        @include media-breakpoint-up(md) {
+            @include make-col($wsize*12/100);
+        }
     }
 }

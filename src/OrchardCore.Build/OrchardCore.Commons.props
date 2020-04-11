@@ -15,6 +15,12 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <LangVersion>8.0</LangVersion>
+
+    <!-- Common Nuget properties-->
+    
+    <!-- This is used by GitHub Repository to find which repository should contain the package when updloaded -->
+    <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore</RepositoryUrl>
+    
   </PropertyGroup>
 
 </Project>

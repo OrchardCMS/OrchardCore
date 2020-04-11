@@ -21,7 +21,9 @@ var fs = require("file-system"),
     util = require("gulp-util"),
     postcss = require("gulp-postcss"),
     rtl = require("postcss-rtl"),
-    babel = require("gulp-babel");
+    babel = require('gulp-babel'),
+    agencytheme = require('./src/OrchardCore.Themes/TheAgencyTheme/wwwroot/gulpfile'),
+    blogtheme = require('./src/OrchardCore.Themes/TheBlogTheme/wwwroot/gulpfile');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -34,8 +36,8 @@ require("events").EventEmitter.prototype._maxListeners = 100;
  */
 
 // Incremental build (each asset group is built only if one or more inputs are newer than the output).
-gulp.task("build", function () {
-    var assetGroupTasks = getAllAssetGroups().map(function (assetGroup) {
+gulp.task("build-assets", function () {
+    var assetGroupTasks = getAssetGroups().map(function (assetGroup) {
         var doRebuild = false;
         return createAssetGroupTask(assetGroup, doRebuild);
     });
@@ -43,8 +45,8 @@ gulp.task("build", function () {
 });
 
 // Full rebuild (all assets groups are built regardless of timestamps).
-gulp.task("rebuild", function () {
-    var assetGroupTasks = getAllAssetGroups().map(function (assetGroup) {
+gulp.task("rebuild-assets", function () {
+    var assetGroupTasks = getAssetGroups().map(function (assetGroup) {
         var doRebuild = true;
         return createAssetGroupTask(assetGroup, doRebuild);
     });
@@ -124,7 +126,7 @@ gulp.task("watch", function () {
 
 gulp.task("default", gulp.series(["build"]));
 
-gulp.task("help", function () {
+gulp.task('help', function() {
     util.log(`
   Usage: gulp [TASK]
   Tasks:
@@ -133,6 +135,46 @@ gulp.task("help", function () {
       watch     Continuous watch (each asset group is built whenever one of its inputs changes).
     `);
 });
+
+gulp.task("build-agencytheme", function(done){
+	return buildAgencyTheme(done);
+});
+
+gulp.task("build-blogtheme", function(done){
+	return buildBlogTheme(done);
+});
+
+gulp.task("build-themes", function(done){
+    buildAgencyTheme( ()=> buildBlogTheme (done) );
+});
+
+
+gulp.task( 'build',  gulp.series([ 'build-assets', 'build-themes' ]) );
+gulp.task( 'rebuild',  gulp.series([ 'rebuild-assets', 'build-themes' ]) );
+gulp.task( 'default',  gulp.series([ 'build' ]) );
+
+/*
+** Build Themes
+*/
+
+function buildAgencyTheme(done){
+    var cwd = process.cwd();      
+    process.chdir('./src/OrchardCore.Themes/TheAgencyTheme/wwwroot');       
+	agencytheme.build( ()=> {
+         process.chdir(cwd);
+         done();
+    });
+}
+
+function buildBlogTheme(done){
+    var cwd = process.cwd();      
+    process.chdir('./src/OrchardCore.Themes/TheBlogTheme/wwwroot');    
+	blogtheme.build( ()=> {
+        process.chdir(cwd);
+        done();
+    });
+    
+}
 
 /*
  ** ASSET GROUPS

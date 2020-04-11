@@ -1,6 +1,6 @@
 @model QueriesEditViewModel
 
-<zone name="Title"><h1>@RenderTitleSegments(T["Edit '{0}' query", Model.Name])</h1></zone>
+<h1>@RenderTitleSegments(T["Edit '{0}' query", Model.Name])</h1>
 <form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
     @Html.ValidationSummary()
 
@@ -11,9 +11,9 @@
 
     @if (Model.Editor.Content != null)
     {
-        <fieldset class="form-group">
+        <div class="form-group">
             @await DisplayAsync(Model.Editor.Actions)
-        </fieldset>
+        </div>
     }
 
     <input type="hidden" asp-for="Name" />

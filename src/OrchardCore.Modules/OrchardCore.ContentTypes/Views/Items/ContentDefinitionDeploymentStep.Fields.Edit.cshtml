@@ -11,10 +11,9 @@
     var avaParts = allParts.Where(x => !allTypes.Any(y => y.Name == x.Name));
 }
 
-
 <h5>@T["Content Definitions"]</h5>
 
-<fieldset class="form-group mt-4 mb-5">
+<div class="form-group mt-4 mb-5">
     <div class="row">
         <div class="col">
             <div class="custom-control custom-checkbox">
@@ -23,10 +22,9 @@
             </div>
         </div>
     </div>
-</fieldset>
+</div>
 
-
-<fieldset class="cdsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
+<div class="cdsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
     <div class="row mb-3">
         <div class="col">
             <h6>Content Types</h6>
@@ -53,7 +51,6 @@
                             <label class="custom-control-label" for="@(Html.IdFor(m => m.ContentTypes) + "_" + ctypename)">@contentTypeDefinition.DisplayName</label>
                         </div>
 
-
                         <ul class="list-group @(checkd??false ? "" : "collapse")" id="sub_@ctypename">
                             @foreach (var part in contentTypeDefinition.Parts.Where(x => x.Name != ctypename))
                             {
@@ -74,20 +71,17 @@
                                             }
                                         </label>
                                     </div>
-
-
                                 </li>
                             }
                         </ul>
-
                     </li>
                 }
             </ul>
         </div>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="cdsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
+<div class="cdsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
     <div class="row mb-3">
         <div class="col">
             <h6>Content Parts</h6>
@@ -112,7 +106,7 @@
             </ul>
         </div>
     </div>
-</fieldset>
+</div>
 
 <script at="Foot">
     $(function () {
@@ -147,4 +141,3 @@
         });
     });
 </script>
-

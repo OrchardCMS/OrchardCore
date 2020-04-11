@@ -1,6 +1,6 @@
 @model EditDeploymentPlanStepViewModel
 
-<zone name="Title"><h1>@RenderTitleSegments(T["Create Step"])</h1></zone>
+<h1>@RenderTitleSegments(T["Create Step"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post">
@@ -10,10 +10,8 @@
     <input type="hidden" asp-for="DeploymentStepId" />
     <input type="hidden" asp-for="DeploymentStepType" />
 
-    <fieldset>
-        <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Create"]</button>
-            <a class="btn btn-secondary" asp-route-action="Display" asp-route-controller="DeploymentPlan" asp-route-id="@Model.DeploymentPlanId">@T["Cancel"]</a>
-        </div>
-    </fieldset>
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Create"]</button>
+        <a class="btn btn-secondary" asp-route-action="Display" asp-route-controller="DeploymentPlan" asp-route-id="@Model.DeploymentPlanId">@T["Cancel"]</a>
+    </div>
 </form>

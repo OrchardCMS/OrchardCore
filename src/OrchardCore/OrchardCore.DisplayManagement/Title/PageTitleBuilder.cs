@@ -1,11 +1,13 @@
-﻿using OrchardCore.UI;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Title
 {
     public class PageTitleBuilder : IPageTitleBuilder
     {
+        private readonly static HtmlString DefaultTitleSeparator = new HtmlString(" - ");
+
         private readonly List<PositionalTitlePart> _titleParts;
         private IHtmlContent _title;
 
@@ -42,7 +44,7 @@ namespace OrchardCore.DisplayManagement.Title
 
             if (separator == null)
             {
-                separator = new HtmlString(" - ");
+                separator = DefaultTitleSeparator;
             }
 
             _titleParts.Sort(FlatPositionComparer.Instance);

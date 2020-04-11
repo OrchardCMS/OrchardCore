@@ -10,7 +10,7 @@
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-sql" at="Foot"></script>
 
-<zone name="Title"><h1>@RenderTitleSegments(T["SQL Query"])</h1></zone>
+<h1>@RenderTitleSegments(T["SQL Query"])</h1>
 
 <div asp-validation-summary="All" class="text-danger"></div>
 
@@ -32,7 +32,6 @@
                 <textarea asp-for="Parameters" rows="1" class="form-control"></textarea>
                 <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
             </div>
-
         </div>
     </div>
 

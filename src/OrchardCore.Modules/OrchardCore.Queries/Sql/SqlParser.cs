@@ -17,7 +17,6 @@ namespace OrchardCore.Queries.Sql
         private ParseTree _tree;
         private static LanguageData language = new LanguageData(new SqlGrammar());
         private Stack<FormattingModes> _modes;
-        private Stack<ISqlBuilder> _sqlBuilders = new Stack<ISqlBuilder>();
 
         private string _limit;
         private string _offset;
@@ -63,7 +62,7 @@ namespace OrchardCore.Queries.Sql
 
                 return true;
             }
-            catch(SqlParserException se)
+            catch (SqlParserException se)
             {
                 query = null;
                 messages = new string[] { se.Message };
@@ -94,7 +93,7 @@ namespace OrchardCore.Queries.Sql
 
         private void PopulateAliases(ParseTree tree)
         {
-            // In order to determine if an Id is a table name or an alias, we 
+            // In order to determine if an Id is a table name or an alias, we
             // analyze every Alias and store the value.
 
             _aliases = new HashSet<string>();
@@ -260,7 +259,6 @@ namespace OrchardCore.Queries.Sql
             }
 
             _builder.Clear();
-            
 
             _modes.Push(FormattingModes.SelectClause);
             EvaluateExpression(parseTreeNode.ChildNodes[1]);
@@ -387,7 +385,7 @@ namespace OrchardCore.Queries.Sql
                     var name = parseTreeNode.ChildNodes[1].ChildNodes[0].Token.ValueString;
 
                     _builder.Append("@" + name);
-                    
+
                     if (_parameters != null && !_parameters.ContainsKey(name))
                     {
                         // If a parameter is not set and there is no default value, report it
@@ -425,7 +423,6 @@ namespace OrchardCore.Queries.Sql
 
         private void EvaluateFunCall(ParseTreeNode funCall)
         {
-            
             var funcName = funCall.ChildNodes[0].ChildNodes[0].Token.ValueString;
             IList<string> arguments;
             var tempBuilder = _builder;
@@ -625,7 +622,6 @@ namespace OrchardCore.Queries.Sql
                     {
                         _builder.Append(_dialect.QuoteForColumnName(id.ChildNodes[i].Token.ValueString));
                     }
-                    
                 }
             }
         }
@@ -653,7 +649,7 @@ namespace OrchardCore.Queries.Sql
                 _builder.Append(parseTreeNode.ChildNodes[0].Token.ValueString);
             }
         }
-        
+
         private void EvaluateSelectRestriction(ParseTreeNode parseTreeNode)
         {
             _builder.Clear();
@@ -663,7 +659,7 @@ namespace OrchardCore.Queries.Sql
                 _builder.Append(parseTreeNode.ChildNodes[0].Term.Name).Append(" ");
             }
         }
-        
+
         private enum FormattingModes
         {
             SelectClause,

@@ -2,22 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data;
-using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
-using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -32,12 +31,12 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly IDataProtectionProvider _dataProtectorProvider;
         private readonly ISetupService _setupService;
         private readonly ShellSettings _currentShellSettings;
         private readonly IClock _clock;
-        private readonly INotifier _notifier;
+        private readonly IEmailAddressValidator _emailAddressValidator;
+        private readonly IStringLocalizer S;
 
         public ApiController(
             IShellHost shellHost,
@@ -48,28 +47,20 @@ namespace OrchardCore.Tenants.Controllers
             IDataProtectionProvider dataProtectorProvider,
             ISetupService setupService,
             IClock clock,
-            INotifier notifier,
-            IEnumerable<IRecipeHarvester> recipeHarvesters,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer)
+            IEmailAddressValidator emailAddressValidator,
+            IStringLocalizer<AdminController> stringLocalizer)
         {
             _dataProtectorProvider = dataProtectorProvider;
             _setupService = setupService;
             _clock = clock;
-            _recipeHarvesters = recipeHarvesters;
             _shellHost = shellHost;
             _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
             _databaseProviders = databaseProviders;
             _currentShellSettings = currentShellSettings;
-            _notifier = notifier;
-
+            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             S = stringLocalizer;
-            H = htmlLocalizer;
         }
-
-        public IStringLocalizer S { get; set; }
-        public IHtmlLocalizer H { get; set; }
 
         [HttpPost]
         [Route("create")]
@@ -77,12 +68,12 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!IsDefaultShell())
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
@@ -121,20 +112,19 @@ namespace OrchardCore.Tenants.Controllers
             {
                 if (_shellHost.TryGetSettings(model.Name, out var settings))
                 {
-                    // Site already exists, return 200 for indempotency purpose
+                    // Site already exists, return 201 for indempotency purpose
 
                     var token = CreateSetupToken(settings);
 
-                    return StatusCode(201, GetTenantUrl(settings, token));
+                    return StatusCode(201, GetEncodedUrl(settings, token));
                 }
                 else
                 {
-                    _shellSettingsManager.SaveSettings(shellSettings);
-                    var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
+                    await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                     var token = CreateSetupToken(shellSettings);
 
-                    return Ok(GetTenantUrl(shellSettings, token));
+                    return Ok(GetEncodedUrl(shellSettings, token));
                 }
             }
 
@@ -147,17 +137,22 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!IsDefaultShell())
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             if (!ModelState.IsValid)
             {
                 return BadRequest();
+            }
+
+            if (!_emailAddressValidator.Validate(model.Email))
+            {
+                return BadRequest(S["Invalid email."]);
             }
 
             if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
@@ -262,7 +257,7 @@ namespace OrchardCore.Tenants.Controllers
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipeDescriptor,
                 SiteTimeZone = model.SiteTimeZone,
-                DatabaseProvider = selectedProvider.Name,
+                DatabaseProvider = selectedProvider.Value,
                 DatabaseConnectionString = connectionString,
                 DatabaseTablePrefix = tablePrefix
             };
@@ -288,41 +283,35 @@ namespace OrchardCore.Tenants.Controllers
             return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
 
-        private string GetTenantUrl(ShellSettings shellSettings, string token)
+        private string GetEncodedUrl(ShellSettings shellSettings, string token)
         {
-            var requestHostInfo = Request.Host;
+            var requestHost = Request.Host;
+            var host = shellSettings.RequestUrlHost?.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
 
-            var tenantUrlHost = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHostInfo.Host;
-            if (requestHostInfo.Port.HasValue)
+            var port = requestHost.Port;
+
+            if (port.HasValue)
             {
-                tenantUrlHost += ":" + requestHostInfo.Port;
+                host += ":" + port;
             }
 
-            var pathBase = Request.PathBase.Value ?? string.Empty;
+            var hostString = new HostString(host);
 
-            if (!string.IsNullOrEmpty(_currentShellSettings.RequestUrlPrefix))
-            {
-                var prefix = "/" + _currentShellSettings.RequestUrlPrefix;
-
-                if (pathBase.EndsWith(prefix))
-                {
-                    pathBase = pathBase.Substring(0, pathBase.Length - prefix.Length);
-                }
-            }
-
-            var result = $"{Request.Scheme}://{tenantUrlHost}{pathBase}";
+            var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
 
             if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
-                result += "/" + shellSettings.RequestUrlPrefix;
+                pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
             }
+
+            QueryString queryString;
 
             if (!string.IsNullOrEmpty(token))
             {
-                result += "?token=" + WebUtility.UrlEncode(token);
+                queryString = QueryString.Create("token", token);
             }
 
-            return result;
+            return $"{Request.Scheme}://{hostString + pathString + queryString}";
         }
 
         private string CreateSetupToken(ShellSettings shellSettings)

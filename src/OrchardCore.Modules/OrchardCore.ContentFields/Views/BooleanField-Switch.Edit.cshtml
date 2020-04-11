@@ -3,7 +3,7 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<BooleanFieldSettings>();
 }
-<fieldset class="form-group">
+<div class="form-group">
     <span class="switch">
         <input asp-for="Value" type="checkbox" class="switch switch-sm content-preview-select" checked="@Model.Value" />
         <label asp-for="Value">@(string.IsNullOrEmpty(settings.Label) ? Model.PartFieldDefinition.DisplayName() : settings.Label)</label>
@@ -12,4 +12,4 @@
     {
         <span class="hint">— @settings.Hint</span>
     }
-</fieldset>
+</div>

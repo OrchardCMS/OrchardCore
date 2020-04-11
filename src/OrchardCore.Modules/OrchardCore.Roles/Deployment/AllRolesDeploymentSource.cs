@@ -32,21 +32,22 @@ namespace OrchardCore.Roles.Deployment
             }
 
             // Get all roles
-            var allRoleNames = await _roleService.GetRoleNamesAsync();
+            var allRoles = await _roleService.GetRolesAsync();
             var permissions = new JArray();
             var tasks = new List<Task>();
 
-            foreach (var roleName in allRoleNames)
+            foreach (var role in allRoles)
             {
-                var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(roleName));
+                var currentRole = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(role.RoleName));
 
-                if (role != null)
+                if (currentRole != null)
                 {
                     permissions.Add(JObject.FromObject(
                         new RolesStepRoleModel
                         {
-                            Name = role.NormalizedRoleName,
-                            Permissions = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
+                            Name = currentRole.RoleName,
+                            Description = currentRole.RoleDescription,
+                            Permissions = currentRole.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
                         }));
                 }
             }

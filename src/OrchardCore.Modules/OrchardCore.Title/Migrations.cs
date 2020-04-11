@@ -1,22 +1,22 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
-using Newtonsoft.Json.Linq;
 using YesSql;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Title
 {
     public class Migrations : DataMigration
     {
-        IContentDefinitionManager _contentDefinitionManager;
+        private IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
-        private readonly ILogger<Migrations> _logger;
+        private readonly ILogger _logger;
 
         public Migrations(
             IContentDefinitionManager contentDefinitionManager,
@@ -63,7 +63,7 @@ namespace OrchardCore.Title
                         && UpdateTitle(contentItemVersion.Content))
                     {
                         _session.Save(contentItemVersion);
-                        _logger.LogInformation($"A content item version's Title was upgraded: '{contentItemVersion.ContentItemVersionId}'");
+                        _logger.LogInformation("A content item version's Title was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
                     }
 
                     lastDocumentId = contentItemVersion.Id;

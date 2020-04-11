@@ -4,65 +4,41 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.DisplayManagement;
+using OrchardCore.ContentPreview.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
-using YesSql;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentPreview.Controllers
 {
-    public class PreviewController : Controller, IUpdateModel
+    public class PreviewController : Controller
     {
         private readonly IContentManager _contentManager;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISiteService _siteService;
-        private readonly ISession _session;
+        private readonly IContentManagerSession _contentManagerSession;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
-        private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IClock _clock;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public PreviewController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
-            IContentDefinitionManager contentDefinitionManager,
-            ISiteService siteService,
-            INotifier notifier,
-            ISession session,
-            IShapeFactory shapeFactory,
-            ILogger<PreviewController> logger,
-            IHtmlLocalizer<PreviewController> localizer,
+            IContentManagerSession contentManagerSession,
             IAuthorizationService authorizationService,
-            IClock clock
-            )
+            IClock clock,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _authorizationService = authorizationService;
             _clock = clock;
-            _notifier = notifier;
             _contentItemDisplayManager = contentItemDisplayManager;
-            _session = session;
-            _siteService = siteService;
             _contentManager = contentManager;
-            _contentDefinitionManager = contentDefinitionManager;
-
-            T = localizer;
-            New = shapeFactory;
-            Logger = logger;
+            _contentManagerSession = contentManagerSession;
+            _updateModelAccessor = updateModelAccessor;
         }
-
-        public IHtmlLocalizer T { get; }
-        public dynamic New { get; set; }
-
-        public ILogger Logger { get; set; }
 
         public IActionResult Index()
         {
@@ -74,7 +50,7 @@ namespace OrchardCore.ContentPreview.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ContentPreview))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             var contentItemType = Request.Form["ContentItemType"];
@@ -86,17 +62,20 @@ namespace OrchardCore.ContentPreview.Controllers
 
             var contentItemId = Request.Form["PreviewContentItemId"];
             var contentItemVersionId = Request.Form["PreviewContentItemVersionId"];
-            int.TryParse(Request.Form["PreviewId"], out var contentId);
 
-            contentItem.Id = contentId;
+            // Unique contentItem.Id that only Preview is using such that another
+            // stored document can't have the same one in the IContentManagerSession index
+
+            contentItem.Id = -1;
             contentItem.ContentItemId = contentItemId;
             contentItem.ContentItemVersionId = contentItemVersionId;
             contentItem.CreatedUtc = _clock.UtcNow;
             contentItem.ModifiedUtc = _clock.UtcNow;
             contentItem.PublishedUtc = _clock.UtcNow;
+            contentItem.Published = true;
 
             // TODO: we should probably get this value from the main editor as it might impact validators
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
@@ -114,7 +93,24 @@ namespace OrchardCore.ContentPreview.Controllers
                 return StatusCode(500, new { errors = errors });
             }
 
-            model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "Detail");
+            var previewAspect = await _contentManager.PopulateAspectAsync(contentItem, new PreviewAspect());
+
+            if (!String.IsNullOrEmpty(previewAspect.PreviewUrl))
+            {
+                // The PreviewPart is configured, we need to set the fake content item
+                _contentManagerSession.Store(contentItem);
+
+                if (!previewAspect.PreviewUrl.StartsWith('/'))
+                {
+                    previewAspect.PreviewUrl = "/" + previewAspect.PreviewUrl;
+                }
+
+                Request.HttpContext.Items["PreviewPath"] = previewAspect.PreviewUrl;
+
+                return Ok();
+            }
+
+            model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "Detail");
 
             return View(model);
         }

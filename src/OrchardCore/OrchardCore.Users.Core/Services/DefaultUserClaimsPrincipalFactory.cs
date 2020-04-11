@@ -11,32 +11,24 @@ namespace OrchardCore.Users.Services
     /// </summary>
     public class DefaultUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<IUser, IRole>
     {
-        private readonly UserManager<IUser> _userManager;
-        private readonly IOptions<IdentityOptions> _identityOptions;
-
         public DefaultUserClaimsPrincipalFactory(
             UserManager<IUser> userManager,
             RoleManager<IRole> roleManager,
             IOptions<IdentityOptions> identityOptions) : base(userManager, roleManager, identityOptions)
         {
-            _userManager = userManager;
-            _identityOptions = identityOptions;
         }
 
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(IUser user)
         {
             var claims = await base.GenerateClaimsAsync(user);
 
-            var email = await _userManager.GetEmailAsync(user);
-
+            var email = await UserManager.GetEmailAsync(user);
             if (email != null)
             {
                 claims.AddClaim(new Claim("email", email));
-            }
 
-            if (await _userManager.IsEmailConfirmedAsync(user))
-            {
-                claims.AddClaim(new Claim("email_verified", "true"));
+                var confirmed = await UserManager.IsEmailConfirmedAsync(user);
+                claims.AddClaim(new Claim("email_verified", confirmed ? bool.TrueString : bool.FalseString, ClaimValueTypes.Boolean));
             }
 
             return claims;

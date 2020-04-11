@@ -5,8 +5,8 @@
  * @license MIT
  */
 
-@import "../../../../../node_modules/bootstrap/scss/functions";
-@import "../../../../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
 
 // To match trumbowyg html editor
 $background: #ecf0f1;
@@ -17,251 +17,253 @@ $z-index-fullscreen: 1200;
 $toolbar-height-fullscreen: 39px;
 
 .CodeMirror {
-  height: auto;
-  min-height: 300px;
-  border: 1px solid $gray-300;
-  border-bottom-left-radius: $border-radius;
-  border-bottom-right-radius: $border-radius;
-  padding: 10px;
-  font: inherit;
-  z-index: 1;
+    height: auto;
+    min-height: 300px;
+    border: 1px solid $gray-300;
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+    padding: 10px;
+    font: inherit;
+    z-index: 1;
 }
 
 .CodeMirror-scroll {
-  min-height: 300px;
+    min-height: 300px;
 }
 
 .CodeMirror-fullscreen {
-  background: #fff;
-  position: fixed !important;
-  top: $toolbar-height-fullscreen;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: auto;
-  z-index: $z-index-fullscreen;
+    background: #fff;
+    position: fixed !important;
+    top: $toolbar-height-fullscreen;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    z-index: $z-index-fullscreen;
 }
 
 .CodeMirror-sided {
-  width: 50% !important;
+    width: 50% !important;
 }
 
 .editor-toolbar {
-  background-color: $background;
-  position: relative;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
-  user-select: none;
-  margin: 0;
-  padding: 0 5px;
-  border-top: 1px solid $gray-300;
-  border-left: 1px solid $gray-300;
-  border-right: 1px solid $gray-300;
-  border-top-left-radius: $border-radius;
-  border-top-right-radius: $border-radius;
-  button {
-    padding: 1px 6px !important;
-    margin-bottom: 1px;
-    border: none;
-    cursor: pointer;
-    background: none;
-    display: inline-block;
+    background-color: $background;
     position: relative;
-    width: 35px;
-    height: 35px;
-    overflow: hidden;
-    vertical-align: middle;
-    transition: background-color 0.15s, opacity 0.15s;
-    &:hover {
-      background-color: #fff;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    margin: 0;
+    padding: 0 5px;
+    border-top: 1px solid $gray-300;
+    border-left: 1px solid $gray-300;
+    border-right: 1px solid $gray-300;
+    border-top-left-radius: $border-radius;
+    border-top-right-radius: $border-radius;
+
+    button {
+        padding: 1px 6px !important;
+        margin-bottom: 1px;
+        border: none;
+        cursor: pointer;
+        background: none;
+        display: inline-block;
+        position: relative;
+        width: 35px;
+        height: 35px;
+        overflow: hidden;
+        vertical-align: middle;
+        transition: background-color 0.15s, opacity 0.15s;
+
+        &:hover {
+            background-color: #fff;
+        }
     }
-  }
 }
 
 .editor-toolbar:after,
 .editor-toolbar:before {
-  display: block;
-  content: " ";
-  height: 1px;
+    display: block;
+    content: " ";
+    height: 1px;
 }
 
 .editor-toolbar.fullscreen {
-  width: 100%;
-  height: $toolbar-height-fullscreen;
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  box-sizing: border-box;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: $z-index-fullscreen;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+    width: 100%;
+    height: $toolbar-height-fullscreen;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: $z-index-fullscreen;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .editor-toolbar i.separator {
-  display: inline-block;
-  width: 0;
-  border-left: 1px solid #d9d9d9;
-  color: transparent;
-  margin: 0 6px 1px;
-  height: 35px;
-  position: relative;
-  vertical-align: middle;
+    display: inline-block;
+    width: 0;
+    border-left: 1px solid #d9d9d9;
+    color: transparent;
+    margin: 0 6px 1px;
+    height: 35px;
+    position: relative;
+    vertical-align: middle;
 }
 
 .editor-toolbar.disabled-for-preview button:not(.active) {
-  pointer-events: none;
-  opacity: 0.5;
+    pointer-events: none;
+    opacity: 0.5;
 }
 
 @media only screen and (max-width: 700px) {
-  .editor-toolbar button.no-mobile {
-    display: none;
-  }
+    .editor-toolbar button.no-mobile {
+        display: none;
+    }
 }
 
 .editor-statusbar {
-  padding: 8px 10px;
-  font-size: 12px;
-  color: #959694;
-  text-align: right;
+    padding: 8px 10px;
+    font-size: 12px;
+    color: #959694;
+    text-align: right;
 }
 
 .editor-statusbar span {
-  display: inline-block;
-  min-width: 4em;
-  margin-left: 1em;
+    display: inline-block;
+    min-width: 4em;
+    margin-left: 1em;
 }
 
 .editor-statusbar .lines:before {
-  content: "lines: ";
+    content: "lines: ";
 }
 
 .editor-statusbar .words:before {
-  content: "words: ";
+    content: "words: ";
 }
 
 .editor-statusbar .characters:before {
-  content: "characters: ";
+    content: "characters: ";
 }
 
 .editor-preview {
-  padding: 14px;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background: #fafafa;
-  z-index: 7;
-  overflow: auto;
-  display: none;
-  box-sizing: border-box;
+    padding: 14px;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: #fafafa;
+    z-index: 7;
+    overflow: auto;
+    display: none;
+    box-sizing: border-box;
 }
 
 .editor-preview-side {
-  padding: 14px;
-  position: fixed;
-  bottom: 0;
-  width: 50%;
-  top: $toolbar-height-fullscreen;
-  right: 0;
-  background: #fafafa;
-  z-index: $z-index-fullscreen;
-  overflow: auto;
-  display: none;
-  box-sizing: border-box;
-  border-top: 1px solid $gray-300;
-  border-right: 1px solid $gray-300;
-  border-bottom: 1px solid $gray-300;
+    padding: 14px;
+    position: fixed;
+    bottom: 0;
+    width: 50%;
+    top: $toolbar-height-fullscreen;
+    right: 0;
+    background: #fafafa;
+    z-index: $z-index-fullscreen;
+    overflow: auto;
+    display: none;
+    box-sizing: border-box;
+    border-top: 1px solid $gray-300;
+    border-right: 1px solid $gray-300;
+    border-bottom: 1px solid $gray-300;
 }
 
 .editor-preview-active-side {
-  display: block;
+    display: block;
 }
 
 .editor-preview-active {
-  display: block;
+    display: block;
 }
 
 .editor-preview > p,
 .editor-preview-side > p {
-  margin-top: 0;
+    margin-top: 0;
 }
 
 .editor-preview pre,
 .editor-preview-side pre {
-  background: #eee;
-  margin-bottom: 10px;
+    background: #eee;
+    margin-bottom: 10px;
 }
 
 .editor-preview table td,
 .editor-preview table th,
 .editor-preview-side table td,
 .editor-preview-side table th {
-  border: 1px solid #ddd;
-  padding: 5px;
+    border: 1px solid #ddd;
+    padding: 5px;
 }
 
 .CodeMirror .CodeMirror-code .cm-tag {
-  color: #63a35c;
+    color: #63a35c;
 }
 
 .CodeMirror .CodeMirror-code .cm-attribute {
-  color: #795da3;
+    color: #795da3;
 }
 
 .CodeMirror .CodeMirror-code .cm-string {
-  color: #183691;
+    color: #183691;
 }
 
 .CodeMirror .CodeMirror-selected {
-  background: #d9d9d9;
+    background: #d9d9d9;
 }
 
 .CodeMirror .CodeMirror-code .cm-header-1 {
-  font-size: 200%;
-  line-height: 200%;
+    font-size: 200%;
+    line-height: 200%;
 }
 
 .CodeMirror .CodeMirror-code .cm-header-2 {
-  font-size: 160%;
-  line-height: 160%;
+    font-size: 160%;
+    line-height: 160%;
 }
 
 .CodeMirror .CodeMirror-code .cm-header-3 {
-  font-size: 125%;
-  line-height: 125%;
+    font-size: 125%;
+    line-height: 125%;
 }
 
 .CodeMirror .CodeMirror-code .cm-header-4 {
-  font-size: 110%;
-  line-height: 110%;
+    font-size: 110%;
+    line-height: 110%;
 }
 
 .CodeMirror .CodeMirror-code .cm-comment {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 2px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 2px;
 }
 
 .CodeMirror .CodeMirror-code .cm-link {
-  color: #7f8c8d;
+    color: #7f8c8d;
 }
 
 .CodeMirror .CodeMirror-code .cm-url {
-  color: #aab2b3;
+    color: #aab2b3;
 }
 
 .CodeMirror .CodeMirror-code .cm-strikethrough {
-  text-decoration: line-through;
+    text-decoration: line-through;
 }
 
 .CodeMirror .CodeMirror-placeholder {
-  opacity: 0.5;
+    opacity: 0.5;
 }

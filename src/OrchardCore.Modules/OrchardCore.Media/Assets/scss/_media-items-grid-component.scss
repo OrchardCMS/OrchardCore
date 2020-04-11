@@ -25,6 +25,12 @@ ol.media-items-grid {
             border-radius: 0px;
             margin-top: -32px;
             transition: all 0.2s;
+            &.delete-button {
+                margin-right: 2.0rem;
+            }
+            &.edit-button {
+                margin-right: 3.8rem;
+            }
         }
 
         &.selected {

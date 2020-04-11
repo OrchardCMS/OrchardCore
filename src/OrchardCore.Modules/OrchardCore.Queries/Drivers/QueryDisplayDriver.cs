@@ -12,7 +12,7 @@ namespace OrchardCore.Queries.Drivers
     public class QueryDisplayDriver : DisplayDriver<Query>
     {
         private readonly IQueryManager _queryManager;
-        private readonly IStringLocalizer<QueryDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public QueryDisplayDriver(IQueryManager queryManager, IStringLocalizer<QueryDisplayDriver> stringLocalizer)
         {
@@ -76,7 +76,7 @@ namespace OrchardCore.Queries.Drivers
             }
             else
             {
-                var existing = await _queryManager.GetQueryAsync(safeName);
+                var existing = await _queryManager.LoadQueryAsync(safeName);
 
                 if (existing != null && existing != model)
                 {
@@ -84,7 +84,7 @@ namespace OrchardCore.Queries.Drivers
                 }
             }
 
-            return await EditAsync(model, updater);
+            return Edit(model, updater);
         }
     }
 }

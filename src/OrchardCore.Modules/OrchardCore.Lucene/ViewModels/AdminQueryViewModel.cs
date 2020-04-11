@@ -13,6 +13,9 @@ namespace OrchardCore.Lucene.ViewModels
         public string Parameters { get; set; }
 
         [BindNever]
+        public int Count { get; set; }
+
+        [BindNever]
         public string[] Indices { get; set; }
 
         [BindNever]

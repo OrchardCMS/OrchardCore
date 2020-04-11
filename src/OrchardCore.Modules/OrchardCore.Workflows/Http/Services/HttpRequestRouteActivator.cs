@@ -54,29 +54,29 @@ namespace OrchardCore.Workflows.Http.Services
                 // Right now the identity map is keep even after CommitAsync() is invoked
                 //using (var session = _store.CreateSession())
                 //{
-                    var query = await _session
-                        .QueryIndex<WorkflowBlockingActivitiesIndex>(index =>
-                        index.ActivityName == HttpRequestFilterEvent.EventName)
-                        .Skip(skip)
-                        .Take(pageSize)
-                        .ListAsync();
+                var query = await _session
+                    .QueryIndex<WorkflowBlockingActivitiesIndex>(index =>
+                    index.ActivityName == HttpRequestFilterEvent.EventName)
+                    .Skip(skip)
+                    .Take(pageSize)
+                    .ListAsync();
 
-                    if (!query.Any())
-                    {
-                        break;
-                    }
+                if (!query.Any())
+                {
+                    break;
+                }
 
-                    skip += pageSize;
-                    var pendingWorkflowIndexes = query.ToList();
-                    var pendingWorkflowIds = pendingWorkflowIndexes.Select(x => x.WorkflowId).Distinct().ToArray();
-                    var pendingWorkflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowId.IsIn(pendingWorkflowIds)).ListAsync();
+                skip += pageSize;
+                var pendingWorkflowIndexes = query.ToList();
+                var pendingWorkflowIds = pendingWorkflowIndexes.Select(x => x.WorkflowId).Distinct().ToArray();
+                var pendingWorkflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowId.IsIn(pendingWorkflowIds)).ListAsync();
 
-                    var workflowRouteEntryQuery =
-                        from workflow in pendingWorkflows
-                        from entry in WorkflowRouteEntries.GetWorkflowRoutesEntries(workflowTypeDictionary[workflow.WorkflowTypeId], workflow, _activityLibrary)
-                        select entry;
+                var workflowRouteEntryQuery =
+                    from workflow in pendingWorkflows
+                    from entry in WorkflowRouteEntries.GetWorkflowRoutesEntries(workflowTypeDictionary[workflow.WorkflowTypeId], workflow, _activityLibrary)
+                    select entry;
 
-                    _workflowInstanceRouteEntries.AddEntries(workflowRouteEntryQuery);
+                _workflowInstanceRouteEntries.AddEntries(workflowRouteEntryQuery);
                 //}
             }
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Data;
 using OrchardCore.Environment.Cache;
 using YesSql;
 
@@ -11,56 +12,58 @@ namespace OrchardCore.Queries.Services
 {
     public class QueryManager : IQueryManager
     {
-        private readonly IMemoryCache _memoryCache;
-        private readonly ISession _session;
-        private readonly ISignal _signal;
-        private IEnumerable<IQuerySource> _querySources;
-
         private const string QueriesDocumentCacheKey = nameof(QueriesDocumentCacheKey);
 
-        public IChangeToken ChangeToken => _signal.GetToken(QueriesDocumentCacheKey);
+        private readonly ISignal _signal;
+        private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
+        private readonly IMemoryCache _memoryCache;
+        private IEnumerable<IQuerySource> _querySources;
 
         public QueryManager(
             ISignal signal,
             ISession session,
+            ISessionHelper sessionHelper,
             IMemoryCache memoryCache,
             IEnumerable<IQuerySource> querySources)
         {
-            _session = session;
-            _memoryCache = memoryCache;
             _signal = signal;
+            _session = session;
+            _sessionHelper = sessionHelper;
+            _memoryCache = memoryCache;
             _querySources = querySources;
         }
 
+        public IChangeToken ChangeToken => _signal.GetToken(QueriesDocumentCacheKey);
+
         public async Task DeleteQueryAsync(string name)
         {
-            // Ensure QueriesDocument exists 
-            await GetDocumentAsync();
-
-            // Load the currently saved object otherwise it would create a new document
-            // as the new session is not tracking the cached object.
-            // TODO: Solve by having an Import method in Session or an Id on the document
-
-            var existing = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
-
-            if (existing.Queries.ContainsKey(name))
-            {
-                existing.Queries.Remove(name);
-            }
+            var existing = await LoadDocumentAsync();
+            existing.Queries.Remove(name);
 
             _session.Save(existing);
-
-            _memoryCache.Set(QueriesDocumentCacheKey, existing);
-            _signal.SignalToken(QueriesDocumentCacheKey);
+            _signal.DeferredSignalToken(QueriesDocumentCacheKey);
 
             return;
+        }
+
+        public async Task<Query> LoadQueryAsync(string name)
+        {
+            var document = await LoadDocumentAsync();
+
+            if (document.Queries.TryGetValue(name, out var query))
+            {
+                return query;
+            }
+
+            return null;
         }
 
         public async Task<Query> GetQueryAsync(string name)
         {
             var document = await GetDocumentAsync();
 
-            if(document.Queries.TryGetValue(name, out var query))
+            if (document.Queries.TryGetValue(name, out var query))
             {
                 return query;
             }
@@ -75,62 +78,52 @@ namespace OrchardCore.Queries.Services
 
         public async Task SaveQueryAsync(string name, Query query)
         {
-            // Ensure QueriesDocument exists 
-            await GetDocumentAsync();
+            if (query.IsReadonly)
+            {
+                throw new ArgumentException("The object is read-only");
+            }
 
-            // Load the currently saved object otherwise it would create a new document
-            // as the new session is not tracking the cached object.
-            // TODO: Solve by having an Import method in Session
-
-            var existing = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
-
+            var existing = await LoadDocumentAsync();
             existing.Queries.Remove(name);
             existing.Queries[query.Name] = query;
 
             _session.Save(existing);
-
-            _memoryCache.Set(QueriesDocumentCacheKey, existing);
-            _signal.SignalToken(QueriesDocumentCacheKey);
+            _signal.DeferredSignalToken(QueriesDocumentCacheKey);
 
             return;
         }
 
+        /// <summary>
+        /// Returns the document from the database to be updated.
+        /// </summary>
+        public Task<QueriesDocument> LoadDocumentAsync() => _sessionHelper.LoadForUpdateAsync<QueriesDocument>();
+
+        /// <summary>
+        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// </summary>
         private async Task<QueriesDocument> GetDocumentAsync()
         {
-            QueriesDocument queries;
-
-            if (!_memoryCache.TryGetValue(QueriesDocumentCacheKey, out queries))
+            if (!_memoryCache.TryGetValue<QueriesDocument>(QueriesDocumentCacheKey, out var queries))
             {
-                queries = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
+                var changeToken = ChangeToken;
 
-                if (queries == null)
-                {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(QueriesDocumentCacheKey, out queries))
-                        {
-                            queries = new QueriesDocument();
+                queries = await _sessionHelper.GetForCachingAsync<QueriesDocument>();
 
-                            _session.Save(queries);
-                            _memoryCache.Set(QueriesDocumentCacheKey, queries);
-                            _signal.SignalToken(QueriesDocumentCacheKey);
-                        }
-                    }
-                }
-                else
+                foreach (var query in queries.Queries.Values)
                 {
-                    _memoryCache.Set(QueriesDocumentCacheKey, queries);
-                    _signal.SignalToken(QueriesDocumentCacheKey);
+                    query.IsReadonly = true;
                 }
+
+                _memoryCache.Set(QueriesDocumentCacheKey, queries, changeToken);
             }
 
             return queries;
         }
 
-        public Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        public Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var querySource = _querySources.FirstOrDefault(q => q.Name == query.Source);
-            
+
             if (querySource == null)
             {
                 throw new ArgumentException("Query source not found: " + query.Source);

@@ -13,6 +13,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IStringLocalizer S;
 
         public ValidateFormFieldTask(
             IHttpContextAccessor httpContextAccessor,
@@ -22,14 +23,14 @@ namespace OrchardCore.Forms.Workflows.Activities
         {
             _httpContextAccessor = httpContextAccessor;
             _updateModelAccessor = updateModelAccessor;
-            T = localizer;
+            S = localizer;
         }
 
         public override string Name => nameof(ValidateFormFieldTask);
-        public override LocalizedString DisplayText => T["Validate Form Field Task"];
-        public override LocalizedString Category => T["Validation"];
 
-        private IStringLocalizer T { get; set; }
+        public override LocalizedString DisplayText => S["Validate Form Field Task"];
+
+        public override LocalizedString Category => S["Validation"];
 
         public string FieldName
         {
@@ -45,7 +46,7 @@ namespace OrchardCore.Forms.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"], T["Valid"], T["Invalid"]);
+            return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

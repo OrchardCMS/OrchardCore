@@ -46,7 +46,7 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
 
             context.Builder.WithSettings(model.Settings);
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition);
         }
     }
 }

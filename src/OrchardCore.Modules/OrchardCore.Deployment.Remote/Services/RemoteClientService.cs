@@ -16,7 +16,7 @@ namespace OrchardCore.Deployment.Remote.Services
         private RemoteClientList _remoteClientList;
 
         public RemoteClientService(
-            ISession session, 
+            ISession session,
             IDataProtectionProvider dataProtectionProvider
             )
         {

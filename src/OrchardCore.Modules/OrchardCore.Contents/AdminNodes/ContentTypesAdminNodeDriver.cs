@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
@@ -33,14 +32,12 @@ namespace OrchardCore.Contents.AdminNodes
                 .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Listable)
                 .OrderBy(ctd => ctd.DisplayName).ToList();
 
-
             var entries = listable.Select(x => new ContentTypeEntryViewModel
             {
                 ContentTypeId = x.Name,
                 IsChecked = treeNode.ContentTypes.Any(selected => String.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
                 IconClass = treeNode.ContentTypes.Where(selected => selected.ContentTypeId == x.Name).FirstOrDefault()?.IconClass ?? String.Empty
             }).ToArray();
-
 
             return Initialize<ContentTypesAdminNodeViewModel>("ContentTypesAdminNode_Fields_TreeEdit", model =>
             {
@@ -59,7 +56,6 @@ namespace OrchardCore.Contents.AdminNodes
 
             if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ShowAll, x => x.IconClass, x => x.ContentTypes))
             {
-
                 treeNode.ShowAll = model.ShowAll;
                 treeNode.IconClass = model.IconClass;
                 treeNode.ContentTypes = model.ContentTypes

@@ -1,0 +1,75 @@
+@model ListSitemapIndexViewModel
+
+<h1>@RenderTitleSegments(T["Sitemap Indexes"])</h1>
+
+@if (String.IsNullOrEmpty(Site.BaseUrl))
+{
+    <p class="alert alert-warning">@T["The site settings 'Base url' property is empty, but is required to generate sitemaps."]</p>
+}
+
+@* the form is necessary to generate the antiforgery token*@
+<form asp-action="List" method="post">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            <div class="input-group input-group-sm filter-options">
+                <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+            </div>
+        </div>
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                <a asp-route-action="Create" class="btn btn-primary float-right" role="button">@T["Add Sitemap Index"]</a>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.SitemapIndexes.Any())
+    {
+        <ul class="list-group">
+            @foreach (var entry in Model.SitemapIndexes)
+            {
+                <li class="list-group-item">
+                    <div class="properties">
+                        <div class="related">
+                            @if (entry.Enabled)
+                            {
+                                <a asp-action="Index" asp-controller="Sitemap" asp-area="OrchardCore.Sitemaps" asp-route-sitemapId="@entry.SitemapId" class="btn btn-success btn-sm" itemprop="">@T["View"]</a>
+                            }
+                            <a asp-action="Edit" asp-route-sitemapId="@entry.SitemapId" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <div class="btn-group btn-group-sm">
+                                <a asp-action="Delete"
+                                   asp-route-sitemapId="@entry.SitemapId"
+                                   class="btn btn-danger" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                                <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="sr-only">@T["Toggle Dropdown"]</span>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a asp-action="Toggle"
+                                       asp-route-sitemapId="@entry.SitemapId"
+                                       class="dropdown-item btn-sm" itemprop="UnsafeUrl">@(entry.Enabled ? T["Disable"] : T["Enable"])</a>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="@(entry.Enabled ? "" : "text-muted")" asp-action="Edit" asp-route-sitemapId="@entry.SitemapId">@entry.Name</a>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            @T["<strong>Nothing here!</strong> There are no sitemaps indexes for the moment."]
+        </div>
+    }
+</form>
+
+@await DisplayAsync(Model.Pager)
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        $(".filter-options input").on("change", function () {
+            $("[name='submit.Filter']").click();
+        });
+    });
+</script>

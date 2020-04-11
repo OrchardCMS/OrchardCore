@@ -9,7 +9,7 @@
 <script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" at="Foot" depends-on="admin"></script>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css"></style>
 
-<zone name="Title"><h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", Model.AdminMenu.Name])</h1></zone>
+<h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", Model.AdminMenu.Name])</h1>
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
@@ -56,7 +56,6 @@
     <div class="form-group">
         <a class="btn btn-secondary" asp-route-controller="menu" asp-route-action="List">@T["Back"]</a>
     </div>
-
 </form>
 
 <!-- Modal -->
@@ -86,7 +85,6 @@
     </div>
 </div>
 
-
 <div id="move-error-message" class="d-none" data-message="@T["There was an error when moving the tree node."]"></div>
 
 <script at="Foot">
@@ -105,7 +103,7 @@
             success: function () {
                 location.reload(true);
             },
-            error: function (error) {                
+            error: function (error) {
                 alert($('#move-error-message').data("message"));
             }
         });
@@ -129,6 +127,4 @@
                 }
             });
     });
-
-
 </script>

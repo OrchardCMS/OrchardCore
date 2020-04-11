@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,18 +12,19 @@ namespace OrchardCore.Workflows.Activities
     public class ScriptTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+        private readonly IStringLocalizer S;
 
         public ScriptTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ScriptTask> localizer)
         {
             _scriptEvaluator = scriptEvaluator;
-            T = localizer;
+            S = localizer;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(ScriptTask);
-        public override LocalizedString DisplayText => T["Script Task"];
-        public override LocalizedString Category => T["Control Flow"];
+
+        public override LocalizedString DisplayText => S["Script Task"];
+
+        public override LocalizedString Category => S["Control Flow"];
 
         public IList<string> AvailableOutcomes
         {
@@ -43,13 +43,14 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(AvailableOutcomes.Select(x => T[x]).ToArray());
+            return Outcomes(AvailableOutcomes.Select(x => S[x]).ToArray());
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var outcomes = new List<string>();
-            await _scriptEvaluator.EvaluateAsync(Script, workflowContext, new OutcomeMethodProvider(outcomes));
+            workflowContext.LastResult = await _scriptEvaluator.EvaluateAsync(Script, workflowContext, new OutcomeMethodProvider(outcomes));
+
             return Outcomes(outcomes);
         }
     }

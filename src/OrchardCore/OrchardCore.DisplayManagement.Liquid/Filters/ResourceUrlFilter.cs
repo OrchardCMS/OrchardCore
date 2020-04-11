@@ -32,14 +32,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
             {
-                if (!String.IsNullOrEmpty(_httpContextAccessor.HttpContext.Request.PathBase))
-                {
-                    resourcePath = _httpContextAccessor.HttpContext.Request.PathBase + resourcePath.Substring(1);
-                }
-                else
-                {
-                    resourcePath = resourcePath.Substring(1);
-                }
+                resourcePath = _httpContextAccessor.HttpContext.Request.PathBase.Add(resourcePath.Substring(1)).Value;
             }
 
             // Don't prefix cdn if the path is absolute, or is in debug mode.

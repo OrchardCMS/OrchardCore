@@ -44,7 +44,7 @@ namespace OrchardCore.Resources
 
             options.AppendVersion = settings.AppendVersion;
 
-            options.ContentBasePath = _httpContextAccessor.HttpContext.Request.PathBase;
+            options.ContentBasePath = _httpContextAccessor.HttpContext.Request.PathBase.Value;
         }
     }
 }

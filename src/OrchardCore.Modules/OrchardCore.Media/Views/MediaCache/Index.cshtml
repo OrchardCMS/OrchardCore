@@ -1,5 +1,5 @@
 @model OrchardCore.Media.ViewModels.MediaCacheViewModel
-<zone name="Title"><h1>@RenderTitleSegments(T["Asset Cache"])</h1></zone>
+<h1>@RenderTitleSegments(T["Asset Cache"])</h1>
 
 @if (Model.IsConfigured)
 {
@@ -19,7 +19,6 @@
                 </div>
             </li>
         </ul>
-
     </form>
 }
 else

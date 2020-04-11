@@ -10,18 +10,19 @@ namespace OrchardCore.Workflows.Activities
     public class SetPropertyTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+        private readonly IStringLocalizer S;
 
         public SetPropertyTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<SetPropertyTask> localizer)
         {
             _scriptEvaluator = scriptEvaluator;
-            T = localizer;
+            S = localizer;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(SetPropertyTask);
-        public override LocalizedString DisplayText => T["Set Property Task"];
-        public override LocalizedString Category => T["Primitives"];
+
+        public override LocalizedString DisplayText => S["Set Property Task"];
+
+        public override LocalizedString Category => S["Primitives"];
 
         public string PropertyName
         {
@@ -37,7 +38,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

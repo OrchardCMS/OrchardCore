@@ -18,7 +18,13 @@ namespace OrchardCore.ContentLocalization.Liquid
             }
 
             var innoFieldsService = ((IServiceProvider)services).GetRequiredService<IContentLocalizationManager>();
-            
+
+            var locale = arguments.At(0).ToStringValue();
+
+            if (arguments.At(0).IsNil())
+            {
+                locale = ctx.CultureInfo.Name;
+            }
 
             if (input.Type == FluidValues.Array)
             {
@@ -26,14 +32,13 @@ namespace OrchardCore.ContentLocalization.Liquid
 
                 var localizationSets = input.Enumerate().Select(x => x.ToStringValue()).ToArray();
 
-
-                return FluidValue.Create(await innoFieldsService.GetItemsForSetsAsync(localizationSets, ctx.CultureInfo.Name));
+                return FluidValue.Create(await innoFieldsService.GetItemsForSetsAsync(localizationSets, locale));
             }
             else
             {
                 var localizationSet = input.ToStringValue();
 
-                return FluidValue.Create(await innoFieldsService.GetContentItemAsync(localizationSet, ctx.CultureInfo.Name));
+                return FluidValue.Create(await innoFieldsService.GetContentItemAsync(localizationSet, locale));
             }
         }
     }

@@ -1,8 +1,6 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
@@ -29,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Notify
         private bool _shouldDeleteCookie;
         private string _tenantPath;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly ILogger<NotifyFilter> _logger;
+        private readonly ILogger _logger;
 
         public NotifyFilter(
             INotifier notifier,

@@ -56,7 +56,7 @@ namespace OrchardCore.GitHub.Drivers
                 }
                 if (settings.CallbackPath.HasValue)
                 {
-                    model.CallbackUrl = settings.CallbackPath;
+                    model.CallbackUrl = settings.CallbackPath.Value;
                 }
             }).Location("Content:5").OnGroup(GitHubConstants.Features.GitHubAuthentication);
         }
@@ -81,7 +81,7 @@ namespace OrchardCore.GitHub.Drivers
                     settings.ClientID = model.ClientID;
                     settings.ClientSecret = protector.Protect(model.ClientSecret);
                     settings.CallbackPath = model.CallbackUrl;
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);

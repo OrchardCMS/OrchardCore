@@ -17,8 +17,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         {
             _optionsAccessor = optionsAccessor;
 
-            Name =  $"{contentItemName}WhereInput";
-            
+            Name = $"{contentItemName}WhereInput";
+
             Description = $"the {contentItemName} content item filters";
 
             AddFilterField<IdGraphType>("contentItemId", "content item id");
@@ -36,7 +36,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field<ListGraphType<ContentItemWhereInput>>("Not", "NOT logical operation").ResolvedType = whereInputType;
         }
 
-        void AddFilterField<T>(string name, string description)
+        private void AddFilterField<T>(string name, string description)
         {
             if (!_optionsAccessor.Value.ShouldSkip(typeof(ContentItemType), name))
             {

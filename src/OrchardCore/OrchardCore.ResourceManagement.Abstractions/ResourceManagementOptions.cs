@@ -8,7 +8,7 @@ namespace OrchardCore.ResourceManagement
 
         public string CdnBaseUrl { get; set; }
 
-        public bool DebugMode { get; set; } = false;
+        public bool DebugMode { get; set; }
 
         public string Culture { get; set; }
 

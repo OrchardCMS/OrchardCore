@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -23,8 +24,10 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(CreateContentTask);
-        public override LocalizedString Category => T["Content"];
-        public override LocalizedString DisplayText => T["Create Content Task"];
+
+        public override LocalizedString Category => S["Content"];
+
+        public override LocalizedString DisplayText => S["Create Content Task"];
 
         public string ContentType
         {
@@ -40,34 +43,31 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public WorkflowExpression<string> ContentProperties
         {
-            get => GetProperty(() => new WorkflowExpression<string>(JsonConvert.SerializeObject(new { DisplayText = T["Enter a title"].Value }, Formatting.Indented)));
+            get => GetProperty(() => new WorkflowExpression<string>(JsonConvert.SerializeObject(new { DisplayText = S["Enter a title"].Value }, Formatting.Indented)));
             set => SetProperty(value);
         }
 
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return !string.IsNullOrEmpty(ContentType);
+            return !String.IsNullOrEmpty(ContentType);
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var contentItem = await ContentManager.NewAsync(ContentType);
 
-            if (!string.IsNullOrWhiteSpace(ContentProperties.Expression))
+            if (!String.IsNullOrWhiteSpace(ContentProperties.Expression))
             {
                 var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext);
-                var propertyObject = JObject.Parse(contentProperties);
-
-                ((JObject)contentItem.Content).Merge(propertyObject);
+                contentItem.Merge(JObject.Parse(contentProperties));
             }
 
-            var versionOptions = Publish ? VersionOptions.Published : VersionOptions.Draft;
-            await ContentManager.CreateAsync(contentItem, versionOptions);
+            await ContentManager.UpdateAndCreateAsync(contentItem, Publish ? VersionOptions.Published : VersionOptions.Draft);
 
             workflowContext.LastResult = contentItem;
             workflowContext.CorrelationId = contentItem.ContentItemId;

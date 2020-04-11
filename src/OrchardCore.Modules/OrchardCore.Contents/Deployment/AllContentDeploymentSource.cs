@@ -9,12 +9,10 @@ namespace OrchardCore.Contents.Deployment
 {
     public class AllContentDeploymentSource : IDeploymentSource
     {
-        private readonly IContentManager _contentManager;
         private readonly ISession _session;
 
-        public AllContentDeploymentSource(IContentManager contentManager, ISession session)
+        public AllContentDeploymentSource(ISession session)
         {
-            _contentManager = contentManager;
             _session = session;
         }
 
