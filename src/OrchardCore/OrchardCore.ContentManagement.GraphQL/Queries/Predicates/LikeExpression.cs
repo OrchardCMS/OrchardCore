@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 {
     /// <summary>

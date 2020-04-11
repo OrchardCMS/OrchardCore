@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Settings;
 
@@ -16,17 +12,14 @@ namespace OrchardCore.Microsoft.Authentication.Services
     public class MicrosoftAccountService : IMicrosoftAccountService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<MicrosoftAccountService> T;
-        private readonly ShellSettings _shellSettings;
+        private readonly IStringLocalizer S;
 
         public MicrosoftAccountService(
             ISiteService siteService,
-            ShellSettings shellSettings,
             IStringLocalizer<MicrosoftAccountService> stringLocalizer)
         {
-            _shellSettings = shellSettings;
             _siteService = siteService;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public async Task<MicrosoftAccountSettings> GetSettingsAsync()
@@ -41,7 +34,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
             {
                 throw new ArgumentNullException(nameof(settings));
             }
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<MicrosoftAccountSettings>(nameof(MicrosoftAccountSettings), aspect =>
             {
                 aspect.AppId = settings.AppId;
@@ -60,14 +53,13 @@ namespace OrchardCore.Microsoft.Authentication.Services
 
             if (string.IsNullOrWhiteSpace(settings.AppId))
             {
-                yield return new ValidationResult(T["AppId is required"], new string[] { nameof(settings.AppId) });
+                yield return new ValidationResult(S["AppId is required"], new string[] { nameof(settings.AppId) });
             }
 
             if (string.IsNullOrWhiteSpace(settings.AppSecret))
             {
-                yield return new ValidationResult(T["AppSecret is required"], new string[] { nameof(settings.AppSecret) });
+                yield return new ValidationResult(S["AppSecret is required"], new string[] { nameof(settings.AppSecret) });
             }
         }
-
     }
 }

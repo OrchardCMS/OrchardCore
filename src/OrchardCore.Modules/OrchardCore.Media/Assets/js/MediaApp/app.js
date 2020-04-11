@@ -276,7 +276,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             return;
                         }
 
-                        confirmDialog({title: $("#deleteFolder").data("title"), message: $("#deleteFolder").data("title"), callback: function (resp) {
+                        confirmDialog({...$("#deleteFolder").data(), callback: function (resp) {
                             if (resp) {
                                 $.ajax({
                                     url: $('#deleteFolderUrl').val() + "?path=" + encodeURIComponent(folder.path),
@@ -316,7 +316,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             return;
                         }
 
-                        confirmDialog({title: $("#deleteMedia").data("title"), message: $("#deleteMedia").data("title"), callback: function (resp) {
+                        confirmDialog({...$("#deleteMedia").data(), callback: function (resp) {
                             if (resp) {
                                 var paths = [];
                                 for (var i = 0; i < mediaList.length; i++) {
@@ -354,7 +354,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             return;
                         }
 
-                        confirmDialog({title: $("#deleteMedia").data("title"), message: $("#deleteMedia").data("title"), callback: function (resp) {
+                        confirmDialog({...$("#deleteMedia").data(), callback: function (resp) {
                             if (resp) {
                                 $.ajax({
                                     url: $('#deleteMediaUrl').val() + "?path=" + encodeURIComponent(media.mediaPath),

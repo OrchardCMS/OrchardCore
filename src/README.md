@@ -11,7 +11,7 @@ It’s important to note the differences between the framework and the CMS. Some
 
 [![Join the chat at https://gitter.im/OrchardCMS/OrchardCore](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/OrchardCore?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/OrchardCMS/OrchardCore/blob/master/LICENSE)
-[![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://orchardcore.readthedocs.io/en/latest/)
+[![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
 ## Building Software as a Service (SaaS) solutions with the Orchard Core Framework
@@ -78,20 +78,21 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 ### Command line
 
 - Install the latest version of the .NET Core SDK from this page <https://www.microsoft.com/net/download/core>
-- Call `dotnet build`.
 - Next, navigate to `D:\OrchardCore\src\OrchardCore.Cms.Web` or wherever your folder is on the commandline in Administrator mode.
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.
 
-You can also read the [Code Generation Templates documentation](./docs/templates/) to create new applications from predefined templates.
+You can also read the [Code Generation Templates documentation](./docs/getting-started/templates/) to create new applications from predefined templates.
 
-### Visual Studio 2017
+### Visual Studio
 
-- Download Visual Studio 2017 (any edition) from <https://www.visualstudio.com/downloads/>.
+- Download Visual Studio 2019 (any edition) from <https://www.visualstudio.com/downloads/>.
 - Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages.
 - Ensure `OrchardCore.Cms.Web` is the startup project and run it.
 - Optionally install the [Lombiq Orchard Visual Studio Extension](https://marketplace.visualstudio.com/items?itemName=LombiqVisualStudioExtension.LombiqOrchardVisualStudioExtension) to add some useful utilities to your Visual Studio such as an error log watcher or a dependency injector.
 
-### Contributing
+### Docker
 
-We currently follow these [engineering guidelines](https://github.com/OrchardCMS/OrchardCore/wiki/Engineering-Guidelines).
+- Run `docker run --name orchardcms orchardproject/orchardcore-cms-linux:latest`
+
+Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>

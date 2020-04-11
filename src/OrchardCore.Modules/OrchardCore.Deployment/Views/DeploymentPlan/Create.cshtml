@@ -6,14 +6,12 @@
 <form asp-action="Create" method="post">
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
-        <input asp-for="Name" class="form-control" autofocus/>
+        <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
     </div>
 
-    <fieldset>
-        <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Create"]</button>
-            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
-        </div>
-    </fieldset>
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Create"]</button>
+        <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+    </div>
 </form>

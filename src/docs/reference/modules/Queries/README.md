@@ -89,7 +89,7 @@ You can access queries from liquid views and templates by using the `Queries` pr
 
 ### query
 
-The `query` filter provides a way to execute queries. 
+The `query` filter provides a way to execute queries.
 
 ```liquid
 {% assign recentBlogPosts = Queries.RecentBlogPosts | query %}

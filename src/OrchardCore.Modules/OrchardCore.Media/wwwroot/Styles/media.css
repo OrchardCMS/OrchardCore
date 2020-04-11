@@ -192,6 +192,14 @@ ol.media-items-grid {
   right: 0px; }
     [dir=rtl] ol.media-items-grid li .inline-media-button {
       left: 0px; }
+      [dir=ltr] ol.media-items-grid li .inline-media-button.delete-button {
+  margin-right: 2.0rem; }
+      [dir=rtl] ol.media-items-grid li .inline-media-button.delete-button {
+        margin-left: 2.0rem; }
+      [dir=ltr] ol.media-items-grid li .inline-media-button.edit-button {
+  margin-right: 3.8rem; }
+      [dir=rtl] ol.media-items-grid li .inline-media-button.edit-button {
+        margin-left: 3.8rem; }
     [dir] ol.media-items-grid li.selected {
       border: 1px solid #007bff; }
     ol.media-items-grid li.selected .inline-media-button, ol.media-items-grid li:hover .inline-media-button {

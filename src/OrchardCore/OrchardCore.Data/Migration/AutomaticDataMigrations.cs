@@ -8,7 +8,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Data.Migration
 {
     /// <summary>
-    /// Registers to OrchardShell.Activated in order to run migrations automatically
+    /// Represents a tenant event that will be registered to OrchardShell.Activated in order to run migrations automatically.
     /// </summary>
     public class AutomaticDataMigrations : ModularTenantEvents
     {
@@ -16,6 +16,12 @@ namespace OrchardCore.Data.Migration
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="AutomaticDataMigrations"/>.
+        /// </summary>
+        /// <param name="serviceProvider">The <see cref="IServiceProvider"/>.</param>
+        /// <param name="shellSettings">The <see cref="ShellSettings"/>.</param>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
         public AutomaticDataMigrations(
             IServiceProvider serviceProvider,
             ShellSettings shellSettings,
@@ -26,6 +32,7 @@ namespace OrchardCore.Data.Migration
             _logger = logger;
         }
 
+        /// <inheritdocs />
         public override Task ActivatingAsync()
         {
             if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)

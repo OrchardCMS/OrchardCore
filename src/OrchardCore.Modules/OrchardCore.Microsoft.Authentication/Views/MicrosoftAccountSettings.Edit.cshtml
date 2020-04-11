@@ -5,23 +5,23 @@
 
 <h3>@T["Microsoft Account Authentication Settings"]</h3>
 
-<fieldset class="form-group" asp-validation-class-for="AppId">
+<div class="form-group" asp-validation-class-for="AppId">
     <label>@T["AppId"]</label>
     <input asp-for="AppId" class="form-control" />
     <span asp-validation-for="AppId"></span>
     <span class="hint">@T["The Application ID found on the Microsoft developer portal parameters."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="AppSecret">
+<div class="form-group" asp-validation-class-for="AppSecret">
     <label>@T["Secret Key"]</label>
     <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" />
     <span asp-validation-for="AppSecret"></span>
     <span class="hint">@T["The Application secret key found on the Microsoft developer portal parameters."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="CallbackPath">
+<div class="form-group" asp-validation-class-for="CallbackPath">
     <label>@T["CallbackPath"]</label>
     <input asp-for="CallbackPath" class="form-control" placeholder="/signin-microsoft" />
     <span asp-validation-for="CallbackPath"></span>
     <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
-</fieldset>
+</div>

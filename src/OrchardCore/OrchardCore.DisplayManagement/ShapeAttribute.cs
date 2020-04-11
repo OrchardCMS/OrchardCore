@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace OrchardCore.DisplayManagement
 {
@@ -10,7 +10,7 @@ namespace OrchardCore.DisplayManagement
 
         public ShapeAttribute(string shapeType)
         {
-            this.ShapeType = shapeType;
+            ShapeType = shapeType;
         }
 
         public string ShapeType { get; private set; }

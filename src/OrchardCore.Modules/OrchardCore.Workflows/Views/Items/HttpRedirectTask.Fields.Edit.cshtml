@@ -1,17 +1,17 @@
 @using OrchardCore.Workflows.Http.ViewModels;
 @model HttpRedirectTaskViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Location">
+<div class="form-group" asp-validation-class-for="Location">
     <label asp-for="Location">@T["Location"]</label>
     <input type="text" asp-for="Location" class="form-control code" />
     <span asp-validation-for="Location"></span>
     <span class="hint">@T["The URL to redirect to. With Liquid support."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="Permanent">
+<div class="form-group" asp-validation-class-for="Permanent">
     <label asp-for="Permanent">
         <input type="checkbox" asp-for="Permanent" />
         @T["Permanent"]
     </label>
     <span class="hint">@T["Check if the redirect should be permanent (301). Leave unchecked for a temporary redirect (302)."]</span>
-</fieldset>
+</div>

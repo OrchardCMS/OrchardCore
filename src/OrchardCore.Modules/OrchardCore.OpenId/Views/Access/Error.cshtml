@@ -1,5 +1,9 @@
-﻿@model ErrorViewModel
+@model ErrorViewModel
 @using OrchardCore.OpenId.ViewModels
+
+@{
+    ViewLayout = "Layout__Login";
+}
 
 <div class="jumbotron">
     <h2>@T["Ooooops, something went really bad! :("]</h2>

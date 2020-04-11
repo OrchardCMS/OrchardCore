@@ -3,11 +3,10 @@
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
 
-<script asp-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js" debug-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-name="vuejs" at="Foot"></script>
 <script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="admin"></script>
 
 <h5>@T["Content Types"]</h5>
-
 
 <div class="row">
     <div class="col col-xl-9">
@@ -24,7 +23,7 @@
                 @T["Show All Content Types"]
             </div>
             <div class="card-body">
-                <fieldset class="form-group">
+                <div class="form-group">
                     <label asp-for="IconClass">@T["Default Icon"]</label>
 
                     <div class="input-group mb-3">
@@ -53,7 +52,7 @@
                     </div>
 
                     <span class="hint">@T["Select an icon. It will be shared by all menu items."]</span>
-                </fieldset>
+                </div>
             </div>
         </div>
 
@@ -78,7 +77,6 @@
                                             <label class="custom-control-label" for="@Html.IdFor(m => m.ContentTypes[i].IsChecked)">@name</label>
                                         </div>
                                     </div>
-                                    
 
                                     <div class="btn-toolbar icon-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
 
@@ -98,7 +96,7 @@
                                         </div>
 
                                         <div class="btn-group" role="group" aria-label="Remove Icon Button">
-                                            <button type="button" class="btn btn-secondary remove-icon" 
+                                            <button type="button" class="btn btn-secondary remove-icon"
                                                     data-related-node="@Html.IdFor(m => m.ContentTypes[i].IconClass)">
                                                 <div style="pointer-events:none;">
                                                     <i class="fa fa-trash"></i>
@@ -106,7 +104,6 @@
                                             </button>
                                         </div>
                                     </div>
-
                                 </li>
                             }
                         </ul>
@@ -117,9 +114,6 @@
         </div>
     </div>
 </div>
-
-
-
 
 <div id="iconPickerVue">
     <div class="modal" id="iconPickerModal" tabindex="-1" role="dialog" aria-labelledby="iconPickerModal" aria-hidden="true">
@@ -159,12 +153,11 @@
             }
         }
 
-
         $('.content-type-checkbox').on('click', function (e) {
             var listItem = $(e.target).closest('.list-group-item');
 
-            var selected = $(e.target).prop('checked');            
-            selected ? listItem.removeClass('disabled-content-type') : listItem.addClass('disabled-content-type'); 
+            var selected = $(e.target).prop('checked');
+            selected ? listItem.removeClass('disabled-content-type') : listItem.addClass('disabled-content-type');
 
         });
 
@@ -181,4 +174,3 @@
         });
     });
 </script>
-

@@ -11,18 +11,16 @@ namespace OrchardCore.Contents.Settings
 {
     public class FullTextAspectSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
-
         private readonly ILiquidTemplateManager _templateManager;
+        private readonly IStringLocalizer S;
 
         public FullTextAspectSettingsDisplayDriver(
             ILiquidTemplateManager templateManager,
             IStringLocalizer<FullTextAspectSettingsDisplayDriver> localizer)
         {
             _templateManager = templateManager;
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; private set; }
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {
@@ -41,7 +39,7 @@ namespace OrchardCore.Contents.Settings
         {
             var model = new FullTextAspectSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, 
+            await context.Updater.TryUpdateModelAsync(model, Prefix,
                 m => m.IncludeFullTextTemplate,
                 m => m.FullTextTemplate,
                 m => m.IncludeDisplayText,
@@ -49,9 +47,9 @@ namespace OrchardCore.Contents.Settings
 
             if (!string.IsNullOrEmpty(model.FullTextTemplate) && !_templateManager.Validate(model.FullTextTemplate, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.FullTextTemplate), T["Full-text doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-            } 
-            else 
+                context.Updater.ModelState.AddModelError(nameof(model.FullTextTemplate), S["Full-text doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+            }
+            else
             {
                 context.Builder.WithSettings(new FullTextAspectSettings
                 {
@@ -62,7 +60,7 @@ namespace OrchardCore.Contents.Settings
                 });
             }
 
-            return Edit(contentTypeDefinition, context.Updater);
+            return Edit(contentTypeDefinition);
         }
     }
 }

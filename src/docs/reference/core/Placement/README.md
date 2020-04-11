@@ -1,8 +1,13 @@
 # OrchardCore.DisplayManagement
 
+This article is about Display management and placement files.
+
 ## Placement files
 
-Any extension can contain an optional `placement.json` file providing custom placement logic.
+Any module or theme can contain an optional `placement.json` file providing custom placement logic.
+
+!!! note
+    The `placement.json` file must be added at the root of a module or a theme.
 
 ### Format
 
@@ -19,10 +24,8 @@ In the following example, we describe the placement for the `TextField` and `Par
 
 A placement rule contains two sets of data:
 
-- Filters
-  - Defines what specific shapes are targeted.
-- Placement information
-  - The placement information to apply when the filter is matched.
+- **Filters** - defines what specific shapes are targeted.
+- **Placement information** - the placement information to apply when the filter is matched.
 
 Currently you can filter shapes by:
 
@@ -30,7 +33,7 @@ Currently you can filter shapes by:
 - `displayType` (Optional): The display type, like `Summary` and `Detail` for the most common ones.
 - `differentiator` (Optional): The differentiator which is used to distinguish shape types that are reused for multiple elements, like field names.
 
-Additional custom filter providers can be added by implementing `IPlacementNodeFilterProvider`. 
+Additional custom filter providers can be added by implementing `IPlacementNodeFilterProvider`.
 
 For shapes that are built from a content item, you can filter by the following built in filter providers:
 
@@ -66,10 +69,10 @@ Placement information consists of:
 
 ### Placing Fields
 
-Fields have a custom differentiator as their shape is used in many places. It is built using the `Part` it's contained
-in, and the name of the field. For instance, if a field named `MyField` would be added to an `Article` content type,
-its differentiator would be `Article.MyField`. If a field named `City` was added to an `Address` part then its differentiator would
-be `Address.City`.
+Fields have a custom differentiator as their shape is used in many places.  
+It is built using the `Part` it's contained in, and the name of the field.  
+For instance, if a field named `MyField` would be added to an `Article` content type, its differentiator would be `Article-MyField`.  
+If a field named `City` was added to an `Address` part then its differentiator would be `Address-City`.
 
 ## Shapes
 
@@ -81,7 +84,7 @@ Everything you need to know about Shapes is in [this video](https://youtu.be/gKL
 
 You can use the `<shape>` tag helper to render any shape, even pass properties.
 
-```razor
+``` html tab="Razor"
 @{
     var intValue = 1;
     var stringValue = "a";
@@ -96,7 +99,7 @@ You can use the `<shape>` tag helper to render any shape, even pass properties.
 <shape type="MyShape" prop-foo="@intValue" prop-bar="@stringValue" />
 ```
 
-```liquid
+``` liquid tab="Liquid"
 {% assign customShape = "MyShape" | shape_new %}
 {% shape_add_properties customShape my_string: "String Test 3", my_int: 1 %}
 {{ customShape | shape_render }}
@@ -107,11 +110,11 @@ You can use the `<shape>` tag helper to render any shape, even pass properties.
 For rendering content items, you could also use the following tag helper.
 Note: you need to add `@addTagHelper *, OrchardCore.Contents` to your `_ViewImports.cshtml` file to load this tag helper.
 
-```razor
+``` html tab="Razor"
 <contentitem alias="alias:main-menu" display-type="Detail" />
 ```
 
-```liquid
+``` liquid tab="Liquid"
 {% contentitem alias:"alias:main-menu" display_type="Detail" %}
 ```
 
@@ -178,6 +181,20 @@ Result:
 3 days ago
 ```
 
-## Shape differenciators
+## Shape differentiators
 
-You can find information about shape differenciators in the [Templates documentation](../../OrchardCore.Modules/OrchardCore.Templates/#content-field-differentiator)
+You can find information about shape differentiators in the [Templates documentation](../../modules/Templates/#content-field-differentiator)
+
+## Tabs
+
+If you want to place a part in a different tab, you use the `#` character in order to specify the tab in which it will be rendered.
+
+```json
+{
+  "TitlePart_Edit": [
+    {
+      "place": "Parts#MyTab:0"
+    }
+  ]
+}
+```

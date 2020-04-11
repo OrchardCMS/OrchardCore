@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This modules provides database indexing for content fields.
+This module provides database indexing for content fields.
 
 ## Available Tables
 
@@ -173,7 +173,7 @@ public class MyClass(){
 
 From a Razor template.
 
-```razor
+```html
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentFields.Indexing
 @inject ISession Session

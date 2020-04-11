@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -58,13 +57,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// (await New.MyShape()).A(1).B("Some text")
         /// </code>
         /// </example>
-        public dynamic New
-        {
-            get
-            {
-                return Factory;
-            }
-        }
+        public dynamic New => Factory;
 
         /// <summary>
         /// Gets an <see cref="IShapeFactory"/> to create new shapes.
@@ -103,6 +96,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         }
 
         private dynamic _themeLayout;
+
         public dynamic ThemeLayout
         {
             get
@@ -129,7 +123,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
                 {
                     if (layout.Metadata.Alternates.Count > 0)
                     {
-                        return layout.Metadata.Alternates.Last();
+                        return layout.Metadata.Alternates.Last;
                     }
 
                     return layout.Metadata.Type;
@@ -144,7 +138,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
                 {
                     if (layout.Metadata.Alternates.Contains(value))
                     {
-                        if (layout.Metadata.Alternates.Last() == value)
+                        if (layout.Metadata.Alternates.Last == value)
                         {
                             return;
                         }
@@ -158,6 +152,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         }
 
         private IPageTitleBuilder _pageTitleBuilder;
+
         public IPageTitleBuilder Title
         {
             get
@@ -183,7 +178,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
                 if (_t == null)
                 {
                     _t = HttpContext.RequestServices.GetRequiredService<IViewLocalizer>();
-                    ((IViewContextAware)_t).Contextualize(this.ViewContext);
+                    ((IViewContextAware)_t).Contextualize(ViewContext);
                 }
 
                 return _t;
@@ -212,7 +207,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
         public IHtmlContent RenderTitleSegments(string segment, string position = "0", IHtmlContent separator = null)
         {
-            Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
+            Title.AddSegment(new StringHtmlContent(segment), position);
             return Title.GenerateTitle(separator);
         }
 
@@ -242,7 +237,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         }
 
         /// <summary>
-        /// Returns the full path of the current request.
+        /// Returns the full escaped path of the current request.
         /// </summary>
         public string FullRequestPath => HttpContext.Request.PathBase + HttpContext.Request.Path + HttpContext.Request.QueryString;
 

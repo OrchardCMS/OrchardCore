@@ -92,7 +92,7 @@ Sometimes you may want to vary by a known value that is not an available context
 For example: You may wish to cache all your blog posts so that you can quickly display lists of your posts throughout your site. If the cache ID for the cache block was `blog-post`, you can use a known value as a context to vary the cache item for each blog post. In this case, you could use the Content Item ID as a context:
 
 ```liquid
-{% cache "blog-post-summary", vary_by: Model.ContentItemId %}
+{% cache "blog-post-summary", vary_by: Model.ContentItem.ContentItemId %}
     ...
 {% endcache %}
 ```

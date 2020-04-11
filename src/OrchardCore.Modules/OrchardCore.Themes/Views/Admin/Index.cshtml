@@ -36,7 +36,7 @@ else
                             <div class="row">
                                 <div class="col-sm-6">
                                     <form asp-route-action="SetCurrentTheme" asp-route-id="@themeEntry.Extension.Id" method="post">
-                                        <button type="submit" class="btn btn-sm btn-primary">@T["Make Default"]</button>
+                                        <button type="submit" class="btn btn-sm btn-primary">@T["Make Current"]</button>
                                     </form>
                                 </div>
                                 <div class="col-sm-6">
@@ -59,7 +59,14 @@ else
                         }
                         else
                         {
-                            @T["This is the current {0} theme", themeEntry.IsAdmin ? "Admin" : "Site"]
+                            if (themeEntry.IsAdmin)
+                            {
+                                @T["This is the current Admin theme"]
+                            }
+                            else
+                            {
+                                @T["This is the current Site theme"]
+                            }
                         }
                     </div>
                 </div>

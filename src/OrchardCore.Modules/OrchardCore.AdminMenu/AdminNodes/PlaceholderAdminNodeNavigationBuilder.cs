@@ -11,7 +11,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
 {
     public class PlaceholderAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     {
-        private readonly ILogger<PlaceholderAdminNodeNavigationBuilder> _logger;
+        private readonly ILogger _logger;
 
         public PlaceholderAdminNodeNavigationBuilder(ILogger<PlaceholderAdminNodeNavigationBuilder> logger)
         {
@@ -19,7 +19,6 @@ namespace OrchardCore.AdminMenu.AdminNodes
         }
 
         public string Name => typeof(PlaceholderAdminNode).Name;
-
 
         public Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
@@ -30,15 +29,14 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 return Task.CompletedTask;
             }
 
-            return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder => {
-
+            return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder =>
+            {
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
 
-                // Add adminNode's IconClass property values to menuItem.Classes. 
-                // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.              
+                // Add adminNode's IconClass property values to menuItem.Classes.
+                // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.
                 node.IconClass?.Split(' ').ToList().ForEach(c => itemBuilder.AddClass("icon-class-" + c));
-
 
                 // Let children build themselves inside this MenuItem
                 // todo: this logic can be shared by all TreeNodeNavigationBuilders

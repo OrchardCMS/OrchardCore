@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 
@@ -16,7 +16,7 @@ namespace OrchardCore.Indexing
         Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(int afterTaskId, int count);
 
         /// <summary>
-        /// Creates a new <see cref="IndexingTask"/>. 
+        /// Creates a new <see cref="IndexingTask"/>.
         /// </summary>
         Task CreateTaskAsync(ContentItem contentItem, IndexingTaskTypes type);
     }

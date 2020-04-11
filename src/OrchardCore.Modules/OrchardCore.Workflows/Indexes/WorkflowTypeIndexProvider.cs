@@ -6,6 +6,7 @@ namespace OrchardCore.Workflows.Indexes
 {
     public class WorkflowTypeIndex : MapIndex
     {
+        public string DocumentId { get; set; }
         public string WorkflowTypeId { get; set; }
         public string Name { get; set; }
         public bool IsEnabled { get; set; }

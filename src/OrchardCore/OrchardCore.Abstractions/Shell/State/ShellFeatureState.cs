@@ -14,8 +14,10 @@ namespace OrchardCore.Environment.Shell.State
 
         [JsonIgnore]
         public bool IsInstalled { get { return InstallState == State.Up; } }
+
         [JsonIgnore]
         public bool IsEnabled { get { return EnableState == State.Up; } }
+
         [JsonIgnore]
         public bool IsDisabled { get { return EnableState == State.Down || EnableState == State.Undefined; } }
 

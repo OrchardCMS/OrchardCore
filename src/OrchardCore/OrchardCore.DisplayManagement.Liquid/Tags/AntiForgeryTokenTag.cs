@@ -29,9 +29,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var tokenSet = antiforgery.GetAndStoreTokens(httpContext);
 
             writer.Write("<input name=\"");
-            HtmlEncoder.Default.Encode(writer, tokenSet.FormFieldName);
+            encoder.Encode(writer, tokenSet.FormFieldName);
             writer.Write("\" type=\"hidden\" value=\"");
-            HtmlEncoder.Default.Encode(writer, tokenSet.RequestToken);
+            encoder.Encode(writer, tokenSet.RequestToken);
             writer.Write("\" />");
 
             return new ValueTask<Completion>(Completion.Normal);

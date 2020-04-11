@@ -3,25 +3,27 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization.PortableObject
 {
+    /// <summary>
+    /// Represents an <see cref="HtmlLocalizer"/> for portable objects.
+    /// </summary>
     public class PortableObjectHtmlLocalizer : HtmlLocalizer
     {
         private readonly IStringLocalizer _localizer;
 
-        public string Context { get; private set; }
-
+        /// <summary>
+        /// Creates a new instance of <see cref="PortableObjectHtmlLocalizer"/>.
+        /// </summary>
+        /// <param name="localizer"></param>
         public PortableObjectHtmlLocalizer(IStringLocalizer localizer) : base(localizer)
         {
             _localizer = localizer;
         }
 
+        /// <inheritdocs />
         public override LocalizedHtmlString this[string name]
-        {
-            get
-            {
-                return ToHtmlString(_localizer[name]);
-            }
-        }
+            => ToHtmlString(_localizer[name]);
 
+        /// <inheritdocs />
         public override LocalizedHtmlString this[string name, params object[] arguments]
         {
             get

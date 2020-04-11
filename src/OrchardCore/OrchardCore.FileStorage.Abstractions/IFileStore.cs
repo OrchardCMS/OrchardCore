@@ -14,7 +14,7 @@ namespace OrchardCore.FileStorage
     /// volumes or drives. All paths are specified and returned as relative to the root of the virtual
     /// file store. Absolute paths using a leading slash or leading period, and parent traversal
     /// using "../", are not supported.
-    /// 
+    ///
     /// This abstraction does not dictate any case sensitivity semantics. Case sensitivity is left to
     /// the underlying storage system of concrete implementations. For example, the Windows file system
     /// is case insensitive, while Linux file system and Azure Blob Storage are case sensitive.
@@ -112,13 +112,13 @@ namespace OrchardCore.FileStorage
         /// If the specified path contains one or more directories, then those directories are
         /// created if they do not already exist.
         /// </remarks>
-        Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false);
+        Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false);
     }
 
     public static class IFileStoreExtensions
     {
         /// <summary>
-        /// Combines multiple path parts using the path delimiter semantics of the abstract virtual file store. 
+        /// Combines multiple path parts using the path delimiter semantics of the abstract virtual file store.
         /// </summary>
         /// <param name="paths">The path parts to combine.</param>
         /// <returns>The full combined path.</returns>
@@ -136,7 +136,7 @@ namespace OrchardCore.FileStorage
             var combined = String.Join("/", normalizedParts);
 
             // Preserve the initial '/' if it's present.
-            if (paths[0]?.StartsWith("/") == true)
+            if (paths[0]?.StartsWith('/') == true)
                 combined = "/" + combined;
 
             return combined;

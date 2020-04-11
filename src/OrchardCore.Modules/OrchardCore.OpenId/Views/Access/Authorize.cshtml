@@ -1,10 +1,14 @@
-﻿@using OrchardCore.OpenId.ViewModels
+@using OrchardCore.OpenId.ViewModels
 @model AuthorizeViewModel
+
+@{
+    ViewLayout = "Layout__Login";
+}
 
 <div class="jumbotron">
     <h1>@T["Authorization"]</h1>
-    
-    <p class="lead text-left">@T["Do you want to grant <strong>{0}</strong> access to your data? (scopes requested: {1})", @Model.ApplicationName, @Model.Scope]</p>
+
+    <p class="lead text-left">@T["Do you want to grant <strong>{0}</strong> access to your data? (scopes requested: {1})", Model.ApplicationName, Model.Scope]</p>
 
     <form method="post">
         @Html.AntiForgeryToken()

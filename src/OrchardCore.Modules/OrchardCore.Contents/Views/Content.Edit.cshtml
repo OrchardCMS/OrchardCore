@@ -5,7 +5,7 @@
 
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 
-<div class="edit-container">
+<div class="edit-container @(Model.Sidebar != null ? "sidebar" : "")">
     <div class="edit-body">
         <div class="edit-item-primary">
             @if (Model.Content != null)

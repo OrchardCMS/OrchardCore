@@ -19,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             _feature = feature;
             _bindingName = shapeType;
-            var delimiterIndex = shapeType.IndexOf("__");
+            var delimiterIndex = shapeType.IndexOf("__", StringComparison.Ordinal);
 
             if (delimiterIndex < 0)
             {
@@ -43,29 +43,18 @@ namespace OrchardCore.DisplayManagement.Descriptors
             return this;
         }
 
-        public ShapeAlterationBuilder BoundAs(string bindingSource, Func<ShapeDescriptor, Func<DisplayContext, Task<IHtmlContent>>> binder)
+        public ShapeAlterationBuilder BoundAs(string bindingSource, Func<DisplayContext, Task<IHtmlContent>> bindingDelegate)
         {
             // schedule the configuration
             return Configure(descriptor =>
             {
-                Func<DisplayContext, Task<IHtmlContent>> target = null;
-
                 var binding = new ShapeBinding
                 {
-                    ShapeDescriptor = descriptor,
                     BindingName = _bindingName,
                     BindingSource = bindingSource,
                 };
 
-                binding.BindingAsync = displayContext =>
-                {
-                    // when used, first realize the actual target once
-                    if (target == null)
-                        target = binder(binding.ShapeDescriptor);
-
-                    // and execute the re
-                    return target(displayContext);
-                };
+                binding.BindingAsync = bindingDelegate;
 
                 // ShapeDescriptor.Bindings is a case insensitive dictionary
                 descriptor.Bindings[_bindingName] = binding;

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -7,14 +7,14 @@ namespace OrchardCore.Indexing
     public class BuildFieldIndexContext : BuildPartIndexContext
     {
         public BuildFieldIndexContext(
-            DocumentIndex documentIndex, 
-            ContentItem contentItem, 
-            IList<string> keys, 
-            ContentPart contentPart, 
-            ContentTypePartDefinition typePartDefinition, 
-            ContentPartFieldDefinition partFieldDefinition, 
+            DocumentIndex documentIndex,
+            ContentItem contentItem,
+            IList<string> keys,
+            ContentPart contentPart,
+            ContentTypePartDefinition typePartDefinition,
+            ContentPartFieldDefinition partFieldDefinition,
             ContentIndexSettings settings)
-            :base(documentIndex, contentItem, keys, typePartDefinition, settings)
+            : base(documentIndex, contentItem, keys, typePartDefinition, settings)
         {
             ContentPartFieldDefinition = partFieldDefinition;
             ContentPart = contentPart;

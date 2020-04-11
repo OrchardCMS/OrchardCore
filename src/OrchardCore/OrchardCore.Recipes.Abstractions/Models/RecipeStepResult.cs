@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Recipes.Models
+namespace OrchardCore.Recipes.Models
 {
     public class RecipeStepResult
     {

@@ -20,7 +20,7 @@ namespace OrchardCore.Modules
             // The same way .Scheme contains the protocol that the user set and not what a proxy
             // could be using (see X-Forwarded-Proto).
 
-            return table.Match(httpRequest.Host.ToString(), httpRequest.Path, true);
+            return table.Match(httpRequest.Host, httpRequest.Path, true);
         }
     }
 }

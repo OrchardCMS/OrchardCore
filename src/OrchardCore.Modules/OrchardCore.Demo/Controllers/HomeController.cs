@@ -41,7 +41,7 @@ namespace OrchardCore.Demo.Controllers
             _contentDisplay = contentDisplay;
         }
 
-        dynamic Shape { get; set; }
+        private dynamic Shape { get; set; }
 
         public ActionResult Index()
         {

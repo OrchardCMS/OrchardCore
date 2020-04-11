@@ -1,4 +1,4 @@
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
@@ -11,7 +11,7 @@ namespace OrchardCore.Media.Services
         private readonly IMediaFileStore _fileStore;
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
         private readonly ShellSettings _shellSettings;
-        private readonly ILogger<TempDirCleanerService> _logger;
+        private readonly ILogger _logger;
 
         public TempDirCleanerService(IMediaFileStore fileStore,
             AttachedMediaFieldFileService attachedMediaFieldFileService,
@@ -28,31 +28,38 @@ namespace OrchardCore.Media.Services
         {
             if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
             {
-                var tempDir = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
-
-                if (await _fileStore.GetDirectoryInfoAsync(tempDir) == null)
+                try
                 {
-                    return;
-                }
+                    var tempDir = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
 
-                var contents = await _fileStore.GetDirectoryContentAsync(tempDir);
-
-                foreach (var c in contents)
-                {
-                    var result = c.IsDirectory ?
-                        await _fileStore.TryDeleteDirectoryAsync(c.Path)
-                        : await _fileStore.TryDeleteFileAsync(c.Path);
-
-                    if (!result)
+                    if (await _fileStore.GetDirectoryInfoAsync(tempDir) == null)
                     {
-                        _logger.LogWarning("Temporary entry {0} could not be deleted.", c.Path);
+                        return;
                     }
+
+                    var contents = await _fileStore.GetDirectoryContentAsync(tempDir);
+
+                    foreach (var c in contents)
+                    {
+                        var result = c.IsDirectory ?
+                            await _fileStore.TryDeleteDirectoryAsync(c.Path)
+                            : await _fileStore.TryDeleteFileAsync(c.Path);
+
+                        if (!result)
+                        {
+                            _logger.LogWarning("Temporary entry {Path} could not be deleted.", c.Path);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "An error occurred while cleaning temporary media folder.");
                 }
             }
         }
 
         public Task ActivatingAsync()
-        {            
+        {
             return Task.CompletedTask;
         }
 

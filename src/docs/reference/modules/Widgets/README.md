@@ -1,7 +1,7 @@
 # Widgets (`OrchardCore.Widgets`)
 
 Widgets are content items of a specific category (stereotype) that can be rendered in custom locations of a page.  
-The Widgets modules provides a `Widget` stereotype and some templates to render it.  
+The Widgets module provides a `Widget` stereotype and some templates to render it.  
 Widgets are used by different modules that need to render specialized pieces of content like Layers or Forms.
 
 ## Creating custom Widgets

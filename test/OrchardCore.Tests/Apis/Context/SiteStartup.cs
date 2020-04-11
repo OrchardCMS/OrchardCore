@@ -1,34 +1,43 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Security.Principal;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
-using OrchardCore.Security;
 
 namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteStartup
     {
+        public static ConcurrentDictionary<string, PermissionsContext> PermissionsContexts;
+
+        static SiteStartup()
+        {
+            PermissionsContexts = new ConcurrentDictionary<string, PermissionsContext>();
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOrchardCms(builder =>
-                builder.AddGlobalFeatures(
-                    "OrchardCore.Tenants",
+                builder.AddSetupFeatures(
+                    "OrchardCore.Tenants"
+                )
+                .AddTenantFeatures(
                     "OrchardCore.Apis.GraphQL"
                 )
                 .ConfigureServices(collection =>
                 {
-                    collection.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>();
+                    collection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp =>
+                    {
+                        return new PermissionContextAuthorizationHandler(sp.GetRequiredService<IHttpContextAccessor>(), PermissionsContexts);
+                    });
+
                     collection.AddAuthentication((options) =>
                     {
                         options.AddScheme<AlwaysLoggedInApiAuthenticationHandler>("Api", null);
@@ -59,43 +68,5 @@ namespace OrchardCore.Tests.Apis.Context
                 return _moduleNames;
             }
         }
-    }
-
-    public class AlwaysLoggedInAuthHandler : AuthorizationHandler<PermissionRequirement>
-    {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
-        {
-            context.Succeed(requirement);
-            return Task.CompletedTask;
-        }
-    }
-
-    public class AlwaysLoggedInApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOptions>
-    {
-        public AlwaysLoggedInApiAuthenticationHandler(
-            IOptionsMonitor<ApiAuthorizationOptions> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock)
-            : base(options, logger, encoder, clock)
-        {
-        }
-
-        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
-        {
-            return Task.FromResult(
-                AuthenticateResult.Success(
-                    new AuthenticationTicket(
-                        new System.Security.Claims.ClaimsPrincipal(new StubIdentity()), "Api")));
-        }
-    }
-
-    public class StubIdentity : IIdentity
-    {
-        public string AuthenticationType => "Dunno";
-
-        public bool IsAuthenticated => true;
-
-        public string Name => "Doug";
     }
 }

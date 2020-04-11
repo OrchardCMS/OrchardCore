@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement
 {
@@ -87,6 +88,38 @@ namespace OrchardCore.ContentManagement
             var part = contentItem.GetOrCreate<TPart>();
             await action(part);
             contentItem.Apply(part);
+
+            return contentItem;
+        }
+
+        /// <summary>
+        /// Merges properties to the contents of a content item.
+        /// </summary>
+        /// <typeparam name="properties">The object to merge.</typeparam>
+        /// <returns>The modified <see cref="ContentItem"/> instance.</returns>
+        public static ContentItem Merge(this ContentItem contentItem, object properties, JsonMergeSettings jsonMergeSettings = null)
+        {
+            var props = JObject.FromObject(properties);
+            var content = (JObject)contentItem.Content;
+
+            content.Merge(props, jsonMergeSettings);
+            contentItem.Elements.Clear();
+
+            if (props.ContainsKey(nameof(contentItem.DisplayText)))
+            {
+                contentItem.DisplayText = props[nameof(contentItem.DisplayText)].ToString();
+            }
+
+            if (props.ContainsKey(nameof(contentItem.Owner)))
+            {
+                contentItem.Owner = props[nameof(contentItem.Owner)].ToString();
+                contentItem.Author = props[nameof(contentItem.Owner)].ToString();
+            }
+
+            if (props.ContainsKey(nameof(contentItem.Author)))
+            {
+                contentItem.Author = props[nameof(contentItem.Author)].ToString();
+            }
 
             return contentItem;
         }

@@ -1,6 +1,6 @@
 # Modules
 
-The library Orchard Core Modules provides a mechanism to have a self-contained modular system where you can opt into a specific application framework and not have the design of your application be dictated to by such.
+The library Orchard Core Modules provide a mechanism to have a self-contained modular system where you can opt into a specific application framework and not have the design of your application be dictated to by such.
 
 ## Getting started
 

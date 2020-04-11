@@ -17,7 +17,7 @@ namespace OrchardCore.Users.Services
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
-        private readonly IStringLocalizer<UserService> T;
+        private readonly IStringLocalizer S;
 
         public UserService(
             SignInManager<IUser> signInManager,
@@ -28,44 +28,44 @@ namespace OrchardCore.Users.Services
             _signInManager = signInManager;
             _userManager = userManager;
             _identityOptions = identityOptions;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public async Task<IUser> AuthenticateAsync(string userName, string password, Action<string, string> reportError)
         {
             if (string.IsNullOrWhiteSpace(userName))
             {
-                reportError("UserName", T["A user name is required."]);
+                reportError("UserName", S["A user name is required."]);
                 return null;
             }
 
             if (string.IsNullOrWhiteSpace(password))
             {
-                reportError("Password", T["A password is required."]);
+                reportError("Password", S["A password is required."]);
                 return null;
             }
 
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
-                reportError(string.Empty, T["The specified username/password couple is invalid."]);
+                reportError(string.Empty, S["The specified username/password couple is invalid."]);
                 return null;
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);
             if (result.IsNotAllowed)
             {
-                reportError(string.Empty, T["The specified user is not allowed to sign in."]);
+                reportError(string.Empty, S["The specified user is not allowed to sign in."]);
                 return null;
             }
             else if (result.RequiresTwoFactor)
             {
-                reportError(string.Empty, T["The specified user is not allowed to sign in using password authentication."]);
+                reportError(string.Empty, S["The specified user is not allowed to sign in using password authentication."]);
                 return null;
             }
             else if (!result.Succeeded)
             {
-                reportError(string.Empty, T["The specified username/password couple is invalid."]);
+                reportError(string.Empty, S["The specified username/password couple is invalid."]);
                 return null;
             }
 
@@ -88,8 +88,21 @@ namespace OrchardCore.Users.Services
                 ProcessValidationErrors(identityResult.Errors, newUser, reportError);
                 return null;
             }
-            
+
             return user;
+        }
+
+        public async Task<bool> ChangeEmailAsync(IUser user, string newEmail, Action<string, string> reportError)
+        {
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+            var identityResult = await _userManager.ChangeEmailAsync(user, newEmail, token);
+
+            if (!identityResult.Succeeded)
+            {
+                ProcessValidationErrors(identityResult.Errors, (User)user, reportError);
+            }
+
+            return identityResult.Succeeded;
         }
 
         public async Task<bool> ChangePasswordAsync(IUser user, string currentPassword, string newPassword, Action<string, string> reportError)
@@ -138,19 +151,19 @@ namespace OrchardCore.Users.Services
             var result = true;
             if (string.IsNullOrWhiteSpace(userIdentifier))
             {
-                reportError("UserName", T["A user name or email is required."]);
+                reportError("UserName", S["A user name or email is required."]);
                 result = false;
             }
 
             if (string.IsNullOrWhiteSpace(newPassword))
             {
-                reportError("Password", T["A password is required."]);
+                reportError("Password", S["A password is required."]);
                 result = false;
             }
 
             if (string.IsNullOrWhiteSpace(resetToken))
             {
-                reportError("Token", T["A token is required."]);
+                reportError("Token", S["A token is required."]);
                 result = false;
             }
 
@@ -206,43 +219,46 @@ namespace OrchardCore.Users.Services
                 {
                     // Password
                     case "PasswordRequiresDigit":
-                        reportError("Password", T["Passwords must have at least one digit character ('0'-'9')."]);
+                        reportError("Password", S["Passwords must have at least one digit character ('0'-'9')."]);
                         break;
                     case "PasswordRequiresLower":
-                        reportError("Password", T["Passwords must have at least one lowercase character ('a'-'z')."]);
+                        reportError("Password", S["Passwords must have at least one lowercase character ('a'-'z')."]);
                         break;
                     case "PasswordRequiresUpper":
-                        reportError("Password", T["Passwords must have at least one uppercase character ('A'-'Z')."]);
+                        reportError("Password", S["Passwords must have at least one uppercase character ('A'-'Z')."]);
                         break;
                     case "PasswordRequiresNonAlphanumeric":
-                        reportError("Password", T["Passwords must have at least one non letter or digit character."]);
+                        reportError("Password", S["Passwords must have at least one non letter or digit character."]);
                         break;
                     case "PasswordTooShort":
-                        reportError("Password", T["Passwords must be at least {0} characters.", _identityOptions.Value.Password.RequiredLength]);
+                        reportError("Password", S["Passwords must be at least {0} characters.", _identityOptions.Value.Password.RequiredLength]);
                         break;
                     case "PasswordRequiresUniqueChars":
-                        reportError("Password", T["Passwords must contain at least {0} unique characters.", _identityOptions.Value.Password.RequiredUniqueChars]);
+                        reportError("Password", S["Passwords must contain at least {0} unique characters.", _identityOptions.Value.Password.RequiredUniqueChars]);
                         break;
 
                     // CurrentPassword
                     case "PasswordMismatch":
-                        reportError("CurrentPassword", T["Incorrect password."]);
+                        reportError("CurrentPassword", S["Incorrect password."]);
                         break;
 
                     // User name
                     case "InvalidUserName":
-                        reportError("UserName", T["User name '{0}' is invalid, can only contain letters or digits.", user.UserName]);
+                        reportError("UserName", S["User name '{0}' is invalid, can only contain letters or digits.", user.UserName]);
                         break;
                     case "DuplicateUserName":
-                        reportError("UserName", T["User name '{0}' is already used.", user.UserName]);
+                        reportError("UserName", S["User name '{0}' is already used.", user.UserName]);
                         break;
 
                     // Email
+                    case "DuplicateEmail":
+                        reportError("Email", S["Email '{0}' is already used.", user.Email]);
+                        break;
                     case "InvalidEmail":
-                        reportError("Email", T["Email '{0}' is invalid.", user.Email]);
+                        reportError("Email", S["Email '{0}' is invalid.", user.Email]);
                         break;
                     default:
-                        reportError(string.Empty, T["Unexpected error: '{0}'.", error.Code]);
+                        reportError(string.Empty, S["Unexpected error: '{0}'.", error.Code]);
                         break;
                 }
             }

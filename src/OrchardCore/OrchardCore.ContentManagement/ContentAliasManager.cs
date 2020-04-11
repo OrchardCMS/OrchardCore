@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task<string> GetContentItemIdAsync(string alias)
         {
-            foreach(var provider in _contentAliasProviders)
+            foreach (var provider in _contentAliasProviders)
             {
                 var result = await provider.GetContentItemIdAsync(alias);
 

@@ -41,14 +41,14 @@ namespace OrchardCore.Contents.Drivers
 
                     if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                     {
-                        ctx.ShapeMetadata.Alternates.Add($"{stereotype}__ContentsMetadata");
+                        ctx.Shape.Metadata.Alternates.Add($"{stereotype}__ContentsMetadata");
                     }
                 });
             }
 
             return Combine(
                 contentsMetadataShape,
-                Shape("Contents_SummaryAdmin__Tags", new ContentItemViewModel(model)).Location("SummaryAdmin", "Meta:10"),
+                Shape("Contents_SummaryAdmin__Tags", new ContentItemViewModel(model)).Location("SummaryAdmin", "Tags:10"),
                 Shape("Contents_SummaryAdmin__Meta", new ContentItemViewModel(model)).Location("SummaryAdmin", "Meta:20"),
                 Shape("Contents_SummaryAdmin__Button__Edit", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:10"),
                 Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:20")

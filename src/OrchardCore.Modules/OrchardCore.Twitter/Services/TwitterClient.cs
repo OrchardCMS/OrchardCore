@@ -10,7 +10,7 @@ namespace OrchardCore.Twitter.Services
     public class TwitterClient
     {
         private readonly HttpClient _client;
-        private readonly ILogger<TwitterClient> _logger;
+        private readonly ILogger _logger;
 
         public TwitterClient(HttpClient client, ILogger<TwitterClient> logger)
         {

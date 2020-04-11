@@ -1,0 +1,91 @@
+@model OrchardCore.Taxonomies.ViewModels.EditTaxonomyFieldViewModel
+@using OrchardCore.Taxonomies.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+@using Newtonsoft.Json.Linq;
+@using Microsoft.AspNetCore.Authorization;
+@inject IAuthorizationService AuthorizationService;
+
+@{
+    var taxonomySettings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+    var tagsSettings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldTagsEditorSettings>();
+    // Create a flat object for vue multi select with required properties.
+    var allTagTerms = JArray.FromObject(Model.TermEntries.Select(te => new { contentItemId = te.ContentItemId, selected = te.Selected, displayText = te.Term.DisplayText, isLeaf = te.IsLeaf }));
+
+    var partName = Model.PartFieldDefinition.PartDefinition.Name;
+    var fieldName = Model.PartFieldDefinition.Name;
+
+    var createTagUrl = Url.Action("Create", "Tag", new { area = "OrchardCore.Taxonomies" });
+
+    bool open = tagsSettings.Open;
+    if (!await AuthorizationService.AuthorizeAsync(User, OrchardCore.Taxonomies.Permissions.ManageTaxonomies))
+    {
+        open = false;
+    }
+
+    var vueElementId = $"TaxonomyField-Tags_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
+}
+
+<script asp-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.js" asp-name="tags-editor" at="Foot" depends-on="vuejs, vue-multiselect"></script>
+<style asp-src="~/OrchardCore.Taxonomies/Styles/tags-editor.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/tags-editor.css" asp-name="tags-editor" depends-on="vue-multiselect"></style>
+
+
+<label>@Model.PartFieldDefinition.DisplayName()</label>
+
+@* Antiforgery token required for the ajax post to create a new tag *@
+@Html.AntiForgeryToken()
+
+@if (!String.IsNullOrEmpty(taxonomySettings.Hint))
+{
+    <span class="hint">— @taxonomySettings.Hint</span>
+}
+
+@if (Model.Taxonomy == null)
+{
+    <div class="alert alert-danger" role="alert">
+        @T["The taxonomy could not be found. Please check the settings for this field."]
+    </div>
+}
+else
+{
+    <div class="form-group">
+        <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-open="@open.ToString().ToLower()" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-create-tag-error-message="@T["Error creating tag"]" data-part-name="@partName" data-field-name="@fieldName" data-all-tag-terms="@allTagTerms" data-create-tag-url="@createTagUrl" data-term-entries-key="@nameof(EditTaxonomyFieldViewModel.TermEntries)" data-content-item-id-key="@nameof(TermEntry.ContentItemId)" data-selected-key="@nameof(TermEntry.Selected)">
+
+            <div class="form-group">
+                <div class="w-xl-50">
+                    <input v-for="tagTerm in allTagTerms" v-bind:name="termEntriesContentItemName(tagTerm)" v-bind:value="tagTerm.contentItemId" type="hidden" />
+                    <input v-for="tagTerm in allTagTerms" v-bind:name="termEntriesSelectedName(tagTerm)" v-bind:value="tagTerm.selected" type="hidden" />
+
+                    <vue-multiselect v-model="selectedTagTerms"
+                                     placeholder="@T["Type to search"]"
+                                     select-label="@T["Select"]"
+                                     deselect-label="@T["Remove"]"
+                                     :options="selectableTagTerms"
+                                     :multiple="@((!taxonomySettings.Unique).ToString().ToLower())"
+                                     :show-labels="false"
+                                     :close-on-select="@taxonomySettings.Unique.ToString().ToLower()"
+                                     :disabled="isDisabled"
+                                     track-by="contentItemId"
+                                     label="displayText"
+                                     @@select="onSelect"
+                                     @@remove="onRemove"
+                                     :taggable="@open.ToString().ToLower()"
+                                     tag-position="bottom"
+                                     tag-placeholder="@T["Press enter to create a tag"]"
+                                     @@tag="createTagTerm">
+                        <template slot="noResult">
+                            @T["No tags found"]
+                        </template>
+                        <template slot="noOptions">
+                            @T["No tags found"]
+                        </template>
+                    </vue-multiselect>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script depends-on="tags-editor" at="Foot">
+        initializeTagsEditor(document.querySelector("#@vueElementId"));
+    </script>
+}

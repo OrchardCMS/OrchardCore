@@ -368,14 +368,14 @@ namespace OrchardCore.ContentManagement.Utilities
             if (rough == null)
                 return null;
 
-            return rough.EndsWith(trim)
+            return rough.EndsWith(trim, StringComparison.Ordinal)
                        ? rough.Substring(0, rough.Length - trim.Length)
                        : rough;
         }
 
         public static string ReplaceLastOccurrence(this string source, string find, string replace)
         {
-            int place = source.LastIndexOf(find);
+            int place = source.LastIndexOf(find, StringComparison.Ordinal);
             return source.Remove(place, find.Length).Insert(place, replace);
         }
     }

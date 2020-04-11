@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.AdminMenu.Services;
@@ -16,25 +17,24 @@ namespace OrchardCore.Contents.AdminNodes
 {
     public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     {
+        private readonly LinkGenerator _linkGenerator;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ILogger<ContentTypesAdminNodeNavigationBuilder> _logger;
-        private readonly string _contentItemlistUrl;
+        private readonly ILogger _logger;
 
         public ContentTypesAdminNodeNavigationBuilder(
             IContentDefinitionManager contentDefinitionManager,
+            LinkGenerator linkGenerator,
             IHttpContextAccessor httpContextAccessor,
             ILogger<ContentTypesAdminNodeNavigationBuilder> logger)
         {
             _contentDefinitionManager = contentDefinitionManager;
-
-            var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
-            _contentItemlistUrl = pathBase + "/Admin/Contents/ContentItems/";
-
+            _linkGenerator = linkGenerator;
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
         public string Name => typeof(ContentTypesAdminNode).Name;
-
 
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
@@ -51,7 +51,14 @@ namespace OrchardCore.Contents.AdminNodes
             {
                 builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
                 {
-                    cTypeMenu.Url(_contentItemlistUrl + ctd.Name);
+                    cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, "", new
+                    {
+                        area = "OrchardCore.Contents",
+                        controller = "Admin",
+                        action = "List",
+                        contentTypeId = ctd.Name
+                    }));
+
                     cTypeMenu.Priority(node.Priority);
                     cTypeMenu.Position(node.Position);
                     cTypeMenu.Permission(
@@ -60,7 +67,6 @@ namespace OrchardCore.Contents.AdminNodes
                     GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
                 });
             }
-
 
             // Add external children
             foreach (var childNode in node.Items)
@@ -75,24 +81,20 @@ namespace OrchardCore.Contents.AdminNodes
                     _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childNode.GetType().Name);
                 }
             }
-
         }
 
         private IEnumerable<ContentTypeDefinition> GetContentTypesToShow(ContentTypesAdminNode node)
         {
-
             var typesToShow = _contentDefinitionManager.ListTypeDefinitions()
                 .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Listable);
 
-
             if (!node.ShowAll)
             {
-                node.ContentTypes = node.ContentTypes ?? (new ContentTypeEntry[] { });
+                node.ContentTypes = node.ContentTypes;
 
                 typesToShow = typesToShow
                     .Where(ctd => node.ContentTypes.ToList()
                                     .Any(s => String.Equals(ctd.Name, s.ContentTypeId, StringComparison.OrdinalIgnoreCase)));
-
             }
 
             return typesToShow.OrderBy(t => t.DisplayName);
@@ -111,7 +113,6 @@ namespace OrchardCore.Contents.AdminNodes
                                 .FirstOrDefault();
 
                 return AddPrefixToClasses(typeEntry.IconClass);
-
             }
         }
 
@@ -123,7 +124,5 @@ namespace OrchardCore.Contents.AdminNodes
                 .ToList<string>()
                 ?? new List<string>();
         }
-
     }
-
 }

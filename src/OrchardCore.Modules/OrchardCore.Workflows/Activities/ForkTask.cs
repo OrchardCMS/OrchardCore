@@ -8,16 +8,18 @@ namespace OrchardCore.Workflows.Activities
 {
     public class ForkTask : TaskActivity
     {
+        private readonly IStringLocalizer S;
+
         public ForkTask(IStringLocalizer<ForkTask> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(ForkTask);
-        public override LocalizedString DisplayText => T["Fork Task"];
-        public override LocalizedString Category => T["Control Flow"];
+
+        public override LocalizedString DisplayText => S["Fork Task"];
+
+        public override LocalizedString Category => S["Control Flow"];
 
         public IList<string> Forks
         {
@@ -27,7 +29,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Forks.Select(x => Outcome(T[x]));
+            return Forks.Select(x => Outcome(S[x]));
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

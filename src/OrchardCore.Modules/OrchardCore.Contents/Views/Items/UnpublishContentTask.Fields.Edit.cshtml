@@ -1,9 +1,9 @@
 @using OrchardCore.Contents.Workflows.ViewModels
 @model UnpublishContentTaskViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Expression">
+<div class="form-group" asp-validation-class-for="Expression">
     <label asp-for="Expression">@T["Expression"]</label>
     <input type="text" asp-for="Expression" class="form-control code" autofocus />
     <span asp-validation-for="Expression"></span>
     <span class="hint">@T["Enter a JavaScript expression that evaluates to the content item to be unpublished. For example: input(\"Content\"). If no expression is specified, the workflow's \"Content\" input variable or \"Content\" property will be used."]</span>
-</fieldset>
+</div>

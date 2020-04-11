@@ -1,7 +1,14 @@
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Extensions
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Html
+@using Microsoft.Extensions.Options
+@using Microsoft.Extensions.Primitives
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject Microsoft.Extensions.Options.IOptions<IdentityOptions> IdentityOptions
+@inject IOptions<RequestLocalizationOptions> LocOptions
+@inject OrchardCore.IOrchardHelper Orchard
 @inject OrchardCore.Modules.IClock Clock
 @model OrchardCore.Setup.ViewModels.SetupViewModel
 
@@ -9,9 +16,6 @@
     // The Setup Layout is a standard MVC layout do that it doesn't use Shapes.
     Layout = "../_Layout.cshtml";
     var localTimeZone = Clock.GetSystemTimeZone();
-}
-
-@{
     var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName) ?? Model.Recipes.FirstOrDefault();
     var options = IdentityOptions.Value;
     var passwordOptions = new HtmlContentBuilder();
@@ -21,14 +25,14 @@
     if (options.Password.RequireNonAlphanumeric)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one non-alphanumeric"]);
-        separator = T[", "];
+        separator = new HtmlString(", ");
         passwordRegex += @"(?=.*[^A-Za-z0-9])";
     }
 
     if (options.Password.RequireUppercase)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one uppercase"]);
-        separator = T[", "];
+        separator = new HtmlString(", ");
         passwordRegex += @"(?=.*[A-Z])";
     }
 
@@ -42,7 +46,7 @@
     if (options.Password.RequireDigit)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one digit"]);
-        separator = T[", "];
+        separator = new HtmlString(", ");
         passwordRegex += @"(?=.*[0-9])";
     }
 
@@ -61,14 +65,31 @@
 
     var passwordTooltip = T["Password must have at least {0}.", passwordOptions];
 }
+<div class="form-group">
+    @if (LocOptions.Value.SupportedUICultures.Count() > 1)
+    {
+        var query = new Dictionary<string, StringValues>(Context.Request.Query);
+        query.Remove("ui-culture");
+        var queryString = QueryString.Create(query);
 
+        <div class="float-right form-inline p-2">
+            <label for="culturesList" class="mr-2">@T["Change language"]</label>
+            <select id="culturesList" class="form-control" onchange="setLocalizationUrl()">
+                @foreach (var culture in LocOptions.Value.SupportedUICultures.OrderBy(x => x.NativeName))
+                {
+                    var uriString = UriHelper.BuildRelative(Context.Request.PathBase, Context.Request.Path, queryString.Add("ui-culture", culture.Name));
+
+                    <option value="@culture" data-url="@uriString" selected="@(culture.Name == Orchard.CultureName())">@(culture.NativeName ?? culture.Name)</option>
+                }
+            </select>
+        </div>
+    }
+</div>
 <form asp-action="Index">
-
-    <div class="jumbotron mt-5">
+    <div class="bg-light p-2">
         <h1>@T["Setup"]</h1>
         <p class="lead">@T["Please answer a few questions to configure your site."]</p>
     </div>
-
     @if (defaultRecipe == null)
     {
         <div class="alert alert-danger" role="alert">
@@ -76,18 +97,18 @@
         </div>
     }
 
-    <div class="row">
-        <fieldset class="form-group col-md-4" asp-validation-class-for="SiteName">
+    <div class="row mt-2">
+        <div class="form-group col-md-4" asp-validation-class-for="SiteName">
             <div>
                 <label asp-for="SiteName">@T["What is the name of your site?"]</label>
                 <input asp-for="SiteName" class="form-control" autofocus required />
                 <span asp-validation-for="SiteName" class="text-danger">@T["The site name is required."]</span>
                 <span class="text-muted form-text small">@T["This is used as the default title of your pages."]</span>
             </div>
-        </fieldset>
+        </div>
         @if (!Model.RecipeNamePreset)
         {
-            <fieldset class="form-group col-md-4">
+            <div class="form-group col-md-4">
                 <input type="hidden" asp-for="RecipeName" required />
                 <nav>
                     <div asp-validation-class-for="RecipeName">
@@ -114,13 +135,12 @@
                                 </div>
                             </div>
                         }
-                        <span class="text-muted form-text small">@T["Recipes allow you to setup your site with additional pre-configured options, features and settings out of the box."]</span>
-
                     </div>
                 </nav>
-            </fieldset>
+                <span class="text-muted form-text small">@T["Recipes allow you to setup your site with additional pre-configured options, features and settings out of the box."]</span>
+            </div>
         }
-        <fieldset class="form-group col-md-4" asp-validation-class-for="SiteTimeZone">
+        <div class="form-group col-md-4" asp-validation-class-for="SiteTimeZone">
             <label asp-for="SiteTimeZone">@T["Default Time Zone"]</label>
             <select asp-for="SiteTimeZone" class="form-control">
                 @foreach (var timezone in Clock.GetTimeZones())
@@ -132,16 +152,10 @@
             </select>
             <span asp-validation-for="SiteTimeZone"></span>
             <span class="text-muted form-text small">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
-        </fieldset>
-
+        </div>
     </div>
-
     @if (!Model.DatabaseConfigurationPreset)
     {
-        <h6>
-            @T["Database"]
-            <span class="text-muted form-text small">@T["The database is used to store the site's configuration and its contents. You can specify a custom table prefix if you intend to reuse the same database for multiple sites."]</span>
-        </h6>
         <div class="row">
             <div class="form-group col-md-6">
                 <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
@@ -152,68 +166,67 @@
                     }
                 </select>
                 <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
+                <span class="text-muted form-text small">@T["The database is used to store the site's configuration and its contents."]</span>
             </div>
 
             <div class="form-group col-md-6 tablePrefix" asp-validation-class-for="TablePrefix">
                 <label asp-for="TablePrefix">@T["Table Prefix"]</label>
                 <input asp-for="TablePrefix" class="form-control" />
                 <span asp-validation-for="TablePrefix" class="text-danger"></span>
+                <span class="text-muted form-text small">@T["You can specify a table prefix if you intend to reuse the same database for multiple sites."]</span>
             </div>
         </div>
 
-        <fieldset class="row connectionString" asp-validation-class-for="ConnectionString">
+        <div class="row connectionString" asp-validation-class-for="ConnectionString">
             <div class="form-group col-md-12">
                 <label asp-for="ConnectionString">@T["Connection string"]</label>
-
                 <div class="input-group mb-2 mb-sm-0">
                     <input asp-for="ConnectionString" class="form-control pwd" type="password" required />
                     <div class="input-group-append reveal" title="@T["Show/hide connection string"]">
                         <button type="button" class="btn btn-secondary" tabindex="-1" aria-hidden="true"><i class="fa fa-eye-slash"></i></button>
                     </div>
                 </div>
-
                 <span asp-validation-for="ConnectionString" class="text-danger"></span>
                 <span id="connectionStringHint" class="text-muted form-text small"></span>
             </div>
-        </fieldset>
+        </div>
     }
-    <h6>
-        @T["Super User"]
-        <span class="text-muted form-text small">@T["The super user has all the rights. It should be used only during Setup and for disaster recovery."]</span>
-    </h6>
-    <div class="row">
-        <div class="form-group col-md-6" asp-validation-class-for="UserName">
-            <label asp-for="UserName">@T["User name"]</label>
-            <input asp-for="UserName" class="form-control" required />
-            <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
-        </div>
-        <div class="form-group col-md-6" asp-validation-class-for="Email">
-            <label for="Email">@T["Email"]</label>
-            <input asp-for="Email" class="form-control" type="email" required />
-            <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="form-group col-md-6" asp-validation-class-for="Password">
-            <label asp-for="Password">@T["Password"]</label>
-            <input asp-for="Password" type="password" class="form-control" data-toggle="popover" data-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-content="@passwordTooltip" required pattern="@passwordRegex" />
-            <div id="passwordStrength"></div>
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-
-        <div class="form-group col-md-6" asp-validation-class-for="PasswordConfirmation">
-            <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
-            <input asp-for="PasswordConfirmation" type="password" class="form-control" title="@passwordTooltip" required pattern="@passwordRegex" />
-            <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
-        </div>
-    </div>
     <fieldset>
-        <div class="form-group">
+        <legend>@T["Super User"]</legend>
+        <span class="text-muted form-text small">@T["The super user has all the rights. It should be used only during Setup and for disaster recovery."]</span>
+        <div class="row">
+            <div class="form-group col-md-6" asp-validation-class-for="UserName">
+                <label asp-for="UserName">@T["User name"]</label>
+                <input asp-for="UserName" class="form-control" required />
+                <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
+            </div>
+            <div class="form-group col-md-6" asp-validation-class-for="Email">
+                <label for="Email">@T["Email"]</label>
+                <input asp-for="Email" class="form-control" type="email" required />
+                <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6" asp-validation-class-for="Password">
+                <label asp-for="Password">@T["Password"]</label>
+                <input asp-for="Password" type="password" class="form-control" data-toggle="popover" data-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-content="@passwordTooltip" required pattern="@passwordRegex" />
+                <div id="passwordStrength"></div>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group col-md-6" asp-validation-class-for="PasswordConfirmation">
+                <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
+                <input asp-for="PasswordConfirmation" type="password" class="form-control" title="@passwordTooltip" required pattern="@passwordRegex" />
+                <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
+            </div>
+        </div>
+    </fieldset>
+    <div class="row">
+        <div class="form-group col-md-4">
             <input type="hidden" asp-for="Secret" value="@Model.Secret" />
             <button class="btn btn-primary" type="submit" id="SubmitButton">@T["Finish Setup"]</button>
         </div>
-    </fieldset>
+    </div>
 </form>
 <script src="~/OrchardCore.Setup/Scripts/setup.min.js" type="text/javascript"></script>
 <script type="text/javascript">

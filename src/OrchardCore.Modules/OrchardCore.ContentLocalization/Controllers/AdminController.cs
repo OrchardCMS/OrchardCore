@@ -6,20 +6,17 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 
 namespace OrchardCore.ContentLocalization.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentLocalizationManager _contentLocalizationManager;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<AdminController> _localizer;
         private readonly IAuthorizationService _authorizationService;
-
-        public IHtmlLocalizer T { get; }
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             IContentManager contentManager,
@@ -30,10 +27,9 @@ namespace OrchardCore.ContentLocalization.Controllers
         {
             _contentManager = contentManager;
             _notifier = notifier;
-            _localizer = localizer;
             _authorizationService = authorizationService;
             _contentLocalizationManager = localizationManager;
-            T = localizer;
+            H = localizer;
         }
 
         [HttpPost]
@@ -51,7 +47,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.LocalizeContent, contentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var checkContentItem = await _contentManager.NewAsync(contentItem.ContentType);
@@ -61,7 +57,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, checkContentItem))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var part = contentItem.As<LocalizationPart>();
@@ -75,19 +71,19 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (alreadyLocalizedContent != null)
             {
-                _notifier.Warning(T["A localization already exist for '{0}'", targetCulture]);
+                _notifier.Warning(H["A localization already exist for '{0}'", targetCulture]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItemId });
             }
 
             try
             {
                 var newContent = await _contentLocalizationManager.LocalizeAsync(contentItem, targetCulture);
-                _notifier.Information(T["Successfully created localized version of the content."]);
+                _notifier.Information(H["Successfully created localized version of the content."]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = newContent.ContentItemId });
             }
             catch (InvalidOperationException)
             {
-                _notifier.Warning(T["Could not create localized version of the content item"]);
+                _notifier.Warning(H["Could not create localized version of the content item"]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItem.ContentItemId });
             }
         }

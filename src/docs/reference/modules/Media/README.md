@@ -1,6 +1,6 @@
 # Media (`OrchardCore.Media`)
 
-The Media modules provides a UI to upload and organize binary files that can be used while creating content.
+The Media module provides a UI to upload and organize binary files that can be used while creating content.
 
 The media-processing liquid filters can also create custom sized images.
 

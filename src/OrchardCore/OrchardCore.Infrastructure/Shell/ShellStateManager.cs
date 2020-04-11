@@ -1,26 +1,25 @@
-using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell.State;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell.State;
 using YesSql;
 
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// Stores <see cref="ShellState"/> in the database. 
+    /// Stores <see cref="ShellState"/> in the database.
     /// </summary>
     public class ShellStateManager : IShellStateManager
     {
         private ShellState _shellState;
         private readonly ISession _session;
+        private readonly ILogger _logger;
 
         public ShellStateManager(ISession session, ILogger<ShellStateManager> logger)
         {
             _session = session;
-            Logger = logger;
+            _logger = logger;
         }
-
-        ILogger Logger { get; set; }
 
         public async Task<ShellState> GetShellStateAsync()
         {
@@ -42,18 +41,18 @@ namespace OrchardCore.Environment.Shell
 
         public async Task UpdateEnabledStateAsync(ShellFeatureState featureState, ShellFeatureState.State value)
         {
-            if (Logger.IsEnabled(LogLevel.Debug))
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("Feature '{FeatureName}' EnableState changed from '{FeatureState}' to '{FeatureState}'",
+                _logger.LogDebug("Feature '{FeatureName}' EnableState changed from '{FeatureState}' to '{FeatureState}'",
                              featureState.Id, featureState.EnableState, value);
             }
 
             var previousFeatureState = await GetOrCreateFeatureStateAsync(featureState.Id);
             if (previousFeatureState.EnableState != featureState.EnableState)
             {
-                if (Logger.IsEnabled(LogLevel.Warning))
+                if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    Logger.LogWarning("Feature '{FeatureName}' prior EnableState was '{FeatureState}' when '{FeatureState}' was expected",
+                    _logger.LogWarning("Feature '{FeatureName}' prior EnableState was '{FeatureState}' when '{FeatureState}' was expected",
                                featureState.Id, previousFeatureState.EnableState, featureState.EnableState);
                 }
             }
@@ -66,17 +65,17 @@ namespace OrchardCore.Environment.Shell
 
         public async Task UpdateInstalledStateAsync(ShellFeatureState featureState, ShellFeatureState.State value)
         {
-            if (Logger.IsEnabled(LogLevel.Debug))
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("Feature '{FeatureName}' InstallState changed from '{FeatureState}' to '{FeatureState}'", featureState.Id, featureState.InstallState, value);
+                _logger.LogDebug("Feature '{FeatureName}' InstallState changed from '{FeatureState}' to '{FeatureState}'", featureState.Id, featureState.InstallState, value);
             }
 
             var previousFeatureState = await GetOrCreateFeatureStateAsync(featureState.Id);
             if (previousFeatureState.InstallState != featureState.InstallState)
             {
-                if (Logger.IsEnabled(LogLevel.Warning))
+                if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    Logger.LogWarning("Feature '{FeatureName}' prior InstallState was '{FeatureState}' when '{FeatureState}' was expected",
+                    _logger.LogWarning("Feature '{FeatureName}' prior InstallState was '{FeatureState}' when '{FeatureState}' was expected",
                                featureState.Id, previousFeatureState.InstallState, featureState.InstallState);
                 }
             }

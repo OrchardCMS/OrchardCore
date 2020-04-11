@@ -14,7 +14,7 @@ namespace OrchardCore.Navigation
             builder.Describe("Navigation")
                 .OnDisplaying(displaying =>
                 {
-                    var menu = displaying.Shape;
+                    dynamic menu = displaying.Shape;
                     string menuName = menu.MenuName;
 
                     menu.Classes.Add("menu-" + menuName.HtmlClassify());
@@ -23,7 +23,7 @@ namespace OrchardCore.Navigation
                 })
                 .OnProcessing(async context =>
                 {
-                    var menu = context.Shape;
+                    dynamic menu = context.Shape;
                     string menuName = menu.MenuName;
 
                     // Menu population is executed when processing the shape so that its value
@@ -70,7 +70,7 @@ namespace OrchardCore.Navigation
             builder.Describe("NavigationItem")
                 .OnDisplaying(displaying =>
                 {
-                    var menuItem = displaying.Shape;
+                    dynamic menuItem = displaying.Shape;
                     var menu = menuItem.Menu;
                     string menuName = menu.MenuName;
                     int level = menuItem.Level;
@@ -83,7 +83,7 @@ namespace OrchardCore.Navigation
             builder.Describe("NavigationItemLink")
                 .OnDisplaying(displaying =>
                 {
-                    var menuItem = displaying.Shape;
+                    dynamic menuItem = displaying.Shape;
                     string menuName = menuItem.Menu.MenuName;
                     int level = menuItem.Level;
 
@@ -103,7 +103,7 @@ namespace OrchardCore.Navigation
         /// <returns></returns>
         private string EncodeAlternateElement(string alternateElement)
         {
-            return alternateElement.Replace("-", "__").Replace(".", "_");
+            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
     }
 }

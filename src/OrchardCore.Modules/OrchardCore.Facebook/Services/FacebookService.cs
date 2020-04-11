@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Settings;
 
@@ -15,17 +13,14 @@ namespace OrchardCore.Facebook.Services
     public class FacebookService : IFacebookService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<FacebookService> T;
-        private readonly ShellSettings _shellSettings;
+        private readonly IStringLocalizer S;
 
         public FacebookService(
             ISiteService siteService,
-            ShellSettings shellSettings,
             IStringLocalizer<FacebookService> stringLocalizer)
         {
-            _shellSettings = shellSettings;
             _siteService = siteService;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public async Task<FacebookSettings> GetSettingsAsync()
@@ -41,7 +36,7 @@ namespace OrchardCore.Facebook.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(FacebookSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
@@ -57,7 +52,7 @@ namespace OrchardCore.Facebook.Services
 
             if (string.IsNullOrEmpty(settings.AppId))
             {
-                results.Add(new ValidationResult(T["The AppId is required."], new[]
+                results.Add(new ValidationResult(S["The AppId is required."], new[]
                 {
                     nameof(settings.AppId)
                 }));
@@ -65,7 +60,7 @@ namespace OrchardCore.Facebook.Services
 
             if (string.IsNullOrEmpty(settings.AppSecret))
             {
-                results.Add(new ValidationResult(T["The App Secret is required."], new[]
+                results.Add(new ValidationResult(S["The App Secret is required."], new[]
                 {
                     nameof(settings.AppSecret)
                 }));

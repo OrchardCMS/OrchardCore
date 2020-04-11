@@ -31,7 +31,7 @@ namespace OrchardCore.Taxonomies.Liquid
                 taxonomyContentItemId = field.TaxonomyContentItemId;
                 termContentItemIds = field.TermContentItemIds;
             }
-            if (input.Type == FluidValues.Object
+            else if (input.Type == FluidValues.Object
                 && input.ToObjectValue() is JObject jobj
                 && jobj.ContainsKey(nameof(TaxonomyField.TermContentItemIds))
                 && jobj.ContainsKey(nameof(TaxonomyField.TaxonomyContentItemId)))

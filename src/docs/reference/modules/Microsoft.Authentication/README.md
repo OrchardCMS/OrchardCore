@@ -39,6 +39,21 @@ Available settings are:
 - CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
 If no value is provided, setup Azure AD app to use the default path /signin-oidc.
 
+#### Recipe Step
+
+The Azure Active Directory can be set during recipes using the settings step. Here is a sample step:
+
+```json
+{
+	"name": "azureADSettings",
+	"appId": "86eb5541-ba2b-4255-9344-54eb73cec375",
+	"tenantId": "4cc363b6-5254-4b8c-bc1b-e951a5fc85ac",
+	"displayName": "Orchard Core AD App",	
+	"callbackPath": "/signin-oidc"
+},
+```
+
+
 ## Users Registration
 
 - If you want to enable new users to register to the site through their Microsoft Account and/or Microsoft Azure AD login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.

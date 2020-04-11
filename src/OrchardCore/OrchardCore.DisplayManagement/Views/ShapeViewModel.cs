@@ -31,6 +31,8 @@ namespace OrchardCore.DisplayManagement.Views
         }
 
         public string Id { get; set; }
+        public string TagName { get; set; }
+
         private List<string> _classes;
         public IList<string> Classes => _classes = _classes ?? new List<string>();
 

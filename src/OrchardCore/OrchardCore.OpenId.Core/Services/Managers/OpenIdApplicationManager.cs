@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using OpenIddict.Abstractions;
 using OpenIddict.Core;
 using OrchardCore.OpenId.Abstractions.Descriptors;
@@ -26,25 +27,25 @@ namespace OrchardCore.OpenId.Services.Managers
         {
         }
 
-        protected new IOpenIdApplicationStore<TApplication> Store => (IOpenIdApplicationStore<TApplication>) base.Store;
-
         /// <summary>
         /// Retrieves an application using its physical identifier.
         /// </summary>
         /// <param name="identifier">The unique identifier associated with the application.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the client application corresponding to the identifier.
         /// </returns>
-        public virtual Task<TApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken = default)
+        public virtual ValueTask<TApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
-            return Store.FindByPhysicalIdAsync(identifier, cancellationToken);
+            return new ValueTask<TApplication>(Store is IOpenIdApplicationStore<TApplication> store ?
+                store.FindByPhysicalIdAsync(identifier, cancellationToken) :
+                Store.FindByIdAsync(identifier, cancellationToken));
         }
 
         /// <summary>
@@ -63,23 +64,12 @@ namespace OrchardCore.OpenId.Services.Managers
                 throw new ArgumentNullException(nameof(application));
             }
 
-            return Store.GetPhysicalIdAsync(application, cancellationToken);
+            return Store is IOpenIdApplicationStore<TApplication> store ?
+                store.GetPhysicalIdAsync(application, cancellationToken) :
+                Store.GetIdAsync(application, cancellationToken);
         }
 
-        public virtual async Task AddToRoleAsync(TApplication application,
-            string role, CancellationToken cancellationToken = default)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            var roles = await Store.GetRolesAsync(application, cancellationToken);
-            await Store.SetRolesAsync(application, roles.Add(role), cancellationToken);
-            await UpdateAsync(application, cancellationToken);
-        }
-
-        public virtual ValueTask<ImmutableArray<string>> GetRolesAsync(
+        public virtual async ValueTask<ImmutableArray<string>> GetRolesAsync(
             TApplication application, CancellationToken cancellationToken = default)
         {
             if (application == null)
@@ -87,51 +77,83 @@ namespace OrchardCore.OpenId.Services.Managers
                 throw new ArgumentNullException(nameof(application));
             }
 
-            return Store.GetRolesAsync(application, cancellationToken);
+            if (Store is IOpenIdApplicationStore<TApplication> store)
+            {
+                return await store.GetRolesAsync(application, cancellationToken);
+            }
+            else
+            {
+                var properties = await Store.GetPropertiesAsync(application, cancellationToken);
+                if (properties.TryGetValue(OpenIdConstants.Properties.Roles, StringComparison.OrdinalIgnoreCase, out JToken value))
+                {
+                    return value.ToObject<ImmutableArray<string>>();
+                }
+
+                return ImmutableArray.Create<string>();
+            }
         }
 
-        public virtual async Task<bool> IsInRoleAsync(TApplication application,
+        public virtual async ValueTask<ImmutableArray<TApplication>> ListInRoleAsync(
             string role, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrEmpty(role))
+            {
+                throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
+            }
+
+            if (Store is IOpenIdApplicationStore<TApplication> store)
+            {
+                return await store.ListInRoleAsync(role, cancellationToken);
+            }
+
+            var builder = ImmutableArray.CreateBuilder<TApplication>();
+
+            for (var offset = 0; ; offset += 1_000)
+            {
+                var applications = await Store.ListAsync(1_000, offset, cancellationToken);
+                if (applications.Length == 0)
+                {
+                    break;
+                }
+
+                foreach (var application in applications)
+                {
+                    var roles = await GetRolesAsync(application, cancellationToken);
+                    if (roles.Contains(role, StringComparer.OrdinalIgnoreCase))
+                    {
+                        builder.Add(application);
+                    }
+                }
+            }
+
+            return builder.ToImmutable();
+        }
+
+        public virtual async ValueTask SetRolesAsync(TApplication application,
+            ImmutableArray<string> roles, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
                 throw new ArgumentNullException(nameof(application));
             }
 
-            if (string.IsNullOrEmpty(role))
+            if (roles.Any(role => string.IsNullOrEmpty(role)))
             {
-                throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
+                throw new ArgumentException("Role names cannot be null or empty.", nameof(roles));
             }
 
-            return (await Store.GetRolesAsync(application, cancellationToken)).Contains(role, StringComparer.OrdinalIgnoreCase);
-        }
-
-        public virtual Task<ImmutableArray<TApplication>> ListInRoleAsync(
-            string role, CancellationToken cancellationToken = default)
-        {
-            if (string.IsNullOrEmpty(role))
+            if (Store is IOpenIdApplicationStore<TApplication> store)
             {
-                throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
+                await store.SetRolesAsync(application, roles, cancellationToken);
+            }
+            else
+            {
+                var properties = await Store.GetPropertiesAsync(application, cancellationToken);
+                properties[OpenIdConstants.Properties.Roles] = JArray.FromObject(roles);
+
+                await Store.SetPropertiesAsync(application, properties, cancellationToken);
             }
 
-            return Store.ListInRoleAsync(role, cancellationToken);
-        }
-
-        public virtual async Task RemoveFromRoleAsync(TApplication application,
-            string role, CancellationToken cancellationToken = default)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            if (string.IsNullOrEmpty(role))
-            {
-                throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
-            }
-
-            var roles = await Store.GetRolesAsync(application, cancellationToken);
-            await Store.SetRolesAsync(application, roles.Remove(role, StringComparer.OrdinalIgnoreCase), cancellationToken);
             await UpdateAsync(application, cancellationToken);
         }
 
@@ -150,7 +172,17 @@ namespace OrchardCore.OpenId.Services.Managers
 
             if (descriptor is OpenIdApplicationDescriptor model)
             {
-                await Store.SetRolesAsync(application, model.Roles.ToImmutableArray(), cancellationToken);
+                if (Store is IOpenIdApplicationStore<TApplication> store)
+                {
+                    await store.SetRolesAsync(application, model.Roles.ToImmutableArray(), cancellationToken);
+                }
+                else
+                {
+                    var properties = await Store.GetPropertiesAsync(application, cancellationToken);
+                    properties[OpenIdConstants.Properties.Roles] = JArray.FromObject(model.Roles);
+
+                    await Store.SetPropertiesAsync(application, properties, cancellationToken);
+                }
             }
 
             await base.PopulateAsync(application, descriptor, cancellationToken);
@@ -171,7 +203,7 @@ namespace OrchardCore.OpenId.Services.Managers
 
             if (descriptor is OpenIdApplicationDescriptor model)
             {
-                model.Roles.UnionWith(await Store.GetRolesAsync(application, cancellationToken));
+                model.Roles.UnionWith(await GetRolesAsync(application, cancellationToken));
             }
 
             await base.PopulateAsync(descriptor, application, cancellationToken);
@@ -183,7 +215,7 @@ namespace OrchardCore.OpenId.Services.Managers
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
             results.AddRange(await base.ValidateAsync(application, cancellationToken));
 
-            foreach (var role in await Store.GetRolesAsync(application, cancellationToken))
+            foreach (var role in await GetRolesAsync(application, cancellationToken))
             {
                 if (string.IsNullOrEmpty(role))
                 {
@@ -196,25 +228,19 @@ namespace OrchardCore.OpenId.Services.Managers
             return results.ToImmutable();
         }
 
-        Task IOpenIdApplicationManager.AddToRoleAsync(object application, string role, CancellationToken cancellationToken)
-            => AddToRoleAsync((TApplication) application, role, cancellationToken);
-
-        async Task<object> IOpenIdApplicationManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        async ValueTask<object> IOpenIdApplicationManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
             => await FindByPhysicalIdAsync(identifier, cancellationToken);
 
         ValueTask<string> IOpenIdApplicationManager.GetPhysicalIdAsync(object application, CancellationToken cancellationToken)
-            => GetPhysicalIdAsync((TApplication) application, cancellationToken);
+            => GetPhysicalIdAsync((TApplication)application, cancellationToken);
 
         ValueTask<ImmutableArray<string>> IOpenIdApplicationManager.GetRolesAsync(object application, CancellationToken cancellationToken)
-            => GetRolesAsync((TApplication) application, cancellationToken);
+            => GetRolesAsync((TApplication)application, cancellationToken);
 
-        Task<bool> IOpenIdApplicationManager.IsInRoleAsync(object application, string role, CancellationToken cancellationToken)
-            => IsInRoleAsync((TApplication) application, role, cancellationToken);
-
-        async Task<ImmutableArray<object>> IOpenIdApplicationManager.ListInRoleAsync(string role, CancellationToken cancellationToken)
+        async ValueTask<ImmutableArray<object>> IOpenIdApplicationManager.ListInRoleAsync(string role, CancellationToken cancellationToken)
             => (await ListInRoleAsync(role, cancellationToken)).CastArray<object>();
 
-        Task IOpenIdApplicationManager.RemoveFromRoleAsync(object application, string role, CancellationToken cancellationToken)
-            => RemoveFromRoleAsync((TApplication) application, role, cancellationToken);
+        ValueTask IOpenIdApplicationManager.SetRolesAsync(object application, ImmutableArray<string> roles, CancellationToken cancellationToken)
+            => SetRolesAsync((TApplication)application, roles, cancellationToken);
     }
 }

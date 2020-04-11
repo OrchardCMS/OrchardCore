@@ -1,16 +1,16 @@
 @using OrchardCore.Workflows.ViewModels;
 @model ForEachTaskViewModel
 
-<fieldset class="form-group" asp-validation-class-for="EnumerableExpression">
+<div class="form-group" asp-validation-class-for="EnumerableExpression">
     <label asp-for="EnumerableExpression">@T["Enumerable Expression"]</label>
     <input type="text" asp-for="EnumerableExpression" class="form-control code" />
     <span asp-validation-for="EnumerableExpression"></span>
     <span class="hint">@T["The list to iterate. With JavaScript support."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="LoopVariableName">
+<div class="form-group" asp-validation-class-for="LoopVariableName">
     <label asp-for="LoopVariableName">@T["Looping Variable"]</label>
     <input type="text" asp-for="LoopVariableName" class="form-control" />
     <span asp-validation-for="LoopVariableName"></span>
     <span class="hint">@T["The name of the looping variable. The current value of each iteration is set to a property with this name as well as the last result."]</span>
-</fieldset>
+</div>

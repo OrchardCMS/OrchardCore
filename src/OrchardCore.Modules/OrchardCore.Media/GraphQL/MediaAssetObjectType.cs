@@ -16,7 +16,8 @@ namespace OrchardCore.Media.GraphQL
             Field<StringGraphType>()
                 .Name("path")
                 .Description("The url to the asset.")
-                .Resolve(x => {
+                .Resolve(x =>
+                {
                     var path = x.Source.Path;
                     var context = (GraphQLContext)x.UserContext;
                     var mediaFileStore = context.ServiceProvider.GetService<IMediaFileStore>();
