@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.Navigation;
+using OrchardCore.Navigation; 
 
 namespace OrchardCore.Admin
 {
@@ -20,6 +20,7 @@ namespace OrchardCore.Admin
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IShapeFactory _shapeFactory;
 
+        // Constructor
         public AdminMenuFilter(INavigationManager navigationManager,
             ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory)
@@ -28,7 +29,11 @@ namespace OrchardCore.Admin
             _layoutAccessor = layoutAccessor;
             _shapeFactory = shapeFactory;
         }
-
+        /*
+            \brief Callback on result execution.
+                Calls the received callback %next after completing its task
+            \details After several checks creates a nanigation menu layout
+        */
         public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
         {
             // Should only run on a full view rendering result
@@ -79,6 +84,7 @@ namespace OrchardCore.Admin
                 shape.Add(menuShape);
             }
 
+            // Invoke next callback
             await next();
         }
     }
