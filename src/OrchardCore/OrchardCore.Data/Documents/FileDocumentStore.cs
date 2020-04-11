@@ -30,7 +30,7 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<T> GetMutableAsync<T>(Func<T> factory = null) where T : class, new()
+        public async Task<T> GetMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
             var loaded = ShellScope.Get<T>(typeof(T));
 
@@ -39,7 +39,9 @@ namespace OrchardCore.Data.Documents
                 return loaded;
             }
 
-            var document = (await GetDocumentAsync<T>()) ?? factory?.Invoke() ?? new T();
+            var document = await GetDocumentAsync<T>()
+                ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
+                ?? new T();
 
             ShellScope.Set(typeof(T), document);
 
@@ -47,10 +49,9 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<T> GetImmutableAsync<T>(Func<T> factory = null) where T : class, new()
+        public async Task<T> GetImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
-            var document = await GetDocumentAsync<T>() ?? factory?.Invoke() ?? new T();
-            return document;
+            return await GetDocumentAsync<T>() ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T();
         }
 
         /// <inheritdoc />

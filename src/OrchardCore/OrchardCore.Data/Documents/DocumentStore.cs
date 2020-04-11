@@ -28,14 +28,16 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<T> GetMutableAsync<T>(Func<T> factory = null) where T : class, new()
+        public async Task<T> GetMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
                 return loaded as T;
             }
 
-            var document = await _session.Query<T>().FirstOrDefaultAsync() ?? factory?.Invoke() ?? new T();
+            var document = await _session.Query<T>().FirstOrDefaultAsync()
+                ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
+                ?? new T();
 
             _loaded[typeof(T)] = document;
 
@@ -43,7 +45,7 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<T> GetImmutableAsync<T>(Func<T> factory = null) where T : class, new()
+        public async Task<T> GetImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
@@ -58,7 +60,7 @@ namespace OrchardCore.Data.Documents
                 return document;
             }
 
-            return factory?.Invoke() ?? new T();
+            return await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T();
         }
 
         /// <inheritdoc />

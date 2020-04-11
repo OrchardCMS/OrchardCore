@@ -13,13 +13,13 @@ namespace OrchardCore.Data.Documents
         /// Loads a single document (or create a new one) for updating and that should not be cached.
         /// For a full isolation, it needs to be used in pair with <see cref="GetImmutableAsync"/>.
         /// </summary>
-        Task<T> GetMutableAsync<T>(Func<T> factory = null) where T : class, new();
+        Task<T> GetMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new();
 
         /// <summary>
         /// Gets a single document (or create a new one) for caching and that should not be updated.
         /// For a full isolation, it needs to be used in pair with <see cref="GetMutableAsync"/>.
         /// </summary>
-        Task<T> GetImmutableAsync<T>(Func<T> factory = null) where T : class, new();
+        Task<T> GetImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new();
 
         /// <summary>
         /// Updates the store with the provided document and then uses the delegate to update the cache.

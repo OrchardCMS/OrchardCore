@@ -36,13 +36,13 @@ namespace OrchardCore.Documents
             _options = options.Value;
         }
 
-        public async Task<TDocument> GetMutableAsync(Func<TDocument> factory = null)
+        public async Task<TDocument> GetMutableAsync(Func<Task<TDocument>> factoryAsync = null)
         {
             TDocument document = null;
 
             if (!_isVolatile)
             {
-                document = await _documentStore.GetMutableAsync(factory);
+                document = await _documentStore.GetMutableAsync(factoryAsync);
 
                 if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
                 {
@@ -56,7 +56,9 @@ namespace OrchardCore.Documents
                     return _volatileCache;
                 }
 
-                _volatileCache = document = await GetFromDistributedCacheAsync() ?? factory?.Invoke() ?? new TDocument();
+                _volatileCache = document = await GetFromDistributedCacheAsync()
+                    ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null))
+                    ?? new TDocument();
             }
 
             document.Identifier = null;
@@ -64,7 +66,7 @@ namespace OrchardCore.Documents
             return document;
         }
 
-        public async Task<TDocument> GetImmutableAsync(Func<TDocument> factory = null)
+        public async Task<TDocument> GetImmutableAsync(Func<Task<TDocument>> factoryAsync = null)
         {
             var document = await GetInternalAsync();
 
@@ -72,11 +74,13 @@ namespace OrchardCore.Documents
             {
                 if (!_isVolatile)
                 {
-                    document = await _documentStore.GetImmutableAsync(factory);
+                    document = await _documentStore.GetImmutableAsync(factoryAsync);
                 }
                 else
                 {
-                    document = factory?.Invoke() ?? new TDocument();
+                    document = await (factoryAsync?.Invoke()
+                        ?? Task.FromResult((TDocument)null))
+                        ?? new TDocument();
                 }
 
                 await SetInternalAsync(document);

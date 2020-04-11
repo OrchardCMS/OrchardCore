@@ -64,33 +64,32 @@ namespace OrchardCore.Autoroute.Services
         /// <summary>
         /// Loads the autoroute document for updating and that should not be cached.
         /// </summary>
-        private Task<AutorouteDocument> LoadDocumentAsync() => DocumentManager.GetMutableAsync();
+        private Task<AutorouteDocument> LoadDocumentAsync() => DocumentManager.GetMutableAsync(CreateDocumentAsync);
 
         /// <summary>
         /// Gets the autoroute document for sharing and that should not be updated.
         /// </summary>
-        private Task<AutorouteDocument> GetDocumentAsync()
+        private Task<AutorouteDocument> GetDocumentAsync() => DocumentManager.GetImmutableAsync(CreateDocumentAsync);
+
+        private async Task<AutorouteDocument> CreateDocumentAsync()
         {
-            return DocumentManager.GetImmutableAsync(() =>
+            var autoroutes = await Session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync();
+
+            var document = new AutorouteDocument();
+
+            foreach (var autoroute in autoroutes)
             {
-                var autoroutes = Session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync().GetAwaiter().GetResult();
+                var requestPath = "/" + autoroute.Path.Trim('/');
+                document.Paths[autoroute.ContentItemId] = requestPath;
+                document.ContentItemIds[requestPath] = autoroute.ContentItemId;
+            }
 
-                var document = new AutorouteDocument();
-
-                foreach (var autoroute in autoroutes)
-                {
-                    var requestPath = "/" + autoroute.Path.Trim('/');
-                    document.Paths[autoroute.ContentItemId] = requestPath;
-                    document.ContentItemIds[requestPath] = autoroute.ContentItemId;
-                }
-
-                return document;
-            });
+            return document;
         }
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
 
-        private static IVolatileDocumentManager<AutorouteDocument> DocumentManager =>
-            ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteDocument>>();
+        private static IVolatileDocumentManager<AutorouteDocument> DocumentManager
+            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteDocument>>();
     }
 }

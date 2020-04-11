@@ -19,29 +19,23 @@ namespace OrchardCore.Settings.Services
         /// <summary>
         /// Loads the site settings from the store for updating and that should not be cached.
         /// </summary>
-        public async Task<ISite> LoadSiteSettingsAsync()
-        {
-            // Await as we can't cast 'Task<SiteSettings>' to 'Task<ISite>'.
-            return await DocumentManager.GetMutableAsync(GetDefaultSettings);
-        }
+        // Await as we can't cast 'Task<SiteSettings>' to 'Task<ISite>'.
+        public async Task<ISite> LoadSiteSettingsAsync() => await DocumentManager.GetMutableAsync(GetDefaultSettingsAsync);
 
         /// <summary>
         /// Gets the site settings from the cache for sharing and that should not be updated.
         /// </summary>
-        public async Task<ISite> GetSiteSettingsAsync()
-        {
-            // Await as we can't cast 'Task<SiteSettings>' to 'Task<ISite>'.
-            return await DocumentManager.GetImmutableAsync(GetDefaultSettings);
-        }
+        // Await as we can't cast 'Task<SiteSettings>' to 'Task<ISite>'.
+        public async Task<ISite> GetSiteSettingsAsync() => await DocumentManager.GetImmutableAsync(GetDefaultSettingsAsync);
 
         /// <summary>
         /// Updates the store with the provided site settings and then updates the cache.
         /// </summary>
         public Task UpdateSiteSettingsAsync(ISite site) => DocumentManager.UpdateAsync(site as SiteSettings);
 
-        private SiteSettings GetDefaultSettings()
+        private Task<SiteSettings> GetDefaultSettingsAsync()
         {
-            return new SiteSettings
+            return Task.FromResult(new SiteSettings
             {
                 SiteSalt = Guid.NewGuid().ToString("N"),
                 SiteName = "My Orchard Project Application",
@@ -50,7 +44,7 @@ namespace OrchardCore.Settings.Services
                 PageSize = 10,
                 MaxPageSize = 100,
                 MaxPagedCount = 0
-            };
+            });
         }
 
         private static IDocumentManager<SiteSettings> DocumentManager => ShellScope.Services.GetRequiredService<IDocumentManager<SiteSettings>>();
