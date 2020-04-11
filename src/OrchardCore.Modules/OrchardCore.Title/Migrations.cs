@@ -16,7 +16,7 @@ namespace OrchardCore.Title
     {
         private IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
-        private readonly ILogger<Migrations> _logger;
+        private readonly ILogger _logger;
 
         public Migrations(
             IContentDefinitionManager contentDefinitionManager,

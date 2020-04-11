@@ -1,22 +1,30 @@
 # Content Fields (`OrchardCore.ContentFields`)
 
-This module provides common content fields.
+This module provides common content fields.  
+Some fields are available in their specific module.
 
 ## Available Fields
 
-| Name | Properties | Shape Type | Shape Class |
-| --- | --- | --- | --- |
-| `BooleanField` | `Value (bool)` | `BooleanField` | `DisplayBooleanFieldViewModel` |
-| `ContentPickerField` | `ContentItemIds (string[])` | `ContentPickerField` | `DisplayContentPickerFieldViewModel` |
-| `LocalizationSetContentPickerField` | `LocalizationSets (string[])` | `LocalizationSetContentPickerField` | `DisplayLocalizationSetContentPickerFieldViewModel` |
-| `DateField` | `Value (DateTime?)` | `DateField` | `DisplayDateFieldViewModel` |
-| `DateTimeField` | `Value (DateTime?)` | `DateTimeField` | `DisplayDateTimeFieldViewModel` |
-| `HtmlField` | `Html (string)` | `HtmlField` | `DisplayHtmlFieldViewModel` |
-| `LinkField` | `Url (string), Text (string)` | `LinkField` | `DisplayLinkFieldViewModel` |
-| `NumericField` | `Value (decimal?)` | `NumericField` | `DisplayNumericFieldViewModel` |
-| `TextField` | `Text (string)` | `TextField` | `DisplayTextFieldViewModel` |
-| `TimeField` | `Value (TimeSpan?)` | `TimeField` | `DisplayTimeFieldViewModel` |
-| `YoutubeField` | `EmbeddedAddress (string), RawAddress (string)` | `YoutubeField` | `YoutubeFieldDisplayViewModel` |
+| Name | Properties |
+| --- | --- |
+| `BooleanField` | `bool Value` |
+| `ContentPickerField` | `string[] ContentItemIds` |
+| `DateField` | `DateTime? Value` |
+| `DateTimeField` | `DateTime? Value` |
+| `HtmlField` | `string Html` |
+| `LinkField` | `string Url, string Text` |
+| `LocalizationSetContentPickerField` | `string[] LocalizationSets` |
+| `MarkdownField` | `string Markdown` |
+| `MediaField` | `string[] Paths` |
+| `NumericField` | `decimal? Value` |
+| `TaxonomyField` | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
+| `TextField` | `string Text` |
+| `TimeField` | `TimeSpan? Value` |
+| `YoutubeField` | `string EmbeddedAddress, string RawAddress` |
+
+!!! note
+    Each field is rendered by a corresponding `Shape Type` that is using its own a Display view model.  
+    Ex: `BooleanField` is rendered by a shape type called `BooleanField` with a `DisplayBooleanFieldViewModel`.
 
 ## Usage
 
@@ -55,13 +63,13 @@ Some view models have special properties that are computed from the actual field
 
 #### Html Field Example
 
-```liquid
+``` liquid tab="Liquid"
 {{ Model.Html }}
 ```
 
 or, to display the raw content before the tags are converted:
 
-```liquid
+``` liquid tab="Liquid"
 {{ Model.Field.Html }}
 ```
 
@@ -75,13 +83,13 @@ or, to display the raw content before the tags are converted:
 
 #### DateTime Field Example
 
-```liquid
+``` liquid tab="Liquid"
 {{ Model.LocalDateTime }}
 ```
 
 or, to display the UTC value before it is converted:
 
-```liquid
+``` liquid tab="Liquid"
 {{ Model.Value }}
 ```
 
@@ -89,7 +97,7 @@ or, to display the UTC value before it is converted:
 
 #### ContentPicker Field Example
 
-```liquid
+``` liquid tab="Liquid"
 {% assign contentItems = Model.ContentItemIds | content_item_id %}
 {% for contentItem in contentItems %}
     {{ contentItem.DisplayText }}
@@ -129,7 +137,7 @@ per set based on the request culture, if no culture is specified.
 
 #### LocalizationSet ContentPicker Field Example
 
-```liquid
+```liquid tab="Liquid"
 {% assign contentItems = Model.LocalizationSets | localization_set %}
 {% for contentItem in contentItems %}
     {{ contentItem.DisplayText }}
@@ -217,7 +225,7 @@ This shape type will match a template file named `{FIELDTYPE}-{DISPLAYMODE}.Disp
 
 This template will need to render an `<option>` tag. Here is an example for a Header display mode options on the Text Field:
 
-``` html
+``` html tab="Razor"
 @{
     string currentDisplayMode = Model.DisplayMode;
 }

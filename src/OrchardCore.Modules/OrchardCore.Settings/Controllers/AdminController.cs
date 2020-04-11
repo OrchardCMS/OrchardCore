@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -17,6 +16,7 @@ namespace OrchardCore.Settings.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             ISiteService siteService,
@@ -24,7 +24,6 @@ namespace OrchardCore.Settings.Controllers
             IAuthorizationService authorizationService,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h,
-            IStringLocalizer<AdminController> s,
             IUpdateModelAccessor updateModelAccessor)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
@@ -33,11 +32,7 @@ namespace OrchardCore.Settings.Controllers
             _authorizationService = authorizationService;
             _updateModelAccessor = updateModelAccessor;
             H = h;
-            S = s;
         }
-
-        private IHtmlLocalizer H { get; set; }
-        private IStringLocalizer S { get; set; }
 
         public async Task<IActionResult> Index(string groupId)
         {

@@ -18,7 +18,6 @@
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>
-
 <div class="form-group">
     <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
@@ -58,7 +57,7 @@
     </div>
     <div class="btn-widget-add-below-wrapper w-100">
         <div class="btn-widget-add-below w-100 border border-info">
-            <div class="btn-group ">
+            <div class="btn-group">
                 <button type="button" title="@T["Add Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fa fa-plus" aria-hidden="true"></i>
                 </button>
@@ -97,7 +96,12 @@
             debug-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"></style>
     }
 
-    <script at="Foot">
+<script at="Foot">
+    function toggleWidgets(){
+        $('.toggleAll > svg').toggleClass('fa-angle-double-up fa-angle-double-down');
+        $('.widget.widget-editor.card').toggleClass('collapsed');
+    }
+
     @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
     if ($('#@widgetTemplatePlaceholderId').length == 1) {
         $("#@widgetTemplatePlaceholderId").sortable({

@@ -34,6 +34,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly ISession _session;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly dynamic New;
+        private readonly ILogger _logger;
 
         public SearchController(
             ISearchPermissionService searchPermissionService,
@@ -59,21 +60,32 @@ namespace OrchardCore.Lucene.Controllers
             _session = session;
             _permissionProviders = permissionProviders;
             New = shapeFactory;
-
-            Logger = logger;
+            _logger = logger;
         }
-
-        private ILogger Logger { get; set; }
 
         [HttpGet]
         public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var searchSettings = siteSettings.As<LuceneSettings>();            
+            var searchSettings = siteSettings.As<LuceneSettings>();
+
+            if (permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index") != null)
+            {
+                if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index")))
+                {
+                    return this.ChallengeOrForbid();
+                }
+            }
+            else
+            {
+                _logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
+                return BadRequest("Search is not configured.");
+            }
 
             if (searchSettings?.DefaultSearchFields == null)
             {
-                Logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
+                _logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
+                
                 return BadRequest("Search is not configured.");
             }
 
@@ -84,7 +96,7 @@ namespace OrchardCore.Lucene.Controllers
             {
                 foreach (var error in result.Errors)
                 {
-                    return BadRequest( error.ToString());
+                    return BadRequest(error.ToString());
                 }
             }
 
@@ -92,7 +104,7 @@ namespace OrchardCore.Lucene.Controllers
 
             if (luceneIndexSettings == null)
             {
-                Logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({searchSettings.SearchIndex}) index.");
+                _logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({searchSettings.SearchIndex}) index.");
                 return BadRequest($"Search index ({indexName}) is not configured.");
             }
 

@@ -22,6 +22,7 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
+        private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
@@ -32,7 +33,7 @@ namespace OrchardCore.Taxonomies.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> h,
+            IHtmlLocalizer<AdminController> localizer,
             IUpdateModelAccessor updateModelAccessor)
         {
             _contentManager = contentManager;
@@ -42,10 +43,8 @@ namespace OrchardCore.Taxonomies.Controllers
             _session = session;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
-            H = h;
+            H = localizer;
         }
-
-        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Create(string id, string taxonomyContentItemId, string taxonomyItemId)
         {
@@ -98,10 +97,13 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
+                model.TaxonomyContentItemId = taxonomyContentItemId;
+                model.TaxonomyItemId = taxonomyItemId;
+
                 return View(model);
             }
 
@@ -207,10 +209,13 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentItem = taxonomyItem.ToObject<ContentItem>();
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             if (!ModelState.IsValid)
             {
+                model.TaxonomyContentItemId = taxonomyContentItemId;
+                model.TaxonomyItemId = taxonomyItemId;
+
                 return View(model);
             }
 

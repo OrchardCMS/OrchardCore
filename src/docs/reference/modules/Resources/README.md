@@ -52,11 +52,11 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | popper                | Script | 1.16.0        | -              |
 | bootstrap             | Script | 3.4.0, 4.4.1  | jQuery, Popper |
 | bootstrap             | Style  | 3.4.0, 4.4.1  | -              |
-| codemirror            | Script | 5.48.4        | -              |
-| codemirror            | Style  | 5.48.4        | -              |
-| font-awesome          | Style  | 4.7.0, 5.12.0 | -              |
-| font-awesome          | Script | 5.12.0        | -              |
-| font-awesome-v4-shims | Script | 5.12.0        | -              |
+| codemirror            | Script | 5.52.2        | -              |
+| codemirror            | Style  | 5.52.2        | -              |
+| font-awesome          | Style  | 4.7.0, 5.13.0 | -              |
+| font-awesome          | Script | 5.13.0        | -              |
+| font-awesome-v4-shims | Script | 5.13.0        | -              |
 
 ### Registering a Resource Manifest
 

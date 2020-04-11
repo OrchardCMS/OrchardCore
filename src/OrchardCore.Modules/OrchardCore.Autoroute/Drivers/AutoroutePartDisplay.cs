@@ -28,7 +28,7 @@ namespace OrchardCore.Autoroute.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly YesSql.ISession _session;
-        private readonly IStringLocalizer<AutoroutePartDisplay> S;
+        private readonly IStringLocalizer S;
 
         public AutoroutePartDisplay(
             IOptions<AutorouteOptions> options,

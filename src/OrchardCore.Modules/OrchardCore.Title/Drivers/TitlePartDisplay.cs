@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Title.Models;
@@ -13,12 +12,11 @@ namespace OrchardCore.Title.Drivers
 {
     public class TitlePartDisplay : ContentPartDisplayDriver<TitlePart>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IStringLocalizer S;
-        public TitlePartDisplay(IContentDefinitionManager contentDefinitionManager, IStringLocalizer<TitlePartDisplay> localizer)
+
+        public TitlePartDisplay(IStringLocalizer<TitlePartDisplay> localizer)
         {
             S = localizer;
-            _contentDefinitionManager = contentDefinitionManager;
         }
 
         public override IDisplayResult Display(TitlePart titlePart, BuildPartDisplayContext context)
