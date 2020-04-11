@@ -18,13 +18,13 @@ This uses the `TermShape` to display a heirachy of the `Terms`
 
 The `TermPart` is rendered when a `Term` is displayed with the `Container routing` feature of the `AutoroutePart`.
 
-It renders a list of all content items that have been categorized by the `TaxonomyField` as part of that `Term` hierachy.
+It renders a list of all content items that have been categorized by the `TaxonomyField` as part of that `Term` hierarchy.
 
 ### Term Shape
 
-The `TermShape` is used by the `TaxonomyPart` display to render the list of term hierachies for the `Taxonomy`.
+The `TermShape` is used by the `TaxonomyPart` display to render the list of term hierarchies for the `Taxonomy`.
 
-It is a reusable shape which may also be called from a content item, similar to that of a `MenuShape`, to render either the entire `Taxonomy` and term hierachy, or a part of the `Term` hierachy.
+It is a reusable shape which may also be called from a content item, similar to that of a `MenuShape`, to render either the entire `Taxonomy` and term hierarchy, or a part of the `Term` hierarchy.
 
 You might invoke the `TermShape` from a content template to render a sidebar of associated taxonomy terms.
 
@@ -36,7 +36,7 @@ You might invoke the `TermShape` from a content template to render a sidebar of 
 <shape type="Term" alias="Categories" />
 ```
 
-You can also specify a `TermContentItemId` to render a part of the term hierachy.
+You can also specify a `TermContentItemId` to render a part of the term hierarchy.
 
 ``` liquid tab="Liquid"
 {% shape "term", TaxonomyContentItemId: "taxonomyContentItemId" TermContentItemId: "termContentItemId" %}
@@ -51,7 +51,7 @@ You can also specify a `TermContentItemId` to render a part of the term hierachy
 | `Model.TaxonomyContentItemId` | If defined, contains the content item identifier of the taxonomy to render. |
 | `Model.Items` | The list of term items shapes for the taxonomy. These are shapes of type `TermItem`. |
 | `Model.Differentiator` | If defined, contains the formatted name of the taxonomy (display text). For instance `Categories`. |
-| `Model.TermContentItemId` | If defined, contains the content item identifier of the term to start rendering the hierachy. |
+| `Model.TermContentItemId` | If defined, contains the content item identifier of the term to start rendering the hierarchy. |
 
 #### Term Alternates
 
@@ -102,11 +102,11 @@ The `TermItem` shape is used to render a term item.
 | `Model.TermContentItem` | The `TermContentItem` for this item. |
 | `Model.Level` | The level of the term item. `0` for top level term items. |
 | `Model.Items` | The list of sub term items shapes. These are shapes of type `TermItem`. |
-| `Model.Terms` | The list of term content items for the lower items in the hierachy. |
+| `Model.Terms` | The list of term content items for the lower items in the hierarchy. |
 | `Model.Differentiator` | If defined, contains the formatted name of the taxonomy. For instance `Categories`. |
 
 !!! note
-    When rendering a partial hierachy of terms using the `TermContentItemId` property, the level is always based of the taxonomy root.
+    When rendering a partial hierarchy of terms using the `TermContentItemId` property, the level is always based of the taxonomy root.
 
 #### TermItem Alternates
 
@@ -171,7 +171,7 @@ available on the `TermItem` shape are still available.
 | `Model.TermContentItem` | The `TermContentItem` for this item. |
 | `Model.Level` | The level of the term item. `0` for top level term items. |
 | `Model.Items` | The list of sub term items shapes. These are shapes of type `TermItem`. |
-| `Model.Terms` | The list of term content items for the lower items in the hierachy. |
+| `Model.Terms` | The list of term content items for the lower items in the hierarchy. |
 | `Model.Differentiator` | If defined, contains the formatted name of the term. For instance `Travel`. |
 
 #### TermContentItem Alternates
