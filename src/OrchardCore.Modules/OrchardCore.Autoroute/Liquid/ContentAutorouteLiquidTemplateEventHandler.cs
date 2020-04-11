@@ -24,7 +24,7 @@ namespace OrchardCore.Autoroute.Liquid
             {
                 return new LiquidPropertyAccessor(async alias =>
                 {
-                    if (!alias.StartsWith("/"))
+                    if (!alias.StartsWith('/'))
                     {
                         alias = "/" + alias;
                     }

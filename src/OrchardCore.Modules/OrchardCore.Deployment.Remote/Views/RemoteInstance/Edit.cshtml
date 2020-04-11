@@ -30,10 +30,8 @@
         <span asp-validation-for="ApiKey" class="text-danger">@T["The api key is required."]</span>
     </div>
 
-    <fieldset>
-        <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
-            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
-        </div>
-    </fieldset>
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+    </div>
 </form>

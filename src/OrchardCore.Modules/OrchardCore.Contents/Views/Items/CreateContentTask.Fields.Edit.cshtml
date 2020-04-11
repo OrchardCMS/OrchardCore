@@ -1,27 +1,27 @@
 @using OrchardCore.Contents.Workflows.ViewModels
 @model CreateContentTaskViewModel
 
-<fieldset class="form-group" asp-validation-class-for="ContentType">
+<div class="form-group" asp-validation-class-for="ContentType">
     <label asp-for="ContentType">@T["Content Type"]</label>
     <select asp-for="ContentType" asp-items="@Model.AvailableContentTypes" class="form-control" asp-validation-class-for="ContentType"></select>
     <span asp-validation-for="ContentType"></span>
     <span class="hint">@T["Select the type of content to create."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="Publish">
+<div class="form-group" asp-validation-class-for="Publish">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="Publish" />
         <label class="custom-control-label" asp-for="Publish">@T["Publish"]</label>
         <span class="hint">— @T["Check if you want the content item to be published when being created. Leave unchecked to create a draft version."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="ContentProperties">
+<div class="form-group" asp-validation-class-for="ContentProperties">
     <label asp-for="ContentProperties">@T["Content Properties"]</label>
     <textarea asp-for="ContentProperties" class="form-control"></textarea>
     <span asp-validation-for="ContentProperties"></span>
     <span class="hint">@T["Optionally provide values for the content parts, fields and their properties in JSON format. With Liquid support."]</span>
-</fieldset>
+</div>
 
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>

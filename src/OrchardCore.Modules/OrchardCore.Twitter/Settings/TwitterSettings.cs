@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Http;
-
 namespace OrchardCore.Twitter.Settings
 {
     public class TwitterSettings

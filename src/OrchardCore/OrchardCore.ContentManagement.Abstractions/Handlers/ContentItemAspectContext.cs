@@ -9,7 +9,7 @@ namespace OrchardCore.ContentManagement.Handlers
         public object Aspect { get; set; }
 
         /// <summary>
-        /// Provides a value for a specific aspect type. 
+        /// Provides a value for a specific aspect type.
         /// </summary>
         public async Task<ContentItemAspectContext> ForAsync<TAspect>(Func<TAspect, Task> action) where TAspect : class
         {
@@ -23,5 +23,4 @@ namespace OrchardCore.ContentManagement.Handlers
             return this;
         }
     }
-
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using OrchardCore.Deployment;
+using System.Collections.Generic;
 
 namespace OrchardCore.Deployment.ViewModels
 {
@@ -20,5 +19,4 @@ namespace OrchardCore.Deployment.ViewModels
     {
         public string Search { get; set; }
     }
-
 }

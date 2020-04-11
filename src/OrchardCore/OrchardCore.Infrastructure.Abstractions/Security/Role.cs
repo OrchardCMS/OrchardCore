@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace OrchardCore.Security
 {
-    public class Role: IRole
+    public class Role : IRole
     {
         public string RoleName { get; set; }
         public string RoleDescription { get; set; }

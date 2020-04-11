@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -17,7 +16,6 @@ using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
@@ -28,10 +26,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
         private static readonly ConcurrentDictionary<MethodInfo, ParameterInfo[]> _parameters =
             new ConcurrentDictionary<MethodInfo, ParameterInfo[]>();
-
-        private static readonly ConcurrentDictionary<Type, Func<dynamic, object>> _converters =
-            new ConcurrentDictionary<Type, Func<dynamic, object>>();
-
 
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IEnumerable<IShapeAttributeProvider> _shapeProviders;
@@ -52,10 +46,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             {
                 var serviceType = shapeProvider.GetType();
 
-                IFeatureInfo feature = _typeFeatureProvider.GetFeatureForDependency(serviceType);
-                if (builder.ExcludedFeatureIds.Contains(feature.Id))
-                    continue;
-
                 foreach (var method in serviceType.GetMethods())
                 {
                     var customAttributes = method.GetCustomAttributes(typeof(ShapeAttribute), false).OfType<ShapeAttribute>();
@@ -74,14 +64,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                     .From(_typeFeatureProvider.GetFeatureForDependency(occurrence.ServiceType))
                     .BoundAs(
                         occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name,
-                        descriptor => CreateDelegate(occurrence, descriptor));
+                        CreateDelegate(occurrence));
             }
         }
 
         [DebuggerStepThrough]
         private Func<DisplayContext, Task<IHtmlContent>> CreateDelegate(
-            ShapeAttributeOccurrence attributeOccurrence,
-            ShapeDescriptor descriptor)
+            ShapeAttributeOccurrence attributeOccurrence)
         {
             return context =>
             {
@@ -117,14 +106,17 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
         private static IHtmlContent CoerceHtmlContent(object invoke)
         {
-            var htmlContent = invoke as IHtmlContent;
+            if (invoke == null)
+            {
+                return HtmlString.Empty;
+            }
 
-            if (htmlContent != null)
+            if (invoke is IHtmlContent htmlContent)
             {
                 return htmlContent;
             }
 
-            return invoke != null ? new HtmlString(invoke.ToString()) : null;
+            return new HtmlString(invoke.ToString());
         }
 
         private static object BindParameter(DisplayContext displayContext, ParameterInfo parameter)
@@ -157,8 +149,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 return displayContext;
             }
 
-            if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) &&
-                typeof(IUrlHelper).IsAssignableFrom(parameter.ParameterType))
+            if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) && typeof(IUrlHelper).IsAssignableFrom(parameter.ParameterType))
             {
                 var viewContextAccessor = displayContext.ServiceProvider.GetRequiredService<ViewContextAccessor>();
                 var viewContext = viewContextAccessor.ViewContext;
@@ -167,14 +158,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 return urlHelperFactory.GetUrlHelper(viewContext);
             }
 
-            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&
-                parameter.ParameterType == typeof(TextWriter))
+            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) && parameter.ParameterType == typeof(TextWriter))
             {
                 throw new InvalidOperationException("Output is no more a valid Shape method parameter. Return an IHtmlContent instead.");
             }
 
-            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&
-                parameter.ParameterType == typeof(Action<object>))
+            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) && parameter.ParameterType == typeof(Action<object>))
             {
                 throw new InvalidOperationException("Output is no more a valid Shape method parameter. Return an IHtmlContent instead.");
             }
@@ -187,7 +176,9 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             object result = getter.Target(getter, displayContext.Value);
 
             if (result == null)
+            {
                 return null;
+            }
 
             if (parameter.ParameterType.IsAssignableFrom(result.GetType()))
             {
@@ -201,21 +192,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             }
 
             return Convert.ChangeType(result, parameter.ParameterType);
-        }
-
-        static Func<dynamic, object> CompileConverter(Type targetType)
-        {
-            var valueParameter = Expression.Parameter(typeof(object), "value");
-
-            return Expression.Lambda<Func<object, object>>(
-                Expression.Convert(
-                    DynamicExpression.Dynamic(
-                        Microsoft.CSharp.RuntimeBinder.Binder.Convert(CSharpBinderFlags.ConvertExplicit, targetType, null),
-                                targetType,
-                                valueParameter
-                        ),
-                    typeof(object)),
-                valueParameter).Compile();
         }
 
         private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)

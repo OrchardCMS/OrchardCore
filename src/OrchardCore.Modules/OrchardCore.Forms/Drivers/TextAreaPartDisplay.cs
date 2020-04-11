@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
@@ -15,7 +14,7 @@ namespace OrchardCore.Forms.Drivers
             return View("TextAreaPart", part).Location("Detail", "Content");
         }
 
-        public override IDisplayResult Edit(TextAreaPart part, BuildPartEditorContext context)
+        public override IDisplayResult Edit(TextAreaPart part)
         {
             return Initialize<TextAreaPartEditViewModel>("TextAreaPart_Fields_Edit", m =>
             {

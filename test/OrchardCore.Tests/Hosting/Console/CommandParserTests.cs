@@ -1,8 +1,5 @@
-using OrchardCore.Environment.Commands.Parameters;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using OrchardCore.Environment.Commands.Parameters;
 using Xunit;
 
 namespace OrchardCore.Tests.Hosting.Console

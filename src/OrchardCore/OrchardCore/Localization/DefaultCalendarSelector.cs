@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Localization
 {
+    /// <summary>
+    /// Represents a default implementation for <see cref="ICalendarSelector"/>.
+    /// </summary>
     public class DefaultCalendarSelector : ICalendarSelector
     {
         private static readonly Task<CalendarSelectorResult> CalendarResult =
@@ -15,6 +18,7 @@ namespace OrchardCore.Localization
                 }
             });
 
+        /// <inheritdocs />
         public Task<CalendarSelectorResult> GetCalendarAsync()
         {
             return CalendarResult;

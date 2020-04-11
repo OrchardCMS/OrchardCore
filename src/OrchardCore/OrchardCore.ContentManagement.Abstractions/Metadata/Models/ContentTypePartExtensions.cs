@@ -33,5 +33,10 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             return typePart.GetSettings<ContentTypePartSettings>().Editor;
         }
+
+        public static string DisplayMode(this ContentTypePartDefinition typePart)
+        {
+            return typePart.GetSettings<ContentTypePartSettings>().DisplayMode;
+        }
     }
 }

@@ -12,9 +12,10 @@ module.exports = {
         console.log(global._LOG_);
     },
     run: function (dir, assembly, clean) {
+        const targetFramework = 'netcoreapp3.1';
         global._LOG_ = "";
 
-        if (fs.existsSync(dir + 'bin/release/netcoreapp3.0/' + assembly)) {
+        if (fs.existsSync(dir + 'bin/release/' + targetFramework + '/' + assembly)) {
             global.log('Application already built, skipping build');
         }
         else {
@@ -27,7 +28,7 @@ module.exports = {
         }
 
         global.log('Starting application ...');
-        let server = child_process.spawn('dotnet', ['bin/release/netcoreapp3.0/' + assembly], { cwd: dir });
+        let server = child_process.spawn('dotnet', ['bin/release/' + targetFramework + '/' + assembly], { cwd: dir });
 
         server.stdout.on('data', (data) => {
             global.log(data);

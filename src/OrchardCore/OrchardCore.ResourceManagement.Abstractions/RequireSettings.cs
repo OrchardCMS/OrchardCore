@@ -1,6 +1,6 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace OrchardCore.ResourceManagement
@@ -20,6 +20,7 @@ namespace OrchardCore.ResourceManagement
         public string Condition { get; set; }
         public string Version { get; set; }
         public bool? AppendVersion { get; set; }
+        public List<string> Dependencies { get; set; }
         public Action<ResourceDefinition> InlineDefinition { get; set; }
 
         public Dictionary<string, string> Attributes
@@ -30,7 +31,6 @@ namespace OrchardCore.ResourceManagement
 
         public RequireSettings()
         {
-
         }
 
         public RequireSettings(ResourceManagementOptions options)
@@ -46,7 +46,7 @@ namespace OrchardCore.ResourceManagement
         {
             get { return _attributes != null && _attributes.Any(a => a.Value != null); }
         }
-        
+
         /// <summary>
         /// The resource will be displayed in the head of the page
         /// </summary>
@@ -149,6 +149,19 @@ namespace OrchardCore.ResourceManagement
         public RequireSettings ShouldAppendVersion(bool? appendVersion)
         {
             AppendVersion = appendVersion;
+            return this;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public RequireSettings SetDependencies(params string[] dependencies)
+        {
+            if (Dependencies == null)
+            {
+                Dependencies = new List<string>();
+            }
+
+            Dependencies.AddRange(dependencies);
+
             return this;
         }
 

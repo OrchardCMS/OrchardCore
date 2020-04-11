@@ -1,5 +1,3 @@
-// ReSharper disable ForCanBeConvertedToForeach
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -173,12 +171,12 @@ namespace OrchardCore.ResourceManagement
             var type = settings.Type;
 
             var stream = ResourceManifests.SelectMany(x => x.GetResources(type));
-            var resource = FindMatchingResource(stream, settings, type, name);
+            var resource = FindMatchingResource(stream, settings, name);
 
             if (resource == null && _dynamicManifest != null)
             {
                 stream = _dynamicManifest.GetResources(type);
-                resource = FindMatchingResource(stream, settings, type, name);
+                resource = FindMatchingResource(stream, settings, name);
             }
 
             if (resolveInlineDefinitions && resource == null)
@@ -198,7 +196,6 @@ namespace OrchardCore.ResourceManagement
         private ResourceDefinition FindMatchingResource(
             IEnumerable<KeyValuePair<string, IList<ResourceDefinition>>> stream,
             RequireSettings settings,
-            string type,
             string name)
         {
             Version lower = null;
@@ -367,8 +364,16 @@ namespace OrchardCore.ResourceManagement
                 var resource = FindResource(settings);
                 if (resource == null)
                 {
-                    throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}.");
+                    throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
                 }
+
+                // Register any additional dependencies for the resource here,
+                // rather than in Combine as they are additive, and should not be Combined.
+                if (settings.Dependencies != null)
+                {
+                    resource.SetDependencies(settings.Dependencies);
+                }
+
                 ExpandDependencies(resource, settings, allResources);
             }
 
@@ -378,8 +383,8 @@ namespace OrchardCore.ResourceManagement
             {
                 requiredResources[i++] = new ResourceRequiredContext
                 {
-                    Resource = (ResourceDefinition) entry.Key,
-                    Settings = (RequireSettings) entry.Value,
+                    Resource = (ResourceDefinition)entry.Key,
+                    Settings = (RequireSettings)entry.Value,
                     FileVersionProvider = _fileVersionProvider
                 };
             }
@@ -404,8 +409,8 @@ namespace OrchardCore.ResourceManagement
             // (1) If a require exists for the resource, combine with it. Last settings in gets preference for its specified values.
             // (2) If no require already exists, form a new settings object based on the given one but with its own type/name.
             settings = allResources.Contains(resource)
-                ? ((RequireSettings) allResources[resource]).Combine(settings)
-                : new RequireSettings(_options) {Type = resource.Type, Name = resource.Name}.Combine(settings);
+                ? ((RequireSettings)allResources[resource]).Combine(settings)
+                : new RequireSettings(_options) { Type = resource.Type, Name = resource.Name }.Combine(settings);
 
             if (resource.Dependencies != null)
             {
@@ -677,7 +682,7 @@ namespace OrchardCore.ResourceManagement
 
             public override int GetHashCode()
             {
-                return HashCode.Combine(Type,  Name);
+                return HashCode.Combine(Type, Name);
             }
 
             public override string ToString() => "(" + Type + ", " + Name + ")";

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
@@ -65,9 +65,9 @@ namespace OrchardCore.Lucene.QueryProviders
                     switch (tokenType)
                     {
                         case JTokenType.Integer:
-                            var minInt = gt?.Value<int>();
-                            var maxInt = lt?.Value<int>();
-                            rangeQuery = NumericRangeQuery.NewInt32Range(field, minInt, maxInt, includeLower, includeUpper);
+                            var minInt = gt?.Value<long>();
+                            var maxInt = lt?.Value<long>();
+                            rangeQuery = NumericRangeQuery.NewInt64Range(field, minInt, maxInt, includeLower, includeUpper);
                             break;
                         case JTokenType.Float:
                             var minFloat = gt?.Value<double>();

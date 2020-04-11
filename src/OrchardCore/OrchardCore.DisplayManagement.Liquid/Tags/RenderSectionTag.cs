@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
+using Microsoft.AspNetCore.Html;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
@@ -29,13 +31,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var required = arguments.HasNamed("required") && Convert.ToBoolean(arguments["required"].ToStringValue());
             var zone = layout[name];
 
-            if (required && zone != null && zone.Items.Count == 0)
+            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
             {
                 throw new InvalidOperationException("Zone not found while invoking 'render_section': " + name);
             }
 
-            var htmlContent = await displayHelper.ShapeExecuteAsync(zone);
-            htmlContent.WriteTo(writer, HtmlEncoder.Default);
+            IHtmlContent htmlContent = await displayHelper.ShapeExecuteAsync(zone);
+            htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
             return Completion.Normal;
         }
     }

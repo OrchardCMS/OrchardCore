@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Modules;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 
@@ -20,7 +18,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
     {
         private readonly IMicrosoftAccountService _microsoftAccountService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<MicrosoftAccountOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public MicrosoftAccountOptionsConfiguration(
             IMicrosoftAccountService microsoftAccountService,
@@ -41,7 +39,9 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
 
             if (_microsoftAccountService.ValidateSettings(settings).Any())
+            {
                 return;
+            }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(MicrosoftAccountDefaults.AuthenticationScheme, builder =>
@@ -54,7 +54,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         public void Configure(string name, MicrosoftAccountOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, MicrosoftAccountDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, MicrosoftAccountDefaults.AuthenticationScheme))
             {
                 return;
             }

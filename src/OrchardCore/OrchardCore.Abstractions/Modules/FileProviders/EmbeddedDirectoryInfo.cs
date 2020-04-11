@@ -9,15 +9,13 @@ namespace OrchardCore.Modules.FileProviders
     /// </summary>
     public class EmbeddedDirectoryInfo : IFileInfo
     {
-        private string _name;
-
         /// <summary>
         /// Initializes an instance of <see cref="EmbeddedDirectoryInfo"/>
         /// </summary>
         /// <param name="info">The directory</param>
         public EmbeddedDirectoryInfo(string name)
         {
-            _name = name;
+            Name = name;
         }
 
         /// <summary>
@@ -36,7 +34,7 @@ namespace OrchardCore.Modules.FileProviders
         public string PhysicalPath => null;
 
         /// <inheritdoc />
-        public string Name => _name;
+        public string Name { get; }
 
         /// <summary>
         /// The time when the directory was last written to.

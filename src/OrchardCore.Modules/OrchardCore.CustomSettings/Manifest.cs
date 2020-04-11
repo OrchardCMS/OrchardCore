@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "https://orchardproject.net",
     Version = "2.0.0",
     Description = "The custom settings modules enables content types to become custom site settings.",
-    Dependencies = new [] { "OrchardCore.Contents" },
+    Dependencies = new[] { "OrchardCore.Contents" },
     Category = "Settings"
 )]

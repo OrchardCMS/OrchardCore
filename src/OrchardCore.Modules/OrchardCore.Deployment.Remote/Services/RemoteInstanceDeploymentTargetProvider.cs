@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
@@ -10,16 +10,15 @@ namespace OrchardCore.Deployment
     public class RemoteInstanceDeploymentTargetProvider : IDeploymentTargetProvider
     {
         private readonly RemoteInstanceService _service;
+        private readonly IStringLocalizer S;
 
         public RemoteInstanceDeploymentTargetProvider(
             IStringLocalizer<RemoteInstanceDeploymentTargetProvider> stringLocalizer,
             RemoteInstanceService service)
         {
             _service = service;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public async Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync()
         {
@@ -28,7 +27,7 @@ namespace OrchardCore.Deployment
             return remoteInstanceList.RemoteInstances.Select(x =>
                     new DeploymentTarget(
                         name: new LocalizedString(x.Name, x.Name, false),
-                        description: T["Sends the deployment plan to a remote instance."],
+                        description: S["Sends the deployment plan to a remote instance."],
                         route: new RouteValueDictionary(new
                         {
                             area = "OrchardCore.Deployment.Remote",

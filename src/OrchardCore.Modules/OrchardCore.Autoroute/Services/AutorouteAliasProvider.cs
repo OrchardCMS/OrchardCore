@@ -21,7 +21,7 @@ namespace OrchardCore.Autoroute.Services
             {
                 alias = alias.Substring(5);
 
-                if (!alias.StartsWith("/"))
+                if (!alias.StartsWith('/'))
                 {
                     alias = "/" + alias;
                 }

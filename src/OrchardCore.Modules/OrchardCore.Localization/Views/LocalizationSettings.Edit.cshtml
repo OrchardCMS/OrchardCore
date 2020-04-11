@@ -1,9 +1,10 @@
 @model LocalizationSettingsViewModel
 @using Newtonsoft.Json;
+@using System.Globalization;
 
 <p class="alert alert-warning col-xl-6">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
-@{ 
+@{
     // ['fr-FR', 'en-US']
     var supportedCultures = JsonConvert.SerializeObject(Model.Cultures.Where(x => x.Supported).Select(c => c.CultureInfo.Name).ToArray());
     var allCultures = JsonConvert.SerializeObject(Model.Cultures.Select(c => new { Name = c.CultureInfo.Name, DisplayName = !String.IsNullOrEmpty(c.CultureInfo.DisplayName) ? c.CultureInfo.DisplayName : c.CultureInfo.NativeName, Supported = c.Supported }).ToArray());
@@ -11,8 +12,7 @@
     var selectedCulture = Model.Cultures.Except(Model.Cultures.Where(x => x.Supported)).First().CultureInfo.Name;
 }
 
-<script asp-src="~/OrchardCore.Localization/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.Localization/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuemultiselect"></script>
-<script asp-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js" debug-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-src="~/OrchardCore.Localization/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.Localization/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs"></script>
 
 <script at="Foot">
     initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(supportedCultures), '@defaultCulture', '@selectedCulture', @Html.Raw(allCultures));
@@ -31,7 +31,8 @@
             <tbody>
                 <tr v-for="(culture, index) in data" :key="index">
                     <td>
-                        <span>{{ culture }}</span>
+                        <span v-if="culture != ''">{{ culture }}</span>
+                        <span v-if="culture == ''">@CultureInfo.InvariantCulture.DisplayName</span>
                         <input type="hidden" class="form-control" v-bind:value="culture" />
                     </td>
                     <td class="text-center align-middle">
@@ -67,13 +68,12 @@
     </div>
 </script>
 
-
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
 
     <div class="row">
-        <fieldset class="col-xl-6">
+        <div class="col-xl-6">
             <label>@T["Define which cultures are supported by the site."]</label>
             <options-table :data="supportedCultures" :default-value="defaultCulture" :selectedCulture="selectedCulture" :list="allCultures" ></options-table>
-        </fieldset>
+        </div>
     </div>
 </div>

@@ -17,60 +17,33 @@ namespace OrchardCore.DisplayManagement.Entities
         where TSection : new()
         where TModel : class, IEntity
     {
+        /// <summary>
+        /// Gets the property name that the <typeparamref name="TSection"/> is stored on the <typeparamref name="TModel"/>.
+        /// </summary>
+        /// <remarks>
+        /// Overriding this property allows changing the name of the property that the section is stored in from the
+        /// default, which is <c>typeof(TSection).Name</c>.
+        /// </remarks>
+        protected virtual string PropertyName => typeof(TSection).Name;
+
         public override Task<IDisplayResult> DisplayAsync(TModel model, BuildDisplayContext context)
         {
-            JToken property;
-            TSection section;
-
-            var typeName = typeof(TSection).Name;
-
-            if (!model.Properties.TryGetValue(typeName, out property))
-            {
-                section = new TSection();
-            }
-            else
-            {
-                section = property.ToObject<TSection>();
-            }
+            var section = GetSection(model);
 
             return DisplayAsync(model, section, context);
         }
 
         public override Task<IDisplayResult> EditAsync(TModel model, BuildEditorContext context)
         {
-            JToken property;
-            TSection section;
-
-            var typeName = typeof(TSection).Name;
-
-            if (!model.Properties.TryGetValue(typeName, out property))
-            {
-                section = new TSection();
-            }
-            else
-            {
-                section = property.ToObject<TSection>();
-            }            
+            var section = GetSection(model);
 
             return EditAsync(model, section, context);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TModel model, UpdateEditorContext context)
         {
-            JToken property;
-            TSection section;
+            var section = GetSection(model);
 
-            var typeName = typeof(TSection).Name;
-
-            if (!model.Properties.TryGetValue(typeName, out property))
-            {
-                section = new TSection();
-            }
-            else
-            {
-                section = property.ToObject<TSection>();
-            }
-            
             var result = await UpdateAsync(model, section, context.Updater, context);
 
             if (result == null)
@@ -80,7 +53,7 @@ namespace OrchardCore.DisplayManagement.Entities
 
             if (context.Updater.ModelState.IsValid)
             {
-                model.Properties[typeName] = JObject.FromObject(section);
+                model.Properties[PropertyName] = JObject.FromObject(section);
             }
 
             return result;
@@ -144,6 +117,13 @@ namespace OrchardCore.DisplayManagement.Entities
         public virtual Task<IDisplayResult> UpdateAsync(TSection section, IUpdateModel updater, string groupId)
         {
             return Task.FromResult<IDisplayResult>(null);
+        }
+
+        private TSection GetSection(TModel model)
+        {
+            return model.Properties.TryGetValue(PropertyName, out var property)
+                ? property.ToObject<TSection>()
+                : new TSection();
         }
     }
 }

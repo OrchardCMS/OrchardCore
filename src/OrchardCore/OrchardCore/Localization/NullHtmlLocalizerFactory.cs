@@ -7,14 +7,17 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization
 {
+    /// Represensts a null <see cref="IHtmlLocalizerFactory"/> which is used by default when the localization module is disabled.
     /// <remarks>
     /// LocalizedHtmlString's arguments will be HTML encoded and not the main string. So the result
-    /// should just contained the localized string containing the formatting placeholders {0...} as is.
+    /// should just contain the localized string containing the formatting placeholders {0...} as is.
     /// </remarks>
     public class NullHtmlLocalizerFactory : IHtmlLocalizerFactory
     {
+        /// <inheritdocs />
         public IHtmlLocalizer Create(string baseName, string location) => NullLocalizer.Instance;
 
+        /// <inheritdocs />
         public IHtmlLocalizer Create(Type resourceSource) => NullLocalizer.Instance;
 
         private class NullLocalizer : IHtmlLocalizer

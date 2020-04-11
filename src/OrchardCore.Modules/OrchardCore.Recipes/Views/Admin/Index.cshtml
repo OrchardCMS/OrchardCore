@@ -14,7 +14,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                     </div>
-                    <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+                    <input id="search-box" class="form-control mr-sm-2" placeholder="@T["Search"]" type="search" autofocus>
                 </div>
             </div>
         </div>
@@ -61,7 +61,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-2 text-right">
-                                    <a asp-action="Execute" asp-route-basePath="@recipe.BasePath" asp-route-fileName="@recipe.FileName" role="button" class="btn btn-primary btn-sm" data-title="@T["Recipes"]" data-message="@T["Are you sure you want to run the recipe?"]" data-ok="@T["Yes"]" data-cancel="@T["No"]" data-ok-class="btn-primary" itemprop="RemoveUrl UnsafeUrl">@T["Run"]</a>
+                                    <a asp-action="Execute" asp-route-basePath="@recipe.BasePath" asp-route-fileName="@recipe.FileName" role="button" class="btn btn-primary btn-sm" data-title="@T["Recipes"]" data-message="@T["Are you sure you want to run the recipe?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" itemprop="RemoveUrl UnsafeUrl">@T["Run"]</a>
                                 </div>
                             </div>
                         </li>
@@ -87,7 +87,7 @@
             if (e.keyCode == 27 || search == '') {
                 searchBox.val('');
                 elementsToFilter.toggle(true);
-            } 
+            }
             else {
                 elementsToFilter.each(function () {
                     var text = $(this).data('filter-value').toLowerCase();

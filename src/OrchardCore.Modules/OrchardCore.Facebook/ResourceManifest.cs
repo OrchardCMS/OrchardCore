@@ -16,7 +16,6 @@ namespace OrchardCore.Facebook
             manifest
                 .DefineScript("fbsdk")
                 .SetUrl("~/OrchardCore.Facebook/sdk/fbsdk.js");
-
         }
     }
 }

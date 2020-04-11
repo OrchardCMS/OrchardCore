@@ -1,9 +1,11 @@
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.ContentManagement
 {
@@ -18,9 +20,26 @@ namespace OrchardCore.ContentManagement
             _shellSettings = shellSettings;
         }
 
-        public Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
+        /// <summary>
+        /// Loads a single document (or create a new one) for updating and that should not be cached.
+        /// </summary>
+        public async Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
         {
+            var scopedCache = ShellScope.Services.GetRequiredService<FileContentDefinitionScopedCache>();
 
+            if (scopedCache.ContentDefinitionRecord != null)
+            {
+                return scopedCache.ContentDefinitionRecord;
+            }
+
+            return scopedCache.ContentDefinitionRecord = await GetContentDefinitionAsync();
+        }
+
+        /// <summary>
+        /// Gets a single document (or create a new one) for caching and that should not be updated.
+        /// </summary>
+        public Task<ContentDefinitionRecord> GetContentDefinitionAsync()
+        {
             ContentDefinitionRecord result;
 
             if (!File.Exists(Filename))
@@ -29,10 +48,13 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                using (var file = File.OpenText(Filename))
+                lock (this)
                 {
-                    var serializer = new JsonSerializer();
-                    result = (ContentDefinitionRecord)serializer.Deserialize(file, typeof(ContentDefinitionRecord));
+                    using (var file = File.OpenText(Filename))
+                    {
+                        var serializer = new JsonSerializer();
+                        result = (ContentDefinitionRecord)serializer.Deserialize(file, typeof(ContentDefinitionRecord));
+                    }
                 }
             }
 
@@ -41,20 +63,27 @@ namespace OrchardCore.ContentManagement
 
         public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
         {
-            using (var file = File.CreateText(Filename))
+            lock (this)
             {
-                var serializer = new JsonSerializer();
-                serializer.Formatting = Formatting.Indented;
-                serializer.Serialize(file, contentDefinitionRecord);
+                using (var file = File.CreateText(Filename))
+                {
+                    var serializer = new JsonSerializer();
+                    serializer.Formatting = Formatting.Indented;
+                    serializer.Serialize(file, contentDefinitionRecord);
+                }
             }
 
             return Task.CompletedTask;
         }
 
         private string Filename => PathExtensions.Combine(
-                _shellOptions.Value.ShellsApplicationDataPath,
-                _shellOptions.Value.ShellsContainerName,
-                _shellSettings.Name, "ContentDefinition.json");
+            _shellOptions.Value.ShellsApplicationDataPath,
+            _shellOptions.Value.ShellsContainerName,
+            _shellSettings.Name, "ContentDefinition.json");
+    }
 
+    internal class FileContentDefinitionScopedCache
+    {
+        public ContentDefinitionRecord ContentDefinitionRecord { get; internal set; }
     }
 }

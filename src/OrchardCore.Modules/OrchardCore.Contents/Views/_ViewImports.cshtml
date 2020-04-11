@@ -2,6 +2,8 @@
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 *@
+@using Microsoft.Extensions.Localization;
+@using Microsoft.AspNetCore.Mvc.Localization;
 @using OrchardCore.ContentManagement.Display.ViewModels
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Contents.Workflows.Activities
@@ -11,10 +13,12 @@
 @using OrchardCore.Contents.Deployment
 @using OrchardCore.Contents.ViewModels
 @using OrchardCore.Contents.AdminNodes
+@using OrchardCore.Contents.Sitemaps
+@using OrchardCore.Sitemaps.Models
 
 @using OrchardCore.Workflows.Helpers
 @inherits OrchardCore.DisplayManagement.Razor.RazorPage<TModel>
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, OrchardCore.DisplayManagement
 @addTagHelper *, OrchardCore.ResourceManagement
-@addTagHelper *, OrchardCore.Contents
+@addTagHelper *, OrchardCore.Contents.TagHelpers

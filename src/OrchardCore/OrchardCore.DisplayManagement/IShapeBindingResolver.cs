@@ -10,6 +10,6 @@ namespace OrchardCore.DisplayManagement
     /// </summary>
     public interface IShapeBindingResolver
     {
-        Task<ShapeBinding> GetDescriptorBindingAsync(string shapeType);
+        Task<ShapeBinding> GetShapeBindingAsync(string shapeType);
     }
 }

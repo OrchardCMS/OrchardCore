@@ -7,7 +7,6 @@ namespace OrchardCore.Contents
 {
     public class Permissions : IPermissionProvider
     {
-
         // Note - in code you should demand PublishContent, EditContent, or DeleteContent
         // Do not demand the "Own" variations - those are applied automatically when you demand the main ones
 
@@ -25,7 +24,7 @@ namespace OrchardCore.Contents
         public static readonly Permission PreviewOwnContent = CommonPermissions.PreviewOwnContent;
         public static readonly Permission CloneContent = CommonPermissions.CloneContent;
         public static readonly Permission CloneOwnContent = CommonPermissions.CloneOwnContent;
-
+        public static readonly Permission GetApiContent = new Permission("GetApiContent", "View content via the api");
 
         //public static readonly Permission MetaListContent = new Permission { ImpliedBy = new[] { EditOwnContent, PublishOwnContent, DeleteOwnContent } };
 
@@ -44,7 +43,8 @@ namespace OrchardCore.Contents
                 PreviewOwnContent,
                 PreviewContent,
                 CloneContent,
-                CloneOwnContent
+                CloneOwnContent,
+                GetApiContent
             }
             .AsEnumerable());
         }
@@ -54,26 +54,26 @@ namespace OrchardCore.Contents
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] {PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent}
+                    Permissions = new[] {PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, GetApiContent}
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] {PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent}
+                    Permissions = new[] {PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, GetApiContent }
                 },
                 new PermissionStereotype {
                     Name = "Moderator"
                 },
                 new PermissionStereotype {
                     Name = "Author",
-                    Permissions = new[] {PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent}
+                    Permissions = new[] {PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent, GetApiContent }
                 },
                 new PermissionStereotype {
                     Name = "Contributor",
-                    Permissions = new[] {EditOwnContent, PreviewOwnContent, CloneOwnContent}
+                    Permissions = new[] {EditOwnContent, PreviewOwnContent, CloneOwnContent, GetApiContent }
                 },
                 new PermissionStereotype {
                     Name = "Authenticated",
-                    Permissions = new[] {ViewContent}
+                    Permissions = new[] {ViewContent, GetApiContent }
                 },
                 new PermissionStereotype {
                     Name = "Anonymous",
@@ -81,6 +81,5 @@ namespace OrchardCore.Contents
                 },
             };
         }
-
     }
 }

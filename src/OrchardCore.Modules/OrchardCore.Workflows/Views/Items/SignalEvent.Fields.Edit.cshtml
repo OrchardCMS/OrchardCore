@@ -1,9 +1,9 @@
 @using OrchardCore.Workflows.ViewModels;
 @model SignalEventViewModel
 
-<fieldset class="form-group" asp-validation-class-for="SignalNameExpression">
+<div class="form-group" asp-validation-class-for="SignalNameExpression">
     <label asp-for="SignalNameExpression">@T["Name"]</label>
     <input type="text" asp-for="SignalNameExpression" class="form-control code" autofocus />
     <span asp-validation-for="SignalNameExpression"></span>
     <span class="hint">@T["The signal name. With Liquid support."]</span>
-</fieldset>
+</div>

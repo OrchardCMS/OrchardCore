@@ -6,7 +6,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "Web App: Dotnet Build Debug",
-			"program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/netcoreapp3.0/OrchardCore.Cms.Web.dll",
+			"program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/netcoreapp3.1/OrchardCore.Cms.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
 			"env": {
@@ -20,7 +20,7 @@
 			"request": "launch",
 			"internalConsoleOptions": "openOnSessionStart",
 			"preLaunchTask": "Web App: Dotnet Build Debug",
-			"program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/netcoreapp3.0/OrchardCore.Cms.Web.dll",
+			"program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/netcoreapp3.1/OrchardCore.Cms.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
 			"env": {
@@ -47,7 +47,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "Web App: Dotnet Build Release",
-			"program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Release/netcoreapp3.0/OrchardCore.Cms.Web.dll",
+			"program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Release/netcoreapp3.1/OrchardCore.Cms.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
 			"stopAtEntry": false,

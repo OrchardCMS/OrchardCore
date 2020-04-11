@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OrchardCore.Autoroute.Models;
 using YesSql.Indexes;
 

@@ -12,9 +12,8 @@
         <ul> <li v-for="e in errors"> <p>{{e}}</p> </li> </ul>
     </div>
 
-
     <div id="mediaContainer" class="align-items-stretch">
-        <div id="navigationApp" class="media-container-navigation m-0 p-0" v-cloak >
+        <div id="navigationApp" class="media-container-navigation m-0 p-0" v-cloak>
             <ol id="folder-tree">
                 <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder" :level="1">
                 </folder>
@@ -69,7 +68,6 @@
                               :class="{active: parents.length - i == 1}">
                             <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectedFolder = folder;">{{ folder.name }}</a>
                         </span>
-
                     </div>
                     <div class="btn-group visibility-buttons" v-show="gridView">
                         <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm" :class="{selected: smallThumbs}" v-on:click="smallThumbs = true">
@@ -105,13 +103,10 @@
 
                 <div class="alert-info pt-2 pb-2 pl-2 pr-2" v-show="mediaItems.length > 0 && filteredMediaItems.length < 1">@T["Nothing to show with this filter"]</div>
                 <div class="alert-info pt-2 pb-2 pl-2 pr-2" v-show="mediaItems.length < 1">@T["This folder is empty"]</div>
-
-
             </div>
             <div v-show="filteredMediaItems.length > 0" class="media-container-footer pt-2">
                 <pager :source-items="filteredMediaItems"> </pager>
             </div>
-
         </div>
     </div>
 </div>
@@ -130,12 +125,11 @@
 @*Localizable Strings shared*@
 <input type="hidden" id="deleteFolder" data-title="@T["Delete media folder"]" data-message="@T["Are you sure you want to delete this folder?"]" />
 <input type="hidden" id="deleteMedia" data-title="@T["Delete media"]" data-message="@T["Are you sure you want to delete these media items?"]" />
-<input type="hidden" id="moveMediaMessage" value="@T["Are you sure you want to move the selected media to this folder?"]" />
+<input type="hidden" id="moveMedia" data-title="@T["Move media"]" data-message="@T["Are you sure you want to move the selected media to this folder?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-success" />
 <input type="hidden" id="sameFolderMessage" value="@T["The media is already on this folder"]" />
 <input type="hidden" id="t-edit-button" value="@T["Edit"]" />
 <input type="hidden" id="t-delete-button" value="@T["Delete"]" />
 <input type="hidden" id="t-view-button" value="@T["View"]" />
-
 
 @*Localizable Strings for uploadListcomponent*@
 <input type="hidden" id="t-uploads" value="@T["Uploads"]" />
@@ -156,7 +150,6 @@
 <input type="hidden" id="t-pager-page-size-label" value="@T["Page Size"]" />
 <input type="hidden" id="t-pager-page-label" value="@T["Page:"]" />
 <input type="hidden" id="t-pager-total-label" value="@T["Total items:"]" />
-
 
 <div class="modal" id="createFolderModal" tabindex="-1" role="dialog" aria-labelledby="createFolderModal" aria-hidden="true">
     <div class="modal-dialog" role="document">

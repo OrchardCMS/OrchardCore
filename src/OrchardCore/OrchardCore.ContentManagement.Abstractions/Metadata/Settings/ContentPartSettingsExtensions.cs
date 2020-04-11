@@ -9,7 +9,7 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
     {
         public static ContentPartDefinitionBuilder Attachable(this ContentPartDefinitionBuilder builder, bool attachable = true)
         {
-            return builder.MergeSettings<ContentPartSettings>(x => x.Attachable = attachable );
+            return builder.MergeSettings<ContentPartSettings>(x => x.Attachable = attachable);
         }
 
         public static bool IsAttachable(this ContentPartDefinition part)

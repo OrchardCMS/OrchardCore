@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -146,17 +147,23 @@ namespace OrchardCore.DisplayManagement.Razor
 
         private async Task<ActionContext> GetActionContextAsync()
         {
+            var httpContext = _httpContextAccessor.HttpContext;
+            var actionContext = httpContext.RequestServices.GetService<IActionContextAccessor>()?.ActionContext;
+
+            if (actionContext != null)
+            {
+                return actionContext;
+            }
+
             var routeData = new RouteData();
             routeData.Routers.Add(new RouteCollection());
 
-            var httpContext = _httpContextAccessor.HttpContext;
-
-            var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-            var filters = httpContext.RequestServices.GetServices<IAsyncViewResultFilter>();
+            actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
 
             foreach (var filter in filters)
             {
-                await filter.OnResultExecutionAsync(actionContext);
+                await filter.OnActionExecutionAsync(actionContext);
             }
 
             return actionContext;

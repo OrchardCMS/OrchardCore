@@ -32,15 +32,14 @@ namespace OrchardCore.Taxonomies.GraphQL
                     return x.Source.TaxonomyContentItemId;
                 });
 
-            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
+            Field<ListGraphType<ContentItemInterface>, List<ContentItem>>()
                 .Name("termContentItems")
                 .Description("the term content items")
                 .PagingArguments()
-                .ResolveAsync(async x =>
+                .ResolveLockedAsync(async x =>
                 {
                     var ids = x.Page(x.Source.TermContentItemIds);
-                    var context = (GraphQLContext)x.UserContext;
-                    var contentManager = context.ServiceProvider.GetService<IContentManager>();
+                    var contentManager = x.ResolveServiceProvider().GetService<IContentManager>();
 
                     var taxonomy = await contentManager.GetAsync(x.Source.TaxonomyContentItemId);
 
@@ -63,11 +62,10 @@ namespace OrchardCore.Taxonomies.GraphQL
             Field<ContentItemInterface, ContentItem>()
                 .Name("taxonomyContentItem")
                 .Description("the taxonomy content item")
-                .ResolveAsync(async x =>
+                .ResolveLockedAsync(x =>
                 {
-                    var context = (GraphQLContext)x.UserContext;
-                    var contentManager = context.ServiceProvider.GetService<IContentManager>();
-                    return await contentManager.GetAsync(x.Source.TaxonomyContentItemId);
+                    var contentManager = x.ResolveServiceProvider().GetService<IContentManager>();
+                    return contentManager.GetAsync(x.Source.TaxonomyContentItemId);
                 });
         }
     }

@@ -18,11 +18,15 @@ using YesSql.Provider.SqlServer;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Provides extension methods for <see cref="OrchardCoreBuilder"/> to add database access functionality.
+    /// </summary>
     public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
         /// Adds tenant level data access services.
         /// </summary>
+        /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
             builder.ConfigureServices(services =>
@@ -116,6 +120,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     return session;
                 });
+
+                services.AddScoped<ISessionHelper, SessionHelper>();
 
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });

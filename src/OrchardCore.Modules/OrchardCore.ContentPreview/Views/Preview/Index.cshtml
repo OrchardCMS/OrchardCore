@@ -32,7 +32,6 @@
     <ul></ul>
 </div>
 
-
 <div id="renderPreviewUrl" style="display:none" data-value="@Url.Action("Render", "Preview", new { area = "OrchardCore.ContentPreview" })"></div>
 
 <resources type="Footer" />
@@ -143,7 +142,7 @@
                         var ul = $('#serverErrorWarning ul').empty();
                         data.responseJSON.errors.forEach(function (error) {
                             console.error(error);
-                            $('<li/>').text(error).appendTo(ul);
+                            $('<li />').text(error).appendTo(ul);
                         });
                         $(serverErrorWarning).show();
                     }
@@ -155,5 +154,4 @@
             console.log('Error while previewing: ' + e);
         }
     }
-
 </script>

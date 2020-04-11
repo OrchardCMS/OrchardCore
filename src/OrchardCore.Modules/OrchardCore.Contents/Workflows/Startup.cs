@@ -24,6 +24,8 @@ namespace OrchardCore.Contents.Workflows
             services.AddActivity<PublishContentTask, PublishContentTaskDisplay>();
             services.AddActivity<UnpublishContentTask, UnpublishContentTaskDisplay>();
             services.AddActivity<CreateContentTask, CreateContentTaskDisplay>();
+            services.AddActivity<RetrieveContentTask, RetrieveContentTaskDisplay>();
+            services.AddActivity<UpdateContentTask, UpdateContentTaskDisplay>();
 
             services.AddScoped<IContentHandler, ContentsHandler>();
             services.AddScoped<IWorkflowValueSerializer, ContentItemSerializer>();

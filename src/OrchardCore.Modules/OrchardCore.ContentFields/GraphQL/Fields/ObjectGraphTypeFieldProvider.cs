@@ -1,5 +1,4 @@
 using System.Linq;
-using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
@@ -38,7 +37,14 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     {
                         var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
+                        // Check if part has been collapsed by trying to get the parent part.
                         var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
+                        if (contentPart == null)
+                        {
+                            // Part is not collapsed, access field directly.
+                            contentPart = context.Source;
+                        }
+
                         var contentField = contentPart?.Get(typeToResolve, field.Name);
                         return contentField;
                     })

@@ -24,10 +24,9 @@ namespace OrchardCore.ContentManagement.GraphQL
             services.AddScoped<IContentTypeBuilder, DynamicContentTypeBuilder>();
 
             services.AddOptions<GraphQLContentOptions>();
-            
+
             return services;
         }
-
 
         /// <summary>
         /// Registers a type providing custom filters for content item filters

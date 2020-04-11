@@ -16,7 +16,7 @@ namespace OrchardCore.DynamicCache.Services
         private readonly ICacheContextManager _cacheContextManager;
         private readonly IDynamicCache _dynamicCache;
         private readonly IServiceProvider _serviceProvider;
-        
+
         private readonly Dictionary<string, string> _localCache = new Dictionary<string, string>();
 
         public DefaultDynamicCacheService(ICacheContextManager cacheContextManager, IDynamicCache dynamicCache, IServiceProvider serviceProvider)
@@ -41,20 +41,20 @@ namespace OrchardCore.DynamicCache.Services
 
             return content;
         }
-        
+
         public async Task SetCachedValueAsync(CacheContext context, string value)
         {
             var cacheKey = await GetCacheKey(context);
-            
+
             _localCache[cacheKey] = value;
             var esi = JsonConvert.SerializeObject(CacheContextModel.FromCacheContext(context));
-            
+
             await Task.WhenAll(
                 SetCachedValueAsync(cacheKey, value, context),
                 SetCachedValueAsync(GetCacheContextCacheKey(cacheKey), esi, context)
             );
         }
-        
+
         public Task TagRemovedAsync(string tag, IEnumerable<string> keys)
         {
             return Task.WhenAll(keys.Select(key => _dynamicCache.RemoveAsync(key)));
@@ -83,7 +83,7 @@ namespace OrchardCore.DynamicCache.Services
             var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
             tagCache.Tag(cacheKey, context.Tags.ToArray());
         }
-        
+
         private async Task<string> GetCacheKey(CacheContext context)
         {
             var cacheEntries = context.Contexts.Count > 0

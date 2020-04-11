@@ -2,9 +2,11 @@ using System;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Stores;
 using OrchardCore.OpenId.YesSql.Indexes;
 using OrchardCore.OpenId.YesSql.Models;
@@ -520,7 +522,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task UpdateAsync(TScope scope, CancellationToken cancellationToken)
+        public virtual async Task UpdateAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -529,9 +531,19 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(scope);
+            _session.Save(scope, checkConcurrency: true);
 
-            return _session.CommitAsync();
+            try
+            {
+                await _session.CommitAsync();
+            }
+            catch (ConcurrencyException exception)
+            {
+                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
+                    .AppendLine("The scope was concurrently updated and cannot be persisted in its current state.")
+                    .Append("Reload the scope from the database and retry the operation.")
+                    .ToString(), exception);
+            }
         }
     }
 }

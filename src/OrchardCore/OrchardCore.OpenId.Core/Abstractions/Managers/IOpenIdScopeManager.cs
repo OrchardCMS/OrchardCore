@@ -14,7 +14,7 @@ namespace OrchardCore.OpenId.Abstractions.Managers
     /// </summary>
     public interface IOpenIdScopeManager : IOpenIddictScopeManager
     {
-        Task<object> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken = default);
+        ValueTask<object> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken = default);
         ValueTask<string> GetPhysicalIdAsync(object scope, CancellationToken cancellationToken = default);
     }
 }

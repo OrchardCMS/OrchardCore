@@ -1,19 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Castle.Core.Logging;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using OrchardCore.Modules;
-using OrchardCore.ReCaptcha.ActionFilters.Abuse;
-using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Services;
 
 namespace OrchardCore.ReCaptcha.ActionFilters
@@ -23,7 +12,6 @@ namespace OrchardCore.ReCaptcha.ActionFilters
     {
         private readonly ReCaptchaMode _mode;
 
-
         public ValidateReCaptchaAttribute(ReCaptchaMode mode = ReCaptchaMode.AlwaysShow)
         {
             _mode = mode;
@@ -32,7 +20,7 @@ namespace OrchardCore.ReCaptcha.ActionFilters
         public override async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
             var recaptchaService = context.HttpContext.RequestServices.GetService<ReCaptchaService>();
-            var T = context.HttpContext.RequestServices.GetService<IStringLocalizer<ReCaptchaService>>();
+            var S = context.HttpContext.RequestServices.GetService<IStringLocalizer<ReCaptchaService>>();
             var isValidCaptcha = false;
             var reCaptchaResponse = context.HttpContext.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
 
@@ -49,12 +37,11 @@ namespace OrchardCore.ReCaptcha.ActionFilters
                 case ReCaptchaMode.AlwaysShow:
                     isRobot = true;
                     break;
-
             }
 
             if (isRobot && !isValidCaptcha)
             {
-                context.ModelState.AddModelError("ReCaptcha", T["Failed to validate captcha"]);
+                context.ModelState.AddModelError("ReCaptcha", S["Failed to validate captcha"]);
             }
 
             await next();

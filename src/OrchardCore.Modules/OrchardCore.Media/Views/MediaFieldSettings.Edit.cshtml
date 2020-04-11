@@ -1,27 +1,27 @@
 @model OrchardCore.Media.Settings.MediaFieldSettings
 
 <div class="row">
-    <fieldset class="form-group col-md-6">
+    <div class="form-group col-md-6">
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="Required" checked="@Model.Required">
             <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
             <span class="hint">@T["Whether a media is required."]</span>
         </div>
-    </fieldset>
+    </div>
 </div>
 <div class="row">
-    <fieldset class="form-group col-md-6">
+    <div class="form-group col-md-6">
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="Multiple" checked="@Model.Multiple">
             <label class="custom-control-label" asp-for="Multiple">@T["Multiple"]</label>
             <span class="hint">@T["Whether multiple media can be selected."]</span>
         </div>
-    </fieldset>
+    </div>
 </div>
 <div class="row">
-    <fieldset class="form-group col-md-6">
+    <div class="form-group col-md-6">
         <label asp-for="Hint">@T["Hint"]</label>
         <input asp-for="Hint" type="text" class="form-control" />
         <span class="hint">@T["The hint text to display on the editor."]</span>
-    </fieldset>
+    </div>
 </div>

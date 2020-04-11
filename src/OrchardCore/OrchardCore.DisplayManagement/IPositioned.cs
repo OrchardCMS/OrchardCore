@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.DisplayManagement
+namespace OrchardCore.DisplayManagement
 {
     public interface IPositioned
     {

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid.Models;
@@ -10,15 +10,13 @@ namespace OrchardCore.Liquid.Drivers
 {
     public class LiquidPartDisplay : ContentPartDisplayDriver<LiquidPart>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
+        private readonly IStringLocalizer S;
 
-        public LiquidPartDisplay(
-            IContentDefinitionManager contentDefinitionManager,
-            ILiquidTemplateManager liquidTemplatemanager)
+        public LiquidPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<LiquidPartDisplay> localizer)
         {
-            _contentDefinitionManager = contentDefinitionManager;
             _liquidTemplatemanager = liquidTemplatemanager;
+            S = localizer;
         }
 
         public override IDisplayResult Display(LiquidPart liquidPart)
@@ -38,7 +36,19 @@ namespace OrchardCore.Liquid.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(LiquidPart model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Liquid);
+            var viewModel = new LiquidPartViewModel();
+
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
+            {
+                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
+                {
+                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                }
+                else
+                {
+                    model.Liquid = viewModel.Liquid;
+                }
+            }
 
             return Edit(model);
         }

@@ -1,43 +1,32 @@
-using OrchardCore.Facebook.Widgets.Models;
-using OrchardCore.Facebook.Widgets.ViewModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Settings;
-using OrchardCore.Mvc.ModelBinding;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Facebook.Widgets.Settings;
+using OrchardCore.Facebook.Widgets.ViewModels;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.Facebook.Widgets.Drivers
 {
     public class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<FacebookPluginPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISiteService _siteService;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IStringLocalizer<FacebookPluginPartDisplayDriver> T;
+        private readonly ILiquidTemplateManager _liquidTemplatemanager;
+        private readonly IStringLocalizer S;
 
         public FacebookPluginPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
-            ISiteService siteService,
-            IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor,
-            IStringLocalizer<FacebookPluginPartDisplayDriver> localizer
-            )
+            ILiquidTemplateManager liquidTemplatemanager,
+            IStringLocalizer<FacebookPluginPartDisplayDriver> localizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _siteService = siteService;
-            _authorizationService = authorizationService;
-            _httpContextAccessor = httpContextAccessor;
-            T = localizer;
+            _liquidTemplatemanager = liquidTemplatemanager;
+            S = localizer;
         }
 
         public override IDisplayResult Display(FacebookPluginPart part)
@@ -81,7 +70,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             }
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart), StringComparison.Ordinal));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart)));
             return contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
         }
 
@@ -89,18 +78,19 @@ namespace OrchardCore.Facebook.Widgets.Drivers
         {
             var viewModel = new FacebookPluginPartViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid);
-
-            model.Liquid = viewModel.Liquid;
-
-            await ValidateAsync(model, updater);
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
+            {
+                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
+                {
+                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                }
+                else
+                {
+                    model.Liquid = viewModel.Liquid;
+                }
+            }
 
             return Edit(model);
-        }
-
-        private Task ValidateAsync(FacebookPluginPart model, IUpdateModel updater)
-        {
-            return Task.CompletedTask;
         }
     }
 }

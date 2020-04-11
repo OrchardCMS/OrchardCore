@@ -1,17 +1,30 @@
 .edit-container {
-    display: table;
-    border-collapse: separate;
-    border-spacing: 8px;
-    width: 100%;
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: row;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    > .edit-body{
+        width:100%;
+    }
+    &.sidebar > .edit-sidebar{
+       visibility:visible; 
+    }
+    &:not(.sidebar) > .edit-sidebar{
+        visibility: hidden; 
+     }
+    width: 100%;        
 }
 
 .edit-body {
-    vertical-align: top;
-    display: table-cell;
+    display: -ms-flexbox;
+    display:flex;
+    flex-direction: column;
+    padding: 8px;  
 }
 
 .edit-sidebar-handler {
-    display: table-cell;
+    display: none;
     border: 0;
     border-left: 1px solid lightgray;
     border-right: 1px solid lightgray;
@@ -24,9 +37,12 @@
 .edit-sidebar {
     visibility: hidden;
     vertical-align: top;
-    display: table-cell;
-    padding-left: 15px;
+    display: -ms-flexbox;
+    display:flex;
+    padding-left: 8px;
+    flex-direction: column;
 }
+
 
 #show-selected-card .list-group-item {
     min-height: 64px;
@@ -34,4 +50,32 @@
 
 .list-group-item.disabled-content-type .icon-toolbar {
     display: none;
+}
+
+@media (min-width: 768px) {
+    .edit-container {
+        &.sidebar > .edit-body{
+            flex: 0 0 75%;
+            width:75%;
+        }
+        &:not(.sidebar) > .edit-body{
+            flex: 0 0 100%;
+        }
+    
+        &:not(.sidebar) > .edit-sidebar{
+            visibility: hidden;
+        }
+        &.sidebar > .edit-sidebar{
+            flex: 0 0 24.42141%;
+            order: 2;
+            padding-left: 15px;            
+        }
+        &.sidebar > .edit-sidebar-handler {
+            display: block;
+        }
+    }
+    
+    .edit-body {
+        order: 0;
+    }
 }

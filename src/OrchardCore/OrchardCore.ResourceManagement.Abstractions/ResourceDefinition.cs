@@ -14,14 +14,17 @@ namespace OrchardCore.ResourceManagement
             { "script", "script" },
             { "stylesheet", "link" }
         };
+
         private static readonly Dictionary<string, string> _filePathAttributes = new Dictionary<string, string> {
             { "script", "src" },
             { "link", "href" }
         };
+
         private static readonly Dictionary<string, Dictionary<string, string>> _resourceAttributes = new Dictionary<string, Dictionary<string, string>> {
             { "script", new Dictionary<string, string> { {"type", "text/javascript"} } },
             { "stylesheet", new Dictionary<string, string> { {"type", "text/css"}, {"rel", "stylesheet"} } }
         };
+
         private static readonly Dictionary<string, TagRenderMode> _fileTagRenderModes = new Dictionary<string, TagRenderMode> {
             { "script", TagRenderMode.Normal },
             { "link", TagRenderMode.SelfClosing },
@@ -194,6 +197,18 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
+        public ResourceDefinition SetDependencies(List<string> dependencies)
+        {
+            if (Dependencies == null)
+            {
+                Dependencies = new List<string>();
+            }
+
+            Dependencies.AddRange(dependencies);
+
+            return this;
+        }
+
         public TagBuilder GetTagBuilder(RequireSettings settings,
             string applicationPath,
             IFileVersionProvider fileVersionProvider)
@@ -328,9 +343,9 @@ namespace OrchardCore.ResourceManagement
             }
 
             var that = (ResourceDefinition)obj;
-            return string.Equals(that.Name, Name, StringComparison.Ordinal) &&
-                string.Equals(that.Type, Type, StringComparison.Ordinal) &&
-                string.Equals(that.Version, Version, StringComparison.Ordinal);
+            return string.Equals(that.Name, Name) &&
+                string.Equals(that.Type, Type) &&
+                string.Equals(that.Version, Version);
         }
 
         public override int GetHashCode()

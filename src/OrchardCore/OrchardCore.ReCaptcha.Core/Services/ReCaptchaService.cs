@@ -7,7 +7,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
-using OrchardCore.ReCaptcha.ActionFilters.Abuse;
+using OrchardCore.ReCaptcha.ActionFilters.Detection;
 using OrchardCore.ReCaptcha.Configuration;
 
 namespace OrchardCore.ReCaptcha.Services
@@ -18,22 +18,21 @@ namespace OrchardCore.ReCaptcha.Services
         private readonly ReCaptchaSettings _settings;
         private readonly IEnumerable<IDetectRobots> _robotDetectors;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<ReCaptchaService> _logger;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer S;
 
-        public ReCaptchaService(ReCaptchaClient reCaptchaClient, IOptions<ReCaptchaSettings> optionsAccessor, IEnumerable<IDetectRobots> robotDetectors, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaService> logger, IStringLocalizer<ReCaptchaService> stringLocalizer)    
+        public ReCaptchaService(ReCaptchaClient reCaptchaClient, IOptions<ReCaptchaSettings> optionsAccessor, IEnumerable<IDetectRobots> robotDetectors, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaService> logger, IStringLocalizer<ReCaptchaService> stringLocalizer)
         {
             _reCaptchaClient = reCaptchaClient;
             _settings = optionsAccessor.Value;
             _robotDetectors = robotDetectors;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
-        private IStringLocalizer T { get; }
-
         /// <summary>
-        /// Flags the behavior as that of a robot 
+        /// Flags the behavior as that of a robot
         /// </summary>
         public void MaybeThisIsARobot()
         {
@@ -81,7 +80,7 @@ namespace OrchardCore.ReCaptcha.Services
 
             if (!isValid)
             {
-                reportError("ReCaptcha", T["Failed to validate captcha"]);
+                reportError("ReCaptcha", S["Failed to validate captcha"]);
             }
 
             return isValid;

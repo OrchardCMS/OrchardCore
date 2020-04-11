@@ -26,6 +26,7 @@ namespace OrchardCore.Workflows
             SchemaBuilder.CreateMapIndexTable(nameof(WorkflowIndex), table => table
                 .Column<string>("WorkflowTypeId")
                 .Column<string>("WorkflowId")
+                .Column<string>("WorkflowStatus")
                 .Column<DateTime>("CreatedUtc")
             );
 
@@ -38,7 +39,17 @@ namespace OrchardCore.Workflows
                 .Column<string>("WorkflowCorrelationId")
             );
 
-            return 1;
+            return 2;
+        }
+
+        public int UpdateFrom1()
+        {
+            SchemaBuilder.AlterTable(nameof(WorkflowIndex), table =>
+            {
+                table.AddColumn<string>("WorkflowStatus");
+            });
+
+            return 2;
         }
     }
 }

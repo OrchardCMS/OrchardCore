@@ -2,8 +2,8 @@ using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -15,6 +15,7 @@ namespace OrchardCore.Flows.Settings
     public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IStringLocalizer S;
 
         public BagPartSettingsDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
@@ -24,11 +25,9 @@ namespace OrchardCore.Flows.Settings
             S = localizer;
         }
 
-        public IStringLocalizer S { get; set; }
-
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(BagPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(BagPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -49,7 +48,7 @@ namespace OrchardCore.Flows.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(BagPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(BagPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }

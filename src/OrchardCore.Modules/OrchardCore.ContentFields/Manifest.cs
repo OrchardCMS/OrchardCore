@@ -7,7 +7,6 @@ using OrchardCore.Modules.Manifest;
     Version = "2.0.0",
     Category = "Content Management"
 )]
-
 [assembly: Feature(
     Id = "OrchardCore.ContentFields",
     Name = "Content Fields",

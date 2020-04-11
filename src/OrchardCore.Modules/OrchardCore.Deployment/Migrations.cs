@@ -1,4 +1,4 @@
-﻿using OrchardCore.Data.Migration;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Indexes;
 
 namespace OrchardCore.Deployment

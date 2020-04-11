@@ -106,7 +106,7 @@ describe('Create Tenants', () => {
     });
 
     it('should display a single tenant', async () => {
-        await page.goto(`${basePath}/OrchardCore.Tenants/Admin/Index`);
+        await page.goto(`${basePath}/Admin/Tenants`);
         await expect(await page.content()).toMatch('Default');
 
         await expect((await page.$$("div.properties")).length).toBe(1);
@@ -115,7 +115,7 @@ describe('Create Tenants', () => {
     it('should create a tenant based on Agency', async () => {
 
         // Create tenant
-        await page.goto(`${basePath}/OrchardCore.Tenants/Admin/Create`);
+        await page.goto(`${basePath}/Admin/Tenants/Create`);
         
         await page.type('#Name', 'Agency');
         await page.type('#RequestUrlPrefix', 'agency');
@@ -125,7 +125,7 @@ describe('Create Tenants', () => {
             (await page.$x("//button[contains(text(), 'Create')]"))[0].click()
         ]);
 
-        await expect(await page.url()).toBe(`${basePath}/OrchardCore.Tenants/Admin/Index`);
+        await expect(await page.url()).toBe(`${basePath}/Admin/Tenants`);
         await expect(await page.content()).toMatch('Agency');
 
         // Go to Setup page
@@ -158,7 +158,7 @@ describe('Create Tenants', () => {
     it('should create a tenant based on Blog', async () => {
 
         // Create tenant
-        await page.goto(`${basePath}/OrchardCore.Tenants/Admin/Create`);
+        await page.goto(`${basePath}/Admin/Tenants/Create`);
         
         await page.type('#Name', 'Blog');
         await page.type('#RequestUrlPrefix', 'blog');
@@ -168,7 +168,7 @@ describe('Create Tenants', () => {
             (await page.$x("//button[contains(text(), 'Create')]"))[0].click()
         ]);
 
-        await expect(await page.url()).toBe(`${basePath}/OrchardCore.Tenants/Admin/Index`);
+        await expect(await page.url()).toBe(`${basePath}/Admin/Tenants`);
         await expect(await page.content()).toMatch('Blog');
 
         // Go to Setup page

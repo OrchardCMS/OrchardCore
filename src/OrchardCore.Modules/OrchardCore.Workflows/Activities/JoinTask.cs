@@ -9,6 +9,8 @@ namespace OrchardCore.Workflows.Activities
 {
     public class JoinTask : TaskActivity
     {
+        private readonly IStringLocalizer S;
+
         public enum JoinMode
         {
             WaitAll,
@@ -17,14 +19,14 @@ namespace OrchardCore.Workflows.Activities
 
         public JoinTask(IStringLocalizer<JoinTask> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(JoinTask);
-        public override LocalizedString DisplayText => T["Join Task"];
-        public override LocalizedString Category => T["Control Flow"];
+
+        public override LocalizedString DisplayText => S["Join Task"];
+
+        public override LocalizedString Category => S["Control Flow"];
 
         public JoinMode Mode
         {
@@ -40,7 +42,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Joined"]);
+            return Outcomes(S["Joined"]);
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

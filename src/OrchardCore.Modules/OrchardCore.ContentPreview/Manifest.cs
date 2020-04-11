@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "https://orchardproject.net",
     Version = "2.0.0",
     Description = "The content Preview module enables live content edition and content preview.",
-    Dependencies = new [] { "OrchardCore.Contents" },
+    Dependencies = new[] { "OrchardCore.Contents" },
     Category = "Content Management"
 )]
