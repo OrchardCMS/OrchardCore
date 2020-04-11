@@ -72,20 +72,28 @@ namespace OrchardCore.Deployment
             routes.MapAreaControllerRoute(
                 name: "DeploymentRemoteInstancesCreate",
                 areaName: "OrchardCore.Deployment.Remote",
-                pattern: _adminOptions.AdminUrlPrefix + "/Deployment/RemoteClient/Create",
+                pattern: _adminOptions.AdminUrlPrefix + "/Deployment/RemoteInstance/Create",
                 defaults: new { controller = remoteInstanceControllerName, action = nameof(RemoteInstanceController.Create) }
             );
             routes.MapAreaControllerRoute(
                 name: "DeploymentRemoteInstancesDelete",
                 areaName: "OrchardCore.Deployment.Remote",
-                pattern: _adminOptions.AdminUrlPrefix + "/Deployment/RemoteClient/Delete/{id}",
+                pattern: _adminOptions.AdminUrlPrefix + "/Deployment/RemoteInstance/Delete/{id}",
                 defaults: new { controller = remoteInstanceControllerName, action = nameof(RemoteClientController.Delete) }
             );
             routes.MapAreaControllerRoute(
                 name: "DeploymentRemoteInstancesEdit",
                 areaName: "OrchardCore.Deployment.Remote",
-                pattern: _adminOptions.AdminUrlPrefix + "/Deployment/RemoteClient/Edit/{id}",
+                pattern: _adminOptions.AdminUrlPrefix + "/Deployment/RemoteInstance/Edit/{id}",
                 defaults: new { controller = remoteInstanceControllerName, action = nameof(RemoteInstanceController.Edit) }
+            );
+
+            //ExportRemoteInstance
+            routes.MapAreaControllerRoute(
+                name: "DeploymentExportRemoteInstanceExecute",
+                areaName: "OrchardCore.Deployment.Remote",
+                pattern: _adminOptions.AdminUrlPrefix + "/Deployment/ExportRemoteInstance/Execute",
+                defaults: new { controller = typeof(ExportRemoteInstanceController).ControllerName(), action = nameof(ExportRemoteInstanceController.Execute) }
             );
         }
     }

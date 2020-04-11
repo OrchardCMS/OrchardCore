@@ -6,8 +6,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Twitter.Settings;
-using OrchardCore.Twitter.ViewModels;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Signin.Settings;
 using OrchardCore.Twitter.Signin.ViewModels;
@@ -70,7 +68,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 {
                     var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Signin);
                     settings.CallbackPath = model.CallbackPath;
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);

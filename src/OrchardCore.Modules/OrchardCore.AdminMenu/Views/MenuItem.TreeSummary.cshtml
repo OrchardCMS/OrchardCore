@@ -20,7 +20,6 @@
     }
 }
 
-
 <li class="menu-item display-summary" id="menu-id-@Model.Index" data-index="@Model.Index" data-treenode-id="@Model.MenuItem.UniqueId">
     <div class="menu-item menu-item-title border rounded p-2 pl-3 mb-1 d-flex flex-row justify-content-between align-items-center @disabledClass" title="@Model.MenuItem.UniqueId">
         @if (Model.Content.Items.Count < 1)
@@ -59,19 +58,18 @@
                             asp-action="Toggle"
                             asp-route-id="@Model.AdminMenuId"
                             asp-route-treeNodeId="@Model.MenuItem.UniqueId"
-                            class="dropdown-item btn-sm" itemprop="UnsafeUrl">@toggleButtonText</a>                            
+                            class="dropdown-item btn-sm" itemprop="UnsafeUrl">@toggleButtonText</a>
                     </div>
                 </div>
-            </div> 
+            </div>
         }
-
     </div>
 
     <ol class="menu-item menu-item-links">
         @if (children != null)
         {
             var updater = ModelUpdaterAccessor.ModelUpdater;
-            
+
             @foreach (var child in children)
             {
                 dynamic adminNodeShape = await MenuItemDisplayManager.BuildDisplayAsync(child, updater, "TreeSummary");

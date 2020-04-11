@@ -76,7 +76,6 @@
     <textarea asp-for="SyncRolesScript" rows="1" class="form-control content-preview-text"></textarea>
 </div>
 
-
 <script at="Foot">
     function resetScript(keepText) {
         var editor = $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor');
@@ -104,7 +103,7 @@
                 '        log("Warning", "Provider " + loginProvider + " was not handled");\n' +
     	        '        break;\n' +
                 '}\n' +
-                '*/\n' 
+                '*/\n'
             );
         }
     }

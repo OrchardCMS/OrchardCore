@@ -17,7 +17,7 @@ namespace OrchardCore.Autoroute.Services
 
         public bool TryGetContentItemId(string path, out string contentItemId)
         {
-            return _contentItemIds.TryGetValue(path, out contentItemId);
+            return _contentItemIds.TryGetValue(path.TrimEnd('/'), out contentItemId);
         }
 
         public bool TryGetPath(string contentItemId, out string path)
@@ -36,7 +36,7 @@ namespace OrchardCore.Autoroute.Services
                         _contentItemIds.Remove(previousPath);
                     }
 
-                    var requestPath = "/" + entry.Path.TrimStart('/');
+                    var requestPath = "/" + entry.Path.Trim('/');
                     _paths[entry.ContentItemId] = requestPath;
                     _contentItemIds[requestPath] = entry.ContentItemId;
                 }

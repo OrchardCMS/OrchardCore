@@ -1,9 +1,11 @@
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.ContentManagement
 {
@@ -11,8 +13,6 @@ namespace OrchardCore.ContentManagement
     {
         private readonly IOptions<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
-
-        private ContentDefinitionRecord _contentDefinitionRecord;
 
         public FileContentDefinitionStore(IOptions<ShellOptions> shellOptions, ShellSettings shellSettings)
         {
@@ -25,12 +25,14 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         public async Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
         {
-            if (_contentDefinitionRecord != null)
+            var scopedCache = ShellScope.Services.GetRequiredService<FileContentDefinitionScopedCache>();
+
+            if (scopedCache.ContentDefinitionRecord != null)
             {
-                return _contentDefinitionRecord;
+                return scopedCache.ContentDefinitionRecord;
             }
 
-            return _contentDefinitionRecord = await GetContentDefinitionAsync();
+            return scopedCache.ContentDefinitionRecord = await GetContentDefinitionAsync();
         }
 
         /// <summary>
@@ -78,5 +80,10 @@ namespace OrchardCore.ContentManagement
             _shellOptions.Value.ShellsApplicationDataPath,
             _shellOptions.Value.ShellsContainerName,
             _shellSettings.Name, "ContentDefinition.json");
+    }
+
+    internal class FileContentDefinitionScopedCache
+    {
+        public ContentDefinitionRecord ContentDefinitionRecord { get; internal set; }
     }
 }

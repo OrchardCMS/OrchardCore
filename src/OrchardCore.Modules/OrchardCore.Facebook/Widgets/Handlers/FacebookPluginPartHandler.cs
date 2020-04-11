@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Models;
@@ -41,12 +40,9 @@ namespace OrchardCore.Facebook.Widgets.Handlers
                         ContentItem = part.ContentItem
                     };
 
-                    var templateContext = new TemplateContext();
-                    templateContext.SetValue("ContentItem", part.ContentItem);
-                    templateContext.MemberAccessStrategy.Register<FacebookPluginPartViewModel>();
-                    templateContext.SetValue("Model", model);
+                    var result = await _liquidTemplateManager.RenderAsync(part.Liquid, _htmlEncoder, model,
+                        scope => scope.SetValue("ContentItem", model.ContentItem));
 
-                    var result = await _liquidTemplateManager.RenderAsync(part.Liquid, _htmlEncoder, templateContext);
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);
                 }
                 catch

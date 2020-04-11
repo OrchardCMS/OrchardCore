@@ -30,7 +30,7 @@ namespace OrchardCore.ContentManagement
             services.AddScoped<IContentAliasManager, ContentAliasManager>();
 
             services.AddOptions<ContentOptions>();
-
+            services.AddScoped<IContentPartHandlerResolver, ContentPartHandlerResolver>();
             return services;
         }
 
@@ -38,6 +38,7 @@ namespace OrchardCore.ContentManagement
         {
             services.RemoveAll<IContentDefinitionStore>();
             services.AddSingleton<IContentDefinitionStore, FileContentDefinitionStore>();
+            services.AddScoped<FileContentDefinitionScopedCache>();
 
             return services;
         }

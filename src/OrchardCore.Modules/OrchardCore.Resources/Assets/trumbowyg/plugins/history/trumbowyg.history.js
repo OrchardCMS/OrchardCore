@@ -10,6 +10,7 @@
     'use strict';
     $.extend(true, $.trumbowyg, {
         langs: {
+            // jshint camelcase:false
             de: {
                 history: {
                     redo: 'Wiederholen',
@@ -52,6 +53,7 @@
                     undo: '되돌리기'
                 }
             },
+            // jshint camelcase:true
         },
         plugins: {
             history: {

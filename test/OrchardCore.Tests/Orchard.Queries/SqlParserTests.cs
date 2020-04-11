@@ -115,7 +115,6 @@ namespace OrchardCore.Tests.OrchardCore.Queries
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
 
-
         [Theory]
         [InlineData("select a order by b", "SELECT [a] ORDER BY [b];")]
         [InlineData("select a order by b, c", "SELECT [a] ORDER BY [b], [c];")]

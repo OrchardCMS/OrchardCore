@@ -7,12 +7,12 @@ namespace OrchardCore.Lists.GraphQL
 {
     public class ContainedInputObjectType : WhereInputObjectGraphType<ContainedPart>
     {
-        public ContainedInputObjectType(IStringLocalizer<ContainedPart> T)
+        public ContainedInputObjectType(IStringLocalizer<ContainedPart> S)
         {
             Name = "ContainedPartInput";
-            Description = T["the list part of the content item"];
+            Description = S["the list part of the content item"];
 
-            AddScalarFilterFields<IdGraphType>("listContentItemId", T["the content item id of the parent list of the content item to filter"]);
+            AddScalarFilterFields<IdGraphType>("listContentItemId", S["the content item id of the parent list of the content item to filter"]);
         }
     }
 }

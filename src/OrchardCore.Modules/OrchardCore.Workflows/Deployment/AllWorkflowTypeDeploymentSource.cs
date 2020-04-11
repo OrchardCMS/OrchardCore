@@ -1,23 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Workflows.Services;
-using YesSql;
 
 namespace OrchardCore.Workflows.Deployment
 {
     public class AllWorkflowTypeDeploymentSource : IDeploymentSource
     {
-        private readonly ISession _session;
         private readonly IWorkflowTypeStore _workflowTypeStore;
 
-        public AllWorkflowTypeDeploymentSource(IWorkflowTypeStore workflowTypeStore, ISession session)
+        public AllWorkflowTypeDeploymentSource(IWorkflowTypeStore workflowTypeStore)
         {
             _workflowTypeStore = workflowTypeStore;
-            _session = session;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)

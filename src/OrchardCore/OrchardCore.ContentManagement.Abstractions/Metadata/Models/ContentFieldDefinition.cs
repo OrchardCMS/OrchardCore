@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.ContentManagement.Metadata.Models
+namespace OrchardCore.ContentManagement.Metadata.Models
 {
     public class ContentFieldDefinition
     {

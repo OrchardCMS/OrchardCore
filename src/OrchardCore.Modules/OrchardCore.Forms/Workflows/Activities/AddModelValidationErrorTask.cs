@@ -11,6 +11,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     public class AddModelValidationErrorTask : TaskActivity
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IStringLocalizer S;
 
         public AddModelValidationErrorTask(
             IUpdateModelAccessor updateModelAccessor,
@@ -18,13 +19,14 @@ namespace OrchardCore.Forms.Workflows.Activities
         )
         {
             _updateModelAccessor = updateModelAccessor;
-            T = localizer;
+            S = localizer;
         }
 
         public override string Name => nameof(AddModelValidationErrorTask);
-        public override LocalizedString DisplayText => T["Add Model Validation Error Task"];
-        public override LocalizedString Category => T["Validation"];
-        private IStringLocalizer T { get; set; }
+
+        public override LocalizedString DisplayText => S["Add Model Validation Error Task"];
+
+        public override LocalizedString Category => S["Validation"];
 
         public string Key
         {
@@ -40,7 +42,7 @@ namespace OrchardCore.Forms.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

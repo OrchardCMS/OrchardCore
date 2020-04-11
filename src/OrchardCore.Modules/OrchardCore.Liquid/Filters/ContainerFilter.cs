@@ -1,12 +1,11 @@
 using System;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.ContentManagement;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Liquid.Filters
 {
-
     public class ContainerFilter : ILiquidFilter
     {
         private readonly IContentManager _contentManager;

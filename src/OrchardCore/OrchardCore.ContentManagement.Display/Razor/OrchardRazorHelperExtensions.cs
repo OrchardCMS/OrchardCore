@@ -1,5 +1,3 @@
-using System.Net;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
@@ -66,7 +64,7 @@ public static class OrchardRazorHelperExtensions
         return builder;
     }
 
-    private static JObject ConvertContentItem(ContentItem contentItem)
+    internal static JObject ConvertContentItem(ContentItem contentItem)
     {
         var o = new JObject();
 

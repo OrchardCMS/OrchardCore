@@ -23,7 +23,7 @@ namespace OrchardCore.Facebook.Login.Configuration
         private readonly IFacebookService _coreService;
         private readonly IFacebookLoginService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<FacebookLoginConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public FacebookLoginConfiguration(
             IFacebookService coreService,
@@ -121,6 +121,5 @@ namespace OrchardCore.Facebook.Login.Configuration
 
             return settings;
         }
-
     }
 }

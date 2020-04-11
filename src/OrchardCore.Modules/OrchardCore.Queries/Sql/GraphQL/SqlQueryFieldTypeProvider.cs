@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +15,7 @@ using OrchardCore.ContentManagement.GraphQL.Queries;
 namespace OrchardCore.Queries.Sql.GraphQL.Queries
 {
     /// <summary>
-    /// This implementation of <see cref="ISchemaBuilder"/> registers 
+    /// This implementation of <see cref="ISchemaBuilder"/> registers
     /// all SQL Qeries as GraphQL queries.
     /// </summary>
     public class SqlQueryFieldTypeProvider : ISchemaBuilder

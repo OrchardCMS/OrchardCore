@@ -16,6 +16,7 @@ using OrchardCore.Lucene.Controllers;
 using OrchardCore.Lucene.Deployment;
 using OrchardCore.Lucene.Drivers;
 using OrchardCore.Lucene.Handlers;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Recipes;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.Settings;
@@ -44,6 +45,9 @@ namespace OrchardCore.Lucene
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<LuceneIndexingState>();
+            services.AddSingleton<LuceneIndexSettingsService>();
+            services.AddSingleton<LuceneIndexManager>();
+            services.AddSingleton<LuceneAnalyzerManager>();
             services.AddScoped<LuceneIndexingService>();
             services.AddScoped<ISearchQueryService, SearchQueryService>();
 
@@ -51,8 +55,6 @@ namespace OrchardCore.Lucene
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddSingleton<LuceneIndexManager>();
-            services.AddSingleton<LuceneAnalyzerManager>();
 
             services.Configure<LuceneOptions>(o =>
                 o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
@@ -68,6 +70,9 @@ namespace OrchardCore.Lucene
             services.AddScoped<IQuerySource, LuceneQuerySource>();
             services.AddScoped<LuceneQuerySource>();
             services.AddRecipeExecutionStep<LuceneIndexStep>();
+
+            services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
+            services.AddShapeAttributes<SearchShapes>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -75,8 +80,8 @@ namespace OrchardCore.Lucene
             routes.MapAreaControllerRoute(
                 name: "Lucene.Search",
                 areaName: "OrchardCore.Lucene",
-                pattern: "Search/{id?}",
-                defaults: new { controller = "Search", action = "Index" }
+                pattern: "Search",
+                defaults: new { controller = "Search", action = "Search" }
             );
 
             var adminControllerName = typeof(AdminController).ControllerName();
@@ -86,13 +91,6 @@ namespace OrchardCore.Lucene
                 areaName: "OrchardCore.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Index",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Lucene.Create",
-                areaName: "OrchardCore.Lucene",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Create",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
             );
 
             routes.MapAreaControllerRoute(

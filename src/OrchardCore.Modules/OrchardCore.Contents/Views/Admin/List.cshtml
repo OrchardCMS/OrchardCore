@@ -76,8 +76,8 @@
                         <label id="selected-items" class="text-muted" for="select-all"></label>
                     </div>
                 </div>
-                <div class="form-group col-2 mb-n1" style="display:none">
-                    <span class="dropdown float-right mt-1" id="actions">
+                <div class="form-group col-2 mb-n1" style="display:none" id="actions">
+                    <span class="dropdown float-right mt-1">
                         <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @T["Actions"]
                         </button>
@@ -124,7 +124,7 @@
 @* This is because ContentTypesAdminNode requires the ContenType to be available as part of the url *@
 <script at="Foot" type="text/javascript">
     $(function () {
-        $('select').selectpicker();
+        $('.selectpicker').selectpicker();
 
         var actions = $("#actions");
         var items = $("#items");
@@ -140,7 +140,7 @@
             $("#items-form").attr("action", newAction);
         });
 
-        $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
 
@@ -158,13 +158,13 @@
 
         function displayActionsOrFilters() {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                actions.parent().show();
+                actions.show();
                 filters.hide();
                 selectedItems.show();
                 items.hide();
             }
             else {
-                actions.parent().hide();
+                actions.hide();
                 filters.show();
                 selectedItems.hide();
                 items.show();
@@ -178,7 +178,13 @@
         });
 
         contentItemsCheckboxes.on("click", function () {
-            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            var itemsCount = $(":checkbox[name='itemIds']").length;
+            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
             displayActionsOrFilters();
         });
     })

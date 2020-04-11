@@ -12,7 +12,6 @@ namespace OrchardCore.Localization
         /// </summary>
         public PluralFormNotFoundException()
         {
-
         }
 
         /// <summary>
@@ -21,7 +20,6 @@ namespace OrchardCore.Localization
         /// <param name="message">The exception message.</param>
         public PluralFormNotFoundException(string message) : base(message)
         {
-
         }
 
         /// <summary>
@@ -31,7 +29,6 @@ namespace OrchardCore.Localization
         /// <param name="innerException">The inner <see cref="Exception"/>.</param>
         public PluralFormNotFoundException(string message, Exception innerException) : base(message, innerException)
         {
-
         }
     }
 }

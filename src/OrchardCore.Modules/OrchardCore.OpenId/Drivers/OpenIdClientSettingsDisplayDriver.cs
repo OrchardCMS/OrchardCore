@@ -89,8 +89,6 @@ namespace OrchardCore.OpenId.Drivers
                 {
                     model.UseIdTokenTokenFlow = true;
                 }
-
-
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -124,7 +122,6 @@ namespace OrchardCore.OpenId.Drivers
                 if (model.UseCodeFlow)
                 {
                     settings.ResponseType = OpenIdConnectResponseType.Code;
-
                 }
                 else if (model.UseCodeIdTokenFlow)
                 {
@@ -179,10 +176,10 @@ namespace OrchardCore.OpenId.Drivers
                     }
                 }
 
-                // If the settings are valid, reload the current tenant.
+                // If the settings are valid, release the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
 

@@ -26,7 +26,7 @@ namespace OrchardCore.OpenId.Configuration
         IConfigureNamedOptions<OpenIddictValidationOptions>,
         IConfigureNamedOptions<JwtBearerOptions>
     {
-        private readonly ILogger<OpenIdValidationConfiguration> _logger;
+        private readonly ILogger _logger;
         private readonly IOpenIdValidationService _validationService;
         private readonly IRunningShellTable _runningShellTable;
         private readonly IShellHost _shellHost;
@@ -36,7 +36,6 @@ namespace OrchardCore.OpenId.Configuration
             ILogger<OpenIdValidationConfiguration> logger,
             IOpenIdValidationService validationService,
             IRunningShellTable runningShellTable,
-            IServiceProvider serviceProvider,
             IShellHost shellHost,
             ShellSettings shellSettings)
         {
@@ -211,6 +210,23 @@ namespace OrchardCore.OpenId.Configuration
             // Don't allow the current tenant to choose the valid audiences, as this would
             // otherwise allow it to introspect tokens meant to be used with another tenant.
             options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
+
+            CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
+            {
+                var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
+                if (service == null)
+                {
+                    return;
+                }
+
+                var configuration = await GetServerSettingsAsync(service);
+                if (configuration == null)
+                {
+                    return;
+                }
+
+                options.UseReferenceTokens = configuration.UseReferenceTokens;
+            }).GetAwaiter().GetResult();
         }
 
         public void Configure(OpenIddictValidationOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

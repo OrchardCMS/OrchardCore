@@ -1,8 +1,15 @@
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
+@using OrchardCore.Admin
+@using OrchardCore.Entities
+@using OrchardCore.Settings
 @using OrchardCore.Users
+@using OrchardCore.Users.Models
+@inject ISiteService SiteService
 @inject SignInManager<IUser> SignInManager
 
-@{ 
+@{
+    var allowChangeEmail = (await SiteService.GetSiteSettingsAsync()).As<ChangeEmailSettings>().AllowChangeEmail;
     var externalAuthenticationSchemes = await SignInManager.GetExternalAuthenticationSchemesAsync();
 }
 <ul class="navbar-nav">
@@ -14,6 +21,10 @@
                 @if (User.HasClaim("Permission", "AccessAdminPanel"))
                 {
                     <a class="dropdown-item" asp-route-area="OrchardCore.Admin" asp-controller="Admin" asp-action="Index"><i class="fa fa-desktop fa-fw"></i> @T["Dashboard"]</a>
+                }
+                @if (allowChangeEmail)
+                {
+                    <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="ChangeEmail" asp-action="Index"><i class="fa fa-envelope fa-fw"></i> @T["Change Email"]</a>
                 }
                 <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ChangePassword"><i class="fa fa-lock fa-fw"></i> @T["Change Password"]</a>
                 @if (externalAuthenticationSchemes.Count() > 0)

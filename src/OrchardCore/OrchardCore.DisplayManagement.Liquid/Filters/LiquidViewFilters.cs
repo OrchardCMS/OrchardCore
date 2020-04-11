@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
-
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
@@ -35,7 +33,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
         public static ValueTask<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("ViewLocalizer", out var item) || !(item is IViewLocalizer localizer))
+            var localizer = context.GetValue("ViewLocalizer")?.ToObjectValue() as IViewLocalizer;
+
+            if (localizer == null)
             {
                 return ThrowArgumentException<ValueTask<FluidValue>>("ViewLocalizer missing while invoking 't'");
             }

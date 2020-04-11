@@ -11,12 +11,12 @@ namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
+        private readonly IStringLocalizer S;
+
         public ContentTypeSettingsDisplayDriver(IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer)
         {
             S = stringLocalizer;
         }
-
-        public IStringLocalizer S { get; }
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {
@@ -55,7 +55,6 @@ namespace OrchardCore.ContentTypes.Editors
 
             return Edit(contentTypeDefinition);
         }
-
 
         private static bool IsAlphaNumericOrEmpty(string value)
         {

@@ -12,7 +12,7 @@ module.exports = {
         console.log(global._LOG_);
     },
     run: function (dir, assembly, clean) {
-        const targetFramework = 'netcoreapp3.0';
+        const targetFramework = 'netcoreapp3.1';
         global._LOG_ = "";
 
         if (fs.existsSync(dir + 'bin/release/' + targetFramework + '/' + assembly)) {

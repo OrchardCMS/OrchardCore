@@ -1,0 +1,9 @@
+[
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/Scripts/ci-list-ordering.js"
+    ],
+    "output": "wwwroot/Scripts/ci-list-ordering.js"
+  }
+]

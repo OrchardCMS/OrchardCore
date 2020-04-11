@@ -34,12 +34,12 @@ The following properties are available on the `DisplayTaxonomyFieldViewModel` cl
 
 ### GetTaxonomyTermAsync
 
-Returns a the term from its content item id and taxonomy.
+Returns a term from its content item id and taxonomy.
 
 ```csharp
 @foreach(var termId in Model.TermContentItemIds)
 {
-    @await OrchardCore.GetTaxonomyTermAsync(Model.TaxonomyContentItemId, termId);
+    @await Orchard.GetTaxonomyTermAsync(Model.TaxonomyContentItemId, termId);
 }
 ```
 
@@ -51,7 +51,7 @@ Returns the list of terms including their parents.
 @foreach(var termId in Model.TermContentItemIds)
 {
     <div>
-    @foreach(var parent in await OrchardCore.GetInheritedTermsAsync(Model.TaxonomyContentItemId, termId))
+    @foreach(var parent in await Orchard.GetInheritedTermsAsync(Model.TaxonomyContentItemId, termId))
     {
         @parent
     }
@@ -62,6 +62,26 @@ Returns the list of terms including their parents.
 ### QueryCategorizedContentItemsAsync
 
 Provides a way to query content items that are categorized with specific terms.
+
+#### QueryCategorizedContentItemsAsync Example 
+
+The following example queries content items that are related to the current content item 
+by the term category, but excluding the current content item.
+
+```csharp
+@using YesSql.Services;
+@{
+    var termContentItemIds = Model.TermContentItemIds;
+    var contentItems = await Orchard.QueryCategorizedContentItemsAsync(
+        query => query.Where(index => index.TermContentItemId.IsIn(termContentItemIds) &&
+            index.ContentItemId != Model.Part.ContentItem.ContentItemId));
+
+    foreach(var contentItem in contentItems)
+    {
+        ...
+    }
+}
+```
 
 ## Liquid Tags
 
@@ -86,7 +106,7 @@ argument is a taxonomy content item id.
 
 #### Example
 
-The following example displays all the colors and their hierarchy
+The following example displays all the colors and their hierarchy:
 
 ```liquid
 {% assign taxonomyId = Model.ContentItem.Content.BlogPost.Colors.TaxonomyContentItemId %}
@@ -122,3 +142,30 @@ Each record corresponds to a selected term for a field.
 | TermContentItemId | `string` | The content item id of the categorized Term |
 
 For instance if a field has two selected terms, there will be two records with all identical column values except for the `TermContentItemId`.
+
+## Tags
+
+Tags are a editor and display mode option for taxonomies to allow tagging of content items while editing.
+
+When using the `Tags` mode the display text property of the tag is stored as well as the `TermContentItemId`.
+
+You can access the `TagNames` property directly with the following accessor:
+
+``` liquid tab="Liquid"
+{% for tagName in Model.ContentItem.Content.BlogPost.Tags.TagNames %}
+    <span class="badge badge-secondary">
+        <i class="fas fa-tag fa-xs fa-rotate-90 align-middle"></i>
+        <span class="align-middle"> {{ tagName }} </span> 
+    </span>
+{% endfor %}
+```
+
+``` html tab="Razor"
+@foreach (var tagName in Model.ContentItem.Content.BlogPost.Tags.TagNames)
+{
+    <span class="taxonomy-tag-term">@tagName</span>
+}
+```
+
+!!! note
+    If the display text property of the term is updated any content items will need to be republished to reflect this change.

@@ -5,7 +5,7 @@
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
-<h3>Endpoints</h3>
+<h3>@T["Endpoints"]</h3>
 <div class="form-group" asp-validation-class-for="EnableTokenEndpoint">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableTokenEndpoint">
@@ -34,11 +34,11 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableUserInfoEndpoint">
         <label class="custom-control-label" asp-for="EnableUserInfoEndpoint">@T["Enable User Info Endpoint"]</label>
-        <span class="hint">— @T["Enables action"] /connect/userinfo]</span>
+        <span class="hint">— @T["Enables action"] /connect/userinfo</span>
     </div>
 </div>
 
-<h3>Flows</h3>
+<h3>@T["Flows"]</h3>
 
 <div class="form-group collapse" asp-validation-class-for="AllowAuthorizationCodeFlow">
     <div class="custom-control custom-checkbox">
@@ -80,7 +80,7 @@
     </div>
 </div>
 
-<h3>Advanced options</h3>
+<h3>@T["Advanced options"]</h3>
 
 <p class="alert alert-info">@T["These options are all optional and are for advanced users only."]</p>
 
@@ -122,7 +122,6 @@
 <div class="form-group" asp-validation-class-for="CertificateThumbprint">
     @if (Model.AvailableCertificates.Count != 0)
     {
-
         <label asp-for="CertificateThumbprint">@T["Certificate"]</label>
         <select asp-for="CertificateThumbprint" class="form-control">
             <option value="">@T["None"]</option>
@@ -164,6 +163,7 @@
     </div>
 </div>
 
+
 <div class="form-group" asp-validation-class-for="AccessTokenFormat">
     <label asp-for="AccessTokenFormat">@T["Token Format"]</label>
     <select asp-for="AccessTokenFormat" class="form-control">
@@ -175,13 +175,23 @@
     <span asp-validation-for="AccessTokenFormat"></span>
 </div>
 
+<div class="form-group" asp-validation-class-for="UseReferenceTokens">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="UseReferenceTokens" >
+        <label class="custom-control-label" asp-for="UseReferenceTokens">@T["Use Reference Tokens"]</label>
+        <span class="hint">— @T["When this option is enabled, it allows to keep track of all the issued tokens, when storing a very large number of claims in the authorization codes, access tokens and refresh tokens or when immediate revocation of reference access tokens is desired."]</span>
+    </div>
+</div>
+
 <script at="Foot" type="text/javascript">
 ////<![CDATA[
     window.onload = function () {
         refreshCertificates();
         refreshEndpoints();
+        refreshUseReferenceTokens();
+
         $("#@Html.IdFor(m => m.AccessTokenFormat)").change(function () {
-            refreshTokenTypeHint();
+            refreshUseReferenceTokens();
         });
         $("#@Html.IdFor(m => m.CertificateStoreLocation)").change(function () {
             refreshCertificates();
@@ -222,6 +232,18 @@
             refreshAllowAuthorizationCodeFlowVisibility();
             refreshEnableAuthorizationEndpoint();
             refreshAllowRefreshTokenFlowVisibility();
+        }
+        function refreshUseReferenceTokens() {
+            var accessTokenFormat = $("#@Html.IdFor(m => m.AccessTokenFormat)");
+            var useReferenceTokens = $("#@Html.IdFor(m => m.UseReferenceTokens)");
+
+            if (accessTokenFormat.val() !== '@OpenIdServerSettings.TokenFormat.JWT') {                
+                useReferenceTokens.removeAttr("disabled");
+            }
+            else {
+                useReferenceTokens.attr('disabled', true);
+                useReferenceTokens.prop("checked", false);
+            }
         }
         function refreshEnableTokenEndpoint() {
             var enableTokenEndpoint = $("#@Html.IdFor(m => m.EnableTokenEndpoint)");
