@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>
-
+    <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>    
+    {% render_section "HeadMeta", required: false %}
     {% resources type: "Meta" %}
 
     <!-- Bootstrap core CSS -->
@@ -32,7 +32,6 @@
     {% resources type: "HeadScript" %}
     {% resources type: "HeadLink" %}
     {% resources type: "Stylesheet" %}
-
 </head>
 <body dir="{{ Culture.Dir }}">
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
