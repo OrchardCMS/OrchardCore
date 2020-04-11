@@ -15,16 +15,16 @@ namespace OrchardCore.PublishLater.Drivers
 {
     public class PublishLaterPartDisplayDriver : ContentPartDisplayDriver<PublishLaterPart>
     {
-        private readonly IHttpContextAccessor _hca;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly ILocalClock _localClock;
 
         public PublishLaterPartDisplayDriver(
-            IHttpContextAccessor hca,
+            IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             ILocalClock localClock)
         {
-            _hca = hca;
+            _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _localClock = localClock;
         }
@@ -47,7 +47,7 @@ namespace OrchardCore.PublishLater.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(PublishLaterPart part, IUpdateModel updater)
         {
-            var httpContext = _hca.HttpContext;
+            var httpContext = _httpContextAccessor.HttpContext;
 
             if (await _authorizationService.AuthorizeAsync(httpContext?.User, Permissions.PublishContent, part.ContentItem))
             {
