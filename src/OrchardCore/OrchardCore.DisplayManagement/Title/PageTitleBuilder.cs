@@ -58,11 +58,14 @@ namespace OrchardCore.DisplayManagement.Title
 
             for (var i = 0; i < _titleParts.Count; i++)
             {
-                htmlContentBuilder.AppendHtml(_titleParts[i].Value);
-
-                if (i < _titleParts.Count - 1)
+                if (!string.IsNullOrWhiteSpace(_titleParts[i].Value.ToString()))
                 {
-                    htmlContentBuilder.AppendHtml(separator);
+                    htmlContentBuilder.AppendHtml(_titleParts[i].Value);
+
+                    if (i < _titleParts.Count - 1)
+                    {
+                        htmlContentBuilder.AppendHtml(separator);
+                    }
                 }
             }
 
