@@ -3,9 +3,9 @@ using OrchardCore.Google;
 
 [assembly: Module(
     Name = "Google",
-    Author = "The Orchard Team",
-    Website = "https://orchardcore.net",
-    Version = "1.0.0-rc2",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Category = "Google"
 )]
 

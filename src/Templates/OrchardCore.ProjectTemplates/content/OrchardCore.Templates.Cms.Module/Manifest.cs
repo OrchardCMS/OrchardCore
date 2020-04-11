@@ -2,8 +2,8 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "OrchardCore.Templates.Cms.Module",
-    Author = "The Orchard Team",
-    Website = "https://orchardcore.net",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
     Version = "0.0.1",
     Description = "OrchardCore.Templates.Cms.Module",
 #if (AddPart)

@@ -2,7 +2,7 @@
   "name": "Blog",
   "displayName": "Blog",
   "description": "Provides a functional Blog with CMS features.",
-  "author": "The Orchard Team",
+  "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0-rc2",
   "issetuprecipe": true,

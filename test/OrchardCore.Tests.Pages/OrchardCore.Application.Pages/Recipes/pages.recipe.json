@@ -2,7 +2,7 @@
   "name": "Pages",
   "displayName": "Pages",
   "description": "Blank site for testing razor pages.",
-  "author": "The Orchard Team",
+  "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0-rc2",
   "issetuprecipe": true,

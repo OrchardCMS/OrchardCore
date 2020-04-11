@@ -2,9 +2,9 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Orchard Demo",
-    Author = "The Orchard Team",
-    Website = "https://orchardcore.net",
-    Version = "1.0.0-rc2",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Description = "Test",
     Category = "Samples",
     Dependencies = new []{ "OrchardCore.Users", "OrchardCore.Contents" }

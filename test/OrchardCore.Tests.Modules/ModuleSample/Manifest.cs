@@ -3,7 +3,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Module(
     Name = "Module Sample",
     Author = "Nicholas Mayne",
-    Website = "https://orchardcore.net",
+    Website = ManifestConstants.OrchardCoreWebsite,
     Version = "2.0.0",
     Category = "Test"
 )]

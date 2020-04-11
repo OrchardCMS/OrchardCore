@@ -2,9 +2,9 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Response Compression",
-    Author = "The Orchard Team",
-    Website = "https://orchardcore.net",
-    Version = "1.0.0-rc2",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Description = "Compresses responses.",
     Category = "Infrastructure"
 )]
