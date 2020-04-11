@@ -28,7 +28,8 @@
                 @if (Model.CanInsert != false)
                 {
                     <div class="btn-group">
-                        <button class="toggleAll btn btn-secondary btn-sm" onclick="toggleWidgets(); return false;" title="@T["Toggle all widgets"]"></button>
+                        <button class="toggleAll btn btn-secondary btn-sm" onclick="toggleWidgets(); return false;" title="@T["Toggle all widgets"]">
+                            <i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
                         <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </button>
