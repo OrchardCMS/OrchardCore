@@ -18,6 +18,7 @@ namespace OrchardCore.Admin
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly ApplicationPartManager _applicationManager;
 
+        // Constructor
         public AdminPageRouteModelProvider(IHostEnvironment hostingEnvironment, ApplicationPartManager applicationManager)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -26,8 +27,12 @@ namespace OrchardCore.Admin
 
         public int Order => 1000;
 
+        /*
+            \brief Callback on prividers executring
+        */
         public void OnProvidersExecuting(PageRouteModelProviderContext context)
         {
+            // If context is not set
             if (context == null)
             {
                 throw new ArgumentNullException(nameof(context));
@@ -37,6 +42,7 @@ namespace OrchardCore.Admin
 
             var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
 
+            // If the hosting enviroment is development
             if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
             {
                 descriptors = GetPageDescriptors<DevelopmentViewsFeature>(_applicationManager);
@@ -48,6 +54,7 @@ namespace OrchardCore.Admin
 
             var adminPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+            // Adding relative paths from descriptors to the admin paths
             foreach (var descriptor in descriptors)
             {
                 foreach (var type in descriptor.Type.GetNestedTypes())
@@ -62,6 +69,9 @@ namespace OrchardCore.Admin
                 }
             }
 
+            // For each route model in context,
+            // if its relative path is contained in admin paths,
+            // then set its admin property to null
             foreach (var model in context.RouteModels.ToArray())
             {
                 if (adminPaths.Contains(model.RelativePath))
@@ -71,12 +81,14 @@ namespace OrchardCore.Admin
             }
         }
 
+        // Callback when providers are executed
         public void OnProvidersExecuted(PageRouteModelProviderContext context)
         {
         }
 
         private IEnumerable<CompiledViewDescriptor> GetPageDescriptors<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
         {
+            // If the application manager is not set
             if (applicationManager == null)
             {
                 throw new ArgumentNullException(nameof(applicationManager));
@@ -88,6 +100,8 @@ namespace OrchardCore.Admin
 
             foreach (var viewDescriptor in viewsFeature.ViewDescriptors)
             {
+                // If the relative path of view descriptor is already visited,
+                // then go to the next view descriptor
                 if (!visited.Add(viewDescriptor.RelativePath))
                 {
                     continue;
