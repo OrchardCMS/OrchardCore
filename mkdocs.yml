@@ -1,24 +1,25 @@
 site_name: Orchard Core Documentation
 theme:
-  name: 'material'
-  logo: 'docs/assets/images/orchard-logo.png'
-  favicon: 'docs/assets/images/favicon.png'
-  feature:
-    tabs: true
+  name: material
+  logo: docs/assets/images/orchard-logo.png
+  favicon: docs/assets/images/favicon-blue.png
+  features:
+    - instant
+    - tabs
   palette:
-    primary: 'blue'
-    accent: 'light blue'
+    primary: blue
+    accent: light blue
   static_templates:
     - 404.html
     
 extra:
   social:
-    - type: 'leaf'
-      link: 'https://orchardcore.net'
-    - type: 'github-alt'
-      link: 'https://github.com/OrchardCMS/OrchardCore'
-    - type: 'twitter'
-      link: 'https://twitter.com/OrchardCMS'
+    - icon: fontawesome/solid/leaf
+      link: https://orchardcore.net
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/OrchardCMS/OrchardCore
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/OrchardCMS
 
 # Repository
 repo_name: OrchardCMS/OrchardCore
@@ -35,7 +36,18 @@ markdown_extensions:
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
+  - pymdownx.b64
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji
+  - pymdownx.magiclink
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
   - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.tasklist
+  - pymdownx.tilde
   - toc:
       permalink: true
 #  - markdown.extensions.nl2br
