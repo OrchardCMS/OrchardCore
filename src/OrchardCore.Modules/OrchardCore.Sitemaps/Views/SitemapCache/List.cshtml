@@ -3,11 +3,10 @@
 <h1>@RenderTitleSegments(T["Sitemaps Cache"])</h1>
 
 <form autocomplete="off">
-
     <div class="row">
         <div class="form-group col-xl-4 col-sm-6">
             <div class="input-group input-group-sm filter-options">
-                <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus="autofocus" />
+                <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
             </div>
         </div>
         <div class="form-group col-xl-8 col-sm-6">
@@ -16,7 +15,6 @@
             </div>
         </div>
     </div>
-
 </form>
 
 <form asp-action="List">
@@ -48,7 +46,6 @@
     <div id="search-alert" class="alert alert-info d-none" role="alert">
         @T["<strong>Nothing here!</strong> Your search returned no results."]
     </div>
-
 </form>
 
 <script at="Foot" type="text/javascript">

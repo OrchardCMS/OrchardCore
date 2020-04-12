@@ -28,8 +28,12 @@ namespace OrchardCore.Tenants.ViewModels
 
     public class ShellSettingsEntry
     {
+        public string Description { get; set; }
+
         public bool Selected { get; set; }
+
         public string Name { get; set; }
+
         public bool IsDefaultTenant { get; set; }
 
         public string Token { get; set; }

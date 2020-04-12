@@ -28,8 +28,8 @@ namespace OrchardCore.OpenId.Controllers
     public class ApplicationController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer<ApplicationController> S;
-        private readonly IHtmlLocalizer<ApplicationController> H;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
         private readonly ISiteService _siteService;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly INotifier _notifier;

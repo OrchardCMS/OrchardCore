@@ -25,6 +25,7 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
+        private readonly ILogger _logger;
 
         public MenuController(
             IAuthorizationService authorizationService,
@@ -41,10 +42,8 @@ namespace OrchardCore.AdminMenu.Controllers
             New = shapeFactory;
             _notifier = notifier;
             H = htmlLocalizer;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; }
 
         public async Task<IActionResult> List(AdminMenuListOptions options, PagerParameters pagerParameters)
         {
@@ -86,7 +85,7 @@ namespace OrchardCore.AdminMenu.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error when retrieving the list of admin menus");
+                _logger.LogError(ex, "Error when retrieving the list of admin menus");
                 _notifier.Error(H["Error when retrieving the list of admin menus"]);
             }
 

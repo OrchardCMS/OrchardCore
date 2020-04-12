@@ -13,6 +13,8 @@ namespace OrchardCore.Setup.ViewModels
         [SiteNameValid(maximumLength: 70)]
         public string SiteName { get; set; }
 
+        public string Description { get; set; }
+
         public string DatabaseProvider { get; set; }
 
         public string ConnectionString { get; set; }

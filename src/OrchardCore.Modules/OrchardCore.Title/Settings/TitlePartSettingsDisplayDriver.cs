@@ -14,7 +14,7 @@ namespace OrchardCore.Title.Settings
     public class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer<TitlePartSettingsDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public TitlePartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<TitlePartSettingsDisplayDriver> localizer)
         {

@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html lang="{{ Culture.Name }}">
-
   <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
+    <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>    
+    {{ Site.Meta | raw }}
     {% render_section "HeadMeta", required:false %}
-
-    <title>{% page_title Site.SiteName %}</title>
 
     <!-- Bootstrap core CSS -->
     {% style name:"thecomingsoontheme-vendor-bootstrap", version:"4" %}
@@ -27,9 +22,7 @@
     {% resources type: "Stylesheet" %}
     {% resources type: "HeadScript" %}
   </head>
-
   <body dir={{ Culture.Dir }}>
-
     <div class="overlay"></div>
     <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
       <source src="{{ "~/TheComingSoonTheme/mp4/bg.mp4" | href }}" type="video/mp4">
@@ -48,5 +41,4 @@
 
     {% resources type: "FootScript" %}
   </body>
-
 </html>

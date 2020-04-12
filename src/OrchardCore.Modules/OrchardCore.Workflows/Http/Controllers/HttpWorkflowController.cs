@@ -22,7 +22,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly IActivityLibrary _activityLibrary;
         private readonly ISecurityTokenService _securityTokenService;
         private readonly IAntiforgery _antiforgery;
-        private readonly ILogger<HttpWorkflowController> _logger;
+        private readonly ILogger _logger;
         public const int NoExpiryTokenLifespan = 36500;
 
         public HttpWorkflowController(
