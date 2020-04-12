@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+@inject OrchardCore.Settings.ISiteService siteService
+@using OrchardCore.Entities
+@using OrchardCore.Admin.Models
+@{
+    var adminSettings = (await siteService.GetSiteSettingsAsync()).As<AdminSettings>();
+}
+<!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
@@ -19,6 +25,10 @@
     <!-- This script can't wait to the footer -->
     <script type="text/javascript" asp-src="~/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="~/TheAdmin/Scripts/userPreferencesLoader.js"></script>
     @await RenderSectionAsync("HeadMeta", required: false)
+    @if (!string.IsNullOrEmpty(adminSettings.Head))
+    {
+        @Html.Raw(adminSettings.Head)
+    }
 </head>
 <body class="preload">
     <div class="ta-wrapper">

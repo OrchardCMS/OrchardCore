@@ -1,9 +1,35 @@
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Zones">
+<div class="form-group" asp-validation-class-for="DisplayMenuFilter">
     <div class="custom-control custom-checkbox">
         <input asp-for="DisplayMenuFilter" class="custom-control-input" type="checkbox" />
         <label asp-for="DisplayMenuFilter" class="custom-control-label">@T["Enable Admin Menu filter"]</label>
     </div>
     <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
-</fieldset>
+</div>
+
+<div class="form-group" asp-validation-class-for="Head">
+    <label asp-for="Head">@T["Head"]</label>
+    <textarea asp-for="Head" class="form-control"></textarea>
+    <span asp-validation-for="Head"></span>
+    <span class="hint">@T["HTML code added in the head of the admin pages."]</span>
+</div>
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-mode-css" at="Foot"></script>
+<script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script at="Foot">
+    $(function () {
+        var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Head)');
+        var editor = CodeMirror.fromTextArea(optionsTexArea, {
+            autoRefresh: true,
+            lineNumbers: false,
+            lineWrapping: true,
+            matchBrackets: true,
+            mode: { name: "htmlmixed" }
+        });
+    });
+</script>
