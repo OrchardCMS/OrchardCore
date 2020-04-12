@@ -483,8 +483,10 @@ Adds alternates to a shape.
 Input
 
 ```liquid
-{% shape_add_alternates my_shape "alternate1", "alternate2" %}
 {% shape_add_alternates my_shape "alternate1 alternate2" %}
+
+{% assign my_alternates = "alternate1,alternate2" | split: "," %}
+{% shape_add_alternates my_shape my_alternates %}
 ```
 
 ### `shape_clear_wrappers`
@@ -504,8 +506,10 @@ Adds wrappers to a shape.
 Input
 
 ```liquid
-{% shape_add_wrappers my_shape "wrapper1", "wrapper2" %}
 {% shape_add_wrappers my_shape "wrapper1 wrapper2" %}
+
+{% assign my_wrappers = "wrapper1,wrapper2" | split: "," %}
+{% shape_add_wrappers my_shape my_wrappers %}
 ```
 
 ### `shape_clear_classes`
@@ -526,7 +530,9 @@ Input
 
 ```liquid
 {% shape_add_classes my_shape "class1 class2" %}
-{% shape_add_classes my_shape "class1", "class2" %}
+
+{% assign my_classes "class1,class2" | split: "," %}
+{% shape_add_classes my_shape my_classes %}
 ```
 
 ### `shape_clear_attributes`
@@ -696,29 +702,92 @@ The content of this block can then be reused from the Layout using the `{% rende
 
 ASP.NET Core MVC provides a set of tag helpers to render predefined HTML outputs. The Liquid module provides a way to call into these Tag Helpers using custom liquid tags.
 
+
+### `form`
+
+Invokes the `form` tag helper of ASP.NET Core.
+
+```liquid
+{% form action:"Create", controller: "Todo", method: "post" %}
+    ... ... ...
+{% endform %}
+```
+
+###  `input`
+
+Using `helper` invokes the `input` tag helper of ASP.NET Core and binds `Text` of the Model
+
+```liquid
+{% helper "input", for: "Text", class: "form-control" %}
+```
+
+### `label`
+
+Using `helper` invokes the `label` tag helper of ASP.NET Core and binds `Text` of the Model
+
+```liquid
+{% helper "label", for: "Text" %}
+```
+
+### `validation_summary`
+
+Using `helper` invokes the `validation_summary` tag helper of ASP.NET Core with `div`  
+
+```liquid
+{% helper "div", validation_summary: "All" %}
+```
+
+### `validation_for`
+
+Using `helper` invokes the `validation_for` tag helper of ASP.NET Core with `span` and binds `Text` of the Model
+
+```liquid
+{% helper "span", validation_for: "Text" %}
+```
+
 ### `link`
 
 Invokes the `link` tag helper from the `Orchard.ResourceManagement` package.
 
 ### `meta`
 
-Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package.
+Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/Readme.md#meta-tags)
 
 ### `resources`
 
-Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package.
+Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/Readme.md#rendering)
 
 ### `script`
 
-Invokes the `script` tag helper from the `Orchard.ResourceManagement` package.
+Invokes the `script` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/Readme.md#inline-definition)
 
 ### `style`
 
-Invokes the `style` tag helper from the `Orchard.ResourceManagement` package.
+Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/Readme.md#inline-definition)
 
 ### `a`
 
 Invokes the `a` content link tag helper from the `OrchardCore.Contents` package.
+
+### `route_*`
+Route data can be added using `route_*` to tag helper of ASP.NET Core that supports route data using `asp-route-*` attribute.
+
+In following example, `route_returnUrl` adds `returnUrl` to form action.
+
+```liquid
+{% form action: "Update", method: "post",  route_returnUrl: Request.Query["returnurl"] %}
+    ... ... ...
+{% endform %}
+```
+
+In following example, `route_todoid` adds `Model.TodoId` to hyperlink.
+
+```liquid
+{% a action: "Delete" , controller: "Todo", class: "btn btn-danger", route_todoid: Model.TodoId %}
+    Delete
+{% enda %}
+```
+
 
 ### `antiforgerytoken`
 
