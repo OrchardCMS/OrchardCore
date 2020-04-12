@@ -1,0 +1,33 @@
+{
+  "name": "",
+  "displayName": "",
+  "description": "",
+  "author": "",
+  "website": "",
+  "version": "",
+  "issetuprecipe": false,
+  "categories": [],
+  "tags": [],
+  "variables": {
+    "clickToDeployStep": "[js:uuid()]"
+  },
+  "steps": [
+    {
+      "name": "deployment",
+      "Plans": [
+        {
+          "Name": "Click to deploy",
+          "Steps": [
+            {
+              "Type": "ClickToDeployContentDeploymentStep",
+              "Step": {
+                "Id": "[js: variables('clickToDeployStep')]",
+                "Name": "ClickToDeployContentDeploymentStep"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

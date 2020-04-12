@@ -248,6 +248,7 @@ namespace OrchardCore.Contents
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ClickToDeployContentDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ClickToDeployContentDeploymentStepDriver>();
             services.AddScoped<IShapeTableProvider, ClickToDeployContentShapes>();
+            services.AddScoped<IDataMigration, ClickToDeployMigrations>();
         }
     }
 
