@@ -1,11 +1,10 @@
-@using OrchardCore.Liquid
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
-    @await Orchard.LiquidToHtmlAsync(Site.Meta)
+    @Html.Raw(Site.Meta)
     @await RenderSectionAsync("HeadMeta", required: false)
     <script asp-name="bootstrap" version="4" at="Foot"></script>
     <style asp-name="thetheme-bootstrap-oc" version="1"></style>

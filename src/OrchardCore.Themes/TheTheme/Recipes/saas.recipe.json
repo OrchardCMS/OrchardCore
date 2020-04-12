@@ -20,7 +20,6 @@
         "OrchardCore.HomeRoute",
         "OrchardCore.Localization",
         "OrchardCore.Features",
-        "OrchardCore.Media",
         "OrchardCore.Navigation",
         "OrchardCore.Recipes",
         "OrchardCore.Resources",
@@ -49,15 +48,6 @@
         "Controller": "Home",
         "Area": "TheTheme"
       }
-    },
-    {
-      "name": "media",
-      "Files": [
-        {
-          "TargetPath": "favicon.ico",
-          "SourcePath": "../wwwroot/favicon.ico"
-        }
-      ]
     }
   ]
 }
