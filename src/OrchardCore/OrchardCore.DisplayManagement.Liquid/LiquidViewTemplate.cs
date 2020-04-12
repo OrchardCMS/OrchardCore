@@ -203,11 +203,12 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         public static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, LiquidTemplateContext context, object model, Action<Scope> scopeAction)
         {
-            var viewContext = context.Services.GetRequiredService<ViewContextAccessor>().ViewContext;
+            var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
+            var viewContext = viewContextAccessor.ViewContext;
 
             if (viewContext == null)
             {
-                viewContext = await GetViewContextAsync(context);
+                viewContext = viewContextAccessor.ViewContext = await GetViewContextAsync(context);
             }
 
             try
@@ -223,11 +224,12 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public static async Task RenderAsync(this LiquidViewTemplate template, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context, object model, Action<Scope> scopeAction)
         {
-            var viewContext = context.Services.GetRequiredService<ViewContextAccessor>().ViewContext;
+            var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
+            var viewContext = viewContextAccessor.ViewContext;
 
             if (viewContext == null)
             {
-                viewContext = await GetViewContextAsync(context);
+                viewContext = viewContextAccessor.ViewContext = await GetViewContextAsync(context);
             }
 
             try
