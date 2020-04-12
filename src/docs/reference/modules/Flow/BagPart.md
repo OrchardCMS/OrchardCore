@@ -49,8 +49,11 @@ to build the display shapes for the  content items, then `DisplayAsync` is used 
 ``` liquid tab="Liquid"
 <section class="flow">
     {% for item in Model.ContentItems %}
-        {{ item | shape_build_display: "Contained" | shape_render }}
-    {% endfor %}
+        {% assign shape = item | shape_build_display: "Detail" %}
+  		{% capture bagpart_item_alternates %}Content_Contained Content_Contained__{{ item.ContentItem.ContentType | raw }}{% endcapture %}
+  		{% shape_add_alternates shape bagpart_item_alternates %}
+  		{{ shape | shape_render }}
+  	{% endfor %}
 </section>
 ```
 
@@ -63,7 +66,10 @@ to build the display shapes for the  content items, then `DisplayAsync` is used 
 <section class="flow">
     @foreach (var item in Model.BagPart.ContentItems)
     {
-        var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.BuildPartDisplayContext.Updater, Model.Settings.DisplayType ?? "Contained", Model.BuildPartDisplayContext.GroupId);
+        var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.BuildPartDisplayContext.Updater, Model.Settings.DisplayType ?? "Detail", Model.BuildPartDisplayContext.GroupId);
+        
+        itemContent.Metadata.Alternates.Add("Content_Contained");
+        itemContent.Metadata.Alternates.Add($"Content_Contained__{item.ContentItem.ContentType}");
 
         @await DisplayAsync(itemContent)
     }
