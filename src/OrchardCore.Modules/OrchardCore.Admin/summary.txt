@@ -1,1 +1,1 @@
-
+This module is used to set various user positions (administrator, moderator, author, etc. - Permissions.cs, PermissionsAdminSettings.cs and some others) and to manage the contents and layout for the admin.
