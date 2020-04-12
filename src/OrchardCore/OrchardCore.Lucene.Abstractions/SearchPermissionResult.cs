@@ -24,11 +24,11 @@ namespace OrchardCore.Lucene
         /// Indicating a failed operation, with a list of errors if applicable.
         /// </summary>
         /// <param name="errors">An optional array of <see cref="LocalizedString"/> which caused the operation to fail.</param>
-        public static SearchPermissionResult Fail(params LocalizedString[] errors) => new SearchPermissionResult { Succeeded = false, Errors = errors, Failed = true, Forbided = false };
+        public static SearchPermissionResult Fail(params LocalizedString[] errors) => new SearchPermissionResult { Succeeded = false, Errors = errors, Failed = true, Forbidden = false };
 
         public bool Failed { get; protected set; }
-        public bool Forbided { get; protected set; }
-        public static SearchPermissionResult Forbid() => new SearchPermissionResult { Succeeded = false, Forbided = true, Failed = false };
+        public bool Forbidden { get; protected set; }
+        public static SearchPermissionResult Forbid() => new SearchPermissionResult { Succeeded = false, Forbidden = true, Failed = false };
     }
 }
 

@@ -91,7 +91,7 @@ namespace OrchardCore.Lucene.Controllers
 
             string indexName = searchSettings.SearchIndex;
             var result = await _searchPermissionService.CheckPermission(indexName, User);
-            if(result.Forbided) return this.ChallengeOrForbid();
+            if(result.Forbidden) return this.ChallengeOrForbid();
             if (result.Failed)
             {
                 foreach (var error in result.Errors)
