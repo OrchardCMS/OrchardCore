@@ -27,7 +27,9 @@ namespace OrchardCore.Media.Azure
 
         public void Configure(MediaBlobStorageOptions options)
         {
-            var section = _shellConfiguration.GetSection("OrchardCore.Media.Azure");
+            var section =
+                _shellConfiguration.GetSection("OrchardCore_Media_Azure") ??
+                _shellConfiguration.GetSection("OrchardCore.Media.Azure"); // For backward compatibility.
 
             options.BasePath = section.GetValue(nameof(options.BasePath), String.Empty);
             options.ContainerName = section.GetValue(nameof(options.ContainerName), String.Empty);

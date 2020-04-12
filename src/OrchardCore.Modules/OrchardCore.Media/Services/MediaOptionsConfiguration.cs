@@ -60,7 +60,9 @@ namespace OrchardCore.Media.Services
 
         public void Configure(MediaOptions options)
         {
-            var section = _shellConfiguration.GetSection("OrchardCore.Media");
+            var section =
+                _shellConfiguration.GetSection("OrchardCore_Media") ??
+                _shellConfiguration.GetSection("OrchardCore.Media"); // For backward compatibility.
 
             // Because IShellConfiguration treats arrays as key value pairs, we replace the array value,
             // rather than letting Configure merge the default array with the appsettings value.

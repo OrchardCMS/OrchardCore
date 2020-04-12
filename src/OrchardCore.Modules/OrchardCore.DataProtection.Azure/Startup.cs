@@ -106,7 +106,7 @@ namespace OrchardCore.DataProtection.Azure
         {
             var blobName =
                 _configuration.GetValue<string>("OrchardCore_DataProtection_Azure:BlobName") ??
-                _configuration.GetValue<string>("OrchardCore.DataProtection.Azure:BlobName");
+                _configuration.GetValue<string>("OrchardCore.DataProtection.Azure:BlobName"); // For backward compatibility.
 
             if (String.IsNullOrEmpty(blobName))
             {

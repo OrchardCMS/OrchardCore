@@ -54,7 +54,11 @@ namespace OrchardCore.Admin
             services.AddScoped<IPermissionProvider, PermissionsAdminSettings>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore.Admin"));
+            var adminSection =
+                _configuration.GetSection("OrchardCore_Admin") ??
+                _configuration.GetSection("OrchardCore.Admin"); // For backward compatibility.
+
+            services.Configure<AdminOptions>(adminSection);
 
             services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
         }

@@ -40,7 +40,10 @@ namespace OrchardCore.Media.Azure
                 _configuration[$"OrchardCore_Media_Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"] ??
                 _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"]; // For backward compatibility.
 
-            var containerName = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
+            var containerName =
+                _configuration[$"OrchardCore_Media_Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"] ??
+                _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"]; // For backward compatibility.
+
             if (CheckOptions(connectionString, containerName, _logger))
             {
                 // Register a media cache file provider.
