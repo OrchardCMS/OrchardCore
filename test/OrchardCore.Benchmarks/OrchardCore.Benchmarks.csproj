@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
+    
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Benchmark</RootNamespace>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
