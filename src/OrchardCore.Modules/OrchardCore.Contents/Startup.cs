@@ -249,6 +249,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IDisplayDriver<DeploymentStep>, ClickToDeployContentDeploymentStepDriver>();
             services.AddScoped<IShapeTableProvider, ClickToDeployContentShapes>();
             services.AddScoped<IDataMigration, ClickToDeployMigrations>();
+            services.AddScoped<IContentDisplayDriver, ClickToDeployContentDriver>();
         }
     }
 

@@ -1,0 +1,36 @@
+@using Microsoft.AspNetCore.Authorization
+@using OrchardCore.ContentManagement
+@using OrchardCore.Entities
+@using OrchardCore.Environment.Shell
+@inject IAuthorizationService AuthorizationService
+@inject IContentManager ContentManager
+@inject IShellFeaturesManager ShellFeaturesManager
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasDraft = contentItem.HasDraft();
+    var features = await ShellFeaturesManager.GetEnabledFeaturesAsync();
+    bool deploymentEnabled = false;
+
+    if (Site.As<ClickToDeploySettings>().ClickToDeployPlanId != 0 && await AuthorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export))
+    {
+        deploymentEnabled = true;
+    }
+}
+
+@if (deploymentEnabled)
+{
+    if (hasDraft)
+    {
+        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId" data-latest=@Boolean.TrueString>@T["Deploy Draft"]</button>
+        if (hasPublished)
+        {
+            <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Deploy Published"]</button>
+        }
+    }
+    else
+    {
+        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Deploy"]</button>
+    }
+}
