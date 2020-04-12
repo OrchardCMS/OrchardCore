@@ -14,6 +14,7 @@ namespace OrchardCore.Admin
         private readonly IExtensionManager _extensionManager;
         private readonly IMemoryCache _memoryCache;
 
+        //creating of new special class variable
         public AdminThemeService(
             ISiteService siteService,
             IExtensionManager extensionManager,
@@ -26,7 +27,9 @@ namespace OrchardCore.Admin
 
         public async Task<IExtensionInfo> GetAdminThemeAsync()
         {
+            //theme name take admin theme name
             string currentThemeName = await GetAdminThemeNameAsync();
+             //what to do if there are no current theme name
             if (String.IsNullOrEmpty(currentThemeName))
             {
                 return null;
@@ -34,14 +37,14 @@ namespace OrchardCore.Admin
 
             return _extensionManager.GetExtension(currentThemeName);
         }
-
+        //enable to set admin theme name
         public async Task SetAdminThemeAsync(string themeName)
         {
             var site = await _siteService.LoadSiteSettingsAsync();
             site.Properties["CurrentAdminThemeName"] = themeName;
             await _siteService.UpdateSiteSettingsAsync(site);
         }
-
+         //program get and save theme name
         public async Task<string> GetAdminThemeNameAsync()
         {
             string themeName;
