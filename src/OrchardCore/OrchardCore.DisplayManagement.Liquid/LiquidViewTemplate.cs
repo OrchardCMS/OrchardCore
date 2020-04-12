@@ -87,7 +87,8 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterBlock<HelperBlock>("block");
             Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
-            Factory.RegisterBlock<NamedHelperBlock>("scriptblock");            
+            Factory.RegisterBlock<NamedHelperBlock>("form");
+            Factory.RegisterBlock<NamedHelperBlock>("scriptblock");
 
             // Dynamic caching
             Factory.RegisterBlock<CacheBlock>("cache");
@@ -181,15 +182,16 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return shape.Items;
                 }
 
-                // Resolve Model.Content.MyType-MyField-FieldType_Display__DisplayMode
+                // Resolves Model.Content.MyType-MyField-FieldType_Display__DisplayMode
                 var namedShaped = shape.Named(n);
                 if (namedShaped != null)
                 {
                     return namedShaped;
                 }
 
-                // Resolve Model.Content.MyNamedPart
-                // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
+                // Resolves Model.Content.MyNamedPart
+                // Resolves Model.Content.MyType__MyField
+                // Resolves Model.Content.MyType-MyField
                 return shape.NormalizedNamed(n.Replace("__", "-"));
             }
 
