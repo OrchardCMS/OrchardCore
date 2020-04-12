@@ -67,20 +67,7 @@ namespace OrchardCore.Lucene.Controllers
         public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var searchSettings = siteSettings.As<LuceneSettings>();
-
-            if (permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index") != null)
-            {
-                if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index")))
-                {
-                    return this.ChallengeOrForbid();
-                }
-            }
-            else
-            {
-                _logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
-                return BadRequest("Search is not configured.");
-            }
+            var searchSettings = siteSettings.As<LuceneSettings>();       
 
             if (searchSettings?.DefaultSearchFields == null)
             {
