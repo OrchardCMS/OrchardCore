@@ -90,15 +90,14 @@ body {
     height: 42px;
     margin-left: 11px;
     margin-right: 24px;
-    padding-left: 36px;
     padding-top: 10px;
-    background-image: url(../logo.png);
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 28px auto;
     white-space: nowrap;
     font-size: 14px;
     transition: width 0.2s ease-in-out;
+
+    img {
+        width: 28px;
+    }
 
     span:first-child {
         margin-left: 5px;

@@ -8,6 +8,20 @@
     <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
 </div>
 
+<div class="form-group" asp-validation-class-for="BrandImageUrl">
+    <label asp-for="BrandImageUrl">@T["Brand image url"]</label>
+    <input asp-for="BrandImageUrl" class="form-control" />
+    <span asp-validation-for="BrandImageUrl"></span>
+    <span class="hint">@T["The url of the upper left image in admin."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="FaviconUrl">
+    <label asp-for="FaviconUrl">@T["Favicon url"]</label>
+    <input asp-for="FaviconUrl" class="form-control" />
+    <span asp-validation-for="FaviconUrl"></span>
+    <span class="hint">@T["The url of the favicon."]</span>
+</div>
+
 <div class="form-group" asp-validation-class-for="Head">
     <label asp-for="Head">@T["Head"]</label>
     <textarea asp-for="Head" class="form-control"></textarea>
