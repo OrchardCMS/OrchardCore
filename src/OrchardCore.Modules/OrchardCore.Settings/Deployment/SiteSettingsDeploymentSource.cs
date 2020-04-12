@@ -89,6 +89,10 @@ namespace OrchardCore.Settings.Deployment
                         data.Add(new JProperty(nameof(ISite.HomeRoute), JObject.FromObject(site.HomeRoute)));
                         break;
 
+                    case "Meta":
+                        data.Add(new JProperty(nameof(ISite.Meta), JObject.FromObject(site.Meta)));
+                        break;
+
                     default:
                         data.Add(new JProperty(settingName, site.Properties[settingName]));
                         break;

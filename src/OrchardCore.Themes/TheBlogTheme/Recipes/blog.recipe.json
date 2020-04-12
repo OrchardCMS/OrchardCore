@@ -84,6 +84,7 @@
     },
     {
       "name": "settings",
+      "Meta": "[file:text('Snippets/meta.html')]",
       "HomeRoute": {
         "Action": "Display",
         "Controller": "Item",
@@ -603,7 +604,21 @@
                   "Position": "0"
                 }
               }
-            }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ManageContainedItemRoutes": true
+                }
+              }
+            }           
           ]
         },
         {
@@ -629,6 +644,20 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ManageContainedItemRoutes": true
                 }
               }
             }
@@ -699,7 +728,7 @@
                   "Multiple": false
                 }
               }  
-            },   			
+            },              
             {
               "FieldName": "TaxonomyField",
               "Name": "Tags",
@@ -993,6 +1022,12 @@
                 "DisplayText": "Earth",
                 "TitlePart": {
                   "Title": "Earth"
+                },
+                "AutoroutePart": {
+                  "Path": "earth"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 }
               },
               {
@@ -1001,6 +1036,12 @@
                 "DisplayText": "Exploration",
                 "TitlePart": {
                   "Title": "Exploration"
+                },
+                "AutoroutePart": {
+                  "Path": "exploration"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 }
               },
               {
@@ -1009,10 +1050,20 @@
                 "DisplayText": "Space",
                 "TitlePart": {
                   "Title": "Space"
+                },
+                "AutoroutePart": {
+                  "Path": "space"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 }
               }
             ],
             "TermContentType": "Tag"
+          },
+          "AutoroutePart": {
+            "Path": "tags",
+            "RouteContainedItems": true
           }
         },
         {
@@ -1040,10 +1091,20 @@
                 },
                 "TitlePart": {
                   "Title": "Travel"
+                },
+                "AutoroutePart": {
+                  "Path": "travel"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]"
                 }
               }
             ],
             "TermContentType": "Category"
+          },
+          "AutoroutePart": {
+            "Path": "categories",
+            "RouteContainedItems": true
           }
         },
         {
