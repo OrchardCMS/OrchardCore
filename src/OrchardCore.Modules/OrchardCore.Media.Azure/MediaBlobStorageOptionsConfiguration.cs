@@ -3,6 +3,7 @@ using Fluid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 
@@ -27,9 +28,7 @@ namespace OrchardCore.Media.Azure
 
         public void Configure(MediaBlobStorageOptions options)
         {
-            var section =
-                _shellConfiguration.GetSection("OrchardCore_Media_Azure") ??
-                _shellConfiguration.GetSection("OrchardCore.Media.Azure"); // For backward compatibility.
+            var section = _shellConfiguration.GetSection("OrchardCore_Media_Azure", "OrchardCore.Media.Azure");
 
             options.BasePath = section.GetValue(nameof(options.BasePath), String.Empty);
             options.ContainerName = section.GetValue(nameof(options.ContainerName), String.Empty);
@@ -59,7 +58,7 @@ namespace OrchardCore.Media.Azure
             catch (Exception e)
             {
                 _logger.LogCritical(e, "Unable to parse Azure Media Storage container name.");
-                throw e;
+                throw;
             }
         }
 
@@ -75,7 +74,7 @@ namespace OrchardCore.Media.Azure
             catch (Exception e)
             {
                 _logger.LogCritical(e, "Unable to parse Azure Media Storage base path.");
-                throw e;
+                throw;
             }
         }
     }

@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -45,22 +47,15 @@ namespace OrchardCore.Admin
             });
 
             services.AddTransient<IAreaControllerRouteMapper, AdminAreaControllerRouteMapper>();
-
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();
             services.AddScoped<IAdminThemeService, AdminThemeService>();
-
             services.AddScoped<IDisplayDriver<ISite>, AdminSiteSettingsDisplayDriver>();
             services.AddScoped<IPermissionProvider, PermissionsAdminSettings>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-
-            var adminSection =
-                _configuration.GetSection("OrchardCore_Admin") ??
-                _configuration.GetSection("OrchardCore.Admin"); // For backward compatibility.
-
-            services.Configure<AdminOptions>(adminSection);
-
             services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
+
+            services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin", "OrchardCore.Admin"));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
