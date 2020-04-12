@@ -18,7 +18,7 @@ namespace OrchardCore.DataProtection.Azure
         private readonly IShellConfiguration _configuration;
         private readonly ShellOptions _shellOptions;
         private readonly ShellSettings _shellSettings;
-        private readonly ILogger<Startup> _logger;
+        private readonly ILogger _logger;
 
         public Startup(
             IShellConfiguration configuration,
@@ -58,7 +58,8 @@ namespace OrchardCore.DataProtection.Azure
 
                 var template = FluidTemplate.Parse(containerName);
 
-                containerName = template.Render(templateContext, NullEncoder.Default);
+                // container name must be lowercase
+                containerName = template.Render(templateContext, NullEncoder.Default).ToLower();
                 containerName.Replace("\r", String.Empty).Replace("\n", String.Empty);
             }
             catch (Exception e)

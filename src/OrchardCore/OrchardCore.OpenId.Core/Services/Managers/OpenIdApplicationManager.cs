@@ -232,15 +232,15 @@ namespace OrchardCore.OpenId.Services.Managers
             => await FindByPhysicalIdAsync(identifier, cancellationToken);
 
         ValueTask<string> IOpenIdApplicationManager.GetPhysicalIdAsync(object application, CancellationToken cancellationToken)
-            => GetPhysicalIdAsync((TApplication) application, cancellationToken);
+            => GetPhysicalIdAsync((TApplication)application, cancellationToken);
 
         ValueTask<ImmutableArray<string>> IOpenIdApplicationManager.GetRolesAsync(object application, CancellationToken cancellationToken)
-            => GetRolesAsync((TApplication) application, cancellationToken);
+            => GetRolesAsync((TApplication)application, cancellationToken);
 
         async ValueTask<ImmutableArray<object>> IOpenIdApplicationManager.ListInRoleAsync(string role, CancellationToken cancellationToken)
             => (await ListInRoleAsync(role, cancellationToken)).CastArray<object>();
 
         ValueTask IOpenIdApplicationManager.SetRolesAsync(object application, ImmutableArray<string> roles, CancellationToken cancellationToken)
-            => SetRolesAsync((TApplication) application, roles, cancellationToken);
+            => SetRolesAsync((TApplication)application, roles, cancellationToken);
     }
 }

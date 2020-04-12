@@ -30,6 +30,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
         [Required, StringLength(1024)]
         public string DisplayName { get; private set; }
+
         public IEnumerable<ContentTypePartDefinition> Parts { get; private set; }
 
         /// <summary>

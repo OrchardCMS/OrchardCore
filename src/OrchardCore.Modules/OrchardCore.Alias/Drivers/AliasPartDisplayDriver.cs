@@ -1,15 +1,15 @@
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Views;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
 using OrchardCore.Alias.ViewModels;
-using YesSql;
-using OrchardCore.Alias.Indexes;
-using Microsoft.Extensions.Localization;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
+using YesSql;
 
 namespace OrchardCore.Alias.Drivers
 {
@@ -19,7 +19,7 @@ namespace OrchardCore.Alias.Drivers
         public const int MaxAliasLength = 767;
 
         private readonly ISession _session;
-        private readonly IStringLocalizer<AliasPartDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public AliasPartDisplayDriver(
             ISession session,
@@ -32,7 +32,7 @@ namespace OrchardCore.Alias.Drivers
 
         public override IDisplayResult Edit(AliasPart aliasPart, BuildPartEditorContext context)
         {
-            return Initialize<AliasPartViewModel>("AliasPart_Edit", m => BuildViewModel(m, aliasPart, context.TypePartDefinition.GetSettings<AliasPartSettings>()));
+            return Initialize<AliasPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, aliasPart, context.TypePartDefinition.GetSettings<AliasPartSettings>()));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AliasPart model, IUpdateModel updater, UpdatePartEditorContext context)
@@ -41,7 +41,7 @@ namespace OrchardCore.Alias.Drivers
 
             await ValidateAsync(model, updater);
 
-            return Edit(model,context);
+            return Edit(model, context);
         }
 
         private void BuildViewModel(AliasPartViewModel model, AliasPart part, AliasPartSettings settings)

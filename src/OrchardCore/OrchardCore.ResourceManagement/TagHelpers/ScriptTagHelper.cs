@@ -23,6 +23,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         [HtmlAttributeName(AppendVersionAttributeName)]
         public bool? AppendVersion { get; set; }
+
         public string CdnSrc { get; set; }
         public string DebugSrc { get; set; }
         public string DebugCdnSrc { get; set; }
@@ -114,7 +115,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     setting.UseDebugMode(Debug.Value);
                 }
-                
+
                 if (!String.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
@@ -245,7 +246,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     {
                         setting.UseDebugMode(Debug.Value);
                     }
-                    
+
                     if (!String.IsNullOrEmpty(Culture))
                     {
                         setting.UseCulture(Culture);

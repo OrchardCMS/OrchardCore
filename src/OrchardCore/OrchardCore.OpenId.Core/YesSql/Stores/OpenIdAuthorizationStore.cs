@@ -602,7 +602,6 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 {
                     await _session.CommitAsync();
                 }
-
                 catch (Exception exception)
                 {
                     if (exceptions == null)

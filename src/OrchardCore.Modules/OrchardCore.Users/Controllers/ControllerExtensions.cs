@@ -23,9 +23,9 @@ namespace OrchardCore.Users.Controllers
     {
         internal static async Task<bool> SendEmailAsync(this Controller controller, string email, string subject, IShape model)
         {
-            var smtpService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISmtpService>();
-            var displayHelper = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
-            var htmlEncoder = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
+            var smtpService = controller.HttpContext.RequestServices.GetRequiredService<ISmtpService>();
+            var displayHelper = controller.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
+            var htmlEncoder = controller.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
             var body = string.Empty;
 
             using (var sw = new StringWriter())
@@ -102,7 +102,5 @@ namespace OrchardCore.Users.Controllers
 
             return callbackUrl;
         }
-
-
     }
 }

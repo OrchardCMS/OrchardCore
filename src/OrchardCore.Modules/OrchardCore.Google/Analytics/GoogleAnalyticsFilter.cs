@@ -45,7 +45,6 @@ namespace OrchardCore.Google.Analytics
                 if (_scriptsCache != null)
                 {
                     _resourceManager.RegisterHeadScript(_scriptsCache);
-
                 }
             }
 

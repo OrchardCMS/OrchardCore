@@ -124,5 +124,4 @@ namespace OrchardCore.Lists
             services.AddLiquidFilter<ListItemsFilter>("list_items");
         }
     }
-
 }

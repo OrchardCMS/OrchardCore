@@ -239,7 +239,6 @@
             }
         }
 
-
         $("#Type").change(function () {
             refreshClientSecret();
         });
@@ -268,7 +267,6 @@
                 clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, client_secret, ", "client_id, "); });
             }
         }
-
 
         $("#AllowRefreshTokenFlow").change(function () {
             refreshOfflineAccessTip();

@@ -107,7 +107,7 @@ See [Alternates](../reference/modules/Templates/#shape-differentiators)
 ### Placement
 
 A mapping file to set the order of appearance or hide contents for a specific content type or Part/Field name or display type in a Theme.  
-See [Placement](../reference/modules/Placement)
+See [Placement](../reference/core/Placement)
 
 ### Assets
 

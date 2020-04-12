@@ -24,7 +24,7 @@ namespace OrchardCore.Themes.Controllers
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             ISiteThemeService siteThemeService,
@@ -66,7 +66,7 @@ namespace OrchardCore.Themes.Controllers
             {
                 var tags = extensionDescriptor.Manifest.Tags.ToArray();
                 var isHidden = tags.Any(x => string.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
-                
+
                 /// is the theme allowed for this tenant ?
                 // allowed = _shellSettings.Themes.Length == 0 || _shellSettings.Themes.Contains(extensionDescriptor.Id);
 
@@ -120,12 +120,10 @@ namespace OrchardCore.Themes.Controllers
 
             if (String.IsNullOrEmpty(id))
             {
-                // Don't use any theme on the front-end 
-
+                // Don't use any theme on the front-end
             }
             else
             {
-
                 var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
 
                 if (feature == null)

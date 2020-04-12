@@ -74,7 +74,6 @@ namespace OrchardCore.Demo.Controllers
 
             _session.Save(contentItem);
             return RedirectToAction("Edit", contentItemId);
-
         }
     }
 }

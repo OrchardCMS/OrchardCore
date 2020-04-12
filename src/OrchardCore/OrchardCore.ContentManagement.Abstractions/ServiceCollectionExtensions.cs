@@ -29,7 +29,7 @@ namespace OrchardCore.ContentManagement
 
         /// <summary>
         /// Registers a content field type. This method may be called multiple times safely,
-        /// to reconfigure an existing part. 
+        /// to reconfigure an existing part.
         /// </summary>
         public static ContentFieldOptionBuilder AddContentField<TContentField>(this IServiceCollection services)
             where TContentField : ContentField
@@ -63,7 +63,8 @@ namespace OrchardCore.ContentManagement
         public static ContentPartOptionBuilder AddHandler(this ContentPartOptionBuilder builder, Type handlerType)
         {
             builder.Services.TryAddScoped(handlerType);
-            builder.Services.Configure<ContentOptions>(o => {
+            builder.Services.Configure<ContentOptions>(o =>
+            {
                 o.AddHandler(builder.ContentPartType, handlerType);
             });
 
@@ -86,7 +87,8 @@ namespace OrchardCore.ContentManagement
         public static ContentPartOptionBuilder RemoveHandler(this ContentPartOptionBuilder builder, Type handlerType)
         {
             builder.Services.RemoveAll(handlerType);
-            builder.Services.Configure<ContentOptions>(o => {
+            builder.Services.Configure<ContentOptions>(o =>
+            {
                 o.RemoveHandler(builder.ContentPartType, handlerType);
             });
 

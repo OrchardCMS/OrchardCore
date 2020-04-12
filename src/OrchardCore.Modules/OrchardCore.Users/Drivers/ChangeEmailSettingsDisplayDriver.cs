@@ -18,7 +18,6 @@ namespace OrchardCore.Users.Drivers
             return Initialize<ChangeEmailSettings>("ChangeEmailSettings_Edit", model =>
             {
                 model.AllowChangeEmail = section.AllowChangeEmail;
-
             }).Location("Content:5").OnGroup(GroupId);
         }
 

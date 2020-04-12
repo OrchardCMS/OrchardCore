@@ -18,21 +18,21 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
 
         public ImportController(
             IDeploymentManager deploymentManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IHtmlLocalizer<ImportController> h
+            IHtmlLocalizer<ImportController> localizer
         )
         {
             _deploymentManager = deploymentManager;
             _authorizationService = authorizationService;
             _notifier = notifier;
 
-            H = h;
+            H = localizer;
         }
-        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index()
         {
@@ -52,42 +52,49 @@ namespace OrchardCore.Deployment.Controllers
                 return Forbid();
             }
 
-            var tempArchiveName = Path.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
-            var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-            try
+            if (importedPackage != null)
             {
-                using (var stream = new FileStream(tempArchiveName, FileMode.Create))
+                var tempArchiveName = Path.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
+                var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+                try
                 {
-                    await importedPackage.CopyToAsync(stream);
-                }
+                    using (var stream = new FileStream(tempArchiveName, FileMode.Create))
+                    {
+                        await importedPackage.CopyToAsync(stream);
+                    }
 
-                if (importedPackage.FileName.EndsWith(".zip"))
+                    if (importedPackage.FileName.EndsWith(".zip"))
+                    {
+                        ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
+                    }
+
+                    if (importedPackage.FileName.EndsWith(".json"))
+                    {
+                        Directory.CreateDirectory(tempArchiveFolder);
+                        System.IO.File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
+                    }
+
+                    await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
+
+                    _notifier.Success(H["Deployment package imported"]);
+                }
+                finally
                 {
-                    ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
+                    if (System.IO.File.Exists(tempArchiveName))
+                    {
+                        System.IO.File.Delete(tempArchiveName);
+                    }
+
+                    if (Directory.Exists(tempArchiveFolder))
+                    {
+                        Directory.Delete(tempArchiveFolder, true);
+                    }
                 }
-
-                if (importedPackage.FileName.EndsWith(".json"))
-                {
-                    Directory.CreateDirectory(tempArchiveFolder);
-                    System.IO.File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
-                }
-
-                await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
-
-                _notifier.Success(H["Deployment package imported"]);
             }
-            finally
+            else
             {
-                if (System.IO.File.Exists(tempArchiveName))
-                {
-                    System.IO.File.Delete(tempArchiveName);
-                }
-
-                if (Directory.Exists(tempArchiveFolder))
-                {
-                    Directory.Delete(tempArchiveFolder, true);
-                }
+                _notifier.Error(H["Please add a file to import."]);
             }
 
             return RedirectToAction("Index");

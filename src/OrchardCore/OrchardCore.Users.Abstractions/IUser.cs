@@ -1,10 +1,13 @@
 namespace OrchardCore.Users
 {
     /// <summary>
-    /// Marker interface for ASP.NET Core Identity services.
+    /// Contract for ASP.NET Core Identity services.
     /// </summary>
     public interface IUser
     {
+        /// <summary>
+        /// Gets the user name.
+        /// </summary>
         string UserName { get; }
     }
 }

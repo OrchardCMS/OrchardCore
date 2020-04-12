@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -40,7 +41,7 @@ namespace OrchardCore.DisplayManagement
 
         private static PlacementInfo FindPlacementImpl(ShapeTable shapeTable, string shapeType, string differentiator, string displayType, IBuildShapeContext context)
         {
-            var delimiterIndex = shapeType.IndexOf("__");
+            var delimiterIndex = shapeType.IndexOf("__", StringComparison.Ordinal);
 
             if (delimiterIndex > 0)
             {

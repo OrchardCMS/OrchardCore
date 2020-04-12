@@ -46,7 +46,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         private void ProcessFeatureDescriptor(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
-            // TODO : (ngm) Replace with configuration Provider and read from that. 
+            // TODO : (ngm) Replace with configuration Provider and read from that.
             // Dont use JSON Deserializer directly.
             var virtualFileInfo = _hostingEnviroment
                 .GetExtensionFileInfo(featureDescriptor.Extension, "placement.json");
@@ -131,7 +131,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
                 KeyValuePair<string, JToken> term, IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders)
         {
-
             if (placementMatchProviders != null)
             {
                 var providersForTerm = placementMatchProviders.Where(x => x.Key.Equals(term.Key));

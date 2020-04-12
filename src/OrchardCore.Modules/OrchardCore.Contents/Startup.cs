@@ -24,6 +24,7 @@ using OrchardCore.Contents.Recipes;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.Settings;
+using OrchardCore.Contents.Sitemaps;
 using OrchardCore.Contents.TagHelpers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
@@ -40,6 +41,10 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Sitemaps.Builders;
+using OrchardCore.Sitemaps.Cache;
+using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Contents
 {
@@ -103,6 +108,8 @@ namespace OrchardCore.Contents
                     };
 
                     options.ContentItemIdKey = "contentItemId";
+                    options.ContainedContentItemIdKey = "containedContentItemId";
+                    options.JsonPathKey = "jsonPath";
                 }
             });
         }
@@ -160,7 +167,7 @@ namespace OrchardCore.Contents
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
                 pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentTypeId?}",
-                defaults: new {controller = adminControllerName, action = nameof(AdminController.List) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.List) }
             );
 
             routes.MapAreaControllerRoute(
@@ -227,7 +234,6 @@ namespace OrchardCore.Contents
         }
     }
 
-
     [RequireFeatures("OrchardCore.AdminMenu")]
     public class AdminMenuStartup : StartupBase
     {
@@ -245,6 +251,21 @@ namespace OrchardCore.Contents
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddFileContentDefinitionStore();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Sitemaps")]
+    public class SitemapsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ISitemapSourceBuilder, ContentTypesSitemapSourceBuilder>();
+            services.AddScoped<ISitemapSourceCacheManager, ContentTypesSitemapSourceCacheManager>();
+            services.AddScoped<ISitemapSourceModifiedDateProvider, ContentTypesSitemapSourceModifiedDateProvider>();
+            services.AddScoped<IDisplayDriver<SitemapSource>, ContentTypesSitemapSourceDriver>();
+            services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<ContentTypesSitemapSource>>();
+            services.AddScoped<IContentItemsQueryProvider, DefaultContentItemsQueryProvider>();
+            services.AddScoped<IContentHandler, ContentTypesSitemapCacheHandler>();
         }
     }
 }

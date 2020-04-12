@@ -9,7 +9,7 @@ namespace OrchardCore.ReCaptcha.Users.Handlers
     {
         private readonly ReCaptchaService _reCaptchaService;
 
-        public LoginFormEventEventHandler(ReCaptchaService reCaptchaService) 
+        public LoginFormEventEventHandler(ReCaptchaService reCaptchaService)
         {
             _reCaptchaService = reCaptchaService;
         }
@@ -22,7 +22,7 @@ namespace OrchardCore.ReCaptcha.Users.Handlers
 
         public async Task LoggingInAsync(string userName, Action<string, string> reportError)
         {
-            if(_reCaptchaService.IsThisARobot())
+            if (_reCaptchaService.IsThisARobot())
             {
                 await _reCaptchaService.ValidateCaptchaAsync(reportError);
             }

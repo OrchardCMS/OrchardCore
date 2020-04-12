@@ -76,7 +76,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
         Task IContentPartHandler.VersioningAsync(VersionContentContext context, ContentPart existing, ContentPart building)
         {
-            return existing is TPart texisting && building is TPart tbuilding 
+            return existing is TPart texisting && building is TPart tbuilding
                 ? VersioningAsync(context, texisting, tbuilding)
                 : Task.CompletedTask;
         }
@@ -173,7 +173,5 @@ namespace OrchardCore.ContentManagement.Handlers
         public virtual Task GetContentItemAspectAsync(ContentItemAspectContext context, TPart part) => Task.CompletedTask;
         public virtual Task CloningAsync(CloneContentContext context, TPart part) => Task.CompletedTask;
         public virtual Task ClonedAsync(CloneContentContext context, TPart part) => Task.CompletedTask;
-
-
     }
 }

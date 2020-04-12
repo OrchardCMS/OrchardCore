@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.AdminMenu.Models;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu.ViewModels
 {
@@ -17,6 +16,5 @@ namespace OrchardCore.AdminMenu.ViewModels
 
         [BindNever]
         public AdminNode AdminNode { get; set; }
-
     }
 }

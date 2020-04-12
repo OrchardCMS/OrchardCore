@@ -50,7 +50,8 @@ namespace OrchardCore.Media.Azure
             {
                 var template = FluidTemplate.Parse(options.ContainerName);
 
-                options.ContainerName = template.Render(templateContext, NullEncoder.Default);
+                // container name must be lowercase
+                options.ContainerName = template.Render(templateContext, NullEncoder.Default).ToLower();
                 options.ContainerName.Replace("\r", String.Empty).Replace("\n", String.Empty);
             }
             catch (Exception e)
@@ -71,7 +72,7 @@ namespace OrchardCore.Media.Azure
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e, "Unable to parse Azure Media Storage ase path.");
+                _logger.LogCritical(e, "Unable to parse Azure Media Storage base path.");
                 throw e;
             }
         }

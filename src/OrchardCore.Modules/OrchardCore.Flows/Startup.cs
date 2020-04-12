@@ -11,6 +11,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Flows.Controllers;
 using OrchardCore.Flows.Drivers;
+using OrchardCore.Flows.Handlers;
 using OrchardCore.Flows.Indexing;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.Settings;
@@ -48,7 +49,8 @@ namespace OrchardCore.Flows
 
             // Bag Part
             services.AddContentPart<BagPart>()
-                .UseDisplayDriver<BagPartDisplay>();
+                .UseDisplayDriver<BagPartDisplay>()
+                .AddHandler<BagPartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, BagPartIndexHandler>();
 

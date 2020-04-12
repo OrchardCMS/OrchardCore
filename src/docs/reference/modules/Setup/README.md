@@ -33,12 +33,46 @@ The value will be retrieved from the `appsettings.json` tenant file.
 
 ## Configuration
 
-`OrchardCore.Setup` can be configured through `appsettings.json` as follows:
+The following configuration values are used by default and can be customized:
 
 ```json
     "OrchardCore.Setup": {
-        "DefaultCulture": "",
-        "SupportedCultures": [ "en" ]
+      "DefaultCulture": "", // When using "" the system OS culture will be used
+      "SupportedCultures": [
+        "ar", 
+        "cs", 
+        "da", 
+        "de", 
+        "el", 
+        "en", 
+        "es", 
+        "fa", 
+        "fi", 
+        "fr", 
+        "he", 
+        "hr", 
+        "hu", 
+        "id", 
+        "it", 
+        "ja", 
+        "ko", 
+        "lt", 
+        "mk", 
+        "nl", 
+        "pl", 
+        "pt", 
+        "ru", 
+        "sk", 
+        "sl", 
+        "sr-cyrl-rs", 
+        "sr-latn-rs", 
+        "sv", 
+        "tr", 
+        "uk", 
+        "vi", 
+        "zh-CN", 
+        "zh-TW"
+      ] // "" value (InvariantCulture) is not supported for these
     }
 ```
 

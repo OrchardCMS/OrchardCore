@@ -16,9 +16,9 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(PublishContentTask);
-        
+
         public override LocalizedString DisplayText => S["Publish Content Task"];
-        
+
         public override LocalizedString Category => S["Content"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

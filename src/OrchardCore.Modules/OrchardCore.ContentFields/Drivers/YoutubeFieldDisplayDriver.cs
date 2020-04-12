@@ -25,9 +25,9 @@ namespace OrchardCore.ContentFields.Fields
         {
             return Initialize<YoutubeFieldDisplayViewModel>(GetDisplayShapeType(context), model =>
             {
-               model.Field = field;
-               model.Part = context.ContentPart;
-               model.PartFieldDefinition = context.PartFieldDefinition;
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
             })
             .Location("Detail", "Content")
             .Location("Summary", "Content");
@@ -83,6 +83,11 @@ namespace OrchardCore.ContentFields.Fields
 
                         field.RawAddress = model.RawAddress;
                         field.EmbeddedAddress = model.EmbeddedAddress;
+                    }
+                    else
+                    {
+                        field.RawAddress = null;
+                        field.EmbeddedAddress = null;
                     }
                 }
             }

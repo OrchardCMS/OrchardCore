@@ -11,7 +11,7 @@ namespace OrchardCore.Workflows.Activities
     public class ForEachTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer<ForEachTask> S;
+        private readonly IStringLocalizer S;
 
         public ForEachTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ForEachTask> localizer)
         {
@@ -19,9 +19,9 @@ namespace OrchardCore.Workflows.Activities
             S = localizer;
         }
         public override string Name => nameof(ForEachTask);
-        
+
         public override LocalizedString DisplayText => S["For Each Task"];
-        
+
         public override LocalizedString Category => S["Control Flow"];
 
         /// <summary>
