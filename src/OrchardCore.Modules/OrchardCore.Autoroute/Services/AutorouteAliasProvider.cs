@@ -15,7 +15,7 @@ namespace OrchardCore.Autoroute.Services
 
         public int Order => 10;
 
-        public Task<string> GetContentItemIdAsync(string alias)
+        public async Task<string> GetContentItemIdAsync(string alias)
         {
             if (alias.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
             {
@@ -26,10 +26,17 @@ namespace OrchardCore.Autoroute.Services
                     alias = "/" + alias;
                 }
 
-                return _autorouteEntries.TryGetContentItemIdAsync(alias);
+                (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(alias);
+
+                if (found)
+                {
+                    // TODO this requires more work, and interface changes to support contained content items.
+                    // as it will require returning the id and jsonPath.
+                    return entry.ContentItemId;
+                }
             }
 
-            return Task.FromResult<string>(null);
+            return null;
         }
     }
 }

@@ -16,9 +16,11 @@ using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.GraphQL.Options;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -26,7 +28,6 @@ using OrchardCore.Modules;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sitemaps.Services;
-using YesSql.Indexes;
 
 namespace OrchardCore.Autoroute
 {
@@ -46,11 +47,13 @@ namespace OrchardCore.Autoroute
                 .UseDisplayDriver<AutoroutePartDisplay>()
                 .AddHandler<AutoroutePartHandler>();
 
+            services.AddScoped<IContentHandler, DefaultRouteContentHandler>();
+            services.AddScoped<IContentHandler, AutorouteContentHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
 
-            services.AddSingleton<IIndexProvider, AutoroutePartIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, AutoroutePartIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();

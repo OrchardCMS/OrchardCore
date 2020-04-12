@@ -31,7 +31,7 @@ namespace OrchardCore.ContentLocalization.Services
                 url = "/";
             }
 
-            string contentItemId;
+            string contentItemId = null;
 
             if (url == "/")
             {
@@ -41,8 +41,19 @@ namespace OrchardCore.ContentLocalization.Services
             }
             else
             {
-                // try to get from autorouteEntries
-                contentItemId = await _autorouteEntries.TryGetContentItemIdAsync(url.Value);
+                // Try to get from autorouteEntries.
+                // This should not consider contained items, so will redirect to the parent item.
+                (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(url.Value);
+
+                if (found)
+                {
+                    contentItemId = entry.ContentItemId;
+                };
+            }
+
+            if (string.IsNullOrEmpty(contentItemId))
+            {
+                return null;
             }
 
             return contentItemId;

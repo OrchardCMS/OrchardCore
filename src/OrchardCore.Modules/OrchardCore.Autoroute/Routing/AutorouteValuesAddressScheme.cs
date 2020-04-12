@@ -28,22 +28,31 @@ namespace OrchardCore.Autoroute.Routing
                 return Enumerable.Empty<Endpoint>();
             }
 
-            string contentItemId = address.ExplicitValues[_options.ContentItemIdKey]?.ToString();
+
+            // Try to get the contained item first, then the container content item
+            string contentItemId = address.ExplicitValues[_options.ContainedContentItemIdKey]?.ToString();
+            if (string.IsNullOrEmpty(contentItemId))
+            {
+                contentItemId = address.ExplicitValues[_options.ContentItemIdKey]?.ToString();
+            }
 
             if (string.IsNullOrEmpty(contentItemId))
             {
                 return Enumerable.Empty<Endpoint>();
             }
 
-            var path = _entries.TryGetPathAsync(contentItemId).GetAwaiter().GetResult();
+            (var found, var autorouteEntry) = _entries.TryGetEntryByContentItemIdAsync(contentItemId).GetAwaiter().GetResult();
 
-            if (path == null)
+            if (!found)
             {
                 return Enumerable.Empty<Endpoint>();
             }
 
             if (Match(address.ExplicitValues))
             {
+                // Once we have the contained content item id value we no longer want it in the route values.
+                address.ExplicitValues.Remove(_options.ContainedContentItemIdKey);
+
                 var routeValues = new RouteValueDictionary(address.ExplicitValues);
 
                 if (address.ExplicitValues.Count > _options.GlobalRouteValues.Count + 1)
@@ -65,7 +74,7 @@ namespace OrchardCore.Autoroute.Routing
                 var endpoint = new RouteEndpoint
                 (
                     c => null,
-                    RoutePatternFactory.Parse(path, routeValues, null),
+                    RoutePatternFactory.Parse(autorouteEntry.Path, routeValues, null),
                     0,
                     null,
                     null

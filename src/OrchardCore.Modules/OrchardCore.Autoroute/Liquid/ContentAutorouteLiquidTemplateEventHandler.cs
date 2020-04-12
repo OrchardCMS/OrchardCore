@@ -29,14 +29,14 @@ namespace OrchardCore.Autoroute.Liquid
                         alias = "/" + alias;
                     }
 
-                    var contentItemId = await _autorouteEntries.TryGetContentItemIdAsync(alias);
+                    (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(alias);
 
-                    if (contentItemId == null)
+                    if (found)
                     {
-                        return NilValue.Instance;
+                        return FluidValue.Create(await _contentManager.GetAsync(entry.ContentItemId, entry.JsonPath));
                     }
 
-                    return FluidValue.Create(await _contentManager.GetAsync(contentItemId));
+                    return NilValue.Instance;
                 });
             });
 
