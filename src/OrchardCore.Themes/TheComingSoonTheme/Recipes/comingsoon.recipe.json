@@ -265,7 +265,7 @@
               "Draftable": true,
               "Versionable": true,
               "Listable": true,
-              "Securable":  true
+              "Securable": true
             }
           },
           "ContentTypePartDefinitionRecords": [
@@ -475,6 +475,27 @@
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "media",
+      "Files": [
+        {
+          "TargetPath": "favicon.ico",
+          "SourcePath": "../wwwroot/favicon.ico"
+        },
+        {
+          "TargetPath": "about-bg.jpg",
+          "SourcePath": "../wwwroot/img/about-bg.jpg"
+        },
+        {
+          "TargetPath": "home-bg.jpg",
+          "SourcePath": "../wwwroot/img/home-bg.jpg"
+        },
+        {
+          "TargetPath": "post-bg.jpg",
+          "SourcePath": "../wwwroot/img/post-bg.jpg"
         }
       ]
     },

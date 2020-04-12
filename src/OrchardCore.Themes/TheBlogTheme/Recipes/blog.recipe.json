@@ -1179,6 +1179,10 @@
       "name": "media",
       "Files": [
         {
+          "TargetPath": "favicon.ico",
+          "SourcePath": "../wwwroot/favicon.ico"
+        },
+        {
           "TargetPath": "about-bg.jpg",
           "SourcePath": "../wwwroot/img/about-bg.jpg"
         },

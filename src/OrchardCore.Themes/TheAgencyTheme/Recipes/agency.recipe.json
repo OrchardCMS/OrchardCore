@@ -983,6 +983,10 @@
       "name": "media",
       "Files": [
         {
+          "TargetPath": "favicon.ico",
+          "SourcePath": "../wwwroot/favicon.ico"
+        },
+        {
           "TargetPath": "about/1.jpg",
           "SourcePath": "../wwwroot/img/about/1.jpg"
         },
