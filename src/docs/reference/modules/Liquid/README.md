@@ -300,6 +300,7 @@ Gives access to the current site settings, e.g `Site.SiteName`.
 | `UseCdn` | `false` | Enable/disable the use of a CDN. | 
 | `ResourceDebugMode` | `Disabled` | Provides options for whether src or debug-src is used for loading scripts and stylesheets | 
 | `CdnBaseUrl` | `https://localhost:44300` | If provided a CDN Base url is prepended to local scripts and stylesheets  | 
+| `Meta` |  | The meta to render in the head section of the current theme.| 
 
 ### Request
 
