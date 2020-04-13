@@ -55,7 +55,7 @@ namespace OrchardCore.Admin
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
 
-            services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin", "OrchardCore.Admin"));
+            services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

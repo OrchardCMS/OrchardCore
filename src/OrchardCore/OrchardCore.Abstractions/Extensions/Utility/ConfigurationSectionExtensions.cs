@@ -12,10 +12,15 @@ namespace OrchardCore.Environment.Extensions.Utility
     /// </summary>
     public static class ConfigurationSectionExtensions
     {
-        public static IConfigurationSection GetSection(this IConfiguration configuration, string key, string compatKey)
+        public static IConfigurationSection GetSectionCompat(this IConfiguration configuration, string key)
         {
             var section = configuration.GetSection(key);
-            return section.Exists() ? section : configuration.GetSection(compatKey);
+
+            return section.Exists()
+                ? section
+                : key.Contains('_')
+                    ? configuration.GetSection(key.Replace('_', '.'))
+                    : section;
         }
     }
 }
