@@ -6,13 +6,13 @@
 <script at="Foot">
     initializeMediaApplication(false,  '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
     initializeMediaField(
-        document.getElementById('@Html.IdFor(m => m.BrandImageMedia)'),
-        document.getElementById('@Html.IdFor(m => m.BrandImageMedia)-ModalBody'),
+        document.getElementById('@Html.IdFor(m => m.BrandImage)'),
+        document.getElementById('@Html.IdFor(m => m.BrandImage)-ModalBody'),
         '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
         false);
     initializeMediaField(
-        document.getElementById('@Html.IdFor(m => m.FaviconMedia)'),
-        document.getElementById('@Html.IdFor(m => m.FaviconMedia)-ModalBody'),
+        document.getElementById('@Html.IdFor(m => m.Favicon)'),
+        document.getElementById('@Html.IdFor(m => m.Favicon)-ModalBody'),
         '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
         false);
 </script>
@@ -25,13 +25,13 @@
     <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
 </div>
 
-<div class="mediafield-editor" id="@Html.IdFor(m => m.BrandImageMedia)" data-for="@Html.IdFor(m => m.BrandImageMedia)">
+<div class="mediafield-editor" id="@Html.IdFor(m => m.BrandImage)" data-for="@Html.IdFor(m => m.BrandImage)">
     <div class="media-field">
         <div class="form-group">
             <label>@T["Brand image"]</label>
             <span class="hint">@T["The brand image used in the admin."]</span>
 
-            <input asp-for="BrandImageMedia" type="hidden" class="paths" :value="paths" data-init="@Model.BrandImageMedia" />
+            <input asp-for="BrandImage" type="hidden" class="paths" :value="paths" data-init="@Model.BrandImage" />
 
             <nav class="media-field-toolbar" v-cloak>
                 <div class="btn-group">
@@ -52,7 +52,7 @@
     </div>
 </div>
 
-<div class="modal" id="@Html.IdFor(m => m.BrandImageMedia)-ModalBody">
+<div class="modal" id="@Html.IdFor(m => m.BrandImage)-ModalBody">
     <div class="modal-dialog modal-lg media-modal" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -71,13 +71,13 @@
     </div>
 </div>
 
-<div class="mediafield-editor" id="@Html.IdFor(m => m.FaviconMedia)" data-for="@Html.IdFor(m => m.FaviconMedia)">
+<div class="mediafield-editor" id="@Html.IdFor(m => m.Favicon)" data-for="@Html.IdFor(m => m.Favicon)">
     <div class="media-field">
         <div class="form-group">
             <label>@T["Favicon"]</label>
             <span class="hint">@T["The favicon used in the admin."]</span>
 
-            <input asp-for="FaviconMedia" type="hidden" class="paths" :value="paths" data-init="@Model.FaviconMedia" />
+            <input asp-for="Favicon" type="hidden" class="paths" :value="paths" data-init="@Model.Favicon" />
 
             <nav class="media-field-toolbar" v-cloak>
                 <div class="btn-group">
@@ -98,7 +98,7 @@
     </div>
 </div>
 
-<div class="modal" id="@Html.IdFor(m => m.FaviconMedia)-ModalBody">
+<div class="modal" id="@Html.IdFor(m => m.Favicon)-ModalBody">
     <div class="modal-dialog modal-lg media-modal" role="document">
         <div class="modal-content">
             <div class="modal-header">

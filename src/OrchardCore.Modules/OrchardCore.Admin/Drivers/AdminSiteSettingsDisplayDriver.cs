@@ -1,6 +1,8 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
@@ -36,8 +38,8 @@ namespace OrchardCore.Admin.Drivers
             return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
                 {
                     model.DisplayMenuFilter = settings.DisplayMenuFilter;
-                    model.BrandImageMedia = settings.BrandImageMedia;
-                    model.FaviconMedia = settings.FaviconMedia;
+                    model.BrandImage = settings.BrandImage;
+                    model.Favicon = settings.Favicon;
                     model.Head = settings.Head;
                 }).Location("Content:3").OnGroup(GroupId);
         }
@@ -58,8 +60,23 @@ namespace OrchardCore.Admin.Drivers
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 settings.DisplayMenuFilter = model.DisplayMenuFilter;
-                settings.BrandImageMedia = model.BrandImageMedia;
-                settings.FaviconMedia = model.FaviconMedia;
+
+                string brandImagePath = null;
+                if (!string.IsNullOrEmpty(model.BrandImage))
+                {
+                    var media = JArray.Parse(model.BrandImage);
+                    brandImagePath = media.FirstOrDefault()?["Path"]?.Value<string>();
+                }
+                settings.BrandImage = brandImagePath;
+
+                string faviconPath = null;
+                if (!string.IsNullOrEmpty(model.Favicon))
+                {
+                    var media = JArray.Parse(model.Favicon);
+                    brandImagePath = media.FirstOrDefault()?["Path"]?.Value<string>();
+                }
+                settings.Favicon = faviconPath;
+
                 settings.Head = model.Head;
             }
 
