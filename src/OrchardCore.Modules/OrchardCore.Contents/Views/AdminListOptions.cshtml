@@ -1,0 +1,8 @@
+@model dynamic
+@if ((bool)Model.HasItems)
+{
+    foreach (var item in Model.Items)
+    {
+        @await DisplayAsync(item)
+    }
+}

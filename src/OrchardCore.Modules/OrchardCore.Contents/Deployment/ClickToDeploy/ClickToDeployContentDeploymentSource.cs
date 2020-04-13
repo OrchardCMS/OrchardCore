@@ -1,19 +1,29 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.ModelBinding;
+using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Contents.Deployment.ClickToDeploy
 {
     public class ClickToDeployContentDeploymentSource : IDeploymentSource
     {
         private readonly IContentManager _contentManager;
+        private readonly ISession _session;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
-        public ClickToDeployContentDeploymentSource(IContentManager contentManager, IUpdateModelAccessor updateModelAccessor)
+        public ClickToDeployContentDeploymentSource(
+            IContentManager contentManager,
+            ISession session,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _contentManager = contentManager;
+            _session = session;
             _updateModelAccessor = updateModelAccessor;
         }
 
@@ -33,7 +43,7 @@ namespace OrchardCore.Contents.Deployment.ClickToDeploy
             ));
 
             var model = new ClickToDeployModel();
-            await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ClickToDeploy", m => m.ContentItemId, m => m.Latest);
+            await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ClickToDeploy", m => m.ItemIds, m => m.Latest, m => m.ContentItemId);
 
             if (!string.IsNullOrEmpty(model.ContentItemId))
             {
@@ -46,11 +56,24 @@ namespace OrchardCore.Contents.Deployment.ClickToDeploy
                 }
             }
 
+            if (model.ItemIds?.Count() > 0)
+            {
+                var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(model.ItemIds) && x.Published).ListAsync();
+
+                foreach (var contentItem in checkedContentItems)
+                {
+                    var objectData = JObject.FromObject(contentItem);
+                    objectData.Remove(nameof(ContentItem.Id));
+                    data.Add(objectData);
+                }
+            }
+
             return;
         }
 
         public class ClickToDeployModel
         {
+            public IEnumerable<int> ItemIds { get; set; }
             public string ContentItemId { get; set; }
             public bool Latest { get; set; }
         }

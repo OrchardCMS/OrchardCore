@@ -1,9 +1,8 @@
-
 @using Microsoft.AspNetCore.Routing
 @using OrchardCore.Contents.Deployment.ClickToDeploy
 @using OrchardCore.Entities
 @using OrchardCore.Deployment.Services
-@inject IDeploymentManager DeploymentTargetManager
+@inject IDeploymentManager DeploymentManager
 @inject IDeploymentPlanService DeploymentPlanService
 @{
     var hasPermission = await DeploymentPlanService.DoesUserHaveExportPermissionAsync();
@@ -21,7 +20,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            @foreach (var target in await DeploymentTargetManager.GetDeploymentTargetsAsync())
+                            @foreach (var target in await DeploymentManager.GetDeploymentTargetsAsync())
                             {
                                 var routeWithId = new RouteValueDictionary(target.Route);
                                 routeWithId["id"] = clickToDeploySettings.ClickToDeployPlanId;
@@ -57,8 +56,6 @@
 
                     $('.click-to-deploy').on('click', function () {
                         var targetButton = this;
-
-                        //TODO move this to a confirm dialog
                         var magicToken = $("input[name=__RequestVerificationToken]").first();
                         if (magicToken) {
                             var hrefParts = $(targetButton).data("target-url").split("?");
