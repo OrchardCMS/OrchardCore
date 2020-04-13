@@ -31,7 +31,7 @@
             <label asp-for="BrandImage">@T["Brand image"]</label>
             <span class="hint">— @T["The brand image used in the admin."]</span>
 
-            <input asp-for="BrandImage" type="hidden" class="paths" :value="paths" data-init="[{ 'Paths': '@Model.BrandImage' }]" />
+            <input asp-for="BrandImage" type="hidden" class="paths" :value="paths" data-init="@Model.BrandImage" />
 
             <nav class="media-field-toolbar" v-cloak>
                 <div class="btn-group">
@@ -77,7 +77,7 @@
             <label>@T["Favicon"]</label>
             <span class="hint">— @T["The favicon used in the admin."]</span>
 
-            <input asp-for="Favicon" type="hidden" class="paths" :value="paths" data-init="[{ 'Paths': '@Model.Favicon' }]" />
+            <input asp-for="Favicon" type="hidden" class="paths" :value="paths" data-init="@Model.Favicon" />
 
             <nav class="media-field-toolbar" v-cloak>
                 <div class="btn-group">
