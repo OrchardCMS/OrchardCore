@@ -82,7 +82,7 @@ namespace OrchardCore.Users.Controllers
                 options = new UserIndexOptions();
             }
 
-            var users = _userManager.Users.Select(u => u as User);
+            var users = _session.Query<User, UserIndex>();
 
             switch (options.Filter)
             {

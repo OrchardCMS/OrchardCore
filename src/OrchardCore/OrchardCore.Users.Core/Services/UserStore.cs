@@ -527,8 +527,8 @@ namespace OrchardCore.Users.Services
 
         #endregion IUserClaimStore<IUser>
 
-        #region IQueryableuserStore
-        public IQueryable<IUser> Users => _session.Query<User>().ListAsync().GetAwaiter().GetResult().AsQueryable();
+        #region IQueryableUserStore
+        public IQueryable<IUser> Users => _session.Query<User, UserIndex>().ListAsync().GetAwaiter().GetResult().AsQueryable();
         #endregion
     }
 }
