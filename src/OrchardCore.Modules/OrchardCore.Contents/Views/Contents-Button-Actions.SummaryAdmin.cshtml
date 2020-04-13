@@ -1,5 +1,4 @@
 @using Microsoft.AspNetCore.Authorization
-@using OrchardCore.Contents
 @using OrchardCore.ContentManagement
 @inject IAuthorizationService AuthorizationService
 @inject IContentManager ContentManager
@@ -8,7 +7,7 @@
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
     var hasDraft = contentItem.HasDraft();
-    var hasClonePermission = await AuthorizationService.AuthorizeAsync(User, Permissions.CloneContent, contentItem);
+    var hasClonePermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.CloneContent, contentItem);
 }
 
 @if (hasDraft)
