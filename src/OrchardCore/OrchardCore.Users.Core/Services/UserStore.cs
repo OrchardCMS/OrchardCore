@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Data;
+using OrchardCore.Infrastructure.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Security.Services;
 using OrchardCore.Users.Handlers;
@@ -20,22 +22,30 @@ namespace OrchardCore.Users.Services
         IUserRoleStore<IUser>,
         IUserPasswordStore<IUser>,
         IUserEmailStore<IUser>,
+        IQueryableUserStore<IUser>,
         IUserSecurityStampStore<IUser>,
         IUserLoginStore<IUser>
     {
         private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
         private readonly IRoleService _roleService;
+        private readonly IScopedDistributedCache _scopedDistributedCache;
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly ILogger _logger;
 
-        public UserStore(ISession session,
+        public UserStore(
+            ISession session,
+            ISessionHelper sessionHelper,
             IRoleService roleService,
+            IScopedDistributedCache scopedDistributedCache,
             ILookupNormalizer keyNormalizer,
             ILogger<UserStore> logger,
             IEnumerable<IUserEventHandler> handlers)
         {
             _session = session;
+            _sessionHelper = sessionHelper;
             _roleService = roleService;
+            _scopedDistributedCache = scopedDistributedCache;
             _keyNormalizer = keyNormalizer;
             _logger = logger;
             Handlers = handlers;
@@ -524,5 +534,17 @@ namespace OrchardCore.Users.Services
         }
 
         #endregion IUserClaimStore<IUser>
+
+        #region IQueryableuserStore
+        public IQueryable<IUser> Users => GetUsersAsync().GetAwaiter().GetResult().Roles.AsQueryable();
+        #endregion
+
+        private async Task<UsersDocument> GetUsersAsync()
+        {
+            return await _scopedDistributedCache.GetOrSetAsync(() =>
+            {
+                return _sessionHelper.GetForCachingAsync<UsersDocument>();
+            });
+        }
     }
 }
