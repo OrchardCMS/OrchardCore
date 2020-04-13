@@ -121,11 +121,11 @@ namespace OrchardCore.Users.Controllers
                     break;
             }
 
-            var count = users.Count();
-            var results = users
+            var count = await users.CountAsync();
+            var results = await users
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize)
-                .ToList();
+                .ListAsync();
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
