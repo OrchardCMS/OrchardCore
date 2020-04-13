@@ -1,5 +1,22 @@
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
 
+<script asp-src="~/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable"></script>
+<style asp-src="~/OrchardCore.Media/Styles/media.min.css" debug-src="~/OrchardCore.Media/Styles/media.css"></style>
+
+<script at="Foot">
+    initializeMediaApplication(false,  '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
+    initializeMediaField(
+        document.getElementById('@Html.IdFor(m => m.BrandImageUrl)'),
+        document.getElementById('@Html.IdFor(m => m.BrandImageUrl)-ModalBody'),
+        '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
+        false);
+    initializeMediaField(
+        document.getElementById('@Html.IdFor(m => m.FaviconUrl)'),
+        document.getElementById('@Html.IdFor(m => m.FaviconUrl)-ModalBody'),
+        '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
+        false);
+</script>
+
 <div class="form-group" asp-validation-class-for="DisplayMenuFilter">
     <div class="custom-control custom-checkbox">
         <input asp-for="DisplayMenuFilter" class="custom-control-input" type="checkbox" />
@@ -8,19 +25,104 @@
     <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
 </div>
 
-<div class="form-group" asp-validation-class-for="BrandImageUrl">
-    <label asp-for="BrandImageUrl">@T["Brand image url"]</label>
-    <input asp-for="BrandImageUrl" class="form-control" />
-    <span asp-validation-for="BrandImageUrl"></span>
-    <span class="hint">@T["The url of the upper left image in admin."]</span>
+<div class="mediafield-editor" id="@Html.IdFor(m => m.BrandImageUrl)" data-for="@Html.IdFor(m => m.BrandImageUrl)">
+    <div class="media-field">
+        <div class="form-group">
+            <label>@T["Brand image"]</label>
+            <span class="hint">@T["The upper left image in admin."]</span>
+
+            <input asp-for="BrandImageUrl" type="hidden" class="paths" :value="paths" data-init="@Model.BrandImageUrl" />
+
+            <nav class="media-field-toolbar" v-cloak>
+                <div class="btn-group">
+                    <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
+                    <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa fa-trash"></i></a>
+                </div>
+                <div  class="selected-media-name">
+                    <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+                </div>
+            </nav>
+        </div>
+        <div class="form-group">
+            <media-field-thumbs-container :media-items="mediaItems"
+                                          :thumb-size="thumbSize"
+                                          :selected-media="selectedMedia">
+            </media-field-thumbs-container>
+        </div>
+    </div>
 </div>
 
-<div class="form-group" asp-validation-class-for="FaviconUrl">
+<div class="modal" id="@Html.IdFor(m => m.BrandImageUrl)-ModalBody">
+    <div class="modal-dialog modal-lg media-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@T["Select Media"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary mediaFieldSelectButton">@T["OK"]</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mediafield-editor" id="@Html.IdFor(m => m.FaviconUrl)" data-for="@Html.IdFor(m => m.FaviconUrl)">
+    <div class="media-field">
+        <div class="form-group">
+            <label>@T["Favicon"]</label>
+            <span class="hint">@T["The favicon of the admin."]</span>
+
+            <input asp-for="FaviconUrl" type="hidden" class="paths" :value="paths" data-init="@Model.FaviconUrl" />
+
+            <nav class="media-field-toolbar" v-cloak>
+                <div class="btn-group">
+                    <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
+                    <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa fa-trash"></i></a>
+                </div>
+                <div  class="selected-media-name">
+                    <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+                </div>
+            </nav>
+        </div>
+        <div class="form-group">
+            <media-field-thumbs-container :media-items="mediaItems"
+                                          :thumb-size="thumbSize"
+                                          :selected-media="selectedMedia">
+            </media-field-thumbs-container>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="@Html.IdFor(m => m.FaviconUrl)-ModalBody">
+    <div class="modal-dialog modal-lg media-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@T["Select Media"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary mediaFieldSelectButton">@T["OK"]</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div class="form-group" asp-validation-class-for="FaviconUrl">
     <label asp-for="FaviconUrl">@T["Favicon url"]</label>
     <input asp-for="FaviconUrl" class="form-control" />
     <span asp-validation-for="FaviconUrl"></span>
-    <span class="hint">@T["The url of the favicon of the admin pages."]</span>
-</div>
+    <span class="hint">@T["The url of the favicon of the admin."]</span>
+</div>*@
 
 <div class="form-group" asp-validation-class-for="Head">
     <label asp-for="Head">@T["Head"]</label>
