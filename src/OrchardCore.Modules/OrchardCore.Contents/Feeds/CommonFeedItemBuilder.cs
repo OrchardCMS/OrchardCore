@@ -26,7 +26,7 @@ namespace OrchardCore.Contents.Feeds.Builders
             {
                 var contentItem = feedItem.Item;
                 var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
-                var body = contentItem.Content.MarkdownBodyPart.Markdown.Value;
+                var bodyAspect = await _contentManager.PopulateAspectAsync<BodyAspect>(contentItem);
                 var routes = contentItemMetadata.DisplayRouteValues;
 
                 // author is intentionally left empty as it could result in unwanted spam
@@ -49,7 +49,7 @@ namespace OrchardCore.Contents.Feeds.Builders
                     feedItem.Element.SetElementValue("title", WebUtility.HtmlEncode(contentItem.DisplayText));
                     feedItem.Element.Add(link);
 
-                    feedItem.Element.SetElementValue("description", body != null ? $"<![CDATA[{body?.ToString()}]]>" : String.Empty);
+                    feedItem.Element.SetElementValue("description", bodyAspect.Body != null ? $"<![CDATA[{bodyAspect.Body?.ToString()}]]>" : String.Empty);
 
                     if (contentItem.PublishedUtc != null)
                     {
@@ -75,7 +75,7 @@ namespace OrchardCore.Contents.Feeds.Builders
                     });
 
                     context.Builder.AddProperty(context, feedItem, "title", WebUtility.HtmlEncode(contentItem.DisplayText));
-                    context.Builder.AddProperty(context, feedItem, "description", body != null ? $"<![CDATA[{body?.ToString()}]]>" : String.Empty);
+                    context.Builder.AddProperty(context, feedItem, "description", bodyAspect.Body != null ? $"<![CDATA[{bodyAspect.Body?.ToString()}]]>" : String.Empty);
 
                     if (contentItem.PublishedUtc != null)
                     {
