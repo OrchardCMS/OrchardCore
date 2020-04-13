@@ -53,7 +53,7 @@ namespace OrchardCore.Media.Azure
 
                 // container name must be lowercase
                 options.ContainerName = template.Render(templateContext, NullEncoder.Default).ToLower();
-                options.ContainerName.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                options.ContainerName = options.ContainerName.Replace("\r", String.Empty).Replace("\n", String.Empty);
             }
             catch (Exception e)
             {
@@ -69,7 +69,7 @@ namespace OrchardCore.Media.Azure
                 var template = FluidTemplate.Parse(options.BasePath);
 
                 options.BasePath = template.Render(templateContext, NullEncoder.Default);
-                options.BasePath.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                options.BasePath = options.BasePath.Replace("\r", String.Empty).Replace("\n", String.Empty);
             }
             catch (Exception e)
             {
