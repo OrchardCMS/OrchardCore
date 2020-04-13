@@ -82,7 +82,7 @@ namespace OrchardCore.Users.Controllers
                 options = new UserIndexOptions();
             }
 
-            var users = _session.Query<User, UserIndex>();
+            var users = _userManager.Users.Select(u => u as User);
 
             switch (options.Filter)
             {
@@ -121,12 +121,11 @@ namespace OrchardCore.Users.Controllers
                     break;
             }
 
-            var count = await users.CountAsync();
-
-            var results = await users
+            var count = users.Count();
+            var results = users
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize)
-                .ListAsync();
+                .ToList();
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
