@@ -1,13 +1,16 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Media.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Admin.Drivers
@@ -35,11 +38,16 @@ namespace OrchardCore.Admin.Drivers
                 return null;
             }
 
+            var brandImagePaths = new List<EditMediaFieldItemInfo> { };
+            brandImagePaths.Add(new EditMediaFieldItemInfo { Path = settings.BrandImage });
+            var faviconImagePaths = new List<EditMediaFieldItemInfo> { };
+            faviconImagePaths.Add(new EditMediaFieldItemInfo { Path = settings.Favicon });
+
             return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
                 {
                     model.DisplayMenuFilter = settings.DisplayMenuFilter;
-                    model.BrandImage = settings.BrandImage;
-                    model.Favicon = settings.Favicon;
+                    model.BrandImage = JsonConvert.SerializeObject(brandImagePaths);
+                    model.Favicon = JsonConvert.SerializeObject(faviconImagePaths);
                     model.Head = settings.Head;
                 }).Location("Content:3").OnGroup(GroupId);
         }
@@ -61,21 +69,25 @@ namespace OrchardCore.Admin.Drivers
 
                 settings.DisplayMenuFilter = model.DisplayMenuFilter;
 
-                string brandImagePath = null;
-                if (!string.IsNullOrEmpty(model.BrandImage))
-                {
-                    var media = JArray.Parse(model.BrandImage);
-                    brandImagePath = media.FirstOrDefault()?["Path"]?.Value<string>();
-                }
-                settings.BrandImage = brandImagePath;
+                // Deserializing an empty string doesn't return an array
+                var BrandImageItems = String.IsNullOrWhiteSpace(model.BrandImage)
+                    ? new List<EditMediaFieldItemInfo>()
+                    : JsonConvert.DeserializeObject<EditMediaFieldItemInfo[]>(model.BrandImage).ToList();
 
-                string faviconPath = null;
-                if (!string.IsNullOrEmpty(model.Favicon))
+                if (BrandImageItems.Count > 0)
                 {
-                    var media = JArray.Parse(model.Favicon);
-                    brandImagePath = media.FirstOrDefault()?["Path"]?.Value<string>();
+                    settings.BrandImage = BrandImageItems.FirstOrDefault().Path;
                 }
-                settings.Favicon = faviconPath;
+
+                // Deserializing an empty string doesn't return an array
+                var FaviconItems = String.IsNullOrWhiteSpace(model.Favicon)
+                    ? new List<EditMediaFieldItemInfo>()
+                    : JsonConvert.DeserializeObject<EditMediaFieldItemInfo[]>(model.Favicon).ToList();
+
+                if (FaviconItems.Count > 0)
+                {
+                    settings.Favicon = FaviconItems.FirstOrDefault().Path;
+                }
 
                 settings.Head = model.Head;
             }

@@ -1,7 +1,6 @@
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
 
-<script asp-src="~/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable"></script>
-<style asp-src="~/OrchardCore.Media/Styles/media.min.css" debug-src="~/OrchardCore.Media/Styles/media.css"></style>
+<partial name="~/Areas/OrchardCore.Media/Views/Shared/MediaFieldEditResources.cshtml" />
 
 <script at="Foot">
     initializeMediaApplication(false,  '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
@@ -28,7 +27,7 @@
 <div class="mediafield-editor" id="@Html.IdFor(m => m.BrandImage)" data-for="@Html.IdFor(m => m.BrandImage)">
     <div class="media-field">
         <div class="form-group">
-            <label>@T["Brand image"]</label>
+            <label asp-for="BrandImage">@T["Brand image"]</label>
             <span class="hint">@T["The brand image used in the admin."]</span>
 
             <input asp-for="BrandImage" type="hidden" class="paths" :value="paths" data-init="@Model.BrandImage" />
@@ -38,7 +37,7 @@
                     <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
                     <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa fa-trash"></i></a>
                 </div>
-                <div  class="selected-media-name">
+                <div class="selected-media-name">
                     <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
                 </div>
             </nav>
@@ -84,7 +83,7 @@
                     <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
                     <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa fa-trash"></i></a>
                 </div>
-                <div  class="selected-media-name">
+                <div class="selected-media-name">
                     <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
                 </div>
             </nav>
@@ -142,3 +141,5 @@
         });
     });
 </script>
+
+<partial name="~/Areas/OrchardCore.Media/Views/Shared/MediaFieldEditLocalization.cshtml" />
