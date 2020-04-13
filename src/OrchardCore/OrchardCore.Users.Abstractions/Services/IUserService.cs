@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -59,6 +60,8 @@ namespace OrchardCore.Users.Services
         /// <param name="userName">The username.</param>
         /// <returns>The <see cref="IUser"/> represents the retrieved user.</returns>
         Task<IUser> GetUserAsync(string userName);
+
+        Task<IEnumerable<IUser>> GetUsersAsync();
 
         /// <summary>
         /// Gets the user with a specified ID.
