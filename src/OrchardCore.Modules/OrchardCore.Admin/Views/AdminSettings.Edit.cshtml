@@ -20,15 +20,16 @@
     <div class="custom-control custom-checkbox">
         <input asp-for="DisplayMenuFilter" class="custom-control-input" type="checkbox" />
         <label asp-for="DisplayMenuFilter" class="custom-control-label">@T["Enable Admin Menu filter"]</label>
+        <span class="hint">— @T["Whether a quick search to filter the admin menu is displayed."]</span>
     </div>
-    <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
+    
 </div>
 
 <div class="mediafield-editor" id="@Html.IdFor(m => m.BrandImage)" data-for="@Html.IdFor(m => m.BrandImage)">
     <div class="media-field">
         <div class="form-group">
             <label asp-for="BrandImage">@T["Brand image"]</label>
-            <span class="hint">@T["The brand image used in the admin."]</span>
+            <span class="hint">— @T["The brand image used in the admin."]</span>
 
             <input asp-for="BrandImage" type="hidden" class="paths" :value="paths" data-init="@Model.BrandImage" />
 
@@ -74,7 +75,7 @@
     <div class="media-field">
         <div class="form-group">
             <label>@T["Favicon"]</label>
-            <span class="hint">@T["The favicon used in the admin."]</span>
+            <span class="hint">— @T["The favicon used in the admin."]</span>
 
             <input asp-for="Favicon" type="hidden" class="paths" :value="paths" data-init="@Model.Favicon" />
 
