@@ -36,8 +36,8 @@ namespace OrchardCore.Admin.Drivers
             return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
                 {
                     model.DisplayMenuFilter = settings.DisplayMenuFilter;
-                    model.BrandImageUrl = settings.BrandImageUrl;
-                    model.FaviconUrl = settings.FaviconUrl;
+                    model.BrandImageMedia = settings.BrandImageMedia;
+                    model.FaviconMedia = settings.FaviconMedia;
                     model.Head = settings.Head;
                 }).Location("Content:3").OnGroup(GroupId);
         }
@@ -58,8 +58,8 @@ namespace OrchardCore.Admin.Drivers
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 settings.DisplayMenuFilter = model.DisplayMenuFilter;
-                settings.BrandImageUrl = model.BrandImageUrl;
-                settings.FaviconUrl = model.FaviconUrl;
+                settings.BrandImageMedia = model.BrandImageMedia;
+                settings.FaviconMedia = model.FaviconMedia;
                 settings.Head = model.Head;
             }
 

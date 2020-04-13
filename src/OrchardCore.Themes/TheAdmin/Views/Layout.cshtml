@@ -3,8 +3,8 @@
 @using OrchardCore.Admin.Models
 @{
     var adminSettings = (await siteService.GetSiteSettingsAsync()).As<AdminSettings>();
-    var brandImageUrl = (string.IsNullOrEmpty(adminSettings.BrandImage)) ? "/TheAdmin/logo.png" : adminSettings.BrandImage;
-    var faviconUrl = (string.IsNullOrEmpty(adminSettings.Favicon)) ? "/TheAdmin/favicon.ico" : adminSettings.Favicon;
+    var brandImageUrl = (string.IsNullOrEmpty(adminSettings.BrandImagePath)) ? "/TheAdmin/logo.png" : Orchard.AssetUrl(adminSettings.BrandImagePath);
+    var faviconUrl = (string.IsNullOrEmpty(adminSettings.FaviconPath)) ? "/TheAdmin/favicon.ico" : Orchard.AssetUrl(adminSettings.FaviconPath);
 }
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">

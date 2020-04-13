@@ -6,13 +6,13 @@
 <script at="Foot">
     initializeMediaApplication(false,  '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
     initializeMediaField(
-        document.getElementById('@Html.IdFor(m => m.BrandImageUrl)'),
-        document.getElementById('@Html.IdFor(m => m.BrandImageUrl)-ModalBody'),
+        document.getElementById('@Html.IdFor(m => m.BrandImageMedia)'),
+        document.getElementById('@Html.IdFor(m => m.BrandImageMedia)-ModalBody'),
         '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
         false);
     initializeMediaField(
-        document.getElementById('@Html.IdFor(m => m.FaviconUrl)'),
-        document.getElementById('@Html.IdFor(m => m.FaviconUrl)-ModalBody'),
+        document.getElementById('@Html.IdFor(m => m.FaviconMedia)'),
+        document.getElementById('@Html.IdFor(m => m.FaviconMedia)-ModalBody'),
         '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
         false);
 </script>
@@ -25,13 +25,13 @@
     <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
 </div>
 
-<div class="mediafield-editor" id="@Html.IdFor(m => m.BrandImageUrl)" data-for="@Html.IdFor(m => m.BrandImageUrl)">
+<div class="mediafield-editor" id="@Html.IdFor(m => m.BrandImageMedia)" data-for="@Html.IdFor(m => m.BrandImageMedia)">
     <div class="media-field">
         <div class="form-group">
             <label>@T["Brand image"]</label>
-            <span class="hint">@T["The upper left image in admin."]</span>
+            <span class="hint">@T["The brand image used in the admin."]</span>
 
-            <input asp-for="BrandImageUrl" type="hidden" class="paths" :value="paths" data-init="@Model.BrandImageUrl" />
+            <input asp-for="BrandImageMedia" type="hidden" class="paths" :value="paths" data-init="@Model.BrandImageMedia" />
 
             <nav class="media-field-toolbar" v-cloak>
                 <div class="btn-group">
@@ -52,7 +52,7 @@
     </div>
 </div>
 
-<div class="modal" id="@Html.IdFor(m => m.BrandImageUrl)-ModalBody">
+<div class="modal" id="@Html.IdFor(m => m.BrandImageMedia)-ModalBody">
     <div class="modal-dialog modal-lg media-modal" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -71,13 +71,13 @@
     </div>
 </div>
 
-<div class="mediafield-editor" id="@Html.IdFor(m => m.FaviconUrl)" data-for="@Html.IdFor(m => m.FaviconUrl)">
+<div class="mediafield-editor" id="@Html.IdFor(m => m.FaviconMedia)" data-for="@Html.IdFor(m => m.FaviconMedia)">
     <div class="media-field">
         <div class="form-group">
             <label>@T["Favicon"]</label>
-            <span class="hint">@T["The favicon of the admin."]</span>
+            <span class="hint">@T["The favicon used in the admin."]</span>
 
-            <input asp-for="FaviconUrl" type="hidden" class="paths" :value="paths" data-init="@Model.FaviconUrl" />
+            <input asp-for="FaviconMedia" type="hidden" class="paths" :value="paths" data-init="@Model.FaviconMedia" />
 
             <nav class="media-field-toolbar" v-cloak>
                 <div class="btn-group">
@@ -98,7 +98,7 @@
     </div>
 </div>
 
-<div class="modal" id="@Html.IdFor(m => m.FaviconUrl)-ModalBody">
+<div class="modal" id="@Html.IdFor(m => m.FaviconMedia)-ModalBody">
     <div class="modal-dialog modal-lg media-modal" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -116,19 +116,12 @@
         </div>
     </div>
 </div>
-
-@*<div class="form-group" asp-validation-class-for="FaviconUrl">
-    <label asp-for="FaviconUrl">@T["Favicon url"]</label>
-    <input asp-for="FaviconUrl" class="form-control" />
-    <span asp-validation-for="FaviconUrl"></span>
-    <span class="hint">@T["The url of the favicon of the admin."]</span>
-</div>*@
 
 <div class="form-group" asp-validation-class-for="Head">
     <label asp-for="Head">@T["Head"]</label>
     <textarea asp-for="Head" class="form-control"></textarea>
     <span asp-validation-for="Head"></span>
-    <span class="hint">@T["HTML code added in the head of the admin pages."]</span>
+    <span class="hint">@T["HTML code used in the head of the admin."]</span>
 </div>
 
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>

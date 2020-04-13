@@ -7,46 +7,36 @@ namespace OrchardCore.Admin.Models
     public class AdminSettings
     {
         public bool DisplayMenuFilter { get; set; }
-        public string BrandImageUrl { get; set; }
-        public string FaviconUrl { get; set; }
+        public string BrandImageMedia { get; set; }
+        public string FaviconMedia { get; set; }
         public string Head { get; set; }
 
-        public string BrandImage
+        public string BrandImagePath
         {
             get
             {
                 string path = null;
 
-                if (!string.IsNullOrEmpty(BrandImageUrl))
+                if (!string.IsNullOrEmpty(BrandImageMedia))
                 {
-                    var media = JArray.Parse(BrandImageUrl);
+                    var media = JArray.Parse(BrandImageMedia);
                     path = media.FirstOrDefault()?["Path"]?.Value<string>();
-
-                    if (!string.IsNullOrEmpty(path))
-                    {
-                        path = "/media/" + path;
-                    }
                 }
 
                 return path;
             }
         }
 
-        public string Favicon
+        public string FaviconPath
         {
             get
             {
                 string path = null;
 
-                if (!string.IsNullOrEmpty(FaviconUrl))
+                if (!string.IsNullOrEmpty(FaviconMedia))
                 {
-                    var media = JArray.Parse(FaviconUrl);
+                    var media = JArray.Parse(FaviconMedia);
                     path = media.FirstOrDefault()?["Path"]?.Value<string>();
-
-                    if (!string.IsNullOrEmpty(path))
-                    {
-                        path = "/media/" + path;
-                    }
                 }
 
                 return path;
