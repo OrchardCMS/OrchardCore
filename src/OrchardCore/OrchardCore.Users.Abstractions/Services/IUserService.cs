@@ -61,8 +61,6 @@ namespace OrchardCore.Users.Services
         /// <returns>The <see cref="IUser"/> represents the retrieved user.</returns>
         Task<IUser> GetUserAsync(string userName);
 
-        Task<IEnumerable<IUser>> GetUsersAsync();
-
         /// <summary>
         /// Gets the user with a specified ID.
         /// </summary>

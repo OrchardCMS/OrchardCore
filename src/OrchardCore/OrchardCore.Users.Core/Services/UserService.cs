@@ -146,9 +146,6 @@ namespace OrchardCore.Users.Services
             return user;
         }
 
-        public Task<IEnumerable<IUser>> GetUsersAsync()
-            => Task.FromResult<IEnumerable<IUser>>(_userManager.Users);
-
         public async Task<bool> ResetPasswordAsync(string userIdentifier, string resetToken, string newPassword, Action<string, string> reportError)
         {
             var result = true;

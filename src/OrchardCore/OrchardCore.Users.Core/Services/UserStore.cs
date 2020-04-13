@@ -536,15 +536,7 @@ namespace OrchardCore.Users.Services
         #endregion IUserClaimStore<IUser>
 
         #region IQueryableuserStore
-        public IQueryable<IUser> Users => GetUsersAsync().GetAwaiter().GetResult().Roles.AsQueryable();
+        public IQueryable<IUser> Users => _session.Query<User>().ListAsync().GetAwaiter().GetResult().AsQueryable();
         #endregion
-
-        private async Task<UsersDocument> GetUsersAsync()
-        {
-            return await _scopedDistributedCache.GetOrSetAsync(() =>
-            {
-                return _sessionHelper.GetForCachingAsync<UsersDocument>();
-            });
-        }
     }
 }
