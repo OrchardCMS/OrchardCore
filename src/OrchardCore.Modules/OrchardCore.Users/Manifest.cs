@@ -42,5 +42,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Users.TimeZone",
     Name = "User Time Zone",
     Description = "Provides a way to set the time zone per user.",
+    Dependencies = new[] { "OrchardCore.Users" },
     Category = "Settings"
 )]
