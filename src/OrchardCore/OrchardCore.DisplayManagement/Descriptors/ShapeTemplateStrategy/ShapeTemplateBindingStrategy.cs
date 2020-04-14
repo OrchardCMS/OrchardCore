@@ -133,9 +133,19 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
             foreach (var iter in hits)
             {
-                // templates are always associated with the namesake feature of module or theme
                 var hit = iter;
-                foreach (var feature in hit.extensionDescriptor.Features)
+
+                // Template files need to be associated with all features of a given module or theme.
+                // So we iterate on the main feature and any other feature that doesn't depend on it.
+                // Note: For performance reasons we only check the 1st level of the dependency graph.
+
+                var mainId = hit.extensionDescriptor.Features.ElementAt(0).Id;
+
+                var features = hit.extensionDescriptor.Features
+                    .Where(f => !f.Dependencies.Contains(mainId))
+                    .ToArray();
+
+                foreach (var feature in features)
                 {
                     if (_logger.IsEnabled(LogLevel.Debug))
                     {
