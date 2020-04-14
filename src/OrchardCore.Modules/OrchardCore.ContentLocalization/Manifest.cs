@@ -4,7 +4,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Content Localization",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
-    Version = "1.0.0",
+    Version = ManifestConstants.OrchardCoreVersion,
     Description = "Provides a part that allows to localize content items.",
     Category = "Internationalization"
 )]
