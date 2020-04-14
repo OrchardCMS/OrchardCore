@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Media.Services
