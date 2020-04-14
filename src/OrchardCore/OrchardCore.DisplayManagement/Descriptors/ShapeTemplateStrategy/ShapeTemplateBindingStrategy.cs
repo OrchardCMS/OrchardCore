@@ -3,10 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
@@ -16,7 +14,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public class ShapeTemplateBindingStrategy : IShapeTableHarvester
     {
-        private readonly string _shellName;
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
         private readonly IShapeTemplateFileProviderAccessor _fileProviderAccessor;
@@ -27,15 +24,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             new Dictionary<string, IShapeTemplateViewEngine>(StringComparer.OrdinalIgnoreCase);
 
         public ShapeTemplateBindingStrategy(
-            ShellSettings shellSettings,
             IEnumerable<IShapeTemplateHarvester> harvesters,
             IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
-            IOptions<MvcViewOptions> options,
             IShapeTemplateFileProviderAccessor fileProviderAccessor,
             ILogger<DefaultShapeTableManager> logger)
         {
-            _shellName = shellSettings.Name;
             _harvesters = harvesters;
             _shellFeaturesManager = shellFeaturesManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
@@ -135,7 +129,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             {
                 var hit = iter;
 
-                // Template files need to be associated with all features of a given module or theme.
+                // Template files need to be associated to all features of a given module or theme.
                 // So we iterate on the main feature and any other feature that doesn't depend on it.
                 // Note: For performance reasons we only check the 1st level of the dependency graph.
 
