@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -13,6 +14,7 @@ namespace OrchardCore.Markdown.Handlers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly IDictionary<string, HtmlString> _bodiesAspectDictionary = new Dictionary<string, HtmlString>();
 
         public MarkdownBodyPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
         {
@@ -24,6 +26,14 @@ namespace OrchardCore.Markdown.Handlers
         {
             return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
+                var contentItemVersionId = part.ContentItem.ContentItemVersionId;
+                if (_bodiesAspectDictionary.ContainsKey(contentItemVersionId))
+                {
+                    bodyAspect.Body = _bodiesAspectDictionary[contentItemVersionId];
+
+                    return;
+                }
+
                 try
                 {
                     var model = new MarkdownBodyPartViewModel()
@@ -38,7 +48,8 @@ namespace OrchardCore.Markdown.Handlers
 
                     var result = Markdig.Markdown.ToHtml(markdown ?? "");
 
-                    bodyAspect.Body =  new HtmlString(result);
+                    _bodiesAspectDictionary.Add(contentItemVersionId, new HtmlString(result));
+                    bodyAspect.Body = _bodiesAspectDictionary[contentItemVersionId];
                 }
                 catch
                 {

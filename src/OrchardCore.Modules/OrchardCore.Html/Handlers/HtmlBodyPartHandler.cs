@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -13,7 +14,7 @@ namespace OrchardCore.Html.Handlers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private HtmlString _bodyAspect;
+        private readonly IDictionary<string, HtmlString> _bodiesAspectDictionary = new Dictionary<string, HtmlString>();
 
         public HtmlBodyPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
         {
@@ -25,9 +26,11 @@ namespace OrchardCore.Html.Handlers
         {
             return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
-                if (_bodyAspect != null)
+                var contentItemVersionId = part.ContentItem.ContentItemVersionId;
+                if (_bodiesAspectDictionary.ContainsKey(contentItemVersionId))
                 {
-                    bodyAspect.Body = _bodyAspect;
+                    bodyAspect.Body = _bodiesAspectDictionary[contentItemVersionId];
+
                     return;
                 }
 
@@ -43,7 +46,8 @@ namespace OrchardCore.Html.Handlers
                     var result = await _liquidTemplateManager.RenderAsync(part.Html, _htmlEncoder, model,
                         scope => scope.SetValue("ContentItem", model.ContentItem));
 
-                    bodyAspect.Body = _bodyAspect = new HtmlString(result);
+                    _bodiesAspectDictionary.Add(contentItemVersionId, new HtmlString(result));
+                    bodyAspect.Body = _bodiesAspectDictionary[contentItemVersionId];
                 }
                 catch
                 {
