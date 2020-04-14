@@ -10,9 +10,17 @@ using OrchardCore.Microsoft.Authentication;
 )]
 
 [assembly: Feature(
+    Id = MicrosoftAuthenticationConstants.Features.MicrosoftAuthentication,
+    Name = "Microsoft Authentication",
+    Category = "Microsoft Authentication",
+    Description = "Manages Microsoft Authentication settings."
+)]
+
+[assembly: Feature(
     Id = MicrosoftAuthenticationConstants.Features.MicrosoftAccount,
     Name = "Microsoft Account Authentication",
     Category = "Microsoft Authentication",
+    Dependencies = new[] { MicrosoftAuthenticationConstants.Features.MicrosoftAuthentication },
     Description = "Authenticates users with their Microsoft Account."
 )]
 
@@ -20,5 +28,6 @@ using OrchardCore.Microsoft.Authentication;
     Id = MicrosoftAuthenticationConstants.Features.AAD,
     Name = "Microsoft Azure Active Directory Authentication",
     Category = "Microsoft Authentication",
+    Dependencies = new[] { MicrosoftAuthenticationConstants.Features.MicrosoftAuthentication },
     Description = "Authenticates users with their Azure Active Directory Account."
 )]
