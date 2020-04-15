@@ -64,6 +64,7 @@
         "OrchardCore.Templates",
         "OrchardCore.Tenants",
         "OrchardCore.Themes",
+        "OrchardCore.ThemeSettings",
         "OrchardCore.Title",
 
         "OrchardCore.Users",

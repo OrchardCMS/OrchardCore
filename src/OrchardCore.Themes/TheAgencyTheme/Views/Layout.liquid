@@ -6,6 +6,7 @@
     <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>
     {% render_section "HeadMeta", required: false %}
     {% resources type: "Meta" %}
+    {{ ThemeSettings.Head | raw }}
     <link type="image/x-icon" rel="shortcut icon" href="/TheAgencyTheme/favicon.ico">
 
     <!-- Bootstrap core CSS -->

@@ -7,12 +7,14 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Services;
 using OrchardCore.ThemeSettings.Drivers;
 
 namespace OrchardCore.ThemeSettings
@@ -31,6 +33,7 @@ namespace OrchardCore.ThemeSettings
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, ThemeSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<ILiquidTemplateEventHandler, ThemeSettingsLiquidTemplateEventHandler>();
         }
     }
 }

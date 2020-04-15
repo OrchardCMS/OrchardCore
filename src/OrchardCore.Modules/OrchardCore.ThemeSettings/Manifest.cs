@@ -5,7 +5,7 @@ using OrchardCore.Modules.Manifest;
     Author = "The Orchard Core Team",
     Website = "https://orcharcore.net",
     Version = "2.0.0",
-    Description = "Theme Settings.",
+    Description = "Allows to specify theme settings.",
     Dependencies = new[] { "OrchardCore.Admin" },
     Category = "Theming"
 )]
