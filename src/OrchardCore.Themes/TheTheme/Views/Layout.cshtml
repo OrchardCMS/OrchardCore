@@ -1,9 +1,15 @@
+@inject OrchardCore.Settings.ISiteService siteService
+@using OrchardCore.Entities
+@{
+    var customThemeSettings = (await siteService.GetSiteSettingsAsync()).As<OrchardCore.ThemeSettings.Models.CustomThemeSettings>();
+}
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
+    @Html.Raw(customThemeSettings.Head)
     @await RenderSectionAsync("HeadMeta", required: false)
     <link type="image/x-icon" rel="shortcut icon" href="/TheTheme/favicon.ico">
     <script asp-name="bootstrap" version="4" at="Foot"></script>
@@ -35,5 +41,6 @@
     </main>
     @await RenderSectionAsync("Footer", required: false)
     <resources type="FootScript" />
+    @Html.Raw(customThemeSettings.Foot)
 </body>
 </html>

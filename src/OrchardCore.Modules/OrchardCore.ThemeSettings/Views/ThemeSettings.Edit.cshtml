@@ -1,0 +1,42 @@
+@model OrchardCore.ThemeSettings.ViewModels.ThemeSettingsViewModel
+
+<div class="form-group" asp-validation-class-for="Head">
+    <label asp-for="Head">@T["Head"]</label>
+    <textarea asp-for="Head" class="form-control" rows="5"></textarea>
+    <span asp-validation-for="Head"></span>
+    <span class="hint">@T["The HTML content to inject in the head."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="Foot">
+    <label asp-for="Foot">@T["Foot"]</label>
+    <textarea asp-for="Foot" class="form-control" rows="5"></textarea>
+    <span asp-validation-for="Foot"></span>
+    <span class="hint">@T["The HTML content to inject in the foooter."]</span>
+</div>
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-mode-css" at="Foot"></script>
+<script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script at="Foot">
+    $(function () {
+        var optionsTextAreaHead = document.getElementById('@Html.IdFor(x => x.Head)');
+        var editor = CodeMirror.fromTextArea(optionsTextAreaHead, {
+            autoRefresh: true,
+            lineNumbers: false,
+            lineWrapping: true,
+            matchBrackets: true,
+            mode: { name: "htmlmixed" }
+        });
+        var optionsTexAreaFoot = document.getElementById('@Html.IdFor(x => x.Foot)');
+        var editor = CodeMirror.fromTextArea(optionsTexAreaFoot, {
+            autoRefresh: true,
+            lineNumbers: false,
+            lineWrapping: true,
+            matchBrackets: true,
+            mode: { name: "htmlmixed" }
+        });
+    });
+</script>
