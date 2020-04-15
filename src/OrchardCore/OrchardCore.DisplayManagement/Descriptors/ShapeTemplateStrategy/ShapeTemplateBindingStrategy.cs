@@ -56,10 +56,14 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
                 .ToList();
 
-            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
-                .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id)).ToList();
+            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult();
 
-            var activeExtensions = Once(enabledFeatures);
+            var enabledFeaturesIds = enabledFeatures.Select(f => f.Id).ToArray();
+
+            // Filter the extensions whose templates are already associated to an excluded feature that it is still enabled.
+            var activeExtensions = Once(enabledFeatures)
+                .Where(e => !e.Features.Any(f => builder.ExcludedFeatureIds.Contains(f.Id) && enabledFeaturesIds.Contains(f.Id)))
+                .ToArray();
 
             if (!_viewEnginesByExtension.Any())
             {
@@ -129,40 +133,31 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             {
                 var hit = iter;
 
-                // Template files need to be associated to all features of a given module or theme.
-                // So we iterate on the main feature and any other feature that doesn't depend on it.
-                // Note: For performance reasons we only check the 1st level of the dependency graph.
+                // The template files of a given module or theme may be used by any of its features.
+                // So, we need to associate them at least to one feature that is currently enabled.
+                var feature = hit.extensionDescriptor.Features.First(f => enabledFeaturesIds.Contains(f.Id));
 
-                var mainId = hit.extensionDescriptor.Features.ElementAt(0).Id;
-
-                var features = hit.extensionDescriptor.Features
-                    .Where(f => !f.Dependencies.Contains(mainId))
-                    .ToArray();
-
-                foreach (var feature in features)
+                if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    if (_logger.IsEnabled(LogLevel.Debug))
-                    {
-                        _logger.LogDebug("Binding '{TemplatePath}' as shape '{ShapeType}' for feature '{FeatureName}'",
-                            hit.shapeContext.harvestShapeInfo.RelativePath,
-                            iter.shapeContext.harvestShapeHit.ShapeType,
-                            feature.Id);
-                    }
-
-                    var viewEngineType = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension].GetType();
-
-                    builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
-                        .From(feature)
-                        .BoundAs(
-                            hit.shapeContext.harvestShapeInfo.RelativePath, displayContext =>
-                            {
-                                var viewEngine = displayContext.ServiceProvider
-                                    .GetServices<IShapeTemplateViewEngine>()
-                                    .FirstOrDefault(e => e.GetType() == viewEngineType);
-
-                                return viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext);
-                            });
+                    _logger.LogDebug("Binding '{TemplatePath}' as shape '{ShapeType}' for feature '{FeatureName}'",
+                        hit.shapeContext.harvestShapeInfo.RelativePath,
+                        iter.shapeContext.harvestShapeHit.ShapeType,
+                        feature.Id);
                 }
+
+                var viewEngineType = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension].GetType();
+
+                builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
+                    .From(feature)
+                    .BoundAs(
+                        hit.shapeContext.harvestShapeInfo.RelativePath, displayContext =>
+                        {
+                            var viewEngine = displayContext.ServiceProvider
+                                .GetServices<IShapeTemplateViewEngine>()
+                                .FirstOrDefault(e => e.GetType() == viewEngineType);
+
+                            return viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext);
+                        });
             }
 
             if (_logger.IsEnabled(LogLevel.Information))
