@@ -18,20 +18,11 @@ namespace OrchardCore.Layers.Handlers
             _states = states;
         }
 
-        public override Task PublishedAsync(PublishContentContext context)
-        {
-            return UpdateLayerIdentifierAsync(context.ContentItem);
-        }
+        public override Task PublishedAsync(PublishContentContext context) => UpdateLayerIdentifierAsync(context.ContentItem);
 
-        public override Task RemovedAsync(RemoveContentContext context)
-        {
-            return UpdateLayerIdentifierAsync(context.ContentItem);
-        }
+        public override Task RemovedAsync(RemoveContentContext context) => UpdateLayerIdentifierAsync(context.ContentItem);
 
-        public override Task UnpublishedAsync(PublishContentContext context)
-        {
-            return UpdateLayerIdentifierAsync(context.ContentItem);
-        }
+        public override Task UnpublishedAsync(PublishContentContext context) => UpdateLayerIdentifierAsync(context.ContentItem);
 
         private Task UpdateLayerIdentifierAsync(ContentItem contentItem)
         {

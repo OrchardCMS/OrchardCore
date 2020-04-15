@@ -31,13 +31,10 @@ namespace OrchardCore.ContentManagement.Metadata
         void StorePartDefinition(ContentPartDefinition contentPartDefinition);
 
         /// <summary>
-        /// Returns an unique identifier representing the list of types and settings for the current tenant.
+        /// Returns an unique identifier that is updated when content definitions have changed.
         /// </summary>
         /// <returns>
-        /// An <see cref="String"/> value that changes every time the list of types changes.
-        /// The implementation is efficient in order to be called frequently.
-        /// </returns>
-        Task<string> GetTypesHashAsync();
+        Task<string> GetIdentifierAsync();
     }
 
     public static class ContentDefinitionManagerExtensions

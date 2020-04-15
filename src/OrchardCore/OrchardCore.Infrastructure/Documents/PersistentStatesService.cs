@@ -29,9 +29,7 @@ namespace OrchardCore.Documents
         public async Task SetAsync<T>(string key, T value) where T : new()
         {
             var document = await _documentManager.GetMutableAsync();
-
             document.Properties[key] = JObject.FromObject(value);
-
             await _documentManager.UpdateAsync(document);
         }
 
@@ -39,9 +37,7 @@ namespace OrchardCore.Documents
         public async Task RemoveAsync(string key)
         {
             var document = await _documentManager.GetMutableAsync();
-
             document.Properties.Remove(key);
-
             await _documentManager.UpdateAsync(document);
         }
 

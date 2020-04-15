@@ -36,6 +36,8 @@ namespace OrchardCore.ContentManagement
             _cachedPartDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>());
         }
 
+        public async Task<string> GetIdentifierAsync() => (await _contentDefinitionStore.GetContentDefinitionAsync()).Identifier;
+
         public ContentTypeDefinition LoadTypeDefinition(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -303,8 +305,6 @@ namespace OrchardCore.ContentManagement
         {
             return source == null ? null : new ContentFieldDefinition(source.Name);
         }
-
-        public async Task<string> GetTypesHashAsync() => (await _contentDefinitionStore.GetContentDefinitionAsync()).Identifier;
 
         /// <summary>
         /// Loads the document from the store for updating and that should not be cached.

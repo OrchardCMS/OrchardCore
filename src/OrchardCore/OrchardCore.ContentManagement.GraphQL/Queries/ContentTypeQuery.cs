@@ -39,7 +39,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         public Task<string> GetIdentifierAsync()
         {
             var contentDefinitionManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IContentDefinitionManager>();
-            return contentDefinitionManager.GetTypesHashAsync();
+            return contentDefinitionManager.GetIdentifierAsync();
         }
 
         public Task BuildAsync(ISchema schema)
