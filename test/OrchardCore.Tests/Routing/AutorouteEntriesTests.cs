@@ -1,6 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement.Routing;
 using Xunit;
@@ -14,6 +13,7 @@ namespace OrchardCore.Tests.Routing
         {
             // Setup
             var entries = new AutorouteEntries();
+            var document = new AutorouteDocument();
 
             var initialEntries = new List<AutorouteEntry>()
             {
@@ -21,10 +21,10 @@ namespace OrchardCore.Tests.Routing
                 new AutorouteEntry("container", "contained-path", "contained")
             };
 
-            entries.AddEntries(initialEntries);
+            entries.AddEntries(document, initialEntries);
 
             // Act
-            var result = entries.TryGetEntryByPath("/contained-path", out var containedEntry);
+            var result = entries.TryGetEntryByPath(document, "/contained-path", out var containedEntry);
 
             // Test
             Assert.True(result);
@@ -35,6 +35,7 @@ namespace OrchardCore.Tests.Routing
         public void ShouldGetEntryByContainedContentItemId()
         {
             // Setup
+            var document = new AutorouteDocument();
             var entries = new AutorouteEntries();
 
             var initialEntries = new List<AutorouteEntry>()
@@ -43,10 +44,10 @@ namespace OrchardCore.Tests.Routing
                 new AutorouteEntry("container", "contained-path", "contained")
             };
 
-            entries.AddEntries(initialEntries);
+            entries.AddEntries(document, initialEntries);
 
             // Act
-            var result = entries.TryGetEntryByContentItemId("contained", out var containedEntry);
+            var result = entries.TryGetEntryByContentItemId(document, "contained", out var containedEntry);
 
             // Test
             Assert.True(result);
@@ -58,6 +59,7 @@ namespace OrchardCore.Tests.Routing
         {
             // Setup
             var entries = new AutorouteEntries();
+            var document = new AutorouteDocument();
 
             var initialEntries = new List<AutorouteEntry>()
             {
@@ -65,11 +67,11 @@ namespace OrchardCore.Tests.Routing
                 new AutorouteEntry("container", "contained-path", "contained")
             };
 
-            entries.AddEntries(initialEntries);
+            entries.AddEntries(document, initialEntries);
 
             // Act
-            entries.RemoveEntry("container", "container-path");
-            var result = entries.TryGetEntryByPath("/contained-path", out var entry);
+            entries.RemoveEntries(document, new[] { new AutorouteEntry("container", "container-path", null, null) });
+            var result = entries.TryGetEntryByPath(document, "/contained-path", out _);
 
             // Test
             Assert.False(result);
@@ -80,6 +82,7 @@ namespace OrchardCore.Tests.Routing
         {
             // Setup
             var entries = new AutorouteEntries();
+            var document = new AutorouteDocument();
 
             var initialEntries = new List<AutorouteEntry>()
             {
@@ -88,7 +91,7 @@ namespace OrchardCore.Tests.Routing
                 new AutorouteEntry("container", "contained-path2", "contained2")
             };
 
-            entries.AddEntries(initialEntries);
+            entries.AddEntries(document, initialEntries);
 
             // Act
             var updatedEntries = new List<AutorouteEntry>()
@@ -97,8 +100,8 @@ namespace OrchardCore.Tests.Routing
                 new AutorouteEntry("container", "contained-path1", "contained1")
             };
 
-            entries.AddEntries(updatedEntries);
-            var result = entries.TryGetEntryByPath("/contained-path2", out var entry);
+            entries.AddEntries(document, updatedEntries);
+            var result = entries.TryGetEntryByPath(document, "/contained-path2", out _);
 
             // Test
             Assert.False(result);
@@ -109,6 +112,7 @@ namespace OrchardCore.Tests.Routing
         {
             // Setup
             var entries = new AutorouteEntries();
+            var document = new AutorouteDocument();
 
             var initialEntries = new List<AutorouteEntry>()
             {
@@ -116,7 +120,7 @@ namespace OrchardCore.Tests.Routing
                 new AutorouteEntry("container", "contained-path-old", "contained")
             };
 
-            entries.AddEntries(initialEntries);
+            entries.AddEntries(document, initialEntries);
 
             // Act
             var updatedEntries = new List<AutorouteEntry>()
@@ -125,8 +129,8 @@ namespace OrchardCore.Tests.Routing
                 new AutorouteEntry("container", "contained-path-new", "contained")
             };
 
-            entries.AddEntries(updatedEntries);
-            var result = entries.TryGetEntryByPath("/contained-path-old", out var entry);
+            entries.AddEntries(document, updatedEntries);
+            var result = entries.TryGetEntryByPath(document, "/contained-path-old", out _);
 
             // Test
             Assert.False(result);
@@ -137,12 +141,13 @@ namespace OrchardCore.Tests.Routing
         {
             // Setup
             var entries = new AutorouteEntries();
+            var document = new AutorouteDocument();
 
-            entries.AddEntry("container", "container-path");
+            entries.AddEntries(document, new[] { new AutorouteEntry("container", "container-path", null, null) });
 
             // Act
-            entries.RemoveEntry("container", "container-path");
-            var result = entries.TryGetEntryByPath("/container-path", out var entry);
+            entries.RemoveEntries(document, new[] { new AutorouteEntry("container", "container-path", null, null) });
+            var result = entries.TryGetEntryByPath(document, "/container-path", out _);
 
             // Test
             Assert.False(result);

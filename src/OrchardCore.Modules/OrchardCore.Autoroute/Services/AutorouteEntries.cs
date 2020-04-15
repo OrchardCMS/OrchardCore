@@ -44,18 +44,26 @@ namespace OrchardCore.Autoroute.Services
         public async Task AddEntriesAsync(IEnumerable<AutorouteEntry> entries)
         {
             var document = await LoadDocumentAsync();
-            AddEntriesInternal(document, entries);
+            AddEntries(document, entries);
             await DocumentManager.UpdateAsync(document);
         }
 
         public async Task RemoveEntriesAsync(IEnumerable<AutorouteEntry> entries)
         {
             var document = await LoadDocumentAsync();
-            RemoveEntriesInternal(document, entries);
+            RemoveEntries(document, entries);
             await DocumentManager.UpdateAsync(document);
         }
 
-        private void AddEntriesInternal(AutorouteDocument document, IEnumerable<AutorouteEntry> entries)
+        // For unit tests only
+        public bool TryGetEntryByPath(AutorouteDocument document, string path, out AutorouteEntry entry)
+            => document.ContentItemIds.TryGetValue(path, out entry);
+
+        // For unit tests only
+        public bool TryGetEntryByContentItemId(AutorouteDocument document, string contentItemId, out AutorouteEntry entry)
+            => document.Paths.TryGetValue(contentItemId, out entry);
+
+        public void AddEntries(AutorouteDocument document, IEnumerable<AutorouteEntry> entries)
         {
             // Evict all entries related to a container item from autoroute entries.
             // This is necesary to account for deletions, disabling of an item, or disabling routing of contained items.
@@ -94,7 +102,7 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        private void RemoveEntriesInternal(AutorouteDocument document, IEnumerable<AutorouteEntry> entries)
+        public void RemoveEntries(AutorouteDocument document, IEnumerable<AutorouteEntry> entries)
         {
             foreach (var entry in entries)
             {
@@ -127,7 +135,7 @@ namespace OrchardCore.Autoroute.Services
             var entries = autoroutes.Select(e => new AutorouteEntry(e.ContentItemId, e.Path, e.ContainedContentItemId, e.JsonPath));
 
             var document = new AutorouteDocument();
-            AddEntriesInternal(document, entries);
+            AddEntries(document, entries);
 
             return document;
         }
