@@ -41,7 +41,7 @@ The Azure Shells Configuration is configured via the `appsettings.json` section 
 ``` json
 {
   "OrchardCore": {
-    "OrchardCore.Shells.Azure": {
+    "OrchardCore_Shells_Azure": {
       "ConnectionString": "", // Set to your Azure Storage account connection string.
       "ContainerName": "hostcontainer", // Set to the Azure Blob container name.
       "BasePath": "some/base/path", // Optionally, set to a subdirectory inside your container.
