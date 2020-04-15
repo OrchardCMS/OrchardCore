@@ -57,12 +57,11 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 .ToList();
 
             var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult();
+            var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToArray();
 
-            var enabledFeaturesIds = enabledFeatures.Select(f => f.Id).ToArray();
-
-            // Filter the extensions whose templates are already associated to an excluded feature that it is still enabled.
+            // Excludes the extensions whose templates are already associated to an excluded feature that is still enabled.
             var activeExtensions = Once(enabledFeatures)
-                .Where(e => !e.Features.Any(f => builder.ExcludedFeatureIds.Contains(f.Id) && enabledFeaturesIds.Contains(f.Id)))
+                .Where(e => !e.Features.Any(f => builder.ExcludedFeatureIds.Contains(f.Id) && enabledFeatureIds.Contains(f.Id)))
                 .ToArray();
 
             if (!_viewEnginesByExtension.Any())
@@ -133,9 +132,8 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             {
                 var hit = iter;
 
-                // The template files of a given module or theme may be used by any of its features.
-                // So, we need to associate them at least to one feature that is currently enabled.
-                var feature = hit.extensionDescriptor.Features.First(f => enabledFeaturesIds.Contains(f.Id));
+                // The template files of an active module need to be associated to one of its enabled feature.
+                var feature = hit.extensionDescriptor.Features.First(f => enabledFeatureIds.Contains(f.Id));
 
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
