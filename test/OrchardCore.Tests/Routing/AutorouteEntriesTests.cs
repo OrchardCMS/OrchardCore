@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement.Routing;
 using Xunit;

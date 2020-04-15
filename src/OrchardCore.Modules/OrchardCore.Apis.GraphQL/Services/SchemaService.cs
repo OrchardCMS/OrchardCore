@@ -48,7 +48,7 @@ namespace OrchardCore.Apis.GraphQL.Services
             {
                 foreach (var builder in _schemaBuilders)
                 {
-                    if (!_identifiers.TryGetValue(builder, out var identifier) || await builder.GetIdentifierAsync() != identifier)
+                    if (_identifiers.TryGetValue(builder, out var identifier) && await builder.GetIdentifierAsync() != identifier)
                     {
                         hasChanged = true;
                         break;
