@@ -49,6 +49,16 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         }
 
         [Theory]
+        [InlineData("select a from t where t.id not in (select x from b)", "SELECT [a] FROM [tp_t] WHERE [tp_t].[id] NOT IN ( SELECT [x] FROM [tp_b] );")]
+        [InlineData("select a from t where t.id not in (select x from b where b.z = 2)", "SELECT [a] FROM [tp_t] WHERE [tp_t].[id] NOT IN ( SELECT [x] FROM [tp_b] WHERE [tp_b].[z] = 2 );")]
+        public void ShouldParseNotInClause(string sql, string expectedSql)
+        {
+            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            Assert.True(result);
+            Assert.Equal(expectedSql, FormatSql(rawQuery));
+        }
+
+        [Theory]
         [InlineData("select a where b", "SELECT [a] WHERE [b];")]
         [InlineData("select a where b.b1", "SELECT [a] WHERE [tp_b].[b1];")]
         [InlineData("select a where b = c", "SELECT [a] WHERE [b] = [c];")]

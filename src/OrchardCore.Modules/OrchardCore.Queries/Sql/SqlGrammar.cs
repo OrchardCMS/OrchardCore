@@ -75,6 +75,7 @@ namespace OrchardCore.Queries.Sql
             var functionArguments = new NonTerminal("funArgs");
             var inStatement = new NonTerminal("inStmt");
             var boolean = new NonTerminal("boolean");
+            var notInQueryExpr = new NonTerminal("notInQueryExpr");
 
             //BNF Rules
             this.Root = statementList;
@@ -121,13 +122,14 @@ namespace OrchardCore.Queries.Sql
 
             //Expression
             expressionList.Rule = MakePlusRule(expressionList, comma, expression);
-            expression.Rule = term | unExpr | binExpr | betweenExpr | parameter;
+            expression.Rule = term | unExpr | binExpr | betweenExpr | notInQueryExpr | parameter;
             term.Rule = Id | boolean | string_literal | number | funCall | tuple | parSelectStatement | inStatement;
             boolean.Rule = TRUE | FALSE;
             tuple.Rule = "(" + expressionList + ")";
             parSelectStatement.Rule = "(" + selectStatement + ")";
             unExpr.Rule = unOp + term;
             unOp.Rule = NOT | "+" | "-" | "~";
+            notInQueryExpr.Rule = expression + NOT + "IN" + "(" + selectStatement + ")";
             binExpr.Rule = expression + binOp + expression;
             binOp.Rule = ToTerm("+") | "-" | "*" | "/" | "%" //arithmetic
                        | "&" | "|" | "^"                     //bit

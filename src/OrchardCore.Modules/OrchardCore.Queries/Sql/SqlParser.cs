@@ -336,6 +336,12 @@ namespace OrchardCore.Queries.Sql
                     _builder.Append(parseTreeNode.ChildNodes[1].ChildNodes[0].Term.Name).Append(" ");
                     EvaluateExpression(parseTreeNode.ChildNodes[2]);
                     break;
+                case "notInQueryExpr":
+                    EvaluateExpression(parseTreeNode.ChildNodes[0]);
+                    _builder.Append(" NOT IN ( ");
+                    _builder.Append(EvaluateSelectStatement(parseTreeNode.ChildNodes[3]));
+                    _builder.Append(" )");
+                    break;
                 case "betweenExpr":
                     EvaluateExpression(parseTreeNode.ChildNodes[0]);
                     _builder.Append(" ");
