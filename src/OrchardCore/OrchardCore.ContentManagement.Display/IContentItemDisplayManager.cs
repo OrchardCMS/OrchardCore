@@ -14,6 +14,6 @@ namespace OrchardCore.ContentManagement.Display
         Task<IShape> BuildDisplayAsync(ContentItem content, IUpdateModel updater, string displayType = "", string groupId = "");
         Task<IShape> BuildEditorAsync(ContentItem content, IUpdateModel updater, bool isNew, string groupId = "", string htmlFieldPrefix = "");
         Task<IShape> UpdateEditorAsync(ContentItem content, IUpdateModel updater, bool isNew, string groupId = "", string htmlFieldPrefix = "");
-        Task RegisterEditorResources(ContentItem content);
+        Task RegisterEditorResourcesAsync(ContentItem content);
     }
 }

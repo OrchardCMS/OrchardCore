@@ -85,7 +85,7 @@
         {
             // Render a mock widget so that its resources are included in the page
             var contentItem = await ContentManager.NewAsync(type.Name);
-            await ContentItemDisplayManager.RegisterEditorResources(contentItem);
+            await ContentItemDisplayManager.RegisterEditorResourcesAsync(contentItem);
         }
 
         <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.min.js"
@@ -96,7 +96,7 @@
                debug-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"></style>
     }
 
-<script at="Foot">
+    <script at="Foot">
     function toggleWidgets(){
         $('.toggleAll > svg').toggleClass('fa-angle-double-up fa-angle-double-down');
         $('.widget.widget-editor.card').toggleClass('collapsed');

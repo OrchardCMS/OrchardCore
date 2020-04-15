@@ -58,8 +58,6 @@ namespace OrchardCore.ContentManagement.Display
             _layoutAccessor = layoutAccessor;
             _logger = logger;
             _displayHelper = displayHelper;
-
-            
         }
 
         public async Task<IShape> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
@@ -181,9 +179,9 @@ namespace OrchardCore.ContentManagement.Display
             return context.Shape;
         }
 
-        //Build a Mock editor Shape to register styles and script to document
-        //Shape result does not render.
-        public async Task RegisterEditorResources(ContentItem contentItem)
+        // Build a Mock editor Shape to register styles and script to document
+        // Shape result does not render.
+        public async Task RegisterEditorResourcesAsync(ContentItem contentItem)
         {
             IUpdateModel updater = new NullModelUpdater();
             bool isNew = true;
@@ -204,10 +202,10 @@ namespace OrchardCore.ContentManagement.Display
             dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
 
-            // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
+            // Adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
 
-            //mock layout
+            // Mock layout
             var mockLayout = await _shapeFactory.CreateAsync("MockLayout", () => new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("Zone"))));
 
             var context = new BuildEditorContext(
@@ -220,7 +218,7 @@ namespace OrchardCore.ContentManagement.Display
                 new ModelStateWrapperUpdater(updater)
             );
 
-            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildEditorAsync(contentItem, context), contentItem, context, Logger);
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildEditorAsync(contentItem, context), contentItem, context, _logger);
 
             await _displayHelper.ShapeExecuteAsync(context.Shape);
         }

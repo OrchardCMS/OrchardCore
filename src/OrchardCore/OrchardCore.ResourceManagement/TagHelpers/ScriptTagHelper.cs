@@ -274,12 +274,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 }
                 catch (RuntimeBinderException)
                 {
-                    //Model is not a shape.
+                    // Model is not a shape.
                 }
 
                 if (!string.IsNullOrWhiteSpace(shapePrefix) && shapePrefix.StartsWith("MockLayout_"))
                 {
-                    //if mock redering do not render inline dom scripts
+                    // If mock redering do not render inline dom scripts
                     return;
                 }
 
