@@ -131,8 +131,8 @@ namespace OrchardCore.Autoroute.Services
 
         private async Task<AutorouteDocument> CreateDocumentAsync()
         {
-            var autoroutes = await Session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync();
-            var entries = autoroutes.Select(e => new AutorouteEntry(e.ContentItemId, e.Path, e.ContainedContentItemId, e.JsonPath));
+            var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published).ListAsync();
+            var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
 
             var document = new AutorouteDocument();
             AddEntries(document, entries);
