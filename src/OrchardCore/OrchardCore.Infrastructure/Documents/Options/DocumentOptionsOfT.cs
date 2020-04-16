@@ -1,6 +1,6 @@
 using OrchardCore.Data.Documents;
 
-namespace OrchardCore.Documents
+namespace OrchardCore.Documents.Options
 {
     public class DocumentOptions<TDocument> where TDocument : IDocument, new()
     {

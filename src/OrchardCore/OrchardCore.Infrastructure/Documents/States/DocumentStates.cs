@@ -1,18 +1,17 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Documents
+namespace OrchardCore.Documents.States
 {
     /// <summary>
-    /// Shares tenant level states that are cached but not persisted.
+    /// Shares tenant level states.
     /// </summary>
-    public class VolatileStatesService : IVolatileStates
+    public class DocumentStates<TDocumentEntity> : IDocumentStates where TDocumentEntity : class, IDocumentEntity, new()
     {
-        private readonly IVolatileDocumentManager<VolatileDocument> _documentManager;
+        private readonly IDocumentManager<TDocumentEntity> _documentManager;
 
-        public VolatileStatesService(IVolatileDocumentManager<VolatileDocument> documentManager) => _documentManager = documentManager;
+        public DocumentStates(IDocumentManager<TDocumentEntity> documentManager) => _documentManager = documentManager;
 
-        /// <inheritdoc />
         public async Task<T> GetAsync<T>(string key) where T : new()
         {
             var document = await _documentManager.GetImmutableAsync();
@@ -25,7 +24,6 @@ namespace OrchardCore.Documents
             return new T();
         }
 
-        /// <inheritdoc />
         public async Task SetAsync<T>(string key, T value) where T : new()
         {
             var document = await _documentManager.GetMutableAsync();
@@ -33,16 +31,11 @@ namespace OrchardCore.Documents
             await _documentManager.UpdateAsync(document);
         }
 
-        /// <inheritdoc />
         public async Task RemoveAsync(string key)
         {
             var document = await _documentManager.GetMutableAsync();
             document.Properties.Remove(key);
             await _documentManager.UpdateAsync(document);
-        }
-
-        public class VolatileDocument : DocumentEntity
-        {
         }
     }
 }

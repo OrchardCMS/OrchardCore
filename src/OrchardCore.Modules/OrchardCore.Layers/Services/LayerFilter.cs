@@ -14,7 +14,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.Documents;
+using OrchardCore.Documents.States;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;

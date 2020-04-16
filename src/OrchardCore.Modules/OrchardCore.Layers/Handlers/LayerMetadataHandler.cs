@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Documents;
-using OrchardCore.Documents;
+using OrchardCore.Documents.States;
 using OrchardCore.Layers.Models;
 
 namespace OrchardCore.Layers.Handlers

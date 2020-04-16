@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
 
-namespace OrchardCore.Documents
+namespace OrchardCore.Documents.States
 {
     /// <summary>
-    /// Shares tenant level states that are cached and persisted.
+    /// Shares tenant level states.
     /// </summary>
-    public interface IPersistentStates
+    public interface IDocumentStates
     {
         /// <summary>
         /// Gets a persistent state of a given type.

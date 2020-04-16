@@ -1,6 +1,6 @@
 using System;
 
-namespace OrchardCore.Documents
+namespace OrchardCore.Documents.Options
 {
     public interface IDocumentOptionsFactory
     {

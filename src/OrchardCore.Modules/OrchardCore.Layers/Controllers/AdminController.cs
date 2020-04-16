@@ -10,7 +10,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Documents;
+using OrchardCore.Documents.States;
 using OrchardCore.Entities;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using OrchardCore.Data.Documents;
 using OrchardCore.Environment.Shell.Configuration;
 
-namespace OrchardCore.Documents
+namespace OrchardCore.Documents.Options
 {
     public class DocumentOptionsFactory : IDocumentOptionsFactory
     {

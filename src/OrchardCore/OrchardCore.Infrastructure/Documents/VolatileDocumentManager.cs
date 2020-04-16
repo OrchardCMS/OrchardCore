@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Data.Documents;
+using OrchardCore.Documents.Options;
 
 namespace OrchardCore.Documents
 {

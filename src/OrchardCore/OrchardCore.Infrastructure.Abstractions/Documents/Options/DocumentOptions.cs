@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace OrchardCore.Documents
+namespace OrchardCore.Documents.Options
 {
     public class DocumentOptions : DistributedCacheEntryOptions
     {
