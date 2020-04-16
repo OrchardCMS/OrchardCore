@@ -1,120 +1,25 @@
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
 
-<partial name="~/Areas/OrchardCore.Media/Views/Shared/MediaFieldEditResources.cshtml" />
-
-<script at="Foot">
-    initializeMediaApplication(false,  '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
-    initializeMediaField(
-        document.getElementById('@Html.IdFor(m => m.BrandImage)'),
-        document.getElementById('@Html.IdFor(m => m.BrandImage)-ModalBody'),
-        '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
-        false);
-    initializeMediaField(
-        document.getElementById('@Html.IdFor(m => m.Favicon)'),
-        document.getElementById('@Html.IdFor(m => m.Favicon)-ModalBody'),
-        '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
-        false);
-</script>
-
 <div class="form-group" asp-validation-class-for="DisplayMenuFilter">
     <div class="custom-control custom-checkbox">
         <input asp-for="DisplayMenuFilter" class="custom-control-input" type="checkbox" />
         <label asp-for="DisplayMenuFilter" class="custom-control-label">@T["Enable Admin Menu filter"]</label>
         <span class="hint">— @T["Whether a quick search to filter the admin menu is displayed."]</span>
-    </div>
-    
+    </div>    
 </div>
 
-<div class="mediafield-editor" id="@Html.IdFor(m => m.BrandImage)" data-for="@Html.IdFor(m => m.BrandImage)">
-    <div class="media-field">
-        <div class="form-group">
-            <label asp-for="BrandImage">@T["Brand image"]</label>
-            <span class="hint">— @T["The brand image used in the admin."]</span>
-
-            <input asp-for="BrandImage" type="hidden" class="paths" :value="paths" data-init="@Model.BrandImage" />
-
-            <nav class="media-field-toolbar" v-cloak>
-                <div class="btn-group">
-                    <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
-                    <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa fa-trash"></i></a>
-                </div>
-                <div class="selected-media-name">
-                    <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
-                </div>
-            </nav>
-        </div>
-        <div class="form-group">
-            <media-field-thumbs-container :media-items="mediaItems"
-                                          :thumb-size="thumbSize"
-                                          :selected-media="selectedMedia">
-            </media-field-thumbs-container>
-        </div>
-    </div>
+<div class="form-group" asp-validation-class-for="BrandImageUrl">
+    <label asp-for="BrandImageUrl">@T["Brand image url"]</label>
+    <input asp-for="BrandImageUrl" class="form-control" />
+    <span asp-validation-for="BrandImageUrl"></span>
+    <span class="hint">@T["The url of the upper left image in the admin."]</span>
 </div>
 
-<div class="modal" id="@Html.IdFor(m => m.BrandImage)-ModalBody">
-    <div class="modal-dialog modal-lg media-modal" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@T["Select Media"]</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary mediaFieldSelectButton">@T["OK"]</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="mediafield-editor" id="@Html.IdFor(m => m.Favicon)" data-for="@Html.IdFor(m => m.Favicon)">
-    <div class="media-field">
-        <div class="form-group">
-            <label>@T["Favicon"]</label>
-            <span class="hint">— @T["The favicon used in the admin."]</span>
-
-            <input asp-for="Favicon" type="hidden" class="paths" :value="paths" data-init="@Model.Favicon" />
-
-            <nav class="media-field-toolbar" v-cloak>
-                <div class="btn-group">
-                    <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
-                    <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa fa-trash"></i></a>
-                </div>
-                <div class="selected-media-name">
-                    <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
-                </div>
-            </nav>
-        </div>
-        <div class="form-group">
-            <media-field-thumbs-container :media-items="mediaItems"
-                                          :thumb-size="thumbSize"
-                                          :selected-media="selectedMedia">
-            </media-field-thumbs-container>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="@Html.IdFor(m => m.Favicon)-ModalBody">
-    <div class="modal-dialog modal-lg media-modal" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@T["Select Media"]</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary mediaFieldSelectButton">@T["OK"]</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
-            </div>
-        </div>
-    </div>
+<div class="form-group" asp-validation-class-for="FaviconUrl">
+    <label asp-for="FaviconUrl">@T["Favicon url"]</label>
+    <input asp-for="FaviconUrl" class="form-control" />
+    <span asp-validation-for="FaviconUrl"></span>
+    <span class="hint">@T["The url of the favicon in the admin."]</span>
 </div>
 
 <div class="form-group" asp-validation-class-for="Head">
@@ -122,6 +27,13 @@
     <textarea asp-for="Head" class="form-control"></textarea>
     <span asp-validation-for="Head"></span>
     <span class="hint">@T["HTML code used in the head of the admin."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="Foot">
+    <label asp-for="Foot">@T["Foot"]</label>
+    <textarea asp-for="Foot" class="form-control"></textarea>
+    <span asp-validation-for="Foot"></span>
+    <span class="hint">@T["HTML code used in the footer of the admin."]</span>
 </div>
 
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
@@ -132,8 +44,16 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script at="Foot">
     $(function () {
-        var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Head)');
-        var editor = CodeMirror.fromTextArea(optionsTexArea, {
+        var optionsTextAreaHead = document.getElementById('@Html.IdFor(x => x.Head)');
+        var editor = CodeMirror.fromTextArea(optionsTextAreaHead, {
+            autoRefresh: true,
+            lineNumbers: false,
+            lineWrapping: true,
+            matchBrackets: true,
+            mode: { name: "htmlmixed" }
+        });
+        var optionsTextAreaFoot = document.getElementById('@Html.IdFor(x => x.Foot)');
+        var editor = CodeMirror.fromTextArea(optionsTextAreaFoot, {
             autoRefresh: true,
             lineNumbers: false,
             lineWrapping: true,
@@ -142,5 +62,3 @@
         });
     });
 </script>
-
-<partial name="~/Areas/OrchardCore.Media/Views/Shared/MediaFieldEditLocalization.cshtml" />

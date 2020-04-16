@@ -10,7 +10,6 @@ using OrchardCore.Admin.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Media.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Admin.Drivers
@@ -38,17 +37,13 @@ namespace OrchardCore.Admin.Drivers
                 return null;
             }
 
-            var brandImagePaths = new List<EditMediaFieldItemInfo> { };
-            brandImagePaths.Add(new EditMediaFieldItemInfo { Path = settings.BrandImage });
-            var faviconImagePaths = new List<EditMediaFieldItemInfo> { };
-            faviconImagePaths.Add(new EditMediaFieldItemInfo { Path = settings.Favicon });
-
             return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
                 {
                     model.DisplayMenuFilter = settings.DisplayMenuFilter;
-                    model.BrandImage = JsonConvert.SerializeObject(brandImagePaths);
-                    model.Favicon = JsonConvert.SerializeObject(faviconImagePaths);
+                    model.BrandImageUrl = settings.BrandImageUrl;
+                    model.FaviconUrl = settings.FaviconUrl;
                     model.Head = settings.Head;
+                    model.Foot = settings.Foot;
                 }).Location("Content:3").OnGroup(GroupId);
         }
 
@@ -68,28 +63,10 @@ namespace OrchardCore.Admin.Drivers
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 settings.DisplayMenuFilter = model.DisplayMenuFilter;
-
-                // Deserializing an empty string doesn't return an array
-                var BrandImageItems = String.IsNullOrWhiteSpace(model.BrandImage)
-                    ? new List<EditMediaFieldItemInfo>()
-                    : JsonConvert.DeserializeObject<EditMediaFieldItemInfo[]>(model.BrandImage).ToList();
-
-                if (BrandImageItems.Count > 0)
-                {
-                    settings.BrandImage = BrandImageItems.FirstOrDefault().Path;
-                }
-
-                // Deserializing an empty string doesn't return an array
-                var FaviconItems = String.IsNullOrWhiteSpace(model.Favicon)
-                    ? new List<EditMediaFieldItemInfo>()
-                    : JsonConvert.DeserializeObject<EditMediaFieldItemInfo[]>(model.Favicon).ToList();
-
-                if (FaviconItems.Count > 0)
-                {
-                    settings.Favicon = FaviconItems.FirstOrDefault().Path;
-                }
-
+                settings.BrandImageUrl = model.BrandImageUrl;
+                settings.FaviconUrl = model.FaviconUrl;
                 settings.Head = model.Head;
+                settings.Foot = model.Foot;
             }
 
             return await EditAsync(settings, context);
