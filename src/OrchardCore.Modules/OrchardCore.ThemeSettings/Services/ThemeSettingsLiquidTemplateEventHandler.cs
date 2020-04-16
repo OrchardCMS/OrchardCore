@@ -2,9 +2,10 @@ using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.Entities;
 using OrchardCore.Liquid;
+using OrchardCore.Settings;
 using OrchardCore.ThemeSettings.Models;
 
-namespace OrchardCore.Settings.Services
+namespace OrchardCore.ThemeSettings.Services
 {
     public class ThemeSettingsLiquidTemplateEventHandler : ILiquidTemplateEventHandler
     {

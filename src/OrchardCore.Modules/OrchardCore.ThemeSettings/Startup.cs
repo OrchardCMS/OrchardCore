@@ -15,7 +15,9 @@ using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Services;
+using OrchardCore.ThemeSettings.Deployment;
 using OrchardCore.ThemeSettings.Drivers;
+using OrchardCore.ThemeSettings.Services;
 
 namespace OrchardCore.ThemeSettings
 {
@@ -34,6 +36,18 @@ namespace OrchardCore.ThemeSettings
             services.AddScoped<IDisplayDriver<ISite>, ThemeSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<ILiquidTemplateEventHandler, ThemeSettingsLiquidTemplateEventHandler>();
+            services.AddScoped<IThemeSettingsService, ThemeSettingsService>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, ThemeSettingsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ThemeSettingsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ThemeSettingsDeploymentStepDriver>();
         }
     }
 }
