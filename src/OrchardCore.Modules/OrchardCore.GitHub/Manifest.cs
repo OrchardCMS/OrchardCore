@@ -8,6 +8,7 @@ using OrchardCore.GitHub;
     Version = "2.0.0",
     Category = "GitHub"
 )]
+
 [assembly: Feature(
     Id = GitHubConstants.Features.GitHubAuthentication,
     Name = "GitHub Authentication",
