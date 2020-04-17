@@ -11,7 +11,7 @@ namespace OrchardCore.Security.AuthorizationHandlers
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
-            if (!(bool)context?.User?.Identity?.IsAuthenticated)
+            if (!(context?.User?.Identity?.IsAuthenticated ?? false))
             {
                 return Task.CompletedTask;
             }
