@@ -4,6 +4,6 @@ using OrchardCore.Modules.Manifest;
     Name = "Module Pages",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
-    Version = "2.0.0",
+    Version = ManifestConstants.OrchardCoreVersion,
     Description = "Module for testing razor pages"
 )]

@@ -2,9 +2,9 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Module Sample",
-    Author = "Nicholas Mayne",
+    Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
-    Version = "2.0.0",
+    Version = ManifestConstants.OrchardCoreVersion,
     Category = "Test"
 )]
 [assembly: Feature(

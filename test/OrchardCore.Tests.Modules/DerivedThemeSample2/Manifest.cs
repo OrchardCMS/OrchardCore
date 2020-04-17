@@ -3,9 +3,9 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Theme(
     Name = "Derived Theme Sample 2",
-    Author = "Nicholas Mayne",
+    Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
-    Version = "2.0.0",
+    Version = ManifestConstants.OrchardCoreVersion,
     Description = "Derived Theme Sample 2.",
     Category = "Test",
     BaseTheme = "BaseThemeSample2"
