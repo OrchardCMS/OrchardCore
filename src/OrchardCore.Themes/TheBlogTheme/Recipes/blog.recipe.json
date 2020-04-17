@@ -40,7 +40,6 @@
         "OrchardCore.Roles",
         "OrchardCore.Settings",
         "OrchardCore.Themes",
-        "OrchardCore.ThemeSettings",
         "OrchardCore.Users",
 
         // Content Management
