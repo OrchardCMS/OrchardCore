@@ -87,7 +87,6 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Templates\OrchardCore.Templates.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Tenants\OrchardCore.Tenants.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Themes\OrchardCore.Themes.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ThemeSettings\OrchardCore.ThemeSettings.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Title\OrchardCore.Title.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Twitter\OrchardCore.Twitter.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Users\OrchardCore.Users.csproj" PrivateAssets="none" />
