@@ -1,8 +1,5 @@
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.ViewModels;
 using YesSql;
@@ -13,23 +10,11 @@ namespace OrchardCore.Contents.Services
     public class ContentQueryService : IContentQueryService
     {
         private readonly YesSql.ISession _session;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IContentManager _contentManager;
         public ContentQueryService(
-            YesSql.ISession session,
-            IAuthorizationService authorizationService,
-            IContentDefinitionManager contentDefinitionManager,
-            IHttpContextAccessor httpContextAccessor,
-            IContentManager contentManager
+            YesSql.ISession session
             )
         {
             _session = session;
-            _authorizationService = authorizationService;
-            _contentDefinitionManager = contentDefinitionManager;
-            _httpContextAccessor = httpContextAccessor;
-            _contentManager = contentManager;
         }
         public IQuery<ContentItem, ContentItemIndex> GetQueryByOptions(OrchardCore.Contents.ViewModels.ContentOptions options)
         {
