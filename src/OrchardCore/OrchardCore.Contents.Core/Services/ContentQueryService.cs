@@ -43,7 +43,7 @@ namespace OrchardCore.Contents.Services
 
             if (options.ContentsStatus == ContentsStatus.Owner)
             {
-                if (options.OwnerName != null)
+                if (!string.IsNullOrEmpty(options.OwnerName))
                 {
                     query = query.With<ContentItemIndex>(x => x.Owner == options.OwnerName);
                 }
