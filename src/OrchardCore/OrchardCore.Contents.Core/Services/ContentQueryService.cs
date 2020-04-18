@@ -1,7 +1,7 @@
 using System.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents.ViewModels;
+using OrchardCore.Contents.Core.Options;
 using YesSql;
 using YesSql.Services;
 
@@ -16,7 +16,7 @@ namespace OrchardCore.Contents.Services
         {
             _session = session;
         }
-        public IQuery<ContentItem, ContentItemIndex> GetQueryByOptions(OrchardCore.Contents.ViewModels.ContentOptions options)
+        public IQuery<ContentItem, ContentItemIndex> GetQueryByOptions(OrchardCore.Contents.Core.Options.ContentOptions options)
         {
             var query = _session.Query<ContentItem, ContentItemIndex>();
 

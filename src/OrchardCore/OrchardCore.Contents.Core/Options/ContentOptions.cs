@@ -2,14 +2,14 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace OrchardCore.Contents.ViewModels
+namespace OrchardCore.Contents.Core.Options
 {
     public class ContentOptions
     {
         public ContentOptions()
         {
             OrderBy = ContentsOrder.Modified;
-            BulkAction = ViewModels.ContentsBulkAction.None;
+            BulkAction = Options.ContentsBulkAction.None;
             ContentsStatus = ContentsStatus.Latest;
         }
         public string OwnerName { get; set; }

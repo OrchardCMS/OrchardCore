@@ -13,6 +13,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.Controllers;
+using OrchardCore.Contents.Core;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;

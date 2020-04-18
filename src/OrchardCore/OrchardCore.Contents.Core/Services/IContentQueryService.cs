@@ -6,6 +6,6 @@ namespace OrchardCore.Contents.Services
 {
     public interface IContentQueryService
     {
-        IQuery<ContentItem, ContentItemIndex> GetQueryByOptions(OrchardCore.Contents.ViewModels.ContentOptions options);
+        IQuery<ContentItem, ContentItemIndex> GetQueryByOptions(OrchardCore.Contents.Core.Options.ContentOptions options);
     }
 }

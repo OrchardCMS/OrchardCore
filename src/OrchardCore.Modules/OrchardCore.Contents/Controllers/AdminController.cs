@@ -15,6 +15,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents.Core.Options;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -210,7 +211,7 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> ListPOST(ViewModels.ContentOptions options, IEnumerable<int> itemIds)
+        public async Task<ActionResult> ListPOST(OrchardCore.Contents.Core.Options.ContentOptions options, IEnumerable<int> itemIds)
         {
             if (itemIds?.Count() > 0)
             {
