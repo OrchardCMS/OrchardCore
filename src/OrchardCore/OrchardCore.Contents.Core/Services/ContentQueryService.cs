@@ -58,7 +58,7 @@ namespace OrchardCore.Contents.Services
             else
             {
                 //var listableTypes = (await GetListableTypesAsync(user)).Select(t => t.Name).ToArray();
-                if (options.ListableContentTypes.Any())
+                if (options.ListableContentTypes != null && options.ListableContentTypes.Any())
                 {
                     query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(options.ListableContentTypes));
                 }
@@ -82,6 +82,7 @@ namespace OrchardCore.Contents.Services
                     query = query.OrderByDescending(cr => cr.ModifiedUtc);
                     break;
             }
+
             return query;
         }
     }
