@@ -12,7 +12,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
         private readonly IEnumerable<IContentLocalizationPartHandler> _partHandlers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ILogger<ContentLocalizationPartHandlerCoordinator> _logger;
+        private readonly ILogger _logger;
 
         public ContentLocalizationPartHandlerCoordinator(
 

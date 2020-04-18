@@ -8,18 +8,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
-using MimeKit;
 using OrchardCore.Data;
-using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
-using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -34,12 +31,12 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly IDataProtectionProvider _dataProtectorProvider;
         private readonly ISetupService _setupService;
         private readonly ShellSettings _currentShellSettings;
         private readonly IClock _clock;
-        private readonly INotifier _notifier;
+        private readonly IEmailAddressValidator _emailAddressValidator;
+        private readonly IStringLocalizer S;
 
         public ApiController(
             IShellHost shellHost,
@@ -50,28 +47,20 @@ namespace OrchardCore.Tenants.Controllers
             IDataProtectionProvider dataProtectorProvider,
             ISetupService setupService,
             IClock clock,
-            INotifier notifier,
-            IEnumerable<IRecipeHarvester> recipeHarvesters,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer)
+            IEmailAddressValidator emailAddressValidator,
+            IStringLocalizer<AdminController> stringLocalizer)
         {
             _dataProtectorProvider = dataProtectorProvider;
             _setupService = setupService;
             _clock = clock;
-            _recipeHarvesters = recipeHarvesters;
             _shellHost = shellHost;
             _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
             _databaseProviders = databaseProviders;
             _currentShellSettings = currentShellSettings;
-            _notifier = notifier;
-
+            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             S = stringLocalizer;
-            H = htmlLocalizer;
         }
-
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
 
         [HttpPost]
         [Route("create")]
@@ -161,7 +150,7 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest();
             }
 
-            if (!MailboxAddress.TryParse(model.Email, out var emailAddress))
+            if (!_emailAddressValidator.Validate(model.Email))
             {
                 return BadRequest(S["Invalid email."]);
             }
@@ -268,7 +257,7 @@ namespace OrchardCore.Tenants.Controllers
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipeDescriptor,
                 SiteTimeZone = model.SiteTimeZone,
-                DatabaseProvider = selectedProvider.Name,
+                DatabaseProvider = selectedProvider.Value,
                 DatabaseConnectionString = connectionString,
                 DatabaseTablePrefix = tablePrefix
             };

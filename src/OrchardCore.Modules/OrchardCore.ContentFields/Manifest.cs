@@ -7,6 +7,7 @@ using OrchardCore.Modules.Manifest;
     Version = "2.0.0",
     Category = "Content Management"
 )]
+
 [assembly: Feature(
     Id = "OrchardCore.ContentFields",
     Name = "Content Fields",
@@ -19,5 +20,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.ContentFields.Indexing.SQL",
     Name = "Content Fields Indexing (SQL)",
     Category = "Content Management",
-    Description = "Content Fields Indexing module adds database indexing for content fields."
+    Description = "Content Fields Indexing module adds database indexing for content fields.",
+    Dependencies = new[] { "OrchardCore.ContentFields" }
 )]

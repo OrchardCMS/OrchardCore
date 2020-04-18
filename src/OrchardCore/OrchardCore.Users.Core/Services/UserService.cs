@@ -17,7 +17,7 @@ namespace OrchardCore.Users.Services
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
-        private readonly IStringLocalizer<UserService> S;
+        private readonly IStringLocalizer S;
 
         public UserService(
             SignInManager<IUser> signInManager,

@@ -22,7 +22,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly IActivityLibrary _activityLibrary;
         private readonly ISecurityTokenService _securityTokenService;
         private readonly IAntiforgery _antiforgery;
-        private readonly ILogger<HttpWorkflowController> _logger;
+        private readonly ILogger _logger;
         public const int NoExpiryTokenLifespan = 36500;
 
         public HttpWorkflowController(
@@ -86,6 +86,16 @@ namespace OrchardCore.Workflows.Http.Controllers
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
                     _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' could not be found.", payload.WorkflowId);
+                }
+
+                return NotFound();
+            }
+
+            if(!workflowType.IsEnabled)
+            {
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' is not enabled.", payload.WorkflowId);
                 }
 
                 return NotFound();

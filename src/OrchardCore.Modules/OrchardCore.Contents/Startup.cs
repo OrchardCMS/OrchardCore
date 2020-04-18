@@ -109,6 +109,8 @@ namespace OrchardCore.Contents
                     };
 
                     options.ContentItemIdKey = "contentItemId";
+                    options.ContainedContentItemIdKey = "containedContentItemId";
+                    options.JsonPathKey = "jsonPath";
                 }
             });
         }

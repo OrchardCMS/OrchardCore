@@ -45,18 +45,15 @@ namespace OrchardCore.Admin
             });
 
             services.AddTransient<IAreaControllerRouteMapper, AdminAreaControllerRouteMapper>();
-
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();
             services.AddScoped<IAdminThemeService, AdminThemeService>();
-
             services.AddScoped<IDisplayDriver<ISite>, AdminSiteSettingsDisplayDriver>();
             services.AddScoped<IPermissionProvider, PermissionsAdminSettings>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-
-            services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore.Admin"));
-
             services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
+
+            services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

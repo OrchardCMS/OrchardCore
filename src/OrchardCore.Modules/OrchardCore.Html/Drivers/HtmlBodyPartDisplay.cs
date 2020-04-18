@@ -16,7 +16,7 @@ namespace OrchardCore.Html.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IStringLocalizer<HtmlBodyPartDisplay> S;
+        private readonly IStringLocalizer S;
 
         public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
         {

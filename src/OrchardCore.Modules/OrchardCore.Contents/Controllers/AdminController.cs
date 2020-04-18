@@ -39,11 +39,12 @@ namespace OrchardCore.Contents.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
-        private readonly IHtmlLocalizer<AdminController> H;
-        private readonly IStringLocalizer<AdminController> S;
+        private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IContentQueryService _contentQueryService;
         private readonly dynamic New;
+        private readonly ILogger _logger;
 
         public AdminController(            
             IContentManager contentManager,
@@ -74,10 +75,8 @@ namespace OrchardCore.Contents.Controllers
             H = htmlLocalizer;
             S = stringLocalizer;
             New = shapeFactory;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         [HttpGet]
         public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string contentTypeId = "")
@@ -131,7 +130,7 @@ namespace OrchardCore.Contents.Controllers
             var query = await _contentQueryService.GetQueryByOptions(model.Options);
 
             // Invoke any service that could alter the query
-            await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, Logger);
+            await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, _logger);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)

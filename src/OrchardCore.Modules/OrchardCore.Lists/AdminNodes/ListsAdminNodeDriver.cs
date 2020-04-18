@@ -20,6 +20,7 @@ namespace OrchardCore.Lists.AdminNodes
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
+
         public override IDisplayResult Display(ListsAdminNode treeNode)
         {
             return Combine(

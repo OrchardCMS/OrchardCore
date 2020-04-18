@@ -21,7 +21,7 @@ namespace OrchardCore.Media.Core
         // Use default stream copy buffer size to stay in gen0 garbage collection.
         private const int StreamCopyBufferSize = 81920;
 
-        private readonly ILogger<DefaultMediaFileStoreCacheFileProvider> _logger;
+        private readonly ILogger _logger;
 
         public DefaultMediaFileStoreCacheFileProvider(ILogger<DefaultMediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root) : base(root)
         {

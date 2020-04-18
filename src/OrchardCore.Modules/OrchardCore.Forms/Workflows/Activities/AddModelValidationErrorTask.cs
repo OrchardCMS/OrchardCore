@@ -11,7 +11,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     public class AddModelValidationErrorTask : TaskActivity
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer<AddModelValidationErrorTask> S;
+        private readonly IStringLocalizer S;
 
         public AddModelValidationErrorTask(
             IUpdateModelAccessor updateModelAccessor,

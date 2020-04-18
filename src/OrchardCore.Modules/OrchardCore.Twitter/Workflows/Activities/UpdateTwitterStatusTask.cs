@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -16,16 +13,15 @@ namespace OrchardCore.Twitter.Workflows.Activities
     {
         private readonly TwitterClient _twitterClient;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<UpdateTwitterStatusTask> S;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IStringLocalizer S;
 
-        public UpdateTwitterStatusTask(TwitterClient twitterClient, IWorkflowExpressionEvaluator expressionEvaluator, IHttpContextAccessor httpContextAccessor, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<UpdateTwitterStatusTask> localizer)
+        public UpdateTwitterStatusTask(
+            TwitterClient twitterClient,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IStringLocalizer<UpdateTwitterStatusTask> localizer)
         {
             _twitterClient = twitterClient;
             _expressionEvaluator = expressionEvaluator;
-            _httpContextAccessor = httpContextAccessor;
-            _updateModelAccessor = updateModelAccessor;
             S = localizer;
         }
 
