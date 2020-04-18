@@ -48,6 +48,8 @@ namespace OrchardCore.Setup.ViewModels
 
         public string SiteTimeZone { get; set; }
 
+        public bool UseCdn { get; set; } = true;
+
         public string Secret { get; set; }
     }
 }

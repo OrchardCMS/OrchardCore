@@ -151,7 +151,8 @@ namespace OrchardCore.Setup.Controllers
                 AdminPassword = model.Password,
                 Errors = new Dictionary<string, string>(),
                 Recipe = selectedRecipe,
-                SiteTimeZone = model.SiteTimeZone
+                SiteTimeZone = model.SiteTimeZone,
+                UseCdn = model.UseCdn
             };
 
             if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))

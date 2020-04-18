@@ -25,6 +25,7 @@ namespace OrchardCore.Settings.Services
             string dbConnectionString,
             string dbTablePrefix,
             string siteTimeZone,
+            bool useCdn,
             Action<string, string> reportError
             )
         {
@@ -33,6 +34,7 @@ namespace OrchardCore.Settings.Services
             siteSettings.SiteName = siteName;
             siteSettings.SuperUser = userName;
             siteSettings.TimeZoneId = siteTimeZone;
+            siteSettings.UseCdn = useCdn;
             await _siteService.UpdateSiteSettingsAsync(siteSettings);
 
             // TODO: Add Encryption Settings in

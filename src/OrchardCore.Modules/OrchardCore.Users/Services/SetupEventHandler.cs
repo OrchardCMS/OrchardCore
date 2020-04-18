@@ -26,6 +26,7 @@ namespace OrchardCore.Users.Services
             string dbConnectionString,
             string dbTablePrefix,
             string siteTimeZone,
+            bool useCdn,
             Action<string, string> reportError
             )
         {
