@@ -1,0 +1,26 @@
+@model ContentItemDeploymentStepViewModel
+<div class="form-group" asp-validation-class-for="ContentItem">
+    <label asp-for="ContentItem">@T["Content Item"]</label>
+    <textarea asp-for="ContentItem" class="form-control"></textarea>
+    <span asp-validation-for="ContentItem"></span>
+    <span class="hint">@T["Provide values for the content item, parts, fields and properties in JSON format."]</span>
+</div>
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+
+<script at="Foot">
+$(function () {
+    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentItem)'), {
+        autoRefresh: true,
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "javascript" },
+      });
+});
+</script>

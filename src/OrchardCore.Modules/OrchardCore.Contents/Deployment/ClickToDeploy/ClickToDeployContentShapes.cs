@@ -79,7 +79,7 @@ namespace OrchardCore.Contents.Deployment.ClickToDeploy
                             var bulkActionsShape = await shapeFactory.CreateAsync("ClickToDeploy__Button__ContentsBulkAction");
 
                             // Don't use Items.Add() or the collection won't be sorted
-                            shape.Add(bulkActionsShape);
+                            shape.Add(bulkActionsShape, ":10");
                         }
                     }
                 });

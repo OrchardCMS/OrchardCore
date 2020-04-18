@@ -14,6 +14,7 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Deployment;
+using OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 using OrchardCore.Contents.Deployment.ClickToDeploy;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
@@ -247,9 +248,49 @@ namespace OrchardCore.Contents
             services.AddTransient<IDeploymentSource, ClickToDeployContentDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ClickToDeployContentDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ClickToDeployContentDeploymentStepDriver>();
+
             services.AddScoped<IShapeTableProvider, ClickToDeployContentShapes>();
             services.AddScoped<IDataMigration, ClickToDeployMigrations>();
             services.AddScoped<IContentDisplayDriver, ClickToDeployContentDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Contents.AddToDeploymentPlan")]
+    public class AddToDeploymentPlanStartup : StartupBase
+    {
+        private readonly AdminOptions _adminOptions;
+
+        public AddToDeploymentPlanStartup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, ContentItemDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentItemDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentItemDeploymentStepDriver>();
+            services.AddScoped<IShapeTableProvider, AddToDeploymentPlanContentShapes>();
+            services.AddScoped<IContentDisplayDriver, AddToDeploymentPlanContentDriver>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var addToDeploymentPlanControllerName = typeof(AddToDeploymentPlanController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+               name: "AddToDeploymentPlan",
+               areaName: "OrchardCore.Contents",
+               pattern: _adminOptions.AdminUrlPrefix + "/AddToDeploymentPlan/AddContentItem/{deploymentPlanId}",
+               defaults: new { controller = addToDeploymentPlanControllerName, action = nameof(AddToDeploymentPlanController.AddContentItem) }
+           );
+
+            routes.MapAreaControllerRoute(
+               name: "AddToDeploymentPlan",
+               areaName: "OrchardCore.Contents",
+               pattern: _adminOptions.AdminUrlPrefix + "/AddToDeploymentPlan/AddContentItems/{deploymentPlanId}",
+               defaults: new { controller = addToDeploymentPlanControllerName, action = nameof(AddToDeploymentPlanController.AddContentItems) }
+           );
         }
     }
 

@@ -1,16 +1,13 @@
 @using Microsoft.AspNetCore.Authorization
 @using OrchardCore.ContentManagement
 @using OrchardCore.Entities
-@using OrchardCore.Environment.Shell
 @inject IAuthorizationService AuthorizationService
 @inject IContentManager ContentManager
-@inject IShellFeaturesManager ShellFeaturesManager
 
 @{
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
     var hasDraft = contentItem.HasDraft();
-    var features = await ShellFeaturesManager.GetEnabledFeaturesAsync();
     bool deploymentEnabled = false;
 
     if (Site.As<ClickToDeploySettings>().ClickToDeployPlanId != 0 && await AuthorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export))
@@ -23,14 +20,14 @@
 {
     if (hasDraft)
     {
-        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId" data-latest=@Boolean.TrueString>@T["Deploy Draft"]</button>
+        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId" data-latest=@Boolean.TrueString>@T["Export draft to deployment target"]</button>
         if (hasPublished)
         {
-            <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Deploy Published"]</button>
+            <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Export published to deployment target"]</button>
         }
     }
     else
     {
-        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Deploy"]</button>
+        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Export to deployment target "]</button>
     }
 }

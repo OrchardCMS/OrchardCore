@@ -1,0 +1,16 @@
+@model ShapeViewModel<ContentItemDeploymentStep>
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+@{
+    var contentItem = Model.Value.ContentItem["DisplayText"];
+}
+
+<h5>@T["Content Item"]</h5>
+@if (contentItem != null)
+{
+    <span class="badge badge-info">@contentItem.ToString()</span>
+}
+else
+{
+    <span class="badge badge-warning">@T["Nothing here!"]</span>
+}

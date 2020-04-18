@@ -1,0 +1,8 @@
+@Model.Metadata.ChildContent
+
+@* Inject the modal window only once per page *@
+@if (!Context.Items.ContainsKey("AddToDeploymentPlan_Modal__ActionDeploymentPlan"))
+{
+    Context.Items["AddToDeploymentPlan_Modal__ActionDeploymentPlan"] = new object();
+    @await DisplayAsync(await New.AddToDeploymentPlan_Modal__ActionDeploymentPlan())
+}

@@ -1,35 +1,31 @@
-@using Microsoft.AspNetCore.Routing
-@using OrchardCore.Contents.Deployment.ClickToDeploy
-@using OrchardCore.Entities
 @using OrchardCore.Deployment.Services
-@inject IDeploymentManager DeploymentManager
-
-<div class="modal fade" id="modalClickToDeployActionTargets" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+@inject IDeploymentPlanService DeploymentPlanService
+@{
+    var deploymentPlans = await DeploymentPlanService.GetAllDeploymentPlansAsync();
+}
+<div class="modal fade" id="modalAddToDeploymentPlanActionDeploymentPlan" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@T["Available Targets"]</h5>
+                <h5 class="modal-title">@T["Available Deployment Plans"]</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    @foreach (var target in await DeploymentManager.GetDeploymentTargetsAsync())
+                    @foreach (var deploymentPlan in deploymentPlans)
                     {
-                        var routeWithId = new RouteValueDictionary(target.Route);
-                        routeWithId["id"] = Site.As<ClickToDeploySettings>().ClickToDeployPlanId;
-                        @* TODO what is this? *@
-                        var returnUrl = Context.Request.Query["returnUrl"];
-                        routeWithId["returnUrl"] = FullRequestPath;
                         <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
                             <div class="card w-100 mb-3">
                                 <div class="card-body">
-                                    <h4 class="card-title">@target.Name</h4>
-                                    <p>@target.Description</p>
+                                    <h4 class="card-title">@deploymentPlan.Name</h4>
                                 </div>
+                                @{
+                                    var url = Url.Action("AddContentItem", "AddToDeploymentPlan", new { area = "OrchardCore.Contents", deploymentPlanId = deploymentPlan.Id, returnUrl = FullRequestPath });
+                                }
                                 <div class="card-footer text-muted text-xs-right">
-                                    <button type="button" class="click-to-deploy text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
+                                    <button type="button" class="add-to-deployment-plan text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@url">@T["Select"]</button>
                                 </div>
                             </div>
                         </div>
@@ -45,12 +41,12 @@
 
 <script at="Foot" depends-on="jQuery">
     $(function () {
-        $('#modalClickToDeployActionTargets').on('show.bs.modal', function (event) {
+        $('#modalAddToDeploymentPlanActionDeploymentPlan').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
             var contentItemId = button.data('content-item-id');
             var latest = button.data('latest');
 
-            $('.click-to-deploy').on('click', function () {
+            $('.add-to-deployment-plan').on('click', function () {
                 var targetButton = this;
                 var magicToken = $("input[name=__RequestVerificationToken]").first();
                 if (magicToken) {
@@ -65,17 +61,17 @@
                             deployForm.append($("<input type=\"hidden\" name=\"" + decodeURIComponent(queryPartKVP[0]) + "\" value=\"" + decodeURIComponent(queryPartKVP[1]) + "\" />"));
                         }
                     }
-                    deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.ContentItemId\" + value=\"" + contentItemId + "\"/>"));
+                    deployForm.append($("<input type=\"hidden\" name=\"contentItemId\" + value=\"" + contentItemId + "\"/>"));
                     if (latest) {
-                        deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.Latest\" + value=\"" + latest + "\"/>"));
+                        deployForm.append($("<input type=\"hidden\" name=\"latest\" + value=\"" + latest + "\"/>"));
                     }
                     $("body").append(deployForm);
                     deployForm.submit();
                 }
             })
         })
-        $('#modalClickToDeployActionTargets').on('hide.bs.modal', function () {
-            $('.click-to-deploy').off('click');
+        $('#modalAddToDeploymentPlanActionDeploymentPlan').on('hide.bs.modal', function () {
+            $('.add-to-deployment-plan').off('click');
         })
     });
 </script>
