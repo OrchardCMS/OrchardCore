@@ -5,11 +5,11 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Deployment.ClickToDeploy
 {
-    public class AddToDeploymentPlanContentDriver : ContentDisplayDriver
+    public class ViewAsJsonContentDriver : ContentDisplayDriver
     {
         public override IDisplayResult Display(ContentItem model)
         {
-            return Shape("AddToDeploymentPlan_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:40");
+            return Shape("ViewAsJson_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:20");
         }
     }
 }

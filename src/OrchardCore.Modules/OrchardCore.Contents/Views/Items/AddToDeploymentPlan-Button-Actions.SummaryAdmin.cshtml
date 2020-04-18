@@ -20,14 +20,14 @@
 {
     if (hasDraft)
     {
-        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalAddToDeploymentPlanActionDeploymentPlan" data-content-item-id="@contentItem.ContentItemId" data-latest=@Boolean.TrueString>@T["Add draft to deployment plan"]</button>
+        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalAddToDeploymentPlanActionDeploymentPlan" data-content-item-id="@contentItem.ContentItemId" data-latest=@Boolean.TrueString>@T["Add Draft to Deployment Plan"]</button>
         if (hasPublished)
         {
-            <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalAddToDeploymentPlanActionDeploymentPlan" data-content-item-id="@contentItem.ContentItemId">@T["Add published to deployment plan"]</button>
+            <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalAddToDeploymentPlanActionDeploymentPlan" data-content-item-id="@contentItem.ContentItemId">@T["Add Published to Deployment Plan"]</button>
         }
     }
     else
     {
-        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalAddToDeploymentPlanActionDeploymentPlan" data-content-item-id="@contentItem.ContentItemId">@T["Add to deployment plan"]</button>
+        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalAddToDeploymentPlanActionDeploymentPlan" data-content-item-id="@contentItem.ContentItemId">@T["Add to Deployment Plan"]</button>
     }
 }

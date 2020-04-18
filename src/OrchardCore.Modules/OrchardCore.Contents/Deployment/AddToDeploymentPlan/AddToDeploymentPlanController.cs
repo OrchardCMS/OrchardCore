@@ -31,7 +31,8 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
         public AddToDeploymentPlanController(
             IAuthorizationService authorizationService,
-            IContentManager contentManager, ISession session,
+            IContentManager contentManager,
+            ISession session,
             IEnumerable<IDeploymentStepFactory> factories,
             INotifier notifier,
             IHtmlLocalizer<AddToDeploymentPlanController> htmlLocalizer

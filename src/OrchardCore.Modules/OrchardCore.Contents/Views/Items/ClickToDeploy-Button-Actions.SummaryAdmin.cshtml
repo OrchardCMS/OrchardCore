@@ -20,14 +20,14 @@
 {
     if (hasDraft)
     {
-        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId" data-latest=@Boolean.TrueString>@T["Export draft to deployment target"]</button>
+        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId" data-latest=@Boolean.TrueString>@T["Export Draft to Deployment Target"]</button>
         if (hasPublished)
         {
-            <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Export published to deployment target"]</button>
+            <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Export Published to Deployment Target"]</button>
         }
     }
     else
     {
-        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Export to deployment target "]</button>
+        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalClickToDeployActionTargets" data-content-item-id="@contentItem.ContentItemId">@T["Export to Deployment Target"]</button>
     }
 }

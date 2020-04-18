@@ -16,6 +16,7 @@ using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 using OrchardCore.Contents.Deployment.ClickToDeploy;
+using OrchardCore.Contents.Deployment.ViewAsJson;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
 using OrchardCore.Contents.Handlers;
@@ -293,6 +294,43 @@ namespace OrchardCore.Contents
            );
         }
     }
+
+    [Feature("OrchardCore.Contents.ViewAsJson")]
+    public class ViewAsJsonStartup : StartupBase
+    {
+        private readonly AdminOptions _adminOptions;
+
+        public ViewAsJsonStartup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentDisplayDriver, ViewAsJsonContentDriver>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var viewAsJsonControllerName = typeof(ViewAsJsonController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+               name: "ViewAsJsonDisplay",
+               areaName: "OrchardCore.Contents",
+               pattern: _adminOptions.AdminUrlPrefix + "/ViewAsJson/Display/{contentItemId}",
+               defaults: new { controller = viewAsJsonControllerName, action = nameof(ViewAsJsonController.Display) }
+           );
+
+            routes.MapAreaControllerRoute(
+               name: "ViewAsJsonExport",
+               areaName: "OrchardCore.Contents",
+               pattern: _adminOptions.AdminUrlPrefix + "/ViewAsJson/Export/{contentItemId}",
+               defaults: new { controller = viewAsJsonControllerName, action = nameof(ViewAsJsonController.Export) }
+           );
+        }
+    }
+
+
 
     [RequireFeatures("OrchardCore.AdminMenu")]
     public class AdminMenuStartup : StartupBase

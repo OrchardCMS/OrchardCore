@@ -9,7 +9,7 @@ namespace OrchardCore.Contents.Deployment.ClickToDeploy
     {
         public override IDisplayResult Display(ContentItem model)
         {
-            return Shape("ClickToDeploy_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:20");
+            return Shape("ClickToDeploy_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:30");
         }
     }
 }

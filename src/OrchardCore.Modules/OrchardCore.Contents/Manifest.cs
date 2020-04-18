@@ -42,3 +42,11 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
     Category = "Content Management"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Contents.ViewAsJson",
+    Name = "View Or Export Content As JSON",
+    Description = "View or export content as JSON from the content item list.",
+    Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
+    Category = "Content Management"
+)]
