@@ -30,7 +30,7 @@ using YesSql.Services;
 namespace OrchardCore.Contents.Controllers
 {
     public class AdminController : Controller
-    {        
+    {
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
@@ -46,7 +46,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly dynamic New;
         private readonly ILogger _logger;
 
-        public AdminController(            
+        public AdminController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
@@ -83,7 +83,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-           
+
             if (!string.IsNullOrEmpty(contentTypeId))
             {
                 model.Options.SelectedContentType = contentTypeId;
@@ -95,7 +95,7 @@ namespace OrchardCore.Contents.Controllers
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
                 if (contentTypeDefinition == null)
                     return NotFound();
-                contentTypeDefinitions = contentTypeDefinitions.Append(contentTypeDefinition);              
+                contentTypeDefinitions = contentTypeDefinitions.Append(contentTypeDefinition);
 
                 // Allows non creatable types to be created by another admin page.
                 if (model.Options.CanCreateSelectedContentType)
@@ -108,9 +108,9 @@ namespace OrchardCore.Contents.Controllers
             }
             else
             {
-                contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();               
+                model.Options.ListableContentTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
             }
-     
+
             // Allow parameters to define creatable types.
             if (model.Options.CreatableTypes == null)
             {
@@ -127,7 +127,8 @@ namespace OrchardCore.Contents.Controllers
                 model.Options.CreatableTypes = creatableList;
             }
 
-            var query = await _contentQueryService.GetQueryByOptions(model.Options);
+            model.Options.OwnerName = User.Identity.Name;
+            var query = _contentQueryService.GetQueryByOptions(model.Options);
 
             // Invoke any service that could alter the query
             await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, _logger);
@@ -172,7 +173,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            var ContentTypeOptions = (await _contentQueryService.GetListableTypesAsync(User))
+            var ContentTypeOptions = (await GetListableTypesAsync())
                 .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
                 .ToList().OrderBy(kvp => kvp.Value);
 
@@ -193,7 +194,7 @@ namespace OrchardCore.Contents.Controllers
             return View(viewModel);
         }
 
-        
+
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.Filter")]
@@ -469,7 +470,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 return Forbid();
             }
-          
+
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
             if (!ModelState.IsValid)
             {
@@ -655,6 +656,21 @@ namespace OrchardCore.Contents.Controllers
             return creatable;
         }
 
-       
+        private async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync()
+        {
+            var listable = new List<ContentTypeDefinition>();
+            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+            {
+                if (ctd.GetSettings<ContentTypeSettings>().Listable)
+                {
+                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
+                    if (authorized)
+                    {
+                        listable.Add(ctd);
+                    }
+                }
+            }
+            return listable;
+        }
     }
 }

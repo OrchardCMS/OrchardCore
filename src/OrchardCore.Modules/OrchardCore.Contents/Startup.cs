@@ -79,7 +79,7 @@ namespace OrchardCore.Contents
             services.AddIdGeneration();
             services.AddScoped<IDataMigration, Migrations>();
 
-            services.AddScoped<IContentQueryService, ContentQueryService>();
+            services.AddContentQueries();
             // Common Part
             services.AddContentPart<CommonPart>()
                 .UseDisplayDriver<DateEditorDriver>()

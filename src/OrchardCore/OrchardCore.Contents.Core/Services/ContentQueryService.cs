@@ -1,14 +1,8 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
-using OrchardCore.Contents;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.ViewModels;
 using YesSql;
@@ -37,17 +31,8 @@ namespace OrchardCore.Contents.Services
             _httpContextAccessor = httpContextAccessor;
             _contentManager = contentManager;
         }
-        public async Task<IQuery<ContentItem, ContentItemIndex>> GetQueryByOptions(OrchardCore.Contents.ViewModels.ContentOptions options, ClaimsPrincipal user = null)
+        public IQuery<ContentItem, ContentItemIndex> GetQueryByOptions(OrchardCore.Contents.ViewModels.ContentOptions options)
         {
-            if (user == null)
-            {
-                var httpContext = _httpContextAccessor.HttpContext;
-                if (httpContext != null)
-                {
-                    user = httpContext.User;
-                }
-            }
-
             var query = _session.Query<ContentItem, ContentItemIndex>();
 
             if (!string.IsNullOrEmpty(options.DisplayText))
@@ -73,27 +58,24 @@ namespace OrchardCore.Contents.Services
 
             if (options.ContentsStatus == ContentsStatus.Owner)
             {
-
-                if (user != null)
+                if (options.OwnerName != null)
                 {
-                    query = query.With<ContentItemIndex>(x => x.Owner == user.Identity.Name);
+                    query = query.With<ContentItemIndex>(x => x.Owner == options.OwnerName);
                 }
-
             }
+
             if (!string.IsNullOrEmpty(options.SelectedContentType))
             {
                 // We display a specific type even if it's not listable so that admin pages
                 // can reuse the Content list page for specific types.
                 query = query.With<ContentItemIndex>(x => x.ContentType == options.SelectedContentType);
-
-
             }
             else
             {
-                var listableTypes = (await GetListableTypesAsync(user)).Select(t => t.Name).ToArray();
-                if (listableTypes.Any())
+                //var listableTypes = (await GetListableTypesAsync(user)).Select(t => t.Name).ToArray();
+                if (options.ListableContentTypes.Any())
                 {
-                    query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
+                    query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(options.ListableContentTypes));
                 }
             }
 
@@ -117,28 +99,6 @@ namespace OrchardCore.Contents.Services
             }
             return query;
         }
-
-        public async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync(ClaimsPrincipal user)
-        {
-            var listable = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
-            {
-                if (ctd.GetSettings<ContentTypeSettings>().Listable)
-                {
-                    if (user != null)
-                    {
-                        var authorized = await _authorizationService.AuthorizeAsync(user, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                        if (authorized)
-                        {
-                            listable.Add(ctd);
-                        }
-                    }
-
-                }
-            }
-            return listable;
-        }
-
     }
 }
 
