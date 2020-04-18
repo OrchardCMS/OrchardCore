@@ -1,9 +1,19 @@
+﻿@inject OrchardCore.Settings.ISiteService siteService
+@using OrchardCore.Entities
+@using OrchardCore.ContentManagement
+@{ 
+    var siteSettings = await siteService.GetSiteSettingsAsync();
+        var themeSettings = siteSettings.As<ContentItem>("ThemeSettings");
+        var head = themeSettings?.Content?.ThemeSettings?.Head.Text ?? string.Empty;
+        var foot = themeSettings?.Content?.ThemeSettings?.Foot.Text ?? string.Empty;
+}
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
+    @Html.Raw(head)
     @Html.Raw(Site.Meta)
     @await RenderSectionAsync("HeadMeta", required: false)
     <script asp-name="bootstrap" version="4" at="Foot"></script>
@@ -35,5 +45,6 @@
     </main>
     @await RenderSectionAsync("Footer", required: false)
     <resources type="FootScript" />
+    @Html.Raw(foot)
 </body>
 </html>

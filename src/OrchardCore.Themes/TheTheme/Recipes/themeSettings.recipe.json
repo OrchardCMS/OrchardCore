@@ -1,0 +1,109 @@
+{
+  "name": "ThemeSettings",
+  "displayName": "Theme settings",
+  "description": "Enables the ThemeSettings content type.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0-rc2",
+  "issetuprecipe": false,
+  "categories": [ "default" ],
+  "tags": [ "theme", "settings" ],
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "OrchardCore.CustomSettings"
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "ThemeSettings",
+          "DisplayName": "Theme",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Stereotype": "CustomSettings",
+              "Securable": true
+            },
+            "FullTextAspectSettings": {}
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "ThemeSettings",
+              "Name": "ThemeSettings",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "ThemeSettings",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Head",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Head",
+                  "Editor": "CodeMirror",
+                  "Position": "0"
+                },
+                "TextFieldSettings": {
+                  "Hint": "Html code used in the head of each page."
+                },
+                "ContentIndexSettings": {}
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Foot",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Foot",
+                  "Editor": "CodeMirror",
+                  "Position": "1"
+                },
+                "TextFieldSettings": {
+                  "Hint": "Html Code used in the footer of each page"
+                },
+                "ContentIndexSettings": {}
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "custom-settings",
+      "ThemeSettings": {
+        "ContentItemId": "40zx9155k4kbpstjb13zn6htwz",
+        "ContentItemVersionId": null,
+        "ContentType": "ThemeSettings",
+        "DisplayText": null,
+        "Latest": false,
+        "Published": false,
+        "ModifiedUtc": "2020-04-18T17:45:52.7684512Z",
+        "PublishedUtc": null,
+        "CreatedUtc": null,
+        "Owner": null,
+        "Author": "admin",
+        "ThemeSettings": {
+          "Head": {
+            "Text": "<link type=\"image/x-icon\" rel=\"shortcut icon\" href=\"/TheTheme/favicon.ico\" />"
+          },
+          "Foot": {
+            "Text": null
+          }
+        }
+      }
+    }
+  ]
+}
