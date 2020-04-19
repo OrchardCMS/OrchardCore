@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -93,17 +92,15 @@ namespace OrchardCore.Data.Documents
             await _semaphore.WaitAsync();
             try
             {
-                JObject jObject;
+                T document;
 
                 using (var file = File.OpenText(filename))
                 {
-                    using (var reader = new JsonTextReader(file))
-                    {
-                        jObject = await JObject.LoadAsync(reader);
-                    }
+                    var serializer = new JsonSerializer();
+                    document = (T)serializer.Deserialize(file, typeof(T));
                 }
 
-                return jObject.ToObject<T>();
+                return document;
             }
             finally
             {
@@ -126,14 +123,11 @@ namespace OrchardCore.Data.Documents
             await _semaphore.WaitAsync();
             try
             {
-                var jObject = JObject.FromObject(document);
-
                 using (var file = File.CreateText(filename))
                 {
-                    using (var writer = new JsonTextWriter(file) { Formatting = Formatting.Indented })
-                    {
-                        await jObject.WriteToAsync(writer);
-                    }
+                    var serializer = new JsonSerializer();
+                    serializer.Formatting = Formatting.Indented;
+                    serializer.Serialize(file, document);
                 }
             }
             finally
