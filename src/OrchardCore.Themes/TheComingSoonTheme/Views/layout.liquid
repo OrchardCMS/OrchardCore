@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>    
-    {{ Site.Meta | raw }}
+    <title>{{ "PageTitle" | shape_new | shape_stringify }}</title> 
     {% render_section "HeadMeta", required:false %}
+    {% resources type: "Meta" %}
+    <link type="image/x-icon" rel="shortcut icon" href="/TheComingSoonTheme/favicon.ico">
 
     <!-- Bootstrap core CSS -->
     {% style name:"thecomingsoontheme-vendor-bootstrap", version:"4" %}
@@ -17,7 +18,6 @@
 
     <!-- Custom styles for this template -->
     <link href="{{ "~/TheComingSoonTheme/css/coming-soon.min.css" | href }}" rel="stylesheet">
-    {% resources type: "Meta" %}
     {% resources type: "HeadLink" %}
     {% resources type: "Stylesheet" %}
     {% resources type: "HeadScript" %}

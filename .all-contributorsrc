@@ -1430,6 +1430,33 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "gvkries",
+      "name": "Georg von Kries",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/7062785?v=4",
+      "profile": "https://www.simplesyn.net",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mguma",
+      "name": "Marco Guetg",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1769143?v=4",
+      "profile": "https://github.com/mguma",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "zhhbo",
+      "name": "朱",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/8653043?v=4",
+      "profile": "https://github.com/zhhbo",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
