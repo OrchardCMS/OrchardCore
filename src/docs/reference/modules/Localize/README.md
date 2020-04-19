@@ -5,7 +5,7 @@ It also supports plural forms.
 
 ## Online translations
 
-[![Crowdin](https://d322cqt584bo4o.cloudfront.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
+[![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
 The localization files for the different cultures are available on [Crowdin](https://crowdin.com/project/orchard-core).
 
