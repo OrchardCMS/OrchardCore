@@ -45,8 +45,6 @@ namespace OrchardCore.Media.Services
         /// <param name="context"></param>
         public async Task Invoke(HttpContext context)
         {
-            //TODO for 3.0 and endpoint routing, validate it is not an endpoint
-
             // Support only Head requests or Get Requests.
             if (!HttpMethods.IsGet(context.Request.Method) && !HttpMethods.IsHead(context.Request.Method))
             {
@@ -65,12 +63,14 @@ namespace OrchardCore.Media.Services
             // subpath.Value returns an unescaped path value, subPath returns an escaped path value.
             var subPathValue = subPath.Value;
 
+            var workerKey = context.Request.PathBase.Value + context.Request.Path.Value;
+
             var isFileCached = await _mediaFileStoreCache.IsCachedAsync(subPathValue);
             if (isFileCached)
             {
                 // When multiple requests occur for the same file the download
                 // may already be in progress so we wait for it to complete.
-                if (Workers.TryGetValue(subPathValue, out var writeTask))
+                if (Workers.TryGetValue(workerKey, out var writeTask))
                 {
                     await writeTask.Value;
                 }
@@ -81,7 +81,7 @@ namespace OrchardCore.Media.Services
 
             // When multiple requests occur for the same file we use a Lazy<Task>
             // to initialize the file store request once.
-            await Workers.GetOrAdd(subPathValue, x => new Lazy<Task>(async () =>
+            await Workers.GetOrAdd(workerKey, x => new Lazy<Task>(async () =>
             {
                 try
                 {
