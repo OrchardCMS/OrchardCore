@@ -33,6 +33,7 @@ namespace OrchardCore.Settings
         public bool AppendVersion { get; set; } = true;
         public string Meta { get; set; }
 
+        // 'MessagePack' can't serialize a 'RouteValueDictionary'.
         public override void OnAfterDeserialize()
         {
             HomeRoute = new RouteValueDictionary(HomeRouteValues);

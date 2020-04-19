@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Documents;
 using OrchardCore.Sitemaps.Models;
@@ -19,19 +18,13 @@ namespace OrchardCore.Sitemaps.Services
             _sitemapEntries = sitemapEntries;
         }
 
-        public async Task BuildAllSitemapRouteEntriesAsync()
-        {
-            var document = await GetDocumentAsync();
-            BuildAllSitemapRouteEntries(document);
-        }
-
         public async Task DeleteSitemapAsync(string sitemapId)
         {
             var existing = await LoadDocumentAsync();
             existing.Sitemaps.Remove(sitemapId);
 
             await _documentManager.UpdateAsync(existing);
-            BuildAllSitemapRouteEntries(existing);
+            await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
 
             return;
         }
@@ -70,7 +63,7 @@ namespace OrchardCore.Sitemaps.Services
             existing.Sitemaps[sitemapId] = sitemap;
 
             await _documentManager.UpdateAsync(existing);
-            BuildAllSitemapRouteEntries(existing);
+            await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
 
             return;
         }
@@ -84,18 +77,5 @@ namespace OrchardCore.Sitemaps.Services
         /// Gets the sitemap document from the cache for sharing and that should not be updated.
         /// </summary>
         private Task<SitemapDocument> GetDocumentAsync() => _documentManager.GetImmutableAsync();
-
-        private void BuildAllSitemapRouteEntries(SitemapDocument document)
-        {
-            var entries = document.Sitemaps.Values
-                .Where(x => x.Enabled)
-                .Select(sitemap => new SitemapEntry
-                {
-                    Path = sitemap.Path,
-                    SitemapId = sitemap.SitemapId
-                });
-
-            _sitemapEntries.BuildEntries(entries);
-        }
     }
 }

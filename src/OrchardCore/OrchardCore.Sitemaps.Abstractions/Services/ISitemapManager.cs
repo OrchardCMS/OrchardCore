@@ -30,10 +30,5 @@ namespace OrchardCore.Sitemaps.Services
         /// </summary>
         /// <param name="sitemapId"></param>
         Task<SitemapType> GetSitemapAsync(string sitemapId);
-
-        /// <summary>
-        /// Build all the sitemap route entries.
-        /// </summary>
-        Task BuildAllSitemapRouteEntriesAsync();
     }
 }

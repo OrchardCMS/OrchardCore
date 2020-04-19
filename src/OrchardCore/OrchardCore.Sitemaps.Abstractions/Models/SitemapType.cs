@@ -5,7 +5,8 @@ namespace OrchardCore.Sitemaps.Models
     /// <summary>
     /// Abstract to provide a type of sitemap.
     /// </summary>
-    public abstract class SitemapType
+    // 'MessagePack' can't serialize an abstract class.
+    public /*abstract*/ class SitemapType
     {
         /// <summary>
         /// Sitemap id.

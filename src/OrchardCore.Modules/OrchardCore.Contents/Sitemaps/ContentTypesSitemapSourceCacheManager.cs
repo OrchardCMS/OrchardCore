@@ -40,7 +40,8 @@ namespace OrchardCore.Contents.Sitemaps
                         continue;
                     }
 
-                    if (source.IndexAll) {
+                    if (source.IndexAll)
+                    {
                         await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
                         break;
                     }
