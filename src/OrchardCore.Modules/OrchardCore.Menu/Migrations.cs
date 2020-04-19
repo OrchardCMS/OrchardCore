@@ -17,7 +17,7 @@ namespace OrchardCore.Menu
         {
             await _recipeMigrator.ExecuteAsync("menu.recipe.json", this);
 
-            return 2;
+            return 1;
         }
 
         public async Task<int> UpdateFrom1Async()
