@@ -52,11 +52,11 @@ namespace OrchardCore.Menu.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPickerMenuItemPart part, IUpdateModel updater)
         {
-            //Update Part ContentItemIds
+            //Update Part ContentItemId
             var contentTypePartDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType).Parts
                .FirstOrDefault(x => x.Name == nameof(ContentPickerMenuItemPart));
             var contentItemIdsPrefix = contentTypePartDefinition.Name + "." + contentTypePartDefinition.PartDefinition.Fields.FirstOrDefault().Name;
-            await updater.TryUpdateModelAsync(part, contentItemIdsPrefix, x => x.ContentItemIds);
+            await updater.TryUpdateModelAsync(part, contentItemIdsPrefix, x => x.ContentItemId);
 
             //Update Part Name
             await updater.TryUpdateModelAsync(part, Prefix, x => x.Name);

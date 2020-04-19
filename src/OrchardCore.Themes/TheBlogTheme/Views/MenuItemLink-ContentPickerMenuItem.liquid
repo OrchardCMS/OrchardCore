@@ -1,6 +1,6 @@
 {% assign link = Model.ContentItem.Content.ContentPickerMenuItemPart %}
 {% if Model.HasItems %}
-    <a href="{{ link.ContentItemIds | display_url:is_content_item_id:true }}" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ link.Name }}<b class="caret"></b></a>
+    <a href="{{ link.ContentItemId | display_url:is_content_item_id:true }}" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ link.Name }}<b class="caret"></b></a>
 {% else %}
-    <a class="nav-link" href="{{ link.ContentItemIds | display_url:true }}">{{ link.Name }}</a>
+    <a class="nav-link" href="{{ link.ContentItemId | display_url:true }}">{{ link.Name }}</a>
 {% endif %}

@@ -1,7 +1,8 @@
-@inject IOptions<AutorouteOptions> AutorouteOptions
+@inject ContentPickerItemRoute ContentPickerItemRoute
+
 @{
     ContentPickerMenuItemPart menuItemPart = Model.MenuItemPart;
-    var linkUrl = Url.RouteUrl(menuItemPart.GetContentPickerItemRouteValue(AutorouteOptions.Value));
+    var linkUrl = Url.RouteUrl(ContentPickerItemRoute.GetContentPickerItemRouteValue(menuItemPart.ContentItemId));
 }
 
 <span>@menuItemPart.Name <code>@linkUrl</code><span class="text-muted">- ContentPickerLink</span></span>

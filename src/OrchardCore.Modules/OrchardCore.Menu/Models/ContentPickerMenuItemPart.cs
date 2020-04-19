@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Routing;
 
 namespace OrchardCore.Menu.Models
 {
@@ -14,13 +14,7 @@ namespace OrchardCore.Menu.Models
         /// <summary>
         /// Content Picker ItemIds
         /// </summary>
-        public string ContentItemIds { get; set; }
-
-        public RouteValueDictionary GetContentPickerItemRouteValue(AutorouteOptions autoRouteOption)
-        {
-            var routeValues = new RouteValueDictionary(autoRouteOption.GlobalRouteValues);
-            routeValues[autoRouteOption.ContentItemIdKey] = ContentItemIds;
-            return routeValues;
-        }
+        [BindProperty(Name = "ContentItemIds")]
+        public string ContentItemId { get; set; }
     }
 }
