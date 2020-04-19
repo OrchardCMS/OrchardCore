@@ -8,7 +8,7 @@ namespace OrchardCore.Email
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer<AdminMenu> S;
+        private readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -24,6 +24,7 @@ namespace OrchardCore.Email
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
                        .Add(S["Smtp"], S["Smtp"], entry => entry
+                       .AddClass("email").Id("email")
                           .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
                           .Permission(Permissions.ManageEmailSettings)
                           .LocalNav()

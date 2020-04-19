@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Environment.Extensions.Features
 {
@@ -11,14 +10,9 @@ namespace OrchardCore.Environment.Extensions.Features
 
         private readonly IEnumerable<IFeatureBuilderEvents> _featureBuilderEvents;
 
-        private readonly ILogger L;
-
-        public FeaturesProvider(
-            IEnumerable<IFeatureBuilderEvents> featureBuilderEvents,
-            ILogger<FeaturesProvider> logger)
+        public FeaturesProvider(IEnumerable<IFeatureBuilderEvents> featureBuilderEvents)
         {
             _featureBuilderEvents = featureBuilderEvents;
-            L = logger;
         }
 
         public IEnumerable<IFeatureInfo> GetFeatures(

@@ -22,7 +22,7 @@ namespace OrchardCore.Users.Drivers
         private readonly IRoleService _roleService;
         private readonly IUserRoleStore<IUser> _userRoleStore;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer<UserDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,

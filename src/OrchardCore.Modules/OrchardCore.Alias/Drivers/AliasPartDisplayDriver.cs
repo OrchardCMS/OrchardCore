@@ -19,7 +19,7 @@ namespace OrchardCore.Alias.Drivers
         public const int MaxAliasLength = 767;
 
         private readonly ISession _session;
-        private readonly IStringLocalizer<AliasPartDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public AliasPartDisplayDriver(
             ISession session,

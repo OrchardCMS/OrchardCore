@@ -83,8 +83,8 @@ The following methods are available from the Razor helper.
 
 | Method | Parameters | Description |
 | --------- | ---- |------------ |
-| `GetContentItemIdByAliasAsync` | `string alias` | Returns the content item id from its alias. |
-| `GetContentItemByAliasAsync` | `string alias, bool latest = false` | Loads a content item from its alias, seeking the latest version or not. |
+| `GetContentItemIdByHandleAsync` | `string name` | Returns the content item id from its handle. Ex: `alias:carousel`, `slug:myblog/my-blog-post` |
+| `GetContentItemByHandleAsync` | `string handle, bool latest = false` | Loads a content item from its handle, seeking the latest version or not. |
 | `GetContentItemByIdAsync` | `string contentItemId, bool latest = false` | Loads a content item from its id, seeking the latest version or not. |
 | `GetContentItemsByIdAsync` | `IEnumerable<string> contentItemIds, bool latest = false` | Loads a list of content items by ids, seeking the latest version or not. |
 | `GetContentItemByVersionIdAsync` | `string contentItemVersionId` | Loads a content item from its version id. |

@@ -15,18 +15,15 @@ namespace OrchardCore.Workflows.Http.Activities
 {
     public class HttpRequestTask : TaskActivity
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<HttpRequestTask> S;
+        private readonly IStringLocalizer S;
 
         public HttpRequestTask(
             IStringLocalizer<HttpRequestTask> localizer,
-            IHttpContextAccessor httpContextAccessor,
             IWorkflowExpressionEvaluator expressionEvaluator
         )
         {
             S = localizer;
-            _httpContextAccessor = httpContextAccessor;
             _expressionEvaluator = expressionEvaluator;
         }
 

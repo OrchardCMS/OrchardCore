@@ -23,7 +23,7 @@
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            @foreach (var type in widgetContentTypes)
+                            @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                             {
                                 <a
                                 class="dropdown-item insert-list-widget btn-sm"
@@ -32,7 +32,7 @@
                                 data-zones-name="@Model.ZonesName"
                                 data-contenttypes-name="@Model.ContentTypesName"
                                 data-widget-type="@type.Name"
-                                data-zone="@Model.Zone"
+                                data-zone="@Model.ZoneValue"
                                 href="javascript:;">@type.DisplayName</a>
                             }
                         </div>

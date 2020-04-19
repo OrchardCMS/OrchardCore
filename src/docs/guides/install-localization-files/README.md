@@ -38,9 +38,7 @@ The result should look like this:
 By default a new Orchard Core CMS website will only accept the default system culture. This step will configure it to accept French as an alternate language.
 
 - Open the Admin section of Orchard Core CMS by opening the browser on <https://localhost:5001/admin>.
-- In the __Configuration__, __Settings__, __General__ section click on __Add or remove supported cultures for the site__.
-- Select `fr | French` then click __Add__.
-- Click on the __Manage Settings__ menu item link which redirects to the __General__ settings page.
+- In the __Configuration__ > __Settings__ > __Cultures__ section, select `fr | French` then click __Add culture__.
 - Click on __Save__, the site is reloaded.
 
 ## Enabling localization and testing the site

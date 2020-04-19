@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -5,7 +6,6 @@ using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OpenIddict.Abstractions;
 using OrchardCore.Modules;
@@ -17,13 +17,11 @@ namespace OrchardCore.OpenId.Controllers
     [OpenIdController, SkipStatusCodePages]
     public class UserInfoController : Controller
     {
-        private readonly ILogger<UserInfoController> _logger;
-        private readonly IStringLocalizer<UserInfoController> S;
+        private readonly IStringLocalizer S;
 
-        public UserInfoController(IStringLocalizer<UserInfoController> localizer, ILogger<UserInfoController> logger)
+        public UserInfoController(IStringLocalizer<UserInfoController> localizer)
         {
             S = localizer;
-            _logger = logger;
         }
 
         // GET/POST: /connect/userinfo
@@ -114,15 +112,7 @@ namespace OrchardCore.OpenId.Controllers
 
                 if (!string.IsNullOrEmpty(updatedAtClaimValue))
                 {
-                    if (long.TryParse(updatedAtClaimValue, out var epoch))
-                    {
-                        claims[OpenIdConnectConstants.Claims.UpdatedAt] = epoch;
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"{OpenIdConnectConstants.Claims.UpdatedAt} claim value '{updatedAtClaimValue}' is invalid. Should be the time the end-user's" +
-                                           " information was last updated, as number of seconds since the Unix epoch (1970-01-01T0:0:0Z) as measured in UTC until the date/time. ");
-                    }
+                    claims[OpenIdConnectConstants.Claims.UpdatedAt] = long.Parse(updatedAtClaimValue, CultureInfo.InvariantCulture);
                 }
             }
 

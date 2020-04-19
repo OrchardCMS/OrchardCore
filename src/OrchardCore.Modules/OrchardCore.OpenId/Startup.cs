@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict.Mvc;
 using OpenIddict.Server;
@@ -43,9 +45,13 @@ namespace OrchardCore.OpenId
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
+        private readonly ILogger _logger;
 
-        public Startup(IOptions<AdminOptions> adminOptions)
-            => _adminOptions = adminOptions.Value;
+        public Startup(IOptions<AdminOptions> adminOptions, ILogger<Startup> logger)
+        {
+            _adminOptions = adminOptions.Value;
+            _logger = logger;
+        }
 
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -66,10 +72,31 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
                 ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
             });
+
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.OnAppendCookie = cookieContext =>
+                {
+                    // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
+                    // Note: it has no practical impact on the security of the site since all endpoints are always
+                    // protected by antiforgery checks, that are enforced with or without this setting being changed.
+                    // 2020-03-23; Moved the SameSiteNode.None here, this will require that the site runs on HTTPS;
+                    if (cookieContext.CookieName.StartsWith("orchauth_"))
+                    {
+                        cookieContext.CookieOptions.SameSite = SameSiteMode.None;
+                    }
+                };
+            });
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+            if (!httpContextAccessor.HttpContext.Request.IsHttps)
+            {
+                _logger.LogCritical("OpenId module requires a site that runs on https.");
+            }
+
             // Application
             var applicationControllerName = typeof(ApplicationController).ControllerName();
 
