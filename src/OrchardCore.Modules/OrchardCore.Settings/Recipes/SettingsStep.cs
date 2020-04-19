@@ -93,10 +93,6 @@ namespace OrchardCore.Settings.Recipes
                         site.HomeRoute = property.Value.ToObject<RouteValueDictionary>();
                         break;
 
-                    case "Meta":
-                        site.Meta = property.Value.ToString();
-                        break;
-
                     default:
                         site.Properties[property.Name] = property.Value;
                         break;
