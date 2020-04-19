@@ -54,7 +54,7 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 // When multiple requests occur for the same sitemap it 
                 // may still be building, so we wait for it to complete.
-                if (Workers.TryGetValue(sitemap.Path, out var writeTask))
+                if (Workers.TryGetValue(sitemapId, out var writeTask))
                 {
                     await writeTask.Value;
                 }
@@ -65,7 +65,7 @@ namespace OrchardCore.Sitemaps.Controllers
             }
             else
             {
-                var work = await Workers.GetOrAdd(sitemap.Path, x => new Lazy<Task<Stream>>(async () =>
+                var work = await Workers.GetOrAdd(sitemapId, x => new Lazy<Task<Stream>>(async () =>
                 {
                     try
                     {
@@ -104,7 +104,7 @@ namespace OrchardCore.Sitemaps.Controllers
                     }
                     finally
                     {
-                        Workers.TryRemove(sitemap.Path, out var writeCacheTask);
+                        Workers.TryRemove(sitemapId, out var writeCacheTask);
                     }
                 }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 
