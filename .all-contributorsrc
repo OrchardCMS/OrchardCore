@@ -1430,6 +1430,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "gvkries",
+      "name": "Georg von Kries",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/7062785?v=4",
+      "profile": "https://www.simplesyn.net",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
