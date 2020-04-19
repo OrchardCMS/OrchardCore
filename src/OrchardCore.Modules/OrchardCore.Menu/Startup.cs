@@ -9,12 +9,10 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Menu.Controllers;
 using OrchardCore.Menu.Drivers;
 using OrchardCore.Menu.Handlers;
 using OrchardCore.Menu.Models;
-using OrchardCore.Menu.Routing;
 using OrchardCore.Menu.TagHelpers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -53,9 +51,6 @@ namespace OrchardCore.Menu
             // ContentPickerMenuItemPart
             services.AddContentPart<ContentPickerMenuItemPart>()
                 .UseDisplayDriver<ContentPickerMenuItemPartDisplayDriver>();
-
-            // Add ContentPickerItem Route
-            services.AddScoped<ContentPickerItemRoute>();
 
             services.AddTagHelpers<MenuTagHelper>();
         }

@@ -21,7 +21,5 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
   </ItemGroup>
-
-  <ProjectExtensions><VisualStudio><UserProperties migrations_4menu_1recipe_1json__JsonSchema="http://json.schemastore.org/behat" /></VisualStudio></ProjectExtensions>
-
+  
 </Project>

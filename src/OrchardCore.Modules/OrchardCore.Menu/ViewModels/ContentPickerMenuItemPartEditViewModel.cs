@@ -7,10 +7,6 @@ namespace OrchardCore.Menu.ViewModels
     {
         public string Name { get; set; }
 
-        public string ContentItemId { get; set; }
-
-        public string Url { get; set; }
-
         [BindNever]
         public ContentPickerMenuItemPart MenuItemPart { get; set; }
     }

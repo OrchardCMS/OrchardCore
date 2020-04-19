@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Routing;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Liquid.Filters
 {
@@ -23,12 +22,16 @@ namespace OrchardCore.Liquid.Filters
 
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            var isContentItemId = arguments["is_content_item_id"].Or(arguments.At(0)).ToBooleanValue();
+            var contentItem = input.ToObjectValue() as ContentItem;
             RouteValueDictionary routeValues;
 
-            if (isContentItemId)
+            if (contentItem == null)
             {
-                var autoRouteOption = ShellScope.Services.GetRequiredService<IOptions<AutorouteOptions>>()?.Value;
+                if (!ctx.AmbientValues.TryGetValue("Services", out var servicesValue))
+                {
+                    throw new ArgumentException("Services missing while invoking 'display_url'");
+                }
+                var autoRouteOption = ((IServiceProvider)servicesValue).GetRequiredService<IOptions<AutorouteOptions>>()?.Value;
                 routeValues = new RouteValueDictionary(autoRouteOption.GlobalRouteValues);
                 if (string.IsNullOrEmpty(input.ToStringValue()))
                 {
@@ -38,13 +41,6 @@ namespace OrchardCore.Liquid.Filters
             }
             else
             {
-                var contentItem = input.ToObjectValue() as ContentItem;
-
-                if (contentItem == null)
-                {
-                    return NilValue.Instance;
-                }
-
                 var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
                 routeValues = contentItemMetadata.DisplayRouteValues;
             }

@@ -15,13 +15,14 @@ namespace OrchardCore.Menu
 
         public async Task<int> CreateAsync()
         {
-            // Return 1 to shortcut the second migration on new content definition schemas.
-            return await Task.FromResult(1);
+            await _recipeMigrator.ExecuteAsync("menu.recipe.json", this);
+
+            return 2;
         }
 
         public async Task<int> UpdateFrom1Async()
         {
-            await _recipeMigrator.ExecuteAsync("menu.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync("content-picker-menu.recipe.json", this);
 
             return 2;
         }

@@ -81,40 +81,6 @@
               }
             }
           ]
-        },
-        {
-          "Name": "ContentPickerMenuItem",
-          "DisplayName": "Content Picker Menu Item",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Listable": true,
-              "Draftable": true,
-              "Versionable": true,
-              "Stereotype": "MenuItem",
-              "Securable": true
-            },
-            "FullTextAspectSettings": {}
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "ContentPickerMenuItemPart",
-              "Name": "ContentPickerMenuItemPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            },
-            {
-              "PartName": "ContentPickerMenuItem",
-              "Name": "ContentPickerMenuItem",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "1"
-                }
-              }
-            }
-          ]
         }
       ],
       "ContentParts": [
@@ -132,34 +98,6 @@
               "Description": "Provides a menu link behavior for your content item."
             }
           }
-        },
-        {
-          "Name": "ContentPickerMenuItemPart",
-          "Settings": {
-            "ContentPartSettings": {
-              "Attachable": true,
-              "DisplayName": "ContentPickerMenuItem",
-              "Description": "Provides a menu link behavior from ContentPicker for your content item."
-            }
-          },
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "ContentPickerField",
-              "Name": "LinkToContentItem",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Link To Content Item",
-                  "Position": "0"
-                },
-                "ContentPickerFieldSettings": {
-                  "Required": true,
-                  "Multiple": false,
-                  "DisplayedContentTypes": []
-                },
-                "ContentIndexSettings": {}
-              }
-            }
-          ]
         }
       ]
     }
