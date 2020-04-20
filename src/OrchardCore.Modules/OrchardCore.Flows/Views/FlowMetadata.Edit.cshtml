@@ -1,5 +1,6 @@
 @using OrchardCore.Flows.Models
-@model FlowMetadata
+@using OrchardCore.Flows.ViewModels
+@model FlowMetadataEditViewModel
 
 <div class="btn-group btn-group-sm" role="group">
     <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -44,5 +45,17 @@
         <label class="btn btn-secondary dropdown-item @(Model.Size == 100 ? "active" : null)">
             <input asp-for="Size" id="@Html.IdFor(x => x.Size)_100" type="radio" autocomplete="off" value="100">@T["100%"]
         </label>
+    </div>
+</div>
+
+<div class="btn-group btn-group-sm" role="group">
+    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa fa-cog" aria-hidden="true"></i>
+    </button>
+    <div class="dropdown-menu btn-group-toggle p-2" data-toggle="buttons">
+        <div class="form-group">
+            <label asp-for="Classes">@T["CSS Classes"]</label>
+            <input type="text" asp-for="Classes" class="form-control">
+        </div>
     </div>
 </div>

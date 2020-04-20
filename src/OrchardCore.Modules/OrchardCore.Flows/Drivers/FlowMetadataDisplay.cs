@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+using System;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
+using OrchardCore.Flows.ViewModels;
 
 namespace OrchardCore.Flows.Drivers
 {
@@ -18,10 +20,11 @@ namespace OrchardCore.Flows.Drivers
                 return null;
             }
 
-            return Initialize<FlowMetadata>("FlowMetadata_Edit", m =>
+            return Initialize<FlowMetadataEditViewModel>("FlowMetadata_Edit", m =>
             {
                 m.Alignment = flowMetadata.Alignment;
                 m.Size = flowMetadata.Size;
+                m.Classes = flowMetadata.Classes != null ? String.Join(" ", flowMetadata.Classes) : null;
             }).Location("Footer");
         }
 
@@ -34,7 +37,15 @@ namespace OrchardCore.Flows.Drivers
                 return null;
             }
 
-            await contentItem.AlterAsync<FlowMetadata>(model => updater.TryUpdateModelAsync(model, Prefix));
+            var viewModel = new FlowMetadataEditViewModel();
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+            {
+                contentItem.Alter<FlowMetadata>(model => {
+                    model.Alignment = viewModel.Alignment;
+                    model.Size = viewModel.Size;
+                    model.Classes = !String.IsNullOrEmpty(viewModel.Classes) ? viewModel.Classes.Split(" ", StringSplitOptions.RemoveEmptyEntries) : null;
+                });
+            }
 
             return Edit(contentItem, updater);
         }
