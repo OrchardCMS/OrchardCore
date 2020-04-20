@@ -74,7 +74,7 @@ namespace OrchardCore.Sitemaps.Routing
 
         private async Task<SitemapRouteDocument> CreateDocumentAsync()
         {
-            var sitemaps = await SitemapManager.ListSitemapsAsync();
+            var sitemaps = await SitemapManager.GetSitemapsAsync();
 
             var document = new SitemapRouteDocument();
             BuildEntries(document, sitemaps);

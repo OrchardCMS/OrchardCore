@@ -6,18 +6,27 @@ namespace OrchardCore.Sitemaps.Services
 {
     public interface ISitemapManager
     {
+        /// <summary>
+        /// Loads all stored <see cref="SitemapType"/> for updating.
+        /// </summary>
+        Task<IEnumerable<SitemapType>> LoadSitemapsAsync();
+
+        /// <summary>
+        /// Gets all stored <see cref="SitemapType"/> for sharing.
+        /// </summary>
+        Task<IEnumerable<SitemapType>> GetSitemapsAsync();
+
+        /// <summary>
+        /// Loads the specified <see cref="SitemapType"/> for updating.
+        /// </summary>
+        /// <param name="sitemapId">The id of the sitemap to load.</param>
         Task<SitemapType> LoadSitemapAsync(string sitemapId);
 
         /// <summary>
-        /// Returns a list of all store <see cref="SitemapType"/>.
+        /// Gets the specified <see cref="SitemapType"/> for sharing.
         /// </summary>
-        Task<IEnumerable<SitemapType>> ListSitemapsAsync();
-
-        /// <summary>
-        /// Saves the specific <see cref="SitemapType"/>.
-        /// </summary>
-        /// <param name="sitemap">The <see cref="SitemapType"/> instance to save.</param>
-        Task SaveSitemapAsync(string sitemapId, SitemapType sitemap);
+        /// <param name="sitemapId">The id of the sitemap to get.</param>
+        Task<SitemapType> GetSitemapAsync(string sitemapId);
 
         /// <summary>
         /// Deletes the specified <see cref="SitemapType"/>.
@@ -26,9 +35,8 @@ namespace OrchardCore.Sitemaps.Services
         Task DeleteSitemapAsync(string sitemapId);
 
         /// <summary>
-        /// Gets the <see cref="SitemapType"/> instance with the specified id.
+        /// Updates the specific <see cref="SitemapType"/>.
         /// </summary>
-        /// <param name="sitemapId"></param>
-        Task<SitemapType> GetSitemapAsync(string sitemapId);
+        Task UpdateSitemapAsync(SitemapType sitemap);
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Sitemaps.Models
 {
@@ -6,7 +7,7 @@ namespace OrchardCore.Sitemaps.Models
     /// Abstract to provide a type of sitemap.
     /// </summary>
     // 'MessagePack' can't serialize an abstract class.
-    public /*abstract*/ class SitemapType
+    public /*abstract*/ class SitemapType : Document
     {
         /// <summary>
         /// Sitemap id.

@@ -68,10 +68,10 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();
             services.AddScoped<ISitemapTypeBuilder, SitemapTypeBuilder>();
             services.AddScoped<ISitemapCacheProvider, DefaultSitemapCacheProvider>();
-            services.AddScoped<ISitemapCacheManager, DefaultSitemapCacheManager>();
-            services.AddScoped<ISitemapTypeCacheManager, SitemapTypeCacheManager>();
+            services.AddScoped<ISitemapUpdateHandler, DefaultSitemapUpdateHandler>();
+            services.AddScoped<ISitemapTypeUpdateHandler, SitemapTypeUpdateHandler>();
             services.AddScoped<ISitemapTypeBuilder, SitemapIndexTypeBuilder>();
-            services.AddScoped<ISitemapTypeCacheManager, SitemapIndexTypeCacheManager>();
+            services.AddScoped<ISitemapTypeUpdateHandler, SitemapIndexTypeUpdateHandler>();
             services.AddScoped<ISitemapModifiedDateProvider, DefaultSitemapModifiedDateProvider>();
             services.AddScoped<IRouteableContentTypeCoordinator, DefaultRouteableContentTypeCoordinator>();
 

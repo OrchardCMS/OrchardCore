@@ -2,30 +2,32 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
-using OrchardCore.Sitemaps.Cache;
+using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Contents.Sitemaps
 {
-    public class ContentTypesSitemapSourceCacheManager : ISitemapSourceCacheManager
+    public class ContentTypesSitemapSourceUpdateHandler : ISitemapSourceUpdateHandler
     {
-        private readonly ISitemapCacheProvider _sitemapCacheProvider;
+        private readonly ISitemapManager _sitemapManager;
 
-        public ContentTypesSitemapSourceCacheManager(ISitemapCacheProvider sitemapCacheProvider)
+        public ContentTypesSitemapSourceUpdateHandler(ISitemapManager sitemapManager)
         {
-            _sitemapCacheProvider = sitemapCacheProvider;
+            _sitemapManager = sitemapManager;
         }
 
-        public async Task ClearCacheAsync(SitemapCacheContext context)
+        public async Task UpdateSitemapAsync(SitemapUpdateContext context)
         {
-            var contentItem = context.CacheObject as ContentItem;
-            var sitemaps = context.Sitemaps
-                .Where(s => s.GetType() == typeof(Sitemap));
+            var contentItem = context.UpdatedObject as ContentItem;
 
             if (contentItem == null)
             {
                 return;
             }
+
+            var sitemaps = (await _sitemapManager.LoadSitemapsAsync())
+                .Where(s => s.GetType() == typeof(Sitemap));
 
             var contentTypeName = contentItem.ContentType;
 
@@ -42,17 +44,17 @@ namespace OrchardCore.Contents.Sitemaps
 
                     if (source.IndexAll)
                     {
-                        await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
+                        await _sitemapManager.UpdateSitemapAsync(sitemap);
                         break;
                     }
                     else if (source.LimitItems && String.Equals(source.LimitedContentType.ContentTypeName, contentTypeName))
                     {
-                        await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
+                        await _sitemapManager.UpdateSitemapAsync(sitemap);
                         break;
                     }
                     else if (source.ContentTypes.Any(ct => String.Equals(ct.ContentTypeName, contentTypeName)))
                     {
-                        await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
+                        await _sitemapManager.UpdateSitemapAsync(sitemap);
                         break;
                     }
                 }

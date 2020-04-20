@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Documents;
 using OrchardCore.Sitemaps.Models;
@@ -18,15 +19,14 @@ namespace OrchardCore.Sitemaps.Services
             _sitemapEntries = sitemapEntries;
         }
 
-        public async Task DeleteSitemapAsync(string sitemapId)
+        public async Task<IEnumerable<SitemapType>> LoadSitemapsAsync()
         {
-            var existing = await LoadDocumentAsync();
-            existing.Sitemaps.Remove(sitemapId);
+            return (await LoadDocumentAsync()).Sitemaps.Values.ToArray();
+        }
 
-            await _documentManager.UpdateAsync(existing);
-            await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
-
-            return;
+        public async Task<IEnumerable<SitemapType>> GetSitemapsAsync()
+        {
+            return (await GetDocumentAsync()).Sitemaps.Values.ToArray();
         }
 
         public async Task<SitemapType> LoadSitemapAsync(string sitemapId)
@@ -51,16 +51,23 @@ namespace OrchardCore.Sitemaps.Services
             return null;
         }
 
-        public async Task<IEnumerable<SitemapType>> ListSitemapsAsync()
-        {
-            return (await GetDocumentAsync()).Sitemaps.Values;
-        }
-
-        public async Task SaveSitemapAsync(string sitemapId, SitemapType sitemap)
+        public async Task DeleteSitemapAsync(string sitemapId)
         {
             var existing = await LoadDocumentAsync();
             existing.Sitemaps.Remove(sitemapId);
-            existing.Sitemaps[sitemapId] = sitemap;
+
+            await _documentManager.UpdateAsync(existing);
+            await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
+
+            return;
+        }
+
+        public async Task UpdateSitemapAsync(SitemapType sitemap)
+        {
+            var existing = await LoadDocumentAsync();
+
+            existing.Sitemaps[sitemap.SitemapId] = sitemap;
+            sitemap.Identifier = IdGenerator.GenerateId();
 
             await _documentManager.UpdateAsync(existing);
             await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);

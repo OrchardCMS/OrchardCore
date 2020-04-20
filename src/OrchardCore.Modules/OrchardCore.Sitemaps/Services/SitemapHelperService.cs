@@ -59,12 +59,12 @@ namespace OrchardCore.Sitemaps.Services
             var routeExists = false;
             if (string.IsNullOrEmpty(sitemapId))
             {
-                routeExists = (await _sitemapManager.ListSitemapsAsync())
+                routeExists = (await _sitemapManager.GetSitemapsAsync())
                     .Any(p => p.Path == path);
             }
             else
             {
-                routeExists = (await _sitemapManager.ListSitemapsAsync())
+                routeExists = (await _sitemapManager.GetSitemapsAsync())
                     .Any(p => p.SitemapId != sitemapId && p.Path == path);
             }
 
