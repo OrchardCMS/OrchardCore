@@ -119,7 +119,7 @@ namespace OrchardCore.Deployment.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(DeploymentPlanIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -148,7 +148,7 @@ namespace OrchardCore.Deployment.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Display(int id)
