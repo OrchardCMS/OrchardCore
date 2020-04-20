@@ -140,7 +140,7 @@ namespace OrchardCore.Deployment.Controllers
                         {
                             _session.Delete(item);
 
-                            _notifier.Success(H["Deplyment plan {0} successfully deleted.", item.Name]);
+                            _notifier.Success(H["Deployment plan {0} successfully deleted.", item.Name]);
                         }
                         break;
                     default:
