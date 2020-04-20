@@ -15,6 +15,8 @@ namespace OrchardCore.Markdown.Handlers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IDictionary<string, HtmlString> _bodiesAspectDictionary = new Dictionary<string, HtmlString>();
+        private IHtmlContent _bodyAspect;
+        private int _contentItemId;
 
         public MarkdownBodyPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
         {
@@ -26,13 +28,16 @@ namespace OrchardCore.Markdown.Handlers
         {
             return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
-                var contentItemVersionId = part.ContentItem.ContentItemVersionId;
-                if (_bodiesAspectDictionary.ContainsKey(contentItemVersionId))
+                if (bodyAspect != null && part.ContentItem.Id == _contentItemId)
                 {
-                    bodyAspect.Body = _bodiesAspectDictionary[contentItemVersionId];
+                    bodyAspect.Body = _bodyAspect;
+                    part.ContentItem.Id = _contentItemId;
 
                     return;
                 }
+
+                _bodyAspect = bodyAspect.Body;
+                _contentItemId = part.ContentItem.Id;
 
                 try
                 {
@@ -48,8 +53,7 @@ namespace OrchardCore.Markdown.Handlers
 
                     var result = Markdig.Markdown.ToHtml(markdown ?? "");
 
-                    _bodiesAspectDictionary.Add(contentItemVersionId, new HtmlString(result));
-                    bodyAspect.Body = _bodiesAspectDictionary[contentItemVersionId];
+                    bodyAspect.Body = _bodyAspect = new HtmlString(result);
                 }
                 catch
                 {
