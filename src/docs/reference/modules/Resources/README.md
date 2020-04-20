@@ -324,8 +324,27 @@ Named script will only be injected once and can optionally specify dependencies.
 
 #### Custom style
 
-The following example demonstrates how to inject a custom stylesheet in the head section.
-The name attribute is mandatory.
+The following example demonstrates how to inject a custom style in the head section.
+The style block will be injected after all stylesheet resources.
+
+``` liquid tab="Liquid"
+{% styleblock at: "Head" %}
+    .my-class {
+        /* some style */
+    }
+{% endstyleblock %}
+```
+
+``` html tab="Razor"
+<style at="Head">
+    .my-class {
+        /* some style */
+    }
+</style>
+```
+
+You can also inject a named style block.
+The style block will only be injected once based on its name and can optionally specify dependencies.
 
 ``` liquid tab="Liquid"
 {% styleblock name: "my-style", depends_on:"the-theme" %}
@@ -342,8 +361,6 @@ The name attribute is mandatory.
     }
 </style>
 ```
-
-The stylesheet will only be injected once based on its name and can optionally specify dependencies.
 
 #### Meta tags
 

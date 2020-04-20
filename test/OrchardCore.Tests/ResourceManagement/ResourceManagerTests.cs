@@ -255,6 +255,24 @@ namespace OrchardCore.Tests.ResourceManagement
         }
 
         [Fact]
+        public void RegisterStyle()
+        {
+            var resourceManager = new ResourceManager(
+                Enumerable.Empty<IResourceManifestProvider>(),
+                new ResourceManifestState(),
+                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                StubFileVersionProvider.Instance
+            );
+
+            var customStyle = "<style>.my-class { prop: value; }</style>";
+            resourceManager.RegisterStyle(new HtmlString(customStyle));
+
+            var registeredStyles = resourceManager.GetRegisteredStyles();
+
+            Assert.Contains(registeredStyles, style => style.ToString() == customStyle);
+        }
+
+        [Fact]
         public void RegisterLink()
         {
             var resourceManager = new ResourceManager(
@@ -397,7 +415,13 @@ namespace OrchardCore.Tests.ResourceManagement
             );
 
             resourceManager.RegisterLink(new LinkEntry { Rel = "icon", Href = "/favicon.ico" });    // Should not be rendered
+
+            // Require resource
             resourceManager.RegisterResource("stylesheet", "required");
+
+            // Register custom style
+            var customStyle = ".my-class { prop: value; }";
+            resourceManager.RegisterStyle(new HtmlString($"<style>{customStyle}</style>"));
 
             var builder = new HtmlContentBuilder();
             resourceManager.RenderStylesheet(builder);
@@ -405,13 +429,24 @@ namespace OrchardCore.Tests.ResourceManagement
             var document = await ParseHtmlAsync(builder);
             var links = document
                 .QuerySelectorAll<IHtmlLinkElement>("link");
+            var styles = document
+                .QuerySelectorAll<IHtmlStyleElement>("style");
 
             Assert.Equal(2, links.Count());
             Assert.Contains(links, link => link.Href == $"{basePath}/dependency.css");
             Assert.Contains(links, link => link.Href == $"{basePath}/required.css");
+            Assert.Single(styles);
+            Assert.Contains(styles, style => style.InnerHtml == customStyle);
+            // Required stylesheet after its dependency
             Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{basePath}/dependency.css")
                 .CompareDocumentPosition(
                     links.First(link => link.Href == $"{basePath}/required.css")
+                )
+            );
+            // Custom style after resources
+            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{basePath}/required.css")
+                .CompareDocumentPosition(
+                    styles.First(style => style.InnerHtml == customStyle)
                 )
             );
         }
@@ -434,7 +469,12 @@ namespace OrchardCore.Tests.ResourceManagement
                 StubFileVersionProvider.Instance
             );
 
+            // Require resource
             resourceManager.RegisterResource("script", "required").AtHead();
+
+            // Register custom script
+            var customScript = "doSomeAction();";
+            resourceManager.RegisterHeadScript(new HtmlString($"<script>{customScript}</script>"));
 
             var builder = new HtmlContentBuilder();
             resourceManager.RenderHeadScript(builder);
@@ -443,12 +483,20 @@ namespace OrchardCore.Tests.ResourceManagement
             var scripts = document
                 .QuerySelectorAll<IHtmlScriptElement>("script");
 
-            Assert.Equal(2, scripts.Count());
+            Assert.Equal(3, scripts.Count());
             Assert.Contains(scripts, script => script.Source == "dependency.js");
             Assert.Contains(scripts, script => script.Source == "required.js");
+            Assert.Contains(scripts, script => script.Text == customScript);
+            // Required script after its dependency
             Assert.Equal(DocumentPositions.Following, scripts.First(script => script.Source == "dependency.js")
                 .CompareDocumentPosition(
                     scripts.First(script => script.Source == "required.js")
+                )
+            );
+            // Custom script after resources
+            Assert.Equal(DocumentPositions.Following, scripts.First(script => script.Source == "required.js")
+                .CompareDocumentPosition(
+                    scripts.First(script => script.Text == customScript)
                 )
             );
         }
@@ -471,7 +519,12 @@ namespace OrchardCore.Tests.ResourceManagement
                 StubFileVersionProvider.Instance
             );
 
+            // Require resource
             resourceManager.RegisterResource("script", "required").AtFoot();
+
+            // Register custom script
+            var customScript = "doSomeAction();";
+            resourceManager.RegisterFootScript(new HtmlString($"<script>{customScript}</script>"));
 
             var builder = new HtmlContentBuilder();
             resourceManager.RenderFootScript(builder);
@@ -480,12 +533,20 @@ namespace OrchardCore.Tests.ResourceManagement
             var scripts = document
                 .QuerySelectorAll<IHtmlScriptElement>("script");
 
-            Assert.Equal(2, scripts.Count());
+            Assert.Equal(3, scripts.Count());
             Assert.Contains(scripts, script => script.Source == "dependency.js");
             Assert.Contains(scripts, script => script.Source == "required.js");
+            Assert.Contains(scripts, script => script.Text == customScript);
+            // Required script after its dependency
             Assert.Equal(DocumentPositions.Following, scripts.First(script => script.Source == "dependency.js")
                 .CompareDocumentPosition(
                     scripts.First(script => script.Source == "required.js")
+                )
+            );
+            // Custom script after resources
+            Assert.Equal(DocumentPositions.Following, scripts.First(script => script.Source == "required.js")
+                .CompareDocumentPosition(
+                    scripts.First(script => script.Text == customScript)
                 )
             );
         }
