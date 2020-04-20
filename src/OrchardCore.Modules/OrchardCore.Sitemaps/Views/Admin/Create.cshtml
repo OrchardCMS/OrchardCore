@@ -5,6 +5,7 @@
 @if (String.IsNullOrEmpty(Site.BaseUrl))
 {
     <p class="alert alert-warning">@T["The site settings 'Base url' property is empty, but is required to generate sitemaps."]</p>
+    <hr />
 }
 
 <div asp-validation-summary="ModelOnly"></div>
