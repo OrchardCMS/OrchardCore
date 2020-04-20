@@ -18,7 +18,7 @@ namespace OrchardCore.Liquid.Filters
 
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            DateTimeOffset value = DateTimeOffset.MinValue;
+            var value = DateTimeOffset.MinValue;
 
             if (input.Type == FluidValues.String)
             {

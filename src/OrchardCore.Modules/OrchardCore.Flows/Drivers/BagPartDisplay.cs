@@ -62,7 +62,6 @@ namespace OrchardCore.Flows.Drivers
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            //part.ContentItems.Clear();
             var contentItems = new List<ContentItem>();
 
             for (var i = 0; i < model.Prefixes.Length; i++)

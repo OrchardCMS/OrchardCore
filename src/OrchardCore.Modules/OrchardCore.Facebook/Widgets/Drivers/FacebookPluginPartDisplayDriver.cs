@@ -17,7 +17,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
-        private readonly IStringLocalizer<FacebookPluginPartDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public FacebookPluginPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,

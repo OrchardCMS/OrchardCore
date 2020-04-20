@@ -11,7 +11,7 @@ namespace OrchardCore.Workflows.Activities
 {
     public class CommitTransactionTask : TaskActivity
     {
-        private readonly IStringLocalizer<CommitTransactionTask> S;
+        private readonly IStringLocalizer S;
 
         public CommitTransactionTask(IStringLocalizer<CommitTransactionTask> localizer)
         {

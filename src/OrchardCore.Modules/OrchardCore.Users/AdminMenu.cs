@@ -25,13 +25,14 @@ namespace OrchardCore.Users
 
             builder.Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
                     .AddClass("security").Id("security")
-                        .Add(S["Users"], "5", installed => installed
+                        .Add(S["Users"], S["Users"], users => users
+                            .AddClass("users").Id("users")
                             .Action("Index", "Admin", "OrchardCore.Users")
                             .Permission(Permissions.ManageUsers)
                             .LocalNav()
                          )
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Login"], S["Login"], registration => registration
+                            .Add(S["Login"], S["Login"], login => login
                                 .Permission(Permissions.ManageUsers)
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LoginSettingsDisplayDriver.GroupId })
                                 .LocalNav()

@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents

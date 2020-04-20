@@ -40,7 +40,6 @@ namespace OrchardCore.Layers.Services
             IContentItemDisplayManager contentItemDisplayManager,
             IUpdateModelAccessor modelUpdaterAccessor,
             IScriptingManager scriptingManager,
-            IServiceProvider serviceProvider,
             IMemoryCache memoryCache,
             ISignal signal,
             IThemeManager themeManager,
