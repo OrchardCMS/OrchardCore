@@ -18,7 +18,7 @@ using YesSql;
 namespace OrchardCore.Taxonomies.Controllers
 {
     [Admin]
-    public class TagController : Controller, IUpdateModel
+    public class TagController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
@@ -26,6 +26,7 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IEnumerable<IContentHandler> _contentHandlers;
         private readonly ISession _session;
         private readonly ILogger _logger;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public TagController(
             IContentManager contentManager,
@@ -33,7 +34,8 @@ namespace OrchardCore.Taxonomies.Controllers
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentHandler> contentHandlers,
             ISession session,
-            ILogger<TagController> logger)
+            ILogger<TagController> logger,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _contentManager = contentManager;
             _authorizationService = authorizationService;
@@ -41,6 +43,7 @@ namespace OrchardCore.Taxonomies.Controllers
             _contentHandlers = contentHandlers;
             _session = session;
             _logger = logger;
+            _updateModelAccessor = updateModelAccessor;
         }
 
         [HttpPost]
