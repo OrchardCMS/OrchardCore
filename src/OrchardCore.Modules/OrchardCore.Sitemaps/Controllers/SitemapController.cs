@@ -92,7 +92,8 @@ namespace OrchardCore.Sitemaps.Controllers
                         if (stream.Length >= _errorLength)
                         {
                             _logger.LogError("Sitemap 50MB maximum length limit exceeded");
-                        } else if( stream.Length >= _warningLength)
+                        }
+                        else if (stream.Length >= _warningLength)
                         {
                             _logger.LogWarning("Sitemap nearing 50MB length limit");
                         }
@@ -103,7 +104,7 @@ namespace OrchardCore.Sitemaps.Controllers
                     }
                     finally
                     {
-                        Workers.TryRemove(sitemap.Path, out var writeCacheTask);
+                        Workers.TryRemove(sitemapId, out var writeCacheTask);
                     }
                 }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 
@@ -113,7 +114,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 }
 
                 work.Position = 0;
-                
+
                 // File result will dispose of stream.
                 return File(work, "application/xml");
             }

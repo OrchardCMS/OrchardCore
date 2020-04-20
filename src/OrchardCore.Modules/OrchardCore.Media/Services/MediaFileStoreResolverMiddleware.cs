@@ -14,7 +14,7 @@ namespace OrchardCore.Media.Services
     /// </summary>
     public class MediaFileStoreResolverMiddleware
     {
-        private static readonly ConcurrentDictionary<string, Lazy<Task>> Workers = new ConcurrentDictionary<string, Lazy<Task>>();
+        private readonly ConcurrentDictionary<string, Lazy<Task>> Workers = new ConcurrentDictionary<string, Lazy<Task>>();
 
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
@@ -63,14 +63,12 @@ namespace OrchardCore.Media.Services
             // subpath.Value returns an unescaped path value, subPath returns an escaped path value.
             var subPathValue = subPath.Value;
 
-            var workerKey = context.Request.PathBase.Value + context.Request.Path.Value;
-
             var isFileCached = await _mediaFileStoreCache.IsCachedAsync(subPathValue);
             if (isFileCached)
             {
                 // When multiple requests occur for the same file the download
                 // may already be in progress so we wait for it to complete.
-                if (Workers.TryGetValue(workerKey, out var writeTask))
+                if (Workers.TryGetValue(subPathValue, out var writeTask))
                 {
                     await writeTask.Value;
                 }
@@ -81,7 +79,7 @@ namespace OrchardCore.Media.Services
 
             // When multiple requests occur for the same file we use a Lazy<Task>
             // to initialize the file store request once.
-            await Workers.GetOrAdd(workerKey, x => new Lazy<Task>(async () =>
+            await Workers.GetOrAdd(subPathValue, x => new Lazy<Task>(async () =>
             {
                 try
                 {
