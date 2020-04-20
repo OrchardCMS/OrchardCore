@@ -115,7 +115,7 @@ namespace OrchardCore.Deployment.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(DeploymentPlanIndexViewModel model)
         {
@@ -124,9 +124,9 @@ namespace OrchardCore.Deployment.Controllers
             });
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPOST(DeploymentPlanIndexOptions options, IEnumerable<int> itemIds)
+        public async Task<ActionResult> IndexBulkActionPOST(DeploymentPlanIndexOptions options, IEnumerable<int> itemIds)
         {
             if (itemIds?.Count() > 0)
             {
