@@ -17,7 +17,7 @@ namespace OrchardCore.Contents.Sitemaps
         {
             var updateContext = new SitemapUpdateContext
             {
-                UpdatedObject = context.ContentItem,
+                UpdateObject = context.ContentItem,
             };
 
             await _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
@@ -27,7 +27,7 @@ namespace OrchardCore.Contents.Sitemaps
         {
             var updateContext = new SitemapUpdateContext
             {
-                UpdatedObject = context.ContentItem,
+                UpdateObject = context.ContentItem,
             };
 
             await _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);

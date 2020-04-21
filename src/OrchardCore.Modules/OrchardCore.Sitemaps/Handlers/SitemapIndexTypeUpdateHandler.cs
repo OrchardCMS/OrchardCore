@@ -18,7 +18,7 @@ namespace OrchardCore.Sitemaps.Handlers
 
         public async Task UpdateSitemapAsync(SitemapUpdateContext context)
         {
-            var contentItem = context.UpdatedObject as ContentItem;
+            var contentItem = context.UpdateObject as ContentItem;
 
             var allSitemaps = await _sitemapManager.LoadSitemapsAsync();
 

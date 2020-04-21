@@ -5,18 +5,18 @@ namespace OrchardCore.Sitemaps.Handlers
 {
     public class SitemapTypeUpdateHandler : ISitemapTypeUpdateHandler
     {
-        private readonly IEnumerable<ISitemapSourceUpdateHandler> _sitemapSourceUpdateManagers;
+        private readonly IEnumerable<ISitemapSourceUpdateHandler> _sitemapSourceUpdateHandlers;
 
-        public SitemapTypeUpdateHandler(IEnumerable<ISitemapSourceUpdateHandler> sitemapSourceUpdateManagers)
+        public SitemapTypeUpdateHandler(IEnumerable<ISitemapSourceUpdateHandler> sitemapSourceUpdateHandlers)
         {
-            _sitemapSourceUpdateManagers = sitemapSourceUpdateManagers;
+            _sitemapSourceUpdateHandlers = sitemapSourceUpdateHandlers;
         }
 
         public async Task UpdateSitemapAsync(SitemapUpdateContext context)
         {
-            foreach (var sitemapSourceCacheManager in _sitemapSourceUpdateManagers)
+            foreach (var sitemapSourceUpdateHandler in _sitemapSourceUpdateHandlers)
             {
-                await sitemapSourceCacheManager.UpdateSitemapAsync(context);
+                await sitemapSourceUpdateHandler.UpdateSitemapAsync(context);
             }
         }
     }

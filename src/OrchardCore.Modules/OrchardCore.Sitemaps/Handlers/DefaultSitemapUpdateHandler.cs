@@ -14,9 +14,9 @@ namespace OrchardCore.Sitemaps.Handlers
 
         public async Task UpdateSitemapAsync(SitemapUpdateContext context)
         {
-            foreach (var sitemapTypeCacheManager in _sitemapTypeUpdateHandlers)
+            foreach (var sitemapTypeUpdateHandler in _sitemapTypeUpdateHandlers)
             {
-                await sitemapTypeCacheManager.UpdateSitemapAsync(context);
+                await sitemapTypeUpdateHandler.UpdateSitemapAsync(context);
             }
         }
     }

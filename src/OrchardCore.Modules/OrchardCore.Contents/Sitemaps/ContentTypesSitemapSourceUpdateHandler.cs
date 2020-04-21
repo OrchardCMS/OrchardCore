@@ -19,7 +19,7 @@ namespace OrchardCore.Contents.Sitemaps
 
         public async Task UpdateSitemapAsync(SitemapUpdateContext context)
         {
-            var contentItem = context.UpdatedObject as ContentItem;
+            var contentItem = context.UpdateObject as ContentItem;
 
             if (contentItem == null)
             {
