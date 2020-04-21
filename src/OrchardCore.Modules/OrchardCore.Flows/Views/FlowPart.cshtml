@@ -18,12 +18,9 @@
             widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
             widgetContent.Classes.Add("widget-align-" + flowMetadata.Alignment.ToString().ToLowerInvariant());
             widgetContent.Classes.Add("widget-size-" + flowMetadata.Size);
-            if (flowMetadata.Classes != null)
+            foreach(var cssClass in flowMetadata.Classes)
             {
-                foreach(var cssClass in flowMetadata.Classes)
-                {
-                    widgetContent.Classes.Add(cssClass);
-                }
+                widgetContent.Classes.Add(cssClass);
             }
         }
 

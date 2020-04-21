@@ -24,7 +24,7 @@ namespace OrchardCore.Flows.Drivers
             {
                 m.Alignment = flowMetadata.Alignment;
                 m.Size = flowMetadata.Size;
-                m.Classes = flowMetadata.Classes != null ? String.Join(" ", flowMetadata.Classes) : null;
+                m.Classes = String.Join(" ", flowMetadata.Classes);
             }).Location("Footer");
         }
 
@@ -43,7 +43,7 @@ namespace OrchardCore.Flows.Drivers
                 contentItem.Alter<FlowMetadata>(model => {
                     model.Alignment = viewModel.Alignment;
                     model.Size = viewModel.Size;
-                    model.Classes = !String.IsNullOrEmpty(viewModel.Classes) ? viewModel.Classes.Split(" ", StringSplitOptions.RemoveEmptyEntries) : null;
+                    model.Classes = viewModel.Classes?.Split(" ", StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
                 });
             }
 

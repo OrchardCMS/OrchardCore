@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Flows.Models
@@ -14,6 +15,6 @@ namespace OrchardCore.Flows.Models
     {
         public FlowAlignment Alignment { get; set; } = FlowAlignment.Justify;
         public int Size { get; set; } = 100;
-        public string[] Classes { get; set; }
+        public string[] Classes { get; set; } = Array.Empty<string>();
     }
 }
