@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{ "PageTitle" | shape_new | shape_stringify }}</title> 
-    {% render_section "HeadMeta", required:false %}
     {% resources type: "Meta" %}
     <link type="image/x-icon" rel="shortcut icon" href="/TheComingSoonTheme/favicon.ico">
 
@@ -21,6 +20,7 @@
     {% resources type: "HeadLink" %}
     {% resources type: "Stylesheet" %}
     {% resources type: "HeadScript" %}
+    {% render_section "HeadMeta", required:false %}
   </head>
   <body dir={{ Culture.Dir }}>
     <div class="overlay"></div>
