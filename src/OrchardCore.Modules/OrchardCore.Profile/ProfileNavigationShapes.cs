@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,16 +17,20 @@ namespace OrchardCore.Profile
             builder.Describe("ProfileNavigation")
                 .OnDisplaying(displaying =>
                 {
-                    var menu = displaying.Shape;
-                    string menuName = menu.MenuName;
+                    dynamic menu = displaying.Shape;
+                    string identifier = menu.ContentItemId ?? menu.Alias;
+                    if (String.IsNullOrEmpty(identifier))
+                    {
+                        return;
+                    }
 
-                    menu.Classes.Add("menu-" + menuName.HtmlClassify());
+                    menu.Classes.Add("menu-" + identifier.HtmlClassify());
                     menu.Classes.Add("menu");
-                    menu.Metadata.Alternates.Add("ProfileNavigation__" + EncodeAlternateElement(menuName));
+                    menu.Metadata.Alternates.Add("ProfileNavigation__" + EncodeAlternateElement(identifier));
                 })
                 .OnProcessing(async context =>
                 {
-                    var menu = context.Shape;
+                    dynamic menu = context.Shape;
                     string menuName = menu.MenuName;
 
                     // Menu population is executed when processing the shape so that its value
@@ -37,10 +42,13 @@ namespace OrchardCore.Profile
                         return;
                     }
 
+                    var viewContextAccessor = context.ServiceProvider.GetRequiredService<ViewContextAccessor>();
+                    var viewContext = viewContextAccessor.ViewContext;
+
                     var navigationManager = context.ServiceProvider.GetRequiredService<IProfileNavigationManager>();
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    var menuItems = navigationManager.BuildMenu(menuName, context.DisplayContext.ViewContext);
+                    var menuItems = navigationManager.BuildMenu(menuName, viewContext);
                     var httpContext = httpContextAccessor.HttpContext;
 
                     if (httpContext != null)
@@ -63,17 +71,17 @@ namespace OrchardCore.Profile
                     }
 
                     // TODO: Flag Selected menu item
-                    await ProfileNavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, context.DisplayContext.ViewContext);
+                    await ProfileNavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, viewContext);
                 });
 
             builder.Describe("ProfileNavigationItem")
                 .OnDisplaying(displaying =>
                 {
-                    var menuItem = displaying.Shape;
+                    dynamic menuItem = displaying.Shape;
                     var menu = menuItem.Menu;
                     string menuName = menu.MenuName;
                     int level = menuItem.Level;
-
+                    string differentiator = menuItem.Differentiator;
                     menuItem.Metadata.Alternates.Add("ProfileNavigationItem__level__" + level);
                     menuItem.Metadata.Alternates.Add("ProfileNavigationItem__" + EncodeAlternateElement(menuName));
                     menuItem.Metadata.Alternates.Add("ProfileNavigationItem__" + EncodeAlternateElement(menuName) + "__level__" + level);
@@ -82,7 +90,7 @@ namespace OrchardCore.Profile
             builder.Describe("ProfileNavigationItemLink")
                 .OnDisplaying(displaying =>
                 {
-                    var menuItem = displaying.Shape;
+                    dynamic menuItem = displaying.Shape;
                     string menuName = menuItem.Menu.MenuName;
                     int level = menuItem.Level;
 
