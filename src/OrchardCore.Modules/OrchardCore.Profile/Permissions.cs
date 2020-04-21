@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Profile
@@ -47,6 +48,11 @@ namespace OrchardCore.Profile
                     Permissions = new[] { ManageProfile }
                 }
             };
+        }
+
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        {
+            return Task.FromResult(GetPermissions());
         }
     }
 }

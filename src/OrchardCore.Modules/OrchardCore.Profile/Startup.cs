@@ -39,19 +39,19 @@ namespace OrchardCore.Profile
             services.AddScoped<IDisplayManager<IProfile>, DisplayManager<IProfile>>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "EndOrchardCore.ProfileWithGroupId",
                 areaName: "OrchardCore.Profile",
-                template: "Profile/{groupId}",
+                pattern: "Profile/{groupId}",
                 defaults: new { controller = "Profile", action = "Index" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "EndOrchardCore.Profile",
                 areaName: "OrchardCore.Profile",
-                template: "Profile",
+                pattern: "Profile",
                 defaults: new { controller = "Profile", action = "Index" }
             );
         }
