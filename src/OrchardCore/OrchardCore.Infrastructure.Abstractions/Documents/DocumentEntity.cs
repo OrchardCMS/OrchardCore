@@ -18,7 +18,6 @@ namespace OrchardCore.Documents
 
         // 'MessagePack' can't serialize a 'JObject'.
         public virtual void OnAfterDeserialize() => Properties = JObject.Parse(JsonProperties);
-
         public virtual void OnBeforeSerialize() => JsonProperties = Properties.ToString(Formatting.None);
     }
 }
