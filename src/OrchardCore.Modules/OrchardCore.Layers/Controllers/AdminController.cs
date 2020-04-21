@@ -30,6 +30,8 @@ namespace OrchardCore.Layers.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly ISignal _signal;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
@@ -41,8 +43,8 @@ namespace OrchardCore.Layers.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             ISiteService siteService,
-            IStringLocalizer<AdminController> s,
-            IHtmlLocalizer<AdminController> h,
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
             IUpdateModelAccessor updateModelAccessor)
         {
@@ -55,12 +57,9 @@ namespace OrchardCore.Layers.Controllers
             _siteService = siteService;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
-            S = s;
-            H = h;
+            S = stringLocalizer;
+            H = htmlLocalizer;
         }
-
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index()
         {

@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using OrchardCore.Markdown.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Markdown.Fields;
 
 namespace OrchardCore.Markdown.Settings
 {

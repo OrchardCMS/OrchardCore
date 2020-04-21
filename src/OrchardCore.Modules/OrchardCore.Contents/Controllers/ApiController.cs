@@ -33,7 +33,8 @@ namespace OrchardCore.Content.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.GetApiContent) ||
+                !await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
                 return this.ChallengeOrForbid();
             }
@@ -67,7 +68,7 @@ namespace OrchardCore.Content.Controllers
         {
             // It is really important to keep the proper method calls order with the ContentManager
             // so that all event handlers gets triggered in the right sequence.
-            
+
             var contentItem = await _contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);
 
             if (contentItem == null)
@@ -96,7 +97,7 @@ namespace OrchardCore.Content.Controllers
 
                 if (!draft)
                 {
-                    await _contentManager.PublishAsync(contentItem); 
+                    await _contentManager.PublishAsync(contentItem);
                 }
             }
 

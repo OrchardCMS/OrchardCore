@@ -41,7 +41,7 @@ function fetcher(params: Object): Promise<any> {
 
 function App() {
     var _graphiql: GraphiQL;
-    
+
     // Gets a graphql query from the URL if present and sets it as the default query.
     var parameters: any = parseQueryFromUrl(window.location);
 
@@ -57,8 +57,8 @@ function App() {
         });
     }, []);
 
-    function handleEditQuery(query: string) { 
-        setQuery(query); 
+    function handleEditQuery(query: string) {
+        setQuery(query);
         parameters.query = query;
         updateURL();
     }
@@ -111,7 +111,7 @@ function App() {
     }
 
     return (
-        <div className="graphiql-container">           
+        <div className="graphiql-container">
             <GraphiQLExplorer
                 schema={schema}
                 query={query}

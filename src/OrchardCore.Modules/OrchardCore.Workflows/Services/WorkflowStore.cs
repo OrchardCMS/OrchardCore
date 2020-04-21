@@ -14,7 +14,7 @@ namespace OrchardCore.Workflows.Services
     {
         private readonly ISession _session;
         private readonly IEnumerable<IWorkflowHandler> _handlers;
-        private readonly ILogger<WorkflowStore> _logger;
+        private readonly ILogger _logger;
 
         public WorkflowStore(ISession session, IEnumerable<IWorkflowHandler> handlers, ILogger<WorkflowStore> logger)
         {

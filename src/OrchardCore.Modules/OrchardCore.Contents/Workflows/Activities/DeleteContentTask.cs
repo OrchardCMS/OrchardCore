@@ -16,9 +16,9 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(DeleteContentTask);
-        
+
         public override LocalizedString DisplayText => S["Delete Content Task"];
-        
+
         public override LocalizedString Category => S["Content"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         {
             var content = await GetContentAsync(workflowContext);
             await ContentManager.RemoveAsync(content.ContentItem);
-            
+
             return Outcomes("Deleted");
         }
     }

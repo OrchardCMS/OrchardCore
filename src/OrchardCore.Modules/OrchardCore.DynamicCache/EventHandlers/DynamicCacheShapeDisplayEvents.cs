@@ -40,7 +40,6 @@ namespace OrchardCore.DynamicCache.EventHandlers
             // The shape has cache settings and no content yet
             if (context.Shape.Metadata.IsCached && context.ChildContent == null)
             {
-
                 var cacheContext = context.Shape.Metadata.Cache();
                 _cacheScopeManager.EnterScope(cacheContext);
                 _openScopes[cacheContext.CacheId] = cacheContext;

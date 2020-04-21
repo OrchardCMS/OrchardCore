@@ -45,7 +45,6 @@ namespace OrchardCore.ContentTypes
             // TODO: Put in its own feature to be able to execute this recipe without having to enable
             // Content Types management UI
             services.AddRecipeExecutionStep<ContentDefinitionStep>();
-
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -130,7 +129,6 @@ namespace OrchardCore.ContentTypes
             );
         }
     }
-
 
     [RequireFeatures("OrchardCore.Deployment")]
     public class DeploymentStartup : StartupBase

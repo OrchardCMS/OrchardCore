@@ -20,9 +20,9 @@ namespace OrchardCore.Lucene
             )
         {
             _indexSettingsFilename = PathExtensions.Combine(
-                shellOptions.Value.ShellsApplicationDataPath, 
-                shellOptions.Value.ShellsContainerName, 
-                shellSettings.Name, 
+                shellOptions.Value.ShellsApplicationDataPath,
+                shellOptions.Value.ShellsContainerName,
+                shellSettings.Name,
                 "lucene.status.json");
 
             if (!File.Exists(_indexSettingsFilename))

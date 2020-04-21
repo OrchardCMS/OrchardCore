@@ -46,7 +46,7 @@ namespace OrchardCore.Lists.GraphQL
         {
             if (contentItemIds is null || !contentItemIds.Any())
             {
-                 return new Dictionary<string, ContentItem>().ToLookup(k => k.Key, v => v.Value);
+                return new Dictionary<string, ContentItem>().ToLookup(k => k.Key, v => v.Value);
             }
 
             var query = await session.Query<ContentItem>()

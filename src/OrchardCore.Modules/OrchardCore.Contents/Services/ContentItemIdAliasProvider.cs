@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Contents.Services
@@ -9,8 +9,6 @@ namespace OrchardCore.Contents.Services
 
         public Task<string> GetContentItemIdAsync(string alias)
         {
-            
-
             if (alias.StartsWith("contentitemid:", System.StringComparison.OrdinalIgnoreCase))
             {
                 string contentItemId = alias.Substring(14);

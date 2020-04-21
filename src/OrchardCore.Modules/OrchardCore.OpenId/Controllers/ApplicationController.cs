@@ -28,8 +28,8 @@ namespace OrchardCore.OpenId.Controllers
     public class ApplicationController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer<ApplicationController> S;
-        private readonly IHtmlLocalizer<ApplicationController> H;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
         private readonly ISiteService _siteService;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly INotifier _notifier;
@@ -199,7 +199,7 @@ namespace OrchardCore.OpenId.Controllers
                 select new Uri(uri, UriKind.Absolute));
 
             descriptor.RedirectUris.UnionWith(
-                from uri in model.RedirectUris?.Split(new[] { " ","," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+                from uri in model.RedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
                 select new Uri(uri, UriKind.Absolute));
 
             descriptor.Roles.UnionWith(model.RoleEntries

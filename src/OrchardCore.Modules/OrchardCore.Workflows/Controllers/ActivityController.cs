@@ -3,12 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Settings;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
@@ -27,10 +24,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-
-        private dynamic New { get; }
-        private IStringLocalizer S { get; }
-        private IHtmlLocalizer H { get; }
+        private readonly IHtmlLocalizer H;
 
         public ActivityController
         (
@@ -40,9 +34,7 @@ namespace OrchardCore.Workflows.Controllers
             IActivityIdGenerator activityIdGenerator,
             IAuthorizationService authorizationService,
             IActivityDisplayManager activityDisplayManager,
-            IShapeFactory shapeFactory,
             INotifier notifier,
-            IStringLocalizer<ActivityController> s,
             IHtmlLocalizer<ActivityController> h,
             IUpdateModelAccessor updateModelAccessor)
         {
@@ -54,9 +46,6 @@ namespace OrchardCore.Workflows.Controllers
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
-
-            New = shapeFactory;
-            S = s;
             H = h;
         }
 

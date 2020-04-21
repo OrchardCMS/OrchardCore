@@ -1,0 +1,8 @@
+@model ShapeViewModel<RecipeFileDeploymentStep>
+
+@{
+    string recipeName = Model.Value.RecipeName;
+}
+
+<h5>@T["Recipe File"]</h5>
+<code>@recipeName</code>

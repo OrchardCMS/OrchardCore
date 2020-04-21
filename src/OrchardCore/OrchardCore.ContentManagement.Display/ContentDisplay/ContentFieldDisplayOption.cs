@@ -8,7 +8,9 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     {
         private readonly List<ContentFieldDisplayDriverOption> _fieldDisplayDrivers = new List<ContentFieldDisplayDriverOption>();
 
-        public ContentFieldDisplayOption(Type contentFieldType) : base(contentFieldType) { }
+        public ContentFieldDisplayOption(Type contentFieldType) : base(contentFieldType)
+        {
+        }
 
         private List<ContentFieldDisplayDriverOption> _displayModeDrivers;
         public IReadOnlyList<ContentFieldDisplayDriverOption> DisplayModeDrivers => _displayModeDrivers ??= _fieldDisplayDrivers.Where(d => d.DisplayMode != null).ToList();

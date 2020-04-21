@@ -9,14 +9,12 @@ namespace OrchardCore.Workflows.UserTasks.Activities
 {
     public class UserTaskEvent : EventActivity
     {
-        private readonly IStringLocalizer<UserTaskEvent> S;
+        private readonly IStringLocalizer S;
 
         public UserTaskEvent(IStringLocalizer<UserTaskEvent> localizer)
         {
             S = localizer;
         }
-
-        private IStringLocalizer T { get; }
 
         public override string Name => nameof(UserTaskEvent);
         public override LocalizedString DisplayText => S["User Task Event"];
@@ -42,7 +40,7 @@ namespace OrchardCore.Workflows.UserTasks.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Actions.Select(x => Outcome(T[x]));
+            return Actions.Select(x => Outcome(S[x]));
         }
 
         public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

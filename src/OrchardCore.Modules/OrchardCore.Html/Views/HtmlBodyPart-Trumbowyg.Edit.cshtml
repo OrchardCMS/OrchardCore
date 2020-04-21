@@ -40,10 +40,16 @@ else
 
 <script at="Foot">
     $(function () {
+@{ 
+    if (culture.GetLanguageDirection() == LanguageDirection.RTL)
+    {
+        <text>
         jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName = {
-            _dir: '@culture.GetLanguageDirection()',
+            _dir: '@culture.GetLanguageDirection()'
         };
-
+        </text>
+    }
+}
         var settings = @Html.Raw(trumbowygSettings.Options);
         settings['lang'] = '@culture.TwoLetterISOLanguageName';
 

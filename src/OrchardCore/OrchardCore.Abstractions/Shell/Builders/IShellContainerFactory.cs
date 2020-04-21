@@ -1,5 +1,5 @@
-﻿using OrchardCore.Environment.Shell.Builders.Models;
 using System;
+using OrchardCore.Environment.Shell.Builders.Models;
 
 namespace OrchardCore.Environment.Shell.Builders
 {

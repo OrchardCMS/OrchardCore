@@ -12,6 +12,8 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Events;
+using OrchardCore.Media.Events;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Azure
@@ -19,7 +21,7 @@ namespace OrchardCore.Media.Azure
     [Feature("OrchardCore.Media.Azure.Storage")]
     public class Startup : Modules.StartupBase
     {
-        private readonly ILogger<Startup> _logger;
+        private readonly ILogger _logger;
         private readonly IShellConfiguration _configuration;
 
         public Startup(ILogger<Startup> logger, IShellConfiguration configuration)
@@ -35,8 +37,9 @@ namespace OrchardCore.Media.Azure
             services.AddTransient<IConfigureOptions<MediaBlobStorageOptions>, MediaBlobStorageOptionsConfiguration>();
 
             // Only replace default implementation if options are valid.
-            var connectionString = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
-            var containerName = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
+            var connectionString = _configuration[$"OrchardCore_Media_Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
+            var containerName = _configuration[$"OrchardCore_Media_Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
+
             if (CheckOptions(connectionString, containerName, _logger))
             {
                 // Register a media cache file provider.
@@ -81,6 +84,10 @@ namespace OrchardCore.Media.Azure
                     var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                     var clock = serviceProvider.GetRequiredService<IClock>();
                     var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
+                    var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                    var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
+                    var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
+
                     var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
 
                     var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsPath);
@@ -95,8 +102,10 @@ namespace OrchardCore.Media.Azure
                         mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                     }
 
-                    return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
+                    return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
                 }));
+
+                services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
                 services.AddScoped<IModularTenantEvents, CreateMediaBlobContainerEvent>();
             }

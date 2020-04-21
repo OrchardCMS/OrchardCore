@@ -52,6 +52,7 @@ namespace OrchardCore.Users.Services
         }
 
         #region IUserStore<IUser>
+
         public async Task<IdentityResult> CreateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
@@ -179,9 +180,10 @@ namespace OrchardCore.Users.Services
             return Task.FromResult(IdentityResult.Success);
         }
 
-        #endregion
+        #endregion IUserStore<IUser>
 
         #region IUserPasswordStore<IUser>
+
         public Task<string> GetPasswordHashAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
@@ -214,9 +216,10 @@ namespace OrchardCore.Users.Services
             return Task.FromResult(((User)user).PasswordHash != null);
         }
 
-        #endregion
+        #endregion IUserPasswordStore<IUser>
 
         #region ISecurityStampValidator<IUser>
+
         public Task SetSecurityStampAsync(IUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
@@ -238,9 +241,11 @@ namespace OrchardCore.Users.Services
 
             return Task.FromResult(((User)user).SecurityStamp);
         }
-        #endregion
+
+        #endregion ISecurityStampValidator<IUser>
 
         #region IUserEmailStore<IUser>
+
         public Task SetEmailAsync(IUser user, string email, CancellationToken cancellationToken)
         {
             if (user == null)
@@ -311,9 +316,10 @@ namespace OrchardCore.Users.Services
             return Task.CompletedTask;
         }
 
-        #endregion
+        #endregion IUserEmailStore<IUser>
 
         #region IUserRoleStore<IUser>
+
         public async Task AddToRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             if (user == null)
@@ -385,9 +391,11 @@ namespace OrchardCore.Users.Services
             var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
             return users == null ? new List<IUser>() : users.ToList<IUser>();
         }
-        #endregion
+
+        #endregion IUserRoleStore<IUser>
 
         #region IUserLoginStore<IUser>
+
         public Task AddLoginAsync(IUser user, UserLoginInfo login, CancellationToken cancellationToken)
         {
             if (user == null)
@@ -442,9 +450,10 @@ namespace OrchardCore.Users.Services
             return Task.CompletedTask;
         }
 
-        #endregion
+        #endregion IUserLoginStore<IUser>
 
         #region IUserClaimStore<IUser>
+
         public Task<IList<Claim>> GetClaimsAsync(IUser user, CancellationToken cancellationToken)
         {
             if (user == null)
@@ -513,6 +522,7 @@ namespace OrchardCore.Users.Services
 
             return users.Cast<IUser>().ToList();
         }
-        #endregion
+
+        #endregion IUserClaimStore<IUser>
     }
 }

@@ -13,7 +13,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer<ValidateFormFieldTask> S;
+        private readonly IStringLocalizer S;
 
         public ValidateFormFieldTask(
             IHttpContextAccessor httpContextAccessor,
@@ -27,9 +27,9 @@ namespace OrchardCore.Forms.Workflows.Activities
         }
 
         public override string Name => nameof(ValidateFormFieldTask);
-        
+
         public override LocalizedString DisplayText => S["Validate Form Field Task"];
-        
+
         public override LocalizedString Category => S["Validation"];
 
         public string FieldName

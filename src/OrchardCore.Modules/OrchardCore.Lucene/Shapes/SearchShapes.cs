@@ -49,6 +49,5 @@ namespace OrchardCore.Lucene
             Shape.Metadata.Type = "Search__Results";
             return DisplayAsync(Shape);
         }
-
     }
 }

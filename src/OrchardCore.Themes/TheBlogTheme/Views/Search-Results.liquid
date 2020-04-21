@@ -6,6 +6,6 @@
             </li>
         {% endfor %}
     </ul>
-{% elsif Model.Terms != null %}
+{% else %}
     <p class="alert alert-warning">{{"There are no such results." | t }}</p>
 {% endif %}

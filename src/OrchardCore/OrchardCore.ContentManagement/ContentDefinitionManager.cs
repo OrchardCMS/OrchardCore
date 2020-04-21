@@ -258,7 +258,7 @@ namespace OrchardCore.ContentManagement
             record.Settings = model.Settings;
         }
 
-        ContentTypeDefinition Build(ContentTypeDefinitionRecord source, IList<ContentPartDefinitionRecord> partDefinitionRecords)
+        private ContentTypeDefinition Build(ContentTypeDefinitionRecord source, IList<ContentPartDefinitionRecord> partDefinitionRecords)
         {
             if (source == null)
             {
@@ -274,7 +274,7 @@ namespace OrchardCore.ContentManagement
             return contentTypeDefinition;
         }
 
-        ContentTypePartDefinition Build(ContentTypePartDefinitionRecord source, ContentPartDefinitionRecord partDefinitionRecord)
+        private ContentTypePartDefinition Build(ContentTypePartDefinitionRecord source, ContentPartDefinitionRecord partDefinitionRecord)
         {
             return source == null ? null : new ContentTypePartDefinition(
                 source.Name,
@@ -282,7 +282,7 @@ namespace OrchardCore.ContentManagement
                 source.Settings);
         }
 
-        ContentPartDefinition Build(ContentPartDefinitionRecord source)
+        private ContentPartDefinition Build(ContentPartDefinitionRecord source)
         {
             return source == null ? null : new ContentPartDefinition(
                 source.Name,
@@ -290,7 +290,7 @@ namespace OrchardCore.ContentManagement
                 source.Settings);
         }
 
-        ContentPartFieldDefinition Build(ContentPartFieldDefinitionRecord source)
+        private ContentPartFieldDefinition Build(ContentPartFieldDefinitionRecord source)
         {
             return source == null ? null : new ContentPartFieldDefinition(
                 Build(new ContentFieldDefinitionRecord { Name = source.FieldName }),
@@ -299,7 +299,7 @@ namespace OrchardCore.ContentManagement
             );
         }
 
-        ContentFieldDefinition Build(ContentFieldDefinitionRecord source)
+        private ContentFieldDefinition Build(ContentFieldDefinitionRecord source)
         {
             return source == null ? null : new ContentFieldDefinition(source.Name);
         }

@@ -72,7 +72,7 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 ```
 
 !!! hint "Nightly builds"
-   If you are using the nightly builds of Orchard Core (MyGet feed) then you should use the package `OrchardCore.Application.Cms.Core.Targets` instead.
+    If you are using the nightly builds of Orchard Core (MyGet feed) then you should use the package `OrchardCore.Application.Cms.Core.Targets` instead.
 
 This will add the packages from Orchard Core CMS
 
@@ -312,7 +312,7 @@ We can now update the Razor Page to use the alias instead of the content item id
 @inject OrchardCore.IOrchardHelper Orchard
 
 @{
-    var blogPost = await Orchard.GetContentItemByAliasAsync($"alias:{Slug}");
+    var blogPost = await Orchard.GetContentItemByHandleAsync($"alias:{Slug}");
 }
 
 ...
@@ -323,6 +323,9 @@ We can now update the Razor Page to use the alias instead of the content item id
     public string Slug { get; set; }
 }
 ```
+
+!!! waring "Release packages"
+    If you are not using the latest MyGet packages then this method is called `GetContentItemByAliasAsync(string alias)`.
 
 The changes consist in using the `slug` name in both the route and the local property, and also use a new method to load a content item with an alias.
 

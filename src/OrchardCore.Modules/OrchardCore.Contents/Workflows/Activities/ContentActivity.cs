@@ -59,7 +59,8 @@ namespace OrchardCore.Contents.Workflows.Activities
                 if (contentItemResult is ContentItem contentItem)
                 {
                     return contentItem;
-                } else if (contentItemResult is string contentItemId)
+                }
+                else if (contentItemResult is string contentItemId)
                 {
                     // Latest is used to allow fetching unpublished content items
                     return await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -84,7 +85,6 @@ namespace OrchardCore.Contents.Workflows.Activities
             return null;
         }
 
-
         protected virtual async Task<string> GetContentItemIdAsync(WorkflowExecutionContext workflowContext)
         {
             // Try and evaluate a content item id from the Content expression, if provided.
@@ -99,6 +99,5 @@ namespace OrchardCore.Contents.Workflows.Activities
             }
             return null;
         }
-
     }
 }

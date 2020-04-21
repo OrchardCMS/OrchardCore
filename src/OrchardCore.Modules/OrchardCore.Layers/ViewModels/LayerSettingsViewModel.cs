@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace OrchardCore.Layers.ViewModels
 {
     public class LayerSettingsViewModel

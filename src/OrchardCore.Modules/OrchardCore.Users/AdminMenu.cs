@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Users.Drivers;
 
 namespace OrchardCore.Users
@@ -25,13 +25,14 @@ namespace OrchardCore.Users
 
             builder.Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
                     .AddClass("security").Id("security")
-                        .Add(S["Users"], "5", installed => installed
+                        .Add(S["Users"], S["Users"], users => users
+                            .AddClass("users").Id("users")
                             .Action("Index", "Admin", "OrchardCore.Users")
                             .Permission(Permissions.ManageUsers)
                             .LocalNav()
                          )
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Login"], S["Login"], registration => registration
+                            .Add(S["Login"], S["Login"], login => login
                                 .Permission(Permissions.ManageUsers)
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LoginSettingsDisplayDriver.GroupId })
                                 .LocalNav()
@@ -47,7 +48,7 @@ namespace OrchardCore.Users
     public class ChangeEmailAdminMenu : INavigationProvider
     {
         private readonly IStringLocalizer S;
- 
+
         public ChangeEmailAdminMenu(IStringLocalizer<ChangeEmailAdminMenu> localizer)
         {
             S = localizer;
@@ -77,7 +78,7 @@ namespace OrchardCore.Users
     public class RegistrationAdminMenu : INavigationProvider
     {
         private readonly IStringLocalizer S;
- 
+
         public RegistrationAdminMenu(IStringLocalizer<RegistrationAdminMenu> localizer)
         {
             S = localizer;

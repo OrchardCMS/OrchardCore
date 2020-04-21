@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +11,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         public DynamicPartGraphType(IHttpContextAccessor httpContextAccessor, ContentTypePartDefinition part)
         {
             Name = part.Name;
-            
+
             var serviceProvider = httpContextAccessor.HttpContext.RequestServices;
             var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
 

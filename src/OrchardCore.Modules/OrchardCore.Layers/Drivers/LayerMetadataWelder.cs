@@ -14,7 +14,7 @@ namespace OrchardCore.Layers.Drivers
     public class LayerMetadataWelder : ContentDisplayDriver
     {
         private readonly ILayerService _layerService;
-        private readonly IStringLocalizer<LayerMetadataWelder> S;
+        private readonly IStringLocalizer S;
 
         public LayerMetadataWelder(ILayerService layerService, IStringLocalizer<LayerMetadataWelder> stringLocalizer)
         {

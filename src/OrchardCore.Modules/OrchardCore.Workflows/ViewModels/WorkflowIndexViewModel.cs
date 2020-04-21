@@ -18,6 +18,7 @@ namespace OrchardCore.Workflows.ViewModels
         public dynamic Pager { get; set; }
         public string ReturnUrl { get; set; }
     }
+
     public class WorkflowIndexOptions
     {
         public WorkflowIndexOptions()
@@ -29,11 +30,13 @@ namespace OrchardCore.Workflows.ViewModels
         public WorkflowFilter Filter { get; set; }
 
         public WorkflowOrder OrderBy { get; set; }
+
         [BindNever]
         public List<SelectListItem> WorkflowsSorts { get; set; }
 
         [BindNever]
         public List<SelectListItem> WorkflowsStatuses { get; set; }
+
         [BindNever]
         public List<SelectListItem> WorkflowsBulkAction { get; set; }
     }

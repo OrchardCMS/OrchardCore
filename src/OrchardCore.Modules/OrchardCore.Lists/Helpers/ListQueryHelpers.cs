@@ -1,15 +1,15 @@
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Lists.Indexes;
-using System.Linq.Expressions;
 using YesSql;
 
 namespace OrchardCore.Lists.Helpers
 {
-    static class ListQueryHelpers
+    internal static class ListQueryHelpers
     {
         internal static async Task<int> QueryListItemsCountAsync(ISession session, string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)
         {

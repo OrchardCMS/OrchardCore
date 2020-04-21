@@ -34,11 +34,11 @@ namespace OrchardCore.Deployment.Deployment
                          {
                              plan.Name,
                              Steps = (from step in plan.DeploymentSteps
-                                     select new
-                                     {
-                                         Type = step.GetType().Name,
-                                         Step = step
-                                     }).ToArray()
+                                      select new
+                                      {
+                                          Type = step.GetType().Name,
+                                          Step = step
+                                      }).ToArray()
                          }).ToArray();
 
             // Adding deployment plans

@@ -68,7 +68,7 @@ namespace OrchardCore.Localization
         }
 
         /// <summary>
-        /// Gets a list of the culture translations including the plural forms. 
+        /// Gets a list of the culture translations including the plural forms.
         /// </summary>
         public IDictionary<string, string[]> Translations { get; private set; }
 

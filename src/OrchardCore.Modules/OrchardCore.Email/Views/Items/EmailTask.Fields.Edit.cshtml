@@ -1,11 +1,18 @@
 @using OrchardCore.Email.Workflows.ViewModels;
 @model EmailTaskViewModel
 
+<div class="form-group" asp-validation-class-for="AuthorExpression">
+    <label asp-for="AuthorExpression">@T["From"]</label>
+    <input type="text" asp-for="AuthorExpression" class="form-control code" />
+    <span asp-validation-for="AuthorExpression"></span>
+    <span class="hint">@T["The author's email address that defines who the email is from. Leave blank to use the configured email address. With Liquid support."]</span>
+</div>
+
 <div class="form-group" asp-validation-class-for="SenderExpression">
     <label asp-for="SenderExpression">@T["Sender"]</label>
     <input type="text" asp-for="SenderExpression" class="form-control code" />
     <span asp-validation-for="SenderExpression"></span>
-    <span class="hint">@T["The sender's email address. Leave blank to use the configured email address. With Liquid support."]</span>
+    <span class="hint">@T["The sender's email address. Required if not the same as the From email address. With Liquid support."]</span>
 </div>
 
 <div class="form-group" asp-validation-class-for="RecipientsExpression">

@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return ConfigureServices((s, sp) => configure(s), order);
         }
-        
+
         /// <summary>
         /// This method gets called for each tenant. Use this method to configure the request's pipeline.
         /// </summary>
