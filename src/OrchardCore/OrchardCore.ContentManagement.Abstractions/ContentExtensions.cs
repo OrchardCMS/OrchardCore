@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Builders;
 
@@ -112,7 +113,7 @@ namespace OrchardCore.ContentManagement
         public static ContentElement Weld<TElement>(this ContentElement contentElement, object settings = null) where TElement : ContentElement, new()
         {
             var elementName = typeof(TElement).Name;
-            
+
             var elementData = contentElement.Data[elementName] as JObject;
 
             if (elementData == null)
@@ -232,6 +233,24 @@ namespace OrchardCore.ContentManagement
         public static bool HasDraft(this IContent content)
         {
             return content.ContentItem != null && (!content.ContentItem.Published || !content.ContentItem.Latest);
+        }
+
+        /// <summary>
+        /// Gets all content elements of a specific type.
+        /// </summary>
+        /// <typeparam name="TElement">The expected type of the content elements.</typeparam>
+        /// <returns>The content element instances or empty sequence if no entries exist.</returns>
+        public static IEnumerable<TElement> OfType<TElement>(this ContentElement contentElement) where TElement : ContentElement
+        {
+            foreach (var part in contentElement.Elements)
+            {
+                var result = part.Value as TElement;
+
+                if (result != null)
+                {
+                    yield return result;
+                }
+            }
         }
     }
 }

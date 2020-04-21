@@ -3,12 +3,12 @@
 
 <h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1>
 <zone name="Breadcrumbs">
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a asp-action="Index">@T["Workflow Types"]</a></li>
-        <li class="breadcrumb-item active" aria-current="page">@Model.WorkflowType.Name</li>
-    </ol>
-</nav>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">@T["Workflow Types"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.WorkflowType.Name</li>
+        </ol>
+    </nav>
 </zone>
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">

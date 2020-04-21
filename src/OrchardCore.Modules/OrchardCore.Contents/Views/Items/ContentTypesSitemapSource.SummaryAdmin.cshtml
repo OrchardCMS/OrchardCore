@@ -1,0 +1,39 @@
+@model ShapeViewModel<ContentTypesSitemapSource>
+@inject OrchardCore.Sitemaps.Services.IRouteableContentTypeCoordinator RoutableContentTypeCoordinator
+@{
+    var allRoutableContentTypes = RoutableContentTypeCoordinator.ListRoutableTypeDefinitions();
+
+    var selectedContentTypes = Model.Value.ContentTypes ?? new ContentTypeSitemapEntry[] { };
+
+    var selectedDisplayNames = allRoutableContentTypes
+        .Where(ctd => selectedContentTypes.Any(sct => sct.ContentTypeName == ctd.Name))
+        .Select(x => x.DisplayName);
+
+    var limitedDisplayName = allRoutableContentTypes
+        .FirstOrDefault(cdt => cdt.Name == Model.Value.LimitedContentType.ContentTypeName)
+        .DisplayName;
+}
+
+<div>
+    @if (Model.Value.IndexAll)
+    {
+        <span class="badge badge-info">@T["All"]</span>
+    }
+    else if (Model.Value.LimitItems)
+    {
+        <span class="badge badge-info">@limitedDisplayName</span>
+
+    }
+    else if (selectedDisplayNames.Any())
+    {
+        foreach (var displayName in selectedDisplayNames)
+        {
+            <span class="badge badge-info">@displayName</span>
+        }
+    }
+    else
+    {
+        <span class="badge badge-warning">@T["Nothing here!"]</span>
+    }
+    <span class="text-muted">- @T["Sitemap Content Types"]</span>
+</div>

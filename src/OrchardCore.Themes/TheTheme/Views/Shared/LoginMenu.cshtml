@@ -1,8 +1,16 @@
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
+@using OrchardCore.Admin
+@using OrchardCore.Entities
+@using OrchardCore.Settings
 @using OrchardCore.Users
+@using OrchardCore.Users.Models
+@inject ISiteService SiteService
 @inject SignInManager<IUser> SignInManager
+@inject IOptions<AdminOptions> AdminOptions
 
-@{ 
+@{
+    var allowChangeEmail = (await SiteService.GetSiteSettingsAsync()).As<ChangeEmailSettings>().AllowChangeEmail;
     var externalAuthenticationSchemes = await SignInManager.GetExternalAuthenticationSchemesAsync();
 }
 <ul class="navbar-nav">
@@ -12,6 +20,10 @@
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user fa-fw"></i> @User.Identity.Name<b class="caret"></b></a>
             <div class="dropdown-menu">
                 <a class="dropdown-item" asp-route-area="OrchardCore.Admin" asp-controller="Admin" asp-action="Index"><i class="fa fa-desktop fa-fw"></i> @T["Dashboard"]</a>
+                @if (allowChangeEmail)
+                {
+                    <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="ChangeEmail" asp-action="Index"><i class="fa fa-envelope fa-fw"></i> @T["Change Email"]</a>
+                }
                 <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ChangePassword"><i class="fa fa-lock fa-fw"></i> @T["Change Password"]</a>
                 @if (externalAuthenticationSchemes.Count() > 0)
                 {

@@ -1,13 +1,13 @@
-using System.Net;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Razor;
 
@@ -21,7 +21,6 @@ public static class OrchardRazorHelperExtensions
         return await orchardDisplayHelper.DisplayHelper.ShapeExecuteAsync(shape);
     }
 
- 
     /// <summary>
     /// Renders an object in the browser's console.
     /// </summary>
@@ -33,7 +32,9 @@ public static class OrchardRazorHelperExtensions
 
         builder.AppendHtml("<script>console.log(");
 
-        if (content == null)
+        var env = orchardHelper.HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
+
+        if (content == null || env.IsProduction())
         {
             builder.AppendHtml("null");
         }
@@ -49,6 +50,10 @@ public static class OrchardRazorHelperExtensions
         {
             builder.AppendHtml(ConvertContentItem(contentItem).ToString());
         }
+        else if (content is IShape shape)
+        {
+            builder.AppendHtml(shape.ShapeToJson().ToString());
+        }
         else
         {
             builder.AppendHtml(JsonConvert.SerializeObject(content));
@@ -59,7 +64,7 @@ public static class OrchardRazorHelperExtensions
         return builder;
     }
 
-    private static JObject ConvertContentItem(ContentItem contentItem)
+    internal static JObject ConvertContentItem(ContentItem contentItem)
     {
         var o = new JObject();
 

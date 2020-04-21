@@ -13,4 +13,4 @@ Orchard Core allows you to add Parts to a content type.
 | [`MarkdownPart`](../../modules/Markdown) | Allows you to add a Markdown body. |
 | [`ListPart`](../../modules/List) | Allows you to add a list. |
 | [`FlowPart`](../../modules/Flow) | Allows you to add widgets. |
-| TBD [`ReCaptcha`](../../modules/ReCaptcha) | Allows you to add ReCaptcha. |
+| [`ReCaptcha`](../../modules/ReCaptcha) | Allows you to add a ReCaptcha. |

@@ -5,7 +5,9 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Security;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents
@@ -37,12 +39,11 @@ namespace OrchardCore.Contents
 
             builder.Add(S["Content"], NavigationConstants.AdminMenuContentPosition, content => content
                 .AddClass("content").Id("content")
-                .Add(S["Content Items"], "1", contentItems => contentItems
+                .Add(S["Content Items"], S["Content Items"], contentItems => contentItems
                     .Permission(Permissions.EditOwnContent)
-                    .Action("List", "Admin", new { area = "OrchardCore.Contents" })
+                    .Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), new { area = "OrchardCore.Contents" })
                     .LocalNav())
                 );
-
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
             if (contentTypes.Any())
             {

@@ -32,7 +32,7 @@ namespace OrchardCore.Recipes.Commands
             }
 
             await Context.Output.WriteLineAsync(S["List of available recipes"]);
-            await Context.Output.WriteLineAsync(S["--------------------------"]);
+            await Context.Output.WriteLineAsync("--------------------------");
             await Context.Output.WriteLineAsync();
 
             foreach (var recipe in recipes)

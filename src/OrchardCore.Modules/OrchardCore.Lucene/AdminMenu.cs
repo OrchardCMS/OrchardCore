@@ -1,7 +1,7 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Lucene
 {
@@ -25,11 +25,11 @@ namespace OrchardCore.Lucene
                 .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                     .AddClass("search").Id("search")
                     .Add(S["Indexing"], S["Indexing"], import => import
-                        .Add(S["Lucene Indices"], "7", indexes => indexes
+                        .Add(S["Lucene Indices"], S["Lucene Indices"], indexes => indexes
                             .Action("Index", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav())
-                        .Add(S["Run Lucene Query"], "8", queries => queries
+                        .Add(S["Run Lucene Query"], S["Run Lucene Query"], queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav()))

@@ -11,7 +11,6 @@ using OrchardCore.Alias.Settings;
 using OrchardCore.Alias.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
@@ -35,9 +34,10 @@ namespace OrchardCore.Alias
             services.AddScoped<IContentAliasProvider, AliasPartContentAliasProvider>();
 
             // Identity Part
-            services.AddContentPart<AliasPart>();
-            services.AddScoped<IContentPartDisplayDriver, AliasPartDisplayDriver>();
-            services.AddScoped<IContentPartHandler, AliasPartHandler>();
+            services.AddContentPart<AliasPart>()
+                .UseDisplayDriver<AliasPartDisplayDriver>()
+                .AddHandler<AliasPartHandler>();
+
             services.AddScoped<IContentPartIndexHandler, AliasPartIndexHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AliasPartSettingsDisplayDriver>();
 

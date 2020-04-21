@@ -20,6 +20,17 @@ namespace OrchardCore.DisplayManagement.Razor
             await next();
         }
 
+        public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
+        {
+            await OnActionExecutionAsync(context);
+            await next();
+        }
+
+        public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
+        {
+            return Task.CompletedTask;
+        }
+
         // Used as a service when we create a fake 'ActionContext'.
         public async Task OnActionExecutionAsync(ActionContext context)
         {

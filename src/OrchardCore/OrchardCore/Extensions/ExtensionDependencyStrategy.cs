@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.Environment.Extensions

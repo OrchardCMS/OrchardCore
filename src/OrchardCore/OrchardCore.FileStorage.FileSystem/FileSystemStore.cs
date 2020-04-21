@@ -196,7 +196,7 @@ namespace OrchardCore.FileStorage.FileSystem
             return Task.FromResult<Stream>(stream);
         }
 
-        public async Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+        public async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
             var physicalPath = GetPhysicalPath(path);
 
@@ -219,6 +219,8 @@ namespace OrchardCore.FileStorage.FileSystem
             {
                 await inputStream.CopyToAsync(outputStream);
             }
+
+            return path;
         }
 
         /// <summary>

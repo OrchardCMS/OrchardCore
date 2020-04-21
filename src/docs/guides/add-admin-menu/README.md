@@ -1,16 +1,16 @@
 # Adding a Menu Item to the Admin Navigation from a Module
 
-The `INavigationProvider` interface is the entry point to every task related to handling admin navigation menu items.
+The `INavigationProvider` interface is the entry point to every task related to handling admin navigation menu items.  
 In order to add menu items from your module you just need to create a class that implements that interface.
 
 ## What you will build
 
-You will build a module that will add a menu item at the root level and two child menu items.
+You will build a module that will add a menu item at the root level and two child menu items.  
 Each menu item will point to its own view.
 
 ## What you will need
 
-- The current version of the .NET Core SDK. You can download it from here https://www.microsoft.com/net/download/core.
+- The current version of the .NET Core SDK. You can download it from here <https://www.microsoft.com/net/download/core>.
 - A text editor and a terminal where you can type dotnet commands.
 
 ## Creating an Orchard Core CMS site and module
@@ -81,7 +81,7 @@ namespace MyModule.Controllers
 ```
 
 !!! tip
-   The `[Admin]` attribute ensures the controller is using the Admin theme and users have the permission to access it.
+   The `[Admin]` attribute ensures the controller is using the Admin theme and users have the permission to access it.  
    Another way to have this behavior would have been to name this class `AdminController`.
 
 ### Adding the views
@@ -102,7 +102,7 @@ Create a folder `.\MyModule\Views\DemoNav`, and add to it these two files:
 
 ## Adding the menu items
 
-Now you just need to add a class that implements `INavigationProvider` interface.
+Now you just need to add a class that implements `INavigationProvider` interface.  
 By convention, we call these classes `AdminMenu.cs` and put it in the root of our module's folder.
 
 ### AdminMenu.cs
@@ -188,7 +188,7 @@ Enter the Admin section by opening <https://localhost:5001/admin> and logging in
 
 Using the left menu go to __Configuration: Features__, search for your module, __MyModule__, and enable it.
 
-Now your module is enabled and you should see a new entry on the admin.
+Now your module is enabled and you should see a new entry on the admin.  
 Click on the new menu items to render the Views we created earlier.
 
 ## Summary

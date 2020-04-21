@@ -7,8 +7,8 @@ Orchard Core consists of two distinct projects:
 
 [![Join the chat at https://gitter.im/OrchardCMS/OrchardCore](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/OrchardCore?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE.txt)
-[![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://orchardcore.readthedocs.io/en/dev/)
-[![Crowdin](https://d322cqt584bo4o.cloudfront.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
+[![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
+[![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
 
 ## Build Status
@@ -58,4 +58,4 @@ Docker images and parameters can be found at <https://hub.docker.com/u/orchardpr
 
 ### Documentation
 
-The documentation can be accessed here: [https://orchardcore.readthedocs.io/en/dev/](https://orchardcore.readthedocs.io/en/dev/)
+The documentation can be accessed here: <https://docs.orchardcore.net/>

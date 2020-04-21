@@ -35,5 +35,17 @@ namespace OrchardCore.Users
                 .Column<string>(nameof(UserByClaimIndex.ClaimValue)));
             return 3;
         }
+
+        public int UpdateFrom3()
+        {
+            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+                .AddColumn<bool>(nameof(UserIndex.IsEnabled), c => c.NotNull().WithDefault(true)));
+
+            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+                .CreateIndex("IDX_UserIndex_IsEnabled", "IsEnabled")
+            );
+
+            return 4;
+        }
     }
 }

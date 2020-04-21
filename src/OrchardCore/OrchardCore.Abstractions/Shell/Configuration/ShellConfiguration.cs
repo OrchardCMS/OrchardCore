@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Environment.Shell.Configuration.Internal;
 
 namespace OrchardCore.Environment.Shell.Configuration
@@ -19,10 +22,13 @@ namespace OrchardCore.Environment.Shell.Configuration
         private readonly IEnumerable<KeyValuePair<string, string>> _initialData;
 
         private readonly string _name;
-        private Func<string, IConfigurationBuilder> _configBuilderFactory;
+        private Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
         private readonly IEnumerable<IConfigurationProvider> _configurationProviders;
+        private SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
-        public ShellConfiguration() { }
+        public ShellConfiguration()
+        {
+        }
 
         public ShellConfiguration(IConfiguration configuration)
         {
@@ -31,13 +37,15 @@ namespace OrchardCore.Environment.Shell.Configuration
                 .Build().Providers;
         }
 
-        public ShellConfiguration(string name, Func<string, IConfigurationBuilder> factory)
+        public ShellConfiguration(string name, Func<string, Task<IConfigurationBuilder>> factory)
         {
             _name = name;
             _configBuilderFactory = factory;
         }
 
-        public ShellConfiguration(ShellConfiguration configuration) : this(null, configuration) { }
+        public ShellConfiguration(ShellConfiguration configuration) : this(null, configuration)
+        {
+        }
 
         public ShellConfiguration(string name, ShellConfiguration configuration)
         {
@@ -65,34 +73,52 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         private void EnsureConfiguration()
         {
-            if (_configuration == null)
+            if (_configuration != null)
             {
-                lock (this)
+                return;
+            }
+
+            EnsureConfigurationAsync().GetAwaiter().GetResult();
+        }
+
+        internal async Task EnsureConfigurationAsync()
+        {
+            if (_configuration != null)
+            {
+                return;
+            }
+
+            await _semaphore.WaitAsync();
+            try
+            {
+                if (_configuration != null)
                 {
-                    if (_configuration == null)
-                    {
-                        var providers = new List<IConfigurationProvider>();
-
-                        if (_configBuilderFactory != null)
-                        {
-                            providers.AddRange(new ConfigurationBuilder()
-                                .AddConfiguration(_configBuilderFactory.Invoke(_name).Build())
-                                .Build().Providers);
-                        }
-
-                        if (_configurationProviders != null)
-                        {
-                            providers.AddRange(_configurationProviders);
-                        }
-
-                        _updatableData = new UpdatableDataProvider(_initialData ??
-                            Enumerable.Empty<KeyValuePair<string, string>>());
-
-                        providers.Add(_updatableData);
-
-                        _configuration = new ConfigurationRoot(providers);
-                    }
+                    return;
                 }
+
+                var providers = new List<IConfigurationProvider>();
+
+                if (_configBuilderFactory != null)
+                {
+                    providers.AddRange(new ConfigurationBuilder()
+                        .AddConfiguration((await _configBuilderFactory.Invoke(_name)).Build())
+                        .Build().Providers);
+                }
+
+                if (_configurationProviders != null)
+                {
+                    providers.AddRange(_configurationProviders);
+                }
+
+                _updatableData = new UpdatableDataProvider(_initialData ?? Enumerable.Empty<KeyValuePair<string, string>>());
+
+                providers.Add(_updatableData);
+
+                _configuration = new ConfigurationRoot(providers);
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
@@ -110,7 +136,14 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public string this[string key]
         {
-            get => Configuration[key];
+            get
+            {
+                var value = Configuration[key];
+
+                return value ?? (key.Contains('_')
+                    ? Configuration[key.Replace('_', '.')]
+                    : null);
+            }
             set
             {
                 EnsureConfiguration();
@@ -120,7 +153,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public IConfigurationSection GetSection(string key)
         {
-            return Configuration.GetSection(key);
+            return Configuration.GetSectionCompat(key);
         }
 
         public IEnumerable<IConfigurationSection> GetChildren()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -5,8 +6,8 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
@@ -310,7 +311,28 @@ namespace OrchardCore.Tests.Localization
 
         [Fact]
         public async Task PortableObjectStringLocalizerShouldRegisterIStringLocalizerOfT()
-            => await StartupRunner.Run(typeof(PortableObjectLocalizationStartup),"en", "Hello");
+            => await StartupRunner.Run(typeof(PortableObjectLocalizationStartup), "en", "Hello");
+
+        [Theory]
+        [InlineData("ar", 1)]
+        [InlineData("ar-YE", 2)]
+        [InlineData("zh-Hans-CN", 3)]
+        [InlineData("zh-Hant-TW", 3)]
+        public void LocalizerWithContextShouldCallGetDictionaryOncePerCulture(string culture, int expectedCalls)
+        {
+            // Arrange
+            SetupDictionary(culture, Array.Empty<CultureDictionaryRecord>());
+
+            var localizer = new PortableObjectStringLocalizer("context", _localizationManager.Object, true, _logger.Object);
+            CultureInfo.CurrentUICulture = new CultureInfo(culture);
+
+            // Act
+            var translation = localizer["Hello"];
+
+            // Assert
+            _localizationManager.Verify(lm => lm.GetDictionary(It.IsAny<CultureInfo>()), Times.Exactly(expectedCalls));
+            Assert.Equal("Hello", translation);
+        }
 
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
         {

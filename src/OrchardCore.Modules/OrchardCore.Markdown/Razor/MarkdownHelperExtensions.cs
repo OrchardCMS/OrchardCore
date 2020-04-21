@@ -17,9 +17,7 @@ public static class ContentRazorHelperExtensions
         var liquidTemplateManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ILiquidTemplateManager>();
         var htmlEncoder = orchardHelper.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
 
-        var context = new TemplateContext();
-
-        markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder, context);
+        markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder);
 
         return new HtmlString(Markdig.Markdown.ToHtml(markdown));
     }

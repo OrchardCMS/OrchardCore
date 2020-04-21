@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.Localization;
 using NodaTime;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Modules
 {
@@ -85,7 +85,7 @@ namespace OrchardCore.Modules
                 timeZoneResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
             }
 
-            foreach(var result in timeZoneResults)
+            foreach (var result in timeZoneResults)
             {
                 var value = await result.TimeZoneId();
 

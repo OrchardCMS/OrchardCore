@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Models;
@@ -41,12 +40,9 @@ namespace OrchardCore.Html.Handlers
                         ContentItem = part.ContentItem
                     };
 
-                    var templateContext = new TemplateContext();
-                    templateContext.SetValue("ContentItem", part.ContentItem);
-                    templateContext.MemberAccessStrategy.Register<HtmlBodyPartViewModel>();
-                    templateContext.SetValue("Model", model);
+                    var result = await _liquidTemplateManager.RenderAsync(part.Html, _htmlEncoder, model,
+                        scope => scope.SetValue("ContentItem", model.ContentItem));
 
-                    var result = await _liquidTemplateManager.RenderAsync(part.Html, _htmlEncoder, templateContext);
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);
                 }
                 catch

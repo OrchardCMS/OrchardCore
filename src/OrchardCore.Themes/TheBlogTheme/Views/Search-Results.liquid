@@ -1,0 +1,11 @@
+{% if Model.ContentItems != null and Model.ContentItems.size > 0 %}
+    <ul class="list-group">
+        {% for item in Model.ContentItems %}
+            <li class="list-group-item">
+                {{ item | shape_build_display: "Summary" | shape_render }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="alert alert-warning">{{"There are no such results." | t }}</p>
+{% endif %}

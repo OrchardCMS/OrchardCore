@@ -17,11 +17,18 @@ using OrchardCore.Modules.Manifest;
     Category = "Internationalization"
 )]
 
-
 [assembly: Feature(
     Id = "OrchardCore.ContentLocalization.ContentCulturePicker",
     Name = "Content Culture Picker",
     Description = "Provides a culture picker shape for the frontend.",
-    Dependencies = new[] { "OrchardCore.ContentLocalization" },
+    Dependencies = new[] { "OrchardCore.ContentLocalization", "OrchardCore.Autoroute" },
+    Category = "Internationalization"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.ContentLocalization.Sitemaps",
+    Name = "Localized Content Item Sitemaps",
+    Description = "Provides support for localized content item sitemaps.",
+    Dependencies = new[] { "OrchardCore.ContentLocalization", "OrchardCore.Sitemaps" },
     Category = "Internationalization"
 )]

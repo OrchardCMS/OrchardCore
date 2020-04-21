@@ -18,6 +18,11 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         public string Position { get; set; }
 
         /// <summary>
+        /// Gest or set the display mode of the type part.
+        /// </summary>
+        public string DisplayMode { get; set; }
+
+        /// <summary>
         /// Gest or set the editor of the type part.
         /// </summary>
         public string Editor { get; set; }

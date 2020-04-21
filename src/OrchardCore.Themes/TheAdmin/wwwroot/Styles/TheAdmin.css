@@ -3,8 +3,161 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+/*
+ * Container style
+ */
+.ps {
+  overflow: hidden !important;
+  overflow-anchor: none;
+  -ms-overflow-style: none;
+  touch-action: auto;
+  -ms-touch-action: auto;
+}
+
+/*
+ * Scrollbar rail styles
+ */
+.ps__rail-x {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  height: 15px;
+  /* there must be 'bottom' or 'top' for ps__rail-x */
+  bottom: 0px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+[dir] .ps__rail-x {
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+}
+
+.ps__rail-y {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  width: 15px;
+  /* there must be 'right' or 'left' for ps__rail-y */
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+[dir] .ps__rail-y {
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+}
+
+[dir=ltr] .ps__rail-y {
+  right: 0;
+}
+
+[dir=rtl] .ps__rail-y {
+  left: 0;
+}
+
+.ps--active-x > .ps__rail-x,
+.ps--active-y > .ps__rail-y {
+  display: block;
+}
+
+[dir] .ps--active-x > .ps__rail-x, [dir] .ps--active-y > .ps__rail-y {
+  background-color: transparent;
+}
+
+.ps:hover > .ps__rail-x,
+.ps:hover > .ps__rail-y,
+.ps--focus > .ps__rail-x,
+.ps--focus > .ps__rail-y,
+.ps--scrolling-x > .ps__rail-x,
+.ps--scrolling-y > .ps__rail-y {
+  opacity: 0.6;
+}
+
+.ps .ps__rail-x:hover,
+.ps .ps__rail-y:hover,
+.ps .ps__rail-x:focus,
+.ps .ps__rail-y:focus,
+.ps .ps__rail-x.ps--clicking,
+.ps .ps__rail-y.ps--clicking {
+  opacity: 0.9;
+}
+
+[dir] .ps .ps__rail-x:hover, [dir] .ps .ps__rail-y:hover, [dir] .ps .ps__rail-x:focus, [dir] .ps .ps__rail-y:focus, [dir] .ps .ps__rail-x.ps--clicking, [dir] .ps .ps__rail-y.ps--clicking {
+  background-color: #eee;
+}
+
+/*
+ * Scrollbar thumb styles
+ */
+.ps__thumb-x {
+  transition: background-color .2s linear, height .2s ease-in-out;
+  height: 6px;
+  /* there must be 'bottom' for ps__thumb-x */
+  bottom: 2px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+[dir] .ps__thumb-x {
+  background-color: #aaa;
+  border-radius: 6px;
+  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
+}
+
+.ps__thumb-y {
+  transition: background-color .2s linear, width .2s ease-in-out;
+  width: 6px;
+  /* there must be 'right' for ps__thumb-y */
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+[dir] .ps__thumb-y {
+  background-color: #aaa;
+  border-radius: 6px;
+  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
+}
+
+[dir=ltr] .ps__thumb-y {
+  right: 2px;
+}
+
+[dir=rtl] .ps__thumb-y {
+  left: 2px;
+}
+
+.ps__rail-x:hover > .ps__thumb-x,
+.ps__rail-x:focus > .ps__thumb-x,
+.ps__rail-x.ps--clicking .ps__thumb-x {
+  height: 11px;
+}
+
+[dir] .ps__rail-x:hover > .ps__thumb-x, [dir] .ps__rail-x:focus > .ps__thumb-x, [dir] .ps__rail-x.ps--clicking .ps__thumb-x {
+  background-color: #999;
+}
+
+.ps__rail-y:hover > .ps__thumb-y,
+.ps__rail-y:focus > .ps__thumb-y,
+.ps__rail-y.ps--clicking .ps__thumb-y {
+  width: 11px;
+}
+
+[dir] .ps__rail-y:hover > .ps__thumb-y, [dir] .ps__rail-y:focus > .ps__thumb-y, [dir] .ps__rail-y.ps--clicking .ps__thumb-y {
+  background-color: #999;
+}
+
+/* MS supports */
+@supports (-ms-overflow-style: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
 /*!
- * Bootstrap v4.4.0 (https://getbootstrap.com/)
+ * Bootstrap v4.4.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
  * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -1740,7 +1893,8 @@ textarea.form-control {
 
 [dir=rtl] .form-check-input {
   margin-right: -1.25rem; }
-  .form-check-input[disabled] ~ .form-check-label {
+  .form-check-input[disabled] ~ .form-check-label,
+  .form-check-input:disabled ~ .form-check-label {
     color: #6c757d; }
 
 [dir] .form-check-label {
@@ -1868,13 +2022,13 @@ textarea.form-control {
   border-color: #28a745;
   box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25); }
 
-.invalid-feedback, .field-validation-error {
+.invalid-feedback {
   display: none;
   width: 100%;
   font-size: 80%;
   color: #dc3545; }
 
-[dir] .invalid-feedback, [dir] .field-validation-error {
+[dir] .invalid-feedback {
   margin-top: 0.25rem; }
 
 .invalid-tooltip {
@@ -1893,14 +2047,11 @@ textarea.form-control {
   background-color: rgba(220, 53, 69, 0.9);
   border-radius: 0.25rem; }
 
-.was-validated :invalid ~ .invalid-feedback, .was-validated :invalid ~ .field-validation-error,
+.was-validated :invalid ~ .invalid-feedback,
 .was-validated :invalid ~ .invalid-tooltip,
 .is-invalid ~ .invalid-feedback,
 .input-validation-error ~ .invalid-feedback,
 .has-validation-error ~ .invalid-feedback,
-.is-invalid ~ .field-validation-error,
-.input-validation-error ~ .field-validation-error,
-.has-validation-error ~ .field-validation-error,
 .is-invalid ~ .invalid-tooltip,
 .input-validation-error ~ .invalid-tooltip,
 .has-validation-error ~ .invalid-tooltip {
@@ -1948,8 +2099,8 @@ textarea.form-control {
 .was-validated .form-check-input:invalid ~ .form-check-label, .form-check-input.is-invalid ~ .form-check-label, .form-check-input.input-validation-error ~ .form-check-label, .form-check-input.has-validation-error ~ .form-check-label {
   color: #dc3545; }
 
-.was-validated .form-check-input:invalid ~ .invalid-feedback, .was-validated .form-check-input:invalid ~ .field-validation-error,
-.was-validated .form-check-input:invalid ~ .invalid-tooltip, .form-check-input.is-invalid ~ .invalid-feedback, .form-check-input.input-validation-error ~ .invalid-feedback, .form-check-input.has-validation-error ~ .invalid-feedback, .form-check-input.is-invalid ~ .field-validation-error, .form-check-input.input-validation-error ~ .field-validation-error, .form-check-input.has-validation-error ~ .field-validation-error,
+.was-validated .form-check-input:invalid ~ .invalid-feedback,
+.was-validated .form-check-input:invalid ~ .invalid-tooltip, .form-check-input.is-invalid ~ .invalid-feedback, .form-check-input.input-validation-error ~ .invalid-feedback, .form-check-input.has-validation-error ~ .invalid-feedback,
 .form-check-input.is-invalid ~ .invalid-tooltip,
 .form-check-input.input-validation-error ~ .invalid-tooltip,
 .form-check-input.has-validation-error ~ .invalid-tooltip {
@@ -3233,9 +3384,9 @@ input[type="button"].btn-block {
   [dir] .custom-control-input:not(:disabled):active ~ .custom-control-label::before {
     background-color: #b3d7ff;
     border-color: #b3d7ff; }
-  .custom-control-input[disabled] ~ .custom-control-label {
+  .custom-control-input[disabled] ~ .custom-control-label, .custom-control-input:disabled ~ .custom-control-label {
     color: #6c757d; }
-    [dir] .custom-control-input[disabled] ~ .custom-control-label::before {
+    [dir] .custom-control-input[disabled] ~ .custom-control-label::before, [dir] .custom-control-input:disabled ~ .custom-control-label::before {
       background-color: #e9ecef; }
 
 .custom-control-label {
@@ -3438,7 +3589,7 @@ input[type="button"].btn-block {
   [dir] .custom-file-input:focus ~ .custom-file-label {
     border-color: #80bdff;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
-  [dir] .custom-file-input[disabled] ~ .custom-file-label {
+  [dir] .custom-file-input[disabled] ~ .custom-file-label, [dir] .custom-file-input:disabled ~ .custom-file-label {
     background-color: #e9ecef; }
   .custom-file-input:lang(en) ~ .custom-file-label::after {
     content: "Browse"; }
@@ -9569,6 +9720,9 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   [dir] body:not(.left-sidebar-compact) #ta-left-sidebar .footer:before {
     background: rgba(0, 0, 0, 0.1);
     margin: 0px auto; }
+  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar #filter, [dir] body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
+    border: none;
+    box-shadow: unset; }
 
 .left-sidebar-compact #ta-left-sidebar {
   z-index: 1000;
@@ -9955,6 +10109,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   [dir] .left-sidebar-compact #ta-left-sidebar .footer:before {
     background: rgba(0, 0, 0, 0.1);
     margin: 0px auto; }
+  .left-sidebar-compact #ta-left-sidebar #filter, .left-sidebar-compact #ta-left-sidebar #filter:focus {
+    display: none; }
 .left-sidebar-compact #ta-left-sidebar label[aria-expanded="true"] .chevron {
   transform: rotate(90deg);
   transition-duration: 0.2s; }
@@ -10060,6 +10216,9 @@ select[multiple] {
 [dir] .admin-toolbar {
   margin-bottom: 1em;
   background-color: #e9ecef; }
+
+ul.pager {
+  justify-content: center; }
 
 [dir] ul.pager {
   margin-top: 1rem; }
@@ -10169,155 +10328,10 @@ select[multiple] {
       font-size: 11px;
       line-height: 24px; }
 
-/*
- * Container style
- */
-.ps {
-  overflow: hidden !important;
-  overflow-anchor: none;
-  -ms-overflow-style: none;
-  touch-action: auto;
-  -ms-touch-action: auto;
-}
+[dir] .disable.custom-control-input:checked ~ .custom-control-label::before {
+  border-color: red;
+  background-color: red; }
 
-/*
- * Scrollbar rail styles
- */
-.ps__rail-x {
-  display: none;
-  opacity: 0;
-  transition: background-color .2s linear, opacity .2s linear;
-  height: 15px;
-  /* there must be 'bottom' or 'top' for ps__rail-x */
-  bottom: 0px;
-  /* please don't change 'position' */
-  position: absolute;
-}
-[dir] .ps__rail-x {
-  -webkit-transition: background-color .2s linear, opacity .2s linear;
-}
-
-.ps__rail-y {
-  display: none;
-  opacity: 0;
-  transition: background-color .2s linear, opacity .2s linear;
-  width: 15px;
-  /* there must be 'right' or 'left' for ps__rail-y */
-  /* please don't change 'position' */
-  position: absolute;
-}
-
-[dir] .ps__rail-y {
-  -webkit-transition: background-color .2s linear, opacity .2s linear;
-}
-
-[dir=ltr] .ps__rail-y {
-  right: 0;
-}
-
-[dir=rtl] .ps__rail-y {
-  left: 0;
-}
-
-.ps--active-x > .ps__rail-x,
-.ps--active-y > .ps__rail-y {
-  display: block;
-}
-
-[dir] .ps--active-x > .ps__rail-x, [dir] .ps--active-y > .ps__rail-y {
-  background-color: transparent;
-}
-
-.ps:hover > .ps__rail-x,
-.ps:hover > .ps__rail-y,
-.ps--focus > .ps__rail-x,
-.ps--focus > .ps__rail-y,
-.ps--scrolling-x > .ps__rail-x,
-.ps--scrolling-y > .ps__rail-y {
-  opacity: 0.6;
-}
-
-.ps .ps__rail-x:hover,
-.ps .ps__rail-y:hover,
-.ps .ps__rail-x:focus,
-.ps .ps__rail-y:focus,
-.ps .ps__rail-x.ps--clicking,
-.ps .ps__rail-y.ps--clicking {
-  opacity: 0.9;
-}
-
-[dir] .ps .ps__rail-x:hover, [dir] .ps .ps__rail-y:hover, [dir] .ps .ps__rail-x:focus, [dir] .ps .ps__rail-y:focus, [dir] .ps .ps__rail-x.ps--clicking, [dir] .ps .ps__rail-y.ps--clicking {
-  background-color: #eee;
-}
-
-/*
- * Scrollbar thumb styles
- */
-.ps__thumb-x {
-  transition: background-color .2s linear, height .2s ease-in-out;
-  height: 6px;
-  /* there must be 'bottom' for ps__thumb-x */
-  bottom: 2px;
-  /* please don't change 'position' */
-  position: absolute;
-}
-[dir] .ps__thumb-x {
-  background-color: #aaa;
-  border-radius: 6px;
-  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
-}
-
-.ps__thumb-y {
-  transition: background-color .2s linear, width .2s ease-in-out;
-  width: 6px;
-  /* there must be 'right' for ps__thumb-y */
-  /* please don't change 'position' */
-  position: absolute;
-}
-
-[dir] .ps__thumb-y {
-  background-color: #aaa;
-  border-radius: 6px;
-  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
-}
-
-[dir=ltr] .ps__thumb-y {
-  right: 2px;
-}
-
-[dir=rtl] .ps__thumb-y {
-  left: 2px;
-}
-
-.ps__rail-x:hover > .ps__thumb-x,
-.ps__rail-x:focus > .ps__thumb-x,
-.ps__rail-x.ps--clicking .ps__thumb-x {
-  height: 11px;
-}
-
-[dir] .ps__rail-x:hover > .ps__thumb-x, [dir] .ps__rail-x:focus > .ps__thumb-x, [dir] .ps__rail-x.ps--clicking .ps__thumb-x {
-  background-color: #999;
-}
-
-.ps__rail-y:hover > .ps__thumb-y,
-.ps__rail-y:focus > .ps__thumb-y,
-.ps__rail-y.ps--clicking .ps__thumb-y {
-  width: 11px;
-}
-
-[dir] .ps__rail-y:hover > .ps__thumb-y, [dir] .ps__rail-y:focus > .ps__thumb-y, [dir] .ps__rail-y.ps--clicking .ps__thumb-y {
-  background-color: #999;
-}
-
-/* MS supports */
-@supports (-ms-overflow-style: none) {
-  .ps {
-    overflow: auto !important;
-  }
-}
-
-@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-  .ps {
-    overflow: auto !important;
-  }
-}
+.dropdown-menu.scrollable {
+  overflow-y: auto;
+  max-height: 250px; }

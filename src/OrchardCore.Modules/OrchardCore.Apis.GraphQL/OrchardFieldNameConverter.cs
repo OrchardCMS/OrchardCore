@@ -13,7 +13,7 @@ namespace OrchardCore.Apis.GraphQL
 
             if (attributes != null)
             {
-                foreach(GraphQLFieldNameAttribute attribute in attributes)
+                foreach (GraphQLFieldNameAttribute attribute in attributes)
                 {
                     if (attribute.Field == field)
                     {

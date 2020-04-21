@@ -198,6 +198,22 @@
         }
     });
 
+    function setFontSize(trumbowyg, size) {
+        trumbowyg.$ed.focus();
+        trumbowyg.saveRange();
+        var text = trumbowyg.range.startContainer.parentElement;
+        var selectedText = trumbowyg.getRangeText();
+        if ($(text).html() === selectedText) {
+            $(text).css('font-size', size);
+        } else {
+            trumbowyg.range.deleteContents();
+            var html = '<span style="font-size: ' + size + ';">' + selectedText + '</span>';
+            var node = $(html)[0];
+            trumbowyg.range.insertNode(node);
+        }
+        trumbowyg.restoreRange();
+    }
+
     function buildDropdown(trumbowyg) {
         var dropdown = [];
 
@@ -206,7 +222,7 @@
                 text: '<span style="font-size: ' + size + ';">' + (trumbowyg.lang.fontsizes[size] || size) + '</span>',
                 hasIcon: false,
                 fn: function () {
-                    trumbowyg.execCmd('fontSize', index + 1, true);
+                    setFontSize(trumbowyg, size);
                 }
             });
             dropdown.push('fontsize_' + size);
@@ -223,18 +239,8 @@
                                 value: trumbowyg.lang.fontCustomSize.value
                             }
                         },
-                        function (values) {
-                            var text = trumbowyg.range.startContainer.parentElement;
-                            var selectedText = trumbowyg.getRangeText();
-                            if ($(text).html() === selectedText) {
-                                $(text).css('font-size', values.size);
-                            } else {
-                                trumbowyg.range.deleteContents();
-                                var html = '<span style="font-size: ' + values.size + ';">' + selectedText + '</span>';
-                                var node = $(html)[0];
-                                trumbowyg.range.insertNode(node);
-                            }
-                            trumbowyg.saveRange();
+                        function (form) {
+                            setFontSize(trumbowyg, form.size);
                             return true;
                         }
                     );

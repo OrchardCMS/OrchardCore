@@ -24,7 +24,7 @@ namespace OrchardCore.Templates.Cms.Web
 
             app.UseStaticFiles();
 #if (UseSerilog)
-            app.UseOrchardCore(c => c.UseSerilogTenantNameLoggingMiddleware());
+            app.UseOrchardCore(c => c.UseSerilogTenantNameLogging());
 #else
             app.UseOrchardCore();
 #endif

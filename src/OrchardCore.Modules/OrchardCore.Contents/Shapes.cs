@@ -95,6 +95,5 @@ namespace OrchardCore.Contents
         {
             return alternateElement.Replace("-", "__").Replace('.', '_');
         }
-
     }
 }

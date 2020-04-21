@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,12 +9,13 @@ using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 
 namespace OrchardCore.Queries.Sql.GraphQL.Queries
 {
     /// <summary>
-    /// This implementation of <see cref="ISchemaBuilder"/> registers 
+    /// This implementation of <see cref="ISchemaBuilder"/> registers
     /// all SQL Qeries as GraphQL queries.
     /// </summary>
     public class SqlQueryFieldTypeProvider : ISchemaBuilder
@@ -109,9 +109,9 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                 Name = query.Name,
                 ResolvedType = new ListGraphType(typetype),
-                Resolver = new AsyncFieldResolver<object, object>(async context =>
+                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(context.FieldName);
 
                     var parameters = context.GetArgument<string>("parameters");
@@ -141,9 +141,9 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                 Name = query.Name,
                 ResolvedType = typetype.ResolvedType,
-                Resolver = new AsyncFieldResolver<object, object>(async context =>
+                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(context.FieldName);
 
                     var parameters = context.GetArgument<string>("parameters");

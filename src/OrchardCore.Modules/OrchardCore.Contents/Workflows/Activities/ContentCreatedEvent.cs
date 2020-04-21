@@ -11,6 +11,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(ContentCreatedEvent);
-        public override LocalizedString DisplayText => T["Content Created Event"];
+
+        public override LocalizedString DisplayText => S["Content Created Event"];
     }
 }

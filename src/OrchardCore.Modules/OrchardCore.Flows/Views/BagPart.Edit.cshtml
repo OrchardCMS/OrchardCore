@@ -18,35 +18,36 @@
 <script asp-name="jQuery-ui" at="Foot"></script>
 
 <div class="form-group">
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.BagPart.ContentItems)
         {
             //Create a Card Shape
             dynamic contentCard = await New.ContentCard(
                 // FOR Updater
-                CollectionShape: Model, 
+                CollectionShape: Model,
                 //Shape Specific
                 CollectionShapeType: nameof(BagPart),
                 ContentItem: widget,
-                BuildEditor: true,                        
+                BuildEditor: true,
                 ParentContentType: parentContentType,
                 CollectionPartName :partName,
                 //Card Specific Properties
                 TargetId: widgetTemplatePlaceholderId,
-                Inline: false,                        
+                Inline: false,
                 CanMove: true,
                 CanDelete: true,
                 //Input hidden
                 //Prefixes
-                HtmlFieldPrefix: htmlFieldPrefix,                        
+                PrefixValue: widget.ContentItemId,
+                HtmlFieldPrefix: htmlFieldPrefix,
                 PrefixesId: Html.IdFor(x => x.Prefixes),
                 PrefixesName: Html.NameFor(x => x.Prefixes),
                 //Content Types
                 ContentTypesId: Html.IdFor(x => x.ContentTypes),
                 ContentTypesName: Html.NameFor(x => x.ContentTypes)
             );
-            @await DisplayAsync(contentCard)       
+            @await DisplayAsync(contentCard)
         }
     </div>
 
@@ -64,20 +65,22 @@
                    data-widget-type="@type.Name"
                    data-flowmetadata="false"
                    data-parent-content-type="@parentContentType"
-                   data-part-name="@partName"                   
+                   data-part-name="@partName"
                    href="javascript:;">@type.DisplayName</a>
             }
         </div>
     </div>
 
-
     @* Rendered only once in case multiple BagPart (or FlowPart) are on the page *@
     @if (Context.Items["BagPart.Edit"] == null)
     {
         Context.Items["BagPart.Edit"] = new object();
-        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
-        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
-        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
+        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.min.js"
+            debug-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
+            debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"
+            debug-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
     }
 
     @* Rendered only once per type to initialize the scripts its editor will need *@

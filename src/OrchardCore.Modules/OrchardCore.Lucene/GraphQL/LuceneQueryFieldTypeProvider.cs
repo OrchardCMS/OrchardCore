@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +9,7 @@ using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Lucene;
 
@@ -47,7 +47,11 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                 {
                     var contentType = type.Remove(0, 12);
-                    schema.Query.AddField(BuildContentTypeFieldType(schema, contentType, query));
+                    var queryField = BuildContentTypeFieldType(schema, contentType, query);
+                    if (queryField != null)
+                    {
+                        schema.Query.AddField(queryField);
+                    }
                 }
                 else
                 {
@@ -107,9 +111,9 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 Name = query.Name,
                 ResolvedType = new ListGraphType(typetype),
-                Resolver = new AsyncFieldResolver<object, object>(async context =>
+                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(context.FieldName);
 
                     var parameters = context.GetArgument<string>("parameters");
@@ -129,19 +133,24 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
         private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, LuceneQuery query)
         {
-            var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().First(x => x.Name == contentType);
-
+            var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
+            
+            if (typetype == null)
+            {
+                return null;
+            }
+            
             var fieldType = new FieldType
             {
                 Arguments = new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "parameters" }
-                ),
+                        new QueryArgument<StringGraphType> { Name = "parameters" }
+                    ),
 
                 Name = query.Name,
                 ResolvedType = typetype.ResolvedType,
-                Resolver = new AsyncFieldResolver<object, object>(async context =>
+                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(context.FieldName);
 
                     var parameters = context.GetArgument<string>("parameters");
@@ -155,7 +164,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 }),
                 Type = typetype.Type
             };
-
+            
             return fieldType;
         }
     }

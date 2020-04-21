@@ -12,6 +12,7 @@ using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Contents;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
@@ -60,6 +61,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     ResolvedType = new ListGraphType(typeType)
                 };
 
+                query.RequirePermission(CommonPermissions.ViewContent, typeDefinition.Name);
+
                 foreach (var builder in contentTypeBuilders)
                 {
                     builder.Build(query, typeDefinition, typeType);
@@ -77,6 +80,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     // Register the content item type explicitly since it won't be discovered from the root 'query' type.
                     schema.RegisterType(typeType);
                 }
+            }
+
+            foreach (var builder in contentTypeBuilders)
+            {
+                builder.Clear();
             }
 
             return Task.FromResult(changeToken);

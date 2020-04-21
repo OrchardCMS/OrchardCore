@@ -1,24 +1,25 @@
 site_name: Orchard Core Documentation
 theme:
-  name: 'material'
-  logo: 'docs/assets/images/orchard-logo.png'
-  favicon: 'docs/assets/images/favicon.png'  
-  feature:
-    tabs: true
+  name: material
+  logo: docs/assets/images/orchard-logo.png
+  favicon: docs/assets/images/favicon-blue.png
+  features:
+    - instant
+    - tabs
   palette:
-    primary: 'blue'
-    accent: 'light blue'
+    primary: blue
+    accent: light blue
   static_templates:
     - 404.html
     
 extra:
   social:
-    - type: 'leaf'
-      link: 'http://orchardproject.net'
-    - type: 'github-alt'
-      link: 'https://github.com/OrchardCMS/OrchardCore'
-    - type: 'twitter'
-      link: 'https://twitter.com/OrchardCMS'
+    - icon: fontawesome/solid/leaf
+      link: https://orchardcore.net
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/OrchardCMS/OrchardCore
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/OrchardCMS
 
 # Repository
 repo_name: OrchardCMS/OrchardCore
@@ -35,27 +36,47 @@ markdown_extensions:
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
+  - pymdownx.b64
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji
+  - pymdownx.magiclink
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
   - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.tasklist
+  - pymdownx.tilde
   - toc:
       permalink: true
 #  - markdown.extensions.nl2br
 
+plugins:
+  - search
+  - git-revision-date-localized
+  
 # Page tree
 nav:
     - About Orchard Core: README.md
     - Getting started: 
         - Create a CMS Web application: docs/getting-started/README.md
+        - Recipes and Starter Themes: docs/getting-started/starter-recipes.md
         - Code Generation Templates: docs/getting-started/templates/README.md
         - Create a Theme: docs/getting-started/theme.md
+    - Glossary: 
+        - Terms and Concepts: docs/glossary/README.md
     - How-to guides: 
         - Follow the Guides: docs/guides/README.md
         - Create a modular application: docs/guides/create-modular-application-mvc/README.md
         - Create a website: docs/guides/create-cms-application/README.md
         - Create a Decoupled CMS site: docs/guides/decoupled-cms/README.md
         - Add an admin menu: docs/guides/add-admin-menu/README.md
+        - Implement Full Text search: docs/guides/implement-fulltext-search/README.md
         - Install localization files: docs/guides/install-localization-files/README.md
         - Integrate Facebook plugins: docs/guides/integrate-facebook-plugins/README.md
         - Run code on startup: docs/guides/run-code-on-startup/README.md
+        - Create a custom admin theme: docs/guides/create-admin-theme/README.md
     - Key Topics: 
         - Manage your Content: docs/topics/content-management/README.md
         - Customize the Display: docs/topics/display/README.md
@@ -78,7 +99,8 @@ nav:
                 - Html: docs/reference/modules/Html/README.md
                 - Markdown: docs/reference/modules/Markdown/README.md
                 - List: docs/reference/modules/List/README.md
-                - Flow: docs/reference/modules/Flow/README.md        
+                - Flow: docs/reference/modules/Flow/README.md 
+                - Bag: docs/reference/modules/Flow/BagPart.md        
             - Content Fields: docs/reference/modules/ContentFields/README.md
             - Content Preview: docs/reference/modules/ContentPreview/README.md
             - Content Localization: docs/reference/modules/ContentLocalization/README.md
@@ -93,10 +115,13 @@ nav:
             - Lucene: docs/reference/modules/Lucene/README.md
             - Queries: docs/reference/modules/Queries/README.md
             - Media: docs/reference/modules/Media/README.md
+            - Media Azure: docs/reference/modules/Media.Azure/README.md
             - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
             - Resources: docs/reference/modules/Resources/README.md
+            - Sitemaps: docs/reference/modules/Sitemaps/README.md
             - Menu: docs/reference/modules/Menu/README.md
             - Navigation: docs/reference/modules/Navigation/README.md
+            - Admin: docs/reference/modules/Admin/README.md
             - Admin Menu: docs/reference/modules/AdminMenu/README.md
             - Taxonomies: docs/reference/modules/Taxonomies/README.md
             - Authentication:
@@ -107,6 +132,7 @@ nav:
                 - Google: docs/reference/modules/Google/README.md
         - Core Modules: 
     #        - How to use Core Modules: docs/reference/core/README.md
+            - Features: docs/reference/modules/Features/README.md
             - Contents: docs/reference/modules/Contents/README.md
             - Configuration: docs/reference/core/Configuration/README.md
             - Custom Settings: docs/reference/modules/CustomSettings/README.md
@@ -119,13 +145,18 @@ nav:
             - Health Check: docs/reference/modules/HealthChecks/README.md
             - Localization: docs/reference/modules/Localize/README.md
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
-            - Media Azure: docs/reference/modules/Media.Azure/README.md
             - Modules: docs/reference/core/Modules/README.md
             - OpenId: docs/reference/modules/OpenId/README.md
+            - Razor Helpers: docs/reference/core/Razor/README.md
             - Recipes: docs/reference/modules/Recipes/README.md
             - Roles: docs/reference/modules/Roles/README.md
             - Scripting: docs/reference/modules/Scripting/README.md
             - Setup: docs/reference/modules/Setup/README.md
+            - Shells: docs/reference/core/Shells/README.md
             - Tenants: docs/reference/modules/Tenants/README.md
             - Workflows: docs/reference/modules/Workflows/README.md
             - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
+    - Resources: 
+        - Learning: docs/resources/README.md
+        - Workshops: docs/resources/workshops/README.md
+    

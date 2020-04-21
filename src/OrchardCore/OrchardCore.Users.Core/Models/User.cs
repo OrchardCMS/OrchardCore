@@ -14,6 +14,7 @@ namespace OrchardCore.Users.Models
         public string PasswordHash { get; set; }
         public string SecurityStamp { get; set; }
         public bool EmailConfirmed { get; set; }
+        public bool IsEnabled { get; set; } = true;
         public string ResetToken { get; set; }
         public IList<string> RoleNames { get; set; } = new List<string>();
         public IList<UserClaim> UserClaims { get; set; } = new List<UserClaim>();

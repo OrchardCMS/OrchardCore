@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.AdminMenu.Services;
@@ -16,19 +17,20 @@ namespace OrchardCore.Contents.AdminNodes
 {
     public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     {
+        private readonly LinkGenerator _linkGenerator;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ILogger<ContentTypesAdminNodeNavigationBuilder> _logger;
-        private readonly string _contentItemlistUrl;
+        private readonly ILogger _logger;
 
         public ContentTypesAdminNodeNavigationBuilder(
             IContentDefinitionManager contentDefinitionManager,
+            LinkGenerator linkGenerator,
             IHttpContextAccessor httpContextAccessor,
             ILogger<ContentTypesAdminNodeNavigationBuilder> logger)
         {
             _contentDefinitionManager = contentDefinitionManager;
-
-            _contentItemlistUrl = httpContextAccessor.HttpContext.Request.PathBase.Add("/Admin/Contents/ContentItems/").Value;
-
+            _linkGenerator = linkGenerator;
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
@@ -49,7 +51,14 @@ namespace OrchardCore.Contents.AdminNodes
             {
                 builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
                 {
-                    cTypeMenu.Url(_contentItemlistUrl + ctd.Name);
+                    cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, "", new
+                    {
+                        area = "OrchardCore.Contents",
+                        controller = "Admin",
+                        action = "List",
+                        contentTypeId = ctd.Name
+                    }));
+
                     cTypeMenu.Priority(node.Priority);
                     cTypeMenu.Position(node.Position);
                     cTypeMenu.Permission(

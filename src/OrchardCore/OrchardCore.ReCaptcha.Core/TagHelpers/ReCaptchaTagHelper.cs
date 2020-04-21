@@ -24,9 +24,9 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         private readonly IResourceManager _resourceManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ReCaptchaSettings _settings;
-        private readonly ILogger<ReCaptchaTagHelper> _logger;
+        private readonly ILogger _logger;
         private readonly ILocalizationService _localizationService;
-        private readonly IStringLocalizer T;
+        private readonly IStringLocalizer S;
 
         public ReCaptchaTagHelper(IOptions<ReCaptchaSettings> optionsAccessor, IResourceManager resourceManager, ILocalizationService localizationService, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaTagHelper> logger, IStringLocalizer<ReCaptchaTagHelper> localizer)
         {
@@ -36,7 +36,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             Mode = ReCaptchaMode.PreventRobots;
             _logger = logger;
             _localizationService = localizationService;
-            T = localizer;
+            S = localizer;
         }
 
         [HtmlAttributeName("mode")]
@@ -96,7 +96,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             }
             catch (CultureNotFoundException)
             {
-                _logger.LogWarning(T["Language with name; {0} not found", language]);
+                _logger.LogWarning(S["Language with name {0} not found", language]);
             }
 
             return culture;

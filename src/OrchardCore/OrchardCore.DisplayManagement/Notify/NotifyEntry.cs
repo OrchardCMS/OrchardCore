@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.DisplayManagement.Notify
 {

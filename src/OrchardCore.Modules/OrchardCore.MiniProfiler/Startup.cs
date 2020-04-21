@@ -11,7 +11,6 @@ namespace OrchardCore.MiniProfiler
 {
     public class Startup : StartupBase
     {
-
         // Early in the pipeline to wrap all other middleware
         public override int Order => -500;
 

@@ -46,7 +46,7 @@ In addition you can specify a `Tenant` setting by using the Tenant Name, in this
   "OrchardCore": {
     "Default": {
       "State": "Placeholder",
-      "OrchardCore.Media": {
+      "OrchardCore_Media": {
         ... specific tenant configuration configuration ...
       }
     }
@@ -69,7 +69,7 @@ Additionally these `appsettings.json` files do not need the `OrchardCore` sectio
 
 ```
 {
-  "OrchardCore.Media": {
+  "OrchardCore_Media": {
     ... specific tenant configuration configuration ...
   }
 }
@@ -83,7 +83,7 @@ Environment variables are also translated into `IShellConfiguration`, for exampl
 OrchardCore__OrchardCore.Media__MaxFileSize
 
 OrchardCore__Default__State
-OrchardCore__Default__OrchardCore.Media__MaxFileSize
+OrchardCore__Default__OrchardCore_Media__MaxFileSize
 ```
 
 ### Order of hierarchy
@@ -95,11 +95,12 @@ By default an Orchard Core site will use `CreateDefaultBuilder` in the Startup P
 3. User Secrets (if environment is __Development__)
 4. Environment Variables
 5. Command Line Args
+6. `IShellConfiguration` will then add these
+    1. `App_Data/appsettings.json`
+    2. `App_Data/Sites/{tenant_name}/appsettings.json` for the particular tenant
 
-`IShellConfiguration` will then add to these
-
-6. `App_Data/appsettings.json`
-7. `App_Data/Sites/{tenant_name}/appsettings.json` for the particular tenant
+!!! note
+    Configurations with the same key that are loaded later take precedence over those which were loaded earlier (last wins).
 
 ### Configuration during Deployment
 

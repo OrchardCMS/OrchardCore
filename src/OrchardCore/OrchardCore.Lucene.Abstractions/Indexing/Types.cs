@@ -4,6 +4,7 @@ namespace OrchardCore.Lucene.Indexing
     {
         // Numeric
         Long,
+
         Integer,
         Short,
         Byte,

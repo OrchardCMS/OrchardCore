@@ -1,0 +1,5 @@
+@model OrchardCore.Users.Workflows.ViewModels.UserEventViewModel<OrchardCore.Users.Workflows.Activities.UserLoggedInEvent>
+
+<header>
+    <h4><i class="fa fa-id-card"></i>@Model.Activity.GetTitleOrDefault(() => T["User LoggedIn"])</h4>
+</header>

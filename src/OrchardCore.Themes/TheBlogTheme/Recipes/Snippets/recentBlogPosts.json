@@ -1,0 +1,12 @@
+{
+  "query": {
+    "term": { "Content.ContentItem.ContentType": "BlogPost" }
+  },
+  "sort": {
+    "Content.ContentItem.CreatedUtc": {
+      "order": "desc",
+      "type": "double"
+    }
+  },
+  "size": 3
+}
