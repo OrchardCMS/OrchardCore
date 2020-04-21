@@ -11,7 +11,7 @@ namespace OrchardCore.Flows.GraphQL
 
             Field(x => x.Size, nullable: true);
             Field<FlowAlignmentEnum>("alignment");
-            Field(x => x.Classes, nullable: true);
+            Field(x => x.Classes);
         }
     }
 }
