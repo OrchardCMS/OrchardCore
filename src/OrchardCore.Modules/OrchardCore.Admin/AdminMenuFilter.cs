@@ -1,9 +1,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
-using OrchardCore.Navigation;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.Admin
 {
@@ -13,16 +15,12 @@ namespace OrchardCore.Admin
     /// </summary>
     public class AdminMenuFilter : IAsyncResultFilter
     {
-        private readonly INavigationManager _navigationManager;
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IShapeFactory _shapeFactory;
 
-        public AdminMenuFilter(INavigationManager navigationManager,
-            ILayoutAccessor layoutAccessor,
+        public AdminMenuFilter(ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory)
         {
-
-            _navigationManager = navigationManager;
             _layoutAccessor = layoutAccessor;
             _shapeFactory = shapeFactory;
         }
@@ -30,7 +28,7 @@ namespace OrchardCore.Admin
         public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
         {
             // Should only run on a full view rendering result
-            if (!(filterContext.Result is ViewResult))
+            if (!(filterContext.Result is ViewResult) && !(filterContext.Result is PageResult))
             {
                 await next();
                 return;
@@ -67,7 +65,15 @@ namespace OrchardCore.Admin
                 }));
 
             dynamic layout = await _layoutAccessor.GetLayoutAsync();
-            layout.Navigation.Add(menuShape);
+
+            if (layout.Navigation is ZoneOnDemand zoneOnDemand)
+            {
+                await zoneOnDemand.AddAsync(menuShape);
+            }
+            else if (layout.Navigation is Shape shape)
+            {
+                shape.Add(menuShape);
+            }
 
             await next();
         }

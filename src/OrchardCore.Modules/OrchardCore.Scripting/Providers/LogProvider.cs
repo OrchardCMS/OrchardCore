@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Scripting.Providers
@@ -20,7 +19,16 @@ namespace OrchardCore.Scripting.Providers
                     {
                         logLevel = LogLevel.Information;
                     }
-                    logger.Log(logLevel, text, param);
+                    object[] args;
+                    if (!(param is Array))
+                    {
+                        args = new[] { param };
+                    }
+                    else
+                    {
+                        args = (object[])param;
+                    }
+                    logger.Log(logLevel, text, args);
                 })
             };
         }

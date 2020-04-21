@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
@@ -18,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 switch (name)
                 {
                     case "Name": return new StringValue(culture.Name);
-                    case "Dir": return new StringValue(culture.TextInfo.IsRightToLeft ? "rtl" : "");
+                    case "Dir": return new StringValue(culture.GetLanguageDirection());
 
                     default: return null;
                 }
@@ -27,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public Task RenderingAsync(TemplateContext context)
         {
-            context.LocalScope.SetValue("Culture", CultureInfo.CurrentUICulture);
+            context.SetValue("Culture", CultureInfo.CurrentUICulture);
 
             return Task.CompletedTask;
         }

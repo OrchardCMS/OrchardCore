@@ -1,6 +1,6 @@
 using System;
 using GraphQL;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentManagement.GraphQL
 {

@@ -11,7 +11,6 @@ namespace OrchardCore.MiniProfiler
 {
     public class Startup : StartupBase
     {
-
         // Early in the pipeline to wrap all other middleware
         public override int Order => -500;
 
@@ -27,7 +26,7 @@ namespace OrchardCore.MiniProfiler
             services.AddMiniProfiler();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             app.UseMiniProfiler();
 

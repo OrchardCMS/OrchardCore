@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentPreview
@@ -7,9 +9,9 @@ namespace OrchardCore.ContentPreview
     {
         public static readonly Permission ContentPreview = new Permission("ContentPreview", "Display content preview");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] { ContentPreview };
+            return Task.FromResult(new[] { ContentPreview }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

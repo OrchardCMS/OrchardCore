@@ -27,9 +27,9 @@ namespace OrchardCore.Modules
                 from location in TzdbDateTimeZoneSource.Default.ZoneLocations
                 let zoneId = location.ZoneId
                 let tz = DateTimeZoneProviders.Tzdb[zoneId]
-                let offset = tz.GetZoneInterval(CurrentInstant).StandardOffset
-                orderby offset, zoneId
-                select new TimeZone(zoneId, offset, tz);
+                let zoneInterval = tz.GetZoneInterval(CurrentInstant)
+                orderby zoneInterval.StandardOffset, zoneId
+                select new TimeZone(zoneId, zoneInterval.StandardOffset, zoneInterval.WallOffset, tz);
 
             return list.ToArray();
         }
@@ -49,6 +49,11 @@ namespace OrchardCore.Modules
         public ITimeZone GetSystemTimeZone()
         {
             var timezone = DateTimeZoneProviders.Tzdb.GetSystemDefault();
+            if (TzdbDateTimeZoneSource.Default.CanonicalIdMap.ContainsKey(timezone.Id))
+            {
+                var canonicalTimeZoneId = TzdbDateTimeZoneSource.Default.CanonicalIdMap[timezone.Id];
+                timezone = GetDateTimeZone(canonicalTimeZoneId);
+            }
             return CreateTimeZone(timezone);
         }
 
@@ -63,7 +68,7 @@ namespace OrchardCore.Modules
             if (!String.IsNullOrEmpty(timeZone) && IsValidTimeZone(DateTimeZoneProviders.Tzdb, timeZone))
             {
                 return DateTimeZoneProviders.Tzdb[timeZone];
-            } 
+            }
 
             return DateTimeZoneProviders.Tzdb.GetSystemDefault();
         }
@@ -75,9 +80,9 @@ namespace OrchardCore.Modules
                 throw new ArgumentException(nameof(DateTimeZone));
             }
 
-            var offset = dateTimeZone.GetZoneInterval(CurrentInstant).StandardOffset;
+            var zoneInterval = dateTimeZone.GetZoneInterval(CurrentInstant);
 
-            return new TimeZone(dateTimeZone.Id, offset, dateTimeZone);
+            return new TimeZone(dateTimeZone.Id, zoneInterval.StandardOffset, zoneInterval.WallOffset, dateTimeZone);
         }
 
         private static bool IsValidTimeZone(IDateTimeZoneProvider provider, string timeZoneId)

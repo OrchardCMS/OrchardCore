@@ -3,7 +3,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Module(
     Name = "XML-RPC",
     Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
+    Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
 
@@ -18,6 +18,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.RemotePublishing",
     Name = "Remote Publishing",
     Description = "The remote publishing feature enables creation of contents from client applications such as Open Live Writer.",
-    Dependencies = new [] { "OrchardCore.XmlRpc" },
+    Dependencies = new[] { "OrchardCore.XmlRpc" },
     Category = "Infrastructure"
 )]

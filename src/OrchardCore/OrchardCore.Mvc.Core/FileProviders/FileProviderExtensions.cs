@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,11 +8,11 @@ namespace OrchardCore.Mvc.FileProviders
 {
     public static class FileProviderExtensions
     {
-        public static IEnumerable<string> GetViewFilePaths(this IFileProvider fileProvider, 
+        public static IEnumerable<string> GetViewFilePaths(this IFileProvider fileProvider,
             string subPath,
-            string[] extensions, 
-            string viewsFolder = null, 
-            bool inViewsFolder = false, 
+            string[] extensions,
+            string viewsFolder = null,
+            bool inViewsFolder = false,
             bool inDepth = true)
         {
             var contents = fileProvider.GetDirectoryContents(subPath);
@@ -47,7 +48,7 @@ namespace OrchardCore.Mvc.FileProviders
                 }
                 else if (inViewsFolder)
                 {
-                    if (extensions.Contains(Path.GetExtension(content.Name)))
+                    if (Array.IndexOf(extensions, Path.GetExtension(content.Name)) != -1)
                     {
                         yield return $"{subPath}/{content.Name}";
                     }

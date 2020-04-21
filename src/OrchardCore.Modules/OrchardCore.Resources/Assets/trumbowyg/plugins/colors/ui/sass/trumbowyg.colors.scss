@@ -1,11 +1,8 @@
-.trumbowyg-dropdown-foreColor,
-.trumbowyg-dropdown-backColor {
-    width: 276px;
+.trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list),
+.trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) {
+    max-width: 276px;
     padding: 7px 5px;
-
-    svg {
-        display: none !important;
-    }
+    overflow: initial;
 
     button {
         display: block;
@@ -26,12 +23,34 @@
                 position: absolute;
                 top: -5px;
                 left: -5px;
-                height: 27px;
                 width: 27px;
+                height: 27px;
                 background: inherit;
-                border: 1px solid #FFF;
+                border: 1px solid #fff;
                 box-shadow: #000 0 0 2px;
                 z-index: 10;
+            }
+        }
+    }
+}
+
+.trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list {
+    button:not(.trumbowyg-backColorRemove-dropdown-button) {
+        position: relative;
+        color: #fff !important;
+
+        &:hover,
+        &:focus {
+            &::after {
+                content: " ";
+                display: block;
+                position: absolute;
+                top: 13px;
+                left: 0;
+                width: 0;
+                height: 0;
+                border: 5px solid transparent;
+                border-left-color: #fff;
             }
         }
     }

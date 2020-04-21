@@ -1,5 +1,4 @@
 using System;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.OpenId.Services;
@@ -7,7 +6,6 @@ using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
-using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
 namespace OrchardCore.OpenId.Recipes
 {
@@ -32,7 +30,7 @@ namespace OrchardCore.OpenId.Recipes
 
             var settings = await _serverService.GetSettingsAsync();
             settings.AccessTokenFormat = model.AccessTokenFormat;
-            settings.Authority = model.Authority;
+            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
 
             settings.CertificateStoreLocation = model.CertificateStoreLocation;
             settings.CertificateStoreName = model.CertificateStoreName;
@@ -84,27 +82,9 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             settings.UseRollingTokens = model.UseRollingTokens;
+            settings.UseReferenceTokens = model.UseReferenceTokens;
 
             await _serverService.UpdateSettingsAsync(settings);
         }
-    }
-
-    public class OpenIdServerSettingsStepModel
-    {
-        public TokenFormat AccessTokenFormat { get; set; } = TokenFormat.Encrypted;
-        public string Authority { get; set; }
-        public StoreLocation CertificateStoreLocation { get; set; } = StoreLocation.LocalMachine;
-        public StoreName CertificateStoreName { get; set; } = StoreName.My;
-        public string CertificateThumbprint { get; set; }
-        public bool EnableTokenEndpoint { get; set; }
-        public bool EnableAuthorizationEndpoint { get; set; }
-        public bool EnableLogoutEndpoint { get; set; }
-        public bool EnableUserInfoEndpoint { get; set; }
-        public bool AllowPasswordFlow { get; set; }
-        public bool AllowClientCredentialsFlow { get; set; }
-        public bool AllowAuthorizationCodeFlow { get; set; }
-        public bool AllowRefreshTokenFlow { get; set; }
-        public bool AllowImplicitFlow { get; set; }
-        public bool UseRollingTokens { get; set; }
     }
 }

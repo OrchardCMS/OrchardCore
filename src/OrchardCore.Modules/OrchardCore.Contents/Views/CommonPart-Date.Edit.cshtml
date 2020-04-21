@@ -1,11 +1,11 @@
 @using OrchardCore.Contents.ViewModels;
 @model DateEditorViewModel
 
-<fieldset class="form-group" asp-validation-class-for="LocalDateTime">
+<div class="form-group" asp-validation-class-for="LocalDateTime">
     <div class="row col-md-6 col-lg-3">
         <label asp-for="LocalDateTime">@T["Created"]</label>
         <input asp-for="LocalDateTime" class="form-control" type="datetime-local" />
         <span asp-validation-for="LocalDateTime"></span>
     </div>
     <span class="hint">@T["The date when the content item was created or first published."]</span>
-</fieldset>
+</div>

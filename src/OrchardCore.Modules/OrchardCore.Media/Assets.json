@@ -1,6 +1,7 @@
 [
   {
     "generateSourceMaps": false,
+    "generateRTL": true,
     "inputs": [
       "Assets/scss/media.scss"
     ],
@@ -8,7 +9,7 @@
   },
   {
     "inputs": [
-      "Assets/js/*.js"
+      "Assets/js/**/*.js"
     ],
     "output": "wwwroot/Scripts/media.js"
   }

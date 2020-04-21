@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -15,26 +14,25 @@ namespace OrchardCore.Tests.DisplayManagement
 {
     public class ShapeHelperTests
     {
-        IServiceProvider _serviceProvider;
+        private IServiceProvider _serviceProvider;
 
         public ShapeHelperTests()
         {
             IServiceCollection serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging();
-            serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
+            var defaultShapeTable = new ShapeTable
+            (
+                new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
+                new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
+            );
 
-            var defaultShapeTable = new TestShapeTable
-            {
-                Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
-                Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
-            };
             serviceCollection.AddSingleton(defaultShapeTable);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();

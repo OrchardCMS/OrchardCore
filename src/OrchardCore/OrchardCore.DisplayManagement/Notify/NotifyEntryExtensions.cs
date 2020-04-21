@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -14,6 +12,7 @@ namespace OrchardCore.DisplayManagement.Notify
             using (var stringWriter = new StringWriter(stringBuilder))
             {
                 entry.Message.WriteTo(stringWriter, htmlEncoder);
+                stringWriter.Flush();
             }
 
             return stringBuilder.ToString();

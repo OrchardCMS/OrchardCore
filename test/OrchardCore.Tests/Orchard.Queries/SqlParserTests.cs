@@ -14,7 +14,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
 
         private string FormatSql(string sql)
         {
-            return sql.Replace("\r\n", " ").Replace("\n", " ");
+            return sql.Replace("\r\n", " ").Replace('\n', ' ');
         }
 
         [Theory]
@@ -69,6 +69,8 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a where a = 1", "SELECT [a] WHERE [a] = 1;")]
         [InlineData("select a where a = 1.234", "SELECT [a] WHERE [a] = 1.234;")]
         [InlineData("select a where a = 'foo'", "SELECT [a] WHERE [a] = 'foo';")]
+        [InlineData("select a where a like '%foo%'", "SELECT [a] WHERE [a] LIKE '%foo%';")]
+        [InlineData("select a where a not like '%foo%'", "SELECT [a] WHERE [a] NOT LIKE '%foo%';")]
         [InlineData("select a where a between b and c", "SELECT [a] WHERE [a] BETWEEN [b] AND [c];")]
         [InlineData("select a where a not between b and c", "SELECT [a] WHERE [a] NOT BETWEEN [b] AND [c];")]
         [InlineData("select a where a = b or c = d", "SELECT [a] WHERE [a] = [b] OR [c] = [d];")]
@@ -76,6 +78,9 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a where (a = b) or (c = d) and e", "SELECT [a] WHERE ([a] = [b]) OR ([c] = [d]) AND [e];")]
         [InlineData("select a where test(arg)", "SELECT [a] WHERE test([arg]);")]
         [InlineData("select a where b in (1,2,3)", "SELECT [a] WHERE [b] IN (1, 2, 3);")]
+        [InlineData("select a where b in (select b)", "SELECT [a] WHERE [b] IN (SELECT [b]);")]
+        [InlineData("select a where b not in (1,2,3)", "SELECT [a] WHERE [b] NOT IN (1, 2, 3);")]
+        [InlineData("select a where b not in (select b)", "SELECT [a] WHERE [b] NOT IN (SELECT [b]);")]
         [InlineData("select a where b = (select Avg(c) from d)", "SELECT [a] WHERE [b] = (SELECT Avg([c]) FROM [tp_d]);")]
         public void ShouldParseExpression(string sql, string expectedSql)
         {
@@ -86,8 +91,8 @@ namespace OrchardCore.Tests.OrchardCore.Queries
 
         [Theory]
         [InlineData("select a where a = @b", "SELECT [a] WHERE [a] = @b;")]
-        [InlineData("select a where a = @b limit @limit", "SELECT TOP @limit [a] WHERE [a] = @b;")]
-        [InlineData("select a where a = @b limit @limit:10", "SELECT TOP @limit [a] WHERE [a] = @b;")]
+        [InlineData("select a where a = @b limit @limit", "SELECT TOP (@limit) [a] WHERE [a] = @b;")]
+        [InlineData("select a where a = @b limit @limit:10", "SELECT TOP (@limit) [a] WHERE [a] = @b;")]
         public void ShouldParseParameters(string sql, string expectedSql)
         {
             var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
@@ -115,7 +120,6 @@ namespace OrchardCore.Tests.OrchardCore.Queries
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
 
-
         [Theory]
         [InlineData("select a order by b", "SELECT [a] ORDER BY [b];")]
         [InlineData("select a order by b, c", "SELECT [a] ORDER BY [b], [c];")]
@@ -131,7 +135,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         }
 
         [Theory]
-        [InlineData("select a limit 100", "SELECT TOP 100 [a];")]
+        [InlineData("select a limit 100", "SELECT TOP (100) [a];")]
         [InlineData("select a limit 100 offset 10", "SELECT [a] OFFSET 10 ROWS FETCH NEXT 100 ROWS ONLY;")]
         [InlineData("select a offset 10", "SELECT [a] OFFSET 10 ROWS;")]
         public void ShouldParseLimitOffsetClause(string sql, string expectedSql)

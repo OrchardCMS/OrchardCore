@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
@@ -10,7 +9,7 @@ namespace OrchardCore.Forms.Drivers
 {
     public class FormInputElementPartDisplay : ContentPartDisplayDriver<FormInputElementPart>
     {
-        public override IDisplayResult Edit(FormInputElementPart part, BuildPartEditorContext context)
+        public override IDisplayResult Edit(FormInputElementPart part)
         {
             return Initialize<FormInputElementPartEditViewModel>("FormInputElementPart_Fields_Edit", m =>
             {

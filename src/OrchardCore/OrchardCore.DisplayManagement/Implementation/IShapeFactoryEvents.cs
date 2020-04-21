@@ -15,11 +15,12 @@ namespace OrchardCore.DisplayManagement.Implementation
         public IShapeFactory ShapeFactory { get; set; }
         public dynamic New { get; set; }
         public string ShapeType { get; set; }
-        public Func<Task<IShape>> CreateAsync { get; set; }
+        public Func<ValueTask<IShape>> CreateAsync { get; set; }
         public IList<Func<ShapeCreatedContext, Task>> OnCreated { get; set; }
+
         public Func<IShape> Create
         {
-            set => CreateAsync = () => Task.FromResult(value());
+            set => CreateAsync = () => new ValueTask<IShape>(value());
         }
     }
 
@@ -33,7 +34,11 @@ namespace OrchardCore.DisplayManagement.Implementation
 
     public abstract class ShapeFactoryEvents : IShapeFactoryEvents
     {
-        public virtual void Creating(ShapeCreatingContext context) { }
-        public virtual void Created(ShapeCreatedContext context) { }
+        public virtual void Creating(ShapeCreatingContext context)
+        {
+        }
+        public virtual void Created(ShapeCreatedContext context)
+        {
+        }
     }
 }

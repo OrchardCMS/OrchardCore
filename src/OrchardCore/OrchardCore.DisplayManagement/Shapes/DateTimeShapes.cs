@@ -10,11 +10,14 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
+    [Feature(Application.DefaultFeatureId)]
     public class DateTimeShapes : IShapeAttributeProvider
     {
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
         private readonly IClock _clock;
         private readonly ILocalClock _localClock;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public DateTimeShapes(
             IClock clock,
@@ -25,12 +28,9 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             _localClock = localClock;
             _clock = clock;
-            T = localizer;
+            S = localizer;
             H = htmlLocalizer;
         }
-
-        IStringLocalizer T { get; }
-        IHtmlLocalizer H { get; }
 
         [Shape]
         public IHtmlContent TimeSpan(IHtmlHelper Html, DateTime? Utc, DateTime? Origin)
@@ -88,7 +88,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             if (Format == null)
             {
-                Format = T[LongDateTimeFormat].Value;
+                Format = S[LongDateTimeFormat].Value;
             }
 
             return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.CurrentUICulture)));

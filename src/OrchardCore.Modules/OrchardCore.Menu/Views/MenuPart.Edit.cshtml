@@ -16,7 +16,7 @@
 
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
-    var menuItemContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "MenuItem");
+    var menuItemContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "MenuItem");
     var canAddMenuItem = Model.MenuPart.ContentItem.Id != 0;
     var index = 0;
 }
@@ -116,6 +116,4 @@
             window.onbeforeunload = function () { };
         });
     });
-
-
 </script>

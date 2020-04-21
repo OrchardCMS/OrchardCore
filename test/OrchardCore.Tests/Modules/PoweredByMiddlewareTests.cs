@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
@@ -35,7 +34,7 @@ namespace OrchardCore.Tests.Modules
             // Act
             await middleware.Invoke(httpContextMock.Object);
 
-            // Assert 
+            // Assert
             Assert.Equal(value, headersArray[key]);
             httpResponseMock.Verify(r => r.Headers, Times.Once);
         }
@@ -65,7 +64,7 @@ namespace OrchardCore.Tests.Modules
             // Act
             await middleware.Invoke(httpContextMock.Object);
 
-            // Assert 
+            // Assert
             Assert.Null(dueTask);
             httpResponseMock.Verify(r => r.Headers.Add(key, value), Times.Never);
         }

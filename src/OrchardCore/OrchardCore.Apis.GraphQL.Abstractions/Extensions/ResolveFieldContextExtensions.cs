@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Builders;
 using GraphQL.Types;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -17,7 +19,7 @@ namespace OrchardCore.Apis.GraphQL
 
             return false;
         }
-        
+
         public static FieldBuilder<TArgumentGraphType, TArgumentType> PagingArguments<TArgumentGraphType, TArgumentType>(this FieldBuilder<TArgumentGraphType, TArgumentType> field)
         {
             return field
@@ -31,6 +33,11 @@ namespace OrchardCore.Apis.GraphQL
             var skip = context.GetArgument<int>("skip");
             var first = context.GetArgument<int>("first");
             var last = context.GetArgument<int>("last");
+
+            if (last == 0 && first == 0)
+            {
+                first = context.ResolveServiceProvider().GetService<IOptions<GraphQLSettings>>().Value.DefaultNumberOfResults;
+            }
 
             if (last > 0)
             {
@@ -50,6 +57,11 @@ namespace OrchardCore.Apis.GraphQL
             }
 
             return source;
+        }
+
+        public static IServiceProvider ResolveServiceProvider<T>(this ResolveFieldContext<T> context)
+        {
+            return ((GraphQLContext)context.UserContext).ServiceProvider;
         }
     }
 }

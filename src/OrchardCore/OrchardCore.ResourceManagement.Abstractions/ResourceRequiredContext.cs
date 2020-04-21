@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace OrchardCore.ResourceManagement
 {
@@ -9,10 +10,11 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition Resource { get; set; }
         public RequireSettings Settings { get; set; }
+        public IFileVersionProvider FileVersionProvider { get; set; }
 
         public IHtmlContent GetHtmlContent(string appPath)
         {
-            var tagBuilder = Resource.GetTagBuilder(Settings, appPath);
+            var tagBuilder = Resource.GetTagBuilder(Settings, appPath, FileVersionProvider);
 
             if (String.IsNullOrEmpty(Settings.Condition))
             {

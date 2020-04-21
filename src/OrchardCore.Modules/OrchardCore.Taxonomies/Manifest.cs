@@ -3,9 +3,9 @@ using OrchardCore.Modules.Manifest;
 [assembly: Module(
     Name = "Taxonomies",
     Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
+    Website = "https://orchardproject.net",
     Version = "2.0.0",
-    Description = "The taxonomies modules provides a way to categorize content items.",
-    Dependencies = new [] { "OrchardCore.ContentTypes" },
+    Description = "The taxonomies module provides a way to categorize content items.",
+    Dependencies = new[] { "OrchardCore.ContentTypes" },
     Category = "Content Management"
 )]

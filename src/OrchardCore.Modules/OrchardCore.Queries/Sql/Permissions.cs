@@ -1,5 +1,7 @@
-using OrchardCore.Security.Permissions;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Queries.Sql
 {
@@ -7,12 +9,13 @@ namespace OrchardCore.Queries.Sql
     {
         public static readonly Permission ManageSqlQueries = new Permission("ManageSqlQueries", "Manage SQL Queries");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] 
+            return Task.FromResult(new[]
             {
                 ManageSqlQueries
-            };
+            }
+            .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

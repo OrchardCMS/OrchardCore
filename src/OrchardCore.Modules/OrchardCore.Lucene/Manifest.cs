@@ -3,7 +3,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Module(
     Name = "Lucene",
     Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
+    Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
 
@@ -14,7 +14,8 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[]
     {
         "OrchardCore.Indexing",
-        "OrchardCore.Liquid"
+        "OrchardCore.Liquid",
+        "OrchardCore.ContentTypes"
     },
     Category = "Content Management"
 )]

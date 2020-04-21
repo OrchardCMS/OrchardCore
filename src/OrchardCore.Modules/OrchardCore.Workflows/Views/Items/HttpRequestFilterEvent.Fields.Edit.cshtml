@@ -1,30 +1,30 @@
 @using OrchardCore.Workflows.Http.ViewModels;
 @model HttpRequestFilterEventViewModel
 
-<fieldset class="form-group" asp-validation-class-for="HttpMethod">
+<div class="form-group" asp-validation-class-for="HttpMethod">
     <label asp-for="HttpMethod">@T["HTTP Method"]</label>
     <select asp-for="HttpMethod" class="form-control" asp-items="Model.AvailableHttpMethods"></select>
     <span asp-validation-for="HttpMethod"></span>
     <span class="hint">@T["The HTTP method to match."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="ControllerName">
+<div class="form-group" asp-validation-class-for="ControllerName">
     <label asp-for="ControllerName">@T["Controller"]</label>
     <input asp-for="ControllerName" type="text" class="form-control" />
     <span asp-validation-for="ControllerName"></span>
     <span class="hint">@T["The controller name to match."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="ActionName">
+<div class="form-group" asp-validation-class-for="ActionName">
     <label asp-for="ActionName">@T["Action"]</label>
     <input asp-for="ActionName" type="text" class="form-control" />
     <span asp-validation-for="ActionName"></span>
     <span class="hint">@T["The action name to match."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="AreaName">
+<div class="form-group" asp-validation-class-for="AreaName">
     <label asp-for="AreaName">@T["Area"]</label>
     <input asp-for="AreaName" type="text" class="form-control" />
     <span asp-validation-for="AreaName"></span>
     <span class="hint">@T["The area name to match."]</span>
-</fieldset>
+</div>

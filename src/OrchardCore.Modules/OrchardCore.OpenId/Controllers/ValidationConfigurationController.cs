@@ -16,7 +16,7 @@ using OrchardCore.OpenId.Settings;
 namespace OrchardCore.OpenId.Controllers
 {
     [Admin, Feature(OpenIdConstants.Features.Validation)]
-    public class ValidationConfigurationController : Controller, IUpdateModel
+    public class ValidationConfigurationController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
@@ -24,7 +24,8 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IDisplayManager<OpenIdValidationSettings> _validationSettingsDisplayManager;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly IHtmlLocalizer<ValidationConfigurationController> H;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IHtmlLocalizer H;
 
         public ValidationConfigurationController(
             IAuthorizationService authorizationService,
@@ -33,7 +34,8 @@ namespace OrchardCore.OpenId.Controllers
             IOpenIdValidationService validationService,
             IDisplayManager<OpenIdValidationSettings> validationSettingsDisplayManager,
             IShellHost shellHost,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _authorizationService = authorizationService;
             H = htmlLocalizer;
@@ -42,17 +44,18 @@ namespace OrchardCore.OpenId.Controllers
             _validationSettingsDisplayManager = validationSettingsDisplayManager;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            _updateModelAccessor = updateModelAccessor;
         }
 
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageValidationSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var settings = await _validationService.GetSettingsAsync();
-            var shape = await _validationSettingsDisplayManager.BuildEditorAsync(settings, updater: this, isNew: false);
+            var shape = await _validationSettingsDisplayManager.BuildEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             return View(shape);
         }
@@ -63,11 +66,11 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageValidationSettings))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var settings = await _validationService.GetSettingsAsync();
-            var shape = await _validationSettingsDisplayManager.UpdateEditorAsync(settings, updater: this, isNew: false);
+            var shape = await _validationSettingsDisplayManager.UpdateEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             if (!ModelState.IsValid)
             {
@@ -92,7 +95,7 @@ namespace OrchardCore.OpenId.Controllers
 
             _notifier.Success(H["OpenID validation configuration successfully updated."]);
 
-            await _shellHost.ReloadShellContextAsync(_shellSettings);
+            await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
             return RedirectToAction(nameof(Index));
         }

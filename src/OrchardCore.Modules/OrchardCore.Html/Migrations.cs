@@ -15,7 +15,7 @@ namespace OrchardCore.Html
     public class Migrations : DataMigration
     {
         private readonly ISession _session;
-        private readonly ILogger<Migrations> _logger;
+        private readonly ILogger _logger;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(
@@ -27,7 +27,6 @@ namespace OrchardCore.Html
             _session = session;
             _logger = logger;
         }
-
 
         public int Create()
         {
@@ -48,7 +47,7 @@ namespace OrchardCore.Html
             // This code can be removed in RC
 
             // Update content type definitions
-            foreach (var contentType in _contentDefinitionManager.ListTypeDefinitions())
+            foreach (var contentType in _contentDefinitionManager.LoadTypeDefinitions())
             {
                 if (contentType.Parts.Any(x => x.PartDefinition.Name == "BodyPart"))
                 {
@@ -63,7 +62,7 @@ namespace OrchardCore.Html
 
             var lastDocumentId = 0;
 
-            for (;;)
+            for (; ; )
             {
                 var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync();
 
@@ -78,7 +77,7 @@ namespace OrchardCore.Html
                     if (UpdateBody(contentItemVersion.Content))
                     {
                         _session.Save(contentItemVersion);
-                        _logger.LogInformation($"A content item version's BodyPart was upgraded: '{contentItemVersion.ContentItemVersionId}'");
+                        _logger.LogInformation("A content item version's BodyPart was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
                     }
 
                     lastDocumentId = contentItemVersion.Id;
@@ -112,6 +111,5 @@ namespace OrchardCore.Html
 
             return 4;
         }
-
     }
 }

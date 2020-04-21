@@ -12,15 +12,15 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Modules
 {
     internal class ModularBackgroundService : BackgroundService
     {
-        private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
-        private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan PollingTime = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
 
         private readonly ConcurrentDictionary<string, BackgroundTaskScheduler> _schedulers =
             new ConcurrentDictionary<string, BackgroundTaskScheduler>();
@@ -30,6 +30,7 @@ namespace OrchardCore.Modules
 
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger _logger;
 
         public ModularBackgroundService(
             IShellHost shellHost,
@@ -38,27 +39,32 @@ namespace OrchardCore.Modules
         {
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             stoppingToken.Register(() =>
             {
-                Logger.LogDebug("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
+                _logger.LogError("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
 
-            try
+            while (GetRunningShells().Count() < 1)
             {
-                while (GetRunningShells().Count() < 1)
+                try
                 {
                     await Task.Delay(MinIdleTime, stoppingToken);
                 }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
+            }
 
-                var previousShells = Enumerable.Empty<ShellContext>();
+            var previousShells = Enumerable.Empty<ShellContext>();
 
+            try
+            {
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     var runningShells = GetRunningShells();
@@ -71,12 +77,9 @@ namespace OrchardCore.Modules
                     await WaitAsync(pollingDelay, stoppingToken);
                 }
             }
-
-            catch (TaskCanceledException) { }
-
             catch (Exception e)
             {
-                Logger.LogError(e, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
+                _logger.LogError(e, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
             }
         }
 
@@ -97,51 +100,38 @@ namespace OrchardCore.Modules
                         break;
                     }
 
-                    IServiceScope scope = null;
-                    ShellContext context = null;
+                    var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
-                    try
+                    if (shellScope.ShellContext.Pipeline == null)
                     {
-                        (scope, context) = await _shellHost.GetScopeAndContextAsync(shell.Settings);
+                        break;
                     }
 
-                    catch (Exception e)
+                    await shellScope.UsingAsync(async scope =>
                     {
-                        Logger.LogError(e, "Can't resolve a scope on tenant '{TenantName}'.", tenant);
-                        return;
-                    }
-
-                    using (scope)
-                    {
-                        if (scope == null || context.Pipeline == null)
-                        {
-                            break;
-                        }
-
                         var taskName = scheduler.Name;
 
                         var task = scope.ServiceProvider.GetServices<IBackgroundTask>().GetTaskByName(taskName);
 
                         if (task == null)
                         {
-                            continue;
+                            return;
                         }
 
                         try
                         {
-                            Logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
 
                             scheduler.Run();
                             await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
 
-                            Logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
-
                         catch (Exception e)
                         {
-                            Logger.LogError(e, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogError(e, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
-                    }
+                    });
                 }
             });
         }
@@ -161,27 +151,15 @@ namespace OrchardCore.Modules
 
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
-                IServiceScope scope = null;
-                ShellContext context = null;
+                var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
-                try
+                if (shellScope.ShellContext.Pipeline == null)
                 {
-                    (scope, context) = await _shellHost.GetScopeAndContextAsync(shell.Settings);
-                }
-
-                catch (Exception e)
-                {
-                    Logger.LogError(e, "Can't resolve a scope on tenant '{TenantName}'.", tenant);
                     return;
                 }
 
-                using (scope)
+                await shellScope.UsingAsync(async scope =>
                 {
-                    if (scope == null || context.Pipeline == null)
-                    {
-                        return;
-                    }
-
                     var tasks = scope.ServiceProvider.GetServices<IBackgroundTask>();
 
                     CleanSchedulers(tenant, tasks);
@@ -199,7 +177,7 @@ namespace OrchardCore.Modules
                     {
                         var taskName = task.GetTaskName();
 
-                        if (!_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
+                        if (!_schedulers.TryGetValue(tenant + taskName, out var scheduler))
                         {
                             _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime);
                         }
@@ -218,10 +196,9 @@ namespace OrchardCore.Modules
                                 settings = await settingsProvider.GetSettingsAsync(task);
                             }
                         }
-
                         catch (Exception e)
                         {
-                            Logger.LogError(e, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogError(e, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
 
                         settings = settings ?? task.GetDefaultSettings();
@@ -235,7 +212,7 @@ namespace OrchardCore.Modules
                         scheduler.Released = false;
                         scheduler.Updated = true;
                     }
-                }
+                });
             });
         }
 
@@ -322,15 +299,25 @@ namespace OrchardCore.Modules
     {
         public static HttpContext CreateHttpContext(this ShellContext shell)
         {
-            return shell.Settings.CreateHttpContext();
+            var context = shell.Settings.CreateHttpContext();
+
+            context.Features.Set(new ShellContextFeature
+            {
+                ShellContext = shell,
+                OriginalPathBase = String.Empty,
+                OriginalPath = "/"
+            });
+
+            return context;
         }
 
         public static HttpContext CreateHttpContext(this ShellSettings settings)
         {
-            var urlHost = settings.RequestUrlHost?.Split(new[] { "," },
+            var context = new DefaultHttpContext().UseShellScopeServices();
+
+            var urlHost = settings.RequestUrlHost?.Split('/',
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
-            var context = new DefaultHttpContext();
             context.Request.Host = new HostString(urlHost ?? "localhost");
 
             if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
@@ -340,6 +327,7 @@ namespace OrchardCore.Modules
 
             context.Request.Path = "/";
             context.Items["IsBackground"] = true;
+
             return context;
         }
     }

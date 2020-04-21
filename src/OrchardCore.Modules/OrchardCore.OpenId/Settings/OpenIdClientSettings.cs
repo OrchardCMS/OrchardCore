@@ -1,12 +1,12 @@
+using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.OpenId.Settings
 {
     public class OpenIdClientSettings
     {
         public string DisplayName { get; set; }
-        public string Authority { get; set; }
+        public Uri Authority { get; set; }
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
         public string CallbackPath { get; set; }

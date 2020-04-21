@@ -7,12 +7,12 @@ namespace OrchardCore.Settings
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -21,9 +21,10 @@ namespace OrchardCore.Settings
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Configuration"], configuration => configuration
-                .Add(T["Settings"], "1", settings => settings
-                    .Add(T["General"], T["General"], entry => entry
+            builder.Add(S["Configuration"], configuration => configuration
+                .Add(S["Settings"], "1", settings => settings
+                    .Add(S["General"], "1", entry => entry
+                    .AddClass("general").Id("general")
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })
                         .Permission(Permissions.ManageGroupSettings)
                         .LocalNav()

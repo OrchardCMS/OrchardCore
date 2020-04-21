@@ -1,5 +1,6 @@
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebUtilities;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.Liquid;
@@ -15,18 +16,18 @@ namespace OrchardCore.Media.Filters
             _mediaFileStore = mediaFileStore;
         }
 
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var url = input.ToStringValue();
             var imageUrl = _mediaFileStore.MapPathToPublicUrl(url);
 
-            return Task.FromResult<FluidValue>(new StringValue(imageUrl ?? url));
+            return new ValueTask<FluidValue>(new StringValue(imageUrl ?? url));
         }
     }
 
     public class ImageTagFilter : ILiquidFilter
     {
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var url = input.ToStringValue();
 
@@ -34,46 +35,43 @@ namespace OrchardCore.Media.Filters
 
             foreach (var name in arguments.Names)
             {
-                imgTag += $" {name.Replace("_", "-")}=\"{arguments[name].ToStringValue()}\"";
+                imgTag += $" {name.Replace('_', '-')}=\"{arguments[name].ToStringValue()}\"";
             }
 
             imgTag += " />";
 
-            return Task.FromResult<FluidValue>(new StringValue(imgTag) { Encode = false });
+            return new ValueTask<FluidValue>(new StringValue(imgTag) { Encode = false });
         }
     }
 
     public class ResizeUrlFilter : ILiquidFilter
     {
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var url = input.ToStringValue();
 
-            if (!url.Contains("?"))
-            {
-                url += "?";
-            }
+            var queryStringParams = new Dictionary<string, string>();
 
             var width = arguments["width"].Or(arguments.At(0));
             var height = arguments["height"].Or(arguments.At(1));
-            var mode = arguments["mode"];
+            var mode = arguments["mode"].Or(arguments.At(2));
 
             if (!width.IsNil())
             {
-                url += "&width=" + width.ToStringValue();
+                queryStringParams.Add("width", width.ToStringValue());
             }
 
             if (!height.IsNil())
             {
-                url += "&height=" + height.ToStringValue();
+                queryStringParams.Add("height", height.ToStringValue());
             }
 
             if (!mode.IsNil())
             {
-                url += "&rmode=" + mode.ToStringValue();
+                queryStringParams.Add("rmode", mode.ToStringValue());
             }
 
-            return Task.FromResult<FluidValue>(new StringValue(url));
+            return new ValueTask<FluidValue>(new StringValue(QueryHelpers.AddQueryString(url, queryStringParams)));
         }
     }
 }

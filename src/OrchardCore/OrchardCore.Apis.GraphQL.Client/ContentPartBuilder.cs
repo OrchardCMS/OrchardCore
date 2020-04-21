@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 namespace OrchardCore.Apis.GraphQL.Client
 {
@@ -33,23 +33,22 @@ namespace OrchardCore.Apis.GraphQL.Client
         internal string Build()
         {
             var sb = new StringBuilder();
-            sb.Append($"{_contentPartName}: {{ ");
-
+            sb.Append(_contentPartName).Append(": {{ ");
 
             for (var i = 0; i < _keysWithValues.Count; i++)
             {
                 var item = _keysWithValues.ElementAt(i);
-                sb.Append($"{item.Key}: \"{item.Value}\"");
+                sb.Append(item.Key).Append(": \"").Append(item.Value).Append('"');
 
                 if (i < (_keysWithValues.Count - 1))
                 {
-                    sb.Append(" ");
+                    sb.Append(' ');
                 }
             }
 
             foreach (var item in _keys)
             {
-                sb.Append(item + " ");
+                sb.Append(item).Append(' ');
             }
 
             sb.Append(" }");

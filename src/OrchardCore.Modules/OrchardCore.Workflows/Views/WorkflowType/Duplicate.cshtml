@@ -5,41 +5,39 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Duplicate" method="post">
 
-    <fieldset class="form-group" asp-validation-class-for="Name">
+    <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name" class="text-danger"></span>
         <div class="hint">@T["The name of the workflow type."]</div>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="custom-control custom-checkbox">
             <input asp-for="IsEnabled" type="checkbox" class="custom-control-input">
             <label class="custom-control-label" asp-for="IsEnabled">@T["Enabled"]</label>
             <span class="hint">@T["Uncheck to prevent workflows of this type from being executed."]</span>
         </div>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="custom-control custom-checkbox">
             <input asp-for="IsSingleton" type="checkbox" class="custom-control-input">
             <label class="custom-control-label" asp-for="IsSingleton">@T["Single instance"]</label>
             <span class="hint">@T["Check to ensure only one workflow of this type can execute at a time. Leave unchecked to allow any number of workflows to execute at the same time."]</span>
         </div>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="custom-control custom-checkbox">
             <input asp-for="DeleteFinishedWorkflows" type="checkbox" class="custom-control-input">
             <label class="custom-control-label" asp-for="DeleteFinishedWorkflows">@T["Delete successfully completed workflows"]</label>
             <span class="hint">@T["Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."]</span>
         </div>
-    </fieldset>
+    </div>
 
-    <fieldset>
-        <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
-            <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Cancel"]</a>
-        </div>
-    </fieldset>
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Cancel"]</a>
+    </div>
 </form>

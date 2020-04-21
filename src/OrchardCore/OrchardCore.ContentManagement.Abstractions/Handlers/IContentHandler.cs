@@ -23,5 +23,7 @@ namespace OrchardCore.ContentManagement.Handlers
         Task RemovingAsync(RemoveContentContext context);
         Task RemovedAsync(RemoveContentContext context);
         Task GetContentItemAspectAsync(ContentItemAspectContext context);
+        Task CloningAsync(CloneContentContext context);
+        Task ClonedAsync(CloneContentContext context);
     }
 }

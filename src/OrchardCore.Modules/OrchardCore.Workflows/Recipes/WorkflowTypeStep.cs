@@ -1,25 +1,20 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
-using YesSql;
 
 namespace OrchardCore.Workflows.Recipes
 {
     public class WorkflowTypeStep : IRecipeStepHandler
     {
-        private readonly ISession _session;
         private readonly IWorkflowTypeStore _workflowTypeStore;
 
-        public WorkflowTypeStep(IWorkflowTypeStore workflowTypeStore, ISession session)
+        public WorkflowTypeStep(IWorkflowTypeStore workflowTypeStore)
         {
             _workflowTypeStore = workflowTypeStore;
-            _session = session;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -43,7 +38,7 @@ namespace OrchardCore.Workflows.Recipes
                 }
                 else
                 {
-                    await _workflowTypeStore.DeleteAsync(workflow);
+                    await _workflowTypeStore.DeleteAsync(existing);
                 }
 
                 await _workflowTypeStore.SaveAsync(workflow);

@@ -5,30 +5,30 @@
 
 <h3>@T["Microsoft Account Authentication Settings"]</h3>
 
-<fieldset class="form-group" asp-validation-class-for="DisplayName">
+<div class="form-group" asp-validation-class-for="DisplayName">
     <label>@T["Display Name"]</label>
     <input asp-for="DisplayName" class="form-control" />
     <span asp-validation-for="DisplayName"></span>
     <span class="hint">@T["The display name of the provider."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="AppId">
+<div class="form-group" asp-validation-class-for="AppId">
     <label>@T["AppId"]</label>
     <input asp-for="AppId" class="form-control" />
     <span asp-validation-for="AppId"></span>
     <span class="hint">@T["The Application ID found on the Azure AD App registration parameters."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="TenantId">
+<div class="form-group" asp-validation-class-for="TenantId">
     <label>@T["TenantId"]</label>
     <input asp-for="TenantId" class="form-control" />
     <span asp-validation-for="TenantId"></span>
     <span class="hint">@T["The Tenant (Directory) ID found on the Azure AD App registration parameters."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="CallbackPath">
+<div class="form-group" asp-validation-class-for="CallbackPath">
     <label>@T["CallbackPath"]</label>
     <input asp-for="CallbackPath" class="form-control" placeholder="/signin-oidc" />
     <span asp-validation-for="CallbackPath"></span>
     <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
-</fieldset>
+</div>

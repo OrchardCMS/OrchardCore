@@ -9,7 +9,7 @@ namespace OrchardCore.ContentFields.Indexing
     {
         public override Task BuildIndexAsync(NumericField field, BuildFieldIndexContext context)
         {
-            var settings = context.ContentPartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+            var settings = context.ContentPartFieldDefinition.GetSettings<NumericFieldSettings>();
             var options = context.Settings.ToOptions();
 
             if (settings.Scale == 0)

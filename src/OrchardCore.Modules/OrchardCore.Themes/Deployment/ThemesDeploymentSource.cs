@@ -26,7 +26,7 @@ namespace OrchardCore.Themes.Deployment
             {
                 return;
             }
-            
+
             result.Steps.Add(new JObject(
                 new JProperty("name", "Themes"),
                 new JProperty(nameof(ThemeStepModel.Site), await _siteThemeService.GetCurrentThemeNameAsync()),

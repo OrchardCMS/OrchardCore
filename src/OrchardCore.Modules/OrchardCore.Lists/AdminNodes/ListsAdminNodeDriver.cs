@@ -20,6 +20,7 @@ namespace OrchardCore.Lists.AdminNodes
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
+
         public override IDisplayResult Display(ListsAdminNode treeNode)
         {
             return Combine(
@@ -44,7 +45,7 @@ namespace OrchardCore.Lists.AdminNodes
         {
             var model = new ListsAdminNodeViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, 
+            if (await updater.TryUpdateModelAsync(model, Prefix,
                 x => x.ContentType, x => x.IconForContentItems,
                 x => x.AddContentTypeAsParent, x => x.IconForParentLink))
             {
@@ -56,7 +57,6 @@ namespace OrchardCore.Lists.AdminNodes
 
             return Edit(treeNode);
         }
-
 
         private List<SelectListItem> GetContenTypesSelectList()
         {

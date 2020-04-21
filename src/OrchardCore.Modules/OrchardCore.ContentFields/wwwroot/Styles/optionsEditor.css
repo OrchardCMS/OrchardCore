@@ -3,8 +3,5 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-.options-table .custom-radio, .options-table .custom-checkbox {
-  top: -10px; }
-
 .options-table .courrier {
   font-family: Courier New, Courier, monospace; }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Builders;
 
@@ -41,6 +42,11 @@ namespace OrchardCore.ContentManagement
         /// <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
         public static ContentElement Get(this ContentElement contentElement, Type contentElementType, string name)
         {
+            if (contentElement.Elements.TryGetValue(name, out var element))
+            {
+                return element;
+            }
+
             var elementData = contentElement.Data[name] as JObject;
 
             if (elementData == null)
@@ -51,6 +57,8 @@ namespace OrchardCore.ContentManagement
             var result = (ContentElement)elementData.ToObject(contentElementType);
             result.Data = elementData;
             result.ContentItem = contentElement.ContentItem;
+
+            contentElement.Elements[name] = result;
 
             return result;
         }
@@ -67,10 +75,11 @@ namespace OrchardCore.ContentManagement
 
             if (existing == null)
             {
-                existing = new TElement();
-                existing.ContentItem = contentElement.ContentItem;
-                contentElement.Data[name] = existing.Data;
-                return existing;
+                var newElement = new TElement();
+                newElement.ContentItem = contentElement.ContentItem;
+                contentElement.Data[name] = newElement.Data;
+                contentElement.Elements[name] = newElement;
+                return newElement;
             }
 
             return existing;
@@ -84,13 +93,13 @@ namespace OrchardCore.ContentManagement
         /// <returns>The current <see cref="ContentItem"/> instance.</returns>
         public static ContentElement Weld(this ContentElement contentElement, string name, ContentElement element)
         {
-            JToken result;
-            if (!contentElement.Data.TryGetValue(name, out result))
+            if (!contentElement.Data.ContainsKey(name))
             {
                 element.Data = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
                 element.ContentItem = contentElement.ContentItem;
 
                 contentElement.Data[name] = element.Data;
+                contentElement.Elements[name] = element;
             }
 
             return contentElement;
@@ -104,7 +113,7 @@ namespace OrchardCore.ContentManagement
         public static ContentElement Weld<TElement>(this ContentElement contentElement, object settings = null) where TElement : ContentElement, new()
         {
             var elementName = typeof(TElement).Name;
-            
+
             var elementData = contentElement.Data[elementName] as JObject;
 
             if (elementData == null)
@@ -143,7 +152,19 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                contentElement.Data[name] = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                elementData = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                contentElement.Data[name] = elementData;
+            }
+
+            element.Data = elementData;
+            element.ContentItem = contentElement.ContentItem;
+
+            // Replace the existing content element with the new one
+            contentElement.Elements[name] = element;
+
+            if (element is ContentField)
+            {
+                contentElement.ContentItem.Elements.Clear();
             }
 
             return contentElement;
@@ -165,6 +186,7 @@ namespace OrchardCore.ContentManagement
                 contentElement.Data = JObject.FromObject(element.Data, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             }
 
+            contentElement.Elements.Clear();
             return contentElement;
         }
 
@@ -211,6 +233,24 @@ namespace OrchardCore.ContentManagement
         public static bool HasDraft(this IContent content)
         {
             return content.ContentItem != null && (!content.ContentItem.Published || !content.ContentItem.Latest);
+        }
+
+        /// <summary>
+        /// Gets all content elements of a specific type.
+        /// </summary>
+        /// <typeparam name="TElement">The expected type of the content elements.</typeparam>
+        /// <returns>The content element instances or empty sequence if no entries exist.</returns>
+        public static IEnumerable<TElement> OfType<TElement>(this ContentElement contentElement) where TElement : ContentElement
+        {
+            foreach (var part in contentElement.Elements)
+            {
+                var result = part.Value as TElement;
+
+                if (result != null)
+                {
+                    yield return result;
+                }
+            }
         }
     }
 }

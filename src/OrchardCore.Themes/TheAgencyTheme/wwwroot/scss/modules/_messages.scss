@@ -1,0 +1,15 @@
+// Messages
+// ------------------------------
+.message {
+    position: relative;
+    padding: $alert-padding-y $alert-padding-x;
+    margin-bottom: $alert-margin-bottom;
+    border: $alert-border-width solid transparent;
+    @include border-radius($alert-border-radius);
+  }
+
+@each $color, $value in $theme-colors {
+    .message-#{$color} {
+      @include alert-variant(theme-color-level($color, $alert-bg-level), theme-color-level($color, $alert-border-level), theme-color-level($color, $alert-color-level));
+    }
+  }

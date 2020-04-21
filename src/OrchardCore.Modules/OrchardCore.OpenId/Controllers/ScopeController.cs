@@ -24,15 +24,14 @@ namespace OrchardCore.OpenId.Controllers
     public class ScopeController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer<ScopeController> T;
-        private readonly IHtmlLocalizer<ScopeController> H;
+        private readonly IStringLocalizer S;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly ISiteService _siteService;
-        private readonly IShapeFactory _shapeFactory;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
+        private readonly dynamic New;
 
         public ScopeController(
             IOpenIdScopeManager scopeManager,
@@ -47,10 +46,9 @@ namespace OrchardCore.OpenId.Controllers
             IShellHost shellHost)
         {
             _scopeManager = scopeManager;
-            _shapeFactory = shapeFactory;
+            New = shapeFactory;
             _siteService = siteService;
-            T = stringLocalizer;
-            H = htmlLocalizer;
+            S = stringLocalizer;
             _authorizationService = authorizationService;
             _notifier = notifier;
             _shellDescriptor = shellDescriptor;
@@ -62,18 +60,16 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var count = await _scopeManager.CountAsync();
 
             var model = new OpenIdScopeIndexViewModel
             {
-                Pager = await _shapeFactory.CreateAsync("Pager", new
-                {
-                    TotalItemCount = await _scopeManager.CountAsync()
-                })
+                Pager = (await New.Pager(pager)).TotalItemCount(count)
             };
 
             foreach (var scope in await _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
@@ -95,7 +91,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new CreateOpenIdScopeViewModel();
@@ -104,7 +100,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal),
+                    Current = string.Equals(tenant.Name, _shellSettings.Name),
                     Name = tenant.Name
                 });
             }
@@ -118,12 +114,12 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (await _scopeManager.FindByNameAsync(model.Name) != null)
             {
-                ModelState.AddModelError(nameof(model.Name), T["The name is already taken by another scope."]);
+                ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
             }
 
             if (!ModelState.IsValid)
@@ -141,12 +137,12 @@ namespace OrchardCore.OpenId.Controllers
 
             if (!string.IsNullOrEmpty(model.Resources))
             {
-                descriptor.Resources.UnionWith(model.Resources.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries));
+                descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
             }
 
             descriptor.Resources.UnionWith(model.Tenants
                 .Where(tenant => tenant.Selected)
-                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
+                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name))
                 .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
             await _scopeManager.CreateAsync(descriptor);
@@ -163,7 +159,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(id);
@@ -184,14 +180,14 @@ namespace OrchardCore.OpenId.Controllers
 
             model.Resources = string.Join(" ",
                 from resource in resources
-                where !string.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant)
+                where !string.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.Ordinal)
                 select resource);
 
             foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
             {
                 model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal),
+                    Current = string.Equals(tenant.Name, _shellSettings.Name),
                     Name = tenant.Name,
                     Selected = resources.Contains(OpenIdConstants.Prefixes.Tenant + tenant.Name)
                 });
@@ -206,7 +202,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(model.Id);
@@ -220,9 +216,9 @@ namespace OrchardCore.OpenId.Controllers
                 var other = await _scopeManager.FindByNameAsync(model.Name);
                 if (other != null && !string.Equals(
                     await _scopeManager.GetIdAsync(other),
-                    await _scopeManager.GetIdAsync(scope), StringComparison.Ordinal))
+                    await _scopeManager.GetIdAsync(scope)))
                 {
-                    ModelState.AddModelError(nameof(model.Name), T["The name is already taken by another scope."]);
+                    ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
                 }
             }
 
@@ -240,15 +236,15 @@ namespace OrchardCore.OpenId.Controllers
             descriptor.Name = model.Name;
 
             descriptor.Resources.Clear();
-            
+
             if (!string.IsNullOrEmpty(model.Resources))
             {
-                descriptor.Resources.UnionWith(model.Resources.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries));
+                descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
             }
 
             descriptor.Resources.UnionWith(model.Tenants
                 .Where(tenant => tenant.Selected)
-                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
+                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name))
                 .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
             await _scopeManager.UpdateAsync(scope, descriptor);
@@ -266,7 +262,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(id);

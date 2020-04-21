@@ -7,29 +7,36 @@ using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Localization.PortableObject
 {
+    /// <summary>
+    /// Represents <see cref="IPluralStringLocalizer"/> for portable objects.
+    /// </summary>
     public class PortableObjectStringLocalizer : IPluralStringLocalizer
     {
         private readonly ILocalizationManager _localizationManager;
+        private readonly bool _fallBackToParentCulture;
         private readonly ILogger _logger;
+        private string _context;
 
-        private CultureDictionary _dictionary;
-        private CultureDictionary _parentCultureDictionary;
-
-        public string Context { get; private set; }
-
-        public PortableObjectStringLocalizer(CultureInfo culture, string context, ILocalizationManager localizationManager, ILogger logger)
+        /// <summary>
+        /// Creates a new instance of <see cref="PortableObjectStringLocalizer"/>.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="localizationManager"></param>
+        /// <param name="fallBackToParentCulture"></param>
+        /// <param name="logger"></param>
+        public PortableObjectStringLocalizer(
+            string context,
+            ILocalizationManager localizationManager,
+            bool fallBackToParentCulture,
+            ILogger logger)
         {
-            Context = context;
+            _context = context;
             _localizationManager = localizationManager;
+            _fallBackToParentCulture = fallBackToParentCulture;
             _logger = logger;
-            _dictionary = localizationManager.GetDictionary(culture);
-
-            if (culture.Parent != null)
-            {
-                _parentCultureDictionary = localizationManager.GetDictionary(culture.Parent);
-            }
         }
 
+        /// <inheritdocs />
         public LocalizedString this[string name]
         {
             get
@@ -39,11 +46,13 @@ namespace OrchardCore.Localization.PortableObject
                     throw new ArgumentNullException(nameof(name));
                 }
 
-                var translation = GetTranslation(name, Context, null);
+                var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, null);
+
                 return new LocalizedString(name, translation ?? name, translation == null);
             }
         }
 
+        /// <inheritdocs />
         public LocalizedString this[string name, params object[] arguments]
         {
             get
@@ -55,16 +64,20 @@ namespace OrchardCore.Localization.PortableObject
             }
         }
 
+        /// <inheritdocs />
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
-            return _dictionary.Translations.Select(t => new LocalizedString(t.Key, t.Value.FirstOrDefault()));
+            var culture = CultureInfo.CurrentUICulture;
+
+            return includeParentCultures
+                ? GetAllStringsFromCultureHierarchy(culture)
+                : GetAllStrings(culture);
         }
 
-        public IStringLocalizer WithCulture(CultureInfo culture)
-        {
-            return new PortableObjectStringLocalizer(culture, Context, _localizationManager, _logger);
-        }
+        [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
+        public IStringLocalizer WithCulture(CultureInfo culture) => this;
 
+        /// <inheritdocs />
         public (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
         {
             if (name == null)
@@ -75,7 +88,8 @@ namespace OrchardCore.Localization.PortableObject
             // Check if a plural form is called, which is when the only argument is of type PluralizationArgument
             if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
             {
-                var translation = GetTranslation(name, Context, pluralArgument.Count);
+                var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, pluralArgument.Count);
+
                 object[] argumentsWithCount;
 
                 if (pluralArgument.Arguments.Length > 0)
@@ -89,7 +103,8 @@ namespace OrchardCore.Localization.PortableObject
                     argumentsWithCount = new object[] { pluralArgument.Count };
                 }
 
-                translation = translation ?? GetTranslation(pluralArgument.Forms, pluralArgument.Count);
+                translation = translation ?? GetTranslation(pluralArgument.Forms, CultureInfo.CurrentUICulture, pluralArgument.Count);
+
                 return (new LocalizedString(name, translation, translation == null), argumentsWithCount);
             }
             else
@@ -99,42 +114,112 @@ namespace OrchardCore.Localization.PortableObject
             }
         }
 
-        private string GetTranslation(string[] pluralForms, int? count)
+        private IEnumerable<LocalizedString> GetAllStrings(CultureInfo culture)
         {
-            var pluralForm = count.HasValue ? _dictionary.PluralRule(count.Value) : 0;
+            var dictionary = _localizationManager.GetDictionary(culture);
+
+            foreach (var translation in dictionary.Translations)
+            {
+                yield return new LocalizedString(translation.Key, translation.Value.FirstOrDefault());
+            }
+        }
+
+        private IEnumerable<LocalizedString> GetAllStringsFromCultureHierarchy(CultureInfo culture)
+        {
+            var currentCulture = culture;
+            var allLocalizedStrings = new List<LocalizedString>();
+
+            do
+            {
+                var localizedStrings = GetAllStrings(currentCulture);
+
+                if (localizedStrings != null)
+                {
+                    foreach (var localizedString in localizedStrings)
+                    {
+                        if (!allLocalizedStrings.Any(ls => ls.Name == localizedString.Name))
+                        {
+                            allLocalizedStrings.Add(localizedString);
+                        }
+                    }
+                }
+
+                currentCulture = currentCulture.Parent;
+            } while (currentCulture != currentCulture.Parent);
+
+            return allLocalizedStrings;
+        }
+
+        private string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
+        {
+            var dictionary = _localizationManager.GetDictionary(culture);
+
+            var pluralForm = count.HasValue ? dictionary.PluralRule(count.Value) : 0;
+
             if (pluralForm >= pluralForms.Length)
             {
-                throw new PluralFormNotFoundException($"Plural form '{pluralForm}' doesn't exist in values provided by the IStringLocalizer.Plural method. Provided values: {pluralForms}");
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("Plural form '{PluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {PluralForms}", pluralForm, String.Join(", ", pluralForms));
+                }
+
+                // Use the latest available form
+                return pluralForms[pluralForms.Length - 1];
             }
 
             return pluralForms[pluralForm];
         }
 
-        private string GetTranslation(string name, string context, int? count)
+        private string GetTranslation(string name, string context, CultureInfo culture, int? count)
         {
-            var key = CultureDictionaryRecord.GetKey(name, context);
+            string translation = null;
             try
             {
-                var translation = _dictionary[key, count];
-
-                if (translation == null && _parentCultureDictionary != null)
+                if (_fallBackToParentCulture)
                 {
-                    translation = _parentCultureDictionary[key, count]; // fallback to the parent culture
+                    do
+                    {
+                        if (ExtractTranslation() != null)
+                        {
+                            break;
+                        }
+
+                        culture = culture.Parent;
+                    }
+                    while (culture != CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    ExtractTranslation();
                 }
 
-                if (translation == null && context != null)
+                string ExtractTranslation()
                 {
-                    translation = GetTranslation(name, null, count); // fallback to the translation without context
-                }
+                    var dictionary = _localizationManager.GetDictionary(culture);
 
-                return translation;
+                    if (dictionary != null)
+                    {
+                        // Extract translation with context
+                        var key = CultureDictionaryRecord.GetKey(name, context);
+                        translation = dictionary[key, count];
+
+                        if (context != null && translation == null)
+                        {
+                            // Extract translation without context
+                            key = CultureDictionaryRecord.GetKey(name, null);
+                            translation = dictionary[key, count];
+                        }
+                    }
+
+                    return translation;
+                }
             }
             catch (PluralFormNotFoundException ex)
             {
                 _logger.LogWarning(ex.Message);
             }
 
-            return null;
+            return translation;
         }
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Mvc.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -10,6 +9,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.Settings;
@@ -86,7 +86,7 @@ namespace OrchardCore.Widgets.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(WidgetsListPart part, BuildPartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(WidgetsListPart part, UpdatePartEditorContext context)
         {
             var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
 

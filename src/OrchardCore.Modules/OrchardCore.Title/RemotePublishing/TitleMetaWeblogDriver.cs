@@ -1,9 +1,9 @@
 using System.Text.Encodings.Web;
 using OrchardCore.ContentManagement;
+using OrchardCore.MetaWeblog;
+using OrchardCore.Title.Models;
 using OrchardCore.XmlRpc;
 using OrchardCore.XmlRpc.Models;
-using OrchardCore.MetaWeblog;
-using OrchardCore.Title.Model;
 
 namespace OrchardCore.Title.RemotePublishing
 {

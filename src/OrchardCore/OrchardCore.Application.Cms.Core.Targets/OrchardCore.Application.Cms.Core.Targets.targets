@@ -1,0 +1,40 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+    <Compile Remove="App_Data\**;Localization\**" />
+    <Content Remove="App_Data\**;Localization\**" />
+    <EmbeddedResource Remove="App_Data\**;Localization\**" />
+    <None Remove="App_Data\**;Localization\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ResolvedFileToPublish Include="App_Data\**" Exclude="$(DefaultItemExcludes);App_Data\**\*.log">
+      <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+    </ResolvedFileToPublish>
+  </ItemGroup>
+
+  <Target Name="MakeWebRootFolder" BeforeTargets="MakeLocalizationFolder" Condition="!Exists('wwwroot/.placeholder')">
+    <WriteLinesToFile Lines="" Encoding="Unicode" File="wwwroot/.placeholder" />
+  </Target>
+
+  <Target Name="MakeLocalizationFolder" BeforeTargets="Build" Condition="!Exists('Localization/.placeholder')">
+    <WriteLinesToFile Lines="" Encoding="Unicode" File="Localization/.placeholder" />
+  </Target>
+
+  <Target Name="CopyPackageTranslationFiles" AfterTargets="Build">
+    <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
+    <Copy
+      SourceFiles="%(PackageTranslationFiles.FullPath)"
+      DestinationFolder="Localization\%(RecursiveDir)"
+      Condition="'@(PackageTranslationFiles)' != ''"
+      SkipUnchangedFiles="true" />
+
+    <ItemGroup>
+      <LocalizationFiles Include="Localization\**" Exclude="$(DefaultItemExcludes)" />
+      <ResolvedFileToPublish Include="@(LocalizationFiles)">
+        <RelativePath>Localization\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
+</Project>

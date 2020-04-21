@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.DisplayManagement.Events;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
@@ -13,7 +13,7 @@ namespace OrchardCore.Tests.Extensions
 {
     public class ExtensionManagerTests
     {
-        private static IHostingEnvironment HostingEnvironment
+        private static IHostEnvironment HostingEnvironment
             = new StubHostingEnvironment();
 
         private static IApplicationContext ApplicationContext
@@ -23,10 +23,10 @@ namespace OrchardCore.Tests.Extensions
             });
 
         private static IFeaturesProvider ModuleFeatureProvider =
-            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>());
+            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
 
         private static IFeaturesProvider ThemeFeatureProvider =
-            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>());
+            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
 
         private IExtensionManager ModuleScopedExtensionManager;
         private IExtensionManager ThemeScopedExtensionManager;
@@ -148,7 +148,6 @@ namespace OrchardCore.Tests.Extensions
             Assert.Equal("Sample1", features.ElementAt(0).Id);
             Assert.Equal("Sample2", features.ElementAt(1).Id);
         }
-
 
         [Fact]
         public void GetFeaturesWithAIdShouldReturnThatFeatureWithDependenciesOrderedWithNoDuplicates()

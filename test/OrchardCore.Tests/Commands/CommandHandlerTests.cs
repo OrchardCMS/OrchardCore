@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Commands;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Commands;
+using OrchardCore.Localization;
 using Xunit;
 
 namespace OrchardCore.Tests.Commands
@@ -95,7 +95,6 @@ namespace OrchardCore.Tests.Commands
             Assert.Equal("Command Baz Called : This was a test", commandContext.Output.ToString());
         }
 
-
         [Fact]
         public void TestBooleanSwitchForCommand()
         {
@@ -121,11 +120,11 @@ namespace OrchardCore.Tests.Commands
         }
 
         [Fact]
-        public void TestSwitchForCommandWithoutSupportForIt()
+        public async Task TestSwitchForCommandWithoutSupportForIt()
         {
             var switches = new Dictionary<string, string> { { "User", "OrchardUser" } };
             var commandContext = CreateCommandContext("Foo", switches);
-            Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
@@ -137,11 +136,11 @@ namespace OrchardCore.Tests.Commands
         }
 
         [Fact]
-        public void TestNotExistingSwitch()
+        public async Task TestNotExistingSwitch()
         {
             var switches = new Dictionary<string, string> { { "ThisSwitchDoesNotExist", "Insignificant" } };
             var commandContext = CreateCommandContext("Foo", switches);
-            Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
@@ -179,30 +178,32 @@ namespace OrchardCore.Tests.Commands
         }
 
         [Fact]
-        public void TestCommandParamsMismatchWithoutParamsNotEnoughArguments()
+        public async Task TestCommandParamsMismatchWithoutParamsNotEnoughArguments()
         {
             var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), new[] { "left to " });
-            Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
-        public void TestCommandParamsMismatchWithoutParamsTooManyArguments()
+        public async Task TestCommandParamsMismatchWithoutParamsTooManyArguments()
         {
             var commandContext = CreateCommandContext("Foo", new Dictionary<string, string>(), new[] { "left to " });
-            Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
-        public void TestCommandParamsMismatchWithParamsButNotEnoughArguments()
+        public async Task TestCommandParamsMismatchWithParamsButNotEnoughArguments()
         {
             var commandContext = CreateCommandContext("ConcatAllParams", new Dictionary<string, string>());
-            Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
         }
     }
 
     public class StubCommandHandler : DefaultCommandHandler
     {
-        public StubCommandHandler() : base(null) { }
+        public StubCommandHandler() : base(new NullStringLocalizerFactory().Create(typeof(object)))
+        {
+        }
 
         [OrchardSwitch]
         public bool Verbose { get; set; }

@@ -3,7 +3,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Module(
     Name = "Lists",
     Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
+    Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
 
@@ -11,6 +11,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Lists",
     Name = "Lists",
     Description = "Introduces a preconfigured container-enabled content type.",
-    Dependencies = new [] { "OrchardCore.ContentTypes" },
+    Dependencies = new[] { "OrchardCore.ContentTypes" },
     Category = "Content Management"
 )]

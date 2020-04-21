@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Handlers;
@@ -21,7 +22,7 @@ namespace OrchardCore.OpenId.Drivers
             => Task.FromResult<IDisplayResult>(Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
             {
                 model.AccessTokenFormat = settings.AccessTokenFormat;
-                model.Authority = settings.Authority;
+                model.Authority = settings.Authority?.AbsoluteUri;
 
                 model.CertificateStoreLocation = settings.CertificateStoreLocation;
                 model.CertificateStoreName = settings.CertificateStoreName;
@@ -39,6 +40,7 @@ namespace OrchardCore.OpenId.Drivers
                 model.AllowImplicitFlow = settings.GrantTypes.Contains(GrantTypes.Implicit);
 
                 model.UseRollingTokens = settings.UseRollingTokens;
+                model.UseReferenceTokens = settings.UseReferenceTokens;
 
                 foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
                 {
@@ -64,7 +66,7 @@ namespace OrchardCore.OpenId.Drivers
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             settings.AccessTokenFormat = model.AccessTokenFormat;
-            settings.Authority = model.Authority;
+            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
 
             settings.CertificateStoreLocation = model.CertificateStoreLocation;
             settings.CertificateStoreName = model.CertificateStoreName;
@@ -125,6 +127,7 @@ namespace OrchardCore.OpenId.Drivers
             }
 
             settings.UseRollingTokens = model.UseRollingTokens;
+            settings.UseReferenceTokens = model.UseReferenceTokens;
 
             return await EditAsync(settings, context);
         }

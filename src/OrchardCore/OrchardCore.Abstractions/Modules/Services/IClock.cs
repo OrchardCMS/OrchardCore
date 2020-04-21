@@ -13,7 +13,7 @@ namespace OrchardCore.Modules
         /// Gets the current <see cref="DateTime"/> of the system, expressed in Utc.!--
         /// </summary>
         /// <remarks>
-        /// A <see cref="DateTime"/> as this property is usually used to store the current date time in UTC and a <see cref="DateTimeOffset" /> 
+        /// A <see cref="DateTime"/> as this property is usually used to store the current date time in UTC and a <see cref="DateTimeOffset" />
         /// would affect usability.
         /// </remarks>
         DateTime UtcNow { get; }

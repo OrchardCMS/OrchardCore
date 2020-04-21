@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions.Features;
@@ -46,7 +47,7 @@ namespace OrchardCore.Environment.Extensions
                     .ToArray());
 
         private bool _isInitialized = false;
-        private static object InitializationSyncLock = new object();
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         public ExtensionManager(
             IApplicationContext applicationContext,
@@ -111,22 +112,22 @@ namespace OrchardCore.Environment.Extensions
             return Task.FromResult<ExtensionEntry>(null);
         }
 
-        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
+        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
         {
-            EnsureInitialized();
-            return Task.FromResult<IEnumerable<FeatureEntry>>(_features.Values);
+            await EnsureInitializedAsync();
+            return _features.Values;
         }
 
-        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
+        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
-            EnsureInitialized();
+            await EnsureInitializedAsync();
 
             var features = GetFeatures(featureIdsToLoad).Select(f => f.Id).ToList();
 
             var loadedFeatures = _features.Values
                 .Where(f => features.Contains(f.FeatureInfo.Id));
 
-            return Task.FromResult(loadedFeatures);
+            return loadedFeatures;
         }
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
@@ -230,7 +231,19 @@ namespace OrchardCore.Environment.Extensions
                 return;
             }
 
-            lock (InitializationSyncLock)
+            EnsureInitializedAsync().GetAwaiter().GetResult();
+        }
+
+        private async Task EnsureInitializedAsync()
+        {
+            if (_isInitialized)
+            {
+                return;
+            }
+
+            await _semaphore.WaitAsync();
+
+            try
             {
                 if (_isInitialized)
                 {
@@ -241,15 +254,16 @@ namespace OrchardCore.Environment.Extensions
                 var loadedExtensions = new ConcurrentDictionary<string, ExtensionEntry>();
 
                 // Load all extensions in parallel
-                Parallel.ForEach(modules, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (module) =>
+                await modules.ForEachAsync((module) =>
                 {
                     if (!module.ModuleInfo.Exists)
                     {
-                        return;
+                        return Task.CompletedTask;
                     }
                     var manifestInfo = new ManifestInfo(module.ModuleInfo);
 
-                    var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (mi, ei) => {
+                    var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (mi, ei) =>
+                    {
                         return _featuresProvider.GetFeatures(ei, mi);
                     });
 
@@ -261,6 +275,8 @@ namespace OrchardCore.Environment.Extensions
                     };
 
                     loadedExtensions.TryAdd(module.Name, entry);
+
+                    return Task.CompletedTask;
                 });
 
                 var loadedFeatures = new Dictionary<string, FeatureEntry>();
@@ -316,6 +332,10 @@ namespace OrchardCore.Environment.Extensions
                 _extensions = _extensionsInfos.ToDictionary(e => e.Id, e => loadedExtensions[e.Id]);
 
                 _isInitialized = true;
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 

@@ -9,13 +9,12 @@ namespace OrchardCore.Lists.Drivers
     {
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, ListPart part)
         {
-            context.For<FeedMetadata>(feedMetadata =>
+            return context.ForAsync<FeedMetadata>(feedMetadata =>
             {
                 // If the value is not defined, it will be represented as null
                 feedMetadata.FeedProxyUrl = part.Content.FeedProxyUrl;
+                return Task.CompletedTask;
             });
-
-            return Task.CompletedTask;
         }
     }
 }

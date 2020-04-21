@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu.Models
 {
@@ -9,7 +7,6 @@ namespace OrchardCore.AdminMenu.Models
     /// </summary>
     public class AdminMenuList
     {
-        public int Id { get; set; }
         public List<AdminMenu> AdminMenu { get; set; } = new List<AdminMenu>();
     }
 }

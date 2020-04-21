@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Modules;
 using OrchardCore.Security.Services;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using YesSql;
@@ -12,7 +16,7 @@ using YesSql;
 namespace OrchardCore.Users.Services
 {
     public class UserStore :
-        IUserStore<IUser>,
+        IUserClaimStore<IUser>,
         IUserRoleStore<IUser>,
         IUserPasswordStore<IUser>,
         IUserEmailStore<IUser>,
@@ -22,15 +26,21 @@ namespace OrchardCore.Users.Services
         private readonly ISession _session;
         private readonly IRoleService _roleService;
         private readonly ILookupNormalizer _keyNormalizer;
+        private readonly ILogger _logger;
 
         public UserStore(ISession session,
             IRoleService roleService,
-            ILookupNormalizer keyNormalizer)
+            ILookupNormalizer keyNormalizer,
+            ILogger<UserStore> logger,
+            IEnumerable<IUserEventHandler> handlers)
         {
             _session = session;
             _roleService = roleService;
             _keyNormalizer = keyNormalizer;
+            _logger = logger;
+            Handlers = handlers;
         }
+        public IEnumerable<IUserEventHandler> Handlers { get; private set; }
 
         public void Dispose()
         {
@@ -38,10 +48,11 @@ namespace OrchardCore.Users.Services
 
         public string NormalizeKey(string key)
         {
-            return _keyNormalizer == null ? key : _keyNormalizer.Normalize(key);
+            return _keyNormalizer == null ? key : _keyNormalizer.NormalizeName(key);
         }
 
         #region IUserStore<IUser>
+
         public async Task<IdentityResult> CreateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
@@ -54,6 +65,9 @@ namespace OrchardCore.Users.Services
             try
             {
                 await _session.CommitAsync();
+
+                var context = new UserContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
             catch
             {
@@ -166,9 +180,10 @@ namespace OrchardCore.Users.Services
             return Task.FromResult(IdentityResult.Success);
         }
 
-        #endregion
+        #endregion IUserStore<IUser>
 
         #region IUserPasswordStore<IUser>
+
         public Task<string> GetPasswordHashAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
@@ -201,9 +216,10 @@ namespace OrchardCore.Users.Services
             return Task.FromResult(((User)user).PasswordHash != null);
         }
 
-        #endregion
+        #endregion IUserPasswordStore<IUser>
 
         #region ISecurityStampValidator<IUser>
+
         public Task SetSecurityStampAsync(IUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
@@ -225,9 +241,11 @@ namespace OrchardCore.Users.Services
 
             return Task.FromResult(((User)user).SecurityStamp);
         }
-        #endregion
+
+        #endregion ISecurityStampValidator<IUser>
 
         #region IUserEmailStore<IUser>
+
         public Task SetEmailAsync(IUser user, string email, CancellationToken cancellationToken)
         {
             if (user == null)
@@ -298,9 +316,10 @@ namespace OrchardCore.Users.Services
             return Task.CompletedTask;
         }
 
-        #endregion
+        #endregion IUserEmailStore<IUser>
 
         #region IUserRoleStore<IUser>
+
         public async Task AddToRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             if (user == null)
@@ -315,7 +334,7 @@ namespace OrchardCore.Users.Services
             {
                 throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
             }
-            
+
             ((User)user).RoleNames.Add(roleName);
         }
 
@@ -372,9 +391,11 @@ namespace OrchardCore.Users.Services
             var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
             return users == null ? new List<IUser>() : users.ToList<IUser>();
         }
-        #endregion
+
+        #endregion IUserRoleStore<IUser>
 
         #region IUserLoginStore<IUser>
+
         public Task AddLoginAsync(IUser user, UserLoginInfo login, CancellationToken cancellationToken)
         {
             if (user == null)
@@ -387,7 +408,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(login));
             }
 
-            if (((User)user).LoginInfos.Any(i=>i.LoginProvider == login.LoginProvider))
+            if (((User)user).LoginInfos.Any(i => i.LoginProvider == login.LoginProvider))
                 throw new InvalidOperationException($"Provider {login.LoginProvider} is already linked for {user.UserName}");
 
             ((User)user).LoginInfos.Add(login);
@@ -429,6 +450,79 @@ namespace OrchardCore.Users.Services
             return Task.CompletedTask;
         }
 
-        #endregion
+        #endregion IUserLoginStore<IUser>
+
+        #region IUserClaimStore<IUser>
+
+        public Task<IList<Claim>> GetClaimsAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult<IList<Claim>>(((User)user).UserClaims.Select(x => x.ToClaim()).ToList());
+        }
+
+        public Task AddClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+            if (claims == null)
+                throw new ArgumentNullException(nameof(claims));
+
+            foreach (var claim in claims)
+            {
+                ((User)user).UserClaims.Add(new UserClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task ReplaceClaimAsync(IUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+            if (claim == null)
+                throw new ArgumentNullException(nameof(claim));
+            if (newClaim == null)
+                throw new ArgumentNullException(nameof(newClaim));
+
+            foreach (var userClaim in ((User)user).UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type))
+            {
+                userClaim.ClaimValue = newClaim.Value;
+                userClaim.ClaimType = newClaim.Type;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+            if (claims == null)
+                throw new ArgumentNullException(nameof(claims));
+
+            foreach (var claim in claims)
+            {
+                foreach (var userClaim in ((User)user).UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToList())
+                    ((User)user).UserClaims.Remove(userClaim);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public async Task<IList<IUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
+        {
+            if (claim == null)
+                throw new ArgumentNullException(nameof(claim));
+
+            var users = await _session.Query<User, UserByClaimIndex>(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value).ListAsync();
+
+            return users.Cast<IUser>().ToList();
+        }
+
+        #endregion IUserClaimStore<IUser>
     }
 }

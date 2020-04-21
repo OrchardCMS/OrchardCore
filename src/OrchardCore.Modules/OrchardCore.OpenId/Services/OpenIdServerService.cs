@@ -25,12 +25,12 @@ namespace OrchardCore.OpenId.Services
     public class OpenIdServerService : IOpenIdServerService
     {
         private readonly IDataProtector _dataProtector;
-        private readonly ILogger<OpenIdServerService> _logger;
+        private readonly ILogger _logger;
         private readonly IMemoryCache _memoryCache;
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<OpenIdServerService> T;
+        private readonly IStringLocalizer S;
 
         public OpenIdServerService(
             IDataProtectionProvider dataProtectionProvider,
@@ -47,7 +47,7 @@ namespace OrchardCore.OpenId.Services
             _shellOptions = shellOptions;
             _shellSettings = shellSettings;
             _siteService = siteService;
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public async Task<OpenIdServerSettings> GetSettingsAsync()
@@ -78,7 +78,7 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
@@ -94,26 +94,34 @@ namespace OrchardCore.OpenId.Services
 
             if (settings.GrantTypes.Count == 0)
             {
-                results.Add(new ValidationResult(T["At least one OpenID Connect flow must be enabled."]));
+                results.Add(new ValidationResult(S["At least one OpenID Connect flow must be enabled."]));
             }
 
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
-                if (!Uri.TryCreate(settings.Authority, UriKind.Absolute, out Uri uri) || !uri.IsWellFormedOriginalString())
+                if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
                 {
-                    results.Add(new ValidationResult(T["The authority must be a valid absolute URL."], new[]
+                    results.Add(new ValidationResult(S["The authority must be a valid absolute URL."], new[]
                     {
                         nameof(settings.Authority)
                     }));
                 }
 
-                if (!string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment))
+                if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
-                    results.Add(new ValidationResult(T["The authority cannot contain a query string or a fragment."], new[]
+                    results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                     {
                         nameof(settings.Authority)
                     }));
                 }
+            }
+
+            if (settings.UseReferenceTokens && settings.AccessTokenFormat != OpenIdServerSettings.TokenFormat.Encrypted)
+            {
+                results.Add(new ValidationResult(S["Reference tokens can only be enabled when using the Encrypted token format."], new[]
+                {
+                    nameof(settings.UseReferenceTokens)
+                }));
             }
 
             if (settings.CertificateStoreLocation != null &&
@@ -126,31 +134,28 @@ namespace OrchardCore.OpenId.Services
 
                 if (certificate == null)
                 {
-                    results.Add(new ValidationResult(T["The certificate cannot be found."], new[]
+                    results.Add(new ValidationResult(S["The certificate cannot be found."], new[]
                     {
                         nameof(settings.CertificateThumbprint)
                     }));
                 }
-
                 else if (!certificate.HasPrivateKey)
                 {
-                    results.Add(new ValidationResult(T["The certificate doesn't contain the required private key."], new[]
+                    results.Add(new ValidationResult(S["The certificate doesn't contain the required private key."], new[]
                     {
                         nameof(settings.CertificateThumbprint)
                     }));
                 }
-
                 else if (certificate.Archived)
                 {
-                    results.Add(new ValidationResult(T["The certificate is not valid because it is marked as archived."], new[]
+                    results.Add(new ValidationResult(S["The certificate is not valid because it is marked as archived."], new[]
                     {
                         nameof(settings.CertificateThumbprint)
                     }));
                 }
-
                 else if (certificate.NotBefore > DateTime.Now || certificate.NotAfter < DateTime.Now)
                 {
-                    results.Add(new ValidationResult(T["The certificate is not valid for current date."], new[]
+                    results.Add(new ValidationResult(S["The certificate is not valid for current date."], new[]
                     {
                         nameof(settings.CertificateThumbprint)
                     }));
@@ -159,7 +164,7 @@ namespace OrchardCore.OpenId.Services
 
             if (settings.GrantTypes.Contains(GrantTypes.Password) && !settings.TokenEndpointPath.HasValue)
             {
-                results.Add(new ValidationResult(T["The password flow cannot be enabled when the token endpoint is disabled."], new[]
+                results.Add(new ValidationResult(S["The password flow cannot be enabled when the token endpoint is disabled."], new[]
                 {
                     nameof(settings.GrantTypes)
                 }));
@@ -167,7 +172,7 @@ namespace OrchardCore.OpenId.Services
 
             if (settings.GrantTypes.Contains(GrantTypes.ClientCredentials) && !settings.TokenEndpointPath.HasValue)
             {
-                results.Add(new ValidationResult(T["The client credentials flow cannot be enabled when the token endpoint is disabled."], new[]
+                results.Add(new ValidationResult(S["The client credentials flow cannot be enabled when the token endpoint is disabled."], new[]
                 {
                     nameof(settings.GrantTypes)
                 }));
@@ -176,7 +181,7 @@ namespace OrchardCore.OpenId.Services
             if (settings.GrantTypes.Contains(GrantTypes.AuthorizationCode) &&
                (!settings.AuthorizationEndpointPath.HasValue || !settings.TokenEndpointPath.HasValue))
             {
-                results.Add(new ValidationResult(T["The authorization code flow cannot be enabled when the authorization and token endpoints are disabled."], new[]
+                results.Add(new ValidationResult(S["The authorization code flow cannot be enabled when the authorization and token endpoints are disabled."], new[]
                 {
                     nameof(settings.GrantTypes)
                 }));
@@ -186,7 +191,7 @@ namespace OrchardCore.OpenId.Services
             {
                 if (!settings.TokenEndpointPath.HasValue)
                 {
-                    results.Add(new ValidationResult(T["The refresh token flow cannot be enabled when the token endpoint is disabled."], new[]
+                    results.Add(new ValidationResult(S["The refresh token flow cannot be enabled when the token endpoint is disabled."], new[]
                     {
                         nameof(settings.GrantTypes)
                     }));
@@ -194,7 +199,7 @@ namespace OrchardCore.OpenId.Services
 
                 if (!settings.GrantTypes.Contains(GrantTypes.Password) && !settings.GrantTypes.Contains(GrantTypes.AuthorizationCode))
                 {
-                    results.Add(new ValidationResult(T["The refresh token flow can only be enabled if the password, authorization code or hybrid flows are enabled."], new[]
+                    results.Add(new ValidationResult(S["The refresh token flow can only be enabled if the password, authorization code or hybrid flows are enabled."], new[]
                     {
                         nameof(settings.GrantTypes)
                     }));
@@ -203,7 +208,7 @@ namespace OrchardCore.OpenId.Services
 
             if (settings.GrantTypes.Contains(GrantTypes.Implicit) && !settings.AuthorizationEndpointPath.HasValue)
             {
-                results.Add(new ValidationResult(T["The implicit flow cannot be enabled when the authorization endpoint is disabled."], new[]
+                results.Add(new ValidationResult(S["The implicit flow cannot be enabled when the authorization endpoint is disabled."], new[]
                 {
                     nameof(settings.GrantTypes)
                 }));
@@ -282,7 +287,6 @@ namespace OrchardCore.OpenId.Services
                         select new X509SecurityKey(certificate));
                 }
 
-#if SUPPORTS_CERTIFICATE_GENERATION
                 try
                 {
                     // If the certificates list is empty or only contains certificates about to expire,
@@ -296,11 +300,8 @@ namespace OrchardCore.OpenId.Services
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError(exception, "An error occured while trying to generate a X.509 signing certificate.");
+                    _logger.LogError(exception, "An error occurred while trying to generate a X.509 signing certificate.");
                 }
-#else
-                _logger.LogError("This platform doesn't support X.509 certificate generation.");
-#endif
             }
             catch (Exception exception)
             {
@@ -341,37 +342,12 @@ namespace OrchardCore.OpenId.Services
                 }
                 else
                 {
-#if SUPPORTS_DIRECT_KEY_CREATION_WITH_SPECIFIED_SIZE
                     algorithm = RSA.Create(size);
-#else
-                    algorithm = RSA.Create();
-
-                    // Note: a 1024-bit key might be returned by RSA.Create() on .NET Desktop/Mono,
-                    // where RSACryptoServiceProvider is still the default implementation and
-                    // where custom implementations can be registered via CryptoConfig.
-                    // To ensure the key size is always acceptable, replace it if necessary.
-                    if (algorithm.KeySize < size)
-                    {
-                        algorithm.KeySize = size;
-                    }
-
-                    if (algorithm.KeySize < size && algorithm is RSACryptoServiceProvider)
-                    {
-                        algorithm.Dispose();
-                        algorithm = new RSACryptoServiceProvider(size);
-                    }
-
-                    if (algorithm.KeySize < size)
-                    {
-                        throw new InvalidOperationException("The RSA key generation failed.");
-                    }
-#endif
                 }
 
                 return algorithm;
             }
 
-#if SUPPORTS_CERTIFICATE_GENERATION
             async Task<X509Certificate2> GenerateSigningCertificateAsync()
             {
                 var subject = GetSubjectName();
@@ -417,7 +393,6 @@ namespace OrchardCore.OpenId.Services
                     return Convert.ToBase64String(data, Base64FormattingOptions.None);
                 }
             }
-#endif
         }
 
         public async Task PruneSigningKeysAsync()
@@ -488,20 +463,8 @@ namespace OrchardCore.OpenId.Services
             {
                 try
                 {
-                    // Extract the certificate password from the separate .pwd file.
-                    var password = await GetPasswordAsync(Path.ChangeExtension(file.FullName, ".pwd"));
-
-                    var flags =
-#if SUPPORTS_EPHEMERAL_KEY_SETS
-                            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                                X509KeyStorageFlags.EphemeralKeySet :
-                                X509KeyStorageFlags.MachineKeySet;
-#else
-                                X509KeyStorageFlags.MachineKeySet;
-#endif
-
                     // Only add the certificate if it's still valid.
-                    var certificate = new X509Certificate2(file.FullName, password, flags);
+                    var certificate = await GetCertificateAsync(file.FullName);
                     if (certificate.NotBefore <= DateTime.Now && certificate.NotAfter > DateTime.Now)
                     {
                         certificates.Add((file.FullName, certificate));
@@ -524,6 +487,39 @@ namespace OrchardCore.OpenId.Services
                 {
                     return _dataProtector.Unprotect(await reader.ReadToEndAsync());
                 }
+            }
+
+            async Task<X509Certificate2> GetCertificateAsync(string path)
+            {
+                // Extract the certificate password from the separate .pwd file.
+                var password = await GetPasswordAsync(Path.ChangeExtension(path, ".pwd"));
+
+                try
+                {
+                    // Note: ephemeral key sets are not supported on non-Windows platforms.
+                    var flags =
+                        RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+                            X509KeyStorageFlags.EphemeralKeySet :
+                            X509KeyStorageFlags.MachineKeySet;
+
+                    return new X509Certificate2(path, password, flags);
+                }
+                // Some cloud platforms (e.g Azure App Service/Antares) are known to fail to import .pfx files if the
+                // private key is not persisted or marked as exportable. To ensure X.509 certificates can be correctly
+                // read on these platforms, a second pass is made by specifying the PersistKeySet and Exportable flags.
+                // For more information, visit https://github.com/OrchardCMS/OrchardCore/issues/3222.
+                catch (CryptographicException exception)
+                {
+                    _logger.LogDebug(exception, "A first-chance exception occurred while trying to extract " +
+                                                "a X.509 certificate with the default key storage options.");
+
+                    return new X509Certificate2(path, password,
+                        X509KeyStorageFlags.MachineKeySet |
+                        X509KeyStorageFlags.PersistKeySet |
+                        X509KeyStorageFlags.Exportable);
+                }
+                // Don't swallow exceptions thrown from the catch handler to ensure unrecoverable exceptions
+                // (e.g caused by malformed X.509 certificates or invalid password) are correctly logged.
             }
         }
     }

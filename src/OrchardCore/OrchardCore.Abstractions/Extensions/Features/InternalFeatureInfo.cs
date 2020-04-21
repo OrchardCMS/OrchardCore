@@ -14,6 +14,7 @@ namespace OrchardCore.Environment.Extensions.Features
             DefaultTenantOnly = false;
             Extension = extensionInfo;
             Dependencies = new string[0];
+            IsAlwaysEnabled = false;
         }
 
         public string Id { get; }
@@ -24,5 +25,6 @@ namespace OrchardCore.Environment.Extensions.Features
         public bool DefaultTenantOnly { get; }
         public IExtensionInfo Extension { get; }
         public string[] Dependencies { get; }
+        public bool IsAlwaysEnabled { get; }
     }
 }

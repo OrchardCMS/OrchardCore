@@ -1,15 +1,10 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Google.Authentication.Services;
 using OrchardCore.Google.Authentication.Settings;
 
@@ -21,20 +16,16 @@ namespace OrchardCore.Google.Authentication.Configuration
     {
         private readonly GoogleAuthenticationService _googleAuthenticationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<GoogleOptionsConfiguration> _logger;
-        private readonly string _tenantPrefix;
-
+        private readonly ILogger _logger;
 
         public GoogleOptionsConfiguration(
             GoogleAuthenticationService googleAuthenticationService,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<GoogleOptionsConfiguration> logger,
-            ShellSettings shellSettings)
+            ILogger<GoogleOptionsConfiguration> logger)
         {
             _googleAuthenticationService = googleAuthenticationService;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
         }
 
         public void Configure(AuthenticationOptions options)
@@ -46,7 +37,9 @@ namespace OrchardCore.Google.Authentication.Configuration
             }
 
             if (!_googleAuthenticationService.CheckSettings(settings))
+            {
                 return;
+            }
 
             options.AddScheme(GoogleDefaults.AuthenticationScheme, builder =>
             {
@@ -57,7 +50,7 @@ namespace OrchardCore.Google.Authentication.Configuration
 
         public void Configure(string name, GoogleOptions options)
         {
-            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -76,17 +69,6 @@ namespace OrchardCore.Google.Authentication.Configuration
             {
                 options.CallbackPath = settings.CallbackPath;
             }
-
-            // should be removed after February 2.2 patches
-            options.UserInformationEndpoint = "https://www.googleapis.com/oauth2/v2/userinfo";
-            options.ClaimActions.Clear();
-            options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
-            options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
-            options.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "given_name");
-            options.ClaimActions.MapJsonKey(ClaimTypes.Surname, "family_name");
-            options.ClaimActions.MapJsonKey("urn:google:profile", "link");
-            options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
-
         }
 
         public void Configure(GoogleOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

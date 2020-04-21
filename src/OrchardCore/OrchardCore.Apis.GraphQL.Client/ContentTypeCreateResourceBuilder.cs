@@ -34,7 +34,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         {
             var sbo = new StringBuilder();
 
-            sbo.AppendLine(ContentType.ToGraphQLStringFormat() + ": {");
+            sbo.Append(ContentType.ToGraphQLStringFormat()).AppendLine(": {");
 
             foreach (var value in _values)
             {
@@ -42,23 +42,24 @@ namespace OrchardCore.Apis.GraphQL.Client
 
                 if (value.Value is string)
                 {
-                    sbo.AppendLine($"{key}: \"{value.Value}\"");
+                    sbo.Append(key).Append(": \"").Append(value.Value).Append('"').AppendLine();
                 }
                 else if (value.Value is bool)
                 {
-                    sbo.AppendLine($"{key}: {((bool)value.Value).ToString().ToLowerInvariant()}");
+                    sbo.Append(key).Append(": ").Append(((bool)value.Value).ToString().ToLowerInvariant()).AppendLine();
                 }
-                else {
-                    sbo.AppendLine($"{key}: {value.Value}");
+                else
+                {
+                    sbo.Append(key).Append(": ").Append(value.Value).AppendLine();
                 }
             }
 
             for (var i = 0; i < contentPartBuilders.Count; i++)
             {
-                sbo.AppendLine(contentPartBuilders[i].Build() + ((i == (contentPartBuilders.Count - 1)) ? "" : ","));
+                sbo.Append(contentPartBuilders[i].Build()).AppendLine((i == (contentPartBuilders.Count - 1)) ? "" : ",");
             }
-            
-            sbo.AppendLine("}");
+
+            sbo.Append('}').AppendLine();
 
             return sbo.ToString();
         }

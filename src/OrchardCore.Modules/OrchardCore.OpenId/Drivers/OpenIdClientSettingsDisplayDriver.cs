@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Configuration;
@@ -27,8 +25,6 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<OpenIdClientSettingsDisplayDriver> T;
         private readonly IOpenIdClientService _clientService;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
@@ -38,8 +34,6 @@ namespace OrchardCore.OpenId.Drivers
             IDataProtectionProvider dataProtectionProvider,
             IOpenIdClientService clientService,
             IHttpContextAccessor httpContextAccessor,
-            INotifier notifier,
-            IHtmlLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer,
             IShellHost shellHost,
             ShellSettings shellSettings)
         {
@@ -47,10 +41,8 @@ namespace OrchardCore.OpenId.Drivers
             _dataProtectionProvider = dataProtectionProvider;
             _clientService = clientService;
             _httpContextAccessor = httpContextAccessor;
-            _notifier = notifier;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            T = stringLocalizer;
         }
 
         public override async Task<IDisplayResult> EditAsync(OpenIdClientSettings settings, BuildEditorContext context)
@@ -65,7 +57,7 @@ namespace OrchardCore.OpenId.Drivers
             {
                 model.DisplayName = settings.DisplayName;
                 model.Scopes = settings.Scopes != null ? string.Join(" ", settings.Scopes) : null;
-                model.Authority = settings.Authority;
+                model.Authority = settings.Authority?.AbsoluteUri;
                 model.CallbackPath = settings.CallbackPath;
                 model.ClientId = settings.ClientId;
                 model.ClientSecret = settings.ClientSecret;
@@ -97,8 +89,6 @@ namespace OrchardCore.OpenId.Drivers
                 {
                     model.UseIdTokenTokenFlow = true;
                 }
-
-
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -120,7 +110,7 @@ namespace OrchardCore.OpenId.Drivers
 
                 settings.DisplayName = model.DisplayName;
                 settings.Scopes = model.Scopes.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
-                settings.Authority = model.Authority;
+                settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
                 settings.CallbackPath = model.CallbackPath;
                 settings.ClientId = model.ClientId;
                 settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
@@ -132,7 +122,6 @@ namespace OrchardCore.OpenId.Drivers
                 if (model.UseCodeFlow)
                 {
                     settings.ResponseType = OpenIdConnectResponseType.Code;
-
                 }
                 else if (model.UseCodeIdTokenFlow)
                 {
@@ -187,10 +176,10 @@ namespace OrchardCore.OpenId.Drivers
                     }
                 }
 
-                // If the settings are valid, reload the current tenant.
+                // If the settings are valid, release the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
 

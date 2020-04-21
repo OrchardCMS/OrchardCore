@@ -32,7 +32,7 @@ namespace OrchardCore.Workflows.Models
         public string FaultMessage { get; set; }
 
         /// <summary>
-        /// List of activities the current workflow instance is waiting on 
+        /// List of activities the current workflow instance is waiting on
         /// for continuing its process.
         /// </summary>
         public IList<BlockingActivity> BlockingActivities { get; } = new List<BlockingActivity>();

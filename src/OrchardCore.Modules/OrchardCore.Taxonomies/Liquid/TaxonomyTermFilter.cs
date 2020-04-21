@@ -14,7 +14,7 @@ namespace OrchardCore.Taxonomies.Liquid
 {
     public class TaxonomyTermsFilter : ILiquidFilter
     {
-        public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             if (!ctx.AmbientValues.TryGetValue("Services", out var services))
             {
@@ -31,7 +31,7 @@ namespace OrchardCore.Taxonomies.Liquid
                 taxonomyContentItemId = field.TaxonomyContentItemId;
                 termContentItemIds = field.TermContentItemIds;
             }
-            if (input.Type == FluidValues.Object
+            else if (input.Type == FluidValues.Object
                 && input.ToObjectValue() is JObject jobj
                 && jobj.ContainsKey(nameof(TaxonomyField.TermContentItemIds))
                 && jobj.ContainsKey(nameof(TaxonomyField.TaxonomyContentItemId)))
@@ -61,7 +61,11 @@ namespace OrchardCore.Taxonomies.Liquid
             foreach (var termContentItemId in termContentItemIds)
             {
                 var term = TaxonomyOrchardHelperExtensions.FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId);
-                terms.Add(term);
+
+                if (term != null)
+                {
+                    terms.Add(term);
+                }
             }
 
             return FluidValue.Create(terms);

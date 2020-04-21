@@ -1,13 +1,13 @@
-﻿@model OrchardCore.Widgets.ViewModels.BuildEditorViewModel
-@inject OrchardCore.ResourceManagement.IResourceManager ResourceManager    
+@using Microsoft.AspNetCore.Html
+@model OrchardCore.Widgets.ViewModels.BuildEditorViewModel
+@inject OrchardCore.ResourceManagement.IResourceManager ResourceManager
 
 @{
     // Don't render the theme
     Layout = "";
-    Model.EditorShape.Metadata.Alternates.Add("Widget_Edit__List");
 
     var sw = new System.IO.StringWriter();
-    (await DisplayAsync(Model.EditorShape)).WriteTo(sw, HtmlEncoder);
+    ((IHtmlContent)await DisplayAsync(Model.EditorShape)).WriteTo(sw, HtmlEncoder);
     var content = sw.ToString();
 
     // Gather all registered scripts for this editor
@@ -31,4 +31,4 @@
 {
     "Content": @Json.Serialize(content),
     "Scripts": @Json.Serialize(scripts)
-}
+    }

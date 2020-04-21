@@ -5,11 +5,11 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Cache;
+using OrchardCore.Data;
+using OrchardCore.Infrastructure.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
 using OrchardCore.Security;
@@ -19,65 +19,60 @@ namespace OrchardCore.Roles.Services
 {
     public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
-        private const string Key = "RolesManager.Roles";
-
         private readonly ISession _session;
-        private readonly ISignal _signal;
-        private readonly IMemoryCache _memoryCache;
+        private readonly ISessionHelper _sessionHelper;
+        private readonly IScopedDistributedCache _scopedDistributedCache;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStringLocalizer S;
+        private readonly ILogger _logger;
 
-        public RoleStore(ISession session,
-            IMemoryCache memoryCache,
-            ISignal signal,
-            IStringLocalizer<RoleStore> stringLocalizer,
+        public RoleStore(
+            ISession session,
+            ISessionHelper sessionHelper,
+            IScopedDistributedCache scopedDistributedCache,
             IServiceProvider serviceProvider,
+            IStringLocalizer<RoleStore> stringLocalizer,
             ILogger<RoleStore> logger)
         {
-            _memoryCache = memoryCache;
-            _signal = signal;
-            T = stringLocalizer;
             _session = session;
+            _sessionHelper = sessionHelper;
+            _scopedDistributedCache = scopedDistributedCache;
             _serviceProvider = serviceProvider;
-            Logger = logger;
+            S = stringLocalizer;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; }
-
-        public IStringLocalizer<RoleStore> T;
 
         public void Dispose()
         {
         }
 
-        public IQueryable<IRole> Roles =>
-            GetRolesAsync().Result.Roles.AsQueryable();
+        public IQueryable<IRole> Roles => GetRolesAsync().GetAwaiter().GetResult().Roles.AsQueryable();
 
-        public Task<RolesDocument> GetRolesAsync()
+        /// <summary>
+        /// Returns the document from the database to be updated.
+        /// </summary>
+        public Task<RolesDocument> LoadRolesAsync() => _sessionHelper.LoadForUpdateAsync<RolesDocument>();
+
+        /// <summary>
+        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// </summary>
+        private async Task<RolesDocument> GetRolesAsync()
         {
-            return _memoryCache.GetOrCreateAsync(Key, async (entry) =>
+            return await _scopedDistributedCache.GetOrSetAsync(() =>
             {
-                var roles = await _session.Query<RolesDocument>().FirstOrDefaultAsync();
-
-                if (roles == null)
-                {
-                    roles = new RolesDocument();
-                    _session.Save(roles);
-                }
-
-                entry.ExpirationTokens.Add(_signal.GetToken(Key));
-
-                return roles;
+                return _sessionHelper.GetForCachingAsync<RolesDocument>();
             });
         }
 
-        public void UpdateRoles(RolesDocument roles)
+        private Task UpdateRolesAsync(RolesDocument roles)
         {
             roles.Serial++;
             _session.Save(roles);
-            _memoryCache.Set(Key, roles);
+            return _scopedDistributedCache.SetAsync(roles);
         }
 
         #region IRoleStore<IRole>
+
         public async Task<IdentityResult> CreateAsync(IRole role, CancellationToken cancellationToken)
         {
             if (role == null)
@@ -85,9 +80,9 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
-            var roles = await GetRolesAsync();
+            var roles = await LoadRolesAsync();
             roles.Roles.Add((Role)role);
-            UpdateRoles(roles);
+            await UpdateRolesAsync(roles);
 
             return IdentityResult.Success;
         }
@@ -98,20 +93,23 @@ namespace OrchardCore.Roles.Services
             {
                 throw new ArgumentNullException(nameof(role));
             }
-            var orchardRole = (Role)role;
 
-            if (String.Equals(orchardRole.NormalizedRoleName, "ANONYMOUS") ||
-                String.Equals(orchardRole.NormalizedRoleName, "AUTHENTICATED"))
+            var roleToRemove = (Role)role;
+
+            if (String.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") ||
+                String.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))
             {
-                return IdentityResult.Failed(new IdentityError { Description = T["Can't delete system roles."] });
+                return IdentityResult.Failed(new IdentityError { Description = S["Can't delete system roles."] });
             }
 
             var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
-            await roleRemovedEventHandlers.InvokeAsync(x => x.RoleRemovedAsync(orchardRole.RoleName), Logger);
+            await roleRemovedEventHandlers.InvokeAsync((handler, roleToRemove) => handler.RoleRemovedAsync(roleToRemove.RoleName), roleToRemove, _logger);
 
-            var roles = await GetRolesAsync();
-            roles.Roles.Remove(orchardRole);
-            UpdateRoles(roles);
+            var roles = await LoadRolesAsync();
+            roleToRemove = roles.Roles.FirstOrDefault(r => r.RoleName == roleToRemove.RoleName);
+            roles.Roles.Remove(roleToRemove);
+
+            await UpdateRolesAsync(roles);
 
             return IdentityResult.Success;
         }
@@ -191,19 +189,20 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
-            var roles = await GetRolesAsync();
+            var roles = await LoadRolesAsync();
             var existingRole = roles.Roles.FirstOrDefault(x => x.RoleName == role.RoleName);
             roles.Roles.Remove(existingRole);
             roles.Roles.Add((Role)role);
 
-            UpdateRoles(roles);
+            await UpdateRolesAsync(roles);
 
             return IdentityResult.Success;
         }
 
-        #endregion
+        #endregion IRoleStore<IRole>
 
         #region IRoleClaimStore<IRole>
+
         public Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (role == null)
@@ -248,6 +247,6 @@ namespace OrchardCore.Roles.Services
             return Task.CompletedTask;
         }
 
-        #endregion
+        #endregion IRoleClaimStore<IRole>
     }
 }

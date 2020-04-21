@@ -1,157 +1,199 @@
 @model AdminIndexViewModel
-@inject ShellSettings ShellSettings
-@using Microsoft.AspNetCore.Http;
-@using OrchardCore.Data;
-@using OrchardCore.Environment.Shell.Models
+@using Microsoft.AspNetCore.Http
 @using OrchardCore.Environment.Shell
-@using System.Collections.Generic
-@using System.Net
+@using OrchardCore.Environment.Shell.Models
 
 @{
-    List<SelectListItem> tenantStates = new List<SelectListItem>() {
-new SelectListItem() { Text = T["All states"].Value, Value = TenantsFilter.All.ToString() },
-new SelectListItem() { Text = T["Running"].Value, Value = TenantsFilter.Running.ToString() },
-new SelectListItem() { Text = T["Disabled"].Value, Value = TenantsFilter.Disabled.ToString() },
-new SelectListItem() { Text = T["Uninitialized"].Value, Value = TenantsFilter.Uninitialized.ToString() }
-};
+    var originalPathBase = Context.Features.Get<ShellContextFeature>().OriginalPathBase;
 
-    List<SelectListItem> tenantSorts = new List<SelectListItem>() {
-new SelectListItem() { Text = T["Sort by name"].Value, Value = TenantsOrder.Name.ToString() },
-new SelectListItem() { Text = T["Sort by state"].Value, Value = TenantsOrder.State.ToString() }
-};
-
-    List<SelectListItem> tenantActions = new List<SelectListItem>() {
-new SelectListItem() { Text = T["Disable"].Value, Value = BulkAction.Disable.ToString() },
-new SelectListItem() { Text = T["Enable"].Value, Value = BulkAction.Enable.ToString() }
-};
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.ShellSettingsEntries.Count - 1;
 }
 
-@functions {
-public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry)
+@functions
 {
-    ShellSettings tenantShellSettings = shellSettingsEntry.ShellSettings;
-    var requestHostInfo = Context.Request.Host;
-
-    var tenantUrlHost = tenantShellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHostInfo.Host;
-    if (requestHostInfo.Port.HasValue)
+    public string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
-        tenantUrlHost += ":" + requestHostInfo.Port;
-    }
+        var shellSettings = shellSettingsEntry.ShellSettings;
 
-    var pathBase = Context.Request.PathBase.Value ?? string.Empty;
+        var requestHost = Context.Request.Host;
+        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
 
-    if (!string.IsNullOrEmpty(ShellSettings.RequestUrlPrefix))
-    {
-        var prefix = "/" + ShellSettings.RequestUrlPrefix;
+        var port = requestHost.Port;
 
-        if (pathBase.EndsWith(prefix))
+        if (port.HasValue)
         {
-            pathBase = pathBase.Substring(0, pathBase.Length - prefix.Length);
+            host += ":" + port;
         }
+
+        var hostString = new HostString(host);
+
+        var pathString = originalPathBase;
+
+        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+        {
+            pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
+        }
+
+        QueryString queryString;
+
+        if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
+        {
+            queryString = QueryString.Create("token", shellSettingsEntry.Token);
+        }
+
+        return $"{Context.Request.Scheme}://{hostString + pathString + queryString}";
     }
 
-    var result = $"{Context.Request.Scheme}://{tenantUrlHost}{pathBase}";
-
-    if (!string.IsNullOrEmpty(tenantShellSettings.RequestUrlPrefix))
+    public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
-        result += "/" + tenantShellSettings.RequestUrlPrefix;
-    }
+        var shellSettings = shellSettingsEntry.ShellSettings;
 
-    if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
-    {
-        result += "?token=" + WebUtility.UrlEncode(shellSettingsEntry.Token);
-    }
+        var requestHost = Context.Request.Host;
+        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
 
-    return result;
+        var port = requestHost.Port;
+
+        if (port.HasValue)
+        {
+            host += ":" + port;
+        }
+
+        var pathString = originalPathBase;
+
+        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+        {
+            pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
+        }
+
+        return $"{Context.Request.Scheme}://{host + pathString.Value}";
+    }
 }
-}
-<a asp-route-action="Create" class="btn btn-primary float-right" role="button">@T["Add Tenant"]</a>
+
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<style asp-name="bootstrap-select"></style>
+
 <h1>@RenderTitleSegments(T["Tenants"])</h1>
-<fieldset class="admin-toolbar container-fluid">
-    <form asp-action="Index" method="get">
-        <div class="row">
-            <div class="col-md-1 col-xl-1 form-group">
-                <label for="filterResults" class="label col-form-label">@T["Filter:"]</label>
-            </div>
-            <div class="col-md-3 col-xl-2 form-group">
-                <select id="filterResults" class="form-control" asp-for="Options.Filter" asp-items="@tenantStates"></select>
-            </div>
-            <div class="col-md-3 col-xl-2 form-group">
-                <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2 my-2 my-lg-0" type="text" placeholder="@T["Search"]" autofocus="autofocus">
-            </div>
-            <div class="col-md-3 col-xl-2 form-group">
-                <select id="orderResults" class="form-control" asp-for="Options.OrderBy" asp-items="@tenantSorts"></select>
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <button type="submit" class="btn btn-secondary">@T["Search"]</button>
-            </div>
-        </div>
-    </form>
-</fieldset>
-
 <form asp-action="Index" method="post">
-    <fieldset class="admin-toolbar container-fluid">
-        <div class="row">
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="bulkAction" class="label col-form-label">@T["Actions:"]</label>
-            </div>
-            <div class="col-md-3 col-xl-2 form-group">
-                <select class="form-control" name="bulkAction" asp-items="@tenantActions"></select>
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <button type="submit" class="btn btn-secondary">@T["Apply"]</button>
+    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input name="BulkAction" type="hidden" />
+
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            <div class="input-group input-group-sm filter-options">
+                <div class="input-group-prepend">
+                    <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                        @T["Filters"]
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="filter-dropdown">
+                        <a class="dropdown-item" href="?Options.Filter=Running">@T["Only running tenants"]</a>
+                        <a class="dropdown-item" href="?Options.Filter=Disabled">@T["Only disabled tenants"]</a>
+                        <a class="dropdown-item" href="?Options.Filter=Uninitialized">@T["Only uninitialized tenants"]</a>
+                    </div>
+                </div>
+                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
             </div>
         </div>
-    </fieldset>
-
-    @* the form is necessary to generate and antiforgery token for the delete action *@
-    <ul class="list-group">
-        @foreach (var entry in Model.ShellSettingsEntries)
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                <a asp-route-action="Create" class="btn btn-sm btn-primary float-rights" role="button">@T["Add Tenant"]</a>
+            </div>
+        </div>
+    </div>
+    <ul class="list-group with-checkbox">
+        <li class="list-group-item bg-light">
+            <div class="row">
+                <div class="form-group col mb-n1 text-nowrap">
+                    <div class="custom-control custom-checkbox mt-2 mr-n2">
+                        <input type="checkbox" class="custom-control-input" id="select-all">
+                        <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                        <label id="items" for="select-all">@T.Plural(Model.ShellSettingsEntries.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                        <label id="selected-items" class="text-muted" for="select-all"></label>
+                    </div>
+                </div>
+                <div class="form-group col-2 mb-n1" style="display:none" id="actions">
+                    <span class="dropdown float-right mt-1">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Actions"]
+                        </button>
+                        <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                            @foreach (var item in Model.Options.TenantsBulkAction)
+                            {
+                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} this/these item(s)?", @item.Text.ToLower()]">@item.Text</a>
+                            }
+                        </span>
+                    </span>
+                </div>
+                <div class="form-group col mb-n1 filter">
+                    <div class="btn-group float-right mt-1">
+                        <select asp-for="Options.Filter" asp-items="@Model.Options.TenantsStates" class="selectpicker show-tick mr-2" data-header="@T["Filter by state"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["State"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.TenantsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
+                    </div>
+                </div>
+            </div>
+        </li>
+        @if (Model.ShellSettingsEntries.Count > 0)
+        {
+            @foreach (var entry in Model.ShellSettingsEntries)
+            {
+                <li class="list-group-item">
+                    <div class="custom-control custom-checkbox float-left">
+                        <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
+                        <label class="custom-control-label" for="tenantNames-@entry.Name"></label>
+                    </div>
+                    <div class="properties">
+                        <div class="related">
+                            <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
+                            {
+                                <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+                            }
+                            @if (entry.ShellSettings.State == TenantState.Disabled)
+                            {
+                                <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+                            }
+                            @if (entry.ShellSettings.State == TenantState.Uninitialized)
+                            {
+                                <a class="btn btn-info btn-sm" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
+                            }
+                            <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
+                        </div>
+                        <a href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
+                        <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
+                        @if (!string.IsNullOrEmpty(entry.Description))
+                        {
+                            <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
+                        }
+                        <div class="metadata">
+                            @switch (entry.ShellSettings.State)
+                            {
+                                case TenantState.Disabled:
+                                    <span class="badge badge-danger">@T["Disabled"]</span>
+                                    break;
+                                case TenantState.Initializing:
+                                    <span class="badge badge-info">@T["Initializing"]</span>
+                                    break;
+                                case TenantState.Invalid:
+                                    <span class="badge badge-warning">@T["Invalid"]</span>
+                                    break;
+                                case TenantState.Running:
+                                    <span class="badge badge-success">@T["Running"]</span>
+                                    break;
+                                case TenantState.Uninitialized:
+                                    <span class="badge badge-secondary">@T["Uninitialized"]</span>
+                                    break;
+                            }
+                        </div>
+                    </div>
+                </li>
+            }
+        }
+        else
         {
             <li class="list-group-item">
-                <div class="custom-control custom-checkbox float-left">
-                    <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
-                    <label class="custom-control-label" for="tenantNames-@entry.Name">&nbsp;</label>
-                </div>
-                <div class="properties">
-                    <div class="related">
-                        <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                        @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
-                        {
-                            <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-dark btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
-                        }
-                        @if (entry.ShellSettings.State == TenantState.Disabled)
-                        {
-                            <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
-                        }
-                        @if (entry.ShellSettings.State == TenantState.Uninitialized)
-                        {
-                            <a class="btn btn-success btn-sm" id="btn-setup-@entry.Name" href="@GetTenantUrl(entry)">@T["Setup"]</a>
-                        }
-                        <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
-                    </div>
-                    <h5>
-                        <a href="@GetTenantUrl(entry)">@entry.Name</a>
-                        <code class="hint">@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix</code>
-                        @switch (entry.ShellSettings.State)
-                        {
-                            case TenantState.Disabled:
-                                <span class="badge badge-dark">@T["Disabled"]</span>
-                                break;
-                            case TenantState.Initializing:
-                                <span class="badge badge-info">@T["Initializing"]</span>
-                                break;
-                            case TenantState.Invalid:
-                                <span class="badge badge-warning">@T["Invalid"]</span>
-                                break;
-                            case TenantState.Running:
-                                <span class="badge badge-success">@T["Running"]</span>
-                                break;
-                            case TenantState.Uninitialized:
-                                <span class="badge badge-primary">@T["Uninitialized"]</span>
-                                break;
-                        }
-                    </h5>
+                <div class="alert alert-info">
+                    @T["<strong>Nothing here!</strong> Your search returned no results."]
                 </div>
             </li>
         }
@@ -159,3 +201,68 @@ public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry)
 </form>
 
 @await DisplayAsync(Model.Pager)
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        $('.selectpicker').selectpicker();
+
+        var actions = $("#actions");
+        var items = $("#items");
+        var filters = $(".filter");
+        var selectAllCtrl = $("#select-all");
+        var selectedItems = $("#selected-items");
+        var tenantItemsCheckboxes = $(":checkbox[name='tenantNames']");
+
+        $(".filter-options select, .filter-options input").on("change", function () {
+            $("[name='submit.Filter']").click();
+        });
+
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $("[name='submit.Filter']").click();
+        });
+
+        $(".dropdown-menu .dropdown-item").on("click", function () {
+            if ($(":checkbox[name='tenantNames']:checked").length > 1) {
+                var $this = $(this);
+                confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
+                    if (r) {
+                        $("[name='BulkAction']").val($this.data("action"));
+                        $("[name='submit.BulkAction']").click();
+                    }
+                }});
+            }
+        });
+
+        function displayActionsOrFilters() {
+            if ($(":checkbox[name='tenantNames']:checked").length > 1) {
+                actions.show();
+                filters.hide();
+                selectedItems.show();
+                items.hide();
+            }
+            else {
+                actions.hide();
+                filters.show();
+                selectedItems.hide();
+                items.show();
+            }
+        }
+
+        selectAllCtrl.click(function(){
+            tenantItemsCheckboxes.not(this).prop("checked", this.checked);
+            selectedItems.text($(":checkbox[name='tenantNames']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+
+        tenantItemsCheckboxes.on("click", function () {
+            var itemsCount = $(":checkbox[name='tenantNames']").length;
+            var selectedItemsCount = $(":checkbox[name='tenantNames']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+    });
+</script>

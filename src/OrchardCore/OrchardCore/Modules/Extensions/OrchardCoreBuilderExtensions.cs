@@ -64,11 +64,13 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IShellsSettingsSources, ShellsSettingsSources>();
             services.AddSingleton<IShellsConfigurationSources, ShellsConfigurationSources>();
             services.AddSingleton<IShellConfigurationSources, ShellConfigurationSources>();
-            services.AddScoped<IShellDescriptorManager, ConfiguredFeaturesShellDescriptorManager>();
             services.AddTransient<IConfigureOptions<ShellOptions>, ShellOptionsSetup>();
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
 
-            return builder;
+            return builder.ConfigureServices(s =>
+            {
+                s.AddScoped<IShellDescriptorManager, ConfiguredFeaturesShellDescriptorManager>();
+            });
         }
 
         /// <summary>

@@ -6,7 +6,7 @@ namespace OrchardCore.Lucene
 {
     public interface ILuceneQueryService
     {
-        Task<TopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj);
+        Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj);
         Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj);
     }
 }

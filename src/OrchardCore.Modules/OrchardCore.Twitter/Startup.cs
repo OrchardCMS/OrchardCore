@@ -1,20 +1,28 @@
+using System;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Twitter;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
-using OrchardCore.Twitter.Configuration;
-using OrchardCore.Twitter.Drivers;
-using OrchardCore.Twitter.Services;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using Microsoft.AspNetCore.Authentication.Twitter;
+using OrchardCore.Twitter.Drivers;
+using OrchardCore.Twitter.Recipes;
+using OrchardCore.Twitter.Services;
+using OrchardCore.Twitter.Signin.Configuration;
+using OrchardCore.Twitter.Signin.Drivers;
+using OrchardCore.Twitter.Signin.Services;
+using Polly;
 
 namespace OrchardCore.Twitter
 {
-    public class Startup : StartupBase
+    public class ModuleStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -22,14 +30,37 @@ namespace OrchardCore.Twitter
         }
     }
 
-    [Feature(TwitterConstants.Features.TwitterSignin)]
-    public class TwitterLoginStartup : StartupBase
+    [Feature(TwitterConstants.Features.Twitter)]
+    public class TwitterStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IDisplayDriver<ISite>, TwitterSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddSingleton<ITwitterSettingsService, TwitterSettingsService>();
+
+            services.AddRecipeExecutionStep<TwitterSettingsStep>();
+
+            services.AddTransient<TwitterClientMessageHandler>();
+
+            services.AddHttpClient<TwitterClient>()
+                .AddHttpMessageHandler<TwitterClientMessageHandler>()
+                .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+        }
+    }
+
+    [Feature(TwitterConstants.Features.Signin)]
+    public class TwitterSigninStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, AdminMenuSignin>();
             services.AddSingleton<ITwitterSigninService, TwitterSigninService>();
             services.AddScoped<IDisplayDriver<ISite>, TwitterSigninSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenuTwitterLogin>();
             // Register the options initializers required by the Twitter Handler.
             services.TryAddEnumerable(new[]
             {

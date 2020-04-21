@@ -14,13 +14,6 @@ namespace OrchardCore.ContentFields.ViewModels
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
 
         [BindNever]
-        public IList<ContentPickerItemViewModel> SelectedItems { get; set; }
-    }
-
-    public class ContentPickerItemViewModel
-    {
-        public string ContentItemId { get; set; }
-        public string DisplayText { get; set; }
-        public bool HasPublished { get; set; }
+        public IList<VueMultiselectItemViewModel> SelectedItems { get; set; }
     }
 }

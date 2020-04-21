@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -40,9 +41,14 @@ namespace OrchardCore.DisplayManagement
 
         private static PlacementInfo FindPlacementImpl(ShapeTable shapeTable, string shapeType, string differentiator, string displayType, IBuildShapeContext context)
         {
-            ShapeDescriptor descriptor;
+            var delimiterIndex = shapeType.IndexOf("__", StringComparison.Ordinal);
 
-            if (shapeTable.Descriptors.TryGetValue(shapeType, out descriptor))
+            if (delimiterIndex > 0)
+            {
+                shapeType = shapeType.Substring(0, delimiterIndex);
+            }
+
+            if (shapeTable.Descriptors.TryGetValue(shapeType, out var descriptor))
             {
                 var placementContext = new ShapePlacementContext(
                     shapeType,
@@ -62,9 +68,10 @@ namespace OrchardCore.DisplayManagement
             return null;
         }
 
-        protected Task<IShape> CreateContentShapeAsync(string actualShapeType)
+        protected ValueTask<IShape> CreateContentShapeAsync(string actualShapeType)
         {
-            return _shapeFactory.CreateAsync(actualShapeType, () => Task.FromResult<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("ContentZone", Arguments.Empty))));
+            return _shapeFactory.CreateAsync(actualShapeType, () =>
+                new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("ContentZone"))));
         }
     }
 }

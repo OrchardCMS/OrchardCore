@@ -1,0 +1,42 @@
+@using OrchardCore.Title.Models
+@model OrchardCore.Title.ViewModels.TitlePartSettingsViewModel
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <label asp-for="Options">@T["Options"]</label>
+        <select asp-for="Options" class="form-control">
+            <option value="@TitlePartOptions.Editable" selected="@(Model.Options == TitlePartOptions.Editable)">@T["Title is editable"]</option>
+            <option value="@TitlePartOptions.EditableRequired" selected="@(Model.Options == TitlePartOptions.EditableRequired)">@T["Title is editable and required"]</option>
+            <option value="@TitlePartOptions.GeneratedDisabled" selected="@(Model.Options == TitlePartOptions.GeneratedDisabled)">@T["Title is generated and input is disabled"]</option>
+            <option value="@TitlePartOptions.GeneratedHidden" selected="@(Model.Options == TitlePartOptions.GeneratedHidden)">@T["Title is generated and input is hidden"]</option>
+        </select>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-lg">
+        <label asp-for="Pattern">@T["Pattern"]</label>
+        <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
+        <span class="hint">@T["The pattern used to render the title of this content type. With Liquid support."]</span>
+    </div>
+</div>
+
+<script at="Foot" depends-on="jquery">
+    $(function () {
+        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+    });
+</script>

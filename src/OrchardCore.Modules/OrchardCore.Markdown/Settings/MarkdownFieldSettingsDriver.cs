@@ -1,17 +1,16 @@
-﻿using System.Threading.Tasks;
-using OrchardCore.Markdown.Fields;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Markdown.Fields;
 
 namespace OrchardCore.Markdown.Settings
 {
-
     public class MarkdownFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MarkdownField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<MarkdownFieldSettings>("MarkdownFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
+            return Initialize<MarkdownFieldSettings>("MarkdownFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
                 .Location("Content");
         }
 
@@ -21,7 +20,7 @@ namespace OrchardCore.Markdown.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            context.Builder.MergeSettings(model);
+            context.Builder.WithSettings(model);
 
             return Edit(partFieldDefinition);
         }

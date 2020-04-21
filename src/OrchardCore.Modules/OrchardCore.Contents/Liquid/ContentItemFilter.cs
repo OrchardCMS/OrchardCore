@@ -11,7 +11,7 @@ namespace OrchardCore.Contents.Liquid
 {
     public class ContentItemFilter : ILiquidFilter
     {
-        public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             if (!ctx.AmbientValues.TryGetValue("Services", out var services))
             {
@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.Liquid
             }
             else
             {
-                var contentItemId = input.ToString();
+                var contentItemId = input.ToStringValue();
 
                 return FluidValue.Create(await contentManager.GetAsync(contentItemId));
             }

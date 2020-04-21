@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Settings;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Settings;
 
 namespace OrchardCore.CustomSettings.Services
 {
@@ -37,7 +37,7 @@ namespace OrchardCore.CustomSettings.Services
             _settingsTypes = new Lazy<IDictionary<string, ContentTypeDefinition>>(
                 () => _contentDefinitionManager
                      .ListTypeDefinitions()
-                     .Where(x => x.Settings.ToObject<ContentTypeSettings>().Stereotype == "CustomSettings")
+                     .Where(x => x.GetSettings<ContentTypeSettings>().Stereotype == "CustomSettings")
                      .ToDictionary(x => x.Name));
         }
 

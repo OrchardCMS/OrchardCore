@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Modules
 {
@@ -10,11 +10,19 @@ namespace OrchardCore.Modules
         private readonly Dictionary<string, Module> _modulesByName;
         private readonly List<Module> _modules;
 
-        public static readonly string ModulesPath = "Areas";
-        public static readonly string ModuleName = "Application";
-        public static readonly string ModulesRoot = ModulesPath + "/";
+        public const string ModulesPath = "Areas";
+        public const string ModulesRoot = ModulesPath + "/";
 
-        public Application(IHostingEnvironment environment, IEnumerable<Module> modules)
+        public const string ModuleName = "Application Main Feature";
+        public const string ModuleDescription = "Provides components defined at the application level.";
+        public static readonly string ModulePriority = int.MinValue.ToString();
+        public const string ModuleCategory = "Application";
+
+        public const string DefaultFeatureId = "Application.Default";
+        public const string DefaultFeatureName = "Application Default Feature";
+        public const string DefaultFeatureDescription = "Adds a default feature to the application's module.";
+
+        public Application(IHostEnvironment environment, IEnumerable<Module> modules)
         {
             Name = environment.ApplicationName;
             Path = environment.ContentRootPath;

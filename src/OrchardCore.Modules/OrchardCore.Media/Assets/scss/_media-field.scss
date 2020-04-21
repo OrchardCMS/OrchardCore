@@ -13,4 +13,20 @@
         padding: 4px;
         white-space: nowrap;
     }
+
+    .fileinput-button {
+        cursor: pointer;
+        margin: 0;
+        padding: 4px 8px;
+        border: 1px solid $secondary;
+
+        input {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
+        }
+    }
 }

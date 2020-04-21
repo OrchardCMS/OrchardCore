@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.BackgroundTasks
@@ -7,9 +8,9 @@ namespace OrchardCore.BackgroundTasks
     {
         public static readonly Permission ManageBackgroundTasks = new Permission("ManageBackgroundTasks", "Manage background tasks");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] { ManageBackgroundTasks };
+            return Task.FromResult(GetPermissions());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -22,6 +23,11 @@ namespace OrchardCore.BackgroundTasks
                     Permissions = new[] { ManageBackgroundTasks }
                 }
             };
+        }
+
+        private IEnumerable<Permission> GetPermissions()
+        {
+            return new[] { ManageBackgroundTasks };
         }
     }
 }

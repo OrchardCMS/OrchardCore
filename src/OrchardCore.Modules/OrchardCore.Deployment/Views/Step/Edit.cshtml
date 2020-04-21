@@ -1,4 +1,4 @@
-﻿@model EditDeploymentPlanStepViewModel
+@model EditDeploymentPlanStepViewModel
 
 <h1>@RenderTitleSegments(T["Edit Step"])</h1>
 
@@ -10,22 +10,19 @@
     <input type="hidden" asp-for="DeploymentStepId" />
     <input type="hidden" asp-for="DeploymentStepType" />
 
-    <fieldset>
-        <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
 
-            <a asp-action="Delete"
-               asp-controller="Step"
-               asp-route-id="@Model.DeploymentPlanId"
-               asp-route-stepId="@Model.DeploymentStepId"
-               class="btn btn-danger"
-               itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+        <a asp-action="Delete"
+           asp-controller="Step"
+           asp-route-id="@Model.DeploymentPlanId"
+           asp-route-stepId="@Model.DeploymentStepId"
+           class="btn btn-danger"
+           itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
 
-            <a class="btn btn-secondary" 
-               asp-route-action="Display" 
-               asp-route-controller="DeploymentPlan" 
-               asp-route-id="@Model.DeploymentPlanId">@T["Cancel"]</a>
-
-        </div>
-    </fieldset>
+        <a class="btn btn-secondary"
+           asp-route-action="Display"
+           asp-route-controller="DeploymentPlan"
+           asp-route-id="@Model.DeploymentPlanId">@T["Cancel"]</a>
+    </div>
 </form>

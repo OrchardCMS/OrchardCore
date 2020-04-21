@@ -6,7 +6,7 @@
 @{
     var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
 
-    var selectedContentTypes = Model.Value.ContentTypes ?? new ContentTypeEntry[] { } ;
+    var selectedContentTypes = Model.Value.ContentTypes;
 
     var selectedDisplayNames = allContentTypes
         .Where(x => isSelected(x, selectedContentTypes))

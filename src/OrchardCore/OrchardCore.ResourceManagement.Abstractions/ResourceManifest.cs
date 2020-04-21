@@ -5,8 +5,7 @@ namespace OrchardCore.ResourceManagement
 {
     public class ResourceManifest
     {
-        private string _basePath = "";
-        private readonly IDictionary<string, IDictionary<string, IList<ResourceDefinition>>> _resources = new Dictionary<string, IDictionary<string, IList<ResourceDefinition>>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDictionary<string, IList<ResourceDefinition>>> _resources = new Dictionary<string, IDictionary<string, IList<ResourceDefinition>>>(StringComparer.OrdinalIgnoreCase);
 
         public virtual ResourceDefinition DefineResource(string resourceType, string resourceName)
         {
@@ -33,21 +32,14 @@ namespace OrchardCore.ResourceManagement
 
         public virtual IDictionary<string, IList<ResourceDefinition>> GetResources(string resourceType)
         {
-            IDictionary<string, IList<ResourceDefinition>> resources;
-            if (!_resources.TryGetValue(resourceType, out resources))
+            if (!_resources.TryGetValue(resourceType, out var resources))
             {
                 _resources[resourceType] = resources = new Dictionary<string, IList<ResourceDefinition>>(StringComparer.OrdinalIgnoreCase);
             }
+
             return resources;
         }
 
-        public string BasePath
-        {
-            get
-            {
-                return _basePath;
-            }
-        }
+        public string BasePath { get; } = "";
     }
-
 }

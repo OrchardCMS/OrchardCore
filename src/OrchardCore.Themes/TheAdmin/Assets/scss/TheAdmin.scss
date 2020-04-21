@@ -3,10 +3,13 @@
 // Because !default means that a variable is not assigned if it already contains a value,
 // we alter the variable before importing boostrap as _variables.scss will use !default
 
-@import "../../../../../node_modules/bootstrap/scss/bootstrap";
+@import "../../node_modules/bootstrap/scss/bootstrap";
 @import "modules/_sizes.scss";
+@import "modules/_cursors.scss";
+@import "modules/_word-wrap.scss";
 @import "bootstrap-switch.scss";
 @import "codemirror.scss";
+@import "jquery-ui-datepicker-override.scss";
 
 $top-nav-height: 49px;
 $footer-height: 40px;
@@ -14,26 +17,25 @@ $left-navigation-width: 260px;
 $left-navigation-width-when-compact: 48px;
 $border-content: 1px solid #DEDEDE;
 $link-padding-left: 16px !default;
+$zindex-sticky: 1000;
 
 html, body {
     background-color: #FFF;
 }
 
-
-@mixin word-wrap() {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    -ms-word-break: break-all;
-    word-break: break-all;
-    word-break: break-word;
-    -ms-hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphens: auto;
-}
-
 body {
     margin-bottom: $footer-height;
+    cursor: default;
+}
+
+@include cursor-class(move);
+@include cursor-class(pointer);
+
+/* rtl:ignore */
+[dir=rtl] .dropdown-menu {
+    left: auto !important;
+    right: 0px !important;
+    transform: translate3d(0px, 38px, 0px) !important;
 }
 
 .left-sidebar-compact .ta-footer {
@@ -72,6 +74,11 @@ body {
 
     .nav-link {
         font-size: 14px;
+    }
+
+    .breadcrumb {
+        background-color: transparent;
+        margin-top: 1rem;
     }
 }
 
@@ -444,6 +451,11 @@ body:not(.left-sidebar-compact) {
             display: block;
             margin: 0px auto;
         }
+
+        #filter, #filter:focus{
+            border: none;
+            box-shadow: unset;
+        }
     }
 }
 // Layout 4 : ta-left-sidebar when compacted
@@ -462,13 +474,6 @@ body:not(.left-sidebar-compact) {
         border-right: $border-content;
         transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
         font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-        // Rotate the chevron's icon when the menu is active
-        label[aria-expanded="true"] {
-            .chevron {
-                transform: rotate(90deg);
-                transition-duration: 0.2s;
-            }
-        }
 
         label[aria-expanded="false"] {
             .chevron {
@@ -873,6 +878,22 @@ body:not(.left-sidebar-compact) {
             display: block;
             margin: 0px auto;
         }
+
+        #filter, #filter:focus{
+            display:none;
+        }
+    }
+}
+/* rtl:ignore */
+.left-sidebar-compact {
+    #ta-left-sidebar {
+        // Rotate the chevron's icon when the menu is active
+        label[aria-expanded="true"] {
+            .chevron {
+                transform: rotate(90deg);
+                transition-duration: 0.2s;
+            }
+        }
     }
 }
 
@@ -948,7 +969,7 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 }
 
 .field-validation-error {
-    @extend small, .invalid-feedback;
+    @extend small
 }
 
 .input-validation-error {
@@ -1024,6 +1045,7 @@ select[multiple] {
 ul.pager {
     @extend .pagination;
     margin-top: 1rem;
+    justify-content: center;
 }
 
 ul.pager li {
@@ -1033,18 +1055,81 @@ ul.pager li {
 ul.pager li a {
     @extend .page-link;
 }
+// Tabs
+// ------------------------------
+//
+.tab-pane {
+    border-left: $nav-tabs-border-width solid $nav-tabs-border-color;
+    border-right: $nav-tabs-border-width solid $nav-tabs-border-color;
+    border-bottom: $nav-tabs-border-width solid $nav-tabs-border-color;
+    border-top: $nav-tabs-border-width solid $nav-tabs-border-color;
+    border-bottom-left-radius: $nav-tabs-border-radius;
+    border-bottom-right-radius: $nav-tabs-border-radius;
+    border-top-right-radius: $nav-tabs-border-radius;
+    margin-bottom: map-get($map: $spacers, $key: 3);
+    padding-left: map-get($map: $spacers, $key: 3);
+    padding-right: map-get($map: $spacers, $key: 3);
+    padding-top: map-get($map: $spacers, $key: 3);
+}
+
+.nav-tabs {
+    border-bottom: none;
+    margin-top: 1px;
+    margin-bottom: -1px;
+
+    .nav-link {
+        border: none;
+        color: $white;
+        background-color: $gray-600;
+        @include transition($btn-transition);
+
+        &:hover {
+            background-color: darken($gray-600, 7.5%)
+        }
+
+        &.active {
+            border-left: $nav-tabs-border-width solid $nav-tabs-border-color;
+            border-right: $nav-tabs-border-width solid $nav-tabs-border-color;
+            border-top: $nav-tabs-border-width solid $nav-tabs-border-color;
+            cursor: initial;
+            color: $gray-900;
+            background-color: $white;
+
+            &:hover {
+                background-color: $white;
+            }
+        }
+    }
+
+    .nav-item {
+        margin-bottom: 0px;
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .nav-tabs {
+        .nav-item:not(.nav-link) {
+            padding-bottom: map-get($map: $spacers, $key: 1);
+        }
+
+        .nav-link {
+            border-bottom-left-radius: $nav-tabs-border-radius;
+            border-bottom-right-radius: $nav-tabs-border-radius;
+
+            &.active {
+                border-bottom: $nav-tabs-border-width solid $nav-tabs-border-color;
+            }
+        }
+    }
+}
 // Sortable
 // ------------------------------
-.ui-sortable-handle {
-    cursor: move;
-}
-
-.btn.ui-sortable-handle {
-    cursor: move !important;
-}
-
 .ui-sortable {
     min-height: $font-size-base;
+}
+
+.with-checkbox .list-group-item {
+    padding: 0.75rem 0.5rem;
 }
 
 .properties {
@@ -1114,4 +1199,14 @@ ul.pager li a {
             line-height: 24px;
         }
     }
+}
+
+.disable.custom-control-input:checked ~ .custom-control-label::before {
+    border-color: red;
+    background-color: red;
+}
+
+.dropdown-menu.scrollable{
+    overflow-y: auto;
+    max-height: 250px;
 }

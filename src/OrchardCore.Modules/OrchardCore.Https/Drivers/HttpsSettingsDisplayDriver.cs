@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Entities;
@@ -15,44 +16,52 @@ namespace OrchardCore.Https.Drivers
     public class HttpsSettingsDisplayDriver : SectionDisplayDriver<ISite, HttpsSettings>
     {
         private const string SettingsGroupId = "Https";
-        private const int DefaultSslPort = 443;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly IHtmlLocalizer T;
+        private readonly IHtmlLocalizer H;
 
         public HttpsSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService,
             INotifier notifier,
             IShellHost shellHost,
             ShellSettings shellSettings,
-            IHtmlLocalizer<HttpsSettingsDisplayDriver> stringLocalizer)
+            IHtmlLocalizer<HttpsSettingsDisplayDriver> htmlLocalizer)
         {
             _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
             _notifier = notifier;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            T = stringLocalizer;
+            H = htmlLocalizer;
         }
 
-        public override IDisplayResult Edit(HttpsSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(HttpsSettings settings, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
+            {
+                return null;
+            }
+
             return Initialize<HttpsSettingsViewModel>("HttpsSettings_Edit", model =>
             {
                 var isHttpsRequest = _httpContextAccessor.HttpContext.Request.IsHttps;
 
                 if (!isHttpsRequest)
-                    _notifier.Warning(T["For safety, Enabling require HTTPS over HTTP has been prevented."]);
+                    _notifier.Warning(H["For safety, Enabling require HTTPS over HTTP has been prevented."]);
 
                 model.EnableStrictTransportSecurity = settings.EnableStrictTransportSecurity;
                 model.IsHttpsRequest = isHttpsRequest;
                 model.RequireHttps = settings.RequireHttps;
                 model.RequireHttpsPermanent = settings.RequireHttpsPermanent;
                 model.SslPort = settings.SslPort ??
-                                (_httpContextAccessor.HttpContext.Request.Host.Port == DefaultSslPort
-                                    ? null
-                                    : _httpContextAccessor.HttpContext.Request.Host.Port);
+                                (isHttpsRequest && !settings.RequireHttps
+                                    ? _httpContextAccessor.HttpContext.Request.Host.Port
+                                    : null);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -69,10 +78,10 @@ namespace OrchardCore.Https.Drivers
                 settings.RequireHttpsPermanent = model.RequireHttpsPermanent;
                 settings.SslPort = model.SslPort;
 
-                // If the settings are valid, reload the current tenant.
+                // If the settings are valid, release the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
 

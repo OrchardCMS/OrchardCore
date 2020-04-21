@@ -1,8 +1,8 @@
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing.Services;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing
 {

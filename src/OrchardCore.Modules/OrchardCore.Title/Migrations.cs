@@ -1,25 +1,25 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
-using Newtonsoft.Json.Linq;
 using YesSql;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Title
 {
     public class Migrations : DataMigration
     {
-        IContentDefinitionManager _contentDefinitionManager;
+        private IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
-        private readonly ILogger<Migrations> _logger;
+        private readonly ILogger _logger;
 
         public Migrations(
-            IContentDefinitionManager contentDefinitionManager, 
+            IContentDefinitionManager contentDefinitionManager,
             ISession session,
             ILogger<Migrations> logger)
         {
@@ -38,7 +38,7 @@ namespace OrchardCore.Title
 
             return 2;
         }
-        
+
         public async Task<int> UpdateFrom1()
         {
             // This code can be removed in RC
@@ -47,30 +47,30 @@ namespace OrchardCore.Title
 
             var lastDocumentId = 0;
 
-            for(;;)
+            for (; ; )
             {
                 var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync();
-                
+
                 if (!contentItemVersions.Any())
                 {
                     // No more content item version to process
                     break;
                 }
 
-                foreach(var contentItemVersion in contentItemVersions)
+                foreach (var contentItemVersion in contentItemVersions)
                 {
                     if (String.IsNullOrEmpty(contentItemVersion.DisplayText)
                         && UpdateTitle(contentItemVersion.Content))
                     {
                         _session.Save(contentItemVersion);
-                        _logger.LogInformation($"A content item version's Title was upgraded: '{contentItemVersion.ContentItemVersionId}'");
+                        _logger.LogInformation("A content item version's Title was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
                     }
 
                     lastDocumentId = contentItemVersion.Id;
                 }
 
                 await _session.CommitAsync();
-            } 
+            }
 
             bool UpdateTitle(JToken content)
             {
@@ -78,8 +78,8 @@ namespace OrchardCore.Title
 
                 if (content.Type == JTokenType.Object)
                 {
-                    var title = content["TitlePart"] ? ["Title"]?.Value<string>();
-                    
+                    var title = content["TitlePart"]?["Title"]?.Value<string>();
+
                     if (!String.IsNullOrWhiteSpace(title))
                     {
                         content["DisplayText"] = title;

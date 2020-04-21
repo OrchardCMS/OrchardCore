@@ -27,6 +27,8 @@ function toggleConnectionStringAndPrefix() {
         $(this).data("connection-string").toLowerCase() === "true"
             ? $(".pwd").attr('required', 'required')
             : $(".pwd").removeAttr('required');
+
+        $("#connectionStringHint").text($(this).data("connection-string-sample"));
     });
 }
 
@@ -38,4 +40,9 @@ function refreshDescription(target) {
     $("#recipeButton").text(recipeDisplayName);
     $("#RecipeName").val(recipeName);
     $("#recipeButton").attr("title", recipeDescription);
+}
+
+function setLocalizationUrl() {
+    var culturesList = document.getElementById('culturesList');
+    window.location = culturesList.options[culturesList.selectedIndex].dataset.url;
 }

@@ -10,11 +10,21 @@ namespace OrchardCore.ContentFields.Indexing
         {
             var options = DocumentIndexOptions.Store;
 
-            foreach (var contentItemId in field.ContentItemIds)
+            if (field.ContentItemIds.Length > 0)
+            {
+                foreach (var contentItemId in field.ContentItemIds)
+                {
+                    foreach (var key in context.Keys)
+                    {
+                        context.DocumentIndex.Set(key, contentItemId, options);
+                    }
+                }
+            }
+            else
             {
                 foreach (var key in context.Keys)
                 {
-                    context.DocumentIndex.Set(key, contentItemId, options);
+                    context.DocumentIndex.Set(key, "NULL", options);
                 }
             }
 

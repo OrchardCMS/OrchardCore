@@ -11,7 +11,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class AddWrappersTag : ExpressionArgumentsTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
         {
             var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
 
@@ -23,7 +23,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                 if (alternates.Type == FluidValues.String)
                 {
-                    var values = alternates.ToStringValue().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var values = alternates.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                     foreach (var value in values)
                     {

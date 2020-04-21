@@ -1,0 +1,6 @@
+@model LocalizationPartViewModel
+
+@if (Model.LocalizationPart.Culture != null)
+{
+    <span class="badge badge-info"><i class="fa fa-globe"></i> @Model.LocalizationPart.Culture</span>
+}

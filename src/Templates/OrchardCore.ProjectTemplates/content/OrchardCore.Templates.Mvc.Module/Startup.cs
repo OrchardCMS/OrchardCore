@@ -12,14 +12,8 @@ namespace OrchardCore.Templates.Mvc.Module
         {
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
-                name: "Home",
-                areaName: "OrchardCore.Templates.Mvc.Module",
-                template: "Home/Index",
-                defaults: new { controller = "Home", action = "Index" }
-            );
         }
     }
 }

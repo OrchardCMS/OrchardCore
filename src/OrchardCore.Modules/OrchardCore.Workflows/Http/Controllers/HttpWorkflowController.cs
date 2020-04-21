@@ -22,8 +22,8 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly IActivityLibrary _activityLibrary;
         private readonly ISecurityTokenService _securityTokenService;
         private readonly IAntiforgery _antiforgery;
-        private readonly ILogger<HttpWorkflowController> _logger;
-        private const int _tokenLifeSpan = 36500;
+        private readonly ILogger _logger;
+        public const int NoExpiryTokenLifespan = 36500;
 
         public HttpWorkflowController(
             IAuthorizationService authorizationService,
@@ -52,7 +52,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
@@ -62,7 +62,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return NotFound();
             }
 
-            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(tokenLifeSpan==0?_tokenLifeSpan: tokenLifeSpan));
+            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(tokenLifeSpan == 0 ? NoExpiryTokenLifespan : tokenLifeSpan));
             var url = Url.Action("Invoke", "HttpWorkflow", new { token = token });
 
             return Ok(url);
@@ -86,6 +86,16 @@ namespace OrchardCore.Workflows.Http.Controllers
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
                     _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' could not be found.", payload.WorkflowId);
+                }
+
+                return NotFound();
+            }
+
+            if(!workflowType.IsEnabled)
+            {
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' is not enabled.", payload.WorkflowId);
                 }
 
                 return NotFound();

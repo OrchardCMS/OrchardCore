@@ -10,10 +10,7 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         },
         addOption: function () {
             if (this.debug) { console.log('add option triggered') };
-            var exist = this.state.options.filter(function (x) { return IsNullOrWhiteSpace(x.value) }).length;
-            if (!exist) {
-                this.state.options.push({ name: '', value: '' });
-            }
+            this.state.options.push({ name: '', value: '' });
         },
         removeOption: function (index) {
             if (this.debug) { console.log('remove option triggered with', index) };
@@ -21,7 +18,7 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         },
         getOptionsFormattedList: function () {
             if (this.debug) { console.log('getOptionsFormattedList triggered') };
-            return JSON.stringify(this.state.options.filter(function (x) { return !IsNullOrWhiteSpace(x.name) && !IsNullOrWhiteSpace(x.value) }));
+            return JSON.stringify(this.state.options.filter(function (x) { return !IsNullOrWhiteSpace(x.name) }));
         }
     }
 

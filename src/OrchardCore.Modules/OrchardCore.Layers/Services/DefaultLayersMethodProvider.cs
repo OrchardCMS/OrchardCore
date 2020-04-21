@@ -22,10 +22,10 @@ namespace OrchardCore.Layers.Services
             _isHomepage = new GlobalMethod
             {
                 Name = "isHomepage",
-                Method = serviceprovider => (Func<string, object>)(name =>
+                Method = serviceProvider => (Func<bool>)(() =>
                 {
-                    var httpContext = serviceprovider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    var requestPath = httpContext.Request.Path;
+                    var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    var requestPath = httpContext.Request.Path.Value;
                     return requestPath == "/" || string.IsNullOrEmpty(requestPath);
                 })
             };
@@ -33,49 +33,53 @@ namespace OrchardCore.Layers.Services
             _isAnonymous = new GlobalMethod
             {
                 Name = "isAnonymous",
-                Method = serviceprovider => (Func<string, object>)(name =>
+                Method = serviceProvider => (Func<bool>)(() =>
                 {
-                    var httpContext = serviceprovider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    return !httpContext.User?.Identity.IsAuthenticated;
+                    var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    return httpContext.User?.Identity.IsAuthenticated != true;
                 })
             };
-            
+
             _isAuthenticated = new GlobalMethod
             {
                 Name = "isAuthenticated",
-                Method = serviceprovider => (Func<string, object>)(name =>
+                Method = serviceProvider => (Func<bool>)(() =>
                 {
-                    var httpContext = serviceprovider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    return httpContext.User?.Identity.IsAuthenticated;
+                    var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    return httpContext.User?.Identity.IsAuthenticated == true;
                 })
             };
 
             _url = new GlobalMethod
             {
                 Name = "url",
-                Method = serviceProvider => (Func<string, object>)(url =>
+                Method = serviceProvider => (Func<string, bool>)(url =>
                 {
-                    if (url.StartsWith("~/"))
+                    if (url.StartsWith("~/", StringComparison.Ordinal))
+                    {
                         url = url.Substring(1);
+                    }
 
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    string requestPath = httpContext.Request.Path;
+                    string requestPath = httpContext.Request.Path.Value;
 
                     // Tenant home page could have an empty string as a request path, where
                     // the default tenant does not.
                     if (string.IsNullOrEmpty(requestPath))
+                    {
                         requestPath = "/";
+                    }
 
-                    return url.EndsWith("*")
+                    return url.EndsWith('*')
                         ? requestPath.StartsWith(url.TrimEnd('*'), StringComparison.OrdinalIgnoreCase)
-                        : string.Equals(requestPath, url, StringComparison.OrdinalIgnoreCase); ;
+                        : string.Equals(requestPath, url, StringComparison.OrdinalIgnoreCase);
                 })
             };
 
             _culture = new GlobalMethod
             {
                 Name = "culture",
-                Method = serviceProvider => (Func<string, object>)(culture =>
+                Method = serviceProvider => (Func<string, bool>)(culture =>
                 {
                     var currentCulture = CultureInfo.CurrentCulture;
 
@@ -83,8 +87,8 @@ namespace OrchardCore.Layers.Services
                         string.Equals(culture, currentCulture.Parent.Name, StringComparison.OrdinalIgnoreCase);
                 })
             };
-            
-            _allMethods = new [] { _isAnonymous, _isAuthenticated, _isHomepage, _url, _culture };
+
+            _allMethods = new[] { _isAnonymous, _isAuthenticated, _isHomepage, _url, _culture };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()

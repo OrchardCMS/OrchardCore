@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -24,30 +22,47 @@ namespace OrchardCore.Users.Workflows.Activities
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer T;
+        private readonly LinkGenerator _linkGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IStringLocalizer S;
 
-        public RegisterUserTask(IUserService userService, UserManager<IUser> userManager, IWorkflowExpressionEvaluator expressionEvaluator, IHttpContextAccessor httpContextAccessor, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<RegisterUserTask> t)
+        public RegisterUserTask(
+            IUserService userService,
+            UserManager<IUser> userManager,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            LinkGenerator linkGenerator,
+            IHttpContextAccessor httpContextAccessor,
+            IUpdateModelAccessor updateModelAccessor,
+            IStringLocalizer<RegisterUserTask> localizer)
         {
             _userService = userService;
             _userManager = userManager;
             _expressionEvaluator = expressionEvaluator;
+            _linkGenerator = linkGenerator;
             _httpContextAccessor = httpContextAccessor;
             _updateModelAccessor = updateModelAccessor;
-            T = t;
+            S = localizer;
         }
 
         // The technical name of the activity. Activities on a workflow definition reference this name.
         public override string Name => nameof(RegisterUserTask);
 
+        public override LocalizedString DisplayText => S["Register User Task"];
+
         // The category to which this activity belongs. The activity picker groups activities by this category.
-        public override LocalizedString Category => T["Content"];
+        public override LocalizedString Category => S["Content"];
 
         // The message to display.
         public bool SendConfirmationEmail
         {
             get => GetProperty(() => true);
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<string> ConfirmationEmailSubject
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
@@ -61,7 +76,7 @@ namespace OrchardCore.Users.Workflows.Activities
         // Returns the possible outcomes of this activity.
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"], T["Valid"], T["Invalid"]);
+            return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
         }
 
         // This is the heart of the activity and actually performs the work to be done.
@@ -78,7 +93,6 @@ namespace OrchardCore.Users.Workflows.Activities
             }
             var outcome = isValid ? "Valid" : "Invalid";
 
-
             if (isValid)
             {
                 var userName = form["UserName"];
@@ -94,7 +108,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     {
                         foreach (var item in errors)
                         {
-                            updater.ModelState.TryAddModelError(item.Key, T[item.Value]);
+                            updater.ModelState.TryAddModelError(item.Key, S[item.Value]);
                         }
                     }
                     outcome = "Invalid";
@@ -102,19 +116,24 @@ namespace OrchardCore.Users.Workflows.Activities
                 else if (SendConfirmationEmail)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var request = _httpContextAccessor.HttpContext.Request;
-                    var uriBuilder = new UriBuilder(request.Scheme, request.Host.Host);
-                    if (request.Host.Port.HasValue)
-                        uriBuilder.Port = request.Host.Port.Value;
-                    uriBuilder.Path = "OrchardCore.Users/Registration/ConfirmEmail";
-                    uriBuilder.Query = string.Format("userId={0}&code={1}", user.Id, code);
-                    workflowContext.Properties["EmailConfirmationUrl"] = uriBuilder.Uri.ToString();
 
+                    var uri = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "ConfirmEmail",
+                        "Registration", new { area = "OrchardCore.Users", userId = user.Id, code });
+
+                    workflowContext.Properties["EmailConfirmationUrl"] = uri;
+
+                    var subject = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailSubject, workflowContext);
+                    var localizedSubject = new LocalizedString(nameof(RegisterUserTask), subject);
 
                     var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext);
-                    var localized = new LocalizedHtmlString(nameof(RegisterUserTask), body);
-                    var message = new MailMessage() { Body = localized.IsResourceNotFound ? body : localized.Value, IsBodyHtml = true, BodyEncoding = Encoding.UTF8 };
-                    message.To.Add(email);
+                    var localizedBody = new LocalizedHtmlString(nameof(RegisterUserTask), body);
+                    var message = new MailMessage()
+                    {
+                        To = email,
+                        Subject = localizedSubject.ResourceNotFound ? subject : localizedSubject.Value,
+                        Body = localizedBody.IsResourceNotFound ? body : localizedBody.Value,
+                        IsBodyHtml = true
+                    };
                     var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
 
                     if (smtpService == null)
@@ -122,7 +141,7 @@ namespace OrchardCore.Users.Workflows.Activities
                         var updater = _updateModelAccessor.ModelUpdater;
                         if (updater != null)
                         {
-                            updater.ModelState.TryAddModelError("", T["No email service is available"]);
+                            updater.ModelState.TryAddModelError("", S["No email service is available"]);
                         }
                         outcome = "Invalid";
                     }

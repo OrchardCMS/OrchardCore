@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Recipes.Models;
@@ -16,13 +15,11 @@ namespace OrchardCore.Recipes.Services
         public ApplicationRecipeHarvester(
             IRecipeReader recipeReader,
             IExtensionManager extensionManager,
-            IHostingEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             ILogger<RecipeHarvester> logger)
             : base(recipeReader, extensionManager, hostingEnvironment, logger)
         {
         }
-
-        public IStringLocalizer T { get; set; }
 
         public override Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
         {

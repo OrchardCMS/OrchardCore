@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 
 namespace OrchardCore.DisplayManagement
@@ -9,6 +10,6 @@ namespace OrchardCore.DisplayManagement
     /// </summary>
     public interface IShapeBindingResolver
     {
-        bool TryGetDescriptorBinding(string shapeType, out ShapeBinding shapeBinding);
+        Task<ShapeBinding> GetShapeBindingAsync(string shapeType);
     }
 }

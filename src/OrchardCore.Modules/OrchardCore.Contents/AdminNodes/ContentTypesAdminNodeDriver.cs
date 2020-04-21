@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
@@ -30,9 +29,8 @@ namespace OrchardCore.Contents.AdminNodes
         public override IDisplayResult Edit(ContentTypesAdminNode treeNode)
         {
             var listable = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Listable)
+                .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Listable)
                 .OrderBy(ctd => ctd.DisplayName).ToList();
-
 
             var entries = listable.Select(x => new ContentTypeEntryViewModel
             {
@@ -40,7 +38,6 @@ namespace OrchardCore.Contents.AdminNodes
                 IsChecked = treeNode.ContentTypes.Any(selected => String.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
                 IconClass = treeNode.ContentTypes.Where(selected => selected.ContentTypeId == x.Name).FirstOrDefault()?.IconClass ?? String.Empty
             }).ToArray();
-
 
             return Initialize<ContentTypesAdminNodeViewModel>("ContentTypesAdminNode_Fields_TreeEdit", model =>
             {
@@ -57,13 +54,13 @@ namespace OrchardCore.Contents.AdminNodes
 
             var model = new ContentTypesAdminNodeViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ShowAll, x => x.IconClass, x => x.ContentTypes)) {
-
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ShowAll, x => x.IconClass, x => x.ContentTypes))
+            {
                 treeNode.ShowAll = model.ShowAll;
                 treeNode.IconClass = model.IconClass;
                 treeNode.ContentTypes = model.ContentTypes
-                    .Where( x => x.IsChecked == true)
-                    .Select(x => new ContentTypeEntry { ContentTypeId = x.ContentTypeId, IconClass = x.IconClass })                    
+                    .Where(x => x.IsChecked == true)
+                    .Select(x => new ContentTypeEntry { ContentTypeId = x.ContentTypeId, IconClass = x.IconClass })
                     .ToArray();
             };
 

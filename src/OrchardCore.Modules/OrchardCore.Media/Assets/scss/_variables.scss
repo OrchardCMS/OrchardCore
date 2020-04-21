@@ -13,7 +13,10 @@ $gray-700: #495057 !default;
 $gray-800: #343a40 !default;
 $gray-900: #212529 !default;
 
-$primary: #007bff;
+$blue: #007bff !default;
+
+$primary: $blue;
+$secondary: $gray-600;
 
 $zindex-fixed: 1030 !default;
 

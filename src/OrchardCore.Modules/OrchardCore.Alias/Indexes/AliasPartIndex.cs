@@ -1,5 +1,6 @@
-﻿using OrchardCore.ContentManagement;
+using System;
 using OrchardCore.Alias.Models;
+using OrchardCore.ContentManagement;
 using YesSql.Indexes;
 
 namespace OrchardCore.Alias.Indexes
@@ -8,6 +9,8 @@ namespace OrchardCore.Alias.Indexes
     {
         public string ContentItemId { get; set; }
         public string Alias { get; set; }
+        public bool Latest { get; set; }
+        public bool Published { get; set; }
     }
 
     public class AliasPartIndexProvider : IndexProvider<ContentItem>
@@ -17,23 +20,19 @@ namespace OrchardCore.Alias.Indexes
             context.For<AliasPartIndex>()
                 .Map(contentItem =>
                 {
-                    if (!contentItem.IsPublished())
+                    var alias = contentItem.As<AliasPart>()?.Alias;
+                    if (!String.IsNullOrEmpty(alias) && (contentItem.Published || contentItem.Latest))
                     {
-                        return null;
+                        return new AliasPartIndex
+                        {
+                            Alias = alias.ToLowerInvariant(),
+                            ContentItemId = contentItem.ContentItemId,
+                            Latest = contentItem.Latest,
+                            Published = contentItem.Published
+                        };
                     }
 
-                    var aliasPart = contentItem.As<AliasPart>();
-
-                    if (aliasPart?.Alias == null)
-                    {
-                        return null;
-                    }
-
-                    return new AliasPartIndex
-                    {
-                        Alias = aliasPart.Alias.ToLowerInvariant(),
-                        ContentItemId = contentItem.ContentItemId,
-                    };
+                    return null;
                 });
         }
     }

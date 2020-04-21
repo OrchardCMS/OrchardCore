@@ -7,6 +7,7 @@ using Fluid;
 using Fluid.Ast;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid.Ast;
 
@@ -14,7 +15,7 @@ namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheStatement : TagStatement
     {
-        private static readonly char[] SplitChars = new [] { ',', ' ' };
+        private static readonly char[] SplitChars = new[] { ',', ' ' };
         private readonly ArgumentsExpression _arguments;
 
         public CacheStatement(ArgumentsExpression arguments, List<Statement> statements = null) : base(statements)
@@ -22,7 +23,7 @@ namespace OrchardCore.DynamicCache.Liquid
             _arguments = arguments;
         }
 
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("Services", out var servicesObj))
             {
@@ -38,15 +39,15 @@ namespace OrchardCore.DynamicCache.Liquid
 
             if (dynamicCache == null || cacheScopeManager == null)
             {
-                logger.LogInformation(@"Liquid cache block entered without an available IDynamicCacheService or ICacheScopeManager. 
-                                        The contents of the cache block will not be cached. 
+                logger.LogInformation(@"Liquid cache block entered without an available IDynamicCacheService or ICacheScopeManager.
+                                        The contents of the cache block will not be cached.
                                         To enable caching, make sure that a feature that contains an implementation of IDynamicCacheService and ICacheScopeManager is enabled (for example, 'Dynamic Cache').");
 
                 await writer.WriteAsync(await EvaluateStatementsAsync(encoder, context));
 
                 return Completion.Normal;
             }
-            
+
             // TODO: Create a configuration setting in the UI
             var debugMode = false;
 
@@ -70,7 +71,7 @@ namespace OrchardCore.DynamicCache.Liquid
             {
                 cacheContext.WithExpirySliding(slidingDuration);
             }
-            
+
             var cacheResult = await dynamicCache.GetCachedValueAsync(cacheContext);
             if (cacheResult != null)
             {
@@ -78,7 +79,7 @@ namespace OrchardCore.DynamicCache.Liquid
 
                 return Completion.Normal;
             }
-            
+
             cacheScopeManager.EnterScope(cacheContext);
             String content;
 
@@ -108,7 +109,7 @@ namespace OrchardCore.DynamicCache.Liquid
             }
 
             await dynamicCache.SetCachedValueAsync(cacheContext, content);
-            
+
             await writer.WriteAsync(content);
 
             return Completion.Normal;
@@ -116,14 +117,20 @@ namespace OrchardCore.DynamicCache.Liquid
 
         private async Task<string> EvaluateStatementsAsync(TextEncoder encoder, TemplateContext context)
         {
-            var content = new StringWriter();
-            
-            foreach (var statement in Statements)
+            using (var sb = StringBuilderPool.GetInstance())
             {
-                await statement.WriteToAsync(content, encoder, context);
-            }
+                using (var content = new StringWriter(sb.Builder))
+                {
+                    foreach (var statement in Statements)
+                    {
+                        await statement.WriteToAsync(content, encoder, context);
+                    }
 
-            return content.ToString();
+                    await content.FlushAsync();
+                }
+
+                return sb.Builder.ToString();
+            }
         }
     }
 }

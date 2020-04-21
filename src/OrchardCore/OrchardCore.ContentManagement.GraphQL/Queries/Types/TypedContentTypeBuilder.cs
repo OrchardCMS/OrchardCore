@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using GraphQL;
-using GraphQL.Execution;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
@@ -42,9 +39,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
 
+                var collapsePart = _contentOptions.ShouldCollapse(part);
+
                 if (serviceProvider.GetService(queryGraphType) is IObjectGraphType queryGraphTypeResolved)
                 {
-                    if (_contentOptions.ShouldCollapse(part))
+                    if (collapsePart)
                     {
                         foreach (var field in queryGraphTypeResolved.Fields)
                         {
@@ -57,7 +56,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                 Description = field.Description,
                                 DeprecationReason = field.DeprecationReason,
                                 Arguments = field.Arguments,
-                                Resolver = new FuncFieldResolver<ContentItem, object>(context => {
+                                Resolver = new FuncFieldResolver<ContentItem, object>(context =>
+                                {
                                     var nameToResolve = partName;
                                     var resolvedPart = context.Source.Get(activator.Type, nameToResolve);
 
@@ -102,13 +102,22 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                     var whereInput = (ContentItemWhereInput)whereArgument.ResolvedType;
 
-                    whereInput.AddField(new FieldType
+                    if (collapsePart)
                     {
-                        Type = inputGraphTypeResolved.GetType(),
-                        Name =  partName.ToFieldName(),
-                        
-                        Description = inputGraphTypeResolved.Description
-                    });
+                        foreach (var field in inputGraphTypeResolved.Fields)
+                        {
+                            whereInput.AddField(field.WithPartCollapsedMetaData().WithPartNameMetaData(partName));
+                        }
+                    }
+                    else
+                    {
+                        whereInput.AddField(new FieldType
+                        {
+                            Type = inputGraphTypeResolved.GetType(),
+                            Name = partName.ToFieldName(),
+                            Description = inputGraphTypeResolved.Description
+                        }.WithPartNameMetaData(partName));
+                    }
                 }
             }
         }

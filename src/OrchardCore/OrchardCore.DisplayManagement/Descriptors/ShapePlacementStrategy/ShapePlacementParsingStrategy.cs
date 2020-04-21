@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,19 +18,17 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
     /// </summary>
     public class ShapePlacementParsingStrategy : IShapeTableHarvester
     {
-        private readonly IHostingEnvironment _hostingEnviroment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly ILogger _logger;
         private readonly IEnumerable<IPlacementNodeFilterProvider> _placementParseMatchProviders;
 
         public ShapePlacementParsingStrategy(
-            IHostingEnvironment hostingEnviroment,
+            IHostEnvironment hostingEnvironment,
             IShellFeaturesManager shellFeaturesManager,
             ILogger<ShapePlacementParsingStrategy> logger,
             IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)
         {
-            _logger = logger;
-            _hostingEnviroment = hostingEnviroment;
+            _hostingEnvironment = hostingEnvironment;
             _shellFeaturesManager = shellFeaturesManager;
             _placementParseMatchProviders = placementParseMatchProviders;
         }
@@ -48,9 +46,9 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         private void ProcessFeatureDescriptor(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
-            // TODO : (ngm) Replace with configuration Provider and read from that. 
+            // TODO : (ngm) Replace with configuration Provider and read from that.
             // Dont use JSON Deserializer directly.
-            var virtualFileInfo = _hostingEnviroment
+            var virtualFileInfo = _hostingEnvironment
                 .GetExtensionFileInfo(featureDescriptor.Extension, "placement.json");
 
             if (virtualFileInfo.Exists)
@@ -81,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                     var matches = filter.Filters.ToList();
 
                     Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, filter);
-                    
+
                     if (matches.Any())
                     {
                         predicate = matches.Aggregate(predicate, BuildPredicate);
@@ -133,7 +131,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
                 KeyValuePair<string, JToken> term, IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders)
         {
-
             if (placementMatchProviders != null)
             {
                 var providersForTerm = placementMatchProviders.Where(x => x.Key.Equals(term.Key));

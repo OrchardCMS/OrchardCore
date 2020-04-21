@@ -28,7 +28,7 @@
         tag.TagRenderMode = TagRenderMode.Normal;
         tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 
-        tag.InnerHtml.AppendHtml(Html.Raw("<button class=\"btn-nostyle\"><span class=\"collapse-icon\"><i class=\"fas fa-chevron-right fa-xs chevron\"></i></span></button>"));
+        tag.InnerHtml.AppendHtml(Html.Raw($"<button class=\"btn-nostyle\"><span class=\"collapse-icon\"><i class=\"fas fa-chevron-{(Orchard.CultureDir() == "ltr" ? "right" : "left")} fa-xs chevron\"></i></span></button>"));
     }
     else
     {

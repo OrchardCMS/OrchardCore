@@ -1,30 +1,26 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OrchardCore.Workflows.Activities
 {
     public class ActivityExecutionResult
     {
-        public static ActivityExecutionResult Noop()
+        public static readonly ActivityExecutionResult Empty = new ActivityExecutionResult(Array.Empty<string>());
+
+        public static readonly ActivityExecutionResult Halted = new ActivityExecutionResult(Array.Empty<string>()) { IsHalted = true };
+
+        public ActivityExecutionResult(IEnumerable<string> outcomes)
         {
-            return new ActivityExecutionResult();
+            Outcomes = outcomes;
         }
 
-        public static ActivityExecutionResult FromOutcomes(IEnumerable<string> outcomes)
+        public ActivityExecutionResult(string[] outcomes, bool halted)
         {
-            return new ActivityExecutionResult { Outcomes = outcomes.ToList() };
+            Outcomes = outcomes;
+            IsHalted = halted;
         }
 
-        public static ActivityExecutionResult Halt()
-        {
-            return new ActivityExecutionResult { IsHalted = true };
-        }
-
-        private ActivityExecutionResult()
-        {
-        }
-
-        public IList<string> Outcomes { get; private set; } = new List<string>(0);
-        public bool IsHalted { get; set; }
+        public IEnumerable<string> Outcomes { get; private set; }
+        public bool IsHalted { get; private set; }
     }
 }

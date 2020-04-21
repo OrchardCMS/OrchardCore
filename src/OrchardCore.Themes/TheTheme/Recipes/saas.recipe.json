@@ -3,7 +3,7 @@
   "displayName": "Software as a Service",
   "description": "Provides default SaaS features like managing multiple websites.",
   "author": "The Orchard Team",
-  "website": "http://orchardproject.net",
+  "website": "https://orchardproject.net",
   "version": "2.0",
   "issetuprecipe": true,
   "categories": [ "default" ],

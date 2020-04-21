@@ -67,7 +67,6 @@ namespace OrchardCore.Tests.Localization
             );
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object, highPriorityRuleProvider.Object }, _translationProvider.Object, _memoryCache);
 
-
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
 
             Assert.Equal(dictionary.PluralRule, csPluralRuleOverride);

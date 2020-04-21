@@ -1,7 +1,6 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Alias.Drivers;
-using OrchardCore.Alias.GraphQL;
 using OrchardCore.Alias.Handlers;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Indexing;
@@ -10,10 +9,8 @@ using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Services;
 using OrchardCore.Alias.Settings;
 using OrchardCore.Alias.ViewModels;
-using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
@@ -37,12 +34,12 @@ namespace OrchardCore.Alias
             services.AddScoped<IContentAliasProvider, AliasPartContentAliasProvider>();
 
             // Identity Part
-            services.AddScoped<IContentPartDisplayDriver, AliasPartDisplayDriver>();
-            services.AddSingleton<ContentPart, AliasPart>();
-            services.AddScoped<IContentPartHandler, AliasPartHandler>();
+            services.AddContentPart<AliasPart>()
+                .UseDisplayDriver<AliasPartDisplayDriver>()
+                .AddHandler<AliasPartHandler>();
+
             services.AddScoped<IContentPartIndexHandler, AliasPartIndexHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AliasPartSettingsDisplayDriver>();
-
 
             services.AddScoped<ILiquidTemplateEventHandler, ContentAliasLiquidTemplateEventHandler>();
         }

@@ -8,8 +8,8 @@ namespace OrchardCore.AdminMenu.Models
     public class AdminNode : MenuItem
     {
         public string UniqueId { get; set; } = Guid.NewGuid().ToString("n");
-        public bool Enabled { get; set; } = true;        
-        
+        public bool Enabled { get; set; } = true;
+
         public AdminNode GetMenuItemById(string id)
         {
             var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
@@ -18,10 +18,16 @@ namespace OrchardCore.AdminMenu.Models
             {
                 // evaluate first node
                 AdminNode item = tempStack.Pop();
-                if (item.UniqueId.Equals(id, StringComparison.OrdinalIgnoreCase)) return item;
+                if (item.UniqueId.Equals(id, StringComparison.OrdinalIgnoreCase))
+                {
+                    return item;
+                }
 
                 // not that one; continue with the rest.
-                foreach (var i in item.Items) tempStack.Push((AdminNode)i);
+                foreach (var i in item.Items)
+                {
+                    tempStack.Push((AdminNode)i);
+                }
             }
 
             //not found
@@ -44,13 +50,15 @@ namespace OrchardCore.AdminMenu.Models
                 }
 
                 // not that one. continue
-                foreach (var i in item.Items) tempStack.Push((AdminNode)i);
+                foreach (var i in item.Items)
+                {
+                    tempStack.Push((AdminNode)i);
+                }
             }
 
             // failure
             return false;
         }
-
 
         public bool InsertMenuItem(AdminNode nodeToInsert, MenuItem destinationNode, int position)
         {
@@ -66,7 +74,10 @@ namespace OrchardCore.AdminMenu.Models
                 }
 
                 // not that one. continue
-                foreach (var n in node.Items) tempStack.Push((AdminNode)n);
+                foreach (var n in node.Items)
+                {
+                    tempStack.Push((AdminNode)n);
+                }
             }
 
             // failure

@@ -12,9 +12,9 @@ namespace OrchardCore.Menu.GraphQL
     {
         public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
-            var settings = contentTypeDefinition.Settings?.ToObject<ContentTypeSettings>();
+            var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
 
-            if (settings != null && settings.Stereotype != "MenuItem") return;
+            if (settings.Stereotype != "MenuItem") return;
 
             contentItemType.Field<MenuItemsListQueryObjectType>(
                 nameof(MenuItemsListPart).ToFieldName(),

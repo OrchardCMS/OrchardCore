@@ -7,7 +7,6 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 
-
 namespace OrchardCore.Google.Analytics.Recipes
 {
     /// <summary>
@@ -15,7 +14,7 @@ namespace OrchardCore.Google.Analytics.Recipes
     /// </summary>
     public class GoogleAnalyticsSettingsStep : IRecipeStepHandler
     {
-        readonly ISiteService _siteService;
+        private readonly ISiteService _siteService;
         public GoogleAnalyticsSettingsStep(ISiteService siteService)
         {
             _siteService = siteService;
@@ -28,11 +27,12 @@ namespace OrchardCore.Google.Analytics.Recipes
                 return;
             }
             var model = context.Step.ToObject<GoogleAnalyticsSettingsViewModel>();
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<GoogleAnalyticsSettings>(nameof(GoogleAnalyticsSettings), aspect =>
             {
                 aspect.TrackingID = model.TrackingID;
             });
+            await _siteService.UpdateSiteSettingsAsync(container);
         }
     }
 }

@@ -7,5 +7,6 @@ namespace OrchardCore.Data
         public bool HasConnectionString { get; set; }
         public bool HasTablePrefix { get; set; }
         public bool IsDefault { get; set; }
+        public string SampleConnectionString { get; set; }
     }
 }

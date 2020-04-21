@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Primitives;
 using System.Collections.Concurrent;
 using System.Threading;
+using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Environment.Cache
 {
@@ -49,5 +49,4 @@ namespace OrchardCore.Environment.Cache
             public CancellationTokenSource TokenSource { get; }
         }
     }
-
 }

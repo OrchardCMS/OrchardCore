@@ -21,10 +21,10 @@ namespace OrchardCore.Queries.Sql.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IStore _store;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IStringLocalizer<AdminController> _stringLocalizer;
+        private readonly IStringLocalizer S;
 
         public AdminController(
-            IAuthorizationService authorizationService, 
+            IAuthorizationService authorizationService,
             IStore store,
             ILiquidTemplateManager liquidTemplateManager,
             IStringLocalizer<AdminController> stringLocalizer)
@@ -32,7 +32,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             _authorizationService = authorizationService;
             _store = store;
             _liquidTemplateManager = liquidTemplateManager;
-            _stringLocalizer = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public Task<IActionResult> Query(string query)
@@ -50,7 +50,7 @@ namespace OrchardCore.Queries.Sql.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSqlQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (String.IsNullOrWhiteSpace(model.DecodedQuery))
@@ -62,7 +62,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             {
                 model.Parameters = "{ }";
             }
-            
+
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -71,13 +71,14 @@ namespace OrchardCore.Queries.Sql.Controllers
 
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
-            var templateContext = new TemplateContext();
-            foreach(var parameter in parameters)
+            var templateContext = _liquidTemplateManager.Context;
+
+            foreach (var parameter in parameters)
             {
                 templateContext.SetValue(parameter.Key, parameter.Value);
             }
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, templateContext);
+            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, NullEncoder.Default);
 
             model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
 
@@ -90,13 +91,13 @@ namespace OrchardCore.Queries.Sql.Controllers
                 {
                     using (connection)
                     {
-                        connection.Open();
+                        await connection.OpenAsync();
                         model.Documents = await connection.QueryAsync(rawQuery, parameters);
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    ModelState.AddModelError("", _stringLocalizer["An error occured while executing the SQL query: {0}", e.Message]);
+                    ModelState.AddModelError("", S["An error occurred while executing the SQL query: {0}", e.Message]);
                 }
             }
             else

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography.X509Certificates;
 using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
@@ -8,7 +9,10 @@ namespace OrchardCore.OpenId.ViewModels
     public class OpenIdServerSettingsViewModel
     {
         public TokenFormat AccessTokenFormat { get; set; }
+
+        [Url]
         public string Authority { get; set; }
+
         public StoreLocation? CertificateStoreLocation { get; set; }
         public StoreName? CertificateStoreName { get; set; }
         public string CertificateThumbprint { get; set; }
@@ -23,6 +27,7 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowRefreshTokenFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool UseRollingTokens { get; set; }
+        public bool UseReferenceTokens { get; set; }
 
         public class CertificateInfo
         {

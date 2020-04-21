@@ -66,6 +66,7 @@ namespace OrchardCore.Roles.Recipes
     public class RolesStepRoleModel
     {
         public string Name { get; set; }
+        public string Description { get; set; }
         public string[] Permissions { get; set; }
     }
 }

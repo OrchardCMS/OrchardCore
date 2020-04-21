@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Modules;
@@ -14,26 +15,24 @@ namespace OrchardCore.Recipes.Services
     {
         private readonly IRecipeReader _recipeReader;
         private readonly IExtensionManager _extensionManager;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
+        private readonly ILogger _logger;
 
         public RecipeHarvester(
             IRecipeReader recipeReader,
             IExtensionManager extensionManager,
-            IHostingEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             ILogger<RecipeHarvester> logger)
         {
             _recipeReader = recipeReader;
             _extensionManager = extensionManager;
             _hostingEnvironment = hostingEnvironment;
-
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         public virtual Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
         {
-            return _extensionManager.GetExtensions().InvokeAsync(HarvestRecipes, Logger);
+            return _extensionManager.GetExtensions().InvokeAsync(HarvestRecipes, _logger);
         }
 
         private Task<IEnumerable<RecipeDescriptor>> HarvestRecipes(IExtensionInfo extension)
@@ -52,7 +51,7 @@ namespace OrchardCore.Recipes.Services
             var recipeDescriptors = new List<RecipeDescriptor>();
 
             var recipeFiles = _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(path)
-                .Where(x => !x.IsDirectory && x.Name.EndsWith(".recipe.json"));
+                .Where(x => !x.IsDirectory && x.Name.EndsWith(".recipe.json", StringComparison.Ordinal));
 
             recipeDescriptors.AddRange(recipeFiles.Select(recipeFile => _recipeReader.GetRecipeDescriptor(path, recipeFile, _hostingEnvironment.ContentRootFileProvider).Result));
 

@@ -14,21 +14,23 @@ namespace OrchardCore.ContentFields.Fields
 {
     public class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
     {
+        private readonly IStringLocalizer S;
+
         public YoutubeFieldDisplayDriver(IStringLocalizer<YoutubeFieldDisplayDriver> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Display(YoutubeField field, BuildFieldDisplayContext context)
         {
             return Initialize<YoutubeFieldDisplayViewModel>(GetDisplayShapeType(context), model =>
-           {
-               model.Field = field;
-               model.Part = context.ContentPart;
-               model.PartFieldDefinition = context.PartFieldDefinition;
-           }).Location("Content").Location("SummaryAdmin", "");
+            {
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
+            })
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(YoutubeField field, BuildFieldEditorContext context)
@@ -49,36 +51,44 @@ namespace OrchardCore.ContentFields.Fields
 
             if (await updater.TryUpdateModelAsync(model, Prefix))
             {
-                var settings = context.PartFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
                 if (settings.Required && String.IsNullOrWhiteSpace(model.RawAddress))
                 {
-                    updater.ModelState.AddModelError(Prefix, T["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, S["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else
                 {
-                    var uri = new Uri(model.RawAddress);
-
-                    // if it is a url with QueryString
-                    if (!String.IsNullOrWhiteSpace(uri.Query))
+                    if (model.RawAddress != null)
                     {
-                        var query = QueryHelpers.ParseQuery(uri.Query);
-                        if (query.ContainsKey("v"))
+                        var uri = new Uri(model.RawAddress);
+
+                        // if it is a url with QueryString
+                        if (!String.IsNullOrWhiteSpace(uri.Query))
                         {
-                            model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{query["v"]}";
+                            var query = QueryHelpers.ParseQuery(uri.Query);
+                            if (query.ContainsKey("v"))
+                            {
+                                model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{query["v"]}";
+                            }
+                            else
+                            {
+                                updater.ModelState.AddModelError(Prefix + "." + nameof(model.RawAddress), S["The format of the url is invalid"]);
+                            }
                         }
                         else
                         {
-                            updater.ModelState.AddModelError(Prefix + "." + nameof(model.RawAddress), T["The format of the url is invalid"]);
+                            var path = uri.AbsolutePath.Split('?')[0];
+                            model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
                         }
+
+                        field.RawAddress = model.RawAddress;
+                        field.EmbeddedAddress = model.EmbeddedAddress;
                     }
                     else
                     {
-                        var path = uri.AbsolutePath.Split('?')[0];
-                        model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
+                        field.RawAddress = null;
+                        field.EmbeddedAddress = null;
                     }
-
-                    field.RawAddress = model.RawAddress;
-                    field.EmbeddedAddress = model.EmbeddedAddress;
                 }
             }
 

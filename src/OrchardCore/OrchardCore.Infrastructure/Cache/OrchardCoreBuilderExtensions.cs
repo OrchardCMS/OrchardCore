@@ -2,6 +2,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Cache.CacheContextProviders;
+using OrchardCore.Infrastructure.Cache;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -14,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(services =>
             {
-                services.AddTransient<ITagCache, DefaultTagCache>();
+                services.AddScoped<ITagCache, DefaultTagCache>();
                 services.AddSingleton<ISignal, Signal>();
                 services.AddScoped<ICacheContextManager, CacheContextManager>();
                 services.AddScoped<ICacheScopeManager, CacheScopeManager>();
@@ -31,6 +32,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // MemoryDistributedCache needs to be registered as a singleton as it owns a MemoryCache instance.
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
+
+                // Provides a distributed cache service that can return existing references in the current scope.
+                services.AddScoped<IScopedDistributedCache, ScopedDistributedCache>();
             });
 
             return builder;

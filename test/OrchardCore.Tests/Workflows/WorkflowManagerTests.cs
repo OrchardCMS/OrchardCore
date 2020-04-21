@@ -90,12 +90,11 @@ namespace OrchardCore.Tests.Workflows
             var javaScriptEngine = new JavaScriptEngine(memoryCache);
             var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
             var globalMethodProviders = new IGlobalMethodProvider[0];
-            var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders, serviceProvider);
+            var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders);
 
             return new JavaScriptWorkflowScriptEvaluator(
                 scriptingManager,
                 workflowContextHandlers.Resolve(),
-                new Mock<IStringLocalizer<JavaScriptWorkflowScriptEvaluator>>().Object,
                 new Mock<ILogger<JavaScriptWorkflowScriptEvaluator>>().Object
             );
         }
@@ -106,7 +105,6 @@ namespace OrchardCore.Tests.Workflows
             WorkflowType workflowType
         )
         {
-            var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
             var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
             var activityLibrary = new Mock<IActivityLibrary>();
             var workflowTypeStore = new Mock<IWorkflowTypeStore>();
@@ -122,10 +120,8 @@ namespace OrchardCore.Tests.Workflows
                 workflowTypeStore.Object,
                 workflowStore.Object,
                 workflowIdGenerator.Object,
-                workflowContextHandlers,
                 workflowValueSerializers,
                 workflowManagerLogger.Object,
-                workflowContextLogger.Object,
                 missingActivityLogger.Object,
                 missingActivityLocalizer.Object,
                 clock.Object);
