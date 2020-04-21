@@ -13,24 +13,24 @@ namespace OrchardCore.Contents.Sitemaps
             _sitemapUpdateHandler = sitemapUpdateHandler;
         }
 
-        public override async Task PublishedAsync(PublishContentContext context)
+        public override Task PublishedAsync(PublishContentContext context)
         {
             var updateContext = new SitemapUpdateContext
             {
                 UpdateObject = context.ContentItem,
             };
 
-            await _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
+            return _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
         }
 
-        public override async Task UnpublishedAsync(PublishContentContext context)
+        public override Task UnpublishedAsync(PublishContentContext context)
         {
             var updateContext = new SitemapUpdateContext
             {
                 UpdateObject = context.ContentItem,
             };
 
-            await _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
+            return _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
         }
     }
 }
