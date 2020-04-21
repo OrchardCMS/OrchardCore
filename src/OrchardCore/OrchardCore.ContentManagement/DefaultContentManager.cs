@@ -380,6 +380,9 @@ namespace OrchardCore.ContentManagement
                 contentItem.Published = false;
             }
 
+            _session.Save(contentItem);
+            _contentManagerSession.Store(contentItem);
+
             // Build a context with the initialized instance to create
             var context = new CreateContentContext(contentItem);
 
@@ -387,9 +390,6 @@ namespace OrchardCore.ContentManagement
             await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
-
-            _session.Save(contentItem);
-            _contentManagerSession.Store(contentItem);
 
             if (options.IsPublished)
             {
