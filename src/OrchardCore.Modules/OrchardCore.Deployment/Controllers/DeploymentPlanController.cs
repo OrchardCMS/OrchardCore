@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
@@ -14,8 +15,10 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Deployment.Controllers
 {
@@ -105,7 +108,47 @@ namespace OrchardCore.Deployment.Controllers
                 Pager = pagerShape
             };
 
+            model.Options.DeploymentPlansBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(DeploymentPlansBulkAction.Delete) }
+            };
+
             return View(model);
+        }
+
+        [HttpPost, ActionName(nameof(Index))]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(DeploymentPlanIndexViewModel model)
+        {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
+        }
+
+        [HttpPost, ActionName(nameof(Index))]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> IndexBulkActionPOST(DeploymentPlanIndexOptions options, IEnumerable<int> itemIds)
+        {
+            if (itemIds?.Count() > 0)
+            {
+                var checkedItems = await _session.Query<DeploymentPlan, DeploymentPlanIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
+                switch (options.BulkAction)
+                {
+                    case DeploymentPlansBulkAction.None:
+                        break;
+                    case DeploymentPlansBulkAction.Delete:
+                        foreach (var item in checkedItems)
+                        {
+                            _session.Delete(item);
+
+                            _notifier.Success(H["Deployment plan {0} successfully deleted.", item.Name]);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Display(int id)

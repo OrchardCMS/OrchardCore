@@ -32,7 +32,7 @@ From a `Content` template, you can reference a field's value like this
 (if the content type is `Article` and has a Text Field named `MyField`):
 
 ``` liquid tab="Liquid"
-{{ Model.ContentItem.Content.Article.MyField.Value }}
+{{ Model.ContentItem.Content.Article.MyField.Text }}
 ```
 
 ``` html tab="Razor"
@@ -63,13 +63,13 @@ Some view models have special properties that are computed from the actual field
 
 #### Html Field Example
 
-```liquid
+``` liquid tab="Liquid"
 {{ Model.Html }}
 ```
 
 or, to display the raw content before the tags are converted:
 
-```liquid
+``` liquid tab="Liquid"
 {{ Model.Field.Html }}
 ```
 
@@ -83,13 +83,13 @@ or, to display the raw content before the tags are converted:
 
 #### DateTime Field Example
 
-```liquid
+``` liquid tab="Liquid"
 {{ Model.LocalDateTime }}
 ```
 
 or, to display the UTC value before it is converted:
 
-```liquid
+``` liquid tab="Liquid"
 {{ Model.Value }}
 ```
 
@@ -97,7 +97,7 @@ or, to display the UTC value before it is converted:
 
 #### ContentPicker Field Example
 
-```liquid
+``` liquid tab="Liquid"
 {% assign contentItems = Model.ContentItemIds | content_item_id %}
 {% for contentItem in contentItems %}
     {{ contentItem.DisplayText }}
@@ -137,7 +137,7 @@ per set based on the request culture, if no culture is specified.
 
 #### LocalizationSet ContentPicker Field Example
 
-```liquid
+```liquid tab="Liquid"
 {% assign contentItems = Model.LocalizationSets | localization_set %}
 {% for contentItem in contentItems %}
     {{ contentItem.DisplayText }}
@@ -225,7 +225,7 @@ This shape type will match a template file named `{FIELDTYPE}-{DISPLAYMODE}.Disp
 
 This template will need to render an `<option>` tag. Here is an example for a Header display mode options on the Text Field:
 
-``` html
+``` html tab="Razor"
 @{
     string currentDisplayMode = Model.DisplayMode;
 }
