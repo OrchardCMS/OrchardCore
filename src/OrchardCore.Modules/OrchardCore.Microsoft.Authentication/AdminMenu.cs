@@ -23,7 +23,7 @@ namespace OrchardCore.Microsoft.Authentication
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Microsoft"], S["am-Microsoft"], client => client
+                        .Add(S["Microsoft"], "am-" + S["Microsoft"], client => client
                         .AddClass("microsoft").Id("microsoft")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.MicrosoftAccount })
                             .Permission(Permissions.ManageMicrosoftAuthentication)
@@ -54,7 +54,7 @@ namespace OrchardCore.Microsoft.Authentication
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Azure Active Directory"], S["am-Azure Active Directory"], client => client
+                        .Add(S["Azure Active Directory"], "am-" + S["Azure Active Directory"], client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
                             .Permission(Permissions.ManageMicrosoftAuthentication)
                             .LocalNav())

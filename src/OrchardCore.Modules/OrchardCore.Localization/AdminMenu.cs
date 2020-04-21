@@ -30,7 +30,7 @@ namespace OrchardCore.Localization
                 builder
                     .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, localization => localization
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Cultures"], S["am-Cultures"], entry => entry
+                            .Add(S["Cultures"], "am-" + S["Cultures"], entry => entry
                             .AddClass("cultures").Id("cultures")
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
                                 .Permission(Permissions.ManageCultures)

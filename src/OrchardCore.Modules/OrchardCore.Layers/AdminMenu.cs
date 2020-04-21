@@ -25,12 +25,12 @@ namespace OrchardCore.Layers
             builder
                 .Add(S["Design"], design => design
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Zones"], S["am-Zones"], zones => zones
+                        .Add(S["Zones"], "am-" + S["Zones"], zones => zones
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
                             .Permission(Permissions.ManageLayers)
                             .LocalNav()
                         ))
-                    .Add(S["Widgets"], S["am-Widgets"], widgets => widgets
+                    .Add(S["Widgets"], "am-" + S["Widgets"], widgets => widgets
                         .Permission(Permissions.ManageLayers)
                         .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()

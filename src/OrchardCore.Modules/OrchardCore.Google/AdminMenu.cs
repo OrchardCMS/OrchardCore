@@ -23,7 +23,7 @@ namespace OrchardCore.Google
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Google"], S["am-Google"], settings => settings
+                        .Add(S["Google"], "am-" + S["Google"], settings => settings
                         .AddClass("google").Id("google")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAuthentication })
                             .Permission(Permissions.ManageGoogleAuthentication)
@@ -54,7 +54,7 @@ namespace OrchardCore.Google
             {
                 builder.Add(S["Configuration"], configuration => configuration
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Google Analytics"], S["am-Google Analytics"], settings => settings
+                            .Add(S["Google Analytics"], "am-" + S["Google Analytics"], settings => settings
                             .AddClass("googleAnalytics").Id("googleAnalytics")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAnalytics })
                                 .Permission(Permissions.ManageGoogleAnalytics)

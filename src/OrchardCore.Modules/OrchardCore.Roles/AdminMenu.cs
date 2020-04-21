@@ -22,7 +22,7 @@ namespace OrchardCore.Roles
             }
 
             builder.Add(S["Security"], security => security
-                        .Add(S["Roles"], S["am-Roles"], roles => roles
+                        .Add(S["Roles"], "am-" + S["Roles"], roles => roles
                             .AddClass("roles").Id("roles")
                             .Action("Index", "Admin", "OrchardCore.Roles")
                             .Permission(Permissions.ManageRoles)
