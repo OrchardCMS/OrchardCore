@@ -3,9 +3,9 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
@@ -274,11 +274,13 @@ namespace OrchardCore.DisplayManagement.Razor
             return zone != null && zone.Items.Count > 0;
         }
 
-        public new void DefineSection(string name, Microsoft.AspNetCore.Mvc.Razor.RenderAsyncDelegate section)
+        public new void DefineSection(string name, RenderAsyncDelegate section)
         {
             var zone = ThemeLayout.Zones[name];
-            dynamic sectionShape = New.AspSection().GetAwaiter().GetResult();
-            sectionShape.RenderAsyncDelegate = SectionDelegate(name, section, sectionShape);
+
+            var sectionShape = new Shape();
+            sectionShape.Metadata.Type = "AspSection";
+            sectionShape.Properties[nameof(RenderAsyncDelegate)] = SectionDelegate(section, sectionShape);
 
             if (zone is Zones.ZoneOnDemand zoneOnDemand)
             {
@@ -288,6 +290,21 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 zone.Add(sectionShape);
             }
+        }
+
+        private RenderAsyncDelegate SectionDelegate(RenderAsyncDelegate oldDelegate, dynamic shape)
+        {
+            RenderAsyncDelegate newDelegate = async () =>
+            {
+                BeginWriteSectionZone();
+                PushWriter(_writer);
+                await oldDelegate();
+                PopWriter();
+                shape.HtmlContent = _writer.ToString();
+                EndWriteSectionZone();
+                shape.RenderAsyncDelegate = null;
+            };
+            return newDelegate;
         }
 
         private void BeginWriteSectionZone()
@@ -301,21 +318,6 @@ namespace OrchardCore.DisplayManagement.Razor
         private void EndWriteSectionZone()
         {
             _writer.GetStringBuilder().Clear();
-        }
-
-        private RenderAsyncDelegate SectionDelegate(string name, RenderAsyncDelegate oldDelegate, dynamic shape)
-        {
-            RenderAsyncDelegate newDelegate = async () =>
-            {
-                BeginWriteSectionZone();
-                PushWriter(_writer);
-                await oldDelegate();
-                PopWriter();
-                shape.HtmlContent = _writer.ToString();
-                EndWriteSectionZone();
-                shape.RenderAsyncDelegate = null;
-            };
-            return newDelegate;
         }
 
         /// <summary>

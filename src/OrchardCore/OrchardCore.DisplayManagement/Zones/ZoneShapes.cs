@@ -83,7 +83,8 @@ namespace OrchardCore.DisplayManagement.Zones
             }
 
             htmlContentBuilder.AppendHtml((string)Shape.HtmlContent);
-            return (IHtmlContent)htmlContentBuilder;
+            
+            return htmlContentBuilder;
         }
 
         public static IEnumerable<string> HarvestAndSortTabs(IEnumerable<dynamic> shapes)
