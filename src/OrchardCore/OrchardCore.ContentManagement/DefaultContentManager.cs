@@ -380,15 +380,16 @@ namespace OrchardCore.ContentManagement
                 contentItem.Published = false;
             }
 
-            _session.Save(contentItem);
-            _contentManagerSession.Store(contentItem);
-
             // Build a context with the initialized instance to create
             var context = new CreateContentContext(contentItem);
 
             // invoke handlers to add information to persistent stores
             await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
 
+            _session.Save(contentItem);
+            _contentManagerSession.Store(contentItem);
+            
+            // content item will live in memory until the deferred _session.Save() actually happens. 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
 
             if (options.IsPublished)
