@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement.Cache;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Script;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Cache;
 using YesSql.Indexes;
@@ -31,6 +32,9 @@ namespace OrchardCore.ContentManagement
 
             services.AddOptions<ContentOptions>();
             services.AddScoped<IContentPartHandlerResolver, ContentPartHandlerResolver>();
+
+            services.AddScoped<IHtmlScriptSanitizer, HtmlScriptSanitizer>();
+
             return services;
         }
 
