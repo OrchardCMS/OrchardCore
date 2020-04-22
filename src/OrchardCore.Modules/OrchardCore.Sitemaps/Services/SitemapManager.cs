@@ -75,6 +75,15 @@ namespace OrchardCore.Sitemaps.Services
             return;
         }
 
+        public async Task UpdateSitemapAsync()
+        {
+            var existing = await LoadDocumentAsync();
+            await _documentManager.UpdateAsync(existing);
+            await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
+
+            return;
+        }
+
         /// <summary>
         /// Loads the sitemap document from the store for updating and that should not be cached.
         /// </summary>

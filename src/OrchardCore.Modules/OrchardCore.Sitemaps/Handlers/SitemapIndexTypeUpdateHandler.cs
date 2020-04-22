@@ -30,9 +30,14 @@ namespace OrchardCore.Sitemaps.Handlers
                 return;
             }
 
-            var contentTypeName = contentItem.ContentType;
-
             var sitemaps = allSitemaps.OfType<Sitemap>();
+
+            if (!sitemaps.Any())
+            {
+                return;
+            }
+
+            var contentTypeName = contentItem.ContentType;
 
             foreach (var sitemap in sitemaps)
             {
@@ -45,20 +50,22 @@ namespace OrchardCore.Sitemaps.Handlers
 
                     if (source.IndexAll)
                     {
-                        await _sitemapManager.UpdateSitemapAsync(sitemap);
+                        sitemap.Identifier = IdGenerator.GenerateId();
                         return;
                     }
                     else if (source.LimitItems && String.Equals(source.LimitedContentType.ContentTypeName, contentTypeName))
                     {
-                        await _sitemapManager.UpdateSitemapAsync(sitemap);
+                        sitemap.Identifier = IdGenerator.GenerateId();
                         return;
                     }
                     else if (source.ContentTypes.Any(ct => String.Equals(ct.ContentTypeName, contentTypeName)))
                     {
-                        await _sitemapManager.UpdateSitemapAsync(sitemap);
+                        sitemap.Identifier = IdGenerator.GenerateId();
                         return;
                     }
                 }
+
+                await _sitemapManager.UpdateSitemapAsync();
             }
         }
     }

@@ -12,7 +12,7 @@ namespace OrchardCore.Sitemaps.Services
         Task<IEnumerable<SitemapType>> LoadSitemapsAsync();
 
         /// <summary>
-        /// Gets all stored <see cref="SitemapType"/> for sharing.
+        /// Gets all cached <see cref="SitemapType"/> for sharing.
         /// </summary>
         Task<IEnumerable<SitemapType>> GetSitemapsAsync();
 
@@ -38,5 +38,10 @@ namespace OrchardCore.Sitemaps.Services
         /// Updates the specific <see cref="SitemapType"/>.
         /// </summary>
         Task UpdateSitemapAsync(SitemapType sitemap);
+
+        /// <summary>
+        /// Updates all <see cref="SitemapType"/>.
+        /// </summary>
+        Task UpdateSitemapAsync();
     }
 }

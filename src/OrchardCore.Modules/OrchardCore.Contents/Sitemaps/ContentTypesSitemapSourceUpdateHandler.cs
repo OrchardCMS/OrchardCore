@@ -29,6 +29,11 @@ namespace OrchardCore.Contents.Sitemaps
             var sitemaps = (await _sitemapManager.LoadSitemapsAsync())
                 .Where(s => s.GetType() == typeof(Sitemap));
 
+            if (!sitemaps.Any())
+            {
+                return;
+            }
+
             var contentTypeName = contentItem.ContentType;
 
             foreach (var sitemap in sitemaps)
@@ -44,21 +49,23 @@ namespace OrchardCore.Contents.Sitemaps
 
                     if (source.IndexAll)
                     {
-                        await _sitemapManager.UpdateSitemapAsync(sitemap);
+                        sitemap.Identifier = IdGenerator.GenerateId();
                         break;
                     }
                     else if (source.LimitItems && String.Equals(source.LimitedContentType.ContentTypeName, contentTypeName))
                     {
-                        await _sitemapManager.UpdateSitemapAsync(sitemap);
+                        sitemap.Identifier = IdGenerator.GenerateId();
                         break;
                     }
                     else if (source.ContentTypes.Any(ct => String.Equals(ct.ContentTypeName, contentTypeName)))
                     {
-                        await _sitemapManager.UpdateSitemapAsync(sitemap);
+                        sitemap.Identifier = IdGenerator.GenerateId();
                         break;
                     }
                 }
             }
+
+            await _sitemapManager.UpdateSitemapAsync();
         }
     }
 }
