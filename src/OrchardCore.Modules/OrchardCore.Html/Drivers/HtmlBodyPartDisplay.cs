@@ -4,9 +4,11 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Script;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
+using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Liquid;
 
@@ -15,12 +17,14 @@ namespace OrchardCore.Html.Drivers
     public class HtmlBodyPartDisplay : ContentPartDisplayDriver<HtmlBodyPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IStringLocalizer S;
 
-        public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
+        public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlBodyPartDisplay> localizer, HtmlEncoder htmlEncoder, IHtmlScriptSanitizer htmlScriptSanitizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
+            _htmlScriptSanitizer = htmlScriptSanitizer;
             _htmlEncoder = htmlEncoder;
             S = localizer;
         }
@@ -47,6 +51,8 @@ namespace OrchardCore.Html.Drivers
         {
             var viewModel = new HtmlBodyPartViewModel();
 
+            var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
+
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html))
             {
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
@@ -56,7 +62,7 @@ namespace OrchardCore.Html.Drivers
                 }
                 else
                 {
-                    model.Html = viewModel.Html;
+                    model.Html = (settings.AllowCustomScripts) ? viewModel.Html : _htmlScriptSanitizer.Sanitize(viewModel.Html);
                 }
             }
 
