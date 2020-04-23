@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Flows.Models;
 
@@ -20,5 +22,8 @@ namespace OrchardCore.Flows.ViewModels
 
         [BindNever]
         public IUpdateModel Updater { get; set; }
+
+        [BindNever]
+        public IEnumerable<ContentTypeDefinition> ContainedContentTypeDefinitions { get; set; }
     }
 }

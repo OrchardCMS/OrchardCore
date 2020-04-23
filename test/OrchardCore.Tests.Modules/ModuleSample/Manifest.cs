@@ -7,6 +7,7 @@ using OrchardCore.Modules.Manifest;
     Version = "2.0.0",
     Category = "Test"
 )]
+
 [assembly: Feature(
     Id = "Sample1",
     Name = "Sample 1",

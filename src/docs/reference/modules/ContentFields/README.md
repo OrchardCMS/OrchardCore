@@ -32,7 +32,7 @@ From a `Content` template, you can reference a field's value like this
 (if the content type is `Article` and has a Text Field named `MyField`):
 
 ``` liquid tab="Liquid"
-{{ Model.ContentItem.Content.Article.MyField.Value }}
+{{ Model.ContentItem.Content.Article.MyField.Text }}
 ```
 
 ``` html tab="Razor"

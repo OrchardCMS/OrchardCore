@@ -24,8 +24,8 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script at="Foot">
     $(function () {
-        var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Html)');
-        var editor = CodeMirror.fromTextArea(optionsTexArea, {
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
+        var editor = CodeMirror.fromTextArea(optionsTextArea, {
             autoRefresh: true,
             lineNumbers: false,
             lineWrapping: true,

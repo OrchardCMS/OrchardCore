@@ -72,7 +72,6 @@
     },
     {
       "name": "settings",
-      "Meta": "[file:text('Snippets/meta.html')]",
       "HomeRoute": {
         "Action": "Display",
         "Controller": "Item",
