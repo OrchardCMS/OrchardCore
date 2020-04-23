@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -15,6 +16,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -37,16 +39,16 @@ namespace OrchardCore.Users
 {
     public class Startup : StartupBase
     {
-        private const string LoginPath = "Login";
-        private const string ChangePasswordPath = "ChangePassword";
-
         private readonly AdminOptions _adminOptions;
+        private readonly UserOptions _userOptions;
+
         private readonly string _tenantName;
 
         public Startup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
         {
             _adminOptions = adminOptions.Value;
             _tenantName = shellSettings.Name;
+            _userOptions = shellSettings.ShellConfiguration.GetSection("OrchardCore_Users").Get<UserOptions>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -56,20 +58,20 @@ namespace OrchardCore.Users
             routes.MapAreaControllerRoute(
                 name: "Login",
                 areaName: "OrchardCore.Users",
-                pattern: LoginPath,
+                pattern: _userOptions.LoginPath,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.Login) }
             );
             routes.MapAreaControllerRoute(
                 name: "ChangePassword",
                 areaName: "OrchardCore.Users",
-                pattern: ChangePasswordPath,
+                pattern: _userOptions.ChangePasswordUrl,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePassword) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "UsersLogOff",
                 areaName: "OrchardCore.Users",
-                pattern: "/Users/LogOff",
+                pattern: _userOptions.LogoffPath,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.LogOff) }
             );
 
@@ -111,6 +113,9 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            // services.Configure<UserOptions>(_configuration.GetSection("OrchardCore_Users"));
+            services.AddSingleton(Options.Create<UserOptions>(_userOptions));
+
             services.AddSecurity();
 
             // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
@@ -136,12 +141,12 @@ namespace OrchardCore.Users
             services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
-                
+
                 // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
                 // set by the pipeline and comming from the request 'PathBase' which already ends with the
                 // tenant prefix but may also start by a path related e.g to a virtual folder.
 
-                options.LoginPath = "/" + LoginPath;
+                options.LoginPath = "/" + _userOptions.LoginPath;
                 options.AccessDeniedPath = "/Error/403";
 
                 // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
