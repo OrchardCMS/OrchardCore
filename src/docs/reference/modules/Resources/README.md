@@ -309,6 +309,61 @@ The following example demonstrates how to inject a custom script in the footer s
 </script>
 ```
 
+You can also inject a named custom script.
+``` liquid tab="Liquid"
+{% scriptblock name: "Carousel", at: "Foot", depends_on:"jQuery" %}
+    document.write('<!-- some script -->');
+{% endscriptblock %}
+```
+
+``` html tab="Razor"
+<script name="Carousel" at="Foot" depends-on="jQuery">
+    document.write('<!-- some script -->');
+</script>
+```
+
+Named script will only be injected once and can optionally specify dependencies.
+
+#### Custom style
+
+The following example demonstrates how to inject a custom style in the head section.
+The style block will be injected after all stylesheet resources.
+
+``` liquid tab="Liquid"
+{% styleblock at: "Head" %}
+    .my-class {
+        /* some style */
+    }
+{% endstyleblock %}
+```
+
+``` html tab="Razor"
+<style at="Head">
+    .my-class {
+        /* some style */
+    }
+</style>
+```
+
+You can also inject a named style block.
+The style block will only be injected once based on its name and can optionally specify dependencies.
+
+``` liquid tab="Liquid"
+{% styleblock name: "my-style", depends_on:"the-theme" %}
+    .my-class {
+        /* some style */
+    }
+{% endscriptblock %}
+```
+
+``` html tab="Razor"
+<style name="my-style" depends-on="the-theme">
+    .my-class {
+        /* some style */
+    }
+</style>
+```
+
 #### Meta tags
 
 ``` liquid tab="Liquid"
