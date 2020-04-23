@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Cache;
@@ -18,13 +19,14 @@ namespace OrchardCore.Sitemaps.Controllers
         private const int WarningLength = 47_185_920;
         private const int ErrorLength = 52_428_800;
 
-        private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> Workers = new ConcurrentDictionary<string, Lazy<Task<Stream>>>();
-        private static readonly ConcurrentDictionary<string, string> _identifiers = new ConcurrentDictionary<string, string>();
+        private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> Workers = new ConcurrentDictionary<string, Lazy<Task<Stream>>>(StringComparer.OrdinalIgnoreCase);
+        private static readonly ConcurrentDictionary<string, string> Identifiers = new ConcurrentDictionary<string, string>();
 
         private readonly ISitemapManager _sitemapManager;
         private readonly ISiteService _siteService;
         private readonly ISitemapBuilder _sitemapBuilder;
         private readonly ISitemapCacheProvider _sitemapCacheProvider;
+        private readonly string _tenantName;
         private readonly ILogger _logger;
 
         public SitemapController(
@@ -32,6 +34,7 @@ namespace OrchardCore.Sitemaps.Controllers
             ISiteService siteService,
             ISitemapBuilder sitemapBuilder,
             ISitemapCacheProvider sitemapCacheProvider,
+            ShellSettings shellSettings,
             ILogger<SitemapController> logger
             )
         {
@@ -39,6 +42,7 @@ namespace OrchardCore.Sitemaps.Controllers
             _siteService = siteService;
             _sitemapBuilder = sitemapBuilder;
             _sitemapCacheProvider = sitemapCacheProvider;
+            _tenantName = shellSettings.Name;
             _logger = logger;
         }
 
@@ -53,7 +57,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             ISitemapCacheFileResolver fileResolver = null;
 
-            if (_identifiers.TryGetValue(sitemapId, out var identifier) && sitemap.Identifier == identifier)
+            if (Identifiers.TryGetValue(sitemapId, out var identifier) && sitemap.Identifier == identifier)
             {
                 fileResolver = await _sitemapCacheProvider.GetCachedSitemapAsync(sitemap.Path);
             }
@@ -62,7 +66,7 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 // When multiple requests occur for the same sitemap it 
                 // may still be building, so we wait for it to complete.
-                if (Workers.TryGetValue(sitemapId, out var writeTask))
+                if (Workers.TryGetValue(_tenantName + sitemap.Path, out var writeTask))
                 {
                     await writeTask.Value;
                 }
@@ -73,7 +77,7 @@ namespace OrchardCore.Sitemaps.Controllers
             }
             else
             {
-                var work = await Workers.GetOrAdd(sitemapId, x => new Lazy<Task<Stream>>(async () =>
+                var work = await Workers.GetOrAdd(_tenantName + sitemap.Path, x => new Lazy<Task<Stream>>(async () =>
                 {
                     try
                     {
@@ -108,13 +112,13 @@ namespace OrchardCore.Sitemaps.Controllers
 
                         await _sitemapCacheProvider.SetSitemapCacheAsync(stream, sitemap.Path, cancellationToken);
 
-                        _identifiers[sitemap.SitemapId] = sitemap.Identifier;
+                        Identifiers[sitemap.SitemapId] = sitemap.Identifier;
 
                         return stream;
                     }
                     finally
                     {
-                        Workers.TryRemove(sitemapId, out var writeCacheTask);
+                        Workers.TryRemove(_tenantName + sitemap.Path, out var writeCacheTask);
                     }
                 }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 
