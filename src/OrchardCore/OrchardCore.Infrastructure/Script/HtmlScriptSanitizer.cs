@@ -1,6 +1,6 @@
 using Ganss.XSS;
 
-namespace OrchardCore.ContentManagement.Script
+namespace OrchardCore.Infrastructure.Script
 {
     public class HtmlScriptSanitizer : IHtmlScriptSanitizer
     {

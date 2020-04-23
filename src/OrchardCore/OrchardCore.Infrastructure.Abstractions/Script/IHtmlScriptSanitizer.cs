@@ -1,4 +1,4 @@
-namespace OrchardCore.ContentManagement.Script
+namespace OrchardCore.Infrastructure.Script
 {
     public interface IHtmlScriptSanitizer
     {
