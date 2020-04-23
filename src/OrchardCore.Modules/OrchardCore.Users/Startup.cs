@@ -48,7 +48,7 @@ namespace OrchardCore.Users
         {
             _adminOptions = adminOptions.Value;
             _tenantName = shellSettings.Name;
-            _userOptions = shellSettings.ShellConfiguration.GetSection("OrchardCore_Users").Get<UserOptions>();
+            _userOptions = shellSettings.ShellConfiguration.GetSection("OrchardCore_Users").Get<UserOptions>() ?? new UserOptions();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
