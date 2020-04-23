@@ -25,14 +25,14 @@ namespace OrchardCore.Users
 
             builder.Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
                     .AddClass("security").Id("security")
-                        .Add(S["Users"], S["Users"], users => users
+                        .Add(S["Users"], "am-" + S["Users"], users => users
                             .AddClass("users").Id("users")
                             .Action("Index", "Admin", "OrchardCore.Users")
                             .Permission(Permissions.ManageUsers)
                             .LocalNav()
                          )
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Login"], S["Login"], login => login
+                            .Add(S["Login"], "am-" + S["Login"], login => login
                                 .Permission(Permissions.ManageUsers)
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LoginSettingsDisplayDriver.GroupId })
                                 .LocalNav()
@@ -64,7 +64,7 @@ namespace OrchardCore.Users
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Email"], S["Email"], registration => registration
+                        .Add(S["Email"], "am-" + S["Email"], registration => registration
                             .Permission(Permissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ChangeEmailSettingsDisplayDriver.GroupId })
                             .LocalNav()
@@ -94,7 +94,7 @@ namespace OrchardCore.Users
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Registration"], S["Registration"], registration => registration
+                        .Add(S["Registration"], "am-" + S["Registration"], registration => registration
                             .Permission(Permissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RegistrationSettingsDisplayDriver.GroupId })
                             .LocalNav()
@@ -124,7 +124,7 @@ namespace OrchardCore.Users
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Reset password"], S["Reset password"], password => password
+                        .Add(S["Reset password"], "am-" + S["Reset password"], password => password
                             .Permission(Permissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ResetPasswordSettingsDisplayDriver.GroupId })
                             .LocalNav()

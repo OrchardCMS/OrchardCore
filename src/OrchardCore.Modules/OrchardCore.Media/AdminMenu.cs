@@ -24,7 +24,7 @@ namespace OrchardCore.Media
             builder
                 .Add(S["Content"], content => content
                     .AddClass("media").Id("media")
-                    .Add(S["Media Library"], S["Media Library"], layers => layers
+                    .Add(S["Media Library"], "am-" + S["Media Library"], layers => layers
                         .Permission(Permissions.ManageOwnMedia)
                         .Action("Index", "Admin", new { area = "OrchardCore.Media" })
                         .LocalNav()
@@ -51,7 +51,7 @@ namespace OrchardCore.Media
             }
 
             builder.Add(S["Content"], content => content
-                .Add(S["Media Cache"], S["Media Cache"], contentItems => contentItems
+                .Add(S["Media Cache"], "am-" + S["Media Cache"], contentItems => contentItems
                     .Action("Index", "MediaCache", new { area = "OrchardCore.Media" })
                     .Permission(MediaCachePermissions.ManageAssetCache)
                     .LocalNav())
