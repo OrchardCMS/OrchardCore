@@ -24,5 +24,15 @@ namespace OrchardCore.Data
         /// <param name="factory">A factory method to get or create a document for caching.</param>
         /// <returns></returns>
         Task<T> GetForCachingAsync<T>(Func<T> factory = null) where T : class, new();
+
+        /// <summary>
+        /// Saves the provided entity to the ambient session.
+        /// </summary>
+        void Save(object entity, bool checkConcurrency = false);
+
+        /// <summary>
+        /// Commits the ambient session.
+        /// </summary>
+        Task CommitAsync();
     }
 }

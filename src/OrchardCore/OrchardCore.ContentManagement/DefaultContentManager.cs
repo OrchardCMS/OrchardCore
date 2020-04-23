@@ -11,6 +11,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Data;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;
@@ -21,6 +22,7 @@ namespace OrchardCore.ContentManagement
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
+        private readonly ISessionHelper _sessionHelper;
         private readonly ILogger _logger;
         private readonly IContentManagerSession _contentManagerSession;
         private readonly IContentItemIdGenerator _idGenerator;
@@ -31,6 +33,7 @@ namespace OrchardCore.ContentManagement
             IContentManagerSession contentManagerSession,
             IEnumerable<IContentHandler> handlers,
             ISession session,
+            ISessionHelper sessionHelper,
             IContentItemIdGenerator idGenerator,
             ILogger<DefaultContentManager> logger,
             IClock clock)
@@ -39,6 +42,7 @@ namespace OrchardCore.ContentManagement
             Handlers = handlers;
             ReversedHandlers = handlers.Reverse().ToArray();
             _session = session;
+            _sessionHelper = sessionHelper;
             _idGenerator = idGenerator;
             _contentManagerSession = contentManagerSession;
             _logger = logger;
@@ -190,14 +194,14 @@ namespace OrchardCore.ContentManagement
                     else
                     {
                         // Save the previous version
-                        _session.Save(contentItem);
+                        _sessionHelper.Save(contentItem);
 
                         contentItem = await BuildNewVersionAsync(contentItem);
                     }
                 }
 
                 // Save the new version
-                _session.Save(contentItem);
+                _sessionHelper.Save(contentItem);
             }
 
             return contentItem;
@@ -264,13 +268,13 @@ namespace OrchardCore.ContentManagement
 
             if (previous != null)
             {
-                _session.Save(previous);
+                _sessionHelper.Save(previous);
                 previous.Published = false;
             }
 
             contentItem.Published = true;
 
-            _session.Save(contentItem);
+            _sessionHelper.Save(contentItem);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), context, _logger);
         }
@@ -314,7 +318,7 @@ namespace OrchardCore.ContentManagement
             publishedItem.Published = false;
             publishedItem.ModifiedUtc = _clock.UtcNow;
 
-            _session.Save(publishedItem);
+            _sessionHelper.Save(publishedItem);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.UnpublishedAsync(context), context, _logger);
         }
@@ -337,7 +341,7 @@ namespace OrchardCore.ContentManagement
 
                 if (latestVersion != null)
                 {
-                    _session.Save(latestVersion);
+                    _sessionHelper.Save(latestVersion);
                 }
             }
 
@@ -386,10 +390,10 @@ namespace OrchardCore.ContentManagement
             // invoke handlers to add information to persistent stores
             await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
 
-            await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
-
-            _session.Save(contentItem);
+            _sessionHelper.Save(contentItem);
             _contentManagerSession.Store(contentItem);
+
+            await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
 
             if (options.IsPublished)
             {
@@ -408,9 +412,10 @@ namespace OrchardCore.ContentManagement
             var context = new UpdateContentContext(contentItem);
 
             await Handlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), context, _logger);
-            await ReversedHandlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
 
-            _session.Save(contentItem);
+            _sessionHelper.Save(contentItem);
+
+            await ReversedHandlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
         }
 
         public async Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect)
@@ -446,7 +451,7 @@ namespace OrchardCore.ContentManagement
             {
                 version.Published = false;
                 version.Latest = false;
-                _session.Save(version);
+                _sessionHelper.Save(version);
             }
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), context, _logger);
@@ -466,14 +471,14 @@ namespace OrchardCore.ContentManagement
             await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), context, _logger);
 
             contentItem.Latest = false;
-            _session.Save(contentItem);
+            _sessionHelper.Save(contentItem);
 
             await ReversedHandlers.InvokeAsync((handler, ccontexttx) => handler.RemovedAsync(context), context, _logger);
 
             if (publishedItem != null)
             {
                 publishedItem.Latest = true;
-                _session.Save(publishedItem);
+                _sessionHelper.Save(publishedItem);
             }
         }
 
@@ -488,9 +493,11 @@ namespace OrchardCore.ContentManagement
             context.CloneContentItem.DisplayText = contentItem.DisplayText;
 
             await Handlers.InvokeAsync((handler, context) => handler.CloningAsync(context), context, _logger);
+
+            _sessionHelper.Save(context.CloneContentItem);
+
             await ReversedHandlers.InvokeAsync((handler, context) => handler.ClonedAsync(context), context, _logger);
 
-            _session.Save(context.CloneContentItem);
             return context.CloneContentItem;
         }
     }

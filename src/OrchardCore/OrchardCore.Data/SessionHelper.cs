@@ -13,6 +13,7 @@ namespace OrchardCore.Data
         private readonly ISession _session;
 
         private readonly Dictionary<Type, object> _loaded = new Dictionary<Type, object>();
+        private readonly HashSet<object> _saved = new HashSet<object>();
 
         /// <summary>
         /// Creates a new instance of <see cref="SessionHelper"/>.
@@ -55,6 +56,27 @@ namespace OrchardCore.Data
             }
 
             return factory?.Invoke() ?? new T();
+        }
+
+        public void Save(object entity, bool checkConcurrency = false)
+        {
+            _session.Save(entity);
+            _saved.Add(entity);
+        }
+
+        public Task CommitAsync()
+        {
+            if (_session == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            foreach(var entity in _saved)
+            {
+                _session.Save(entity);
+            }
+
+            return _session.CommitAsync();
         }
     }
 }
