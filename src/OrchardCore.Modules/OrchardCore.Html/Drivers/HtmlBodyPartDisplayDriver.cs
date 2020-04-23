@@ -14,14 +14,14 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Html.Drivers
 {
-    public class HtmlBodyPartDisplay : ContentPartDisplayDriver<HtmlBodyPart>
+    public class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBodyPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IStringLocalizer S;
 
-        public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlBodyPartDisplay> localizer, HtmlEncoder htmlEncoder, IHtmlScriptSanitizer htmlScriptSanitizer)
+        public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlBodyPartDisplayDriver> localizer, HtmlEncoder htmlEncoder, IHtmlScriptSanitizer htmlScriptSanitizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlScriptSanitizer = htmlScriptSanitizer;

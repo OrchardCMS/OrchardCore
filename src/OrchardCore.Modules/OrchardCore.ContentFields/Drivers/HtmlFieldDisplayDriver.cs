@@ -2,12 +2,14 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure.Script;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentFields.Drivers
@@ -15,14 +17,16 @@ namespace OrchardCore.ContentFields.Drivers
     public class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IStringLocalizer S;
 
-        public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlFieldDisplayDriver> localizer, HtmlEncoder htmlEncoder)
+        public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlFieldDisplayDriver> localizer, HtmlEncoder htmlEncoder, IHtmlScriptSanitizer htmlScriptSanitizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
-            S = localizer;
+            _htmlScriptSanitizer = htmlScriptSanitizer;
             _htmlEncoder = htmlEncoder;
+            S = localizer;
         }
 
         public override IDisplayResult Display(HtmlField field, BuildFieldDisplayContext context)
@@ -56,6 +60,8 @@ namespace OrchardCore.ContentFields.Drivers
         {
             var viewModel = new EditHtmlFieldViewModel();
 
+            var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
+
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html))
             {
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
@@ -65,7 +71,7 @@ namespace OrchardCore.ContentFields.Drivers
                 }
                 else
                 {
-                    field.Html = viewModel.Html;
+                    field.Html = (settings.AllowCustomScripts) ? viewModel.Html : _htmlScriptSanitizer.Sanitize(viewModel.Html);
                 }
             }
 
