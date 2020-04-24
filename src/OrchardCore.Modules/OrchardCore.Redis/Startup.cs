@@ -20,7 +20,7 @@ namespace OrchardCore.Redis
     {
         private readonly string _tenant;
         private readonly IShellConfiguration _configuration;
-        private readonly ILogger<Startup> _logger;
+        private readonly ILogger _logger;
 
         public Startup(ShellSettings shellSettings, IShellConfiguration configuration, ILogger<Startup> logger)
         {
