@@ -17,12 +17,15 @@ namespace OrchardCore.Menu
         {
             await _recipeMigrator.ExecuteAsync("menu.recipe.json", this);
 
-            return 1;
+            // Return 2 to shortcut the second migration on new content definition schemas.
+            return 2;
         }
 
+        // Add content picker menu. This only needs to run on old content definition schemas.
+        // This code can be removed in a later version.
         public async Task<int> UpdateFrom1Async()
         {
-            await _recipeMigrator.ExecuteAsync("content-picker-menu.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync("content-picker-menu-upgrade2.recipe.json", this);
 
             return 2;
         }
