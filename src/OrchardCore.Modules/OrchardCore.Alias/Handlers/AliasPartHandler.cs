@@ -49,7 +49,7 @@ namespace OrchardCore.Alias.Handlers
 
             if (part.Alias.Length > AliasPartDisplayDriver.MaxAliasLength)
             {
-                context.Fail(S["Your alias is too long. The alias can only be up to {0} characters.", AliasPartDisplayDriver.DefaultMaxAliasLengthError]);
+                context.Fail(S["Your alias is too long. The alias can only be up to {0} characters.", AliasPartDisplayDriver.MaxAliasLength]);
             }
 
             if (!await IsAliasUniqueAsync(part.Alias, part))

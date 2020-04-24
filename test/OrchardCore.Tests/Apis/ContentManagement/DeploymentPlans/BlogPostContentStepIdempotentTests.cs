@@ -13,7 +13,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
     public class BlogPostContentStepIdempotentTests
     {
         [Fact]
-        public async Task ShouldProduceSameOutcomeForNewContentOnMultipleExections()
+        public async Task ShouldProduceSameOutcomeForNewContentOnMultipleExecutions()
         {
             using (var context = new BlogPostDeploymentContext())
             {
@@ -57,7 +57,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
         }
 
         [Fact]
-        public async Task ShouldProduceSameOutcomeForExistingContentItemVersionOnMultipleExections()
+        public async Task ShouldProduceSameOutcomeForExistingContentItemVersionOnMultipleExecutions()
         {
             using (var context = new BlogPostDeploymentContext())
             {

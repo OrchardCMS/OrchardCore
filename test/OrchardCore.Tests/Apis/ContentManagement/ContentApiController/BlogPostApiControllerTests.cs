@@ -256,7 +256,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
 
                 // Test
                 Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
-                Assert.Contains(AutoroutePartDisplay.DefaultUniquePathError, problemDetails.Detail);
+                Assert.Contains("Your permalink is already in use.", problemDetails.Detail);
                 using (var shellScope = await BlogPostApiControllerContext.ShellHost.GetScopeAsync(context.TenantName))
                 {
                     await shellScope.UsingAsync(async scope =>
