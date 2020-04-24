@@ -14,7 +14,6 @@ namespace OrchardCore.Markdown.Handlers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IDictionary<string, HtmlString> _bodiesAspectDictionary = new Dictionary<string, HtmlString>();
         private IHtmlContent _bodyAspect;
         private int _contentItemId;
 
@@ -31,7 +30,6 @@ namespace OrchardCore.Markdown.Handlers
                 if (bodyAspect != null && part.ContentItem.Id == _contentItemId)
                 {
                     bodyAspect.Body = _bodyAspect;
-                    part.ContentItem.Id = _contentItemId;
 
                     return;
                 }

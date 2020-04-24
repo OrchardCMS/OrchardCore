@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -30,7 +29,6 @@ namespace OrchardCore.Html.Handlers
                 if (bodyAspect != null && part.ContentItem.Id == _contentItemId)
                 {
                     bodyAspect.Body = _bodyAspect;
-                    part.ContentItem.Id = _contentItemId;
 
                     return;
                 }
