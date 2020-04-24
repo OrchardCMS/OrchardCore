@@ -25,7 +25,7 @@ namespace OrchardCore.Menu
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom1Async()
         {
-            await _recipeMigrator.ExecuteAsync("content-picker-menu-upgrade2.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync("content-picker-menu-updatefrom1.recipe.json", this);
 
             return 2;
         }
