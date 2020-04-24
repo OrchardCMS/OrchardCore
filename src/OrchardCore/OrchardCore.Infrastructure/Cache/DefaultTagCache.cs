@@ -15,7 +15,7 @@ namespace OrchardCore.Environment.Cache
 
         private readonly ConcurrentDictionary<string, HashSet<string>> _dictionary;
         private readonly IEnumerable<ITagRemovedEventHandler> _tagRemovedEventHandlers;
-        private readonly ILogger<DefaultTagCache> _logger;
+        private readonly ILogger _logger;
 
         public DefaultTagCache(
             IEnumerable<ITagRemovedEventHandler> tagRemovedEventHandlers,

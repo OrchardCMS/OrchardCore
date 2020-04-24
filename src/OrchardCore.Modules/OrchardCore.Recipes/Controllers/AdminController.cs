@@ -26,7 +26,7 @@ namespace OrchardCore.Recipes.Controllers
         private readonly INotifier _notifier;
         private readonly IRecipeExecutor _recipeExecutor;
         private readonly ISiteService _siteService;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             ShellSettings shellSettings,

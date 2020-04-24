@@ -46,7 +46,7 @@ In addition you can specify a `Tenant` setting by using the Tenant Name, in this
   "OrchardCore": {
     "Default": {
       "State": "Placeholder",
-      "OrchardCore.Media": {
+      "OrchardCore_Media": {
         ... specific tenant configuration configuration ...
       }
     }
@@ -69,7 +69,7 @@ Additionally these `appsettings.json` files do not need the `OrchardCore` sectio
 
 ```
 {
-  "OrchardCore.Media": {
+  "OrchardCore_Media": {
     ... specific tenant configuration configuration ...
   }
 }
@@ -83,7 +83,7 @@ Environment variables are also translated into `IShellConfiguration`, for exampl
 OrchardCore__OrchardCore.Media__MaxFileSize
 
 OrchardCore__Default__State
-OrchardCore__Default__OrchardCore.Media__MaxFileSize
+OrchardCore__Default__OrchardCore_Media__MaxFileSize
 ```
 
 ### Order of hierarchy

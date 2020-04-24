@@ -13,7 +13,7 @@ namespace OrchardCore.Workflows.Services
     {
         private readonly ISession _session;
         private readonly IEnumerable<IWorkflowTypeEventHandler> _handlers;
-        private readonly ILogger<WorkflowTypeStore> _logger;
+        private readonly ILogger _logger;
 
         public WorkflowTypeStore(ISession session, IEnumerable<IWorkflowTypeEventHandler> handlers, ILogger<WorkflowTypeStore> logger)
         {

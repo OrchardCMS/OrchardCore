@@ -15,6 +15,7 @@ namespace OrchardCore.DisplayManagement
         private readonly IEnumerable<IDisplayDriver<TModel>> _drivers;
         private readonly IShapeFactory _shapeFactory;
         private readonly ILayoutAccessor _layoutAccessor;
+        private readonly ILogger _logger;
 
         public DisplayManager(
             IEnumerable<IDisplayDriver<TModel>> drivers,
@@ -28,11 +29,8 @@ namespace OrchardCore.DisplayManagement
             _shapeFactory = shapeFactory;
             _layoutAccessor = layoutAccessor;
             _drivers = drivers;
-
-            Logger = logger;
+            _logger = logger;
         }
-
-        private ILogger Logger { get; set; }
 
         public async Task<IShape> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
         {
@@ -69,7 +67,7 @@ namespace OrchardCore.DisplayManagement
                 {
                     await result.ApplyAsync(context);
                 }
-            }, model, context, Logger);
+            }, model, context, _logger);
 
             return shape;
         }
@@ -103,7 +101,7 @@ namespace OrchardCore.DisplayManagement
                 {
                     await result.ApplyAsync(context);
                 }
-            }, model, context, Logger);
+            }, model, context, _logger);
 
             return shape;
         }
@@ -137,7 +135,7 @@ namespace OrchardCore.DisplayManagement
                 {
                     await result.ApplyAsync(context);
                 }
-            }, model, context, Logger);
+            }, model, context, _logger);
 
             return shape;
         }

@@ -17,7 +17,7 @@ namespace OrchardCore.Media.Services
         private static readonly ConcurrentDictionary<string, Lazy<Task>> Workers = new ConcurrentDictionary<string, Lazy<Task>>();
 
         private readonly RequestDelegate _next;
-        private readonly ILogger<MediaFileStoreResolverMiddleware> _logger;
+        private readonly ILogger _logger;
         private readonly IMediaFileStoreCache _mediaFileStoreCache;
         private readonly IMediaFileStore _mediaFileStore;
 

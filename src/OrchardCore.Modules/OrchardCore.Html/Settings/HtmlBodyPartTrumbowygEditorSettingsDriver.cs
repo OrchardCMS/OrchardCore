@@ -13,7 +13,7 @@ namespace OrchardCore.Html.Settings
 {
     public class HtmlBodyPartTrumbowygEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer<HtmlBodyPartTrumbowygEditorSettingsDriver> S;
+        private readonly IStringLocalizer S;
 
         public HtmlBodyPartTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlBodyPartTrumbowygEditorSettingsDriver> localizer)
         {

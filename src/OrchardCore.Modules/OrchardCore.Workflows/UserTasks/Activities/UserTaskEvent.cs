@@ -9,7 +9,7 @@ namespace OrchardCore.Workflows.UserTasks.Activities
 {
     public class UserTaskEvent : EventActivity
     {
-        private readonly IStringLocalizer<UserTaskEvent> S;
+        private readonly IStringLocalizer S;
 
         public UserTaskEvent(IStringLocalizer<UserTaskEvent> localizer)
         {

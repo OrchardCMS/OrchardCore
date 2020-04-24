@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
@@ -30,7 +31,7 @@ namespace OrchardCore.Shells.Database.Configuration
         {
             _options = configuration
                 .GetSection("OrchardCore")
-                .GetSection("OrchardCore.Shells.Database")
+                .GetSectionCompat("OrchardCore_Shells_Database")
                 .Get<DatabaseShellsStorageOptions>()
                 ?? new DatabaseShellsStorageOptions();
 

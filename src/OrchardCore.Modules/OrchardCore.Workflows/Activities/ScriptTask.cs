@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.Activities
     public class ScriptTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer<ScriptTask> S;
+        private readonly IStringLocalizer S;
 
         public ScriptTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ScriptTask> localizer)
         {

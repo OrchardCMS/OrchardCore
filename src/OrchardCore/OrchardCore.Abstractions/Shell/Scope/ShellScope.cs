@@ -265,14 +265,6 @@ namespace OrchardCore.Environment.Shell.Scope
             finally
             {
                 semaphore.Release();
-
-                lock (_semaphores)
-                {
-                    if (_semaphores.ContainsKey(ShellContext.Settings.Name))
-                    {
-                        _semaphores.Remove(ShellContext.Settings.Name);
-                    }
-                }
             }
         }
 

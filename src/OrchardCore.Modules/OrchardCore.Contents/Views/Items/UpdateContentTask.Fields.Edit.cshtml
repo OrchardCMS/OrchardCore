@@ -1,0 +1,43 @@
+@using OrchardCore.Contents.Workflows.ViewModels
+@model UpdateContentTaskViewModel
+
+<div class="form-group" asp-validation-class-for="ContentType">
+    <label asp-for="ContentType">@T["Content Type"]</label>
+    <select asp-for="ContentType" asp-items="@Model.AvailableContentTypes" class="form-control" asp-validation-class-for="ContentType"></select>
+    <span asp-validation-for="ContentType"></span>
+    <span class="hint">@T["Select the type of content to update."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="ContentItemIdExpression">
+    <label asp-for="ContentItemIdExpression">@T["Content Item ID"]</label>
+    <input type="text" asp-for="ContentItemIdExpression" class="form-control code" asp-validation-class-for="ContentItemIdExpression" />
+    <span asp-validation-for="ContentItemIdExpression"></span>
+    <span class="hint">@T["Enter a JavaScript expression that evaluates to the Content Item's ID(ContentItemId) to be updated."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="ContentProperties">
+    <label asp-for="ContentProperties">@T["Content Properties"]</label>
+    <textarea asp-for="ContentProperties" class="form-control"></textarea>
+    <span asp-validation-for="ContentProperties"></span>
+    <span class="hint">@T["Optionally provide values for the content parts, fields and their properties in JSON format. With Liquid support."]</span>
+</div>
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<script at="Foot">
+$(function () {
+    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentProperties)'), {
+        autoRefresh: true,
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+});
+</script>
