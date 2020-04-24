@@ -15,7 +15,7 @@ namespace OrchardCore.Sitemaps.Controllers
 {
     public class SitemapController : Controller
     {
-        private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> Workers = new ConcurrentDictionary<string, Lazy<Task<Stream>>>(StringComparer.OrdinalIgnoreCase);
+        private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> Workers = new ConcurrentDictionary<string, Lazy<Task<Stream>>>();
         private const int _warningLength = 47_185_920;
         private const int _errorLength = 52_428_800;
 
@@ -54,7 +54,7 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 // When multiple requests occur for the same sitemap it 
                 // may still be building, so we wait for it to complete.
-                if (Workers.TryGetValue(sitemapId, out var writeTask))
+                if (Workers.TryGetValue(sitemap.Path, out var writeTask))
                 {
                     await writeTask.Value;
                 }
@@ -65,7 +65,7 @@ namespace OrchardCore.Sitemaps.Controllers
             }
             else
             {
-                var work = await Workers.GetOrAdd(sitemapId, x => new Lazy<Task<Stream>>(async () =>
+                var work = await Workers.GetOrAdd(sitemap.Path, x => new Lazy<Task<Stream>>(async () =>
                 {
                     try
                     {
@@ -92,8 +92,7 @@ namespace OrchardCore.Sitemaps.Controllers
                         if (stream.Length >= _errorLength)
                         {
                             _logger.LogError("Sitemap 50MB maximum length limit exceeded");
-                        }
-                        else if (stream.Length >= _warningLength)
+                        } else if( stream.Length >= _warningLength)
                         {
                             _logger.LogWarning("Sitemap nearing 50MB length limit");
                         }
@@ -104,7 +103,7 @@ namespace OrchardCore.Sitemaps.Controllers
                     }
                     finally
                     {
-                        Workers.TryRemove(sitemapId, out var writeCacheTask);
+                        Workers.TryRemove(sitemap.Path, out var writeCacheTask);
                     }
                 }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 
@@ -114,7 +113,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 }
 
                 work.Position = 0;
-
+                
                 // File result will dispose of stream.
                 return File(work, "application/xml");
             }
