@@ -113,7 +113,6 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            // services.Configure<UserOptions>(_configuration.GetSection("OrchardCore_Users"));
             services.AddSingleton(Options.Create<UserOptions>(_userOptions));
 
             services.AddSecurity();

@@ -4,15 +4,13 @@ The Users module enables authentication UI and user management.
 
 ## Custom Paths
 
-If you want to specify custom paths to login page, logoff, etc...
-
-Below listed the configurable paths with their default values.  Specify the one you want to configure in appsettings.json:
+If you want to specify custom paths to access the authentication related urls, you can change ithem by using this option in the appsettings.json:
 
 ``` json
   "OrchardCore": {
-    "OrchardCore_Admin": {
+    "OrchardCore_Users": {
       "LoginPath": "Login",
-      "LogoffPath": "/Users/LogOff",
+      "LogoffPath": "LogOff",
       "ChangePasswordUrl": "ChangePassword"
     }
   }
