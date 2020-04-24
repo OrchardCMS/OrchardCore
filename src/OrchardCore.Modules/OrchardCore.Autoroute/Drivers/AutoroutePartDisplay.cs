@@ -23,10 +23,6 @@ namespace OrchardCore.Autoroute.Drivers
     {
         public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,.;=<>\\|%".ToCharArray();
         public const int MaxPathLength = 1024;
-        public const string DefaultUniquePathError = "Your permalink is already in use.";
-        public const string DefaultMaxPathLengthError = "Your permalink is too long. The permalink can only be up to {0} characters.";
-        public const string DefaultInvalidCharactersForPathError = "Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).";
-        public const string DefaultHomePageError = "Your permalink can't be set to the homepage, please use the homepage option instead.";
 
         private readonly AutorouteOptions _options;
         private readonly ISiteService _siteService;
@@ -127,18 +123,18 @@ namespace OrchardCore.Autoroute.Drivers
         {
             if (autoroute.Path == "/")
             {
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S[DefaultHomePageError]);
+                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink can't be set to the homepage, please use the homepage option instead."]);
             }
 
             if (autoroute.Path?.IndexOfAny(InvalidCharactersForPath) > -1 || autoroute.Path?.IndexOf(' ') > -1)
             {
                 var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S[DefaultInvalidCharactersForPathError, invalidCharactersForMessage]);
+                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
             }
 
             if (autoroute.Path?.Length > MaxPathLength)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S[DefaultMaxPathLengthError, MaxPathLength]);
+                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is too long. The permalink can only be up to {0} characters.", MaxPathLength]);
             }
 
             // This can only validate the path if the Autoroute is not managing content item routes or the path is absolute.

@@ -157,23 +157,23 @@ namespace OrchardCore.Autoroute.Handlers
 
             if (part.Path == "/")
             {
-                context.Fail(S[AutoroutePartDisplay.DefaultHomePageError]);
+                context.Fail(S["Your permalink can't be set to the homepage, please use the homepage option instead."]);
             }
 
             if (part.Path?.IndexOfAny(AutoroutePartDisplay.InvalidCharactersForPath) > -1 || part.Path?.IndexOf(' ') > -1)
             {
                 var invalidCharactersForMessage = string.Join(", ", AutoroutePartDisplay.InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                context.Fail(S[AutoroutePartDisplay.DefaultInvalidCharactersForPathError, invalidCharactersForMessage]);
+                context.Fail(S["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
             }
 
             if (part.Path?.Length > AutoroutePartDisplay.MaxPathLength)
             {
-                context.Fail(S[AutoroutePartDisplay.DefaultMaxPathLengthError, AutoroutePartDisplay.MaxPathLength]);
+                context.Fail(S["Your permalink is too long. The permalink can only be up to {0} characters.", AutoroutePartDisplay.MaxPathLength]);
             }
 
             if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
             {
-                context.Fail(S[AutoroutePartDisplay.DefaultUniquePathError]);
+                context.Fail(S["Your permalink is already in use."]);
             }
 
         }
