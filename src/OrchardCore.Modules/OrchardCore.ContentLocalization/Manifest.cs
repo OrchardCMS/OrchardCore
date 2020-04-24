@@ -8,6 +8,7 @@ using OrchardCore.Modules.Manifest;
     Description = "Provides a part that allows to localize content items.",
     Category = "Internationalization"
 )]
+
 [assembly: Feature(
     Id = "OrchardCore.ContentLocalization",
     Name = "Content Localization",
@@ -28,6 +29,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.ContentLocalization.Sitemaps",
     Name = "Localized Content Item Sitemaps",
     Description = "Provides support for localized content item sitemaps.",
-    Dependencies = new[] { "OrchardCore.Sitemaps" },
+    Dependencies = new[] { "OrchardCore.ContentLocalization", "OrchardCore.Sitemaps" },
     Category = "Internationalization"
 )]
