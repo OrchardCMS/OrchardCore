@@ -31,7 +31,7 @@ namespace OrchardCore.Contents.Deployment
                 new JProperty("data", data)
             ));
 
-            foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published || x.Latest).ListAsync())
+            foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published).ListAsync())
             {
                 var objectData = JObject.FromObject(contentItem);
 
