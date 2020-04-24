@@ -499,11 +499,20 @@ namespace OrchardCore.ContentManagement
                         // would be further ahead, on a timeline, between the two.
 
                         var jImporting = JObject.FromObject(importingItem);
+
+                        // Removed Published and Latest from consideration when evaluating.
+                        // Otherwise an import of an unchanged (but published) version would overwrite a newer published version.
+                        jImporting.Remove(nameof(ContentItem.Published));
+                        jImporting.Remove(nameof(ContentItem.Latest));
+
                         var jOriginal = JObject.FromObject(originalVersion);
+
+                        jOriginal.Remove(nameof(ContentItem.Published));
+                        jOriginal.Remove(nameof(ContentItem.Latest));
 
                         if (JToken.DeepEquals(jImporting, jOriginal))
                         {
-                            _logger.LogInformation("Importing '{ContentItemVersionId}' skipped as it is unchanged");
+                            _logger.LogInformation("Importing '{ContentItemVersionId}' skipped as it is unchanged", importingItem.ContentItemVersionId);
                             continue;
                         }
 
