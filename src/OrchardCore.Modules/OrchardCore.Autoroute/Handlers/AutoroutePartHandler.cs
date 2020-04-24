@@ -147,7 +147,7 @@ namespace OrchardCore.Autoroute.Handlers
             return Task.CompletedTask;
         }
 
-        public override async Task ValidateAsync(ValidateContentContext context, AutoroutePart part)
+        public override async Task ValidatingAsync(ValidateContentContext context, AutoroutePart part)
         {
             // Only validate the path if it's not empty.
             if (String.IsNullOrWhiteSpace(part.Path))

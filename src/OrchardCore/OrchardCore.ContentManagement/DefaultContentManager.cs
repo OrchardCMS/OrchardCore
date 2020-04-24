@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -405,20 +406,6 @@ namespace OrchardCore.ContentManagement
             }
         }
 
-        public async Task<ContentValidateResult> ValidateAsync(ContentItem contentItem)
-        {
-            var context = new ValidateContentContext(contentItem);
-
-            await Handlers.InvokeAsync((handler, context) => handler.ValidateAsync(context), context, _logger);
-
-            if (!context.ContentValidateResult.Succeeded)
-            {
-                _session.Cancel();
-            }
-
-            return context.ContentValidateResult;
-        }
-
         public Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem)
         {
             return CreateContentItemVersionAsync(contentItem, null);
@@ -426,7 +413,7 @@ namespace OrchardCore.ContentManagement
 
         public Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion)
         {
-            return UpdateContentItemVersionAsync(updatedVersion, updatedVersion);
+            return UpdateContentItemVersionAsync(updatingVersion, updatedVersion, null);
         }
 
         public async Task ImportAsync(IEnumerable<ContentItem> contentItems)
@@ -476,6 +463,10 @@ namespace OrchardCore.ContentManagement
 
                     if (originalVersion == null)
                     {
+                        var context = new ImportContentContext(importingItem);
+
+                        await Handlers.InvokeAsync((handler, context) => handler.ImportingAsync(context), context, _logger);
+
                         // The version does not exist in the current database.
                         var result = await CreateContentItemVersionAsync(importingItem, evictionVersions.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase)));
                         if (!result.Succeeded)
@@ -485,16 +476,25 @@ namespace OrchardCore.ContentManagement
                                 _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem?.ContentItemVersionId, string.Join(',', result.Errors));
                             }
 
-                            throw new Exception(string.Join(',', result.Errors));
+                            throw new ValidationException(string.Join(", ", result.Errors));
                         }
+
+                        // Imported handlers will only be fired if the validation has been successful.
+                        // Consumers should implement validated handlers to alter the success of that operation.
+                        await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportedAsync(context), context, _logger);
                     }
                     else
                     {
                         // The version exists in the database.
+                        // It is important to only import changed items.
                         // We compare the two versions and skip importing it if they are the same.
                         // We do this to prevent unnecessary sql updates, and because UpdateContentItemVersionAsync
-                        // will remove drafts of updated items to prevent orphans.
-                        // So it is important to only import changed items.
+                        // may remove drafts of updated items.
+                        // This is necesary because an imported item maybe set to latest, and published.
+                        // In this case, the draft item in the system, must be removed, or there will be two drafts.
+                        // The draft item should be removed, because it would now be orphaned, as the imported published item
+                        // would be further ahead, on a timeline, between the two.
+
                         var jImporting = JObject.FromObject(importingItem);
                         var jOriginal = JObject.FromObject(originalVersion);
 
@@ -504,6 +504,11 @@ namespace OrchardCore.ContentManagement
                             continue;
                         }
 
+                        // Handlers are only fired if the import is going ahead.
+                        var context = new ImportContentContext(importingItem, originalVersion);
+
+                        await Handlers.InvokeAsync((handler, context) => handler.ImportingAsync(context), context, _logger);
+
                         var result = await UpdateContentItemVersionAsync(originalVersion, importingItem, evictionVersions.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase)));
                         if (!result.Succeeded)
                         {
@@ -512,8 +517,12 @@ namespace OrchardCore.ContentManagement
                                 _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem.ContentItemVersionId, string.Join(',', result.Errors));
                             }
 
-                            throw new Exception(string.Join(',', result.Errors));
+                            throw new ValidationException(string.Join(", ", result.Errors));
                         }
+
+                        // Imported handlers will only be fired if the validation has been successful.
+                        // Consumers should implement validated handlers to alter the success of that operation.
+                        await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportedAsync(context), context, _logger);
                     }
                 }
 
@@ -531,6 +540,22 @@ namespace OrchardCore.ContentManagement
             await ReversedHandlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
 
             _session.Save(contentItem);
+        }
+
+        public async Task<ContentValidateResult> ValidateAsync(ContentItem contentItem)
+        {
+            var validateContext = new ValidateContentContext(contentItem);
+
+            await Handlers.InvokeAsync((handler, context) => handler.ValidatingAsync(context), validateContext, _logger);
+
+            await ReversedHandlers.InvokeAsync((handler, context) => handler.ValidatedAsync(context), validateContext, _logger);
+
+            if (!validateContext.ContentValidateResult.Succeeded)
+            {
+                _session.Cancel();
+            }
+
+            return validateContext.ContentValidateResult;
         }
 
         public async Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect)
@@ -716,8 +741,7 @@ namespace OrchardCore.ContentManagement
             var importingLatest = updatedVersion.Latest;
             var existingLatest = updatingVersion.Latest;
 
-            // If latest values do not match and importing latest is true then we must find and evict the previous latest
-            // This is when there is a draft in the system
+            // If latest values do not match and importing latest is true then we must find and evict the previous latest.
             if (importingLatest != existingLatest && importingLatest == true)
             {
                 discardLatest = true;

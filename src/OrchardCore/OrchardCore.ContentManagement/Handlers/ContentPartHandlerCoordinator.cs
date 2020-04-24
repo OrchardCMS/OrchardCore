@@ -112,30 +112,6 @@ namespace OrchardCore.ContentManagement.Handlers
             }
         }
 
-        public override async Task ValidateAsync(ValidateContentContext context)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var activator = _contentPartFactory.GetTypeActivator(partName);
-
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (part != null)
-                {
-                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-                    await partHandlers.InvokeAsync((handler, context, part) => handler.ValidateAsync(context, part), context, part, _logger);
-                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
-                    await _partHandlers.InvokeAsync((handler, context, part) => handler.ValidateAsync(context, part), context, part, _logger);
-                }
-            }
-        }
-
         public override async Task CreatedAsync(CreateContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
@@ -156,6 +132,54 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.CreatedAsync(context, part), context, part, _logger);
+                }
+            }
+        }
+
+        public override async Task ImportingAsync(ImportContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                if (part != null)
+                {
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.ImportingAsync(context, part), context, part, _logger);
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.ImportingAsync(context, part), context, part, _logger);
+                }
+            }
+        }
+
+        public override async Task ImportedAsync(ImportContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                if (part != null)
+                {
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.ImportedAsync(context, part), context, part, _logger);
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.ImportedAsync(context, part), context, part, _logger);
                 }
             }
         }
@@ -272,6 +296,54 @@ namespace OrchardCore.ContentManagement.Handlers
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.LoadedAsync(context, part), context, part, _logger);
+                }
+            }
+        }
+
+        public override async Task ValidatingAsync(ValidateContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                if (part != null)
+                {
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.ValidatingAsync(context, part), context, part, _logger);
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.ValidatingAsync(context, part), context, part, _logger);
+                }
+            }
+        }
+
+        public override async Task ValidatedAsync(ValidateContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                if (part != null)
+                {
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.ValidatedAsync(context, part), context, part, _logger);
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.ValidatedAsync(context, part), context, part, _logger);
                 }
             }
         }

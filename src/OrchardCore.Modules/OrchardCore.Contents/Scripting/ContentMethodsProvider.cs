@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
@@ -42,8 +43,7 @@ namespace OrchardCore.Contents.Scripting
                         return contentItem;
                     } else
                     {
-                        // TODO is this the right way to handle global method errors.
-                        throw new Exception(string.Join(',', result.Errors));
+                        throw new ValidationException(string.Join(", ", result.Errors));
                     }
                 })
             };
@@ -59,8 +59,7 @@ namespace OrchardCore.Contents.Scripting
                     var result = contentManager.ValidateAsync(contentItem).GetAwaiter().GetResult();
                     if (!result.Succeeded)
                     {
-                        // TODO is this the right way to handle global method errors.
-                        throw new Exception(string.Join(',', result.Errors));
+                        throw new ValidationException(string.Join(", ", result.Errors));
                     }
                 })
             };

@@ -39,7 +39,7 @@ namespace OrchardCore.Alias.Handlers
             S = stringLocalizer;
         }
 
-        public override async Task ValidateAsync(ValidateContentContext context, AliasPart part)
+        public override async Task ValidatingAsync(ValidateContentContext context, AliasPart part)
         {
             // Only validate the alias if it's not empty.
             if (String.IsNullOrWhiteSpace(part.Alias))

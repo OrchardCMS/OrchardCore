@@ -33,12 +33,6 @@ namespace OrchardCore.ContentManagement
         /// <param name="options">The version to create the item with</param>
         Task CreateAsync(ContentItem contentItem, VersionOptions options);
 
-        /// <summary>
-        /// Validates a content item 
-        /// </summary>
-        /// <param name="contentItem"></param>
-        /// <returns>The validation <see cref="ContentValidateResult"/> result.</returns>
-        Task<ContentValidateResult> ValidateAsync(ContentItem contentItem);
 
         /// <summary>
         /// Creates (puts) a new content item and manages removing and updating existing published or draft items.
@@ -60,6 +54,13 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentItems"></param>
         Task ImportAsync(IEnumerable<ContentItem> contentItems);
+
+        /// <summary>
+        /// Validates a content item 
+        /// </summary>
+        /// <param name="contentItem"></param>
+        /// <returns>The validation <see cref="ContentValidateResult"/> result.</returns>
+        Task<ContentValidateResult> ValidateAsync(ContentItem contentItem);
 
         /// <summary>
         /// Gets the published content item with the specified id
