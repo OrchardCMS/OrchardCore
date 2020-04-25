@@ -12,9 +12,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Assets\scss\bootstrap-oc.scss" />
+    <EmbeddedResource Include="Assets\scss\modules\_flow.scss" />
+    <EmbeddedResource Include="Assets\scss\modules\_messages.scss" />
+    <EmbeddedResource Include="Assets\scss\modules\_pager.scss" />
+    <EmbeddedResource Include="Assets\scss\modules\_widgets.scss" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\scss\" />
   </ItemGroup>
 
 </Project>

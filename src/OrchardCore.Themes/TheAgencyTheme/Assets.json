@@ -2,13 +2,13 @@
   {
     "generateRTL": true,
     "inputs": [
-      "node_modules/startbootstrap-agency/dist/css/styles.css"
+      "Assets/scss/styles.scss"
     ],
     "output": "wwwroot/Styles/styles.css"
   },
   {
     "inputs": [
-      "wwwroot/scss/bootstrap-oc.scss"
+      "Assets/scss/bootstrap-oc.scss"
     ],
     "output": "wwwroot/Styles/bootstrap-oc.css"
   },
