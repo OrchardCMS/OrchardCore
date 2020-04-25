@@ -7,7 +7,7 @@
     "Contributors.md"
   ],
   "imageSize": 100,
-  "commit": false,
+  "commit": true,
   "commitConvention": "none",
   "contributors": [
     {
@@ -1490,6 +1490,15 @@
       "profile": "https://github.com/Devqon",
       "contributions": [
         "question"
+      ]
+    },
+    {
+      "login": "jaliao",
+      "name": "Justin Liao",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/12048035?v=4",
+      "profile": "http://www.blockcode.com.tw",
+      "contributions": [
+        "translation"
       ]
     }
   ],
