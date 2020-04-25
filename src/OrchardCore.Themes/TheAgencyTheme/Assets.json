@@ -1,0 +1,22 @@
+[
+  //{
+  //  "generateRTL": true,
+  //  "inputs": [
+  //    "node_modules/startbootstrap-agency/dist/css/styles.css"
+  //  ],
+  //  "output": "wwwroot/Styles/styles.css"
+  //},
+  {
+    "generateRTL": true,
+    "inputs": [
+      "wwwroot/scss/bootstrap-oc.scss"
+    ],
+    "output": "wwwroot/Styles/bootstrap-oc.css"
+  },
+  {
+    "inputs": [
+      "node_modules/startbootstrap-agency/dist/js/scripts.js"
+    ],
+    "output": "wwwroot/Scripts/scripts.js"
+  }
+]
