@@ -25,7 +25,7 @@ environment:
     MYGET_API_KEY:
         secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
     NUGET_API_KEY:
-        secure: bR0JuO8NuLOxL18tQ7ZtQXOHNHjqCJXlkUOzEyNQniptTszwYcwufYhKTyoybqei
+        secure: nhxlp80FeVXTBsSsLok7RVUPbSa+DKEwbhqa4EJrf8vzK+vD9Jff1v+eA6HUP402
 
 stack: node 9, docker
 
@@ -41,7 +41,7 @@ install:
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
 # Uncomment to download a specific version of dotnet
 #  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
-# - ps: .\dotnet-install.ps1 --Version 3.1.200
+# - ps: .\dotnet-install.ps1 --Version 3.1.201
 
 build_script:
   - dotnet build -c Release

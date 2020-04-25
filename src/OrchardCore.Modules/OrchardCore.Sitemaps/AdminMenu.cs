@@ -22,17 +22,17 @@ namespace OrchardCore.Sitemaps
             }
 
             builder.Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, cfg => cfg
-                    .Add(S["SEO"], S["SEO"], admt => admt
+                    .Add(S["SEO"], "am-" + S["SEO"], admt => admt
                         .Permission(Permissions.ManageSitemaps)
-                        .Add(S["Sitemaps"], "5", sitemaps => sitemaps
+                        .Add(S["Sitemaps"], "am1-" + S["Sitemaps"], sitemaps => sitemaps
                             .Action("List", "Admin", new { area = "OrchardCore.Sitemaps" })
                             .LocalNav()
                         )
-                        .Add(S["Sitemap Indexes"], "10", sitemaps => sitemaps
+                        .Add(S["Sitemap Indexes"], "am2-" + S["Sitemap Indexes"], sitemaps => sitemaps
                             .Action("List", "SitemapIndex", new { area = "OrchardCore.Sitemaps" })
                             .LocalNav()
                         )
-                        .Add(S["Sitemaps Cache"], "15", sitemaps => sitemaps
+                        .Add(S["Sitemaps Cache"], "am3-" + S["Sitemaps Cache"], sitemaps => sitemaps
                             .Action("List", "SitemapCache", new { area = "OrchardCore.Sitemaps" })
                             .LocalNav()
                         )

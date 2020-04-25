@@ -80,12 +80,3 @@
         right: calc(-14px + 50%);
     }
 }
-
-.toggleAll:after {
-    font-family: 'FontAwesome';
-    content: "\f102";
-}
-
-.toggleAll.collapsed:after {
-    content: "\f103";
-}

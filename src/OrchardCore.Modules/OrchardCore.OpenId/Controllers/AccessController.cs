@@ -20,7 +20,6 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Filters;
-using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Routing;
 using OrchardCore.Security.Services;
@@ -35,15 +34,14 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IOpenIdAuthorizationManager _authorizationManager;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer<AccessController> S;
+        private readonly IStringLocalizer S;
 
         public AccessController(
             IOpenIdApplicationManager applicationManager,
             IOpenIdAuthorizationManager authorizationManager,
             IStringLocalizer<AccessController> localizer,
             IOpenIdScopeManager scopeManager,
-            ShellSettings shellSettings,
-            IOpenIdServerService serverService)
+            ShellSettings shellSettings)
         {
             S = localizer;
             _applicationManager = applicationManager;

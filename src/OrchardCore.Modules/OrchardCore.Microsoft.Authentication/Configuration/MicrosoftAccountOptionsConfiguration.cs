@@ -18,7 +18,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
     {
         private readonly IMicrosoftAccountService _microsoftAccountService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<MicrosoftAccountOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public MicrosoftAccountOptionsConfiguration(
             IMicrosoftAccountService microsoftAccountService,
@@ -39,7 +39,9 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
 
             if (_microsoftAccountService.ValidateSettings(settings).Any())
+            {
                 return;
+            }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(MicrosoftAccountDefaults.AuthenticationScheme, builder =>

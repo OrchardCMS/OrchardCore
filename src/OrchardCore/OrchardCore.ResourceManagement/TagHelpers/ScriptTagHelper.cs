@@ -187,6 +187,16 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     _resourceManager.RenderLocalScript(setting, output.Content);
                 }
+                else
+                {
+                    var childContent = await output.GetChildContentAsync();
+                    if (!childContent.IsEmptyOrWhiteSpace)
+                    {
+                        // Inline content definition
+                        _resourceManager.InlineManifest.DefineScript(Name)
+                            .SetInnerContent(childContent.GetContent());
+                    }
+                }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
