@@ -427,28 +427,23 @@ namespace OrchardCore.ContentManagement
             {
                 // Preload all the versions for this batch from the database.
                 var versionIds = batchedContentItems
-                    .Where(x => !String.IsNullOrEmpty(x.ContentItemVersionId))
-                    .Select(x => x.ContentItemVersionId);
+                     .Where(x => !String.IsNullOrEmpty(x.ContentItemVersionId))
+                     .Select(x => x.ContentItemVersionId);
 
-                var versions = await _session
-                    .Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(versionIds))
+                var itemIds = batchedContentItems
+                    .Where(x => !String.IsNullOrEmpty(x.ContentItemId))
+                    .Select(x => x.ContentItemId);
+
+                var existingContentItems = await _session
+                    .Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentItemId.IsIn(itemIds) &&
+                        (x.Latest || x.Published || x.ContentItemVersionId.IsIn(versionIds)))
                     .ListAsync();
 
-                foreach (var version in versions)
-                {
-                    await LoadAsync(version);
-                }
+                var versionsToUpdate = existingContentItems.Where(c => versionIds.Any(v => String.Equals(v, c.ContentItemVersionId, StringComparison.OrdinalIgnoreCase)));
+                var versionsThatMaybeEvicted = existingContentItems.Except(versionsToUpdate);
 
-                // Query for versions that may be evicted.
-                var publishedLatestVersions = versions.Where(x => x.Latest && x.Published);
-                var reducedContentItems = batchedContentItems.Except(publishedLatestVersions);
-                var evictionIds = reducedContentItems.Select(x => x.ContentItemId);
-
-                var evictionVersions = await _session.Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId.IsIn(evictionIds) && (x.Latest || x.Published))
-                    .ListAsync();
-
-                foreach (var version in evictionVersions)
+                foreach (var version in existingContentItems)
                 {
                     await LoadAsync(version);
                 }
@@ -458,22 +453,23 @@ namespace OrchardCore.ContentManagement
                     ContentItem originalVersion = null;
                     if (!String.IsNullOrEmpty(importingItem.ContentItemVersionId))
                     {
-                        originalVersion = versions.FirstOrDefault(x => String.Equals(x.ContentItemVersionId, importingItem.ContentItemVersionId, StringComparison.OrdinalIgnoreCase));
+                        originalVersion = versionsToUpdate.FirstOrDefault(x => String.Equals(x.ContentItemVersionId, importingItem.ContentItemVersionId, StringComparison.OrdinalIgnoreCase));
                     }
 
                     if (originalVersion == null)
                     {
+                        // The version does not exist in the current database.
                         var context = new ImportContentContext(importingItem);
 
                         await Handlers.InvokeAsync((handler, context) => handler.ImportingAsync(context), context, _logger);
 
-                        // The version does not exist in the current database.
-                        var result = await CreateContentItemVersionAsync(importingItem, evictionVersions.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase)));
+                        var evictionVersions = versionsThatMaybeEvicted.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+                        var result = await CreateContentItemVersionAsync(importingItem, evictionVersions);
                         if (!result.Succeeded)
                         {
                             if (_logger.IsEnabled(LogLevel.Error))
                             {
-                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem?.ContentItemVersionId, string.Join(',', result.Errors));
+                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem?.ContentItemVersionId, string.Join(", ", result.Errors));
                             }
 
                             throw new ValidationException(string.Join(", ", result.Errors));
@@ -483,7 +479,7 @@ namespace OrchardCore.ContentManagement
                         // Consumers should implement validated handlers to alter the success of that operation.
                         await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportedAsync(context), context, _logger);
 
-                        //TODO implement sessionHelper.Save()
+                        //TODO can be removed when sessionHelper.Save() implemented.
                         _session.Save(importingItem);
                     }
                     else
@@ -521,12 +517,13 @@ namespace OrchardCore.ContentManagement
 
                         await Handlers.InvokeAsync((handler, context) => handler.ImportingAsync(context), context, _logger);
 
-                        var result = await UpdateContentItemVersionAsync(originalVersion, importingItem, evictionVersions.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase)));
+                        var evictionVersions = versionsThatMaybeEvicted.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+                        var result = await UpdateContentItemVersionAsync(originalVersion, importingItem, evictionVersions);
                         if (!result.Succeeded)
                         {
                             if (_logger.IsEnabled(LogLevel.Error))
                             {
-                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem.ContentItemVersionId, string.Join(',', result.Errors));
+                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem.ContentItemVersionId, string.Join(", ", result.Errors));
                             }
 
                             throw new ValidationException(string.Join(", ", result.Errors));
@@ -536,7 +533,7 @@ namespace OrchardCore.ContentManagement
                         // Consumers should implement validated handlers to alter the success of that operation.
                         await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportedAsync(context), context, _logger);
 
-                        // TODO implement sessionHelper.Save
+                        //TODO can be removed when sessionHelper.Save() implemented.
                         _session.Save(originalVersion);
                     }
                 }
@@ -656,6 +653,12 @@ namespace OrchardCore.ContentManagement
 
         private async Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions = null)
         {
+            if (String.IsNullOrEmpty(contentItem.ContentItemId))
+            {
+                // NewAsync should be used to create new content items.
+                throw new ArgumentNullException(nameof(ContentItem.ContentItemId));
+            }
+
             // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
             contentItem.Id = 0;
 
@@ -736,7 +739,7 @@ namespace OrchardCore.ContentManagement
             }
 
             // Re-enlist content item here in case of session queries.
-            // TODO implement sessionHelper.Save();
+            // TODO remove when sessionHelper.Save() implemented;
             _session.Save(contentItem);
 
             return result;
@@ -819,7 +822,7 @@ namespace OrchardCore.ContentManagement
                 }
             }
 
-            // TODO implement sessionhelper.Save
+            // TODO remove when sessionHelper.Save() implemented.
             _session.Save(updatingVersion);
 
             return result;
