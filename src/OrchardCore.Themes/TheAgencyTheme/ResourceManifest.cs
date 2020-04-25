@@ -22,7 +22,7 @@ namespace OrchardCore.Themes.TheAgencyTheme
             manifest
                 .DefineStyle("TheAgencyTheme-bootstrap-oc")
                 .SetDependencies("TheAgencyTheme")
-                .SetUrl("~/TheAgencyTheme/css/bootstrap-oc.min.css", "~/TheAgencyTheme/css/bootstrap-oc.css")
+                .SetUrl("~/TheAgencyTheme/Styles/bootstrap-oc.min.css", "~/TheAgencyTheme/Styles/bootstrap-oc.css")
                 .SetVersion("1.0.0");
         }
     }

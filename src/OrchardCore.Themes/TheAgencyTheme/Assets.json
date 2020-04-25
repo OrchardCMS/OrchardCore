@@ -1,13 +1,12 @@
 [
-  //{
-  //  "generateRTL": true,
-  //  "inputs": [
-  //    "node_modules/startbootstrap-agency/dist/css/styles.css"
-  //  ],
-  //  "output": "wwwroot/Styles/styles.css"
-  //},
   {
     "generateRTL": true,
+    "inputs": [
+      "node_modules/startbootstrap-agency/dist/css/styles.css"
+    ],
+    "output": "wwwroot/Styles/styles.css"
+  },
+  {
     "inputs": [
       "wwwroot/scss/bootstrap-oc.scss"
     ],
