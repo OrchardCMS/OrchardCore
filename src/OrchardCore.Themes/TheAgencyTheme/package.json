@@ -1,0 +1,7 @@
+{
+  "name": "orchardcore.theagencytheme",
+  "version": "1.0.0",
+  "dependencies": {
+    "startbootstrap-agency": "6.0.0"
+  }
+}
