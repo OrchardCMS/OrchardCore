@@ -670,7 +670,7 @@ namespace OrchardCore.ContentManagement
                 contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
             }
 
-            // Remove previous published or latest items or they will continue to be listed as published or latest.
+            // Remove previous latest item or they will continue to be listed as latest.
             // When importing a new draft the existing latest must be set to false. The creating version wins.
             if (contentItem.Latest && !contentItem.Published)
             {
@@ -683,7 +683,7 @@ namespace OrchardCore.ContentManagement
                 // the imported (which we assume is the version that wins) content.
                 await RemoveVersionsAsync(contentItem, evictionVersions);
             }
-            // When neither imported or latest the operation will create a database record
+            // When neither published or latest the operation will create a database record
             // which will be part of the content item archive.
 
             // Invoked create handlers.
@@ -880,7 +880,7 @@ namespace OrchardCore.ContentManagement
         private async Task RemoveVersionsAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions)
         {
             IEnumerable<ContentItem> activeVersions;
-            if (evictionVersions != null)
+            if (evictionVersions == null)
             {
                 activeVersions = await _session.Query<ContentItem, ContentItemIndex>()
                     .Where(x =>
