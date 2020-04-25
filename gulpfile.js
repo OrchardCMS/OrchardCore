@@ -22,6 +22,7 @@ var fs = require("file-system"),
     postcss = require('gulp-postcss'),
     rtl = require('postcss-rtl'),
     babel = require('gulp-babel'),
+    agencytheme = require('./src/OrchardCore.Themes/TheAgencyTheme/wwwroot/gulpfile'),
     blogtheme = require('./src/OrchardCore.Themes/TheBlogTheme/wwwroot/gulpfile');
 
 // For compat with older versions of Node.js.
@@ -91,8 +92,16 @@ gulp.task('help', function() {
     `);
   });
 
+gulp.task("build-agencytheme", function(done){
+	return buildAgencyTheme(done);
+});
+
+gulp.task("build-blogtheme", function(done){
+	return buildBlogTheme(done);
+});
+
 gulp.task("build-themes", function(done){
-    buildBlogTheme(done);
+    buildAgencyTheme( ()=> buildBlogTheme (done) );
 });
 
 
@@ -103,6 +112,15 @@ gulp.task( 'default',  gulp.series([ 'build' ]) );
 /*
 ** Build Themes
 */
+
+function buildAgencyTheme(done){
+    var cwd = process.cwd();      
+    process.chdir('./src/OrchardCore.Themes/TheAgencyTheme/wwwroot');       
+	agencytheme.build( ()=> {
+         process.chdir(cwd);
+         done();
+    });
+}
 
 function buildBlogTheme(done){
     var cwd = process.cwd();      

@@ -9,7 +9,6 @@
     "bootstrap-slider": "10.6.2",
     "codemirror": "5.53.2",
     "jquery": "3.4.1",
-    "jquery.easing": "1.4.1",
     "jquery-resizable-dom": "0.35.0",
     "popper.js": "1.16.0",
     "sortablejs": "^1.10.2",

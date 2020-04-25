@@ -126,12 +126,6 @@
   },
   {
     "inputs": [
-      "node_modules/jquery.easing/jquery.easing.js"
-    ],
-    "output": "wwwroot/Scripts/jquery.easing.js"
-  },
-  {
-    "inputs": [
       "node_modules/jquery-resizable-dom/dist/jquery-resizable.js"
     ],
     "output": "wwwroot/Scripts/jquery-resizable.js"
