@@ -13,7 +13,7 @@ namespace OrchardCore.Html.Handlers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private IHtmlContent _bodyAspect;
+        private HtmlString _bodyAspect;
         private int _contentItemId;
 
         public HtmlBodyPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
@@ -33,9 +33,6 @@ namespace OrchardCore.Html.Handlers
                     return;
                 }
 
-                _bodyAspect = bodyAspect.Body;
-                _contentItemId = part.ContentItem.Id;
-
                 try
                 {
                     var model = new HtmlBodyPartViewModel()
@@ -49,10 +46,12 @@ namespace OrchardCore.Html.Handlers
                         scope => scope.SetValue("ContentItem", model.ContentItem));
 
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);
+                    _contentItemId = part.ContentItem.Id;
                 }
                 catch
                 {
                     bodyAspect.Body = HtmlString.Empty;
+                    _contentItemId = null;
                 }
             });
         }
