@@ -4,7 +4,11 @@ header.masthead {
     padding-bottom: 6rem;
     text-align: center;
     color: $white;
-    background-color: #343434;
+    background-image: url("../assets/img/header-bg.jpg");
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-position: center center;
+    background-size: cover;
     .masthead-subheading {
         font-size: 1.5rem;
         font-style: italic;
@@ -12,7 +16,6 @@ header.masthead {
         margin-bottom: 25px;
         font-family: $subheadings-font-family;
     }
-
     .masthead-heading {
         font-size: 3.25rem;
         font-weight: 700;
