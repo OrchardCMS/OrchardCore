@@ -23,6 +23,7 @@
 <script at="Foot">
     $(function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
+        // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
         if (optionsTextArea) {
             var editor = CodeMirror.fromTextArea(optionsTextArea, {
                 autoRefresh: true,
