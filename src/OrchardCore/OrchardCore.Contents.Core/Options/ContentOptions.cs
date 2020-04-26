@@ -13,12 +13,19 @@ namespace OrchardCore.Contents.Core.Options
             ContentsStatus = ContentsStatus.Latest;
         }
         public string OwnerName { get; set; }
+
         public string DisplayText { get; set; }
+
         public string SelectedContentType { get; set; }
+
         public string[] ListableContentTypes { get; set; }
+
         public bool CanCreateSelectedContentType { get; set; }
+
         public ContentsOrder OrderBy { get; set; }
+
         public ContentsStatus ContentsStatus { get; set; }
+
         public ContentsBulkAction BulkAction { get; set; }
 
         #region Lists to populate

@@ -10,13 +10,12 @@ namespace OrchardCore.Contents.Services
     public class ContentQueryService : IContentQueryService
     {
         private readonly YesSql.ISession _session;
-        public ContentQueryService(
-            YesSql.ISession session
-            )
+
+        public ContentQueryService(YesSql.ISession session)
         {
             _session = session;
         }
-        public IQuery<ContentItem, ContentItemIndex> GetQueryByOptions(OrchardCore.Contents.Core.Options.ContentOptions options)
+        public virtual IQuery<ContentItem, ContentItemIndex> GetQueryByOptions(OrchardCore.Contents.Core.Options.ContentOptions options)
         {
             var query = _session.Query<ContentItem, ContentItemIndex>();
 
@@ -36,17 +35,15 @@ namespace OrchardCore.Contents.Services
                 case ContentsStatus.AllVersions:
                     query = query.With<ContentItemIndex>(x => x.Latest);
                     break;
+                case ContentsStatus.Owner:
+                    if (!string.IsNullOrEmpty(options.OwnerName))
+                    {
+                        query = query.With<ContentItemIndex>(x => x.Owner == options.OwnerName);
+                    }
+                    break;
                 default:
                     query = query.With<ContentItemIndex>(x => x.Latest);
                     break;
-            }
-
-            if (options.ContentsStatus == ContentsStatus.Owner)
-            {
-                if (!string.IsNullOrEmpty(options.OwnerName))
-                {
-                    query = query.With<ContentItemIndex>(x => x.Owner == options.OwnerName);
-                }
             }
 
             if (!string.IsNullOrEmpty(options.SelectedContentType))
@@ -87,5 +84,3 @@ namespace OrchardCore.Contents.Services
         }
     }
 }
-
-

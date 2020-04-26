@@ -7,7 +7,8 @@ namespace OrchardCore.Contents.Core
     {
         public static IServiceCollection AddContentQueries(this IServiceCollection services)
         {
-            services.AddScoped<IContentQueryService, ContentQueryService>();            
+            services.AddScoped<IContentQueryService, ContentQueryService>();
+
             return services;
         }
     }

@@ -195,8 +195,6 @@ namespace OrchardCore.Contents.Controllers
             return View(viewModel);
         }
 
-
-
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.Filter")]
         public ActionResult ListFilterPOST(ListContentsViewModel model)
