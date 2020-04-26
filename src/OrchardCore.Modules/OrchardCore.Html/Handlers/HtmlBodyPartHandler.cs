@@ -51,7 +51,7 @@ namespace OrchardCore.Html.Handlers
                 catch
                 {
                     bodyAspect.Body = HtmlString.Empty;
-                    _contentItemId = null;
+                    _contentItemId = default;
                 }
             });
         }

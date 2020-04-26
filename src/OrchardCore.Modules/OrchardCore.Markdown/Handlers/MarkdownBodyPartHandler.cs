@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -14,7 +13,7 @@ namespace OrchardCore.Markdown.Handlers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private IHtmlContent _bodyAspect;
+        private HtmlString _bodyAspect;
         private int _contentItemId;
 
         public MarkdownBodyPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
@@ -34,9 +33,6 @@ namespace OrchardCore.Markdown.Handlers
                     return;
                 }
 
-                _bodyAspect = bodyAspect.Body;
-                _contentItemId = part.ContentItem.Id;
-
                 try
                 {
                     var model = new MarkdownBodyPartViewModel()
@@ -52,10 +48,12 @@ namespace OrchardCore.Markdown.Handlers
                     var result = Markdig.Markdown.ToHtml(markdown ?? "");
 
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);
+                    _contentItemId = part.ContentItem.Id;
                 }
                 catch
                 {
                     bodyAspect.Body = HtmlString.Empty;
+                    _contentItemId = default;
                 }
             });
         }
