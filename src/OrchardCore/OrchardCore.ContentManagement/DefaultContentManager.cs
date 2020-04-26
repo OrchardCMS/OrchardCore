@@ -84,11 +84,6 @@ namespace OrchardCore.ContentManagement
 
         public Task<ContentItem> GetAsync(string contentItemId)
         {
-            if (contentItemId == null)
-            {
-                throw new ArgumentNullException(nameof(contentItemId));
-            }
-
             return GetAsync(contentItemId, VersionOptions.Published);
         }
 
@@ -121,11 +116,17 @@ namespace OrchardCore.ContentManagement
                 contentItems[i] = await LoadAsync(contentItems[i]);
             }
 
-            return contentItems.OrderBy(c => contentItemIds.ToImmutableArray().IndexOf(c.ContentItemId));
+            var ids = contentItemIds.ToImmutableArray();
+            return contentItems.OrderBy(c => ids.IndexOf(c.ContentItemId));
         }
 
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
         {
+            if (contentItemId == null)
+            {
+                throw new ArgumentNullException(nameof(contentItemId));
+            }
+
             ContentItem contentItem = null;
 
             if (options.IsLatest)
